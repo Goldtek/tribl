@@ -1,0 +1,12 @@
+{
+  "name": "tribl",
+  "displayName": "tribl",
+  "expo": {
+    "name": "tribl",
+    "slug": "tribl",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
