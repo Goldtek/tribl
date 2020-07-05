@@ -1,0 +1,24 @@
+{
+  "skipWalkThrough": "skip",
+  "nextWalkThrough": "suivante",
+  "getStarted": "Commencer",
+  "screenOne": {
+    "title": "Trouvez votre tribu",
+    "subTitle": "Découvrez les discussions de la communauté et connectez-vous avec des personnes partageant les mêmes idées"
+  },
+
+  "screenTwo": {
+    "title": "Rejoignez les événements à proximité",
+    "subTitle": "Assistez à des expériences Tribl et rencontrez des étrangers familiers dans votre ville"
+  },
+
+  "screenThree": {
+    "title": "Voyagez et explorez",
+    "subTitle": "Rejoignez des groupes de voyage et explorez le monde en tant que local"
+  },
+
+  "screenFour": {
+    "title": "Voyagez et explorez",
+    "subTitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elia."
+  }
+}

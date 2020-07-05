@@ -3,11 +3,15 @@ import CommunityScreen from './community';
 import ProfileScreen from './profile';
 import InboxScreen from './inbox';
 import TriblScreen from './tribl';
+import SignupScreen from './signup';
+import LoginScreen from './login';
 
 export default {
   WalkThroughScreen,
   CommunityScreen,
   ProfileScreen,
   InboxScreen,
-  TriblScreen
+  TriblScreen,
+  SignupScreen,
+  LoginScreen
 };

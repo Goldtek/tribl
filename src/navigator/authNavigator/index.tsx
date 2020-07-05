@@ -6,11 +6,8 @@ const AuthStack = createStackNavigator();
 
 export default function AuthNavigator() {
   return (
-    <AuthStack.Navigator initialRouteName="SignupScreen" headerMode="screen">
-      <AuthStack.Screen
-        name="SignupScreen"
-        component={Screens.CommunityScreen}
-      />
+    <AuthStack.Navigator headerMode="screen">
+      <AuthStack.Screen name="SignupScreen" component={Screens.SignupScreen} />
     </AuthStack.Navigator>
   );
 }

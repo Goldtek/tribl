@@ -1,4 +1,5 @@
 import 'styled-components';
+import { configureFonts, DefaultTheme } from 'react-native-paper';
 
 // All app colors
 enum COLORS {
@@ -52,5 +53,45 @@ declare module 'styled-components' {
   }
 }
 
+const paperFontConfig = {
+  default: {
+    regular: {
+      fontFamily: FONTS.WORK_SANS_REGULAR,
+      fontWeight: 'normal'
+    },
+
+    medium: {
+      fontFamily: FONTS.WORK_SANS_MEDIUM,
+      fontWeight: 'normal'
+    },
+
+    light: {
+      fontFamily: FONTS.WORK_SANS_REGULAR,
+      fontWeight: 'normal'
+    },
+
+    thin: {
+      fontFamily: FONTS.WORK_SANS_REGULAR,
+      fontWeight: 'normal'
+    }
+  }
+};
+
+export const paperTheme = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: COLORS.PRIMARY,
+    accent: COLORS.SECONDARY,
+    background: COLORS.WHITE,
+    surface: COLORS.WHITE,
+    text: COLORS.PRIMARY_TEXT,
+    disabled: COLORS.DISABLED
+  },
+  // @ts-ignore
+  fonts: configureFonts(paperFontConfig)
+};
+
 // App theme
-export const theme = { colors: COLORS, fonts: FONTS };
+export const styledComponentTheme = { colors: COLORS, fonts: FONTS };
