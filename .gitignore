@@ -5,6 +5,7 @@
 *.mobileprovision
 *.orig.*
 web-report/
+coverage/
 
 # Environment Variables
 .env
