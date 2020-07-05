@@ -8,6 +8,8 @@ export type RootStackParamList = {
   ProfileScreen: undefined;
   InboxScreen: undefined;
   TriblScreen: undefined;
+  SignupScreen: undefined;
+  LoginScreen: undefined;
 };
 
 interface StackScreenInterface {

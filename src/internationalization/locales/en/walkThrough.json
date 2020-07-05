@@ -1,0 +1,24 @@
+{
+  "skipWalkThrough": "skip",
+  "nextWalkThrough": "next",
+  "getStarted": "get started",
+  "screenOne": {
+    "title": "Find your Tribe",
+    "subTitle": "Discover community discussions and \n connect with like-minded people"
+  },
+
+  "screenTwo": {
+    "title": "Join nearby Events",
+    "subTitle": "Attend Tribl Experiences and meet \n familiar strangers in your city"
+  },
+
+  "screenThree": {
+    "title": "Travel and Explore",
+    "subTitle": "Join travel groups and explore the \n world as a local"
+  },
+
+  "screenFour": {
+    "title": "Travel and Explore",
+    "subTitle": "Lorem ipsum dolor sit amet, \n consectetur adipiscing elia."
+  }
+}

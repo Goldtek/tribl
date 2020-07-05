@@ -14,8 +14,9 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <RootStack.Navigator
-        initialRouteName="CommunityScreen"
+        initialRouteName="SignupScreen"
         screenOptions={{
+          headerShown: false,
           headerBackTitleStyle: {
             fontFamily: fonts.WORK_SANS_MEDIUM,
             color: colors.PRIMARY_TEXT,
@@ -31,11 +32,9 @@ export default function AppNavigator() {
 
         <RootStack.Screen name="SignupScreen" component={AuthNavigator} />
 
-        <RootStack.Screen
-          name="CommunityScreen"
-          component={BottomNavigator}
-          options={{ headerShown: false }}
-        />
+        <RootStack.Screen name="LoginScreen" component={Screens.LoginScreen} />
+
+        <RootStack.Screen name="CommunityScreen" component={BottomNavigator} />
       </RootStack.Navigator>
     </NavigationContainer>
   );
