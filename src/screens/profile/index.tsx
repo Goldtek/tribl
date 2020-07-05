@@ -6,9 +6,8 @@ import { Button } from 'react-native-paper';
 import { Container, Welcome } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ProfileScreenProp extends NavigationInterface {
-  testID?: string;
-}
+interface ProfileScreenProp extends NavigationInterface {}
+
 export default function ProfileScreen(props: ProfileScreenProp) {
   return (
     <Container>

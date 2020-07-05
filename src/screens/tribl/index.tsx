@@ -6,9 +6,7 @@ import { Button } from 'react-native-paper';
 import { Container, Welcome } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface TriblScreenProp extends NavigationInterface {
-  testID?: string;
-}
+interface TriblScreenProp extends NavigationInterface {}
 
 export default function TriblScreen(props: TriblScreenProp) {
   return (
