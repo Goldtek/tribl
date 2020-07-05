@@ -4,12 +4,13 @@ import {
   ThemeProvider as Provider,
   ThemeContext
 } from 'styled-components/native';
-import { theme } from './types';
+
+import { styledComponentTheme, paperTheme } from './types';
 
 const ThemeProvider: FunctionComponent = ({ children }) => {
   return (
-    <PaperProvider>
-      <Provider theme={theme}>{children}</Provider>
+    <PaperProvider theme={paperTheme}>
+      <Provider theme={styledComponentTheme}>{children}</Provider>
     </PaperProvider>
   );
 };
