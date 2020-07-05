@@ -1,21 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import loadResources from './src/libs/loadResources';
+import AppRouter from './src';
+import './src/internationalization';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+  const [isAppReady, setIsAppReady] = useState(false);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  useEffect(() => {
+    (async () => {
+      await SplashScreen.preventAutoHideAsync();
+      await loadResources();
+      SplashScreen.hideAsync();
+      setIsAppReady(true);
+    })();
+  }, []);
+
+  return isAppReady ? <AppRouter /> : null;
+}
