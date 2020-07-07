@@ -6,9 +6,9 @@ import { Button } from 'react-native-paper';
 import { Container, Welcome } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface InboxScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {}
 
-export default function InboxScreen(props: InboxScreenProp) {
+export default function InboxScreen(props: ScreenProp) {
   return (
     <Container>
       <Button
