@@ -12,10 +12,3 @@ export const GET_USER_COUNTRY = gql`
     countryCode @client
   }
 `;
-
-// CHANGE USER COUNTRY
-export const CHANGE_USER_COUNTRY = gql`
-  mutation ChangeUserCountry($countryCode: String!) {
-    changeUserCountry(countryCode: $countryCode) @client
-  }
-`;
