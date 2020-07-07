@@ -4,12 +4,16 @@ import {
   ThemeProvider as Provider,
   ThemeContext
 } from 'styled-components/native';
+import { AntDesign } from '@expo/vector-icons';
 
 import { styledComponentTheme, paperTheme } from './types';
 
 const ThemeProvider: FunctionComponent = ({ children }) => {
   return (
-    <PaperProvider theme={paperTheme}>
+    <PaperProvider
+      theme={paperTheme}
+      settings={{ icon: (props) => <AntDesign {...props} /> }}
+    >
       <Provider theme={styledComponentTheme}>{children}</Provider>
     </PaperProvider>
   );
