@@ -1,4 +1,13 @@
 {
+  "skipSignup": "skip",
+  "userRegSteps": {
+    "OTPScreen": "1 of 5 steps",
+    "CreateAccountScreen": "2 of 5 steps",
+    "AvatarUploadScreen": "3 of 5 steps",
+    "IdentifyUserScreen": "4 of 5 steps",
+    "UserLocationScreen": "5 of 5 steps"
+  },
+
   "screenOne": {
     "title": "get started",
     "subTitle": "To sign up for account, enter your \nmobile number.",
@@ -17,8 +26,13 @@
   },
 
   "screenThree": {
-    "title": "Travel and Explore",
-    "subTitle": "Join travel groups and explore the \n world as a local"
+    "title": "Verify your number",
+    "subTitle": "setup 1",
+    "paragraph": "We’ve sent a verification code to your \nphone number",
+    "didNotReceiveCode": "Didn’t receive the code?",
+    "resend": "resend",
+    "submit": "submit",
+    "loading": "loading..."
   },
 
   "screenFour": {
