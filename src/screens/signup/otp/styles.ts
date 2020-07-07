@@ -1,15 +1,13 @@
 import styled from 'styled-components/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 export const Container = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
   background-color: ${({ theme }) => theme.colors.WHITE};
 `;
 
-export const Welcome = styled.Text`
-  font-size: ${({ theme }) => theme.fonts.LARGE_SIZE}px;
-  font-family: ${({ theme }) => theme.fonts.WORK_SANS_REGULAR};
-  color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
-  text-transform: capitalize;
+export const GradientContainer = styled(LinearGradient)`
+  height: ${RFValue(50)}px;
+  justify-content: center;
+  align-items: center;
 `;
