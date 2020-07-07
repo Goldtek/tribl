@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import BottomNavigator from './navigator/bottomNavigator';
-import AuthNavigator from './navigator/authNavigator';
+import SignupNavigator from './navigator/signupNavigator';
 import { useThemeContext } from './theme';
 import Screens from './screens';
 
@@ -30,9 +30,13 @@ export default function AppNavigator() {
           component={Screens.WalkThroughScreen}
         />
 
-        <RootStack.Screen name="SignupScreen" component={AuthNavigator} />
+        <RootStack.Screen name="SignupScreen" component={SignupNavigator} />
 
-        <RootStack.Screen name="LoginScreen" component={Screens.LoginScreen} />
+        <RootStack.Screen
+          name="LoginScreen"
+          component={Screens.LoginScreen}
+          options={{ headerShown: true }}
+        />
 
         <RootStack.Screen name="CommunityScreen" component={BottomNavigator} />
       </RootStack.Navigator>
