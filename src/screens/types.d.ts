@@ -10,6 +10,8 @@ export type RootStackParamList = {
   TriblScreen: undefined;
   SignupScreen: undefined;
   LoginScreen: undefined;
+  SelectCountryScreen: undefined;
+  OTPScreen: undefined;
 };
 
 interface StackScreenInterface {
