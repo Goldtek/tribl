@@ -17,9 +17,9 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { USER_FIRST_LAUNCH } from '../../constants';
 
 // DEFINE SCREEN PROP TYPES
-interface WalkThroughScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {}
 
-export default function WalkThroughScreen(props: WalkThroughScreenProp) {
+export default function WalkThroughScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
