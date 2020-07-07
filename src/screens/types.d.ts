@@ -3,14 +3,18 @@ import { TFunction, i18n } from 'i18next';
 
 // App Navigation prop types
 export type RootStackParamList = {
+  SelectCountryScreen: undefined;
+  CreateAccountScreen: undefined;
+  AvatarUploadScreen: undefined;
+  IdentifyUserScreen: undefined;
+  UserLocationScreen: undefined;
   WalkThroughScreen: undefined;
   CommunityScreen: undefined;
   ProfileScreen: undefined;
+  SignupScreen: undefined;
   InboxScreen: undefined;
   TriblScreen: undefined;
-  SignupScreen: undefined;
   LoginScreen: undefined;
-  SelectCountryScreen: undefined;
   OTPScreen: undefined;
 };
 
