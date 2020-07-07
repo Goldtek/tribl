@@ -1,0 +1,28 @@
+{
+  "screenOne": {
+    "title": "get started",
+    "subTitle": "To sign up for account, enter your \nmobile number.",
+    "mobileNumber": "mobile number",
+    "placeholder": "Mobile Number",
+    "submit": "next",
+    "gotAnAccount": "Already have an account?",
+    "login": "log in",
+    "loading": "loading..."
+  },
+
+  "screenTwo": {
+    "title": "country",
+    "placeholder": "Search",
+    "emptyList": "No result found"
+  },
+
+  "screenThree": {
+    "title": "Travel and Explore",
+    "subTitle": "Join travel groups and explore the \n world as a local"
+  },
+
+  "screenFour": {
+    "title": "Travel and Explore",
+    "subTitle": "Lorem ipsum dolor sit amet, \n consectetur adipiscing elia."
+  }
+}
