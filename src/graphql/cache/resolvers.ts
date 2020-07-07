@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import { GET_USER_COUNTRY } from './query';
-import { StoreInterface, AppResolvers } from './types';
+import { StoreInterface, AppResolvers } from '../types';
 
 export const typeDefs = gql`
   extend type Query {

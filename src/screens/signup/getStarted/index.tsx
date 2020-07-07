@@ -16,7 +16,7 @@ import { NavigationInterface } from '../../types';
 import Input from '../../../common/input';
 import Countries from '../../../libs/countries';
 import { GET_USER_COUNTRY } from '../../../graphql/cache/query';
-import { StoreInterface } from '../../../graphql/cache/types';
+import { StoreInterface } from '../../../graphql/types';
 import { DEVICE_OS } from '../../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
