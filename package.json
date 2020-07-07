@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
+    "@expo/vector-icons": "^10.2.0",
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/netinfo": "^5.9.4",
@@ -44,11 +45,12 @@
     "react-native-safe-area-context": "^3.0.7",
     "react-native-screens": "^2.9.0",
     "react-native-skeleton-content": "^1.0.18",
+    "react-native-smooth-phone-input": "^1.0.3",
     "react-native-svg": "^12.1.0",
     "react-native-swiper": "^1.6.0",
     "react-native-unimodules": "~0.10.0",
-    "react-native-vector-icons": "^6.7.0",
     "react-native-web": "~0.11.7",
+    "recyclerlistview": "^3.0.0",
     "styled-components": "^5.1.1"
   },
   "devDependencies": {
