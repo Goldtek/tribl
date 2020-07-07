@@ -18,5 +18,5 @@ export default function CommunityIcon(props: IconProps) {
       </svg>
       `;
 
-  return <SvgCss xml={xml} width="100%" height="100%" {...props} />;
+  return <SvgCss uri xml={xml} width="100%" height="100%" {...props} />;
 }
