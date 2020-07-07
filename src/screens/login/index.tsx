@@ -6,9 +6,9 @@ import { Button } from 'react-native-paper';
 import { Container, Welcome } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface LoginScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {}
 
-export default function LoginScreen(props: LoginScreenProp) {
+export default function LoginScreen(props: ScreenProp) {
   return (
     <Container>
       <Button
