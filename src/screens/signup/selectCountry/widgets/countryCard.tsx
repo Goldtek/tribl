@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableOpacity, Image } from 'react-native';
-import { CHANGE_USER_COUNTRY } from '../../../../graphql/cache/query';
+import { CHANGE_USER_COUNTRY } from '../../../../graphql/cache/mutations';
 import { useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../theme';
 import COUNTRIES, { CountryInterface } from '../../../../libs/countries';
