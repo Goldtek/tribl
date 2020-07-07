@@ -1,0 +1,120 @@
+import React, { useState } from 'react';
+import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { useTranslation } from 'react-i18next';
+import { NavigationInterface } from '../../types';
+import { useThemeContext } from '../../../theme';
+
+// IMPORT FOR ALL CUSTOM STYLES
+import { Container, GradientContainer } from './styles';
+
+// DEFINE SCREEN PROP TYPES
+interface ScreenProp extends NavigationInterface {}
+
+export default function UserLocationScreen(props: ScreenProp) {
+  const { navigation } = props;
+
+  const { colors, fonts } = useThemeContext();
+  const { t } = useTranslation();
+  const { bottom: safeAreaBottom } = useSafeAreaInsets();
+
+  const [state, setState] = useState({ otp: '', loading: false });
+
+  const handleSubmit = () => {
+    setState({ ...state, loading: true });
+
+    setTimeout(() => {
+      navigation.navigate('IdentifyUserScreen');
+      setState({ ...state, loading: false });
+    }, 1000);
+  };
+
+  return (
+    <Container
+      style={{
+        height: '100%',
+        paddingLeft: RFValue(20),
+        paddingRight: RFValue(20)
+      }}
+    >
+      <ProgressBar
+        progress={5 / 5}
+        color={colors.PRIMARY}
+        style={{
+          height: RFValue(5),
+          backgroundColor: '#F2F2F7',
+          borderRadius: 4,
+          marginBottom: RFValue(30)
+        }}
+      />
+
+      <Title
+        style={{
+          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+          fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
+          color: colors.PRIMARY,
+          textTransform: 'capitalize',
+          lineHeight: RFValue(30)
+        }}
+      >
+        {t(`signup.screenThree.subTitle`)}
+      </Title>
+
+      <Title
+        style={{
+          fontFamily: fonts.WORK_SANS_BOLD,
+          fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
+          color: colors.PRIMARY_TEXT,
+          lineHeight: RFValue(30),
+          marginTop: 20
+        }}
+      >
+        {t(`signup.screenThree.title`)}
+      </Title>
+
+      <Paragraph
+        style={{
+          fontFamily: fonts.WORK_SANS_REGULAR,
+          fontSize: RFValue(fonts.LARGE_SIZE),
+          color: colors.SECONDARY_TEXT,
+          lineHeight: RFValue(22)
+        }}
+      >
+        {t(`signup.screenThree.paragraph`)}
+      </Paragraph>
+
+      <Container
+        style={{
+          flex: 1,
+          justifyContent: 'flex-end',
+          paddingBottom: RFValue(safeAreaBottom + 60)
+        }}
+      >
+        <GradientContainer
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          colors={[colors.PRIMARY, colors.SECONDARY]}
+          style={{ borderRadius: 4, marginTop: RFValue(20) }}
+        >
+          <Button
+            mode="text"
+            color={colors.WHITE}
+            uppercase={false}
+            loading={state.loading}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
+            }}
+            contentStyle={{ height: RFValue(60) }}
+            style={{ width: '100%', height: RFValue(60) }}
+            onPress={handleSubmit}
+          >
+            {t(`signup.screenThree.${state.loading ? 'loading' : 'submit'}`)}
+          </Button>
+        </GradientContainer>
+      </Container>
+    </Container>
+  );
+}
