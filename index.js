@@ -1,4 +1,7 @@
+import { YellowBox } from 'react-native';
 import { registerRootComponent } from 'expo';
+
+YellowBox.ignoreWarnings(['ReactNative.NativeModules.LottieAnimationView']);
 
 import App from './App';
 

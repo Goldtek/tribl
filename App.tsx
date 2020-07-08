@@ -14,7 +14,7 @@ export default function App() {
     (async () => {
       await SplashScreen.preventAutoHideAsync();
       await loadResources();
-      SplashScreen.hideAsync();
+      await SplashScreen.hideAsync();
       setIsAppReady(true);
     })();
   }, []);
