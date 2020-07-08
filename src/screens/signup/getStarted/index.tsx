@@ -13,14 +13,15 @@ import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
-import Input from '../../../common/input';
+import Input from '../../../components/input';
 import Countries from '../../../libs/countries';
 import { GET_USER_COUNTRY } from '../../../graphql/cache/query';
 import { StoreInterface } from '../../../graphql/types';
 import { DEVICE_OS } from '../../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, GradientContainer } from './styles';
+import { Container } from './styles';
+import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -33,10 +34,7 @@ export default function GetStartedScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({
-    number: '',
-    loading: false
-  });
+  const [state, setState] = useState({ number: '', loading: false });
 
   const handleSubmit = () => {
     setState({ ...state, loading: true });
@@ -151,29 +149,9 @@ export default function GetStartedScreen(props: ScreenProp) {
               </TouchableOpacity>
             </Input>
 
-            <GradientContainer
-              start={{ x: 1, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              colors={[colors.PRIMARY, colors.SECONDARY]}
-              style={{ borderRadius: 4, marginTop: RFValue(20) }}
-            >
-              <Button
-                mode="text"
-                color={colors.WHITE}
-                uppercase={false}
-                loading={state.loading}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'capitalize'
-                }}
-                contentStyle={{ height: RFValue(60) }}
-                style={{ width: '100%', height: RFValue(60) }}
-                onPress={handleSubmit}
-              >
-                {t(`signup.screenOne.${state.loading ? 'loading' : 'submit'}`)}
-              </Button>
-            </GradientContainer>
+            <GradientButton loading={state.loading} onPress={handleSubmit}>
+              {t(`signup.screenOne.${state.loading ? 'loading' : 'submit'}`)}
+            </GradientButton>
 
             <Container
               style={{
