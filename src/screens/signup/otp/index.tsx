@@ -9,7 +9,8 @@ import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, GradientContainer } from './styles';
+import { Container } from './styles';
+import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -150,29 +151,9 @@ export default function OTPScreen(props: ScreenProp) {
             paddingBottom: RFValue(safeAreaBottom + 60)
           }}
         >
-          <GradientContainer
-            start={{ x: 1, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            colors={[colors.PRIMARY, colors.SECONDARY]}
-            style={{ borderRadius: 4, marginTop: RFValue(20) }}
-          >
-            <Button
-              mode="text"
-              color={colors.WHITE}
-              uppercase={false}
-              loading={state.loading}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{ height: RFValue(60) }}
-              style={{ width: '100%', height: RFValue(60) }}
-              onPress={handleSubmit}
-            >
-              {t(`signup.screenThree.${state.loading ? 'loading' : 'submit'}`)}
-            </Button>
-          </GradientContainer>
+          <GradientButton loading={state.loading} onPress={handleSubmit}>
+            {t(`signup.screenThree.${state.loading ? 'loading' : 'submit'}`)}
+          </GradientButton>
         </Container>
       </Container>
     </TouchableWithoutFeedback>

@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
+import { KeyboardAvoidingView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
+import Input from '../../../components/input';
+import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import CreateAccountModal from './widgets/modal';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, GradientContainer } from './styles';
+import { Container } from './styles';
+import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -17,104 +22,174 @@ export default function CreateAccountScreen(props: ScreenProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { bottom: safeAreaBottom } = useSafeAreaInsets();
+  const { bottom: safeAreaBottom, top: safeAreaTop } = useSafeAreaInsets();
 
-  const [state, setState] = useState({ otp: '', loading: false });
+  const [state, setState] = useState({
+    otp: '',
+    firstName: 'Tiffany',
+    lastName: '',
+    email: '',
+    loading: false,
+    isModalVisible: false
+  });
 
   const handleSubmit = () => {
     setState({ ...state, loading: true });
 
     setTimeout(() => {
-      navigation.navigate('AvatarUploadScreen');
-      setState({ ...state, loading: false });
+      setState({ ...state, loading: false, isModalVisible: true });
     }, 1000);
+
+    setTimeout(() => {
+      navigation.reset({ index: 0, routes: [{ name: 'AvatarUploadScreen' }] });
+      setState({ ...state, loading: false, isModalVisible: false });
+    }, 5000);
   };
 
   return (
-    <Container
-      style={{
-        height: '100%',
-        paddingLeft: RFValue(20),
-        paddingRight: RFValue(20)
-      }}
-    >
-      <ProgressBar
-        progress={2 / 5}
-        color={colors.PRIMARY}
-        style={{
-          height: RFValue(5),
-          backgroundColor: '#F2F2F7',
-          borderRadius: 4,
-          marginBottom: RFValue(30)
-        }}
-      />
-
-      <Title
-        style={{
-          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-          fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
-          color: colors.PRIMARY,
-          textTransform: 'capitalize',
-          lineHeight: RFValue(30)
-        }}
-      >
-        {t(`signup.screenThree.subTitle`)}
-      </Title>
-
-      <Title
-        style={{
-          fontFamily: fonts.WORK_SANS_BOLD,
-          fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
-          color: colors.PRIMARY_TEXT,
-          lineHeight: RFValue(30),
-          marginTop: 20
-        }}
-      >
-        {t(`signup.screenThree.title`)}
-      </Title>
-
-      <Paragraph
-        style={{
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(fonts.LARGE_SIZE),
-          color: colors.SECONDARY_TEXT,
-          lineHeight: RFValue(22)
-        }}
-      >
-        {t(`signup.screenThree.paragraph`)}
-      </Paragraph>
-
+    <Fragment>
       <Container
         style={{
-          flex: 1,
-          justifyContent: 'flex-end',
-          paddingBottom: RFValue(safeAreaBottom + 60)
+          height: '100%',
+          paddingLeft: RFValue(20),
+          paddingRight: RFValue(20)
         }}
       >
-        <GradientContainer
-          start={{ x: 1, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          colors={[colors.PRIMARY, colors.SECONDARY]}
-          style={{ borderRadius: 4, marginTop: RFValue(20) }}
+        <ProgressBar
+          progress={2 / 5}
+          color={colors.PRIMARY}
+          style={{
+            height: RFValue(5),
+            backgroundColor: '#F2F2F7',
+            borderRadius: 4,
+            marginBottom: 10
+          }}
+        />
+
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior="position"
+          contentContainerStyle={{ flex: 1 }}
+          keyboardVerticalOffset={-50}
         >
-          <Button
-            mode="text"
-            color={colors.WHITE}
-            uppercase={false}
-            loading={state.loading}
-            labelStyle={{
+          <Title
+            style={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
+              color: colors.PRIMARY,
+              textTransform: 'capitalize',
+              lineHeight: RFValue(30)
             }}
-            contentStyle={{ height: RFValue(60) }}
-            style={{ width: '100%', height: RFValue(60) }}
-            onPress={handleSubmit}
           >
-            {t(`signup.screenThree.${state.loading ? 'loading' : 'submit'}`)}
-          </Button>
-        </GradientContainer>
+            {t(`signup.screenFour.subTitle`)}
+          </Title>
+
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
+              color: colors.PRIMARY_TEXT,
+              lineHeight: RFValue(30),
+              marginTop: 20
+            }}
+          >
+            {t(`signup.screenFour.title`)}
+          </Title>
+
+          <Paragraph
+            style={{
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              color: colors.SECONDARY_TEXT,
+              lineHeight: RFValue(22)
+            }}
+          >
+            {t(`signup.screenFour.paragraph`)}
+          </Paragraph>
+
+          <Container>
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginTop: 30
+              }}
+            >
+              {t(`signup.screenFour.firstName`)}
+            </Paragraph>
+
+            <Input
+              placeholder={t(`signup.screenFour.firstName`)}
+              defaultValue={state.firstName}
+              onChangeText={(firstName) => setState({ ...state, firstName })}
+              returnKeyType="next"
+              textInputStyle={{ paddingLeft: 20, paddingRight: 20 }}
+            />
+
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginTop: 20
+              }}
+            >
+              {t(`signup.screenFour.lastName`)}
+            </Paragraph>
+
+            <Input
+              placeholder={t(`signup.screenFour.lastName`)}
+              defaultValue={state.lastName}
+              onChangeText={(lastName) => setState({ ...state, lastName })}
+              returnKeyType="next"
+              textInputStyle={{ paddingLeft: 20, paddingRight: 20 }}
+            />
+
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginTop: 20
+              }}
+            >
+              {t(`signup.screenFour.email`)}
+            </Paragraph>
+
+            <Input
+              placeholder={t(`signup.screenFour.email`)}
+              defaultValue={state.email}
+              onChangeText={(email) => setState({ ...state, email })}
+              returnKeyType="next"
+              textInputStyle={{ paddingLeft: 20, paddingRight: 20 }}
+            />
+          </Container>
+
+          <Container
+            style={{
+              justifyContent: 'flex-end',
+              paddingBottom: RFValue(safeAreaBottom + 30),
+              marginTop: RFValue(
+                safeAreaBottom + DEVICE_FULL_WIDTH <= 375 ? 30 : 60
+              )
+            }}
+          >
+            <GradientButton loading={state.loading} onPress={handleSubmit}>
+              {t(
+                `signup.screenFour.${
+                  state.loading ? 'loading' : 'createAccount'
+                }`
+              )}
+            </GradientButton>
+          </Container>
+        </KeyboardAvoidingView>
       </Container>
-    </Container>
+
+      <CreateAccountModal t={t} isVisible={state.isModalVisible} {...props} />
+    </Fragment>
   );
 }
