@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { getCountryLayout } from '../../../utils/LayoutUtil';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
-import Input from '../../../common/input';
+import Input from '../../../components/input';
 import CountryCard from './widgets/countryCard';
 import Countries, { CountryInterface } from '../../../libs/countries';
 
