@@ -1,5 +1,6 @@
 {
   "skipSignup": "skip",
+  "preparePassport": "let’s prepare \nyour Tribl Passport.",
   "userRegSteps": {
     "OTPScreen": "1 of 5 steps",
     "CreateAccountScreen": "2 of 5 steps",
@@ -36,7 +37,13 @@
   },
 
   "screenFour": {
-    "title": "Travel and Explore",
-    "subTitle": "Lorem ipsum dolor sit amet, \n consectetur adipiscing elia."
+    "title": "Create account",
+    "subTitle": "setup 2",
+    "paragraph": "To register your account, we will need \nsome information.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "createAccount": "create account",
+    "loading": "creating..."
   }
 }
