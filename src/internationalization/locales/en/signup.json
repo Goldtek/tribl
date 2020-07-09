@@ -45,5 +45,13 @@
     "email": "Email",
     "createAccount": "create account",
     "loading": "creating..."
+  },
+
+  "screenFive": {
+    "title": "photo",
+    "subTitle": "setup 3",
+    "paragraph": "add profile photo",
+    "submit": "next",
+    "uploading": "uploading..."
   }
 }

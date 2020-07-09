@@ -9,6 +9,7 @@ import GetStartedNavigator from './getStartedNavigator';
 import { useThemeContext } from '../../theme';
 import { useTranslation } from 'react-i18next';
 import { DEVICE_OS } from '../../utils/device';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const SignupStack = createStackNavigator();
 
@@ -23,10 +24,16 @@ export default function SignupNavigator() {
         const hideSkipOption =
           headerTitle.includes('1') || headerTitle.includes('2');
 
+        const avatarScreen =
+          headerTitle.includes('3') && DEVICE_OS === 'android';
+
         return {
           headerShown: true,
           headerTitle: headerTitle,
-          headerTitleStyle: { color: colors.SECONDARY_TEXT },
+          headerTitleStyle: {
+            color: colors.SECONDARY_TEXT,
+            marginLeft: avatarScreen ? RFValue(7) : 0
+          },
           headerTintColor: colors.PRIMARY,
           headerBackTitleVisible: false,
           headerPressColorAndroid: colors.PRIMARY,

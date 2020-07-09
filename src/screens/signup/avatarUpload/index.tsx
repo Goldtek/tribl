@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
+import { ProgressBar, Title, Paragraph } from 'react-native-paper';
+import { TouchableHighlight, Image } from 'react-native';
+import ImagePicker from 'react-native-image-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
+import GradientButton from '../../../components/gradientButton';
+import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
@@ -19,7 +23,10 @@ export default function AvatarUploadScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
-  const [state, setState] = useState({ otp: '', loading: false });
+  const [state, setState] = useState({
+    avatarSource: 'try',
+    loading: false
+  });
 
   const handleSubmit = () => {
     setState({ ...state, loading: true });
@@ -28,6 +35,19 @@ export default function AvatarUploadScreen(props: ScreenProp) {
       navigation.navigate('IdentifyUserScreen');
       setState({ ...state, loading: false });
     }, 1000);
+  };
+
+  const handleAvatar = () => {
+    const options = {
+      title: 'Select Avatar',
+      storageOptions: { skipBackup: true, path: 'images' }
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      const { didCancel, error, uri } = response;
+      if (didCancel || error) return;
+      setState({ ...state, avatarSource: uri });
+    });
   };
 
   return (
@@ -58,7 +78,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
           lineHeight: RFValue(30)
         }}
       >
-        {t(`signup.screenThree.subTitle`)}
+        {t(`signup.screenFive.subTitle`)}
       </Title>
 
       <Title
@@ -67,53 +87,107 @@ export default function AvatarUploadScreen(props: ScreenProp) {
           fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
           color: colors.PRIMARY_TEXT,
           lineHeight: RFValue(30),
+          textTransform: 'capitalize',
           marginTop: 20
         }}
       >
-        {t(`signup.screenThree.title`)}
+        {t(`signup.screenFive.title`)}
       </Title>
 
-      <Paragraph
+      <Container
         style={{
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(fonts.LARGE_SIZE),
-          color: colors.SECONDARY_TEXT,
-          lineHeight: RFValue(22)
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginTop: RFValue(20)
         }}
       >
-        {t(`signup.screenThree.paragraph`)}
-      </Paragraph>
+        <TouchableHighlight
+          onPress={handleAvatar}
+          underlayColor={colors.PRIMARY}
+          style={{
+            width: RFValue(120),
+            height: RFValue(120),
+            borderRadius: RFValue(60),
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 15
+          }}
+        >
+          <GradientContainer
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            colors={[colors.PRIMARY, colors.SECONDARY]}
+            style={{
+              width: RFValue(120),
+              height: RFValue(120),
+              borderRadius: RFValue(60)
+            }}
+          >
+            <Container
+              style={{
+                width: RFValue(115),
+                height: RFValue(115),
+                borderRadius: RFValue(60),
+                backgroundColor: colors.DISABLED,
+                borderWidth: RFValue(20),
+                borderColor: colors.WHITE,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <Feather
+                name="camera"
+                size={RFValue(30)}
+                color={colors.PRIMARY}
+              />
+            </Container>
+          </GradientContainer>
+        </TouchableHighlight>
+
+        <Paragraph
+          style={{
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            color: colors.PRIMARY_TEXT,
+            textTransform: 'capitalize',
+            lineHeight: RFValue(22)
+          }}
+        >
+          {t(`signup.screenFive.paragraph`)}
+        </Paragraph>
+      </Container>
+
+      <Container
+        style={{
+          width: '100%',
+          height: RFValue(200),
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: RFValue(5),
+          backgroundColor: colors.INACTIVE,
+          marginTop: RFValue(30)
+        }}
+      >
+        <Image
+          source={{ uri: state.avatarSource }}
+          style={{
+            width: '100%',
+            height: '100%',
+            resizeMode: 'contain'
+          }}
+        />
+      </Container>
 
       <Container
         style={{
           flex: 1,
           justifyContent: 'flex-end',
-          paddingBottom: RFValue(safeAreaBottom + 60)
+          paddingBottom: RFValue(safeAreaBottom + 20)
         }}
       >
-        <GradientContainer
-          start={{ x: 1, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          colors={[colors.PRIMARY, colors.SECONDARY]}
-          style={{ borderRadius: 4, marginTop: RFValue(20) }}
-        >
-          <Button
-            mode="text"
-            color={colors.WHITE}
-            uppercase={false}
-            loading={state.loading}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{ height: RFValue(60) }}
-            style={{ width: '100%', height: RFValue(60) }}
-            onPress={handleSubmit}
-          >
-            {t(`signup.screenThree.${state.loading ? 'loading' : 'submit'}`)}
-          </Button>
-        </GradientContainer>
+        <GradientButton loading={state.loading} onPress={handleSubmit}>
+          {t(`signup.screenFive.${state.loading ? 'uploading' : 'submit'}`)}
+        </GradientButton>
       </Container>
     </Container>
   );
