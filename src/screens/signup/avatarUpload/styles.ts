@@ -7,7 +7,7 @@ export const Container = styled.View`
 `;
 
 export const GradientContainer = styled(LinearGradient)`
-  height: ${RFValue(50)}px;
+  min-height: ${RFValue(55)}px;
   justify-content: center;
   align-items: center;
 `;
