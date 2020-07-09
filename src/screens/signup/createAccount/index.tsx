@@ -4,6 +4,7 @@ import { KeyboardAvoidingView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import GradientButton from '../../../components/gradientButton';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Input from '../../../components/input';
@@ -12,7 +13,6 @@ import CreateAccountModal from './widgets/modal';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -87,7 +87,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
           <Title
             style={{
               fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
               color: colors.PRIMARY_TEXT,
               lineHeight: RFValue(30),
               marginTop: 20

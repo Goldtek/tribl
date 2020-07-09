@@ -53,5 +53,12 @@
     "paragraph": "add profile photo",
     "submit": "next",
     "uploading": "uploading..."
+  },
+
+  "screenSix": {
+    "title": "How do you identify?",
+    "subTitle": "setup 4",
+    "paragraph": "Let us know your ethnic identity. \n(Select all that apply)",
+    "submit": "next"
   }
 }
