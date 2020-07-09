@@ -1,33 +1,39 @@
 import React, { useState } from 'react';
-import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
+import { ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import GradientButton from '../../../components/gradientButton';
 import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
+import IdentityButton from './widgets/identityButton';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, GradientContainer } from './styles';
+import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  identities: string[];
+}
 
 export default function IdentifyUserScreen(props: ScreenProp) {
-  const { navigation } = props;
+  const { navigation, identities } = props;
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
-  const [state, setState] = useState({ otp: '', loading: false });
+  const [state, setState] = useState<{ [name: string]: string }>({});
 
   const handleSubmit = () => {
-    setState({ ...state, loading: true });
+    navigation.navigate('UserLocationScreen');
+  };
 
-    setTimeout(() => {
-      navigation.navigate('UserLocationScreen');
-      setState({ ...state, loading: false });
-    }, 1000);
+  const handleSelect = (selected: string) => {
+    if (!state[selected]) return setState({ ...state, [selected]: selected });
+
+    const { [selected]: removedSelected, ...rest } = state;
+
+    setState({ ...rest });
   };
 
   return (
@@ -49,72 +55,88 @@ export default function IdentifyUserScreen(props: ScreenProp) {
         }}
       />
 
-      <Title
-        style={{
-          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-          fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
-          color: colors.PRIMARY,
-          textTransform: 'capitalize',
-          lineHeight: RFValue(30)
-        }}
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+        showsVerticalScrollIndicator={false}
       >
-        {t(`signup.screenThree.subTitle`)}
-      </Title>
-
-      <Title
-        style={{
-          fontFamily: fonts.WORK_SANS_BOLD,
-          fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
-          color: colors.PRIMARY_TEXT,
-          lineHeight: RFValue(30),
-          marginTop: 20
-        }}
-      >
-        {t(`signup.screenThree.title`)}
-      </Title>
-
-      <Paragraph
-        style={{
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(fonts.LARGE_SIZE),
-          color: colors.SECONDARY_TEXT,
-          lineHeight: RFValue(22)
-        }}
-      >
-        {t(`signup.screenThree.paragraph`)}
-      </Paragraph>
-
-      <Container
-        style={{
-          flex: 1,
-          justifyContent: 'flex-end',
-          paddingBottom: RFValue(safeAreaBottom + 60)
-        }}
-      >
-        <GradientContainer
-          start={{ x: 1, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          colors={[colors.PRIMARY, colors.SECONDARY]}
-          style={{ borderRadius: 4, marginTop: RFValue(20) }}
+        <Title
+          style={{
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
+            color: colors.PRIMARY,
+            textTransform: 'capitalize',
+            lineHeight: RFValue(30)
+          }}
         >
-          <Button
-            mode="text"
-            color={colors.WHITE}
-            uppercase={false}
-            loading={state.loading}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{ height: RFValue(60) }}
-            style={{ width: '100%', height: RFValue(60) }}
-            onPress={handleSubmit}
-          >
-            {t(`signup.screenThree.${state.loading ? 'loading' : 'submit'}`)}
-          </Button>
-        </GradientContainer>
-      </Container>
+          {t(`signup.screenSix.subTitle`)}
+        </Title>
+
+        <Title
+          style={{
+            fontFamily: fonts.WORK_SANS_BOLD,
+            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+            color: colors.PRIMARY_TEXT,
+            lineHeight: RFValue(30),
+            marginTop: 20
+          }}
+        >
+          {t(`signup.screenSix.title`)}
+        </Title>
+
+        <Paragraph
+          style={{
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            color: colors.SECONDARY_TEXT,
+            lineHeight: RFValue(22)
+          }}
+        >
+          {t(`signup.screenSix.paragraph`)}
+        </Paragraph>
+
+        <Container
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            marginTop: RFValue(20),
+            flexWrap: 'wrap'
+          }}
+        >
+          {identities.map((identity) => (
+            <IdentityButton
+              key={identity}
+              {...{ identity, handleSelect, state }}
+            />
+          ))}
+        </Container>
+
+        <Container style={{ marginTop: RFValue(60) }}>
+          <GradientButton onPress={handleSubmit}>
+            {t(`signup.screenSix.submit`)}
+          </GradientButton>
+        </Container>
+      </ScrollView>
     </Container>
   );
 }
+
+IdentifyUserScreen.defaultProps = {
+  identities: [
+    'diaspora',
+    'gullah',
+    'Afro-European',
+    'Caribbean',
+    'African',
+    'Afro-Canadian',
+    'Black',
+    'African American',
+    'West African',
+    'East African',
+    'Creole',
+    'Afro-Latin',
+    'Mixed',
+    'Afro-Asian',
+    'Afro-Indian'
+  ].sort((a, b) => a.length - b.length)
+};

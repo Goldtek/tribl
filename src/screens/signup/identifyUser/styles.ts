@@ -7,7 +7,16 @@ export const Container = styled.View`
 `;
 
 export const GradientContainer = styled(LinearGradient)`
-  height: ${RFValue(50)}px;
+  height: 100%;
   justify-content: center;
   align-items: center;
+`;
+
+export const Identity = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_SEMI_BOLD};
+  font-size: ${({ theme }) => RFValue(theme.fonts.LARGE_SIZE)}px;
+  color: #8a8c92;
+  padding: 0px 30px;
+  text-transform: capitalize;
+  text-align: center;
 `;
