@@ -68,7 +68,7 @@ export default function OTPScreen(props: ScreenProp) {
         <Title
           style={{
             fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
+            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
             color: colors.PRIMARY_TEXT,
             lineHeight: RFValue(30),
             marginTop: 20
