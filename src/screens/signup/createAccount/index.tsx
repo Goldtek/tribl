@@ -125,7 +125,12 @@ export default function CreateAccountScreen(props: ScreenProp) {
               defaultValue={state.firstName}
               onChangeText={(firstName) => setState({ ...state, firstName })}
               returnKeyType="next"
-              textInputStyle={{ paddingLeft: 20, paddingRight: 20 }}
+              textInputStyle={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_REGULAR
+              }}
             />
 
             <Paragraph
@@ -145,7 +150,12 @@ export default function CreateAccountScreen(props: ScreenProp) {
               defaultValue={state.lastName}
               onChangeText={(lastName) => setState({ ...state, lastName })}
               returnKeyType="next"
-              textInputStyle={{ paddingLeft: 20, paddingRight: 20 }}
+              textInputStyle={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_REGULAR
+              }}
             />
 
             <Paragraph
@@ -164,8 +174,14 @@ export default function CreateAccountScreen(props: ScreenProp) {
               placeholder={t(`signup.screenFour.email`)}
               defaultValue={state.email}
               onChangeText={(email) => setState({ ...state, email })}
-              returnKeyType="next"
-              textInputStyle={{ paddingLeft: 20, paddingRight: 20 }}
+              keyboardType="email-address"
+              returnKeyType="done"
+              textInputStyle={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_REGULAR
+              }}
             />
           </Container>
 
