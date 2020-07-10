@@ -25,6 +25,8 @@ export default function IdentityButton(props: IdentityButtonProp) {
       onPress={onPress}
       underlayColor={colors.DISABLED}
       style={{
+        flex: 1,
+        flexBasis: '40%',
         height: RFValue(50),
         justifyContent: 'center',
         margin: 5,

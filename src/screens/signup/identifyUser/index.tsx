@@ -98,9 +98,8 @@ export default function IdentifyUserScreen(props: ScreenProp) {
           style={{
             flex: 1,
             flexDirection: 'row',
-            alignItems: 'flex-start',
-            marginTop: RFValue(20),
-            flexWrap: 'wrap'
+            flexWrap: 'wrap',
+            marginTop: RFValue(20)
           }}
         >
           {identities.map((identity) => (
@@ -111,7 +110,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
           ))}
         </Container>
 
-        <Container style={{ marginTop: RFValue(60) }}>
+        <Container style={{ marginTop: RFValue(40) }}>
           <GradientButton onPress={handleSubmit}>
             {t(`signup.screenSix.submit`)}
           </GradientButton>
@@ -123,20 +122,20 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
 IdentifyUserScreen.defaultProps = {
   identities: [
-    'diaspora',
-    'gullah',
-    'Afro-European',
-    'Caribbean',
-    'African',
-    'Afro-Canadian',
-    'Black',
-    'African American',
-    'West African',
-    'East African',
+    'Afro-Indian',
     'Creole',
+    'Caribbean',
     'Afro-Latin',
-    'Mixed',
+    'Afro-Canadian',
     'Afro-Asian',
-    'Afro-Indian'
-  ].sort((a, b) => a.length - b.length)
+    'West African',
+    'African',
+    'East African',
+    'Black',
+    'Afro-European',
+    'gullah',
+    'diaspora',
+    'Mixed',
+    'African American'
+  ]
 };

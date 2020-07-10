@@ -16,7 +16,7 @@ export const Identity = styled.Text`
   font-family: ${({ theme }) => theme.fonts.WORK_SANS_SEMI_BOLD};
   font-size: ${({ theme }) => RFValue(theme.fonts.LARGE_SIZE)}px;
   color: #8a8c92;
-  padding: 0px 30px;
+  /* padding: 0px 10px; */
   text-transform: capitalize;
   text-align: center;
 `;
