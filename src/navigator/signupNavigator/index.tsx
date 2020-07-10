@@ -19,13 +19,14 @@ export default function SignupNavigator() {
 
   return (
     <SignupStack.Navigator
-      screenOptions={({ route }) => {
+      screenOptions={({ route, navigation }) => {
         const headerTitle = t(`signup.userRegSteps.${[route.name]}`);
         const hideSkipOption =
           headerTitle.includes('1') || headerTitle.includes('2');
 
         const avatarScreen =
-          headerTitle.includes('3') && DEVICE_OS === 'android';
+          headerTitle.includes('3') ||
+          (headerTitle.includes('2') && DEVICE_OS === 'android');
 
         return {
           headerShown: true,
@@ -46,7 +47,8 @@ export default function SignupNavigator() {
                   fontSize: fonts.MEDIUM_SIZE,
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD
                 }}
-                onPress={() => console.log('SKP ON HEADER PRESSED')}
+                //@ts-ignore
+                onPress={() => navigation.navigate(route.name)}
               >
                 {t('signup.skipSignup')}
               </Button>
