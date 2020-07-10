@@ -50,7 +50,8 @@
   "screenFive": {
     "title": "photo",
     "subTitle": "setup 3",
-    "paragraph": "add profile photo",
+    "paragraph": "Add a pic with personality to give \ncommunity members a sense of who \nyou are.",
+    "addAvatar": "add passport photo",
     "submit": "next",
     "uploading": "uploading..."
   },
@@ -60,5 +61,16 @@
     "subTitle": "setup 4",
     "paragraph": "Let us know your ethnic identity. \n(Select all that apply)",
     "submit": "next"
+  },
+
+  "screenSeven": {
+    "title": "Where are you local?",
+    "subTitle": "setup 5",
+    "paragraph": "Share your geo-location and more to \nconnect with familiar strangers nearby",
+    "setLocation": "set current location",
+    "currentLocation": "current location",
+    "birthPlace": "birth place",
+    "submit": "submit",
+    "loading": "submitting..."
   }
 }

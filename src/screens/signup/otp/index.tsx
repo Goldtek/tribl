@@ -28,7 +28,7 @@ export default function OTPScreen(props: ScreenProp) {
     setState({ ...state, loading: true });
 
     setTimeout(() => {
-      navigation.navigate('CreateAccountScreen');
+      navigation.reset({ index: 0, routes: [{ name: 'CreateAccountScreen' }] });
       setState({ ...state, loading: false });
     }, 1000);
   };
