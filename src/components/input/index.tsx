@@ -12,8 +12,9 @@ type InputProps = {
   secureTextEntry?: boolean;
   keyboardType?: any;
   returnKeyType?: any;
-  onChangeText(T: any): void;
+  onChangeText?(T: any): void;
   children?: React.ReactNode;
+  editable?: boolean;
 };
 
 export default function Input(props: InputProps) {
