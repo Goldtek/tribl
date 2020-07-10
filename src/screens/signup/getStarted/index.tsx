@@ -77,90 +77,18 @@ export default function GetStartedScreen(props: ScreenProp) {
               />
             </Container>
 
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize',
-                lineHeight: RFValue(30)
-              }}
-            >
-              {t(`signup.screenOne.title`)}
-            </Title>
-            <Subheading
-              style={{
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.SECONDARY_TEXT
-              }}
-            >
-              {t(`signup.screenOne.subTitle`)}
-            </Subheading>
-            <Paragraph
-              style={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginTop: 30
-              }}
-            >
-              {t(`signup.screenOne.mobileNumber`)}
-            </Paragraph>
-
-            <Input
-              placeholder={t(`signup.screenOne.placeholder`)}
-              defaultValue={state.number}
-              onChangeText={(number) => setState({ ...state, number })}
-              keyboardType="phone-pad"
-              returnKeyType="done"
-              secureTextEntry
-            >
-              <TouchableOpacity
-                onPress={() => navigation.navigate('SelectCountryScreen')}
+            <Container style={{ flex: 1, paddingTop: RFValue(20) }}>
+              <Title
                 style={{
-                  height: '100%',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingLeft: 15
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: RFValue(30)
                 }}
               >
-                <Fragment>
-                  <Image
-                    style={{
-                      width: RFValue(25),
-                      height: RFValue(30),
-                      resizeMode: 'contain'
-                    }}
-                    //@ts-ignore
-                    source={Countries.getFlag(data?.countryCode)}
-                  />
-                  <Container
-                    style={{
-                      height: RFValue(30),
-                      margin: RFValue(10),
-                      borderWidth: 0.7,
-                      borderColor: colors.INACTIVE
-                    }}
-                  />
-                </Fragment>
-              </TouchableOpacity>
-            </Input>
-
-            <GradientButton loading={state.loading} onPress={handleSubmit}>
-              {t(`signup.screenOne.${state.loading ? 'loading' : 'submit'}`)}
-            </GradientButton>
-
-            <Container
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: RFValue(30)
-              }}
-            >
+                {t(`signup.screenOne.title`)}
+              </Title>
               <Subheading
                 style={{
                   fontFamily: fonts.WORK_SANS_REGULAR,
@@ -168,24 +96,62 @@ export default function GetStartedScreen(props: ScreenProp) {
                   color: colors.SECONDARY_TEXT
                 }}
               >
-                {t(`signup.screenOne.gotAnAccount`)}
+                {t(`signup.screenOne.subTitle`)}
               </Subheading>
-
-              <Button
-                mode="text"
-                color={colors.WHITE}
-                uppercase={false}
-                labelStyle={{
+              <Paragraph
+                style={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.PRIMARY,
-                  textTransform: 'capitalize',
-                  right: RFValue(8)
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase',
+                  marginTop: 30
                 }}
-                onPress={() => navigation.navigate('LoginScreen')}
               >
-                {t('signup.screenOne.login')}
-              </Button>
+                {t(`signup.screenOne.mobileNumber`)}
+              </Paragraph>
+
+              <Input
+                placeholder={t(`signup.screenOne.placeholder`)}
+                defaultValue={state.number}
+                onChangeText={(number) => setState({ ...state, number })}
+                keyboardType="phone-pad"
+                returnKeyType="done"
+              >
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('SelectCountryScreen')}
+                  style={{
+                    height: '100%',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingLeft: 15
+                  }}
+                >
+                  <Fragment>
+                    <Image
+                      style={{
+                        width: RFValue(25),
+                        height: RFValue(30),
+                        resizeMode: 'contain'
+                      }}
+                      //@ts-ignore
+                      source={Countries.getFlag(data?.countryCode)}
+                    />
+                    <Container
+                      style={{
+                        height: RFValue(30),
+                        margin: RFValue(10),
+                        borderWidth: 0.7,
+                        borderColor: colors.INACTIVE
+                      }}
+                    />
+                  </Fragment>
+                </TouchableOpacity>
+              </Input>
+
+              <GradientButton loading={state.loading} onPress={handleSubmit}>
+                {t(`signup.screenOne.${state.loading ? 'loading' : 'submit'}`)}
+              </GradientButton>
             </Container>
           </Fragment>
         </TouchableWithoutFeedback>
