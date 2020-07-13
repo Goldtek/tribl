@@ -1,7 +1,7 @@
-import { YellowBox } from 'react-native';
+import { LogBox } from 'react-native';
 import { registerRootComponent } from 'expo';
 
-YellowBox.ignoreWarnings(['ReactNative.NativeModules.LottieAnimationView']);
+LogBox.ignoreLogs(['ReactNative.NativeModules.LottieAnimationView']);
 
 import App from './App';
 

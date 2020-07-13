@@ -10,7 +10,7 @@
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 
-#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 #import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
@@ -40,14 +40,14 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
 #endif
   
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   self.launchOptions = launchOptions;
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  #ifdef DEBUG
+  #ifdef FB_SONARKIT_ENABLED
     [self initializeReactNativeApp];
   #else
     EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
@@ -83,7 +83,7 @@ static void InitializeFlipper(UIApplication *application) {
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
- #ifdef DEBUG
+ #ifdef FB_SONARKIT_ENABLED
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
  #else
   return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
