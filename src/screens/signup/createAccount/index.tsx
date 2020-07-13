@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
-import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
-import { KeyboardAvoidingView } from 'react-native';
+import { ProgressBar, Title, Paragraph } from 'react-native-paper';
+import { KeyboardAvoidingView, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
   });
 
   const handleSubmit = () => {
+    Keyboard.dismiss();
     setState({ ...state, loading: true });
 
     setTimeout(() => {
