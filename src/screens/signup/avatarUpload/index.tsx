@@ -178,7 +178,11 @@ export default function AvatarUploadScreen(props: ScreenProp) {
               marginTop: 20
             }}
           >
-            {t(`signup.screenFive.addAvatar`)}
+            {t(
+              `signup.screenFive.${
+                state.avatarSource ? 'photoAdded' : 'addAvatar'
+              }`
+            )}
           </Subheading>
         </Container>
 
