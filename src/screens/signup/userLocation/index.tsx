@@ -7,7 +7,7 @@ import {
   Paragraph
 } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableHighlight, KeyboardAvoidingView } from 'react-native';
 import * as Location from 'expo-location';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,7 @@ import { useThemeContext } from '../../../theme';
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 import Input from '../../../components/input';
+import LoadingModal from '../../../components/loading';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -38,6 +39,7 @@ export default function UserLocationScreen(props: ScreenProp) {
     street: '',
     birthPlace: '',
     loading: false,
+    isModalVisible: false,
     isVisible: false
   });
 
@@ -45,9 +47,13 @@ export default function UserLocationScreen(props: ScreenProp) {
     setState({ ...state, loading: true });
 
     setTimeout(() => {
-      // navigation.navigate('IdentifyUserScreen');
-      // setState({ ...state, loading: false });
+      setState({ ...state, loading: false, isModalVisible: true });
     }, 1000);
+
+    setTimeout(() => {
+      navigation.reset({ index: 0, routes: [{ name: 'PassportScreen' }] });
+      setState({ ...state, loading: false, isModalVisible: false });
+    }, 5000);
   };
 
   const handleLocation = async () => {
@@ -308,6 +314,11 @@ export default function UserLocationScreen(props: ScreenProp) {
           size={RFValue(30)}
         />
       </Modal>
+
+      <LoadingModal
+        title={t('signup.preparingPassport')}
+        isVisible={state.isModalVisible}
+      />
     </Fragment>
   );
 }
