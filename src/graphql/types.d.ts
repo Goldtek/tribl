@@ -1,5 +1,6 @@
 import { Resolvers } from 'apollo-client';
 import { ApolloCache } from 'apollo-cache';
+import { JwtTokenResult } from '../constants';
 
 /*
  *************************************************************
@@ -25,6 +26,37 @@ export interface AppResolvers extends Resolvers {
 
 // STORE (LOCAL STATE) INTERFACE
 export interface StoreInterface {
-  countryCode: string;
-  number: string;
+  userDetails: {
+    number: string;
+    countryCode: string;
+    firstName: string;
+    lastName: string;
+    DOB: string;
+    citizenship: string;
+    locality: string;
+    identity: string[];
+    interest: string[];
+    __typename?: string;
+  };
 }
+
+/*
+ *************************************************************
+ ******************    APOLLO SERVER    **********************
+ *******************   STORE TYPES     ***********************
+ *************************************************************
+ */
+
+// SERVER OTP (RESPONSE) TYPE
+export type OTPInterface = {
+  sendOtp: { __typename: string; success: boolean };
+};
+
+// SERVER VERIFY OTP (RESPONSE) TYPE
+interface VerifyOTPIT extends JwtTokenResult {
+  __typename: string;
+}
+
+export type VerifyOTPInterface = {
+  validateOtp: VerifyOTPIT;
+};

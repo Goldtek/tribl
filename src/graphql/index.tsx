@@ -7,13 +7,26 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import cache from './cache';
-import { resolvers, typeDefs } from './cache/resolvers';
+import { cacheResolvers } from './cache/resolvers';
+import { serverResolvers } from './server/resolvers';
 import ENVIRONMENT_VARIABLES from '../config';
-import { USER_TOKEN } from '../constants';
+import { USER_AUTH_KEYS, JwtTokenResult } from '../constants';
+import typeDefs from './schema';
+
+const resolvers = {
+  Mutation: {
+    ...cacheResolvers.Mutation,
+    ...serverResolvers.Mutation
+  }
+};
 
 const request = async (operation: Operation) => {
-  const userToken = await AsyncStorage.getItem(USER_TOKEN);
-  operation.setContext({ headers: { authorization: userToken } });
+  const authKeys = (await AsyncStorage.getItem(USER_AUTH_KEYS)) as string;
+  const { id_token } = JSON.parse(authKeys) as JwtTokenResult;
+
+  console.tron('USER ID TOKEN TO GET REFRESH TOKEN', { id_token });
+
+  operation.setContext({ headers: { authorization: id_token } });
 };
 
 const requestLink = new ApolloLink(
@@ -39,16 +52,16 @@ export const client = new ApolloClient<NormalizedCacheObject>({
   link: ApolloLink.from([
     onError(({ graphQLErrors, networkError }) => {
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
-      if (graphQLErrors) console.log(graphQLErrors);
+      if (graphQLErrors) console.tron(graphQLErrors);
 
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
-      if (networkError) console.log(networkError);
+      if (networkError) console.tron(networkError);
     }),
     requestLink,
     new HttpLink({ uri: ENVIRONMENT_VARIABLES.TRIBL_SERVER_BASE_URI })
   ]),
-  cache,
   typeDefs,
+  cache,
   resolvers
 });
 
