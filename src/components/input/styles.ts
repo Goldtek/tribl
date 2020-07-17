@@ -19,5 +19,4 @@ export const TextInput = styled.TextInput`
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   background-color: ${({ theme }) => theme.colors.WHITE};
   border-radius: 4px;
-  text-transform: capitalize;
 `;
