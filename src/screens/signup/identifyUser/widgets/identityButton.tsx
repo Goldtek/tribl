@@ -13,7 +13,7 @@ interface IdentityButtonProp {
   state: { [name: string]: string };
 }
 
-export default function IdentityButton(props: IdentityButtonProp) {
+function IdentityButton(props: IdentityButtonProp) {
   const { identity, handleSelect, state } = props;
 
   const { colors } = useThemeContext();
@@ -36,7 +36,7 @@ export default function IdentityButton(props: IdentityButtonProp) {
       }}
     >
       {!state[identity] ? (
-        <Identity>{props.identity}</Identity>
+        <Identity>{identity}</Identity>
       ) : (
         <GradientContainer
           start={{ x: 1, y: 0 }}
@@ -50,3 +50,5 @@ export default function IdentityButton(props: IdentityButtonProp) {
     </TouchableHighlight>
   );
 }
+
+export default React.memo(IdentityButton);
