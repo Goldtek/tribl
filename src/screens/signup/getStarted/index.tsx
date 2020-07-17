@@ -7,21 +7,23 @@ import {
   Keyboard
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Title, Subheading, Paragraph } from 'react-native-paper';
+import { Title, Subheading, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import Input from '../../../components/input';
 import Countries from '../../../libs/countries';
-import { GET_USER_COUNTRY } from '../../../graphql/cache/query';
-import { StoreInterface } from '../../../graphql/types';
-import { DEVICE_OS } from '../../../utils/device';
+import { GET_USER_DETAILS } from '../../../graphql/cache/query';
+import { ADD_USER_PHONE_NUMBER } from '../../../graphql/cache/mutations';
+import { SEND_USER_OTP } from '../../../graphql/server/mutations';
+import { StoreInterface, OTPInterface } from '../../../graphql/types';
+import { DEVICE_OS, DEVICE_ID } from '../../../utils/device';
+import GradientButton from '../../../components/gradientButton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -29,20 +31,41 @@ interface ScreenProp extends NavigationInterface {}
 export default function GetStartedScreen(props: ScreenProp) {
   const { navigation } = props;
 
-  const { data } = useQuery<StoreInterface>(GET_USER_COUNTRY);
-
+  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
+  console.log({ data });
+
+  const country = Countries.getCountryDataByCode(data?.userDetails.countryCode);
+
   const [state, setState] = useState({ number: '', loading: false });
 
-  const handleSubmit = () => {
+  const onChangeText = (number: string) => setState({ ...state, number });
+
+  const [sendOtp] = useMutation<OTPInterface>(SEND_USER_OTP, {
+    variables: {
+      payload: { phoneNumber: `+${state.number}`, deviceId: DEVICE_ID }
+    }
+  });
+
+  const [addPhoneNumber] = useMutation(ADD_USER_PHONE_NUMBER, {
+    variables: { number: `+${state.number}` }
+  });
+
+  const handleSubmit = async () => {
     setState({ ...state, loading: true });
+    // const { data } = await sendOtp();
+
+    // if (data?.sendOtp.success) {
 
     setTimeout(() => {
-      navigation.navigate('OTPScreen');
       setState({ ...state, loading: false });
-    }, 1000);
+
+      navigation.navigate('OTPScreen');
+    }, 2000);
+    // addPhoneNumber();
+    // }
   };
 
   return (
@@ -112,8 +135,8 @@ export default function GetStartedScreen(props: ScreenProp) {
 
               <Input
                 placeholder={t(`signup.screenOne.placeholder`)}
-                defaultValue={state.number}
-                onChangeText={(number) => setState({ ...state, number })}
+                defaultValue={country?.dialCode}
+                onChangeText={onChangeText}
                 keyboardType="phone-pad"
                 returnKeyType="done"
               >
