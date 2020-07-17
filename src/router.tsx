@@ -32,12 +32,6 @@ export default function AppNavigator() {
 
         <RootStack.Screen name="SignupScreen" component={SignupNavigator} />
 
-        <RootStack.Screen
-          name="LoginScreen"
-          component={Screens.LoginScreen}
-          options={{ headerShown: true }}
-        />
-
         <RootStack.Screen name="CommunityScreen" component={BottomNavigator} />
       </RootStack.Navigator>
     </NavigationContainer>
