@@ -35,7 +35,7 @@ const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
   return (
     <Container
       start={{ x: 1, y: 0 }}
-      end={{ x: 0, y: 1 }}
+      end={{ x: 0, y: 3 }}
       colors={[colors.PRIMARY, colors.SECONDARY]}
       style={{ borderRadius: 4, marginTop: RFValue(20) }}
     >
