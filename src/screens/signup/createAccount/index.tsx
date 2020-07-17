@@ -7,9 +7,11 @@ import { useTranslation } from 'react-i18next';
 import GradientButton from '../../../components/gradientButton';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
+import { useMutation } from '@apollo/react-hooks';
 import Input from '../../../components/input';
+import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import CreateAccountModal from './widgets/modal';
+import LoadingModal from '../../../components/loading';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -22,24 +24,32 @@ export default function CreateAccountScreen(props: ScreenProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { bottom: safeAreaBottom, top: safeAreaTop } = useSafeAreaInsets();
+  const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
   const [state, setState] = useState({
-    otp: '',
-    firstName: 'Tiffany',
+    firstName: '',
     lastName: '',
     email: '',
     loading: false,
     isModalVisible: false
   });
 
-  const handleSubmit = () => {
+  const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
+    variables: {
+      payload: {
+        firstName: state.firstName,
+        lastName: state.lastName,
+        email: state.email
+      }
+    }
+  });
+
+  const handleSubmit = async () => {
     Keyboard.dismiss();
     setState({ ...state, loading: true });
 
-    setTimeout(() => {
-      setState({ ...state, loading: false, isModalVisible: true });
-    }, 1000);
+    // await addUserDetails();
+    setState({ ...state, loading: false, isModalVisible: true });
 
     setTimeout(() => {
       navigation.reset({ index: 0, routes: [{ name: 'AvatarUploadScreen' }] });
@@ -206,7 +216,10 @@ export default function CreateAccountScreen(props: ScreenProp) {
         </KeyboardAvoidingView>
       </Container>
 
-      <CreateAccountModal t={t} isVisible={state.isModalVisible} {...props} />
+      <LoadingModal
+        title={`Tiffany, ${t('signup.settingPassport')}`}
+        isVisible={state.isModalVisible}
+      />
     </Fragment>
   );
 }

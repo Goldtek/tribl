@@ -4,22 +4,20 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import Modal from 'react-native-modal';
 import { StatusBar } from 'expo-status-bar';
 import LottieView from 'lottie-react-native';
-import { TFunction } from 'i18next';
-import EllipseIcon from '../../../../../assets/icons/ellipseIcon';
-import { useThemeContext } from '../../../../theme';
-import { NavigationInterface } from '../../../types';
+import EllipseIcon from '../../../assets/icons/ellipseIcon';
+import { useThemeContext } from '../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container } from '../styles';
+import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ModalProp extends NavigationInterface {
+interface ModalProp {
   isVisible: boolean;
-  t: TFunction;
+  title: string;
 }
 
-export default function CreateAccountModal(props: ModalProp) {
-  const { t, isVisible } = props;
+export default function LoadingModal(props: ModalProp) {
+  const { title, isVisible } = props;
   const { colors, fonts } = useThemeContext();
 
   return (
@@ -49,7 +47,7 @@ export default function CreateAccountModal(props: ModalProp) {
           marginTop: 20
         }}
       >
-        {`Tiffany, ${t('signup.preparePassport')}`}
+        {title}
       </Title>
 
       <Container
@@ -62,12 +60,11 @@ export default function CreateAccountModal(props: ModalProp) {
         }}
       >
         <LottieView
-          source={require('../../../../../assets/animations/ellipse.json')}
+          source={require('../../../assets/animations/ellipse.json')}
           autoPlay
           loop
           style={{ width: RFValue(300), height: RFValue(300) }}
         />
-
         <EllipseIcon />
       </Container>
     </Modal>

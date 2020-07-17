@@ -61,7 +61,7 @@ class Country {
     return this.countryCodes;
   }
 
-  getCountryDataByCode(countryCode: string) {
+  getCountryDataByCode(countryCode?: string) {
     if (this.countries) {
       return this.countries?.find(({ iso2 }) => iso2 === countryCode);
     }

@@ -11,7 +11,8 @@ enum COLORS {
   PRIMARY_TEXT = '#535D7E',
   SECONDARY_TEXT = '#A9AEBE',
   INACTIVE = '#DADAED',
-  DISABLED = '#E8E8E8'
+  DISABLED = '#E8E8E8',
+  ACTION = '#F1F3FF'
 }
 
 // All app font sizes
@@ -38,6 +39,7 @@ declare module 'styled-components' {
       SECONDARY_TEXT: string;
       INACTIVE: string;
       DISABLED: string;
+      ACTION: string;
     };
 
     // All Global App Font Sizes
