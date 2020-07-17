@@ -1,12 +1,15 @@
 {
   "skipSignup": "skip",
-  "preparePassport": "let’s prepare \nyour Tribl Passport.",
+  "finishSignup": "done",
+  "settingPassport": "let’s prepare \nyour Tribl Passport.",
+  "preparingPassport": "Preparing your \naccount and providing \nyour passport",
   "userRegSteps": {
     "OTPScreen": "1 of 5 steps",
     "CreateAccountScreen": "2 of 5 steps",
     "AvatarUploadScreen": "3 of 5 steps",
     "IdentifyUserScreen": "4 of 5 steps",
-    "UserLocationScreen": "5 of 5 steps"
+    "UserLocationScreen": "5 of 5 steps",
+    "PassportScreen": ""
   },
 
   "screenOne": {
@@ -52,6 +55,7 @@
     "subTitle": "setup 3",
     "paragraph": "Add a pic with personality to give \ncommunity members a sense of who \nyou are.",
     "addAvatar": "add passport photo",
+    "photoAdded": "photo added",
     "submit": "next",
     "uploading": "uploading..."
   },
@@ -71,6 +75,27 @@
     "currentLocation": "current location",
     "birthPlace": "birth place",
     "submit": "submit",
+    "loading": "submitting..."
+  },
+
+  "screenEight": {
+    "title": "tribl passport",
+    "subTitle": "Welcome to Tribl. Use this passport to \nidentify, connect, & engage.",
+    "sharePassport": "share my passport",
+    "contactCard": "contact card",
+    "QRCode": "QR code",
+    "firstName": "first name",
+    "lastName": "last name",
+    "DOB": "add birthdate",
+    "citizenship": "citizenship",
+    "locality": "locality",
+    "identity": "identity",
+    "interest": "interest",
+    "linkAccounts": "link accounts",
+    "instagramTitle": "connect your instagram",
+    "instagramSubTitle": "Connect your Instagram to share your most \nrecent photos with the community",
+    "spotifyTitle": "connect your spotify",
+    "spotifySubTitle": "Connect your Spotify account to add your top artists \nto your profile. Your top artists will be selected \nbased on your streams on Spotify.",
     "loading": "submitting..."
   }
 }
