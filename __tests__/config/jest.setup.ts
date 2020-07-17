@@ -5,6 +5,11 @@ jest.mock(
   () => require('../../__mocks__/Localize').default
 );
 
+jest.mock(
+  'react-native-device-info',
+  () => require('../../__mocks__/DeviceInfo').default
+);
+
 // RESET ALL MOCKS AFTER EVERY TEST
 afterEach(jest.resetAllMocks);
 

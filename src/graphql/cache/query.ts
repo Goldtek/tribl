@@ -6,9 +6,20 @@ import gql from 'graphql-tag';
  ****************************************************************
  */
 
-// GET USER DEFAULT COUNTRY
-export const GET_USER_COUNTRY = gql`
-  query GetUserCountry {
-    countryCode @client
+// GET USER DETAILS
+export const GET_USER_DETAILS = gql`
+  query GetUserDetails {
+    userDetails @client {
+      number
+      countryCode
+      firstName
+      lastName
+      DOB
+      citizenship
+      locality
+      identity
+      interest
+      __typename
+    }
   }
 `;

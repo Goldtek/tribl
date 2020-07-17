@@ -1,21 +1,14 @@
 import React from 'react';
 
 import { Container, TextInput } from './styles';
-import { ViewStyle, TextStyle, StyleProp } from 'react-native';
+import { ViewStyle, TextStyle, StyleProp, TextInputProps } from 'react-native';
 
-type InputProps = {
+interface InputProps extends TextInputProps {
   textInputStyle?: StyleProp<TextStyle>;
   contanierStyle?: StyleProp<ViewStyle>;
   testID?: string;
-  placeholder: string;
-  defaultValue: string;
-  secureTextEntry?: boolean;
-  keyboardType?: any;
-  returnKeyType?: any;
-  onChangeText?(T: any): void;
   children?: React.ReactNode;
-  editable?: boolean;
-};
+}
 
 export default function Input(props: InputProps) {
   const { children, contanierStyle, textInputStyle, ...restProps } = props;

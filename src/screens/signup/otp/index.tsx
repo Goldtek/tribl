@@ -2,15 +2,28 @@ import React, { useState } from 'react';
 import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import {
+  VALIDATE_USER_OTP,
+  SEND_USER_OTP
+} from '../../../graphql/server/mutations';
+import {
+  StoreInterface,
+  OTPInterface,
+  VerifyOTPInterface
+} from '../../../graphql/types';
+import GradientButton from '../../../components/gradientButton';
+import { GET_USER_DETAILS } from '../../../graphql/cache/query';
 import { NavigationInterface } from '../../types';
+import { DEVICE_ID } from '../../../utils/device';
 import { useThemeContext } from '../../../theme';
+import useCountDown from './useCountDown';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -18,19 +31,50 @@ interface ScreenProp extends NavigationInterface {}
 export default function OTPScreen(props: ScreenProp) {
   const { navigation } = props;
 
+  const [timeLeft, restartOtpTimer] = useCountDown();
+  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+  const { bottom: safeAreaBottom } = useSafeAreaInsets();
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
   const [state, setState] = useState({ otp: '', loading: false });
 
-  const handleSubmit = (otpCode: string) => {
+  const [sendOtp] = useMutation<OTPInterface>(SEND_USER_OTP, {
+    variables: {
+      payload: { phoneNumber: data?.userDetails.number, deviceId: DEVICE_ID }
+    }
+  });
+
+  const [verifyOtp] = useMutation<VerifyOTPInterface>(VALIDATE_USER_OTP, {
+    variables: {
+      payload: {
+        phoneNumber: data?.userDetails.number,
+        deviceId: DEVICE_ID,
+        otp: state.otp
+      }
+    }
+  });
+
+  const resendOtp = () => {
+    sendOtp();
+    restartOtpTimer();
+  };
+
+  const handleSubmit = () => {
+    if (!state.otp || state.loading) return;
     setState({ ...state, loading: true });
 
-    setTimeout(() => {
-      navigation.reset({ index: 0, routes: [{ name: 'CreateAccountScreen' }] });
+    setTimeout(async () => {
+      // const response = await verifyOtp();
+
+      // AsyncStorage.setItem(
+      //   USER_AUTH_KEYS,
+      //   JSON.stringify(response.data?.validateOtp)
+      // );
+
       setState({ ...state, loading: false });
-    }, 1000);
+      navigation.reset({ index: 0, routes: [{ name: 'CreateAccountScreen' }] });
+    }, 3000);
   };
 
   return (
@@ -94,6 +138,7 @@ export default function OTPScreen(props: ScreenProp) {
             autoFocusOnLoad={true}
             keyboardType="number-pad"
             placeholderCharacter="0"
+            onCodeChanged={(otp) => setState({ ...state, otp })}
             onCodeFilled={handleSubmit}
             codeInputFieldStyle={{
               width: RFValue(65),
@@ -125,23 +170,38 @@ export default function OTPScreen(props: ScreenProp) {
             {t(`signup.screenThree.didNotReceiveCode`)}
           </Paragraph>
 
-          <Button
-            mode="text"
-            color={colors.WHITE}
-            uppercase={false}
-            onPress={() => console.log('RESEND OTP')}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              color: colors.PRIMARY_TEXT,
-              marginLeft: 5,
-              padding: 5,
-              paddingTop: 2,
-              textTransform: 'capitalize'
-            }}
-          >
-            {t(`signup.screenThree.resend`)}
-          </Button>
+          {timeLeft ? (
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                marginLeft: 5,
+                padding: 5,
+                paddingTop: 2
+              }}
+            >
+              {timeLeft}
+            </Title>
+          ) : (
+            <Button
+              mode="text"
+              color={colors.WHITE}
+              uppercase={false}
+              onPress={resendOtp}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                marginLeft: 5,
+                padding: 5,
+                paddingTop: 2,
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`signup.screenThree.resend`)}
+            </Button>
+          )}
         </Container>
 
         <Container

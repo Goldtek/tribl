@@ -4,6 +4,7 @@ import AvatarUploadScreen from './avatarUpload';
 import IdentifyUserScreen from './identifyUser';
 import UserLocationScreen from './userLocation';
 import GetStartedScreen from './getStarted';
+import PassportScreen from './passport';
 import OTPScreen from './otp';
 
 export default {
@@ -13,5 +14,6 @@ export default {
   IdentifyUserScreen,
   UserLocationScreen,
   GetStartedScreen,
+  PassportScreen,
   OTPScreen
 };

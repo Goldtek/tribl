@@ -1,28 +1,17 @@
-import gql from 'graphql-tag';
-import { GET_USER_COUNTRY } from './query';
+import { GET_USER_DETAILS } from './query';
 import { StoreInterface, AppResolvers } from '../types';
 
-export const typeDefs = gql`
-  extend type Query {
-    countryCode: String!
-  }
-
-  extend type Mutation {
-    changeUserCountry(id: String!): [String!]!
-  }
-`;
-
-export const resolvers: AppResolvers = {
+export const cacheResolvers: AppResolvers = {
   Mutation: {
-    // CHANGE USER DEFAULT COUNTRY MUTATION
-    changeUserCountry: (_, country, { cache }) => {
+    // CHANGE USER DEFAULT DETAILS MUTATION
+    addUserDetails: (_, payload, { cache }) => {
       const queryResult = cache.readQuery<StoreInterface>({
-        query: GET_USER_COUNTRY
+        query: GET_USER_DETAILS
       });
 
-      if (queryResult?.countryCode) {
-        const data = { ...queryResult, ...country };
-        cache.writeQuery({ query: GET_USER_COUNTRY, data });
+      if (queryResult?.userDetails.countryCode) {
+        const data = { ...queryResult, ...payload };
+        cache.writeQuery({ query: GET_USER_DETAILS, data });
         return null;
       }
     }

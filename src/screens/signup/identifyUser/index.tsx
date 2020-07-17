@@ -104,7 +104,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
         >
           {identities.map((identity) => (
             <IdentityButton
-              key={identity}
+              key={identity.toLowerCase()}
               {...{ identity, handleSelect, state }}
             />
           ))}
