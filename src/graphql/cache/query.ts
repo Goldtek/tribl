@@ -19,7 +19,6 @@ export const GET_USER_DETAILS = gql`
       locality
       identity
       interest
-      __typename
     }
   }
 `;

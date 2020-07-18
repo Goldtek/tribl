@@ -4,13 +4,21 @@ import { StoreInterface, AppResolvers } from '../types';
 export const cacheResolvers: AppResolvers = {
   Mutation: {
     // CHANGE USER DEFAULT DETAILS MUTATION
-    addUserDetails: (_, payload, { cache }) => {
+    addUserDetails: (_, { details }: { details: Object }, { cache }) => {
       const queryResult = cache.readQuery<StoreInterface>({
         query: GET_USER_DETAILS
       });
 
       if (queryResult?.userDetails.countryCode) {
-        const data = { ...queryResult, ...payload };
+        const data = {
+          ...queryResult,
+          userDetails: {
+            ...queryResult.userDetails,
+            ...details
+          }
+        } as StoreInterface;
+
+        console.tron(data);
         cache.writeQuery({ query: GET_USER_DETAILS, data });
         return null;
       }
