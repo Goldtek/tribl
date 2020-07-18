@@ -7,7 +7,7 @@ import {
   Keyboard
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Title, Subheading, Paragraph } from 'react-native-paper';
+import { Title, Subheading, Paragraph, Snackbar } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
@@ -16,7 +16,7 @@ import { NavigationInterface } from '../../types';
 import Input from '../../../components/input';
 import Countries from '../../../libs/countries';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
-import { ADD_USER_PHONE_NUMBER } from '../../../graphql/cache/mutations';
+import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { SEND_USER_OTP } from '../../../graphql/server/mutations';
 import { StoreInterface, OTPInterface } from '../../../graphql/types';
 import { DEVICE_OS, DEVICE_ID } from '../../../utils/device';
@@ -28,18 +28,22 @@ import { Container } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function GetStartedScreen(props: ScreenProp) {
+export default function getStartedScreenScreen(props: ScreenProp) {
   const { navigation } = props;
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  console.log({ data });
+  const userDetails = data?.userDetails;
 
-  const country = Countries.getCountryDataByCode(data?.userDetails.countryCode);
+  const country = Countries.getCountryDataByCode(userDetails?.countryCode);
 
-  const [state, setState] = useState({ number: '', loading: false });
+  const [state, setState] = useState({
+    number: '',
+    inputError: false,
+    loading: false
+  });
 
   const onChangeText = (number: string) => setState({ ...state, number });
 
@@ -49,24 +53,29 @@ export default function GetStartedScreen(props: ScreenProp) {
     }
   });
 
-  const [addPhoneNumber] = useMutation(ADD_USER_PHONE_NUMBER, {
-    variables: { number: `+${state.number}` }
+  const [addPhoneNumber] = useMutation(ADD_USER_DETAILS, {
+    variables: { details: { number: `+${state.number}` } }
   });
 
-  const handleSubmit = async () => {
-    setState({ ...state, loading: true });
-    // const { data } = await sendOtp();
 
-    // if (data?.sendOtp.success) {
-
-    setTimeout(() => {
-      setState({ ...state, loading: false });
-
-      navigation.navigate('OTPScreen');
-    }, 2000);
-    // addPhoneNumber();
-    // }
+  const handleInputError = () => {
+    setState({ ...state, inputError: !state.inputError });
   };
+
+  const handleSubmit = async () => {
+    if (!state.number) return handleInputError();
+
+    setState({ ...state, loading: true });
+    const { data } = await sendOtp();
+
+    if (data?.sendOtp.success) {
+      setState({ ...state, loading: false });
+      navigation.navigate('OTPScreen');
+      addPhoneNumber();
+    }
+  };
+
+ 
 
   return (
     <SafeAreaView
@@ -110,7 +119,7 @@ export default function GetStartedScreen(props: ScreenProp) {
                   lineHeight: RFValue(30)
                 }}
               >
-                {t(`signup.screenOne.title`)}
+                {t(`signup.getStartedScreen.title`)}
               </Title>
               <Subheading
                 style={{
@@ -119,7 +128,7 @@ export default function GetStartedScreen(props: ScreenProp) {
                   color: colors.SECONDARY_TEXT
                 }}
               >
-                {t(`signup.screenOne.subTitle`)}
+                {t(`signup.getStartedScreen.subTitle`)}
               </Subheading>
               <Paragraph
                 style={{
@@ -130,11 +139,11 @@ export default function GetStartedScreen(props: ScreenProp) {
                   marginTop: 30
                 }}
               >
-                {t(`signup.screenOne.mobileNumber`)}
+                {t(`signup.getStartedScreen.mobileNumber`)}
               </Paragraph>
 
               <Input
-                placeholder={t(`signup.screenOne.placeholder`)}
+                placeholder={t(`signup.getStartedScreen.placeholder`)}
                 defaultValue={country?.dialCode}
                 onChangeText={onChangeText}
                 keyboardType="phone-pad"
@@ -158,7 +167,7 @@ export default function GetStartedScreen(props: ScreenProp) {
                         resizeMode: 'contain'
                       }}
                       //@ts-ignore
-                      source={Countries.getFlag(data?.countryCode)}
+                      source={Countries.getFlag(userDetails?.countryCode)}
                     />
                     <Container
                       style={{
@@ -173,9 +182,22 @@ export default function GetStartedScreen(props: ScreenProp) {
               </Input>
 
               <GradientButton loading={state.loading} onPress={handleSubmit}>
-                {t(`signup.screenOne.${state.loading ? 'loading' : 'submit'}`)}
+                {t(
+                  `signup.getStartedScreen.${
+                    state.loading ? 'loading' : 'submit'
+                  }`
+                )}
               </GradientButton>
             </Container>
+
+            <Snackbar
+              duration={Snackbar.DURATION_SHORT}
+              visible={state.inputError}
+              onDismiss={handleInputError}
+              action={{ label: 'Dismiss', onPress: handleInputError }}
+            >
+              {t(`signup.getStartedScreen.inputError`)}
+            </Snackbar>
           </Fragment>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
