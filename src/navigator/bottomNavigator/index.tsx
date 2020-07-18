@@ -23,17 +23,17 @@ export default function BottomNavigator() {
       activeColor={colors.PRIMARY}
       inactiveColor={colors.SECONDARY_TEXT}
       barStyle={{ backgroundColor: colors.WHITE }}
-      initialRouteName="ConnectionScreen"
+      initialRouteName="CommunityScreen"
       labeled={false}
     >
       <BottomTab.Screen
-        name="ConnectionScreen"
+        name="CommunityScreen"
         component={CommunityNavigator}
         options={{
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>
               <CommunityIcon fillColor={color} />
-              <Label style={{ color }}>connection</Label>
+              <Label style={{ color }}>community</Label>
             </IconContainer>
           )
         }}
@@ -72,7 +72,7 @@ export default function BottomNavigator() {
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>
               <ProfileIcon fillColor={color} />
-              <Label style={{ color }}>profile</Label>
+              <Label style={{ color }}>passport</Label>
             </IconContainer>
           )
         }}
