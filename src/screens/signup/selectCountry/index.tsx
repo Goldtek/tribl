@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { IconButton, Title } from 'react-native-paper';
+import { SafeAreaView } from 'react-native';
+import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { RecyclerListView, DataProvider } from 'recyclerlistview';
 import { AntDesign } from '@expo/vector-icons';
@@ -77,12 +77,6 @@ export default function SelectCountryScreen(props: ScreenProp) {
       }}
     >
       <Container>
-        <IconButton
-          icon="arrowleft"
-          color={colors.PRIMARY}
-          onPress={() => navigation.goBack()}
-        />
-
         <Title
           style={{
             fontFamily: fonts.WORK_SANS_BOLD,
