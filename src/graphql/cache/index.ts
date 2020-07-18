@@ -14,15 +14,18 @@ const cache = new InMemoryCache({ freezeResults: true });
 cache.writeData<StoreInterface>({
   data: {
     userDetails: {
+      DOB: '',
+      email: '',
       number: '',
       countryCode: DEVICE_DEFAULT_COUNTRY,
       firstName: '',
       lastName: '',
-      DOB: '',
       citizenship: '',
       locality: '',
       identity: [],
-      interest: []
+      interest: [],
+      userId: '',
+      __typename: 'userDetails'
     }
   }
 });
