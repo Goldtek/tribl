@@ -57,7 +57,6 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     variables: { details: { number: `+${state.number}` } }
   });
 
-
   const handleInputError = () => {
     setState({ ...state, inputError: !state.inputError });
   };
@@ -66,28 +65,31 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     if (!state.number) return handleInputError();
 
     setState({ ...state, loading: true });
-    const { data } = await sendOtp();
 
-    if (data?.sendOtp.success) {
+    try {
+      const { data } = await sendOtp();
+
+      if (data?.sendOtp.success) {
+        setState({ ...state, loading: false });
+        navigation.navigate('OTPScreen');
+        addPhoneNumber();
+      }
+    } catch (error) {
       setState({ ...state, loading: false });
-      navigation.navigate('OTPScreen');
-      addPhoneNumber();
+      handleInputError();
     }
   };
-
- 
 
   return (
     <SafeAreaView
       style={{
         flex: 1,
         width: '100%',
-        backgroundColor: colors.WHITE,
-        padding: 20
+        backgroundColor: colors.WHITE
       }}
     >
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{ flex: 1, padding: 20 }}
         behavior={DEVICE_OS === 'ios' ? 'padding' : 'height'}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -189,18 +191,28 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                 )}
               </GradientButton>
             </Container>
-
-            <Snackbar
-              duration={Snackbar.DURATION_SHORT}
-              visible={state.inputError}
-              onDismiss={handleInputError}
-              action={{ label: 'Dismiss', onPress: handleInputError }}
-            >
-              {t(`signup.getStartedScreen.inputError`)}
-            </Snackbar>
           </Fragment>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      <Snackbar
+        duration={Snackbar.DURATION_MEDIUM}
+        visible={state.inputError}
+        onDismiss={handleInputError}
+        wrapperStyle={{ top: 0 }}
+        style={{ minHeight: RFValue(50), borderRadius: 4 }}
+        action={{ label: 'Dismiss', onPress: handleInputError }}
+      >
+        <Paragraph
+          style={{
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.WHITE,
+            letterSpacing: 2
+          }}
+        >
+          {t(`signup.getStartedScreen.inputError`)}
+        </Paragraph>
+      </Snackbar>
     </SafeAreaView>
   );
 }
