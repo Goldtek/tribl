@@ -27,16 +27,18 @@ export interface AppResolvers extends Resolvers {
 // STORE (LOCAL STATE) INTERFACE
 export interface StoreInterface {
   userDetails: {
-    number: string;
+    DOB: string;
+    email: string;
     countryCode: string;
     firstName: string;
     lastName: string;
-    DOB: string;
+    number: string;
     citizenship: string;
     locality: string;
     identity: string[];
     interest: string[];
-    __typename?: string;
+    userId: string;
+    __typename: string;
   };
 }
 
@@ -59,4 +61,10 @@ interface VerifyOTPIT extends JwtTokenResult {
 
 export type VerifyOTPInterface = {
   validateOtp: VerifyOTPIT;
+};
+
+// SERVER CREATE ACCOUNT (RESPONSE) TYPE
+export type CreateAccountInterface = {
+  success: boolean;
+  _id: string;
 };
