@@ -12,7 +12,7 @@
     "PassportScreen": ""
   },
 
-  "screenOne": {
+  "getStartedScreen": {
     "title": "get started",
     "subTitle": "To sign up for account, enter your \nmobile number.",
     "mobileNumber": "mobile number",
@@ -20,6 +20,7 @@
     "submit": "next",
     "gotAnAccount": "Already have an account?",
     "login": "log in",
+    "inputError": "Provide a valid number",
     "loading": "loading..."
   },
 
@@ -29,17 +30,18 @@
     "emptyList": "No result found"
   },
 
-  "screenThree": {
+  "OTPScreen": {
     "title": "Verify your number",
     "subTitle": "setup 1",
     "paragraph": "We’ve sent a verification code to your \nphone number",
     "didNotReceiveCode": "Didn’t receive the code?",
     "resend": "resend",
     "submit": "submit",
+    "inputError": "Provide a valid OTP",
     "loading": "loading..."
   },
 
-  "screenFour": {
+  "createAccountScreen": {
     "title": "Create account",
     "subTitle": "setup 2",
     "paragraph": "To register your account, we will need \nsome information.",
@@ -47,6 +49,7 @@
     "lastName": "Last Name",
     "email": "Email",
     "createAccount": "create account",
+    "inputError": "All fields are required",
     "loading": "creating..."
   },
 
