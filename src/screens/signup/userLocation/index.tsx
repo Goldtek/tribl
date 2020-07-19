@@ -4,23 +4,30 @@ import {
   Modal,
   ProgressBar,
   Title,
-  Paragraph
+  Paragraph,
+  Snackbar
 } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { TouchableHighlight, KeyboardAvoidingView } from 'react-native';
+import {
+  TouchableHighlight,
+  KeyboardAvoidingView,
+  SafeAreaView
+} from 'react-native';
 import * as Location from 'expo-location';
 import { useTranslation } from 'react-i18next';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
+import { useMutation } from '@apollo/react-hooks';
 import GradientButton from '../../../components/gradientButton';
 import GPSIcon from '../../../../assets/icons/gpsIcon';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
+import Input from '../../../components/input';
+import LoadingModal from '../../../components/loading';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import Input from '../../../components/input';
-import LoadingModal from '../../../components/loading';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -33,24 +40,55 @@ export default function UserLocationScreen(props: ScreenProp) {
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
   const [state, setState] = useState({
-    location: '',
-    city: '',
-    state: '',
-    street: '',
-    birthPlace: '',
+    locationInput: '',
+    birthPlaceInput: '',
+    currentLocation: {
+      lat: 0,
+      long: 0,
+      country: '',
+      state: ''
+    },
+    birthPlace: {
+      lat: 0,
+      long: 0,
+      country: '',
+      state: ''
+    },
+    errorTag: 'inputError',
+    inputError: false,
     loading: false,
     isModalVisible: false,
     isVisible: false
   });
 
+  const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
+    variables: {
+      payload: {
+        currentLocation: state.currentLocation,
+        birthPlace: state.birthPlace
+      }
+    }
+  });
+
+  const handleInputError = (error?: object) => {
+    setState({ ...state, inputError: !state.inputError, ...error });
+  };
+
   const handleSubmit = () => {
+    const { locationInput, birthPlaceInput } = state;
+
+    if (!locationInput || !birthPlaceInput) {
+      return handleInputError();
+    }
+
     setState({ ...state, loading: true });
 
     setTimeout(() => {
       setState({ ...state, loading: false, isModalVisible: true });
-    }, 1000);
+    }, 500);
 
     setTimeout(() => {
+      addUserDetails();
       navigation.reset({ index: 0, routes: [{ name: 'PassportScreen' }] });
       setState({ ...state, loading: false, isModalVisible: false });
     }, 5000);
@@ -61,23 +99,13 @@ export default function UserLocationScreen(props: ScreenProp) {
       const isLocationEnabled = await Location.hasServicesEnabledAsync();
 
       if (!isLocationEnabled) {
-        throw new Error(
-          JSON.stringify({
-            key: 'isLocationEnabled',
-            message: 'LOCATION SERVICE NOT ENABLED'
-          })
-        );
+        return handleInputError({ errorTag: 'isLocationEnabled' });
       }
 
       const locationPermission = await Location.requestPermissionsAsync();
 
       if (!locationPermission.granted) {
-        throw new Error(
-          JSON.stringify({
-            key: 'locationPermission',
-            message: 'LOCATION PERMISSION NOT GRANTED'
-          })
-        );
+        return handleInputError({ errorTag: 'locationPermission' });
       }
 
       setState({ ...state, isVisible: true });
@@ -88,12 +116,7 @@ export default function UserLocationScreen(props: ScreenProp) {
       });
 
       if (!timestamp) {
-        throw new Error(
-          JSON.stringify({
-            key: 'currentPosition',
-            message: 'NETWORK TIMEOUT TRY AGAIN'
-          })
-        );
+        return handleInputError({ errorTag: 'currentPosition' });
       }
 
       const [currentLocation] = await Location.reverseGeocodeAsync({
@@ -101,23 +124,26 @@ export default function UserLocationScreen(props: ScreenProp) {
         longitude: coords.longitude
       });
 
-      const { city, region, street } = currentLocation;
+      const { region, country } = currentLocation;
 
       setState({
         ...state,
         isVisible: false,
-        city,
-        state: region,
-        street,
-        location: `${street}, ${city}, ${region}`
+        locationInput: `${region}, ${country}`,
+        currentLocation: {
+          lat: coords.latitude,
+          long: coords.longitude,
+          state: region,
+          country
+        }
       });
     } catch (error) {
-      console.log(JSON.parse(error.message));
+      console.log(error.message);
     }
   };
 
   return (
-    <Fragment>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <Container
         style={{
           height: '100%',
@@ -151,7 +177,7 @@ export default function UserLocationScreen(props: ScreenProp) {
               lineHeight: RFValue(30)
             }}
           >
-            {t(`signup.screenSeven.subTitle`)}
+            {t(`signup.userLocationScreen.subTitle`)}
           </Title>
 
           <Title
@@ -163,7 +189,7 @@ export default function UserLocationScreen(props: ScreenProp) {
               marginTop: 20
             }}
           >
-            {t(`signup.screenSeven.title`)}
+            {t(`signup.userLocationScreen.title`)}
           </Title>
 
           <Paragraph
@@ -174,11 +200,11 @@ export default function UserLocationScreen(props: ScreenProp) {
               lineHeight: RFValue(22)
             }}
           >
-            {t(`signup.screenSeven.paragraph`)}
+            {t(`signup.userLocationScreen.paragraph`)}
           </Paragraph>
 
           <Container style={{ flex: 1, paddingTop: RFValue(30) }}>
-            {!state.location ? (
+            {!state.locationInput ? (
               <TouchableHighlight
                 onPress={handleLocation}
                 underlayColor={colors.DISABLED}
@@ -218,7 +244,7 @@ export default function UserLocationScreen(props: ScreenProp) {
                       marginLeft: RFValue(20)
                     }}
                   >
-                    {t(`signup.screenSeven.setLocation`)}
+                    {t(`signup.userLocationScreen.setLocation`)}
                   </Title>
                 </Fragment>
               </TouchableHighlight>
@@ -233,12 +259,12 @@ export default function UserLocationScreen(props: ScreenProp) {
                     marginTop: 30
                   }}
                 >
-                  {t(`signup.screenSeven.currentLocation`)}
+                  {t(`signup.userLocationScreen.currentLocation`)}
                 </Paragraph>
 
                 <Input
-                  placeholder={t(`signup.screenSeven.currentLocation`)}
-                  defaultValue={state.location}
+                  placeholder={t(`signup.userLocationScreen.currentLocation`)}
+                  value={state.locationInput}
                   returnKeyType="next"
                   editable={false}
                   textInputStyle={{
@@ -258,16 +284,16 @@ export default function UserLocationScreen(props: ScreenProp) {
                     marginTop: 20
                   }}
                 >
-                  {t(`signup.screenSeven.birthPlace`)}
+                  {t(`signup.userLocationScreen.birthPlace`)}
                 </Paragraph>
 
                 <Input
-                  placeholder={t(`signup.screenSeven.birthPlace`)}
-                  defaultValue={state.birthPlace}
-                  onChangeText={(birthPlace) =>
-                    setState({ ...state, birthPlace })
+                  placeholder={t(`signup.userLocationScreen.birthPlace`)}
+                  returnKeyType="done"
+                  value={state.birthPlaceInput}
+                  onChangeText={(birthPlaceInput) =>
+                    setState({ ...state, birthPlaceInput })
                   }
-                  returnKeyType="next"
                   textInputStyle={{
                     paddingLeft: 20,
                     paddingRight: 20,
@@ -289,7 +315,9 @@ export default function UserLocationScreen(props: ScreenProp) {
             >
               <GradientButton loading={state.loading} onPress={handleSubmit}>
                 {t(
-                  `signup.screenSeven.${state.loading ? 'loading' : 'submit'}`
+                  `signup.userLocationScreen.${
+                    state.loading ? 'loading' : 'submit'
+                  }`
                 )}
               </GradientButton>
             </Container>
@@ -319,6 +347,26 @@ export default function UserLocationScreen(props: ScreenProp) {
         title={t('signup.preparingPassport')}
         isVisible={state.isModalVisible}
       />
-    </Fragment>
+
+      <Snackbar
+        duration={Snackbar.DURATION_SHORT}
+        visible={state.inputError}
+        onDismiss={handleInputError}
+        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
+        style={{ minHeight: RFValue(50), borderRadius: 4 }}
+        action={{ label: 'Dismiss', onPress: handleInputError }}
+      >
+        <Paragraph
+          style={{
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.WHITE,
+            letterSpacing: 2
+          }}
+        >
+          {t(`signup.userLocationScreen.${state.errorTag}`)}
+        </Paragraph>
+      </Snackbar>
+    </SafeAreaView>
   );
 }
