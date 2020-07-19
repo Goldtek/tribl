@@ -88,7 +88,7 @@ export default function contactSlide() {
               textTransform: 'uppercase'
             }}
           >
-            {t(`signup.screenEight.firstName`)}
+            {t(`signup.passportScreen.firstName`)}
           </Title>
           <EditTextInput
             underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
@@ -126,7 +126,7 @@ export default function contactSlide() {
               textTransform: 'uppercase'
             }}
           >
-            {t(`signup.screenEight.lastName`)}
+            {t(`signup.passportScreen.lastName`)}
           </Title>
           <EditTextInput
             underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
@@ -164,7 +164,7 @@ export default function contactSlide() {
             marginBottom: 0
           }}
         >
-          {t(`signup.screenEight.DOB`)}
+          {t(`signup.passportScreen.DOB`)}
         </Title>
 
         <Button
@@ -183,7 +183,7 @@ export default function contactSlide() {
           contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
           onPress={handleDatePicker}
         >
-          {state.date ? state.date : t(`signup.screenEight.DOB`)}
+          {state.date ? state.date : t(`signup.passportScreen.DOB`)}
         </Button>
 
         <DateTimePicker
@@ -204,7 +204,7 @@ export default function contactSlide() {
             textTransform: 'uppercase'
           }}
         >
-          {t(`signup.screenEight.citizenship`)}
+          {t(`signup.passportScreen.citizenship`)}
         </Title>
 
         <Paragraph
@@ -231,7 +231,7 @@ export default function contactSlide() {
             marginBottom: 10
           }}
         >
-          {t(`signup.screenEight.locality`)}
+          {t(`signup.passportScreen.locality`)}
         </Title>
 
         <Location>
@@ -301,7 +301,7 @@ export default function contactSlide() {
             marginBottom: 10
           }}
         >
-          {t(`signup.screenEight.identity`)}
+          {t(`signup.passportScreen.identity`)}
         </Title>
 
         <Identities>
@@ -334,7 +334,7 @@ export default function contactSlide() {
             textTransform: 'uppercase'
           }}
         >
-          {t(`signup.screenEight.interest`)}
+          {t(`signup.passportScreen.interest`)}
         </Title>
         <IconButton
           onPress={() => console.log('Pressed')}
@@ -363,7 +363,7 @@ export default function contactSlide() {
             marginTop: 10
           }}
         >
-          {t(`signup.screenEight.linkAccounts`)}
+          {t(`signup.passportScreen.linkAccounts`)}
         </Title>
 
         <InstagramButton
@@ -384,7 +384,7 @@ export default function contactSlide() {
                 textTransform: 'capitalize'
               }}
             >
-              {t(`signup.screenEight.instagramTitle`)}
+              {t(`signup.passportScreen.instagramTitle`)}
             </Title>
             <ButtonDot />
           </Fragment>
@@ -398,7 +398,7 @@ export default function contactSlide() {
             marginBottom: 10
           }}
         >
-          {t(`signup.screenEight.instagramSubTitle`)}
+          {t(`signup.passportScreen.instagramSubTitle`)}
         </Paragraph>
 
         <SpotifyButton
@@ -419,7 +419,7 @@ export default function contactSlide() {
                 textTransform: 'capitalize'
               }}
             >
-              {t(`signup.screenEight.spotifyTitle`)}
+              {t(`signup.passportScreen.spotifyTitle`)}
             </Title>
             <ButtonDot />
           </Fragment>
@@ -432,7 +432,7 @@ export default function contactSlide() {
             color: colors.PRIMARY_TEXT
           }}
         >
-          {t(`signup.screenEight.spotifySubTitle`)}
+          {t(`signup.passportScreen.spotifySubTitle`)}
         </Paragraph>
       </LinkAccountsContainer>
     </ContactContainer>

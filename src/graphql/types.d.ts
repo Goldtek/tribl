@@ -25,19 +25,33 @@ export interface AppResolvers extends Resolvers {
 }
 
 // STORE (LOCAL STATE) INTERFACE
+type Location = {
+  lat: number | null;
+  long: number | null;
+  country: string;
+  state: string;
+  __typename: string;
+};
 export interface StoreInterface {
   userDetails: {
     DOB: string;
     email: string;
+    avatar: string;
+    userId: string;
     countryCode: string;
     firstName: string;
     lastName: string;
     number: string;
     citizenship: string;
-    locality: string;
-    identity: string[];
-    interest: string[];
-    userId: string;
+    identities: string[];
+    interests: string[];
+    currentLocation: Location;
+    birthPlace: Location;
+    __typename: string;
+  };
+
+  selectableIdentities: {
+    identities: string[];
     __typename: string;
   };
 }
@@ -65,6 +79,8 @@ export type VerifyOTPInterface = {
 
 // SERVER CREATE ACCOUNT (RESPONSE) TYPE
 export type CreateAccountInterface = {
-  success: boolean;
-  _id: string;
+  createPassport: {
+    success: boolean;
+    _id: string;
+  };
 };
