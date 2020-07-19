@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
+import ImageResizer from 'react-native-image-resizer';
 import {
   ProgressBar,
   Title,
   Paragraph,
   Subheading,
-  Avatar
+  Snackbar
 } from 'react-native-paper';
-import { TouchableHighlight } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TouchableHighlight, SafeAreaView } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../components/gradientButton';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
+import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
+import { useMutation } from '@apollo/react-hooks';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, GradientContainer } from './styles';
@@ -27,171 +30,226 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
-  const [state, setState] = useState({ avatarSource: '', loading: false });
+  const [state, setState] = useState({
+    avatar: '',
+    inputError: false
+  });
 
-  const handleSubmit = () => {
-    setState({ ...state, loading: true });
+  const [addUserImage] = useMutation(ADD_USER_DETAILS, {
+    variables: { details: { avatar: state.avatar } }
+  });
 
-    setTimeout(() => {
-      navigation.navigate('IdentifyUserScreen');
-      setState({ ...state, loading: false });
-    }, 1000);
+  const handleInputError = () => {
+    setState({ ...state, inputError: !state.inputError });
   };
 
-  const handleAvatar = () => {
-    const options = {
-      title: 'Select Avatar',
-      storageOptions: { skipBackup: true, path: 'images' }
-    };
+  const handleSubmit = () => {
+    if (!state.avatar) return handleInputError();
 
-    ImagePicker.showImagePicker(options, (response) => {
-      const { didCancel, error, uri } = response;
-      if (didCancel || error) return;
-      setState({ ...state, avatarSource: uri });
-    });
+    navigation.navigate('IdentifyUserScreen');
+    addUserImage();
+  };
+
+  const handleAvatar = async () => {
+    try {
+      let divider = 1;
+
+      const { size, height, width, path } = (await ImagePicker.openPicker({
+        cropping: false,
+        mediaType: 'photo'
+      })) as Image;
+
+      if (size > 300000) divider = size / 300000;
+
+      const { uri: resizedImage } = await ImageResizer.createResizedImage(
+        path,
+        width / divider,
+        height / divider,
+        'JPEG',
+        100,
+        0,
+        undefined
+      );
+
+      const { mime, data } = await ImagePicker.openCropper({
+        path: resizedImage,
+        width: RFValue(90),
+        height: RFValue(90),
+        includeBase64: true
+      });
+
+      setState({ ...state, avatar: `data:${mime};base64,${data}` });
+      ImagePicker.clean();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <Container
-      style={{
-        height: '100%',
-        paddingLeft: RFValue(20),
-        paddingRight: RFValue(20)
-      }}
-    >
-      <ProgressBar
-        progress={3 / 5}
-        color={colors.PRIMARY}
-        style={{
-          height: RFValue(5),
-          backgroundColor: '#F2F2F7',
-          borderRadius: 4,
-          marginBottom: RFValue(30)
-        }}
-      />
-
-      <Title
-        style={{
-          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-          fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
-          color: colors.PRIMARY,
-          textTransform: 'capitalize',
-          lineHeight: RFValue(30)
-        }}
-      >
-        {t(`signup.screenFive.subTitle`)}
-      </Title>
-
-      <Title
-        style={{
-          fontFamily: fonts.WORK_SANS_BOLD,
-          fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
-          color: colors.PRIMARY_TEXT,
-          lineHeight: RFValue(30),
-          textTransform: 'capitalize',
-          marginTop: 20
-        }}
-      >
-        {t(`signup.screenFive.title`)}
-      </Title>
-
-      <Paragraph
-        style={{
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(fonts.LARGE_SIZE),
-          color: colors.SECONDARY_TEXT,
-          lineHeight: RFValue(22),
-          marginTop: 20
-        }}
-      >
-        {t(`signup.screenFive.paragraph`)}
-      </Paragraph>
-
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <Container
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingBottom: RFValue(safeAreaBottom + 20),
-          marginTop: RFValue(40)
-        }}
+        style={{ flex: 1, paddingLeft: RFValue(20), paddingRight: RFValue(20) }}
       >
-        <Container style={{ alignItems: 'center' }}>
-          <TouchableHighlight
-            onPress={handleAvatar}
-            underlayColor={colors.PRIMARY}
-            style={{
-              width: RFValue(100),
-              height: RFValue(100),
-              borderRadius: RFValue(50),
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <GradientContainer
-              start={{ x: 1, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              colors={[colors.PRIMARY, colors.SECONDARY]}
+        <ProgressBar
+          progress={3 / 5}
+          color={colors.PRIMARY}
+          style={{
+            height: RFValue(5),
+            backgroundColor: '#F2F2F7',
+            borderRadius: 4,
+            marginBottom: RFValue(30)
+          }}
+        />
+
+        <Title
+          style={{
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
+            color: colors.PRIMARY,
+            textTransform: 'capitalize',
+            lineHeight: RFValue(30)
+          }}
+        >
+          {t(`signup.avatarUploadScreen.subTitle`)}
+        </Title>
+
+        <Title
+          style={{
+            fontFamily: fonts.WORK_SANS_BOLD,
+            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+            color: colors.PRIMARY_TEXT,
+            lineHeight: RFValue(30),
+            textTransform: 'capitalize',
+            marginTop: 20
+          }}
+        >
+          {t(`signup.avatarUploadScreen.title`)}
+        </Title>
+
+        <Paragraph
+          style={{
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            color: colors.SECONDARY_TEXT,
+            lineHeight: RFValue(22),
+            marginTop: 20
+          }}
+        >
+          {t(`signup.avatarUploadScreen.paragraph`)}
+        </Paragraph>
+
+        <Container
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingBottom: RFValue(40),
+            marginTop: RFValue(40)
+          }}
+        >
+          <Container style={{ alignItems: 'center' }}>
+            <TouchableHighlight
+              onPress={handleAvatar}
+              underlayColor={colors.PRIMARY}
               style={{
                 width: RFValue(100),
                 height: RFValue(100),
                 borderRadius: RFValue(50),
-                overflow: 'hidden'
+                justifyContent: 'center',
+                alignItems: 'center'
               }}
             >
-              {state.avatarSource ? (
-                <Avatar.Image
-                  size={RFValue(96)}
-                  source={{ uri: state.avatarSource }}
-                />
-              ) : (
-                <Container
-                  style={{
-                    width: '97%',
-                    height: '97%',
-                    borderRadius: RFValue(50),
-                    backgroundColor: colors.DISABLED,
-                    borderWidth: RFValue(20),
-                    borderColor: colors.WHITE,
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Feather
-                    name="camera"
-                    size={RFValue(20)}
-                    color={colors.PRIMARY}
+              <GradientContainer
+                start={{ x: 1, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                colors={[colors.PRIMARY, colors.SECONDARY]}
+                style={{
+                  width: RFValue(100),
+                  height: RFValue(100),
+                  borderRadius: RFValue(50),
+                  overflow: 'hidden'
+                }}
+              >
+                {state.avatar ? (
+                  <FastImage
+                    source={{
+                      uri: state.avatar,
+                      priority: FastImage.priority.high
+                    }}
+                    resizeMode={FastImage.resizeMode.contain}
+                    style={{
+                      width: '97%',
+                      height: '97%',
+                      borderRadius: RFValue(50)
+                    }}
                   />
-                </Container>
+                ) : (
+                  <Container
+                    style={{
+                      width: '97%',
+                      height: '97%',
+                      borderRadius: RFValue(50),
+                      backgroundColor: colors.DISABLED,
+                      borderWidth: RFValue(20),
+                      borderColor: colors.WHITE,
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Feather
+                      name="camera"
+                      size={RFValue(20)}
+                      color={colors.PRIMARY}
+                    />
+                  </Container>
+                )}
+              </GradientContainer>
+            </TouchableHighlight>
+
+            <Subheading
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginTop: 20
+              }}
+            >
+              {t(
+                `signup.avatarUploadScreen.${
+                  state.avatar ? 'photoAdded' : 'addAvatar'
+                }`
               )}
-            </GradientContainer>
-          </TouchableHighlight>
+            </Subheading>
+          </Container>
 
-          <Subheading
-            style={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              marginTop: 20
-            }}
-          >
-            {t(
-              `signup.screenFive.${
-                state.avatarSource ? 'photoAdded' : 'addAvatar'
-              }`
-            )}
-          </Subheading>
-        </Container>
-
-        <Container style={{ width: '100%' }}>
-          <GradientButton loading={state.loading} onPress={handleSubmit}>
-            {t(`signup.screenFive.${state.loading ? 'uploading' : 'submit'}`)}
-          </GradientButton>
+          <Container style={{ width: '100%' }}>
+            <GradientButton onPress={handleSubmit}>
+              {t(`signup.avatarUploadScreen.submit`)}
+            </GradientButton>
+          </Container>
         </Container>
       </Container>
-    </Container>
+
+      <Snackbar
+        duration={Snackbar.DURATION_SHORT}
+        visible={state.inputError}
+        onDismiss={handleInputError}
+        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
+        style={{ minHeight: RFValue(50), borderRadius: 4 }}
+        action={{ label: 'Dismiss', onPress: handleInputError }}
+      >
+        <Paragraph
+          style={{
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.WHITE
+          }}
+        >
+          {t(`signup.avatarUploadScreen.inputError`)}
+        </Paragraph>
+      </Snackbar>
+    </SafeAreaView>
   );
 }
