@@ -1,12 +1,16 @@
 import React from 'react';
-import { SafeAreaView, Image, ScrollView } from 'react-native';
+import { SafeAreaView, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import FastImage from 'react-native-fast-image';
 import { Share } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Title, Paragraph, Subheading, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
+import { GET_USER_DETAILS } from '../../../graphql/cache/query';
+import { StoreInterface } from '../../../graphql/types';
+import { useQuery } from '@apollo/react-hooks';
 import { FontAwesome } from '@expo/vector-icons';
 import TabViewSlider from './widgets/tabs';
 
@@ -25,6 +29,12 @@ interface ScreenProp extends NavigationInterface {}
 export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+
+  const userDetails = data?.userDetails;
+
+  console.log({ userDetails });
 
   const onShare = async () => {
     try {
@@ -58,7 +68,7 @@ export default function PassportScreen(props: ScreenProp) {
               lineHeight: RFValue(30)
             }}
           >
-            {t(`signup.screenEight.title`)}
+            {t(`signup.passportScreen.title`)}
           </Title>
 
           <Paragraph
@@ -70,18 +80,19 @@ export default function PassportScreen(props: ScreenProp) {
               lineHeight: RFValue(22)
             }}
           >
-            {t(`signup.screenEight.subTitle`)}
+            {t(`signup.passportScreen.subTitle`)}
           </Paragraph>
 
           <ImageContainer>
-            <Image
+            <FastImage
               source={{
-                uri: 'https://randomuser.me/api/portraits/men/75.jpg'
+                uri: userDetails?.avatar,
+                priority: FastImage.priority.high
               }}
+              resizeMode={FastImage.resizeMode.cover}
               style={{
                 width: RFValue(120),
                 height: RFValue(120),
-                resizeMode: 'cover',
                 borderRadius: 4
               }}
             />
@@ -94,7 +105,7 @@ export default function PassportScreen(props: ScreenProp) {
                   color: colors.WHITE
                 }}
               >
-                Kamilah Wells
+                {`${userDetails?.firstName} ${userDetails?.lastName}`}
               </Subheading>
 
               <Paragraph
@@ -104,7 +115,7 @@ export default function PassportScreen(props: ScreenProp) {
                   color: colors.WHITE
                 }}
               >
-                Atlanta, GA
+                {`${userDetails?.currentLocation.state} ${userDetails?.currentLocation.country}`}
               </Paragraph>
 
               <ImageIconContainer>
@@ -153,7 +164,7 @@ export default function PassportScreen(props: ScreenProp) {
             }}
             onPress={onShare}
           >
-            {t(`signup.screenEight.sharePassport`)}
+            {t(`signup.passportScreen.sharePassport`)}
           </Button>
         </HeaderContainer>
         <TabViewSlider />
