@@ -75,8 +75,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
         addPhoneNumber();
       }
     } catch (error) {
-      setState({ ...state, loading: false });
-      handleInputError();
+      setState({ ...state, inputError: !state.inputError, loading: false });
     }
   };
 
@@ -195,7 +194,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
       <Snackbar
-        duration={Snackbar.DURATION_MEDIUM}
+        duration={Snackbar.DURATION_SHORT}
         visible={state.inputError}
         onDismiss={handleInputError}
         wrapperStyle={{ top: 0 }}
