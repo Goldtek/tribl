@@ -19,8 +19,6 @@ import { Container } from './styles';
 interface ScreenProp extends NavigationInterface {}
 
 export default function SelectCountryScreen(props: ScreenProp) {
-  const { navigation } = props;
-
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
