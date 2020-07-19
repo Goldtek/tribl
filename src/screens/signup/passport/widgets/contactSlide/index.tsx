@@ -11,6 +11,9 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
+import { GET_USER_DETAILS } from '../../../../../graphql/cache/query';
+import { StoreInterface } from '../../../../../graphql/types';
+import { useQuery } from '@apollo/react-hooks';
 
 import {
   ContactContainer,
@@ -45,6 +48,9 @@ export default function contactSlide() {
     focusedLastName: false,
     showDatePicker: false
   });
+
+  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+  const userDetails = data?.userDetails;
 
   const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
@@ -93,7 +99,7 @@ export default function contactSlide() {
         </FirstNameContainer>
         <TextInput
           ref={(e) => (inputRef.current.firstName = e)}
-          value="Kamilah"
+          value={userDetails?.firstName}
           editable={state.editFirstName}
           onChangeText={(text) => console.log({ text })}
           onFocus={handleInputFocus('focusedFirstName')}
@@ -131,7 +137,7 @@ export default function contactSlide() {
         </LastNameContainer>
         <TextInput
           ref={(e) => (inputRef.current.lastName = e)}
-          value="Wells"
+          value={userDetails?.lastName}
           editable={state.editLastName}
           onChangeText={(text) => console.log({ text })}
           onFocus={handleInputFocus('focusedLastName')}
@@ -209,7 +215,9 @@ export default function contactSlide() {
             textTransform: 'capitalize'
           }}
         >
-          United States of America
+          {userDetails?.birthPlace.country
+            ? userDetails?.birthPlace.country
+            : 'empty'}
         </Paragraph>
       </CitizenshipContainer>
 
@@ -248,7 +256,9 @@ export default function contactSlide() {
               marginBottom: 10
             }}
           >
-            Brooklyn, NY
+            {userDetails?.birthPlace.state
+              ? `${userDetails?.birthPlace.state} ${userDetails?.birthPlace.country}`
+              : 'empty'}
           </Paragraph>
         </Location>
 
@@ -274,7 +284,9 @@ export default function contactSlide() {
               marginBottom: 10
             }}
           >
-            Atlanta, GA
+            {userDetails?.currentLocation.state
+              ? `${userDetails?.currentLocation.state} ${userDetails?.currentLocation.country}`
+              : 'empty'}
           </Paragraph>
         </Location>
       </LocationContainer>
@@ -293,11 +305,23 @@ export default function contactSlide() {
         </Title>
 
         <Identities>
-          <IdentityText>Black</IdentityText>
-          <IdentityText>African American</IdentityText>
-          <IdentityText>Caribbean</IdentityText>
-          <IdentityText>Diaspora</IdentityText>
-          <IdentityText>Gullah</IdentityText>
+          {userDetails?.identities.length ? (
+            userDetails?.identities.map((identity) => (
+              <IdentityText key={identity}>{identity}</IdentityText>
+            ))
+          ) : (
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginBottom: 10
+              }}
+            >
+              empty
+            </Paragraph>
+          )}
         </Identities>
       </IdentityContainer>
 
