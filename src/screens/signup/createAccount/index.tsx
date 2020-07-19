@@ -14,6 +14,7 @@ import { CreateAccountInterface } from '../../../graphql/types';
 import { CREATE_USER_ACCOUNT } from '../../../graphql/server/mutations';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import LoadingModal from '../../../components/loading';
+import { validateEmailInput } from '../../../utils/validateEmailInput';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -32,6 +33,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
     firstName: '',
     lastName: '',
     email: '',
+    errorTag: 'inputError',
     inputError: false,
     loading: false,
     isModalVisible: false
@@ -60,8 +62,8 @@ export default function CreateAccountScreen(props: ScreenProp) {
     }
   );
 
-  const handleInputError = () => {
-    setState({ ...state, inputError: !state.inputError });
+  const handleInputError = (error?: object) => {
+    setState({ ...state, inputError: !state.inputError, ...error });
   };
 
   const handleSubmit = async () => {
@@ -73,23 +75,30 @@ export default function CreateAccountScreen(props: ScreenProp) {
       return handleInputError();
     }
 
+    if (!validateEmailInput(email)) {
+      return handleInputError({ errorTag: 'emailInputError' });
+    }
+
     setState({ ...state, loading: true });
 
-    setTimeout(() => {
-      setState({ ...state, loading: false, isModalVisible: true });
-    }, 500);
+    try {
+      const { data } = await createPassport();
 
-    setTimeout(async () => {
-      const response = await createPassport();
-      if (response.data?.success) {
-        addUserDetails().finally(() => {
+      if (data?.createPassport.success) {
+        setState({ ...state, loading: false, isModalVisible: true });
+
+        setTimeout(() => {
           navigation.reset({
             index: 0,
             routes: [{ name: 'AvatarUploadScreen' }]
           });
-        });
+          setState({ ...state, loading: false, isModalVisible: false });
+          addUserDetails();
+        }, 5000);
       }
-    }, 5000);
+    } catch (error) {
+      setState({ ...state, loading: false });
+    }
   };
 
   return (
@@ -252,7 +261,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
       </Container>
 
       <LoadingModal
-        title={`Tiffany, ${t('signup.settingPassport')}`}
+        title={`${(state.firstName, t('signup.settingPassport'))}`}
         isVisible={state.isModalVisible}
       />
 
@@ -260,10 +269,20 @@ export default function CreateAccountScreen(props: ScreenProp) {
         duration={Snackbar.DURATION_SHORT}
         visible={state.inputError}
         onDismiss={handleInputError}
+        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
+        style={{ minHeight: RFValue(50), borderRadius: 4 }}
         action={{ label: 'Dismiss', onPress: handleInputError }}
-        wrapperStyle={{ paddingLeft: 10, paddingRight: 10 }}
       >
-        {t(`signup.createAccountScreen.inputError`)}
+        <Paragraph
+          style={{
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.WHITE,
+            letterSpacing: 2
+          }}
+        >
+          {t(`signup.createAccountScreen.${state.errorTag}`)}
+        </Paragraph>
       </Snackbar>
     </Fragment>
   );
