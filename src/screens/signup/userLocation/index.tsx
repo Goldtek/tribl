@@ -63,9 +63,12 @@ export default function UserLocationScreen(props: ScreenProp) {
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
-      payload: {
-        currentLocation: state.currentLocation,
-        birthPlace: state.birthPlace
+      details: {
+        currentLocation: {
+          ...state.currentLocation,
+          __typename: 'currentLocation'
+        },
+        birthPlace: { ...state.birthPlace, __typename: 'birthPlace' }
       }
     }
   });
@@ -91,7 +94,7 @@ export default function UserLocationScreen(props: ScreenProp) {
       addUserDetails();
       navigation.reset({ index: 0, routes: [{ name: 'PassportScreen' }] });
       setState({ ...state, loading: false, isModalVisible: false });
-    }, 5000);
+    }, 3500);
   };
 
   const handleLocation = async () => {
