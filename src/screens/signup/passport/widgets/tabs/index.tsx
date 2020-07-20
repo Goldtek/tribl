@@ -17,8 +17,8 @@ export default function TabViewSlider(props: TabProp) {
   const [tabIndex, setTabIndex] = React.useState(0);
 
   const [routes] = React.useState([
-    { key: 'contactSlide', title: t(`signup.screenEight.contactCard`) },
-    { key: 'QRcodeSlide', title: t(`signup.screenEight.QRCode`) }
+    { key: 'contactSlide', title: t(`signup.passportScreen.contactCard`) },
+    { key: 'QRcodeSlide', title: t(`signup.passportScreen.QRCode`) }
   ]);
 
   const renderScene = SceneMap({ contactSlide, QRcodeSlide });
