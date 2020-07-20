@@ -16,9 +16,7 @@ import IdentityButton from './widgets/identityButton';
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {
-  identities: string[];
-}
+interface ScreenProp extends NavigationInterface {}
 
 export default function IdentifyUserScreen(props: ScreenProp) {
   const { navigation } = props;
@@ -34,7 +32,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
-      payload: {
+      details: {
         identities: [...Array.from(state.selectedIdentities.values())]
       }
     }
