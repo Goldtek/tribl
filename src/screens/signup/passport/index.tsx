@@ -34,8 +34,6 @@ export default function PassportScreen(props: ScreenProp) {
 
   const userDetails = data?.userDetails;
 
-  console.log({ userDetails });
-
   const onShare = async () => {
     try {
       const { action } = await Share.share({
@@ -98,24 +96,16 @@ export default function PassportScreen(props: ScreenProp) {
             />
 
             <ImageTextContainer>
-              <Subheading
+              <Paragraph
                 style={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                  paddingRight: 20,
+                  lineHeight: 21,
                   color: colors.WHITE
                 }}
               >
                 {`${userDetails?.firstName} ${userDetails?.lastName}`}
-              </Subheading>
-
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.WHITE
-                }}
-              >
-                {`${userDetails?.currentLocation.state} ${userDetails?.currentLocation.country}`}
               </Paragraph>
 
               <ImageIconContainer>
