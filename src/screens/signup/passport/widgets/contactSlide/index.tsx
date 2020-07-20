@@ -57,7 +57,7 @@ export default function contactSlide() {
   const onChange = (selectedDate: Date) => {
     const date = `${selectedDate
       .toLocaleDateString()
-      .substring(0, 6)}/${selectedDate?.getFullYear()}`;
+      .substring(0, 6)}${selectedDate?.getFullYear()}`;
 
     return setState({ ...state, date, showDatePicker: false });
   };
