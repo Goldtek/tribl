@@ -18,7 +18,6 @@ export const cacheResolvers: AppResolvers = {
           }
         } as StoreInterface;
 
-        console.tron(data);
         cache.writeQuery({ query: GET_USER_DETAILS, data });
         return null;
       }
