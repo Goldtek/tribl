@@ -14,15 +14,53 @@ const cache = new InMemoryCache({ freezeResults: true });
 cache.writeData<StoreInterface>({
   data: {
     userDetails: {
+      DOB: '',
+      email: '',
       number: '',
       countryCode: DEVICE_DEFAULT_COUNTRY,
       firstName: '',
       lastName: '',
-      DOB: '',
       citizenship: '',
-      locality: '',
-      identity: [],
-      interest: []
+      currentLocation: {
+        lat: null,
+        long: null,
+        country: '',
+        state: '',
+        __typename: 'currentLocation'
+      },
+      birthPlace: {
+        lat: null,
+        long: null,
+        country: '',
+        state: '',
+        __typename: 'birthPlace'
+      },
+      identities: [],
+      interests: [],
+      userId: '',
+      avatar: '',
+      __typename: 'userDetails'
+    },
+
+    selectableIdentities: {
+      identities: [
+        'afro-indian',
+        'creole',
+        'caribbean',
+        'afro-latin',
+        'afro-canadian',
+        'afro-asian',
+        'west african',
+        'african',
+        'east african',
+        'black',
+        'afro-european',
+        'gullah',
+        'diaspora',
+        'mixed',
+        'african american'
+      ],
+      __typename: 'selectedIdentities'
     }
   }
 });

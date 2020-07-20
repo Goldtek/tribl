@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableOpacity, Image } from 'react-native';
-import { CHANGE_USER_COUNTRY } from '../../../../graphql/cache/mutations';
+import { ADD_USER_DETAILS } from '../../../../graphql/cache/mutations';
 import { useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../theme';
 import COUNTRIES, { CountryInterface } from '../../../../libs/countries';
@@ -18,8 +18,8 @@ const CountryCard = (props: CountryCardProps) => {
 
   const { name, iso2, dialCode, navigation } = props;
 
-  const [toggleTodo] = useMutation(CHANGE_USER_COUNTRY, {
-    variables: { countryCode: iso2 }
+  const [toggleTodo] = useMutation(ADD_USER_DETAILS, {
+    variables: { details: { countryCode: iso2 } }
   });
 
   const handleSelect = () => {

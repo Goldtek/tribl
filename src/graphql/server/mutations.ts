@@ -25,3 +25,13 @@ export const VALIDATE_USER_OTP = gql`
     }
   }
 `;
+
+// VALIDATE USER OTP
+export const CREATE_USER_ACCOUNT = gql`
+  mutation createPassport($payload: CreatePassportInput!) {
+    createPassport(input: $payload) {
+      success
+      _id
+    }
+  }
+`;

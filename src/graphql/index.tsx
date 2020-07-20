@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import AsyncStorage from '@react-native-community/async-storage';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { ApolloLink, Observable, Operation } from 'apollo-link';
 import { ApolloProvider as Provider } from '@apollo/react-hooks';
@@ -10,8 +9,7 @@ import cache from './cache';
 import { cacheResolvers } from './cache/resolvers';
 import { serverResolvers } from './server/resolvers';
 import ENVIRONMENT_VARIABLES from '../config';
-import { USER_AUTH_KEYS, JwtTokenResult } from '../constants';
-import typeDefs from './schema';
+import Storage from '../storage';
 
 const resolvers = {
   Mutation: {
@@ -21,12 +19,8 @@ const resolvers = {
 };
 
 const request = async (operation: Operation) => {
-  const authKeys = (await AsyncStorage.getItem(USER_AUTH_KEYS)) as string;
-  const { id_token } = JSON.parse(authKeys) as JwtTokenResult;
-
-  console.tron('USER ID TOKEN TO GET REFRESH TOKEN', { id_token });
-
-  operation.setContext({ headers: { authorization: id_token } });
+  const auth = await Storage.getUserAuth();
+  operation.setContext({ headers: { authorization: auth?.id_token } });
 };
 
 const requestLink = new ApolloLink(
@@ -60,7 +54,6 @@ export const client = new ApolloClient<NormalizedCacheObject>({
     requestLink,
     new HttpLink({ uri: ENVIRONMENT_VARIABLES.TRIBL_SERVER_BASE_URI })
   ]),
-  typeDefs,
   cache,
   resolvers
 });

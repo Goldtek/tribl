@@ -12,7 +12,7 @@
     "PassportScreen": ""
   },
 
-  "screenOne": {
+  "getStartedScreen": {
     "title": "get started",
     "subTitle": "To sign up for account, enter your \nmobile number.",
     "mobileNumber": "mobile number",
@@ -20,6 +20,7 @@
     "submit": "next",
     "gotAnAccount": "Already have an account?",
     "login": "log in",
+    "inputError": "Provide a valid number",
     "loading": "loading..."
   },
 
@@ -29,17 +30,18 @@
     "emptyList": "No result found"
   },
 
-  "screenThree": {
+  "OTPScreen": {
     "title": "Verify your number",
     "subTitle": "setup 1",
     "paragraph": "We’ve sent a verification code to your \nphone number",
     "didNotReceiveCode": "Didn’t receive the code?",
     "resend": "resend",
     "submit": "submit",
+    "inputError": "Provide a valid OTP",
     "loading": "loading..."
   },
 
-  "screenFour": {
+  "createAccountScreen": {
     "title": "Create account",
     "subTitle": "setup 2",
     "paragraph": "To register your account, we will need \nsome information.",
@@ -47,27 +49,32 @@
     "lastName": "Last Name",
     "email": "Email",
     "createAccount": "create account",
+    "inputError": "All fields are required",
+    "emailInputError": "Invalid email address!",
+    "registrationError": "Registration failed try again!",
     "loading": "creating..."
   },
 
-  "screenFive": {
+  "avatarUploadScreen": {
     "title": "photo",
     "subTitle": "setup 3",
     "paragraph": "Add a pic with personality to give \ncommunity members a sense of who \nyou are.",
     "addAvatar": "add passport photo",
     "photoAdded": "photo added",
-    "submit": "next",
-    "uploading": "uploading..."
-  },
-
-  "screenSix": {
-    "title": "How do you identify?",
-    "subTitle": "setup 4",
-    "paragraph": "Let us know your ethnic identity. \n(Select all that apply)",
+    "selectAvatar": "Select Avatar",
+    "inputError": "Image is required or skip this setup",
     "submit": "next"
   },
 
-  "screenSeven": {
+  "identifyUserScreen": {
+    "title": "How do you identify?",
+    "subTitle": "setup 4",
+    "paragraph": "Let us know your ethnic identity. \n(Select all that apply)",
+    "inputError": "Select an identity or skip this setup",
+    "submit": "next"
+  },
+
+  "userLocationScreen": {
     "title": "Where are you local?",
     "subTitle": "setup 5",
     "paragraph": "Share your geo-location and more to \nconnect with familiar strangers nearby",
@@ -75,10 +82,14 @@
     "currentLocation": "current location",
     "birthPlace": "birth place",
     "submit": "submit",
+    "inputError": "All fields are required",
+    "isLocationEnabled": "LOCATION SERVICE NOT ENABLED",
+    "locationPermission": "LOCATION PERMISSION NOT GRANTED",
+    "currentPosition": "NETWORK TIMEOUT TRY AGAIN",
     "loading": "submitting..."
   },
 
-  "screenEight": {
+  "passportScreen": {
     "title": "tribl passport",
     "subTitle": "Welcome to Tribl. Use this passport to \nidentify, connect, & engage.",
     "sharePassport": "share my passport",
