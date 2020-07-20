@@ -41,7 +41,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
-      payload: {
+      details: {
         firstName: state.firstName,
         lastName: state.lastName,
         email: state.email
@@ -94,7 +94,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
           });
           setState({ ...state, loading: false, isModalVisible: false });
           addUserDetails();
-        }, 5000);
+        }, 3500);
       }
     } catch (error) {
       setState({ ...state, loading: false });
