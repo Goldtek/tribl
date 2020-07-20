@@ -55,5 +55,11 @@
 	<false/>
   <key>UIStatusBarStyle</key>
   <string>UIStatusBarStyleDefault</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Allow Tribl to access photos and media on your device</string>
+  <key>NSCameraUsageDescription</key>
+  <string>Allow Tribl to access photos and media on your device</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Allow Tribl to access photos and media on your device</string>
 </dict>
 </plist>

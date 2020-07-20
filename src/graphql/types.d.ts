@@ -25,18 +25,34 @@ export interface AppResolvers extends Resolvers {
 }
 
 // STORE (LOCAL STATE) INTERFACE
+type Location = {
+  lat: number | null;
+  long: number | null;
+  country: string;
+  state: string;
+  __typename: string;
+};
 export interface StoreInterface {
   userDetails: {
-    number: string;
+    DOB: string;
+    email: string;
+    avatar: string;
+    userId: string;
     countryCode: string;
     firstName: string;
     lastName: string;
-    DOB: string;
+    number: string;
     citizenship: string;
-    locality: string;
-    identity: string[];
-    interest: string[];
-    __typename?: string;
+    identities: string[];
+    interests: string[];
+    currentLocation: Location;
+    birthPlace: Location;
+    __typename: string;
+  };
+
+  selectableIdentities: {
+    identities: string[];
+    __typename: string;
   };
 }
 
@@ -59,4 +75,12 @@ interface VerifyOTPIT extends JwtTokenResult {
 
 export type VerifyOTPInterface = {
   validateOtp: VerifyOTPIT;
+};
+
+// SERVER CREATE ACCOUNT (RESPONSE) TYPE
+export type CreateAccountInterface = {
+  createPassport: {
+    success: boolean;
+    _id: string;
+  };
 };

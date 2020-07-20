@@ -1,5 +1,5 @@
 import React, { useState, Fragment } from 'react';
-import { ProgressBar, Title, Paragraph } from 'react-native-paper';
+import { ProgressBar, Title, Paragraph, Snackbar } from 'react-native-paper';
 import { KeyboardAvoidingView, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -10,8 +10,11 @@ import { useThemeContext } from '../../../theme';
 import { useMutation } from '@apollo/react-hooks';
 import Input from '../../../components/input';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
+import { CreateAccountInterface } from '../../../graphql/types';
+import { CREATE_USER_ACCOUNT } from '../../../graphql/server/mutations';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import LoadingModal from '../../../components/loading';
+import { validateEmailInput } from '../../../utils/validateEmailInput';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -30,13 +33,15 @@ export default function CreateAccountScreen(props: ScreenProp) {
     firstName: '',
     lastName: '',
     email: '',
+    errorTag: 'inputError',
+    inputError: false,
     loading: false,
     isModalVisible: false
   });
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
-      payload: {
+      details: {
         firstName: state.firstName,
         lastName: state.lastName,
         email: state.email
@@ -44,17 +49,56 @@ export default function CreateAccountScreen(props: ScreenProp) {
     }
   });
 
+  const [createPassport] = useMutation<CreateAccountInterface>(
+    CREATE_USER_ACCOUNT,
+    {
+      variables: {
+        payload: {
+          firstName: state.firstName,
+          lastName: state.lastName,
+          email: state.email
+        }
+      }
+    }
+  );
+
+  const handleInputError = (error?: object) => {
+    setState({ ...state, inputError: !state.inputError, ...error });
+  };
+
   const handleSubmit = async () => {
     Keyboard.dismiss();
+
+    const { firstName, lastName, email } = state;
+
+    if (!firstName && !lastName && !email) {
+      return handleInputError();
+    }
+
+    if (!validateEmailInput(email)) {
+      return handleInputError({ errorTag: 'emailInputError' });
+    }
+
     setState({ ...state, loading: true });
 
-    // await addUserDetails();
-    setState({ ...state, loading: false, isModalVisible: true });
+    try {
+      const { data } = await createPassport();
 
-    setTimeout(() => {
-      navigation.reset({ index: 0, routes: [{ name: 'AvatarUploadScreen' }] });
-      setState({ ...state, loading: false, isModalVisible: false });
-    }, 5000);
+      if (data?.createPassport.success) {
+        setState({ ...state, loading: false, isModalVisible: true });
+
+        setTimeout(() => {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'AvatarUploadScreen' }]
+          });
+          setState({ ...state, loading: false, isModalVisible: false });
+          addUserDetails();
+        }, 3500);
+      }
+    } catch (error) {
+      setState({ ...state, loading: false });
+    }
   };
 
   return (
@@ -92,7 +136,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
               lineHeight: RFValue(30)
             }}
           >
-            {t(`signup.screenFour.subTitle`)}
+            {t(`signup.createAccountScreen.subTitle`)}
           </Title>
 
           <Title
@@ -104,7 +148,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
               marginTop: 20
             }}
           >
-            {t(`signup.screenFour.title`)}
+            {t(`signup.createAccountScreen.title`)}
           </Title>
 
           <Paragraph
@@ -115,7 +159,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
               lineHeight: RFValue(22)
             }}
           >
-            {t(`signup.screenFour.paragraph`)}
+            {t(`signup.createAccountScreen.paragraph`)}
           </Paragraph>
 
           <Container>
@@ -128,11 +172,11 @@ export default function CreateAccountScreen(props: ScreenProp) {
                 marginTop: 30
               }}
             >
-              {t(`signup.screenFour.firstName`)}
+              {t(`signup.createAccountScreen.firstName`)}
             </Paragraph>
 
             <Input
-              placeholder={t(`signup.screenFour.firstName`)}
+              placeholder={t(`signup.createAccountScreen.firstName`)}
               defaultValue={state.firstName}
               onChangeText={(firstName) => setState({ ...state, firstName })}
               returnKeyType="next"
@@ -153,11 +197,11 @@ export default function CreateAccountScreen(props: ScreenProp) {
                 marginTop: 20
               }}
             >
-              {t(`signup.screenFour.lastName`)}
+              {t(`signup.createAccountScreen.lastName`)}
             </Paragraph>
 
             <Input
-              placeholder={t(`signup.screenFour.lastName`)}
+              placeholder={t(`signup.createAccountScreen.lastName`)}
               defaultValue={state.lastName}
               onChangeText={(lastName) => setState({ ...state, lastName })}
               returnKeyType="next"
@@ -178,11 +222,11 @@ export default function CreateAccountScreen(props: ScreenProp) {
                 marginTop: 20
               }}
             >
-              {t(`signup.screenFour.email`)}
+              {t(`signup.createAccountScreen.email`)}
             </Paragraph>
 
             <Input
-              placeholder={t(`signup.screenFour.email`)}
+              placeholder={t(`signup.createAccountScreen.email`)}
               defaultValue={state.email}
               onChangeText={(email) => setState({ ...state, email })}
               keyboardType="email-address"
@@ -207,7 +251,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
           >
             <GradientButton loading={state.loading} onPress={handleSubmit}>
               {t(
-                `signup.screenFour.${
+                `signup.createAccountScreen.${
                   state.loading ? 'loading' : 'createAccount'
                 }`
               )}
@@ -217,9 +261,29 @@ export default function CreateAccountScreen(props: ScreenProp) {
       </Container>
 
       <LoadingModal
-        title={`Tiffany, ${t('signup.settingPassport')}`}
+        title={`${(state.firstName, t('signup.settingPassport'))}`}
         isVisible={state.isModalVisible}
       />
+
+      <Snackbar
+        duration={Snackbar.DURATION_SHORT}
+        visible={state.inputError}
+        onDismiss={handleInputError}
+        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
+        style={{ minHeight: RFValue(50), borderRadius: 4 }}
+        action={{ label: 'Dismiss', onPress: handleInputError }}
+      >
+        <Paragraph
+          style={{
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.WHITE,
+            letterSpacing: 2
+          }}
+        >
+          {t(`signup.createAccountScreen.${state.errorTag}`)}
+        </Paragraph>
+      </Snackbar>
     </Fragment>
   );
 }

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { ScrollView } from 'react-native';
-import { ProgressBar, Title, Paragraph } from 'react-native-paper';
+import { ScrollView, SafeAreaView } from 'react-native';
+import { ProgressBar, Title, Paragraph, Snackbar } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../components/gradientButton';
 import { useTranslation } from 'react-i18next';
+import { GET_SELECTABLE_IDENTITIES } from '../../../graphql/cache/query';
+import { StoreInterface } from '../../../graphql/types';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import IdentityButton from './widgets/identityButton';
@@ -12,130 +16,156 @@ import IdentityButton from './widgets/identityButton';
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {
-  identities: string[];
-}
+interface ScreenProp extends NavigationInterface {}
 
 export default function IdentifyUserScreen(props: ScreenProp) {
-  const { navigation, identities } = props;
+  const { navigation } = props;
 
+  const { data } = useQuery<StoreInterface>(GET_SELECTABLE_IDENTITIES);
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState<{ [name: string]: string }>({});
+  const [state, setState] = useState({
+    selectedIdentities: new Map(),
+    inputError: false
+  });
+
+  const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
+    variables: {
+      details: {
+        identities: [...Array.from(state.selectedIdentities.values())]
+      }
+    }
+  });
+
+  const handleInputError = () => {
+    setState({ ...state, inputError: !state.inputError });
+  };
 
   const handleSubmit = () => {
+    if (!state.selectedIdentities.size) return handleInputError();
+
     navigation.navigate('UserLocationScreen');
+    addUserDetails();
   };
 
   const handleSelect = (selected: string) => {
-    if (!state[selected]) return setState({ ...state, [selected]: selected });
+    if (!state.selectedIdentities.has(selected)) {
+      return setState({
+        ...state,
+        selectedIdentities: new Map(
+          state.selectedIdentities.set(selected, selected)
+        )
+      });
+    }
 
-    const { [selected]: removedSelected, ...rest } = state;
-
-    setState({ ...rest });
+    state.selectedIdentities.delete(selected);
+    setState({
+      ...state,
+      selectedIdentities: new Map(state.selectedIdentities)
+    });
   };
 
   return (
-    <Container
-      style={{
-        height: '100%',
-        paddingLeft: RFValue(20),
-        paddingRight: RFValue(20)
-      }}
-    >
-      <ProgressBar
-        progress={4 / 5}
-        color={colors.PRIMARY}
-        style={{
-          height: RFValue(5),
-          backgroundColor: '#F2F2F7',
-          borderRadius: 4,
-          marginBottom: RFValue(30)
-        }}
-      />
-
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
-        showsVerticalScrollIndicator={false}
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+      <Container
+        style={{ paddingLeft: RFValue(20), paddingRight: RFValue(20) }}
       >
-        <Title
+        <ProgressBar
+          progress={4 / 5}
+          color={colors.PRIMARY}
           style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
-            color: colors.PRIMARY,
-            textTransform: 'capitalize',
-            lineHeight: RFValue(30)
+            height: RFValue(5),
+            backgroundColor: '#F2F2F7',
+            borderRadius: 4,
+            marginBottom: RFValue(30)
           }}
-        >
-          {t(`signup.screenSix.subTitle`)}
-        </Title>
+        />
 
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
-            color: colors.PRIMARY_TEXT,
-            lineHeight: RFValue(30),
-            marginTop: 20
-          }}
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
+          showsVerticalScrollIndicator={false}
         >
-          {t(`signup.screenSix.title`)}
-        </Title>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
+              color: colors.PRIMARY,
+              textTransform: 'capitalize',
+              lineHeight: RFValue(30)
+            }}
+          >
+            {t(`signup.identifyUserScreen.subTitle`)}
+          </Title>
 
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+              color: colors.PRIMARY_TEXT,
+              lineHeight: RFValue(30),
+              marginTop: 20
+            }}
+          >
+            {t(`signup.identifyUserScreen.title`)}
+          </Title>
+
+          <Paragraph
+            style={{
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              color: colors.SECONDARY_TEXT,
+              lineHeight: RFValue(22)
+            }}
+          >
+            {t(`signup.identifyUserScreen.paragraph`)}
+          </Paragraph>
+
+          <Container
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              marginTop: RFValue(20)
+            }}
+          >
+            {data?.selectableIdentities.identities.map((identity) => (
+              <IdentityButton
+                key={identity}
+                identity={identity}
+                selected={state.selectedIdentities.get(identity)}
+                handleSelect={handleSelect}
+              />
+            ))}
+          </Container>
+
+          <Container style={{ marginTop: RFValue(40) }}>
+            <GradientButton onPress={handleSubmit}>
+              {t(`signup.identifyUserScreen.submit`)}
+            </GradientButton>
+          </Container>
+        </ScrollView>
+      </Container>
+      <Snackbar
+        duration={Snackbar.DURATION_SHORT}
+        visible={state.inputError}
+        onDismiss={handleInputError}
+        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
+        style={{ minHeight: RFValue(50), borderRadius: 4 }}
+        action={{ label: 'Dismiss', onPress: handleInputError }}
+      >
         <Paragraph
           style={{
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            color: colors.SECONDARY_TEXT,
-            lineHeight: RFValue(22)
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.WHITE
           }}
         >
-          {t(`signup.screenSix.paragraph`)}
+          {t(`signup.identifyUserScreen.inputError`)}
         </Paragraph>
-
-        <Container
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            marginTop: RFValue(20)
-          }}
-        >
-          {identities.map((identity) => (
-            <IdentityButton
-              key={identity.toLowerCase()}
-              {...{ identity, handleSelect, state }}
-            />
-          ))}
-        </Container>
-
-        <Container style={{ marginTop: RFValue(40) }}>
-          <GradientButton onPress={handleSubmit}>
-            {t(`signup.screenSix.submit`)}
-          </GradientButton>
-        </Container>
-      </ScrollView>
-    </Container>
+      </Snackbar>
+    </SafeAreaView>
   );
 }
 
-IdentifyUserScreen.defaultProps = {
-  identities: [
-    'Afro-Indian',
-    'Creole',
-    'Caribbean',
-    'Afro-Latin',
-    'Afro-Canadian',
-    'Afro-Asian',
-    'West African',
-    'African',
-    'East African',
-    'Black',
-    'Afro-European',
-    'gullah',
-    'diaspora',
-    'Mixed',
-    'African American'
-  ]
-};
+IdentifyUserScreen.defaultProps = {};

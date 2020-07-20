@@ -11,6 +11,9 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
+import { GET_USER_DETAILS } from '../../../../../graphql/cache/query';
+import { StoreInterface } from '../../../../../graphql/types';
+import { useQuery } from '@apollo/react-hooks';
 
 import {
   ContactContainer,
@@ -46,12 +49,15 @@ export default function contactSlide() {
     showDatePicker: false
   });
 
+  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+  const userDetails = data?.userDetails;
+
   const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
   const onChange = (selectedDate: Date) => {
     const date = `${selectedDate
       .toLocaleDateString()
-      .substring(0, 6)}/${selectedDate?.getFullYear()}`;
+      .substring(0, 6)}${selectedDate?.getFullYear()}`;
 
     return setState({ ...state, date, showDatePicker: false });
   };
@@ -82,7 +88,7 @@ export default function contactSlide() {
               textTransform: 'uppercase'
             }}
           >
-            {t(`signup.screenEight.firstName`)}
+            {t(`signup.passportScreen.firstName`)}
           </Title>
           <EditTextInput
             underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
@@ -93,7 +99,7 @@ export default function contactSlide() {
         </FirstNameContainer>
         <TextInput
           ref={(e) => (inputRef.current.firstName = e)}
-          value="Kamilah"
+          value={userDetails?.firstName}
           editable={state.editFirstName}
           onChangeText={(text) => console.log({ text })}
           onFocus={handleInputFocus('focusedFirstName')}
@@ -120,7 +126,7 @@ export default function contactSlide() {
               textTransform: 'uppercase'
             }}
           >
-            {t(`signup.screenEight.lastName`)}
+            {t(`signup.passportScreen.lastName`)}
           </Title>
           <EditTextInput
             underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
@@ -131,7 +137,7 @@ export default function contactSlide() {
         </LastNameContainer>
         <TextInput
           ref={(e) => (inputRef.current.lastName = e)}
-          value="Wells"
+          value={userDetails?.lastName}
           editable={state.editLastName}
           onChangeText={(text) => console.log({ text })}
           onFocus={handleInputFocus('focusedLastName')}
@@ -158,7 +164,7 @@ export default function contactSlide() {
             marginBottom: 0
           }}
         >
-          {t(`signup.screenEight.DOB`)}
+          {t(`signup.passportScreen.DOB`)}
         </Title>
 
         <Button
@@ -177,7 +183,7 @@ export default function contactSlide() {
           contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
           onPress={handleDatePicker}
         >
-          {state.date ? state.date : t(`signup.screenEight.DOB`)}
+          {state.date ? state.date : t(`signup.passportScreen.DOB`)}
         </Button>
 
         <DateTimePicker
@@ -198,7 +204,7 @@ export default function contactSlide() {
             textTransform: 'uppercase'
           }}
         >
-          {t(`signup.screenEight.citizenship`)}
+          {t(`signup.passportScreen.citizenship`)}
         </Title>
 
         <Paragraph
@@ -209,7 +215,9 @@ export default function contactSlide() {
             textTransform: 'capitalize'
           }}
         >
-          United States of America
+          {userDetails?.birthPlace.country
+            ? userDetails?.birthPlace.country
+            : 'empty'}
         </Paragraph>
       </CitizenshipContainer>
 
@@ -223,7 +231,7 @@ export default function contactSlide() {
             marginBottom: 10
           }}
         >
-          {t(`signup.screenEight.locality`)}
+          {t(`signup.passportScreen.locality`)}
         </Title>
 
         <Location>
@@ -248,7 +256,9 @@ export default function contactSlide() {
               marginBottom: 10
             }}
           >
-            Brooklyn, NY
+            {userDetails?.birthPlace.state
+              ? `${userDetails?.birthPlace.state} ${userDetails?.birthPlace.country}`
+              : 'empty'}
           </Paragraph>
         </Location>
 
@@ -274,7 +284,9 @@ export default function contactSlide() {
               marginBottom: 10
             }}
           >
-            Atlanta, GA
+            {userDetails?.currentLocation.state
+              ? `${userDetails?.currentLocation.state} ${userDetails?.currentLocation.country}`
+              : 'empty'}
           </Paragraph>
         </Location>
       </LocationContainer>
@@ -289,15 +301,27 @@ export default function contactSlide() {
             marginBottom: 10
           }}
         >
-          {t(`signup.screenEight.identity`)}
+          {t(`signup.passportScreen.identity`)}
         </Title>
 
         <Identities>
-          <IdentityText>Black</IdentityText>
-          <IdentityText>African American</IdentityText>
-          <IdentityText>Caribbean</IdentityText>
-          <IdentityText>Diaspora</IdentityText>
-          <IdentityText>Gullah</IdentityText>
+          {userDetails?.identities.length ? (
+            userDetails?.identities.map((identity) => (
+              <IdentityText key={identity}>{identity}</IdentityText>
+            ))
+          ) : (
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginBottom: 10
+              }}
+            >
+              empty
+            </Paragraph>
+          )}
         </Identities>
       </IdentityContainer>
 
@@ -310,7 +334,7 @@ export default function contactSlide() {
             textTransform: 'uppercase'
           }}
         >
-          {t(`signup.screenEight.interest`)}
+          {t(`signup.passportScreen.interest`)}
         </Title>
         <IconButton
           onPress={() => console.log('Pressed')}
@@ -339,7 +363,7 @@ export default function contactSlide() {
             marginTop: 10
           }}
         >
-          {t(`signup.screenEight.linkAccounts`)}
+          {t(`signup.passportScreen.linkAccounts`)}
         </Title>
 
         <InstagramButton
@@ -360,7 +384,7 @@ export default function contactSlide() {
                 textTransform: 'capitalize'
               }}
             >
-              {t(`signup.screenEight.instagramTitle`)}
+              {t(`signup.passportScreen.instagramTitle`)}
             </Title>
             <ButtonDot />
           </Fragment>
@@ -374,7 +398,7 @@ export default function contactSlide() {
             marginBottom: 10
           }}
         >
-          {t(`signup.screenEight.instagramSubTitle`)}
+          {t(`signup.passportScreen.instagramSubTitle`)}
         </Paragraph>
 
         <SpotifyButton
@@ -395,7 +419,7 @@ export default function contactSlide() {
                 textTransform: 'capitalize'
               }}
             >
-              {t(`signup.screenEight.spotifyTitle`)}
+              {t(`signup.passportScreen.spotifyTitle`)}
             </Title>
             <ButtonDot />
           </Fragment>
@@ -408,7 +432,7 @@ export default function contactSlide() {
             color: colors.PRIMARY_TEXT
           }}
         >
-          {t(`signup.screenEight.spotifySubTitle`)}
+          {t(`signup.passportScreen.spotifySubTitle`)}
         </Paragraph>
       </LinkAccountsContainer>
     </ContactContainer>

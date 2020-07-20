@@ -9,12 +9,12 @@ import { GradientContainer, Identity } from '../styles';
 // DEFINE SCREEN PROP TYPES
 interface IdentityButtonProp {
   identity: string;
+  selected: boolean;
   handleSelect(T: string): void;
-  state: { [name: string]: string };
 }
 
 function IdentityButton(props: IdentityButtonProp) {
-  const { identity, handleSelect, state } = props;
+  const { identity, handleSelect, selected } = props;
 
   const { colors } = useThemeContext();
 
@@ -35,7 +35,7 @@ function IdentityButton(props: IdentityButtonProp) {
         borderColor: colors.DISABLED
       }}
     >
-      {!state[identity] ? (
+      {!selected ? (
         <Identity>{identity}</Identity>
       ) : (
         <GradientContainer

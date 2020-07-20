@@ -10,16 +10,38 @@ import gql from 'graphql-tag';
 export const GET_USER_DETAILS = gql`
   query GetUserDetails {
     userDetails @client {
+      DOB
+      email
       number
       countryCode
       firstName
       lastName
-      DOB
       citizenship
-      locality
-      identity
-      interest
-      __typename
+      currentLocation {
+        lat
+        long
+        country
+        state
+      }
+      birthPlace {
+        lat
+        long
+        country
+        state
+      }
+      identities
+      interests
+      userId
+      avatar
+    }
+  }
+`;
+
+// GET USER SELECTABLE IDENTITIES
+export const GET_SELECTABLE_IDENTITIES = gql`
+  query GetUserSelectableIdentities {
+    selectableIdentities @client {
+      identities
     }
   }
 `;

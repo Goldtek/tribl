@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { IconButton, Title } from 'react-native-paper';
+import { SafeAreaView } from 'react-native';
+import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { RecyclerListView, DataProvider } from 'recyclerlistview';
 import { AntDesign } from '@expo/vector-icons';
@@ -19,8 +19,6 @@ import { Container } from './styles';
 interface ScreenProp extends NavigationInterface {}
 
 export default function SelectCountryScreen(props: ScreenProp) {
-  const { navigation } = props;
-
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -77,12 +75,6 @@ export default function SelectCountryScreen(props: ScreenProp) {
       }}
     >
       <Container>
-        <IconButton
-          icon="arrowleft"
-          color={colors.PRIMARY}
-          onPress={() => navigation.goBack()}
-        />
-
         <Title
           style={{
             fontFamily: fonts.WORK_SANS_BOLD,

@@ -11,6 +11,19 @@ class Storage {
 
     return true;
   }
+
+  async getUserAuth() {
+    const authKeys = (await AsyncStorage.getItem(
+      APP_CONSTANTS.USER_AUTH_KEYS
+    )) as string;
+
+    const auth = JSON.parse(authKeys) as APP_CONSTANTS.JwtTokenResult | null;
+    return auth;
+  }
+
+  async addUserAuth(auth: Object | undefined) {
+    AsyncStorage.setItem(APP_CONSTANTS.USER_AUTH_KEYS, JSON.stringify(auth));
+  }
 }
 
 export default new Storage();
