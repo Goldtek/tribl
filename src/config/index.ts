@@ -1,11 +1,13 @@
 //@ts-nocheck
-const { TRIBL_SERVER_BASE_URI } = 'react-native-dotenv';
+const { TRIBL_SERVER_BASE_URI, GOOGLE_PLACES_API } = 'react-native-dotenv';
 import Reactotron from 'reactotron-react-native';
 
 // FIX THIS TO USE ENVIRONMENT VARIABLES (APP SECRETES)
 const ENVIRONMENT_VARIABLES = {
   TRIBL_SERVER_BASE_URI:
-    TRIBL_SERVER_BASE_URI || 'http://52.53.172.167:9700/graphql'
+    TRIBL_SERVER_BASE_URI || 'http://52.53.172.167:9700/graphql',
+  GOOGLE_PLACES_API:
+    GOOGLE_PLACES_API || 'AIzaSyAJR6mSnhyzyvUAsAOQTpAjoZrNayWe880'
 };
 
 declare global {
