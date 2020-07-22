@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useRef, RefObject } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -21,10 +21,16 @@ import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { useMutation } from '@apollo/react-hooks';
 import GradientButton from '../../../components/gradientButton';
 import GPSIcon from '../../../../assets/icons/gpsIcon';
+import {
+  GooglePlacesAutocomplete,
+  GooglePlaceData,
+  GooglePlaceDetail
+} from 'react-native-google-places-autocomplete';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Input from '../../../components/input';
 import LoadingModal from '../../../components/loading';
+import ENVIRONMENT_VARIABLES from '../../../config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -38,6 +44,8 @@ export default function UserLocationScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
+
+  const birthPlaceRef = useRef<GooglePlacesAutocomplete | null>(null);
 
   const [state, setState] = useState({
     locationInput: '',
@@ -88,12 +96,12 @@ export default function UserLocationScreen(props: ScreenProp) {
 
     setTimeout(() => {
       setState({ ...state, loading: false, isModalVisible: true });
-    }, 500);
+    }, 300);
 
     setTimeout(() => {
-      addUserDetails();
       navigation.reset({ index: 0, routes: [{ name: 'PassportScreen' }] });
       setState({ ...state, loading: false, isModalVisible: false });
+      addUserDetails();
     }, 3500);
   };
 
@@ -143,6 +151,18 @@ export default function UserLocationScreen(props: ScreenProp) {
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const handleBirthLocation = (
+    data: GooglePlaceData,
+    _details: GooglePlaceDetail | null = null
+  ): void => {
+    // 'details' is provided when fetchDetails = true
+    const birthAddress = birthPlaceRef.current?.getAddressText();
+  };
+
+  const handleDoneButton = () => {
+    const birthAddress = birthPlaceRef.current?.getAddressText();
   };
 
   return (
@@ -290,18 +310,45 @@ export default function UserLocationScreen(props: ScreenProp) {
                   {t(`signup.userLocationScreen.birthPlace`)}
                 </Paragraph>
 
-                <Input
+                <GooglePlacesAutocomplete
+                  ref={birthPlaceRef}
                   placeholder={t(`signup.userLocationScreen.birthPlace`)}
                   returnKeyType="done"
                   value={state.birthPlaceInput}
-                  onChangeText={(birthPlaceInput) =>
-                    setState({ ...state, birthPlaceInput })
-                  }
-                  textInputStyle={{
-                    paddingLeft: 20,
-                    paddingRight: 20,
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    fontFamily: fonts.WORK_SANS_REGULAR
+                  suppressDefaultStyles={true}
+                  enablePoweredByContainer={false}
+                  onPress={handleBirthLocation}
+                  onSubmitEditing={handleDoneButton}
+                  onFail={(error) => console.error(error)}
+                  query={{
+                    types: '(regions)',
+                    key: ENVIRONMENT_VARIABLES.GOOGLE_PLACES_API,
+                    language: 'en'
+                  }}
+                  styles={{
+                    textInputContainer: {
+                      height: RFValue(60),
+                      borderRadius: 5,
+                      backgroundColor: colors.WHITE,
+                      borderColor: colors.INACTIVE,
+                      borderWidth: 1
+                    },
+                    row: { paddingTop: 10, paddingBottom: 10 },
+                    separator: {
+                      borderColor: colors.DISABLED,
+                      borderWidth: 0.5
+                    },
+                    description: { fontFamily: fonts.WORK_SANS_REGULAR }
+                  }}
+                  textInputProps={{
+                    style: {
+                      flex: 1,
+                      color: colors.PRIMARY_TEXT,
+                      paddingLeft: 20,
+                      paddingRight: 20,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR
+                    }
                   }}
                 />
               </Container>
@@ -310,7 +357,6 @@ export default function UserLocationScreen(props: ScreenProp) {
             <Container
               style={{
                 justifyContent: 'flex-end',
-                paddingBottom: RFValue(safeAreaBottom + 30),
                 marginTop: RFValue(
                   safeAreaBottom + DEVICE_FULL_WIDTH <= 375 ? 30 : 60
                 )

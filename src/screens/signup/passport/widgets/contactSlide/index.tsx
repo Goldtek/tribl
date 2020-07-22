@@ -195,121 +195,60 @@ export default function contactSlide() {
         />
       </DOBContainer>
 
-      <CitizenshipContainer>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'uppercase'
-          }}
-        >
-          {t(`signup.passportScreen.citizenship`)}
-        </Title>
-
-        <Paragraph
-          style={{
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'capitalize'
-          }}
-        >
-          {userDetails?.birthPlace.country
-            ? userDetails?.birthPlace.country
-            : 'empty'}
-        </Paragraph>
-      </CitizenshipContainer>
-
-      <LocationContainer>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'uppercase',
-            marginBottom: 10
-          }}
-        >
-          {t(`signup.passportScreen.locality`)}
-        </Title>
-
-        <Location>
-          <AntDesign
-            name="home"
-            color="#CACEE5"
-            size={20}
+      {userDetails?.birthPlace.country ? (
+        <CitizenshipContainer>
+          <Title
             style={{
-              padding: RFValue(12),
-              borderRadius: 4,
-              margin: 0,
-              marginRight: 10,
-              backgroundColor: colors.ACTION
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
             }}
-          />
+          >
+            {t(`signup.passportScreen.citizenship`)}
+          </Title>
+
           <Paragraph
             style={{
               fontFamily: fonts.WORK_SANS_REGULAR,
               fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              marginBottom: 10
+              textTransform: 'capitalize'
             }}
           >
-            {userDetails?.birthPlace.state
-              ? `${userDetails?.birthPlace.state} ${userDetails?.birthPlace.country}`
-              : 'empty'}
+            {userDetails?.birthPlace.country}
           </Paragraph>
-        </Location>
+        </CitizenshipContainer>
+      ) : null}
 
-        <Location>
-          <SimpleLineIcons
-            name="location-pin"
-            color="#CACEE5"
-            size={20}
+      {userDetails?.currentLocation.country &&
+      userDetails?.birthPlace.country ? (
+        <LocationContainer>
+          <Title
             style={{
-              padding: RFValue(12),
-              borderRadius: 4,
-              margin: 0,
-              marginRight: 10,
-              backgroundColor: colors.ACTION
-            }}
-          />
-          <Paragraph
-            style={{
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
+              textTransform: 'uppercase',
               marginBottom: 10
             }}
           >
-            {userDetails?.currentLocation.state
-              ? `${userDetails?.currentLocation.state} ${userDetails?.currentLocation.country}`
-              : 'empty'}
-          </Paragraph>
-        </Location>
-      </LocationContainer>
+            {t(`signup.passportScreen.locality`)}
+          </Title>
 
-      <IdentityContainer>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'uppercase',
-            marginBottom: 10
-          }}
-        >
-          {t(`signup.passportScreen.identity`)}
-        </Title>
-
-        <Identities>
-          {userDetails?.identities.length ? (
-            userDetails?.identities.map((identity) => (
-              <IdentityText key={identity}>{identity}</IdentityText>
-            ))
-          ) : (
+          <Location>
+            <AntDesign
+              name="home"
+              color="#CACEE5"
+              size={20}
+              style={{
+                padding: RFValue(12),
+                borderRadius: 4,
+                margin: 0,
+                marginRight: 10,
+                backgroundColor: colors.ACTION
+              }}
+            />
             <Paragraph
               style={{
                 fontFamily: fonts.WORK_SANS_REGULAR,
@@ -319,11 +258,59 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              empty
+              {`${userDetails?.birthPlace.state} ${userDetails?.birthPlace.country}`}
             </Paragraph>
-          )}
-        </Identities>
-      </IdentityContainer>
+          </Location>
+
+          <Location>
+            <SimpleLineIcons
+              name="location-pin"
+              color="#CACEE5"
+              size={20}
+              style={{
+                padding: RFValue(12),
+                borderRadius: 4,
+                margin: 0,
+                marginRight: 10,
+                backgroundColor: colors.ACTION
+              }}
+            />
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginBottom: 10
+              }}
+            >
+              {`${userDetails?.currentLocation.state} ${userDetails?.currentLocation.country}`}
+            </Paragraph>
+          </Location>
+        </LocationContainer>
+      ) : null}
+
+      {userDetails?.identities.length ? (
+        <IdentityContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase',
+              marginBottom: 10
+            }}
+          >
+            {t(`signup.passportScreen.identity`)}
+          </Title>
+
+          <Identities>
+            {userDetails?.identities.map((identity) => (
+              <IdentityText key={identity}>{identity}</IdentityText>
+            ))}
+          </Identities>
+        </IdentityContainer>
+      ) : null}
 
       <InterestContainer>
         <Title

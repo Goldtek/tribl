@@ -22,6 +22,7 @@ export default function QRcodeSlide() {
           value="Just some string value"
           size={RFValue(100)}
           color={colors.PRIMARY}
+          backgroundColor="transparent"
         />
         <QRCodeHolderEdge style={styles.bottomRight} />
         <QRCodeHolderEdge style={styles.bottomLeft} />
