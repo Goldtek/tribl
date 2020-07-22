@@ -13,6 +13,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 
 const SignupStack = createStackNavigator();
+let routeNames = [] as string[];
 
 export default function SignupNavigator() {
   const { colors, fonts } = useThemeContext();
@@ -20,12 +21,23 @@ export default function SignupNavigator() {
 
   return (
     <SignupStack.Navigator
+      initialRouteName="UserLocationScreen"
       screenOptions={({ route, navigation }) => {
         const headerTitle = t(`signup.userRegSteps.${[route.name]}`);
 
+        const navigationState = navigation.dangerouslyGetState() as {
+          routeNames: string[];
+        };
+
+        if (!routeNames.length) {
+          routeNames = navigationState.routeNames;
+        }
+
         const handleNavigation = () => {
+          const nextRoute = Number(headerTitle.split(' ')[0]) + 1;
+
           headerTitle
-            ? navigation.navigate(route.name)
+            ? navigation.navigate(routeNames[nextRoute])
             : navigation.reset({
                 index: 0,
                 routes: [{ name: 'CommunityScreen' }]
