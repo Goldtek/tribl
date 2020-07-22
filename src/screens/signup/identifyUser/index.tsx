@@ -11,6 +11,7 @@ import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import IdentityButton from './widgets/identityButton';
+import ScrollInstruction from './widgets/scrollInstruction';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -27,7 +28,8 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
   const [state, setState] = useState({
     selectedIdentities: new Map(),
-    inputError: false
+    inputError: false,
+    showInstruction: true
   });
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
@@ -40,6 +42,10 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
   const handleInputError = () => {
     setState({ ...state, inputError: !state.inputError });
+  };
+
+  const handleInstruction = () => {
+    setState({ ...state, showInstruction: false });
   };
 
   const handleSubmit = () => {
@@ -146,6 +152,11 @@ export default function IdentifyUserScreen(props: ScreenProp) {
           </Container>
         </ScrollView>
       </Container>
+
+      {state.showInstruction ? (
+        <ScrollInstruction onPress={handleInstruction} />
+      ) : null}
+
       <Snackbar
         duration={Snackbar.DURATION_SHORT}
         visible={state.inputError}
@@ -167,5 +178,3 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     </SafeAreaView>
   );
 }
-
-IdentifyUserScreen.defaultProps = {};
