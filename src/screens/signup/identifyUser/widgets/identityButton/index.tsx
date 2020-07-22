@@ -1,10 +1,10 @@
 import React from 'react';
 import { TouchableHighlight } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../../theme';
+import { useThemeContext } from '../../../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { GradientContainer, Identity } from '../styles';
+import { GradientContainer, Identity } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface IdentityButtonProp {
