@@ -21,7 +21,6 @@ export default function SignupNavigator() {
 
   return (
     <SignupStack.Navigator
-      initialRouteName="UserLocationScreen"
       screenOptions={({ route, navigation }) => {
         const headerTitle = t(`signup.userRegSteps.${[route.name]}`);
 
