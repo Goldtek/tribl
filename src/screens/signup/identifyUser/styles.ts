@@ -16,7 +16,22 @@ export const Identity = styled.Text`
   font-family: ${({ theme }) => theme.fonts.WORK_SANS_SEMI_BOLD};
   font-size: ${({ theme }) => RFValue(theme.fonts.LARGE_SIZE)}px;
   color: #8a8c92;
-  /* padding: 0px 10px; */
   text-transform: capitalize;
   text-align: center;
+`;
+
+export const BlurContents = styled.View`
+  flex: 1;
+  align-items: center;
+  border: 1px black solid;
+`;
+
+export const InstructionButton = styled.View`
+  flex: 1;
+  height: ${RFValue(50)}px;
+  justify-content: center;
+  margin: 5px;
+  border-radius: 4px;
+  border-width: 1.2px;
+  border-color: ${({ theme }) => theme.colors.DISABLED};
 `;
