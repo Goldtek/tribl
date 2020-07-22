@@ -37,7 +37,9 @@ export default function PassportScreen(props: ScreenProp) {
   const onShare = async () => {
     try {
       const { action } = await Share.share({
-        message: 'Share your Tribl passport'
+        title: t(`signup.passportScreen.title`),
+        message: t(`signup.passportScreen.sharePassportMessage`),
+        url: userDetails?.avatar
       });
 
       if (action === Share.dismissedAction) return;
