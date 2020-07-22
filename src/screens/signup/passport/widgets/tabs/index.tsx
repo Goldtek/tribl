@@ -1,16 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
-import { DEVICE_FULL_WIDTH, DEVICE_OS } from '../../../../../utils/device';
+import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Platform } from 'react-native';
 import { useThemeContext } from '../../../../../theme';
 import contactSlide from '../contactSlide';
 import QRcodeSlide from '../QRcodeSlide';
 
-// DEFINE SCREEN PROP TYPES
-interface TabProp {}
-
-export default function TabViewSlider(props: TabProp) {
+export default function TabViewSlider() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -36,22 +34,32 @@ export default function TabViewSlider(props: TabProp) {
 
   const renderPager = (props: any) => <ScrollPager {...props} />;
 
-  return DEVICE_OS === 'ios' ? (
-    <TabView
-      navigationState={{ index: tabIndex, routes }}
-      renderScene={renderScene}
-      renderPager={renderPager}
-      renderTabBar={renderTabBar}
-      onIndexChange={setTabIndex}
-      initialLayout={{ width: DEVICE_FULL_WIDTH }}
-    />
-  ) : (
-    <TabView
-      navigationState={{ index: tabIndex, routes }}
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      onIndexChange={setTabIndex}
-      initialLayout={{ width: DEVICE_FULL_WIDTH }}
-    />
-  );
+  return Platform.select({
+    ios: (
+      <TabView
+        navigationState={{ index: tabIndex, routes }}
+        renderScene={renderScene}
+        renderPager={renderPager}
+        renderTabBar={renderTabBar}
+        onIndexChange={setTabIndex}
+        initialLayout={{ width: DEVICE_FULL_WIDTH }}
+        sceneContainerStyle={{
+          height: tabIndex === 1 ? DEVICE_FULL_WIDTH : undefined
+        }}
+      />
+    ),
+
+    android: (
+      <TabView
+        navigationState={{ index: tabIndex, routes }}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={setTabIndex}
+        initialLayout={{ width: DEVICE_FULL_WIDTH }}
+        sceneContainerStyle={{
+          height: tabIndex === 1 ? DEVICE_FULL_WIDTH : undefined
+        }}
+      />
+    )
+  }) as JSX.Element | null;
 }
