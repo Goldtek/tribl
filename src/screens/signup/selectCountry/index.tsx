@@ -41,7 +41,7 @@ export default function SelectCountryScreen(props: ScreenProp) {
               lineHeight: RFValue(30)
             }}
           >
-            {t(`signup.screenTwo.emptyList`)}
+            {t(`signup.selectCountry.emptyList`)}
           </Title>
         </Container>
       );
@@ -87,11 +87,11 @@ export default function SelectCountryScreen(props: ScreenProp) {
             lineHeight: RFValue(30)
           }}
         >
-          {t(`signup.screenTwo.title`)}
+          {t(`signup.selectCountry.title`)}
         </Title>
 
         <Input
-          placeholder={t(`signup.screenTwo.placeholder`)}
+          placeholder={t(`signup.selectCountry.placeholder`)}
           defaultValue=""
           onChangeText={handleSearch}
           textInputStyle={{ fontFamily: fonts.WORK_SANS_SEMI_BOLD }}

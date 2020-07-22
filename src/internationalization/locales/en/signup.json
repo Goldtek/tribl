@@ -24,7 +24,7 @@
     "loading": "loading..."
   },
 
-  "screenTwo": {
+  "selectCountry": {
     "title": "country",
     "placeholder": "Search",
     "emptyList": "No result found"
@@ -83,6 +83,8 @@
     "setLocation": "set current location",
     "currentLocation": "current location",
     "birthPlace": "birth place",
+    "birthPlacePlaceholder": "City, State, Country",
+    "placePlaceholderInstruction": "Choose selection that provides \n(city, state, country) listing format",
     "submit": "submit",
     "inputError": "All fields are required",
     "isLocationEnabled": "LOCATION SERVICE NOT ENABLED",
