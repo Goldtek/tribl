@@ -3,6 +3,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { StyleSheet } from 'react-native';
 
 export const QRCodeContainer = styled.View`
+  flex: 1;
   justify-content: center;
   align-items: center;
 `;

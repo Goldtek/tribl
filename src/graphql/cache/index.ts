@@ -38,7 +38,7 @@ cache.writeData<StoreInterface>({
       identities: [],
       interests: [],
       userId: '',
-      avatar: '',
+      avatar: 'https://bit.ly/39kcTOS',
       __typename: 'userDetails'
     },
 
