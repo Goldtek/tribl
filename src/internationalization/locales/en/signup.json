@@ -71,6 +71,8 @@
     "subTitle": "setup 4",
     "paragraph": "Let us know your ethnic identity. \n(Select all that apply)",
     "inputError": "Select an identity or skip this setup",
+    "scrollUp": "On selecting an identity you can scroll up for more options",
+    "closeScrollUp": "close",
     "submit": "next"
   },
 
@@ -90,9 +92,10 @@
   },
 
   "passportScreen": {
-    "title": "tribl passport",
+    "title": "Tribl passport",
     "subTitle": "Welcome to Tribl. Use this passport to \nidentify, connect, & engage.",
     "sharePassport": "share my passport",
+    "sharePassportMessage": "Download Tribl and come join me in our community",
     "contactCard": "contact card",
     "QRCode": "QR code",
     "firstName": "first name",
