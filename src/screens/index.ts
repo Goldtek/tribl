@@ -1,13 +1,9 @@
 import WalkThroughScreen from './walkThrough';
-import CommunityScreen from './community';
-import ProfileScreen from './profile';
+import PassportScreen from './passport';
 import InboxScreen from './inbox';
-import TriblScreen from './tribl';
 
 export default {
   WalkThroughScreen,
-  CommunityScreen,
-  ProfileScreen,
-  InboxScreen,
-  TriblScreen
+  PassportScreen,
+  InboxScreen
 };
