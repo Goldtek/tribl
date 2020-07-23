@@ -135,12 +135,12 @@ export default function UserLocationScreen(props: ScreenProp) {
         longitude: coords.longitude
       });
 
-      const { region, country } = currentLocation;
+      const { region, country, city } = currentLocation;
 
       setState({
         ...state,
         isVisible: false,
-        locationInput: `${region}, ${country}`,
+        locationInput: `${city}, ${region}, ${country}`,
         currentLocation: {
           lat: coords.latitude,
           long: coords.longitude,
@@ -158,11 +158,9 @@ export default function UserLocationScreen(props: ScreenProp) {
     _details: GooglePlaceDetail | null = null
   ): void => {
     // 'details' is provided when fetchDetails = true
-    const birthAddress = birthPlaceRef.current?.getAddressText();
-  };
+    // const birthAddress = birthPlaceRef.current?.getAddressText();
 
-  const handleDoneButton = () => {
-    const birthAddress = birthPlaceRef.current?.getAddressText();
+    console.tron(data);
   };
 
   return (
@@ -312,13 +310,14 @@ export default function UserLocationScreen(props: ScreenProp) {
 
                 <GooglePlacesAutocomplete
                   ref={birthPlaceRef}
-                  placeholder={t(`signup.userLocationScreen.birthPlace`)}
+                  placeholder={t(
+                    `signup.userLocationScreen.birthPlacePlaceholder`
+                  )}
                   returnKeyType="done"
                   value={state.birthPlaceInput}
                   suppressDefaultStyles={true}
                   enablePoweredByContainer={false}
                   onPress={handleBirthLocation}
-                  onSubmitEditing={handleDoneButton}
                   onFail={(error) => console.error(error)}
                   query={{
                     types: '(regions)',
@@ -351,6 +350,17 @@ export default function UserLocationScreen(props: ScreenProp) {
                     }
                   }}
                 />
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textAlign: 'center',
+                    marginTop: 5
+                  }}
+                >
+                  {t(`signup.userLocationScreen.placePlaceholderInstruction`)}
+                </Paragraph>
               </Container>
             )}
 

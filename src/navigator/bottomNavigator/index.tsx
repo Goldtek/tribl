@@ -1,15 +1,15 @@
 import React from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import CommunityIcon from '../../../assets/icons/communityIcon';
-import ProfileIcon from '../../../assets/icons/profileIcon';
+import PassportIcon from '../../../assets/icons/passportIcon';
 import InboxIcon from '../../../assets/icons/inboxIcon';
-import TriblIcon from '../../../assets/icons/tribIcon';
 import CommunityNavigator from '../communityNavigator';
 import { useThemeContext } from '../../theme';
 import Screens from '../../screens';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { IconContainer, Label } from './styles';
+import { useTranslation } from 'react-i18next';
 
 export type TabBarIconTypes = { color: string };
 
@@ -17,6 +17,7 @@ const BottomTab = createMaterialBottomTabNavigator();
 
 export default function BottomNavigator() {
   const { colors } = useThemeContext();
+  const { t } = useTranslation();
 
   return (
     <BottomTab.Navigator
@@ -33,7 +34,9 @@ export default function BottomNavigator() {
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>
               <CommunityIcon fillColor={color} />
-              <Label style={{ color }}>community</Label>
+              <Label style={{ color }}>
+                {t(`community.bottomLabels.community`)}
+              </Label>
             </IconContainer>
           )
         }}
@@ -46,33 +49,24 @@ export default function BottomNavigator() {
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>
               <InboxIcon fillColor={color} />
-              <Label style={{ color }}>inbox</Label>
+              <Label style={{ color }}>
+                {t(`community.bottomLabels.inbox`)}
+              </Label>
             </IconContainer>
           )
         }}
       />
 
       <BottomTab.Screen
-        name="TriblScreen"
-        component={Screens.TriblScreen}
+        name="PassportScreen"
+        component={Screens.PassportScreen}
         options={{
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>
-              <TriblIcon fillColor={color} />
-              <Label style={{ color }}>tribl</Label>
-            </IconContainer>
-          )
-        }}
-      />
-
-      <BottomTab.Screen
-        name="ProfileScreen"
-        component={Screens.ProfileScreen}
-        options={{
-          tabBarIcon: ({ color }: TabBarIconTypes) => (
-            <IconContainer>
-              <ProfileIcon fillColor={color} />
-              <Label style={{ color }}>passport</Label>
+              <PassportIcon fillColor={color} />
+              <Label style={{ color }}>
+                {t(`community.bottomLabels.passport`)}
+              </Label>
             </IconContainer>
           )
         }}
