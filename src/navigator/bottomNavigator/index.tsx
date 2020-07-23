@@ -58,8 +58,8 @@ export default function BottomNavigator() {
       />
 
       <BottomTab.Screen
-        name="ProfileScreen"
-        component={Screens.ProfileScreen}
+        name="PassportScreen"
+        component={Screens.PassportScreen}
         options={{
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>
