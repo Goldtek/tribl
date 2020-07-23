@@ -4,7 +4,8 @@ import { configureFonts, DefaultTheme } from 'react-native-paper';
 // All app colors
 enum COLORS {
   WHITE = '#FFFFFF',
-  SUCCESS = '#2AC769',
+  GREY = '#F8F8FB',
+  ONLINE = '#7ED321',
   WARNING = '#F6A609',
   PRIMARY = '#718CFB',
   SECONDARY = '#A875FF',
@@ -31,7 +32,8 @@ declare module 'styled-components' {
     // All Global App Colors
     colors: {
       WHITE: string;
-      SUCCESS: string;
+      GREY: string;
+      ONLINE: string;
       WARNING: string;
       PRIMARY: string;
       SECONDARY: string;
