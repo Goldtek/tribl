@@ -3,10 +3,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { enableScreens } from 'react-native-screens';
 import loadResources from './src/libs/loadResources';
 import codePush from 'react-native-code-push';
+import { Platform } from 'react-native';
 import AppRouter from './src';
 import './src/internationalization';
 
-enableScreens();
+Platform.select({ ios: enableScreens() });
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
@@ -26,7 +27,11 @@ function App() {
 // Prompt the user when an update is available
 // and then display a "downloading" modal
 codePush.sync(
-  {},
+  {
+    deploymentKey: '23b6df88-75df-4a81-be10-dbb5798089f3',
+    updateDialog: { title: 'An update is available!' },
+    installMode: codePush.InstallMode.ON_NEXT_RESUME
+  },
   (status) => {
     switch (status) {
       case codePush.SyncStatus.DOWNLOADING_PACKAGE:
@@ -45,7 +50,5 @@ codePush.sync(
 
 export default codePush({
   checkFrequency: codePush.CheckFrequency.ON_APP_RESUME,
-  updateDialog: { title: 'An update is available!' },
-  appendReleaseDescription: true,
-  installMode: codePush.InstallMode.ON_NEXT_RESUME
+  appendReleaseDescription: true
 })(App);
