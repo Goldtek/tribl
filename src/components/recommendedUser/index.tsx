@@ -34,8 +34,8 @@ function RecommendedUser(props: RecommendedUserProp) {
         height: RFValue(200),
         alignItems: 'center',
         borderRadius: 5,
-        marginLeft: 8,
-        marginRight: 8
+        marginRight: 8,
+        marginBottom: 10
       }}
     >
       <Card.Content
