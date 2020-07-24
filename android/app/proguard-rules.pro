@@ -9,6 +9,11 @@
 
 # Add any project specific keep options here:
 
+# Hermes:
+-keep class com.facebook.hermes.unicode.** { *; }
+-keep class com.facebook.jni.** { *; }
+
+
 # RNFastImage:
 -keep public class com.dylanvann.fastimage.* {*;}
 -keep public class com.dylanvann.fastimage.** {*;}
