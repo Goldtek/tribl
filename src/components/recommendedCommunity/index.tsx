@@ -23,7 +23,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
     <Card
       onPress={() => {}}
       style={{
-        width: DEVICE_FULL_WIDTH,
+        width: '100%',
         height: RFValue(300),
         alignItems: 'center',
         marginTop: 3,
@@ -34,7 +34,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         style={{
           width: DEVICE_FULL_WIDTH - 30,
           height: RFValue(230),
-          paddingTop: 10,
+          paddingTop: 0,
           paddingBottom: 0,
           paddingLeft: 0,
           paddingRight: 0
@@ -80,14 +80,14 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
             }}
           />
         )}
-        right={(props) => (
+        right={() => (
           <Button
-            {...props}
             mode="text"
             onPress={() => {}}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE)
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              left: 15
             }}
           >
             join
