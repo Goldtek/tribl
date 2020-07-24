@@ -158,9 +158,8 @@ export default function UserLocationScreen(props: ScreenProp) {
     _details: GooglePlaceDetail | null = null
   ): void => {
     // 'details' is provided when fetchDetails = true
-    // const birthAddress = birthPlaceRef.current?.getAddressText();
-
-    console.tron(data);
+    const { description } = data;
+    setState({ ...state, birthPlaceInput: description });
   };
 
   return (
