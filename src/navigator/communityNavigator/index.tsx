@@ -44,6 +44,7 @@ export default function CommunityNavigator() {
         headerTitleStyle: {
           fontFamily: fonts.WORK_SANS_BOLD,
           fontSize: RFValue(fonts.LARGE_SIZE * 1.2),
+          color: colors.PRIMARY_TEXT,
           textTransform: 'capitalize'
         }
       }}
