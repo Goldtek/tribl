@@ -6,6 +6,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
+import { useNavigation } from '@react-navigation/native';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -39,7 +40,11 @@ interface ScreenProp extends NavigationInterface {
 export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
 
+  const navigation = useNavigation();
+
   const { recommendedCommunity, recommendedMembers, recentActivities } = props;
+
+  const navigateToSearch = () => navigation.navigate('CommunitySearchScreen');
 
   return (
     <ScrollView
@@ -65,7 +70,7 @@ export default function HomeScreen(props: ScreenProp) {
 
           <Button
             mode="text"
-            onPress={() => {}}
+            onPress={navigateToSearch}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -82,7 +87,12 @@ export default function HomeScreen(props: ScreenProp) {
           style={{ marginTop: 20, backgroundColor: colors.WHITE }}
         >
           {recommendedMembers.map((member, index) => (
-            <RecommendedUser key={index} {...member} />
+            <RecommendedUser
+              key={index}
+              {...member}
+              index={index}
+              lastChild={recommendedMembers.length - 1}
+            />
           ))}
         </ScrollView>
       </RecommendedList>
@@ -105,7 +115,7 @@ export default function HomeScreen(props: ScreenProp) {
 
           <Button
             mode="text"
-            onPress={() => {}}
+            onPress={navigateToSearch}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.MEDIUM_SIZE),
