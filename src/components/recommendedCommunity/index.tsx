@@ -26,8 +26,9 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         width: '100%',
         height: RFValue(300),
         alignItems: 'center',
+        backgroundColor: colors.GREY,
         marginTop: 3,
-        marginBottom: 3
+        elevation: 0
       }}
     >
       <Card.Content
@@ -71,7 +72,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         }}
         left={({ size }) => (
           <FastImage
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.contain}
             source={{ uri: avatar, priority: FastImage.priority.high }}
             style={{
               width: RFValue(size),
