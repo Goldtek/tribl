@@ -1,19 +1,12 @@
-import React from 'react';
-import { Button, Card, Title, Paragraph } from 'react-native-paper';
+import React, { Fragment } from 'react';
+import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
-import { DEVICE_FULL_WIDTH } from '../../utils/device';
+import { useNavigation } from '@react-navigation/native';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import {
-  CommunityContainer,
-  TextConatiner,
-  CardContainer,
-  CardContent
-} from './styles';
-import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TextConatiner } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface PopularUserProp {
@@ -32,9 +25,15 @@ function PopularCommunity(props: PopularUserProp) {
     members = 'New York, NY'
   } = props;
 
+  const handleNavigation = () => navigation.navigate('CommunityDetailScreen');
+
   return (
-    <CardContainer>
-      <CommunityContainer>
+    <TouchableRipple
+      onPress={handleNavigation}
+      rippleColor={colors.PRIMARY}
+      style={{ height: RFValue(100), flexDirection: 'row', paddingLeft: 15 }}
+    >
+      <Fragment>
         <FastImage
           resizeMode={FastImage.resizeMode.contain}
           source={{
@@ -69,25 +68,21 @@ function PopularCommunity(props: PopularUserProp) {
           >
             {members}
           </Paragraph>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('SingleCommunityScreen')}
+          <Paragraph
+            style={{
+              fontSize: fonts.MEDIUM_SIZE,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              lineHeight: RFValue(19),
+              color: colors.PRIMARY,
+              textTransform: 'uppercase'
+            }}
           >
-            <Paragraph
-              style={{
-                color: colors.PRIMARY,
-                fontSize: fonts.MEDIUM_SIZE,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                textTransform: 'uppercase',
-                lineHeight: RFValue(14)
-              }}
-            >
-              join
-            </Paragraph>
-          </TouchableOpacity>
+            join
+          </Paragraph>
         </TextConatiner>
-      </CommunityContainer>
-    </CardContainer>
+      </Fragment>
+    </TouchableRipple>
   );
 }
 
-export default React.memo(PopularCommunity);
+export default React.memo(PopularCommunity, () => false);
