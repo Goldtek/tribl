@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
+import Screens from '../../screens/community';
+import { Entypo } from '@expo/vector-icons';
 import {
   Menu,
   TouchableRipple,
@@ -12,8 +14,6 @@ import {
   Searchbar,
   Text
 } from 'react-native-paper';
-import Screens from '../../screens/community';
-import { Entypo } from '@expo/vector-icons';
 
 const CommunityStack = createStackNavigator();
 
@@ -22,13 +22,19 @@ export default function CommunityNavigator() {
   const { t } = useTranslation();
   const { top: safeAreaTop } = useSafeAreaInsets();
 
-  const [menu, setMenu] = useState(false);
+  const [menu, setMenu] = useState({
+    communityScreen: false,
+    detailScreen: false
+  });
 
   const [search, setSearch] = useState('');
 
   const onChangeSearch = (query: any) => setSearch(query);
 
-  const showMenu = () => setMenu(!menu);
+  const showMenu = (screen: string) => () => {
+    //@ts-ignore
+    setMenu({ ...menu, [screen]: !menu[screen] });
+  };
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -56,7 +62,8 @@ export default function CommunityNavigator() {
           fontSize: RFValue(fonts.LARGE_SIZE * 1.2),
           color: colors.PRIMARY_TEXT,
           textTransform: 'capitalize'
-        }
+        },
+        headerStyle: { height: RFValue(90) }
       }}
     >
       <CommunityStack.Screen
@@ -67,25 +74,31 @@ export default function CommunityNavigator() {
           headerRightContainerStyle: { marginRight: 10 },
           headerRight: () => (
             <Menu
-              visible={menu}
-              onDismiss={showMenu}
+              visible={menu.communityScreen}
+              onDismiss={showMenu('communityScreen')}
               anchor={
                 <TouchableRipple
                   rippleColor={colors.PRIMARY}
-                  onPress={showMenu}
+                  onPress={showMenu('communityScreen')}
                   style={{
                     padding: RFValue(3),
                     paddingTop: RFValue(6),
                     paddingBottom: RFValue(6),
-                    backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                    backgroundColor: menu.communityScreen
+                      ? colors.PRIMARY
+                      : 'transparent',
                     borderRadius: 4,
-                    borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                    borderColor: menu.communityScreen
+                      ? colors.PRIMARY
+                      : colors.INACTIVE,
                     borderWidth: 1
                   }}
                 >
                   <Entypo
                     name="dots-three-vertical"
-                    color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                    color={
+                      menu.communityScreen ? colors.WHITE : colors.PRIMARY_TEXT
+                    }
                     size={20}
                   />
                 </TouchableRipple>
@@ -162,10 +175,6 @@ export default function CommunityNavigator() {
         name="CommunitySearchScreen"
         component={Screens.SearchScreen}
         options={{
-          headerStyle: {
-            height: RFValue(100),
-            backgroundColor: colors.OFFWHITE
-          },
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
@@ -176,14 +185,14 @@ export default function CommunityNavigator() {
               onChange={onChangeSearch}
               value={search}
               style={{
-                borderColor: colors.INPUT,
-                borderWidth: 1,
-                shadowColor: colors.TRANSPARENT,
-                height: '60%',
+                height: '70%',
                 fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: fonts.LARGE_SIZE + 2,
+                fontSize: RFValue(fonts.LARGE_SIZE),
                 color: colors.SECONDARY_TEXT,
-                backgroundColor: colors.OFFWHITE
+                elevation: 0,
+                borderColor: colors.INACTIVE,
+                borderRadius: 4,
+                borderWidth: 1
               }}
               iconColor={colors.PRIMARY_TEXT}
             />
@@ -197,20 +206,15 @@ export default function CommunityNavigator() {
       />
 
       <CommunityStack.Screen
-        name="SingleCommunityScreen"
-        component={Screens.SingleCommunityScreen}
+        name="CommunityDetailScreen"
+        component={Screens.CommunityDetailScreen}
         options={{
-          headerStyle: {
-            height: RFValue(100),
-            backgroundColor: colors.WHITE
-          },
           headerTitle: () => (
             <Text
               style={{
                 color: colors.PRIMARY_TEXT,
-                fontSize: fonts.LARGE_SIZE + 8,
+                fontSize: RFValue(fonts.LARGE_SIZE),
                 fontFamily: fonts.WORK_SANS_BOLD,
-                lineHeight: RFValue(34),
                 textTransform: 'capitalize'
               }}
             >
@@ -223,25 +227,31 @@ export default function CommunityNavigator() {
           headerRightContainerStyle: { marginRight: 10 },
           headerRight: () => (
             <Menu
-              visible={menu}
-              onDismiss={showMenu}
+              visible={menu.detailScreen}
+              onDismiss={showMenu('detailScreen')}
               anchor={
                 <TouchableRipple
                   rippleColor={colors.PRIMARY}
-                  onPress={showMenu}
+                  onPress={showMenu('detailScreen')}
                   style={{
                     padding: RFValue(3),
                     paddingTop: RFValue(6),
                     paddingBottom: RFValue(6),
-                    backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                    backgroundColor: menu.detailScreen
+                      ? colors.PRIMARY
+                      : 'transparent',
                     borderRadius: 4,
-                    borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                    borderColor: menu.detailScreen
+                      ? colors.PRIMARY
+                      : colors.INACTIVE,
                     borderWidth: 1
                   }}
                 >
                   <Entypo
                     name="dots-three-vertical"
-                    color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                    color={
+                      menu.detailScreen ? colors.WHITE : colors.PRIMARY_TEXT
+                    }
                     size={20}
                   />
                 </TouchableRipple>
