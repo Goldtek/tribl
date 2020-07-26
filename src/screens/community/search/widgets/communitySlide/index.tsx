@@ -1,24 +1,26 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { NavigationInterface } from '../../../../types';
-import { Card, Title, Paragraph } from 'react-native-paper';
+import {
+  Card,
+  Title,
+  Paragraph,
+  Button,
+  TouchableRipple
+} from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { TouchableOpacity, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { useThemeContext } from '../../../../../theme';
 import PopularCommunities from '../../../../../libs/popularCommunities/index.json';
 import PopularCommunity from '../../../../../components/popularCommunity';
-import { useNavigation } from '@react-navigation/native';
+import RecommendedCommunity from '../../../../../components/recommendedCommunity';
+import RecommendedCommunityData from '../../../../../libs/featuredCommunity/index.json';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import {
-  Container,
-  CommunityWrapper,
-  TitleWrapper,
-  ViewWrapper,
-  PopularContainer
-} from './styles';
+import { Container, CommunityWrapper, PopularContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -26,122 +28,79 @@ interface ScreenProp extends NavigationInterface {}
 export default function CommunitySlideScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 20 }}
+    >
       <Container>
-        <Card
-          onPress={() => navigation.navigate('SingleCommunityScreen')}
+        <Title
           style={{
-            backgroundColor: colors.OFFWHITE,
-            borderWidth: 0,
-            shadowColor: colors.TRANSPARENT
+            color: colors.PRIMARY_TEXT,
+            textTransform: 'capitalize',
+            fontFamily: fonts.WORK_SANS_BOLD,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            paddingLeft: RFValue(15),
+            marginBottom: RFValue(20)
           }}
         >
-          <Card.Title
-            title="featured community"
-            titleStyle={{
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase',
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: fonts.LARGE_SIZE + 4,
-              paddingLeft: RFValue(10)
-            }}
-          />
-          <Card.Content>
-            <FastImage
-              resizeMode={FastImage.resizeMode.contain}
-              source={{
-                uri: 'https://linkpicture.com/q/Rectangle-62-1.png',
-                priority: FastImage.priority.high
-              }}
-              style={{
-                width: '100%',
-                height: RFValue(250)
-              }}
-            />
-            <CommunityWrapper>
-              <FastImage
-                resizeMode={FastImage.resizeMode.contain}
-                source={{
-                  uri: 'https://linkpicture.com/q/Rectangle-62-1.png',
-                  priority: FastImage.priority.high
-                }}
-                style={{
-                  width: RFValue(50),
-                  height: RFValue(70)
-                }}
-              />
-              <TitleWrapper>
-                <Title
-                  style={{
-                    color: colors.BLACK,
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: fonts.LARGE_SIZE + 1,
-                    marginBottom: 0,
-                    lineHeight: 23
-                  }}
-                >
-                  The Wave
-                </Title>
-                <Paragraph
-                  style={{
-                    color: colors.GREY_TEXT,
-                    fontSize: fonts.MEDIUM_SIZE + 1,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    marginTop: 0,
-                    lineHeight: 15
-                  }}
-                >
-                  40k members
-                </Paragraph>
-              </TitleWrapper>
-              <Paragraph
-                style={{
-                  marginLeft: 'auto',
-                  alignSelf: 'center',
-                  color: colors.PRIMARY,
-                  fontSize: fonts.MEDIUM_SIZE,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  textTransform: 'uppercase'
-                }}
-              >
-                join
-              </Paragraph>
-            </CommunityWrapper>
-          </Card.Content>
-        </Card>
+          featured community
+        </Title>
+        <RecommendedCommunity
+          avatar={RecommendedCommunityData.avatar}
+          name={RecommendedCommunityData.name}
+          members={RecommendedCommunityData.members}
+        />
         <PopularContainer>
           <CommunityWrapper>
             <Title
               style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
                 color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: fonts.LARGE_SIZE + 4,
-                textTransform: 'uppercase'
+                textTransform: 'capitalize',
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 0
               }}
             >
               popular communities
             </Title>
-            <ViewWrapper>
-              <Paragraph
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontSize: fonts.MEDIUM_SIZE,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  textTransform: 'capitalize'
-                }}
-              >
-                view all
-              </Paragraph>
-              <TouchableOpacity onPress={() => {}}>
+
+            <TouchableRipple
+              onPress={() => {}}
+              rippleColor={colors.PRIMARY}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingRight: 15,
+                padding: 5
+              }}
+            >
+              <Fragment>
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    marginTop: 0,
+                    marginBottom: 0,
+                    marginRight: 5
+                  }}
+                >
+                  view all
+                </Paragraph>
                 <Feather
                   name="arrow-right"
-                  size={fonts.LARGE_SIZE + 8}
+                  size={RFValue(fonts.LARGE_SIZE)}
                   color={colors.PRIMARY_TEXT}
                 />
-              </TouchableOpacity>
-            </ViewWrapper>
+              </Fragment>
+            </TouchableRipple>
           </CommunityWrapper>
+
           {PopularCommunities.map((community, index) => (
             <PopularCommunity
               key={index}
