@@ -1,20 +1,21 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { NavigationInterface } from '../../../../types';
-import { Title, Paragraph } from 'react-native-paper';
+import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
 import { useThemeContext } from '../../../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableOpacity, ScrollView } from 'react-native';
+import RecommendedMembers from '../../../../../components/recommendedUser';
+import MembersData from '../../../../../libs/recommendedUsers/index.json';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   Container,
   HeaderContainer,
   TitleWrapper,
-  BackWrapper
+  RecommendedList,
+  RecommendedListHeader
 } from './styles';
-import RecommendedMembers from '../../../../../components/recommendedUser';
-import MembersData from '../../../../../libs/recommendedUsers/index.json';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -22,113 +23,136 @@ interface ScreenProp extends NavigationInterface {}
 export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{ height: '100%' }}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      nestedScrollEnabled
+      style={{ flexGrow: 1 }}
+    >
       <Container>
-        <HeaderContainer>
-          <TitleWrapper>
+        <RecommendedList>
+          <RecommendedListHeader>
             <Title
               style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
                 color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 4),
-                textTransform: 'capitalize'
+                textTransform: 'capitalize',
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 0
               }}
             >
               most active members
             </Title>
-            <BackWrapper>
-              <Paragraph
-                style={{
-                  marginLeft: 'auto',
-                  marginRight: RFValue(5),
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: fonts.MEDIUM_SIZE,
-                  textTransform: 'capitalize'
-                }}
-              >
-                View All
-              </Paragraph>
-              <TouchableOpacity onPress={() => {}}>
+            <TouchableRipple
+              rippleColor={colors.PRIMARY}
+              onPress={() => {}}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingRight: 15,
+                padding: 5
+              }}
+            >
+              <Fragment>
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    marginTop: 0,
+                    marginBottom: 0,
+                    padding: 5
+                  }}
+                >
+                  view all
+                </Paragraph>
                 <Feather
                   name="arrow-right"
-                  size={fonts.LARGE_SIZE + 8}
+                  size={RFValue(fonts.LARGE_SIZE)}
                   color={colors.PRIMARY_TEXT}
                 />
-              </TouchableOpacity>
-            </BackWrapper>
-          </TitleWrapper>
-        </HeaderContainer>
-        <ScrollView
-          horizontal={true}
-          alwaysBounceHorizontal={false}
-          showsHorizontalScrollIndicator={false}
-          style={{
-            marginTop: RFValue(15),
-            marginBottom: RFValue(15),
-            paddingLeft: RFValue(10)
-          }}
-        >
-          {MembersData.map((members, index) => (
-            <RecommendedMembers
-              key={index}
-              avatar={members.avatar}
-              name={members.name}
-              address={members.address}
-            />
-          ))}
-        </ScrollView>
-        <HeaderContainer>
-          <TitleWrapper>
+              </Fragment>
+            </TouchableRipple>
+          </RecommendedListHeader>
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            style={{ marginTop: 20 }}
+          >
+            {MembersData.map((member, index) => (
+              <RecommendedMembers
+                key={index}
+                {...member}
+                index={index}
+                lastChild={MembersData.length - 1}
+              />
+            ))}
+          </ScrollView>
+        </RecommendedList>
+        <RecommendedList>
+          <RecommendedListHeader>
             <Title
               style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
                 color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 4),
                 textTransform: 'capitalize',
-                shadowColor: colors.TRANSPARENT
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 0
               }}
             >
               members nearby
             </Title>
-            <BackWrapper>
-              <Paragraph
-                style={{
-                  marginLeft: 'auto',
-                  marginRight: RFValue(5),
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: fonts.MEDIUM_SIZE,
-                  textTransform: 'capitalize'
-                }}
-              >
-                View All
-              </Paragraph>
-              <TouchableOpacity onPress={() => {}}>
+            <TouchableRipple
+              rippleColor={colors.PRIMARY}
+              onPress={() => {}}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingRight: 15,
+                padding: 5
+              }}
+            >
+              <Fragment>
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    marginTop: 0,
+                    marginBottom: 0,
+                    padding: 5
+                  }}
+                >
+                  view all
+                </Paragraph>
                 <Feather
                   name="arrow-right"
-                  size={fonts.LARGE_SIZE + 8}
+                  size={RFValue(fonts.LARGE_SIZE)}
                   color={colors.PRIMARY_TEXT}
                 />
-              </TouchableOpacity>
-            </BackWrapper>
-          </TitleWrapper>
-        </HeaderContainer>
-        <ScrollView
-          horizontal={true}
-          alwaysBounceHorizontal={false}
-          showsHorizontalScrollIndicator={false}
-          style={{ marginTop: RFValue(15), paddingLeft: RFValue(10) }}
-        >
-          {MembersData.map((members, index) => (
-            <RecommendedMembers
-              key={index}
-              avatar={members.avatar}
-              name={members.name}
-              address={members.address}
-            />
-          ))}
-        </ScrollView>
+              </Fragment>
+            </TouchableRipple>
+          </RecommendedListHeader>
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            style={{ marginTop: 20 }}
+          >
+            {MembersData.map((member, index) => (
+              <RecommendedMembers
+                key={index}
+                {...member}
+                index={index}
+                lastChild={MembersData.length - 1}
+              />
+            ))}
+          </ScrollView>
+        </RecommendedList>
       </Container>
     </ScrollView>
   );
