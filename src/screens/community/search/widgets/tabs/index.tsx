@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
+import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Platform } from 'react-native';
 import { useThemeContext } from '../../../../../theme';
@@ -21,35 +22,48 @@ export default function TabViewSlider() {
 
   const renderScene = SceneMap({ memberSlide, communitySlide });
 
-  const renderTabBar = (props: any) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{
-        backgroundColor: colors.PRIMARY,
-        height: RFValue(4),
-        width: RFValue(30)
-      }}
-      tabStyle={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-start'
-      }}
-      activeColor={colors.PRIMARY}
-      inactiveColor={colors.PRIMARY_TEXT}
-      labelStyle={{
-        fontFamily: fonts.WORK_SANS_REGULAR,
-        fontSize: fonts.LARGE_SIZE + 1,
-        textTransform: 'capitalize'
-      }}
+  const renderLabel = ({
+    route,
+    focused
+  }: {
+    route: { title: string };
+    focused: boolean;
+  }) => (
+    <Title
       style={{
-        backgroundColor: colors.OFFWHITE,
-        border: 0,
-        shadowColor: colors.TRANSPARENT,
-        marginTop: RFValue(20),
-        width: '80%'
+        fontFamily: focused
+          ? fonts.WORK_SANS_SEMI_BOLD
+          : fonts.WORK_SANS_REGULAR,
+        fontSize: RFValue(fonts.LARGE_SIZE + 1),
+        color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
+        textTransform: 'capitalize',
+        marginTop: 0,
+        marginBottom: 0,
+        width: '105%'
       }}
-    />
+    >
+      {route.title}
+    </Title>
   );
+
+  const renderTabBar = (props: any) => {
+    return (
+      <TabBar
+        {...props}
+        indicatorStyle={{
+          backgroundColor: colors.PRIMARY,
+          height: RFValue(4)
+        }}
+        renderLabel={renderLabel}
+        style={{
+          backgroundColor: colors.GREY,
+          shadowColor: colors.TRANSPARENT,
+          elevation: 0,
+          marginBottom: 10
+        }}
+      />
+    );
+  };
 
   const renderPager = (props: any) => <ScrollPager {...props} />;
 
