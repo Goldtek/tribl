@@ -23,11 +23,11 @@ interface ScreenProp extends NavigationInterface {
     address: string;
     avatar: string;
   }[];
-  recommendedCommunities: {
+  recommendedCommunity: {
     name: string;
     members: string;
     avatar: string;
-  }[];
+  };
   recentActivities: {
     name: string;
     action: string;
@@ -39,11 +39,7 @@ interface ScreenProp extends NavigationInterface {
 export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
 
-  const {
-    recommendedCommunities,
-    recommendedMembers,
-    recentActivities
-  } = props;
+  const { recommendedCommunity, recommendedMembers, recentActivities } = props;
 
   return (
     <ScrollView
@@ -83,19 +79,15 @@ export default function HomeScreen(props: ScreenProp) {
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          style={{
-            paddingTop: 25,
-            backgroundColor: colors.WHITE,
-            marginBottom: 20
-          }}
+          style={{ marginTop: 20, backgroundColor: colors.WHITE }}
         >
-          {recommendedMembers.map((member) => (
-            <RecommendedUser {...member} />
+          {recommendedMembers.map((member, index) => (
+            <RecommendedUser key={index} {...member} />
           ))}
         </ScrollView>
       </RecommendedList>
 
-      <RecommendedList style={{ paddingLeft: 0, paddingTop: 10 }}>
+      <RecommendedList>
         <RecommendedListHeader style={{ paddingLeft: 15 }}>
           <Title
             style={{
@@ -126,29 +118,29 @@ export default function HomeScreen(props: ScreenProp) {
         </RecommendedListHeader>
 
         <RecommendedCommunityContainer>
-          {recommendedCommunities.map((community) => (
-            <RecommendedCommunity {...community} />
-          ))}
+          <RecommendedCommunity {...recommendedCommunity} />
         </RecommendedCommunityContainer>
       </RecommendedList>
 
       <RecentActivitiesList>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'capitalize',
-            lineHeight: 20,
-            marginTop: 0,
-            marginBottom: 30
-          }}
-        >
-          recent activities
-        </Title>
+        <RecommendedListHeader>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'capitalize',
+              lineHeight: 20,
+              marginTop: 0,
+              marginBottom: 30
+            }}
+          >
+            recent activities
+          </Title>
+        </RecommendedListHeader>
 
         {recentActivities.map((activity) => (
-          <RecentActivity {...activity} />
+          <RecentActivity key={activity.name} {...activity} />
         ))}
       </RecentActivitiesList>
     </ScrollView>
@@ -208,49 +200,47 @@ HomeScreen.defaultProps = {
       avatar: 'https://picsum.photos/700'
     }
   ],
-  recommendedCommunities: [
-    {
-      name: 'peter martin',
-      members: '10k member',
-      avatar: 'https://picsum.photos/700'
-    }
-  ],
+  recommendedCommunity: {
+    name: 'peter martin',
+    members: '10k member',
+    avatar: 'https://picsum.photos/700'
+  },
   recentActivities: [
     {
       name: 'Alex Muleba',
       action: 'sent money to Uche Nnadi',
       avatar: 'https://picsum.photos/700',
-      date: '2 min ago'
+      date: '2m ago'
     },
     {
       name: 'Blair Bashen',
       action: 'Joined #Afropolitan',
       avatar: 'https://picsum.photos/700',
-      date: '10 min ago'
+      date: '10m ago'
     },
     {
       name: 'Kobla',
       action: 'Joined #AustineJusticeCoalition',
       avatar: 'https://picsum.photos/700',
-      date: '45 min ago'
+      date: '45m ago'
     },
     {
       name: 'Erikan O.',
       action: 'Donated to #BlackLivesMatter',
       avatar: 'https://picsum.photos/700',
-      date: '2 hours ago'
+      date: '2h ago'
     },
     {
       name: 'Josephine Kellner',
       action: 'sent money to Jasmine',
       avatar: 'https://picsum.photos/700',
-      date: '8 hours ago'
+      date: '8h ago'
     },
     {
       name: 'Spencer Evans',
       action: 'added mutual connection Mbiyimoh',
       avatar: 'https://picsum.photos/700',
-      date: '12 hours ago'
+      date: '12h ago'
     }
   ]
 };

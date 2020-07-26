@@ -2,6 +2,7 @@ import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 export const TextContainer = styled.View`
+  width: 60%;
   margin-left: 15px;
   margin-bottom: 5px;
 `;

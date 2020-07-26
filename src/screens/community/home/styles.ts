@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 export const ScrollView = styled.ScrollView`
   padding-top: 6px;
@@ -6,14 +7,15 @@ export const ScrollView = styled.ScrollView`
 `;
 
 export const RecommendedList = styled.View`
-  padding: 25px 0px 0px 15px;
   background-color: ${({ theme }) => theme.colors.WHITE};
+  padding-top: ${RFValue(20)}px;
 `;
 
 export const RecommendedListHeader = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  padding-left: 15px;
 `;
 
 export const RecommendedCommunityContainer = styled.View`
@@ -22,5 +24,4 @@ export const RecommendedCommunityContainer = styled.View`
 
 export const RecentActivitiesList = styled.View`
   margin-top: 25px;
-  padding: 0px 15px;
 `;
