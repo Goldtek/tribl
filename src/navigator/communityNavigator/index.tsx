@@ -2,12 +2,18 @@ import React, { useState, useCallback } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Menu, TouchableRipple, Divider } from 'react-native-paper';
+import {
+  Menu,
+  TouchableRipple,
+  Divider,
+  Searchbar,
+  Text
+} from 'react-native-paper';
 import Screens from '../../screens/community';
 import { Entypo } from '@expo/vector-icons';
-import { Platform } from 'react-native';
 
 const CommunityStack = createStackNavigator();
 
@@ -17,6 +23,10 @@ export default function CommunityNavigator() {
   const { top: safeAreaTop } = useSafeAreaInsets();
 
   const [menu, setMenu] = useState(false);
+
+  const [search, setSearch] = useState('');
+
+  const onChangeSearch = (query: any) => setSearch(query);
 
   const showMenu = () => setMenu(!menu);
 
@@ -151,6 +161,157 @@ export default function CommunityNavigator() {
       <CommunityStack.Screen
         name="CommunitySearchScreen"
         component={Screens.SearchScreen}
+        options={{
+          headerStyle: {
+            height: RFValue(100),
+            backgroundColor: colors.OFFWHITE
+          },
+          headerTitle: () => null,
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRight: () => (
+            <Searchbar
+              placeholder="Search by name or tag"
+              onChange={onChangeSearch}
+              value={search}
+              style={{
+                borderColor: colors.INPUT,
+                borderWidth: 1,
+                shadowColor: colors.TRANSPARENT,
+                height: '60%',
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: fonts.LARGE_SIZE + 2,
+                color: colors.SECONDARY_TEXT,
+                backgroundColor: colors.OFFWHITE
+              }}
+              iconColor={colors.PRIMARY_TEXT}
+            />
+          ),
+          headerRightContainerStyle: {
+            width: '80%',
+            marginRight: RFValue(10),
+            marginLeft: RFValue(20)
+          }
+        }}
+      />
+
+      <CommunityStack.Screen
+        name="SingleCommunityScreen"
+        component={Screens.SingleCommunityScreen}
+        options={{
+          headerStyle: {
+            height: RFValue(100),
+            backgroundColor: colors.WHITE
+          },
+          headerTitle: () => (
+            <Text
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontSize: fonts.LARGE_SIZE + 8,
+                fontFamily: fonts.WORK_SANS_BOLD,
+                lineHeight: RFValue(34),
+                textTransform: 'capitalize'
+              }}
+            >
+              black lives matter
+            </Text>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRightContainerStyle: { marginRight: 10 },
+          headerRight: () => (
+            <Menu
+              visible={menu}
+              onDismiss={showMenu}
+              anchor={
+                <TouchableRipple
+                  rippleColor={colors.PRIMARY}
+                  onPress={showMenu}
+                  style={{
+                    padding: RFValue(3),
+                    paddingTop: RFValue(6),
+                    paddingBottom: RFValue(6),
+                    backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                    borderRadius: 4,
+                    borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                    borderWidth: 1
+                  }}
+                >
+                  <Entypo
+                    name="dots-three-vertical"
+                    color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                    size={20}
+                  />
+                </TouchableRipple>
+              }
+              contentStyle={{
+                right: 10,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                paddingTop: 0,
+                paddingBottom: 0,
+                overflow: Platform.select({ android: 'hidden' })
+              }}
+              style={{ top: RFValue(getMenuHeight()) }}
+            >
+              <Menu.Item
+                onPress={() => {}}
+                title="Invite Friend"
+                style={{
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textAlign: 'center'
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title="Connection Requests"
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title="Privacy Settings"
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT
+                }}
+              />
+            </Menu>
+          )
+        }}
       />
     </CommunityStack.Navigator>
   );
