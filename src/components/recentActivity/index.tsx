@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Button, TouchableRipple, Title, Paragraph } from 'react-native-paper';
+import { TouchableRipple, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
@@ -42,7 +42,9 @@ function RecentActivity(props: RecentActivityProp) {
         width: '100%',
         height: RFValue(80),
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingLeft: 15,
+        paddingRight: 15
       }}
     >
       <Fragment>
