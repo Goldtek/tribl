@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.microsoft.codepush.react.CodePush;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -56,7 +57,15 @@ public class MainApplication extends Application implements ReactApplication {
       if (BuildConfig.DEBUG) {
         return super.getJSBundleFile();
       } else {
-        return UpdatesController.getInstance().getLaunchAssetFile();
+
+        // 2. Override the getJSBundleFile method in order to let
+        // the CodePush runtime determine where to get the JS
+        // bundle location from on each app start      
+        // Microsoft code-push controller
+        return CodePush.getJSBundleFile();
+
+        // Expo update controller [Reference this if App OTA updates fails with code-push]
+        //  return UpdatesController.getInstance().getLaunchAssetFile();
       }
     }
 
