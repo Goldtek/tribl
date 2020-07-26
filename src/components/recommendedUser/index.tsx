@@ -8,6 +8,7 @@ import { DEVICE_FULL_WIDTH } from '../../utils/device';
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, OnlineNotifier, AvatarContainer } from './styles';
 import { useNavigation } from '@react-navigation/native';
+import hexToRGB from '../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp {
@@ -34,8 +35,10 @@ function RecommendedUser(props: RecommendedUserProp) {
         height: RFValue(200),
         alignItems: 'center',
         borderRadius: 5,
-        marginRight: 8,
-        marginBottom: 10
+        marginBottom: 20,
+        marginLeft: 15,
+        borderWidth: 0.5,
+        borderColor: hexToRGB(colors.DISABLED, 0.3)
       }}
     >
       <Card.Content
