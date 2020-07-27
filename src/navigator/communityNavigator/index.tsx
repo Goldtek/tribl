@@ -24,7 +24,8 @@ export default function CommunityNavigator() {
 
   const [menu, setMenu] = useState({
     communityScreen: false,
-    detailScreen: false
+    detailScreen: false,
+    memberScreen: false
   });
 
   const [search, setSearch] = useState('');
@@ -219,6 +220,125 @@ export default function CommunityNavigator() {
               }}
             >
               black lives matter
+            </Text>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRightContainerStyle: { marginRight: 10 },
+          headerRight: () => (
+            <Menu
+              visible={menu.detailScreen}
+              onDismiss={showMenu('detailScreen')}
+              anchor={
+                <TouchableRipple
+                  rippleColor={colors.PRIMARY}
+                  onPress={showMenu('detailScreen')}
+                  style={{
+                    padding: RFValue(3),
+                    paddingTop: RFValue(6),
+                    paddingBottom: RFValue(6),
+                    backgroundColor: menu.detailScreen
+                      ? colors.PRIMARY
+                      : 'transparent',
+                    borderRadius: 4,
+                    borderColor: menu.detailScreen
+                      ? colors.PRIMARY
+                      : colors.INACTIVE,
+                    borderWidth: 1
+                  }}
+                >
+                  <Entypo
+                    name="dots-three-vertical"
+                    color={
+                      menu.detailScreen ? colors.WHITE : colors.PRIMARY_TEXT
+                    }
+                    size={20}
+                  />
+                </TouchableRipple>
+              }
+              contentStyle={{
+                right: 10,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                paddingTop: 0,
+                paddingBottom: 0,
+                overflow: Platform.select({ android: 'hidden' })
+              }}
+              style={{ top: RFValue(getMenuHeight()) }}
+            >
+              <Menu.Item
+                onPress={() => {}}
+                title="Invite Friend"
+                style={{
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textAlign: 'center'
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title="Connection Requests"
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title="Privacy Settings"
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT
+                }}
+              />
+            </Menu>
+          )
+        }}
+      />
+
+      <CommunityStack.Screen
+        name="MemberDetailScreen"
+        component={Screens.MemberDetailScreen}
+        options={{
+          headerTitle: () => (
+            <Text
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_BOLD,
+                textTransform: 'capitalize'
+              }}
+            >
+              peter martin
             </Text>
           ),
           headerBackTitleVisible: false,
