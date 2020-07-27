@@ -33,7 +33,7 @@ function RecommendedUser(props: RecommendedUserProp) {
 
   return (
     <Card
-      onPress={() => {}}
+      onPress={() => navigation.navigate('MemberDetailScreen')}
       style={{
         width: RFValue(DEVICE_FULL_WIDTH / 3),
         height: RFValue(200),
