@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
@@ -6,6 +6,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
+import { useNavigation } from '@react-navigation/native';
+import JoinCommunity from '../../../components/joinCommunity';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -39,111 +41,137 @@ interface ScreenProp extends NavigationInterface {
 export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
 
+  const navigation = useNavigation();
+
+  const [state, setState] = useState({ showJoinCommunityModal: false });
+
   const { recommendedCommunity, recommendedMembers, recentActivities } = props;
 
+  const navigateToSearch = () => navigation.navigate('CommunitySearchScreen');
+
+  const handleJoinCommunity = () => {
+    setState({
+      ...state,
+      showJoinCommunityModal: !state.showJoinCommunityModal
+    });
+  };
+
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      nestedScrollEnabled
-      contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
-    >
-      <RecommendedList>
-        <RecommendedListHeader>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              lineHeight: 20,
-              marginTop: 0,
-              marginBottom: 0
-            }}
-          >
-            recommended members
-          </Title>
+    <Fragment>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
+      >
+        <RecommendedList>
+          <RecommendedListHeader>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 0
+              }}
+            >
+              recommended members
+            </Title>
 
-          <Button
-            mode="text"
-            onPress={() => {}}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize'
-            }}
+            <Button
+              mode="text"
+              onPress={navigateToSearch}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize'
+              }}
+            >
+              view all
+            </Button>
+          </RecommendedListHeader>
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            style={{ marginTop: 20, backgroundColor: colors.WHITE }}
           >
-            view all
-          </Button>
-        </RecommendedListHeader>
-        <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={{ marginTop: 20, backgroundColor: colors.WHITE }}
-        >
-          {recommendedMembers.map((member, index) => (
-            <RecommendedUser key={index} {...member} />
+            {recommendedMembers.map((member, index) => (
+              <RecommendedUser
+                key={index}
+                {...member}
+                index={index}
+                lastChild={recommendedMembers.length - 1}
+              />
+            ))}
+          </ScrollView>
+        </RecommendedList>
+
+        <RecommendedList>
+          <RecommendedListHeader style={{ paddingLeft: 15 }}>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 0
+              }}
+            >
+              recommended community
+            </Title>
+
+            <Button
+              mode="text"
+              onPress={navigateToSearch}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize'
+              }}
+            >
+              view all
+            </Button>
+          </RecommendedListHeader>
+
+          <RecommendedCommunityContainer>
+            <RecommendedCommunity
+              {...recommendedCommunity}
+              onPress={handleJoinCommunity}
+            />
+          </RecommendedCommunityContainer>
+        </RecommendedList>
+
+        <RecentActivitiesList>
+          <RecommendedListHeader>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 30
+              }}
+            >
+              recent activities
+            </Title>
+          </RecommendedListHeader>
+
+          {recentActivities.map((activity) => (
+            <RecentActivity key={activity.name} {...activity} />
           ))}
-        </ScrollView>
-      </RecommendedList>
-
-      <RecommendedList>
-        <RecommendedListHeader style={{ paddingLeft: 15 }}>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              lineHeight: 20,
-              marginTop: 0,
-              marginBottom: 0
-            }}
-          >
-            recommended community
-          </Title>
-
-          <Button
-            mode="text"
-            onPress={() => {}}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize'
-            }}
-          >
-            view all
-          </Button>
-        </RecommendedListHeader>
-
-        <RecommendedCommunityContainer>
-          <RecommendedCommunity {...recommendedCommunity} />
-        </RecommendedCommunityContainer>
-      </RecommendedList>
-
-      <RecentActivitiesList>
-        <RecommendedListHeader>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              lineHeight: 20,
-              marginTop: 0,
-              marginBottom: 30
-            }}
-          >
-            recent activities
-          </Title>
-        </RecommendedListHeader>
-
-        {recentActivities.map((activity) => (
-          <RecentActivity key={activity.name} {...activity} />
-        ))}
-      </RecentActivitiesList>
-    </ScrollView>
+        </RecentActivitiesList>
+      </ScrollView>
+      {state.showJoinCommunityModal ? (
+        <JoinCommunity onPress={handleJoinCommunity} />
+      ) : null}
+    </Fragment>
   );
 }
 

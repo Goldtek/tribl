@@ -11,13 +11,14 @@ interface RecommendedCommunityProp {
   name: string;
   members: string;
   avatar: string;
+  onPress(): void;
 }
 
 function RecommendedCommunity(props: RecommendedCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, name, members } = props;
+  const { avatar, name, members, onPress } = props;
 
   return (
     <Card
@@ -26,8 +27,9 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         width: '100%',
         height: RFValue(300),
         alignItems: 'center',
+        backgroundColor: colors.GREY,
         marginTop: 3,
-        marginBottom: 3
+        elevation: 0
       }}
     >
       <Card.Content
@@ -71,7 +73,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         }}
         left={({ size }) => (
           <FastImage
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.contain}
             source={{ uri: avatar, priority: FastImage.priority.high }}
             style={{
               width: RFValue(size),
@@ -83,7 +85,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         right={() => (
           <Button
             mode="text"
-            onPress={() => {}}
+            onPress={onPress}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.MEDIUM_SIZE),
