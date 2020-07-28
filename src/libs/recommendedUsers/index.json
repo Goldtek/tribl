@@ -1,0 +1,65 @@
+[
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Peter Martin",
+    "address": "New York, NY",
+    "currentLocation": {
+      "lat": null,
+      "long": null,
+      "country": "USA",
+      "state": "New York, NY",
+      "__typename": "currentLocation"
+    },
+    "birthPlace": {
+      "lat": null,
+      "long": null,
+      "country": "USA",
+      "state": "Chicago, IL",
+      "__typename": "birthPlace"
+    },
+    "identities": ["afro-indian", "creole", "caribbean", "afro-latin"],
+    "interests": ["Tech", "Travel", "NBA"]
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Aminatu Diop",
+    "address": "Brooklyn, NY",
+    "currentLocation": {
+      "lat": null,
+      "long": null,
+      "country": "USA",
+      "state": "Brooklyn, NY",
+      "__typename": "currentLocation"
+    },
+    "birthPlace": {
+      "lat": null,
+      "long": null,
+      "country": "USA",
+      "state": "Chicago, IL",
+      "__typename": "birthPlace"
+    },
+    "identities": ["afro-indian", "creole", "caribbean", "afro-latin"],
+    "interests": ["Tech", "Travel", "NBA"]
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Jennifer Artin",
+    "address": "New York, NY",
+    "currentLocation": {
+      "lat": null,
+      "long": null,
+      "country": "USA",
+      "state": "New York, NY",
+      "__typename": "currentLocation"
+    },
+    "birthPlace": {
+      "lat": null,
+      "long": null,
+      "country": "USA",
+      "state": "Chicago, IL",
+      "__typename": "birthPlace"
+    },
+    "identities": ["afro-indian", "creole", "caribbean", "afro-latin"],
+    "interests": ["Tech", "Travel", "NBA"]
+  }
+]

@@ -15,6 +15,8 @@ interface RecommendedUserProp {
   avatar: string;
   name: string;
   address: string;
+  index: number;
+  lastChild: number;
 }
 
 function RecommendedUser(props: RecommendedUserProp) {
@@ -24,12 +26,14 @@ function RecommendedUser(props: RecommendedUserProp) {
   const {
     avatar = 'https://picsum.photos/700',
     name = 'Peter Martin',
-    address = 'New York, NY'
+    address = 'New York, NY',
+    index,
+    lastChild
   } = props;
 
   return (
     <Card
-      onPress={() => {}}
+      onPress={() => navigation.navigate('MemberDetailScreen')}
       style={{
         width: RFValue(DEVICE_FULL_WIDTH / 3),
         height: RFValue(200),
@@ -37,6 +41,7 @@ function RecommendedUser(props: RecommendedUserProp) {
         borderRadius: 5,
         marginBottom: 20,
         marginLeft: 15,
+        marginRight: index === lastChild ? 15 : 0,
         borderWidth: 0.5,
         borderColor: hexToRGB(colors.DISABLED, 0.3)
       }}
