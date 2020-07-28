@@ -1,69 +1,31 @@
 import React, { useState, useCallback } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Image, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
-import { Entypo } from '@expo/vector-icons';
-import {
-  Menu,
-  TouchableRipple,
-  Divider,
-  Searchbar,
-  Text
-} from 'react-native-paper';
+import { Searchbar, Text, TouchableRipple } from 'react-native-paper';
+import { FontAwesome, Feather } from '@expo/vector-icons';
+import { TouchableHighlight } from 'react-native-gesture-handler';
+import hexToRGB from '../../utils/hexToRGB';
 
 const CommunityStack = createStackNavigator();
 
 export default function CommunityNavigator() {
   const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
-  const { top: safeAreaTop } = useSafeAreaInsets();
-
-  const [menu, setMenu] = useState({
-    communityScreen: false,
-    detailScreen: false,
-    memberScreen: false
-  });
 
   const [search, setSearch] = useState('');
 
   const onChangeSearch = (query: any) => setSearch(query);
-
-  const showMenu = (screen: string) => () => {
-    //@ts-ignore
-    setMenu({ ...menu, [screen]: !menu[screen] });
-  };
-
-  const getMenuHeight = useCallback(() => {
-    switch (true) {
-      case Math.ceil(safeAreaTop) <= 20:
-        return Math.ceil(safeAreaTop + 50);
-
-      case Math.ceil(safeAreaTop) <= 36:
-        return Math.ceil(safeAreaTop + 50);
-
-      case Math.ceil(safeAreaTop) <= 44:
-        return Math.ceil(safeAreaTop + 35);
-
-      default:
-        return Math.ceil(safeAreaTop);
-    }
-  }, []);
 
   return (
     <CommunityStack.Navigator
       initialRouteName="CommunityScreen"
       headerMode="screen"
       screenOptions={{
-        headerTitleStyle: {
-          fontFamily: fonts.WORK_SANS_BOLD,
-          fontSize: RFValue(fonts.LARGE_SIZE * 1.2),
-          color: colors.PRIMARY_TEXT,
-          textTransform: 'capitalize'
-        },
+        headerTitleContainerStyle: { alignItems: 'center' },
         headerStyle: { height: RFValue(90) }
       }}
     >
@@ -71,104 +33,40 @@ export default function CommunityNavigator() {
         name="CommunityScreen"
         component={Screens.HomeScreen}
         options={{
-          headerTitle: t(`community.headerTitle`),
-          headerRightContainerStyle: { marginRight: 10 },
-          headerRight: () => (
-            <Menu
-              visible={menu.communityScreen}
-              onDismiss={showMenu('communityScreen')}
-              anchor={
-                <TouchableRipple
-                  rippleColor={colors.PRIMARY}
-                  onPress={showMenu('communityScreen')}
-                  style={{
-                    padding: RFValue(3),
-                    paddingTop: RFValue(6),
-                    paddingBottom: RFValue(6),
-                    backgroundColor: menu.communityScreen
-                      ? colors.PRIMARY
-                      : 'transparent',
-                    borderRadius: 4,
-                    borderColor: menu.communityScreen
-                      ? colors.PRIMARY
-                      : colors.INACTIVE,
-                    borderWidth: 1
-                  }}
-                >
-                  <Entypo
-                    name="dots-three-vertical"
-                    color={
-                      menu.communityScreen ? colors.WHITE : colors.PRIMARY_TEXT
-                    }
-                    size={20}
-                  />
-                </TouchableRipple>
-              }
-              contentStyle={{
-                right: 10,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                paddingTop: 0,
-                paddingBottom: 0,
-                overflow: Platform.select({ android: 'hidden' })
+          headerTitle: () => (
+            <Image
+              source={require('../../../assets/images/logo.png')}
+              style={{
+                width: RFValue(50),
+                height: RFValue(50),
+                right: Platform.select({ android: RFValue(20) }),
+                resizeMode: 'contain'
               }}
-              style={{ top: RFValue(getMenuHeight()) }}
+            />
+          ),
+          headerLeft: (props) => (
+            <TouchableHighlight
+              {...props}
+              onPress={() => {}}
+              underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                borderRadius: RFValue(20),
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
             >
-              <Menu.Item
-                onPress={() => {}}
-                title="Invite Friend"
-                style={{
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textAlign: 'center'
-                }}
+              <Feather
+                name="menu"
+                size={RFValue(25)}
+                color={colors.PRIMARY_TEXT}
               />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title="Connection Requests"
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title="Privacy Settings"
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT
-                }}
-              />
-            </Menu>
-          )
+            </TouchableHighlight>
+          ),
+
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: { marginRight: 10 }
         }}
       />
 
@@ -225,103 +123,7 @@ export default function CommunityNavigator() {
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRightContainerStyle: { marginRight: 10 },
-          headerRight: () => (
-            <Menu
-              visible={menu.detailScreen}
-              onDismiss={showMenu('detailScreen')}
-              anchor={
-                <TouchableRipple
-                  rippleColor={colors.PRIMARY}
-                  onPress={showMenu('detailScreen')}
-                  style={{
-                    padding: RFValue(3),
-                    paddingTop: RFValue(6),
-                    paddingBottom: RFValue(6),
-                    backgroundColor: menu.detailScreen
-                      ? colors.PRIMARY
-                      : 'transparent',
-                    borderRadius: 4,
-                    borderColor: menu.detailScreen
-                      ? colors.PRIMARY
-                      : colors.INACTIVE,
-                    borderWidth: 1
-                  }}
-                >
-                  <Entypo
-                    name="dots-three-vertical"
-                    color={
-                      menu.detailScreen ? colors.WHITE : colors.PRIMARY_TEXT
-                    }
-                    size={20}
-                  />
-                </TouchableRipple>
-              }
-              contentStyle={{
-                right: 10,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                paddingTop: 0,
-                paddingBottom: 0,
-                overflow: Platform.select({ android: 'hidden' })
-              }}
-              style={{ top: RFValue(getMenuHeight()) }}
-            >
-              <Menu.Item
-                onPress={() => {}}
-                title="Invite Friend"
-                style={{
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textAlign: 'center'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title="Connection Requests"
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title="Privacy Settings"
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT
-                }}
-              />
-            </Menu>
-          )
+          headerRightContainerStyle: { marginRight: 10 }
         }}
       />
 
@@ -344,103 +146,7 @@ export default function CommunityNavigator() {
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRightContainerStyle: { marginRight: 10 },
-          headerRight: () => (
-            <Menu
-              visible={menu.detailScreen}
-              onDismiss={showMenu('detailScreen')}
-              anchor={
-                <TouchableRipple
-                  rippleColor={colors.PRIMARY}
-                  onPress={showMenu('detailScreen')}
-                  style={{
-                    padding: RFValue(3),
-                    paddingTop: RFValue(6),
-                    paddingBottom: RFValue(6),
-                    backgroundColor: menu.detailScreen
-                      ? colors.PRIMARY
-                      : 'transparent',
-                    borderRadius: 4,
-                    borderColor: menu.detailScreen
-                      ? colors.PRIMARY
-                      : colors.INACTIVE,
-                    borderWidth: 1
-                  }}
-                >
-                  <Entypo
-                    name="dots-three-vertical"
-                    color={
-                      menu.detailScreen ? colors.WHITE : colors.PRIMARY_TEXT
-                    }
-                    size={20}
-                  />
-                </TouchableRipple>
-              }
-              contentStyle={{
-                right: 10,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                paddingTop: 0,
-                paddingBottom: 0,
-                overflow: Platform.select({ android: 'hidden' })
-              }}
-              style={{ top: RFValue(getMenuHeight()) }}
-            >
-              <Menu.Item
-                onPress={() => {}}
-                title="Invite Friend"
-                style={{
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textAlign: 'center'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title="Connection Requests"
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title="Privacy Settings"
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT
-                }}
-              />
-            </Menu>
-          )
+          headerRightContainerStyle: { marginRight: 10 }
         }}
       />
     </CommunityStack.Navigator>
