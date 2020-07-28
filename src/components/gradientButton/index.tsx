@@ -15,6 +15,7 @@ type GradientButtonProps = {
   labelStyle?: StyleProp<TextStyle>;
   contentStyle?: StyleProp<ViewStyle>;
   style?: StyleProp<ViewStyle>;
+  gradientContainerstyle?: StyleProp<ViewStyle>;
 };
 
 const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
@@ -27,7 +28,8 @@ const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
     labelStyle,
     style,
     contentStyle,
-    onPress
+    onPress,
+    gradientContainerstyle
   } = props;
 
   const { colors, fonts } = useThemeContext();
@@ -37,7 +39,10 @@ const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 3 }}
       colors={[colors.PRIMARY, colors.SECONDARY]}
-      style={{ borderRadius: 4, marginTop: RFValue(20) }}
+      style={[
+        { borderRadius: 4, marginTop: RFValue(20) },
+        gradientContainerstyle
+      ]}
     >
       <Button
         mode={mode ? mode : 'text'}
