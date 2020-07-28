@@ -20,7 +20,8 @@ enum COLORS {
   SHADOW = 'F5F5F5',
   BLACK = '#000000',
   GREY_TEXT = '#8A8C92',
-  DARK_TEXT = '#979797'
+  DARK_TEXT = '#979797',
+  INPUTBORDER = '50555C'
 }
 
 // All app font sizes
@@ -56,6 +57,7 @@ declare module 'styled-components' {
       BLACK: string;
       GREY_TEXT: string;
       DARK_TEXT: string;
+      INPUTBORDER: string;
     };
 
     // All Global App Font Sizes
