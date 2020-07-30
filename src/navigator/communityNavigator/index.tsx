@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Image, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const [search, setSearch] = useState('');
+  const { t } = useTranslation();
 
   const onChangeSearch = (query: any) => setSearch(query);
 
@@ -82,7 +83,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerLeftContainerStyle: { paddingLeft: 10 },
           headerRight: () => (
             <Searchbar
-              placeholder="Search by name or tag"
+              placeholder={t(`community.tabPanel.placeholder`)}
               onChange={onChangeSearch}
               value={search}
               style={{

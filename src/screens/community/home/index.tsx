@@ -3,6 +3,7 @@ import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useTranslation } from 'react-i18next';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
@@ -40,6 +41,7 @@ interface ScreenProp extends NavigationInterface {
 
 export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
+  const { t } = useTranslation();
 
   const navigation = useNavigation();
 
@@ -76,7 +78,7 @@ export default function HomeScreen(props: ScreenProp) {
                 marginBottom: 0
               }}
             >
-              recommended members
+              {t(`community.recommended.members`)}
             </Title>
 
             <Button
@@ -89,7 +91,7 @@ export default function HomeScreen(props: ScreenProp) {
                 textTransform: 'capitalize'
               }}
             >
-              view all
+              {t(`community.recommended.view`)}
             </Button>
           </RecommendedListHeader>
           <ScrollView
@@ -121,7 +123,7 @@ export default function HomeScreen(props: ScreenProp) {
                 marginBottom: 0
               }}
             >
-              recommended community
+              {t(`community.recommended.community`)}
             </Title>
 
             <Button
@@ -134,7 +136,7 @@ export default function HomeScreen(props: ScreenProp) {
                 textTransform: 'capitalize'
               }}
             >
-              view all
+              {t(`community.recommended.view`)}
             </Button>
           </RecommendedListHeader>
 
@@ -159,7 +161,7 @@ export default function HomeScreen(props: ScreenProp) {
                 marginBottom: 30
               }}
             >
-              recent activities
+              {t(`community.recommended.activity`)}
             </Title>
           </RecommendedListHeader>
 

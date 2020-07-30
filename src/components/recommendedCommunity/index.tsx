@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button, Card } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
-import { useNavigation } from '@react-navigation/native';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedCommunityProp {
@@ -16,7 +16,7 @@ interface RecommendedCommunityProp {
 
 function RecommendedCommunity(props: RecommendedCommunityProp) {
   const { colors, fonts } = useThemeContext();
-  const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const { avatar, name, members, onPress } = props;
 
@@ -92,7 +92,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
               left: 15
             }}
           >
-            join
+            {t(`community.recommended.join`)}
           </Button>
         )}
         style={{ flex: 1, paddingLeft: 0 }}

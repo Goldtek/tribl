@@ -1,17 +1,16 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Image, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens';
-import { Searchbar, Text, TouchableRipple, Divider } from 'react-native-paper';
-import CommunityIcon from '../../../assets/icons/communityIcon';
+import { Text } from 'react-native-paper';
 import {
   MaterialCommunityIcons,
   Entypo,
   SimpleLineIcons,
-  Feather
+  Feather,
+  FontAwesome
 } from '@expo/vector-icons';
 import BottomNavigator from '../bottomNavigator';
 import CustomDrawerContent from './customDrawerComponent';
@@ -20,15 +19,14 @@ const Drawer = createDrawerNavigator();
 
 export default function SideDrawerNavigator() {
   const { colors, fonts } = useThemeContext();
+  const { t } = useTranslation();
 
   return (
     <Drawer.Navigator
       drawerType="slide"
       drawerStyle={{ backgroundColor: colors.GREY }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      drawerContentOptions={{
-        itemStyle: { marginVertical: 5 }
-      }}
+      drawerContentOptions={{ itemStyle: { marginVertical: 5 } }}
     >
       <Drawer.Screen
         name="CommunityScreen"
@@ -50,7 +48,7 @@ export default function SideDrawerNavigator() {
                 textTransform: 'capitalize'
               }}
             >
-              community
+              {t(`community.sideNav.community`)}
             </Text>
           )
         }}
@@ -71,7 +69,7 @@ export default function SideDrawerNavigator() {
                 textTransform: 'capitalize'
               }}
             >
-              chat
+              {t(`community.sideNav.chat`)}
             </Text>
           )
         }}
@@ -96,7 +94,7 @@ export default function SideDrawerNavigator() {
                 textTransform: 'capitalize'
               }}
             >
-              connection requests
+              {t(`community.sideNav.request`)}
             </Text>
           )
         }}
@@ -118,7 +116,7 @@ export default function SideDrawerNavigator() {
                 textTransform: 'capitalize'
               }}
             >
-              add wallet
+              {t(`community.sideNav.wallet`)}
             </Text>
           )
         }}
@@ -139,7 +137,7 @@ export default function SideDrawerNavigator() {
                 textTransform: 'capitalize'
               }}
             >
-              privacy settings
+              {t(`community.sideNav.settings`)}
             </Text>
           )
         }}
@@ -160,12 +158,36 @@ export default function SideDrawerNavigator() {
                 textTransform: 'capitalize'
               }}
             >
-              invite friends
+              {t(`community.sideNav.invite`)}
             </Text>
           )
         }}
       />
-      {/* <Drawer.Screen name="Passport" component={Screens.PassportScreen} /> */}
+      <Drawer.Screen
+        name="policy"
+        component={Screens.InboxScreen}
+        options={{
+          drawerIcon: () => (
+            <FontAwesome
+              name="user-secret"
+              size={24}
+              color={colors.PRIMARY_TEXT}
+            />
+          ),
+          drawerLabel: () => (
+            <Text
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(13),
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`community.sideNav.policy`)}
+            </Text>
+          )
+        }}
+      />
     </Drawer.Navigator>
   );
 }
