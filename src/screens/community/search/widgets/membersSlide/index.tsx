@@ -1,27 +1,23 @@
 import React, { Fragment } from 'react';
+import { ScrollView } from 'react-native';
 import { NavigationInterface } from '../../../../types';
-import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
+import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { useThemeContext } from '../../../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { TouchableOpacity, ScrollView } from 'react-native';
 import RecommendedMembers from '../../../../../components/recommendedUser';
 import MembersData from '../../../../../libs/recommendedUsers/index.json';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import {
-  Container,
-  HeaderContainer,
-  TitleWrapper,
-  RecommendedList,
-  RecommendedListHeader
-} from './styles';
+import { Container, RecommendedList, RecommendedListHeader } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
+  const { t } = useTranslation();
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -42,7 +38,7 @@ export default function SearchScreen(props: ScreenProp) {
                 marginBottom: 0
               }}
             >
-              most active members
+              {t(`community.tabPanel.active`)}
             </Title>
             <TouchableRipple
               rippleColor={colors.PRIMARY}
@@ -66,7 +62,7 @@ export default function SearchScreen(props: ScreenProp) {
                     padding: 5
                   }}
                 >
-                  view all
+                  {t(`community.tabPanel.view`)}
                 </Paragraph>
                 <Feather
                   name="arrow-right"
@@ -104,7 +100,7 @@ export default function SearchScreen(props: ScreenProp) {
                 marginBottom: 0
               }}
             >
-              members nearby
+              {t(`community.tabPanel.nearby`)}
             </Title>
             <TouchableRipple
               rippleColor={colors.PRIMARY}
@@ -128,7 +124,7 @@ export default function SearchScreen(props: ScreenProp) {
                     padding: 5
                   }}
                 >
-                  view all
+                  {t(`community.tabPanel.view`)}
                 </Paragraph>
                 <Feather
                   name="arrow-right"

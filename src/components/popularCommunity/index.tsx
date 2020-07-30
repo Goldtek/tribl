@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
+import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 
@@ -18,6 +19,7 @@ interface PopularUserProp {
 function PopularCommunity(props: PopularUserProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const {
     avatar = 'https://picsum.photos/700',
@@ -77,7 +79,7 @@ function PopularCommunity(props: PopularUserProp) {
               textTransform: 'uppercase'
             }}
           >
-            join
+            {t(`community.recommended.join`)}
           </Paragraph>
         </TextConatiner>
       </Fragment>

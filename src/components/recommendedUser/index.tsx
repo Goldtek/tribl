@@ -2,13 +2,14 @@ import React from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
+import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
+import { useNavigation } from '@react-navigation/native';
+import hexToRGB from '../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, OnlineNotifier, AvatarContainer } from './styles';
-import { useNavigation } from '@react-navigation/native';
-import hexToRGB from '../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp {
@@ -22,6 +23,7 @@ interface RecommendedUserProp {
 function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const {
     avatar = 'https://picsum.photos/700',
@@ -119,7 +121,7 @@ function RecommendedUser(props: RecommendedUserProp) {
           style={{ borderRadius: 5 }}
           onPress={() => {}}
         >
-          Add+
+          {t(`community.recommended.add`)}+
         </Button>
       </Card.Content>
     </Card>

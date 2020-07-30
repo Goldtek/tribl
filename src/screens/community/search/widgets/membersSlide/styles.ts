@@ -6,17 +6,6 @@ export const Container = styled.View`
   padding-top: ${RFValue(10)}px;
 `;
 
-export const HeaderContainer = styled.View`
-  flex-direction: column;
-`;
-
-export const TitleWrapper = styled.View`
-  flex: 1;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 0 ${RFValue(15)}px ${RFValue(5)}px;
-`;
-
 export const RecommendedList = styled.View`
   padding-top: ${RFValue(20)}px;
 `;

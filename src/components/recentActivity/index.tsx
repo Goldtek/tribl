@@ -3,7 +3,6 @@ import { TouchableRipple, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
-import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -25,7 +24,6 @@ interface RecentActivityProp {
 
 function RecentActivity(props: RecentActivityProp) {
   const { colors, fonts } = useThemeContext();
-  const navigation = useNavigation();
 
   const {
     avatar = 'https://picsum.photos/700',
