@@ -1,27 +1,22 @@
 import React from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Image, Platform, SafeAreaView, View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
-import {
-  Searchbar,
-  Text,
-  TouchableRipple,
-  Avatar,
-  Divider
-} from 'react-native-paper';
-import { FontAwesome, Feather } from '@expo/vector-icons';
+import { Text } from 'react-native-paper';
 import {
   DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem
+  DrawerItemList
 } from '@react-navigation/drawer';
 import FastImage from 'react-native-fast-image';
+
 import { DrawerFooter, ProfileContainer } from './styles';
 
 export default function CustomDrawerComponent(props: any) {
   const { colors, fonts } = useThemeContext();
+  const { t } = useTranslation();
+  const { avatar = 'https://picsum.photos/700' } = props;
+
   return (
     <DrawerContentScrollView
       {...props}
@@ -32,7 +27,7 @@ export default function CustomDrawerComponent(props: any) {
           <FastImage
             resizeMode={FastImage.resizeMode.contain}
             source={{
-              uri: 'https://picsum.photos/700',
+              uri: avatar,
               priority: FastImage.priority.high
             }}
             style={{
@@ -65,7 +60,7 @@ export default function CustomDrawerComponent(props: any) {
             lineHeight: RFValue(15)
           }}
         >
-          version 1.0.0
+          {t(`community.sideNav.version`)}
         </Text>
         <Text
           style={{
@@ -73,10 +68,11 @@ export default function CustomDrawerComponent(props: any) {
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
             fontSize: RFValue(13),
             textAlign: 'center',
-            lineHeight: RFValue(15)
+            lineHeight: RFValue(15),
+            textTransform: 'capitalize'
           }}
         >
-          silicon jungle labs
+          {t(`community.sideNav.company`)}
         </Text>
       </DrawerFooter>
     </DrawerContentScrollView>
