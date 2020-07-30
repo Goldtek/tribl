@@ -1,5 +1,6 @@
 import { StackNavigationProp, RouteProp } from '@react-navigation/stack';
 import { TFunction, i18n } from 'i18next';
+import { StackActionHelpers } from '@react-navigation/native';
 
 // App Navigation prop types
 export type RootStackParamList = {
@@ -18,8 +19,13 @@ export type RootStackParamList = {
   OTPScreen: undefined;
 };
 
+interface StackNavigationInterface extends StackActionHelpers {
+  toggleDrawer(): void;
+}
+
 interface StackScreenInterface {
-  navigation: StackNavigationProp<RootStackParamList, string>;
+  navigation: StackNavigationProp<RootStackParamList, string> &
+    StackNavigationInterface;
   route: RouteProp<RootStackParamList, string>;
 }
 
