@@ -1,18 +1,22 @@
 import React from 'react';
 import { NavigationInterface } from '../../types';
 import { Card, Title, Paragraph } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import MembersCard from '../../../components/recommendedUser';
 import MembersData from '../../../libs/recommendedUsers/index.json';
+
 import { Container, CardContainer, TextContainer } from './styles';
 
 interface SingleCommunityScreenProp extends NavigationInterface {}
 
 export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const { colors, fonts } = useThemeContext();
+  const { t } = useTranslation();
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Container>
@@ -63,7 +67,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                   color: colors.DARK_TEXT
                 }}
               >
-                100k members
+                100k {t(`community.tabPanel.member`)}
               </Paragraph>
               <Paragraph
                 style={{
@@ -89,7 +93,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 marginTop: RFValue(20)
               }}
             >
-              join
+              {t(`community.tabPanel.join`)}
             </Paragraph>
           </CardContainer>
         </Card>
@@ -106,7 +110,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 paddingLeft: 15
               }}
             >
-              recommended members
+              {t(`community.tabPanel.nearby`)}
             </Title>
             <ScrollView
               horizontal={true}

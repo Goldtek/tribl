@@ -16,8 +16,8 @@ export default function TabViewSlider() {
   const [tabIndex, setTabIndex] = React.useState(0);
 
   const [routes] = React.useState([
-    { key: 'memberSlide', title: 'members' },
-    { key: 'communitySlide', title: 'communities' }
+    { key: 'memberSlide', title: `${t(`community.tabPanel.member`)}` },
+    { key: 'communitySlide', title: `${t(`community.tabPanel.community`)}` }
   ]);
 
   const renderScene = SceneMap({ memberSlide, communitySlide });

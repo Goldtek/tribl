@@ -6,11 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import Input from '../input';
 import GradientButton from '../gradientButton';
-import {
-  TouchableWithoutFeedback,
-  Keyboard,
-  KeyboardAvoidingView
-} from 'react-native';
+import { TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
 import { DEVICE_OS } from '../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -29,8 +25,6 @@ interface JoinCommunityProp {
 function JoinCommunity(props: JoinCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
-  const [referral, setReferral] = useState('');
 
   const handleRequest = () => {};
 
@@ -72,7 +66,7 @@ function JoinCommunity(props: JoinCommunityProp) {
                   textTransform: 'capitalize'
                 }}
               >
-                enter your referral {'\n'}code below
+                {t(`community.joinModal.title`)}
               </Title>
               <Paragraph
                 style={{
@@ -83,10 +77,10 @@ function JoinCommunity(props: JoinCommunityProp) {
                   lineHeight: RFValue(14)
                 }}
               >
-                referral code
+                {t(`community.joinModal.label`)}
               </Paragraph>
               <Input
-                placeholder="Paste your code here"
+                placeholder={t(`community.joinModal.placeholder`)}
                 placeholderTextColor={colors.INACTIVE}
                 textInputStyle={{
                   paddingLeft: 20,
@@ -118,7 +112,7 @@ function JoinCommunity(props: JoinCommunityProp) {
                     alignItems: 'center'
                   }}
                 >
-                  request
+                  {t(`community.joinModal.request`)}
                 </Button>
                 <GradientButton
                   onPress={handleJoin}
@@ -138,7 +132,7 @@ function JoinCommunity(props: JoinCommunityProp) {
                     width: '45%'
                   }}
                 >
-                  join
+                  {t(`community.joinModal.join`)}
                 </GradientButton>
               </ButtonContainer>
             </BlurContentsContainer>

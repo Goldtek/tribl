@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useRef } from 'react';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native';
-import { Button, IconButton, Title, Paragraph } from 'react-native-paper';
+import { Title, Paragraph } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -14,11 +14,6 @@ import GradientButton from '../../../components/gradientButton';
 
 import {
   ContactContainer,
-  FirstNameContainer,
-  LastNameContainer,
-  DOBContainer,
-  Container,
-  TextInput,
   InterestContainer,
   IdentityContainer,
   Identities,
@@ -26,11 +21,6 @@ import {
   LocationContainer,
   Location,
   CitizenshipContainer,
-  LinkAccountsContainer,
-  InstagramButton,
-  SpotifyButton,
-  ButtonDot,
-  EditTextInput,
   Header,
   Connection,
   ConnectionCover
@@ -91,7 +81,7 @@ export default function contactSlide() {
                   textTransform: 'uppercase'
                 }}
               >
-                connections
+                {t(`community.memberPassport.connection`)}
               </Paragraph>
             </Connection>
             <Connection>
@@ -112,13 +102,15 @@ export default function contactSlide() {
                   textTransform: 'uppercase'
                 }}
               >
-                communities
+                {t(`community.memberPassport.community`)}
               </Paragraph>
             </Connection>
           </ConnectionCover>
         </Header>
 
-        <GradientButton onPress={() => {}}>connect</GradientButton>
+        <GradientButton onPress={() => {}}>
+          {t(`community.memberPassport.connect`)}
+        </GradientButton>
         {userDetail?.birthPlace.country ? (
           <CitizenshipContainer>
             <Title
@@ -130,7 +122,7 @@ export default function contactSlide() {
                 marginTop: RFValue(10)
               }}
             >
-              bio
+              {t(`community.memberPassport.bio`)}
             </Title>
 
             <Paragraph

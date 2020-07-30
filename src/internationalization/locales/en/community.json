@@ -3,5 +3,54 @@
     "community": "tribl",
     "inbox": "inbox",
     "passport": "passport"
+  },
+  "recommended": {
+    "members": "recommended members",
+    "community": "recommended community",
+    "view": "view all",
+    "join": "join",
+    "add": "add",
+    "activity": "recent activity"
+  },
+  "joinModal": {
+    "title": "enter your referral code below",
+    "label": "referral code",
+    "placeholder": "paste code here",
+    "join": "join",
+    "request": "request"
+  },
+  "memberPassport": {
+    "connection": "connections",
+    "community": "communities",
+    "connect": "connect",
+    "bio": "bio",
+    "locality": "locality",
+    "identity": "identity",
+    "interest": "interest"
+  },
+  "tabPanel": {
+    "member": "members",
+    "community": "communities",
+    "highlight": "highlights",
+    "channel": "channels",
+    "active": "most active members",
+    "nearby": "members nearby",
+    "featured": "featured community",
+    "popular": "popular communities",
+    "join": "join",
+    "tag": "tags",
+    "view": "view all",
+    "placeholder": "Search by name or tag"
+  },
+  "sideNav": {
+    "community": "community",
+    "chat": "chat",
+    "request": "connection requests",
+    "wallet": "add wallet",
+    "settings": "privacy settings",
+    "invite": "invite friend",
+    "policy": "privacy policy",
+    "version": "version 1.0.0",
+    "company": "silicon jungle labs"
   }
 }
