@@ -1,21 +1,23 @@
 import React, { useState, useCallback } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-
 import { Image, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
-import { Searchbar, Text, TouchableRipple } from 'react-native-paper';
-import { FontAwesome, Feather } from '@expo/vector-icons';
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { Searchbar, Text } from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
+import { TouchableHighlight } from 'react-native';
 import hexToRGB from '../../utils/hexToRGB';
+import { NavigationInterface } from '../../screens/types';
 
 const CommunityStack = createStackNavigator();
 
-export default function CommunityNavigator() {
-  const { colors, fonts } = useThemeContext();
+interface CommunityNavigatorProps extends NavigationInterface {}
 
+export default function CommunityNavigator(props: CommunityNavigatorProps) {
+  const { navigation } = props;
+  const { colors, fonts } = useThemeContext();
   const [search, setSearch] = useState('');
 
   const onChangeSearch = (query: any) => setSearch(query);
@@ -47,7 +49,7 @@ export default function CommunityNavigator() {
           headerLeft: (props) => (
             <TouchableHighlight
               {...props}
-              onPress={() => {}}
+              onPress={navigation.toggleDrawer}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
               style={{
                 height: RFValue(40),
