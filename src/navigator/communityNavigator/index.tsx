@@ -10,6 +10,7 @@ import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
+import { GLOBAL_HEADER_STYLE } from '../../constants';
 
 const CommunityStack = createStackNavigator();
 
@@ -67,7 +68,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </TouchableHighlight>
           ),
-
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: { marginRight: 10 }
         }}
@@ -126,7 +126,8 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRightContainerStyle: { marginRight: 10 }
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
         }}
       />
 
@@ -149,7 +150,8 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRightContainerStyle: { marginRight: 10 }
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
         }}
       />
     </CommunityStack.Navigator>
