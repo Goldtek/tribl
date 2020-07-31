@@ -2,5 +2,5 @@ import styled from 'styled-components/native';
 
 export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.WHITE};
-  padding: 10px;
+  padding: 10px 0px;
 `;
