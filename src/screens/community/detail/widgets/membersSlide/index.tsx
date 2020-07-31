@@ -5,18 +5,16 @@ import { Title, Searchbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
-import MemberCard from './widget';
-import FriendCard from './widget/friends';
-import MembersData from '../../../../../libs/recommendedUsers/index.json';
-import FriendsData from '../../../../../libs/friends/index.json';
+import MemberCard from './widget/member';
+import MembersData from '../../../../../libs/members/index.json';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MemberScreenProp extends NavigationInterface {}
+interface MemberSlideProp extends NavigationInterface {}
 
-export default function MemberSlide(props: MemberScreenProp) {
+export default function MemberSlide(props: MemberSlideProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
@@ -48,40 +46,24 @@ export default function MemberSlide(props: MemberScreenProp) {
           fontSize: RFValue(fonts.LARGE_SIZE),
           marginTop: RFValue(20),
           marginBottom: RFValue(10),
+          marginLeft: RFValue(10),
           textTransform: 'capitalize'
         }}
       >
         {t(`community.tabPanel.memberTitle`)}
       </Title>
-      {FriendsData.length ? (
-        <FlatList
-          renderItem={({ item, index }) => (
-            <FriendCard
-              {...item}
-              {...props}
-              key={index}
-              name={item.name}
-              lastSeen={item.lastSeen}
-              avatar={item.avatar}
-            />
-          )}
-          data={FriendsData}
-          keyExtractor={(_item, index) => index.toString()}
-        />
-      ) : null}
       <FlatList
-        renderItem={({ item, index }) => (
-          <MemberCard
-            {...item}
-            {...props}
-            key={index}
-            name={item.name}
-            lastSeen={item.lastSeen}
-            avatar={item.avatar}
-          />
-        )}
         data={MembersData}
-        keyExtractor={(_item, index) => index.toString()}
+        contentContainerStyle={{
+          flexGrow: 1,
+          marginTop: RFValue(20),
+          paddingBottom: RFValue(120)
+        }}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item, index }) => (
+          <MemberCard key={item.id} {...item} {...props} />
+        )}
+        keyExtractor={(item) => item.id}
       />
     </Container>
   );
