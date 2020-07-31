@@ -1,7 +1,7 @@
 import React from 'react';
-import { SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Text } from 'react-native-paper';
 import {
@@ -18,11 +18,8 @@ export default function CustomDrawerComponent(props: any) {
   const { avatar = 'https://picsum.photos/700' } = props;
 
   return (
-    <DrawerContentScrollView
-      {...props}
-      contentContainerStyle={{ flex: 1, justifyContent: 'space-between' }}
-    >
-      <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
         <ProfileContainer>
           <FastImage
             resizeMode={FastImage.resizeMode.contain}
@@ -49,32 +46,32 @@ export default function CustomDrawerComponent(props: any) {
           </Text>
         </ProfileContainer>
         <DrawerItemList {...props} />
-      </SafeAreaView>
-      <DrawerFooter>
-        <Text
-          style={{
-            color: colors.PRIMARY_TEXT,
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(13),
-            textAlign: 'center',
-            lineHeight: RFValue(15)
-          }}
-        >
-          {t(`community.sideNav.version`)}
-        </Text>
-        <Text
-          style={{
-            color: colors.PRIMARY_TEXT,
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(13),
-            textAlign: 'center',
-            lineHeight: RFValue(15),
-            textTransform: 'capitalize'
-          }}
-        >
-          {t(`community.sideNav.company`)}
-        </Text>
-      </DrawerFooter>
-    </DrawerContentScrollView>
+        <DrawerFooter>
+          <Text
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(13),
+              textAlign: 'center',
+              lineHeight: RFValue(15)
+            }}
+          >
+            {t(`community.sideNav.version`)}
+          </Text>
+          <Text
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(13),
+              textAlign: 'center',
+              lineHeight: RFValue(15),
+              textTransform: 'capitalize'
+            }}
+          >
+            {t(`community.sideNav.company`)}
+          </Text>
+        </DrawerFooter>
+      </DrawerContentScrollView>
+    </SafeAreaView>
   );
 }
