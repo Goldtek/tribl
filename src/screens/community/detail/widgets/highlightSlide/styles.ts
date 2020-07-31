@@ -8,23 +8,13 @@ export const Container = styled.View`
 
 export const CardContainer = styled.View`
   flex-direction: row;
+  padding: 20px 10px;
+  align-items: center;
 `;
 
 export const TextContainer = styled.View`
-  width: ${RFValue(200)}px;
-`;
-
-export const JoinContainer = styled.View`
-  width: 60px;
-  height: 40px;
-  align-self: flex-start;
-  background-color: ${({ theme }) => theme.colors.PRIMARY};
-  margin-left: auto;
-  margin-right: ${RFValue(10)}px;
-  margin-top: ${RFValue(20)}px;
-  border-radius: 4px;
-  justify-content: center;
-  align-items: center;
+  flex: 1;
+  padding: 0px 10px;
 `;
 
 export const TagContainer = styled.View`
