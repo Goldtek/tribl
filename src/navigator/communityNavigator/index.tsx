@@ -28,10 +28,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
     <CommunityStack.Navigator
       initialRouteName="CommunityScreen"
       headerMode="screen"
-      screenOptions={{
-        headerTitleContainerStyle: { alignItems: 'center' },
-        headerStyle: { height: RFValue(90) }
-      }}
+      screenOptions={{ headerStyle: { height: RFValue(90) } }}
     >
       <CommunityStack.Screen
         name="CommunityScreen"
@@ -68,6 +65,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </TouchableHighlight>
           ),
+          headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: { marginRight: 10 }
         }}
@@ -111,18 +109,13 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
         name="CommunityDetailScreen"
         component={Screens.CommunityDetailScreen}
         options={{
-          headerTitle: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_BOLD,
-                textTransform: 'capitalize'
-              }}
-            >
-              black lives matter
-            </Text>
-          ),
+          headerTitle: 'black lives matter',
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
@@ -135,18 +128,13 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
         name="MemberDetailScreen"
         component={Screens.MemberDetailScreen}
         options={{
-          headerTitle: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_BOLD,
-                textTransform: 'capitalize'
-              }}
-            >
-              peter martin
-            </Text>
-          ),
+          headerTitle: 'peter martin',
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
