@@ -18,13 +18,17 @@ export default function MemberSlide(props: MemberSlideProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
-  const onChangeSearch = (query: any) => setSearch(query);
+  const onChangeSearch = (query: string) => setSearch(query);
+
+  const _renderItem = ({ item }: any) => (
+    <MemberCard key={item.id} {...item} {...props} />
+  );
 
   return (
     <Container>
       <Searchbar
         placeholder={t(`community.tabPanel.search`)}
-        onChange={onChangeSearch}
+        onChangeText={onChangeSearch}
         value={search}
         style={{
           marginLeft: RFValue(15),
@@ -52,6 +56,7 @@ export default function MemberSlide(props: MemberSlideProp) {
       >
         {t(`community.tabPanel.memberTitle`)}
       </Title>
+
       <FlatList
         data={MembersData}
         contentContainerStyle={{
@@ -60,9 +65,7 @@ export default function MemberSlide(props: MemberSlideProp) {
           paddingBottom: RFValue(120)
         }}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item, index }) => (
-          <MemberCard key={item.id} {...item} {...props} />
-        )}
+        renderItem={_renderItem}
         keyExtractor={(item) => item.id}
       />
     </Container>
