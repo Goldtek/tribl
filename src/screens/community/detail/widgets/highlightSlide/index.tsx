@@ -14,7 +14,6 @@ import {
   Container,
   CardContainer,
   TextContainer,
-  JoinContainer,
   TagContainer,
   Tags,
   TagText
@@ -52,10 +51,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 uri: 'https://www.linkpicture.com/q/Rectangle-159.png',
                 priority: FastImage.priority.high
               }}
-              style={{
-                width: RFValue(100),
-                height: RFValue(100)
-              }}
+              style={{ width: '20%', height: '50%' }}
             />
             <TextContainer>
               <Title
@@ -90,18 +86,24 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 to make connections
               </Paragraph>
             </TextContainer>
-            <JoinContainer>
-              <Paragraph
-                style={{
-                  color: colors.WHITE,
-                  fontSize: fonts.MEDIUM_SIZE,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`community.tabPanel.join`)}
-              </Paragraph>
-            </JoinContainer>
+            <Button
+              mode="contained"
+              style={{
+                width: '20%',
+                height: RFValue(40),
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 4
+              }}
+              labelStyle={{
+                fontSize: fonts.LARGE_SIZE,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                color: colors.WHITE,
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`community.tabPanel.join`)}
+            </Button>
           </CardContainer>
           <TagContainer>
             <Title
