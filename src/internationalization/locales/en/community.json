@@ -40,7 +40,9 @@
     "join": "join",
     "tag": "tags",
     "view": "view all",
-    "placeholder": "Search by name or tag"
+    "placeholder": "Search by name or tag",
+    "search": "Search",
+    "memberTitle": "community members"
   },
   "sideNav": {
     "community": "community",
