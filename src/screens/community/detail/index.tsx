@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationInterface } from '../../types';
 import TabViewSlide from './widgets/tabs';
+
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
