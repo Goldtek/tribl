@@ -1,0 +1,58 @@
+[
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Jane Martin",
+    "lastSeen": "2 mins ago",
+    "connect": true,
+    "id": "1"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Aminatu Diop",
+    "lastSeen": "2 mins ago",
+    "connect": true,
+    "id": "2"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Aminatu Diop",
+    "lastSeen": "2 mins ago",
+    "connect": true,
+    "id": "3"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Peter Martin",
+    "lastSeen": "2 mins ago",
+    "connect": false,
+    "id": "4"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Aminatu Diop",
+    "lastSeen": "2 mins ago",
+    "connect": false,
+    "id": "5"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Jennifer Artin",
+    "lastSeen": "2 mins ago",
+    "connect": false,
+    "id": "6"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Jane Martin",
+    "lastSeen": "2 mins ago",
+    "connect": false,
+    "id": "7"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Peter Martin",
+    "lastSeen": "2 mins ago",
+    "connect": false,
+    "id": "8"
+  }
+]
