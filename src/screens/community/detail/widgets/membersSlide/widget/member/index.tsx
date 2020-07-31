@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
-import { NavigationInterface } from '../../../../../../types';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { NavigationInterface } from '../../../../../../types';
 import { useThemeContext } from '../../../../../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
