@@ -8,9 +8,11 @@
 	<true/>
 	<key>EXUpdatesLaunchWaitMs</key>
 	<integer>0</integer>
+	<key>EXUpdatesReleaseChannel</key>
+	<string>default</string>
 	<key>EXUpdatesSDKVersion</key>
 	<string>38.0.0</string>
 	<key>EXUpdatesURL</key>
-	<string>https://exp.host/@josemak25/tribl</string>
+	<string>https://exp.host/@josemak25/Tribl</string>
 </dict>
 </plist>

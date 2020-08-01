@@ -86,6 +86,7 @@
     "prettier": "2.0.5",
     "react-native-clean-project": "^3.3.0",
     "reactotron-react-native": "^5.0.0",
+    "sharp-cli": "^1.14.1",
     "typescript": "~3.9.5"
   },
   "private": true,
