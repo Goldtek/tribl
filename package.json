@@ -7,7 +7,8 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "web": "expo start --web"
+    "codepush-staging": "appcenter codepush release-react -a Tribl/Tribl -d Staging",
+    "codepush-production": " appcenter codepush release-react -a Tribl/Tribl -d Production"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
