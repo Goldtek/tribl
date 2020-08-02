@@ -84,7 +84,7 @@ export default function WalkThroughScreen(props: ScreenProp) {
 
   return (
     <GradientContainer colors={[colors.PRIMARY, colors.SECONDARY]}>
-      <StatusBar translucent />
+      <StatusBar translucent animated style="light" />
       <SafeAreaView
         style={{
           flex: 1,
