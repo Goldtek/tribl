@@ -18,6 +18,10 @@ target 'tribl' do
   use_flipper!
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
 
+  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
+
+  pod 'lottie-ios', :path => '../node_modules/lottie-ios'
+
   post_install do |installer|
     flipper_post_install(installer)
   end
