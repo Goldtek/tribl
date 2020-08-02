@@ -24,30 +24,6 @@ function App() {
   return isAppReady ? <AppRouter /> : null;
 }
 
-// Prompt the user when an update is available
-// and then display a "downloading" modal
-codePush.sync(
-  {
-    deploymentKey: '23b6df88-75df-4a81-be10-dbb5798089f3',
-    updateDialog: { title: 'An update is available!' },
-    installMode: codePush.InstallMode.ON_NEXT_RESUME
-  },
-  (status) => {
-    switch (status) {
-      case codePush.SyncStatus.DOWNLOADING_PACKAGE:
-        // Show "downloading" modal
-        break;
-      case codePush.SyncStatus.INSTALLING_UPDATE:
-        // Hide "downloading" modal
-        break;
-    }
-  },
-  ({ receivedBytes, totalBytes }) => {
-    /* Update download modal progress */
-    console.log({ receivedBytes, totalBytes });
-  }
-);
-
 export default codePush({
   checkFrequency: codePush.CheckFrequency.ON_APP_RESUME,
   appendReleaseDescription: true
