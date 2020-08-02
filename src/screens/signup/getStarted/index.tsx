@@ -14,7 +14,7 @@ import { useThemeContext } from '../../../theme';
 import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import Input from '../../../components/input';
-import Countries from '../../../libs/countries';
+import countriesDB from '../../../libs/countries';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { SEND_USER_OTP } from '../../../graphql/server/mutations';
@@ -37,7 +37,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
   const userDetails = data?.userDetails;
 
-  const country = Countries.getCountryDataByCode(userDetails?.countryCode);
+  const country = countriesDB.getCountry(userDetails?.countryCode);
 
   const [state, setState] = useState({
     number: '',
@@ -161,15 +161,13 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                   }}
                 >
                   <Fragment>
-                    <Image
+                    <Paragraph
                       style={{
-                        width: RFValue(25),
-                        height: RFValue(30),
-                        resizeMode: 'contain'
+                        fontSize: RFValue(fonts.LARGE_SIZE)
                       }}
-                      //@ts-ignore
-                      source={Countries.getFlag(userDetails?.countryCode)}
-                    />
+                    >
+                      {country.emoji}
+                    </Paragraph>
                     <Container
                       style={{
                         height: RFValue(30),
