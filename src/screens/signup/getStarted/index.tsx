@@ -145,7 +145,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
               <Input
                 placeholder={t(`signup.getStartedScreen.placeholder`)}
-                defaultValue={country?.dialCode}
+                defaultValue={country?.phoneCode}
                 onChangeText={onChangeText}
                 keyboardType="phone-pad"
                 returnKeyType="done"
