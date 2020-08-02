@@ -49,7 +49,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
   const [sendOtp] = useMutation<OTPInterface>(SEND_USER_OTP, {
     variables: {
-      payload: { phoneNumber: `+${state.number}`, deviceId: DEVICE_ID }
+      payload: { phoneNumber: state.number, deviceId: DEVICE_ID }
     }
   });
 
