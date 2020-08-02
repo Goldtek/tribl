@@ -62,10 +62,10 @@ public class MainApplication extends Application implements ReactApplication {
         // the CodePush runtime determine where to get the JS
         // bundle location from on each app start      
         // Microsoft code-push controller
-        return CodePush.getJSBundleFile();
+        // return CodePush.getJSBundleFile();
 
         // Expo update controller [Reference this if App OTA updates fails with code-push]
-        //  return UpdatesController.getInstance().getLaunchAssetFile();
+         return UpdatesController.getInstance().getLaunchAssetFile();
       }
     }
 
