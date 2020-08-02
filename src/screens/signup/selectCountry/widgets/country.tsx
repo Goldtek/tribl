@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
 import { Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { TouchableOpacity, Image } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { ADD_USER_DETAILS } from '../../../../graphql/cache/mutations';
 import { useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../theme';
-import COUNTRIES, { CountryInterface } from '../../../../libs/countries';
+import { CountryInterface } from '../../../../libs/countries';
 import { NavigationInterface } from '../../../types';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -16,7 +16,7 @@ interface CountryCardProps extends CountryInterface, NavigationInterface {}
 const CountryCard = (props: CountryCardProps) => {
   const { colors, fonts } = useThemeContext();
 
-  const { name, iso2, dialCode, navigation } = props;
+  const { name, iso2, phoneCode, emoji, navigation } = props;
 
   const [toggleTodo] = useMutation(ADD_USER_DETAILS, {
     variables: { details: { countryCode: iso2 } }
@@ -42,16 +42,14 @@ const CountryCard = (props: CountryCardProps) => {
     >
       <Fragment>
         <Container style={{ flexDirection: 'row' }}>
-          <Image
-            //@ts-ignore
-            source={COUNTRIES.getFlag(iso2)}
+          <Title
             style={{
-              width: RFValue(50),
-              height: RFValue(35),
-              resizeMode: 'contain',
-              borderRadius: 4
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE))
             }}
-          />
+          >
+            {emoji}
+          </Title>
+
           <Title
             style={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
@@ -65,10 +63,10 @@ const CountryCard = (props: CountryCardProps) => {
             {name.length <= 20 ? name : `${name.substring(0, 20)}...`}
           </Title>
         </Container>
-        <Paragraph>+{dialCode}</Paragraph>
+        <Paragraph>{phoneCode}</Paragraph>
       </Fragment>
     </TouchableOpacity>
   );
 };
 
-export default React.memo(CountryCard);
+export default React.memo(CountryCard, () => false);
