@@ -54,7 +54,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   });
 
   const [addPhoneNumber] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { number: `+${state.number}` } }
+    variables: { details: { number: state.number } }
   });
 
   const handleInputError = () => {
