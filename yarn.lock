@@ -1571,7 +1571,7 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-community/clipboard@^1.2.2":
+"@react-native-community/clipboard@^1.2.2", "@react-native-community/clipboard@^1.2.3":
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/clipboard/-/clipboard-1.2.3.tgz#1590f6849d9c8a3bc14bbd1aa0f1f3945e4e60ca"
   integrity sha512-X9dfG/JiLI5pNyAwg3VMd7O3l/PVbYoAy8m12fetLWkBFzgTVEUIwsP0vysZ/29lnlLVM+qJUywcJmat046fvw==
@@ -3116,6 +3116,11 @@ cosmiconfig@^6.0.0:
     path-type "^4.0.0"
     yaml "^1.7.2"
 
+countries-db@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/countries-db/-/countries-db-1.0.0.tgz#64fba47828c3dbd119e29b2401edaf45344aaa42"
+  integrity sha512-A/janPP1pY090NcTFaEaBR8XkRZjBLlILcGLPlgsjPLeoyeJ6tzFRW2J17mqp1NPoRE/PV35NuEnQvjmYTP0Og==
+
 create-react-class@^15.6.3:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
@@ -3844,10 +3849,10 @@ expo-status-bar@^1.0.0:
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-1.0.2.tgz#2441a77c56be31597898337b0d086981f2adefd8"
   integrity sha512-5313u744GcLzCadxIPXyTkYw77++UXv1dXCuhYDxDbtsEf93iMra7WSvzyE8a7mRQLIIPRuGnBOdrL/V1C7EOQ==
 
-expo-updates@~0.2.8:
-  version "0.2.13"
-  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.2.13.tgz#b2249f0248a504d51c81bcda900954d883b7395b"
-  integrity sha512-txJryKpt7pnXGldFLsqhzNx5BH1wKvKN7PD8CCyuqGlDAwbWoxVGC7DueitvGngCTeMTVybu+oQYNIRYaIm0cw==
+expo-updates@^0.2.14:
+  version "0.2.14"
+  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.2.14.tgz#0cfbab6ebb8560b1955d888a7d4a31c643e7f3fd"
+  integrity sha512-/FNEDRSS7xxG+ql/vDdjPD6eAG63K9zbXsinYsu9Nrm06OhbB8MAx+OA4bMn+CZkvrQOzVJMhZ3oPvyOvEcmuQ==
   dependencies:
     "@expo/metro-config" "^0.1.16"
     fbemitter "^2.1.1"
