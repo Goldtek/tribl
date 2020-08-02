@@ -150,7 +150,7 @@ export default function OTPScreen(props: ScreenProp) {
               lineHeight: RFValue(22)
             }}
           >
-            {t(`signup.OTPScreen.paragraph`) + ' (305) 408-1935.'}
+            {t(`signup.OTPScreen.paragraph`) + ` ${data?.userDetails.number}`}
           </Paragraph>
 
           <Container style={{ height: RFValue(100), marginTop: 10 }}>
