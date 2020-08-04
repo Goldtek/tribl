@@ -14,7 +14,7 @@ import { useThemeContext } from '../../../theme';
 import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import Input from '../../../components/input';
-import Countries from '../../../libs/countries';
+import countriesDB from '../../../libs/countries';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { SEND_USER_OTP } from '../../../graphql/server/mutations';
@@ -37,7 +37,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
   const userDetails = data?.userDetails;
 
-  const country = Countries.getCountryDataByCode(userDetails?.countryCode);
+  const country = countriesDB.getCountry(userDetails?.countryCode);
 
   const [state, setState] = useState({
     number: '',
@@ -49,12 +49,12 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
   const [sendOtp] = useMutation<OTPInterface>(SEND_USER_OTP, {
     variables: {
-      payload: { phoneNumber: `+${state.number}`, deviceId: DEVICE_ID }
+      payload: { phoneNumber: state.number, deviceId: DEVICE_ID }
     }
   });
 
   const [addPhoneNumber] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { number: `+${state.number}` } }
+    variables: { details: { number: state.number } }
   });
 
   const handleInputError = () => {
@@ -145,7 +145,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
               <Input
                 placeholder={t(`signup.getStartedScreen.placeholder`)}
-                defaultValue={country?.dialCode}
+                defaultValue={country?.phoneCode}
                 onChangeText={onChangeText}
                 keyboardType="phone-pad"
                 returnKeyType="done"
@@ -161,15 +161,13 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                   }}
                 >
                   <Fragment>
-                    <Image
+                    <Paragraph
                       style={{
-                        width: RFValue(25),
-                        height: RFValue(30),
-                        resizeMode: 'contain'
+                        fontSize: RFValue(fonts.LARGE_SIZE)
                       }}
-                      //@ts-ignore
-                      source={Countries.getFlag(userDetails?.countryCode)}
-                    />
+                    >
+                      {country.emoji}
+                    </Paragraph>
                     <Container
                       style={{
                         height: RFValue(30),

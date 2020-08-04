@@ -13,6 +13,9 @@
 -keep class com.facebook.hermes.unicode.** { *; }
 -keep class com.facebook.jni.** { *; }
 
+# RN SVG
+-keep public class com.horcrux.svg.** {*;}
+
 
 # RNFastImage:
 -keep public class com.dylanvann.fastimage.* {*;}

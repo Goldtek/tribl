@@ -9,8 +9,8 @@ import { getCountryLayout } from '../../../utils/LayoutUtil';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Input from '../../../components/input';
-import CountryCard from './widgets/countryCard';
-import Countries, { CountryInterface } from '../../../libs/countries';
+import CountryCard from './widgets/country';
+import countriesDB, { CountryInterface } from '../../../libs/countries';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -24,7 +24,7 @@ export default function SelectCountryScreen(props: ScreenProp) {
 
   const [state, setState] = useState({
     dataProvider: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(
-      Countries.getAll()
+      countriesDB.getAllCountries()
     ),
     layoutProvider: getCountryLayout()
   });
@@ -51,7 +51,7 @@ export default function SelectCountryScreen(props: ScreenProp) {
   };
 
   const handleSearch = (value: string) => {
-    const result = Countries.searchCountry(value);
+    const result = countriesDB.searchCountry(value);
 
     if (!result.length) {
       return setState({

@@ -5,6 +5,16 @@
     "name": "Tribl",
     "slug": "Tribl",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": ["**/*"],
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "translucent": true
+    },
+    "androidNavigationBar": {
+      "visible": "sticky-immersive"
+    },
+    "android": {
+      "enableDangerousExperimentalLeanBuilds": true
+    }
   }
 }

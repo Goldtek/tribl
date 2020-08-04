@@ -1,19 +1,14 @@
-import Flags from './resources/flags';
+//@ts-ignore
+import countryList from 'countries-db/lib';
 
 let instance: null | Country = null;
 
-export interface CountryInterface {
-  name: string;
-  iso2: string;
-  dialCode: string;
-  priority: number;
-  areaCodes: null | string[];
-  isEmpty?: boolean;
-}
-
 class Country {
-  private countryCodes: [];
   private countries: null | CountryInterface[];
+
+  constructor() {
+    this.countries = null;
+  }
 
   static getInstance() {
     if (!instance) {
@@ -22,64 +17,74 @@ class Country {
     return instance;
   }
 
-  constructor() {
-    this.countryCodes = [];
-    this.countries = null;
-  }
-
-  addCountryCode(iso2: string, dialCode: string, priority?: number) {
-    if (!(dialCode in this.countryCodes)) {
-      //@ts-ignore
-      this.countryCodes[dialCode] = [];
-    }
-
-    const index = priority || 0;
-    //@ts-ignore
-    this.countryCodes[dialCode][index] = iso2;
-  }
-
-  getAll() {
+  getAllCountries(): CountryInterface[] {
     if (!this.countries) {
-      const allCountries = require('./resources/countries.json') as CountryInterface[];
-      this.countries = allCountries.sort((a: any, b: any) => b.name - a.name);
+      const allCountries = countryList.getAllCountries();
+      this.countries = Object.values(allCountries).sort(
+        (a: any, b: any) => b.name - a.name
+      ) as CountryInterface[];
     }
 
     return this.countries;
   }
 
-  getCountryCodes() {
-    if (!this.countryCodes.length) {
-      this.getAll().map(({ iso2, dialCode, priority, areaCodes }) => {
-        this.addCountryCode(iso2, dialCode, priority);
-        if (areaCodes) {
-          areaCodes.map((areaCode) => {
-            this.addCountryCode(iso2, dialCode + areaCode);
-          });
-        }
-      });
-    }
-    return this.countryCodes;
+  getCountry(iso2?: string): CountryInterface {
+    return countryList.getCountry(iso2?.toUpperCase());
   }
 
-  getCountryDataByCode(countryCode?: string) {
+  getFlag(countryCode: string): string {
+    const country = countryList.getAllCountries() as {
+      [name: string]: CountryInterface;
+    };
+
+    return country[countryCode].emoji;
+  }
+
+  searchCountry(countryName: string): CountryInterface[] {
     if (this.countries) {
-      return this.countries?.find(({ iso2 }) => iso2 === countryCode);
+      return this.countries.filter(({ name }) =>
+        name.toLowerCase().includes(countryName.toLowerCase())
+      );
     }
 
-    return this.getAll().find(({ iso2 }) => iso2 === countryCode);
-  }
-
-  searchCountry(countryName: string) {
-    if (this.countries) {
-      return this.countries.filter(({ name }) => name.includes(countryName));
-    }
-
-    return this.getAll().filter(({ name }) => name.includes(countryName));
-  }
-
-  getFlag(countryCode: string) {
-    return Flags.get(countryCode);
+    return this.getAllCountries().filter(({ name }) =>
+      name.toLowerCase().includes(countryName.toLowerCase())
+    );
   }
 }
 
 export default Country.getInstance();
+
+export interface CountryInterface {
+  id: string;
+  name: string;
+  officialName: string;
+  emoji: string;
+  emojiUnicode: string;
+  iso2: string;
+  iso3: string;
+  isoNumeric: string;
+  geonameId: number;
+  dialCode: string;
+  priority: number;
+  areaCodes: null | string[];
+  isEmpty?: boolean;
+  continentId: string;
+  population: number;
+  elevation: number;
+  areaSqKm: number;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+  timezones: string[];
+  domain: string;
+  currencyCode: string;
+  currencyName: string;
+  postalCodeFormat: string;
+  postalCodeRegex: string;
+  phoneCode: string;
+  neighborCountryIds: string[];
+  languages: string[];
+  locales: string[];
+}

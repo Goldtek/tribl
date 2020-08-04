@@ -14,7 +14,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <RootStack.Navigator
-        initialRouteName="CommunityScreen"
+        initialRouteName="WalkThroughScreen"
         screenOptions={{
           headerShown: false,
           headerBackTitleStyle: {
