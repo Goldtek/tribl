@@ -2,6 +2,7 @@
   {
     "avatar": "https://picsum.photos/700",
     "name": "Peter Martin",
+    "lastSeen": "2 mins ago",
     "address": "New York, NY",
     "currentLocation": {
       "lat": null,
@@ -23,6 +24,7 @@
   {
     "avatar": "https://picsum.photos/700",
     "name": "Aminatu Diop",
+    "lastSeen": "2 mins ago",
     "address": "Brooklyn, NY",
     "currentLocation": {
       "lat": null,
@@ -44,6 +46,7 @@
   {
     "avatar": "https://picsum.photos/700",
     "name": "Jennifer Artin",
+    "lastSeen": "2 mins ago",
     "address": "New York, NY",
     "currentLocation": {
       "lat": null,

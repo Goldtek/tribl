@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   ProgressBar,
@@ -100,148 +100,146 @@ export default function OTPScreen(props: ScreenProp) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <Fragment>
-          <Container
+        <Container
+          style={{
+            height: '100%',
+            paddingLeft: RFValue(20),
+            paddingRight: RFValue(20)
+          }}
+        >
+          <ProgressBar
+            progress={1 / 5}
+            color={colors.PRIMARY}
             style={{
-              height: '100%',
-              paddingLeft: RFValue(20),
-              paddingRight: RFValue(20)
+              height: RFValue(5),
+              backgroundColor: '#F2F2F7',
+              borderRadius: 4,
+              marginBottom: RFValue(30)
+            }}
+          />
+
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
+              color: colors.PRIMARY,
+              textTransform: 'capitalize',
+              lineHeight: RFValue(30)
             }}
           >
-            <ProgressBar
-              progress={1 / 5}
-              color={colors.PRIMARY}
-              style={{
-                height: RFValue(5),
-                backgroundColor: '#F2F2F7',
-                borderRadius: 4,
-                marginBottom: RFValue(30)
-              }}
-            />
+            {t(`signup.OTPScreen.subTitle`)}
+          </Title>
 
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
-                color: colors.PRIMARY,
-                textTransform: 'capitalize',
-                lineHeight: RFValue(30)
-              }}
-            >
-              {t(`signup.OTPScreen.subTitle`)}
-            </Title>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+              color: colors.PRIMARY_TEXT,
+              lineHeight: RFValue(30),
+              marginTop: 20
+            }}
+          >
+            {t(`signup.OTPScreen.title`)}
+          </Title>
 
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+          <Paragraph
+            style={{
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              color: colors.SECONDARY_TEXT,
+              lineHeight: RFValue(22)
+            }}
+          >
+            {t(`signup.OTPScreen.paragraph`) + ` ${data?.userDetails.number}`}
+          </Paragraph>
+
+          <Container style={{ height: RFValue(100), marginTop: 10 }}>
+            <OTPInputView
+              pinCount={4}
+              autoFocusOnLoad={true}
+              keyboardType="number-pad"
+              placeholderCharacter="0"
+              onCodeFilled={handleSubmit}
+              codeInputFieldStyle={{
+                width: RFValue(65),
+                height: RFValue(70),
+                fontSize: RFValue(fonts.LARGE_SIZE * 2),
                 color: colors.PRIMARY_TEXT,
-                lineHeight: RFValue(30),
-                marginTop: 20
+                fontFamily: fonts.WORK_SANS_BOLD,
+                borderWidth: 1.2,
+                borderRadius: 4,
+                borderColor: colors.INACTIVE
               }}
-            >
-              {t(`signup.OTPScreen.title`)}
-            </Title>
-
+              codeInputHighlightStyle={{ borderColor: colors.PRIMARY }}
+              placeholderTextColor={colors.DISABLED}
+            />
+          </Container>
+          <Container
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
             <Paragraph
               style={{
                 fontFamily: fonts.WORK_SANS_REGULAR,
                 fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.SECONDARY_TEXT,
-                lineHeight: RFValue(22)
+                color: colors.SECONDARY_TEXT
               }}
             >
-              {t(`signup.OTPScreen.paragraph`) + ' (305) 408-1935.'}
+              {t(`signup.OTPScreen.didNotReceiveCode`)}
             </Paragraph>
 
-            <Container style={{ height: RFValue(100), marginTop: 10 }}>
-              <OTPInputView
-                pinCount={4}
-                autoFocusOnLoad={true}
-                keyboardType="number-pad"
-                placeholderCharacter="0"
-                onCodeFilled={handleSubmit}
-                codeInputFieldStyle={{
-                  width: RFValue(65),
-                  height: RFValue(70),
-                  fontSize: RFValue(fonts.LARGE_SIZE * 2),
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  borderWidth: 1.2,
-                  borderRadius: 4,
-                  borderColor: colors.INACTIVE
-                }}
-                codeInputHighlightStyle={{ borderColor: colors.PRIMARY }}
-                placeholderTextColor={colors.DISABLED}
-              />
-            </Container>
-            <Container
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Paragraph
+            {timeLeft ? (
+              <Title
                 style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                   fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.SECONDARY_TEXT
+                  color: colors.PRIMARY_TEXT,
+                  marginLeft: 5,
+                  padding: 5,
+                  paddingTop: 2
                 }}
               >
-                {t(`signup.OTPScreen.didNotReceiveCode`)}
-              </Paragraph>
-
-              {timeLeft ? (
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    marginLeft: 5,
-                    padding: 5,
-                    paddingTop: 2
-                  }}
-                >
-                  {timeLeft}
-                </Title>
-              ) : (
-                <Button
-                  mode="text"
-                  color={colors.WHITE}
-                  uppercase={false}
-                  onPress={resendOtp}
-                  labelStyle={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    marginLeft: 5,
-                    padding: 5,
-                    paddingTop: 2,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {t(`signup.OTPScreen.resend`)}
-                </Button>
-              )}
-            </Container>
-
-            <Container
-              style={{
-                flex: 1,
-                justifyContent: 'flex-end',
-                paddingBottom: RFValue(safeAreaBottom + 60)
-              }}
-            >
-              <GradientButton
-                loading={state.loading}
-                onPress={() => handleSubmit('')}
+                {timeLeft}
+              </Title>
+            ) : (
+              <Button
+                mode="text"
+                color={colors.WHITE}
+                uppercase={false}
+                onPress={resendOtp}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  marginLeft: 5,
+                  padding: 5,
+                  paddingTop: 2,
+                  textTransform: 'capitalize'
+                }}
               >
-                {t(`signup.OTPScreen.${state.loading ? 'loading' : 'submit'}`)}
-              </GradientButton>
-            </Container>
+                {t(`signup.OTPScreen.resend`)}
+              </Button>
+            )}
           </Container>
-        </Fragment>
+
+          <Container
+            style={{
+              flex: 1,
+              justifyContent: 'flex-end',
+              paddingBottom: RFValue(safeAreaBottom + 60)
+            }}
+          >
+            <GradientButton
+              loading={state.loading}
+              onPress={() => handleSubmit('')}
+            >
+              {t(`signup.OTPScreen.${state.loading ? 'loading' : 'submit'}`)}
+            </GradientButton>
+          </Container>
+        </Container>
       </TouchableWithoutFeedback>
       <Snackbar
         duration={Snackbar.DURATION_SHORT}
