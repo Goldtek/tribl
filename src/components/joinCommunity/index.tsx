@@ -94,7 +94,7 @@ function JoinCommunity(props: JoinCommunityProp) {
                   mode="outlined"
                   onPress={handleRequest}
                   labelStyle={{
-                    color: colors.GREY_TEXT,
+                    color: colors.SECONDARY_TEXT,
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.LARGE_SIZE),
                     width: '80%',
