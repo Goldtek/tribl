@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import ImageResizer from 'react-native-image-resizer';
-import {
-  ProgressBar,
-  Title,
-  Paragraph,
-  Subheading,
-  Snackbar
-} from 'react-native-paper';
+import { ProgressBar, Title, Paragraph, Subheading } from 'react-native-paper';
 import { TouchableHighlight, SafeAreaView } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { Toast } from '../../../components/rootToaster';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../components/gradientButton';
@@ -31,17 +26,14 @@ export default function AvatarUploadScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({
-    avatar: '',
-    inputError: false
-  });
+  const [state, setState] = useState({ avatar: '' });
 
   const [addUserImage] = useMutation(ADD_USER_DETAILS, {
     variables: { details: { avatar: state.avatar } }
   });
 
   const handleInputError = () => {
-    setState({ ...state, inputError: !state.inputError });
+    Toast.show(t(`signup.avatarUploadScreen.inputError`));
   };
 
   const handleSubmit = () => {
@@ -231,25 +223,6 @@ export default function AvatarUploadScreen(props: ScreenProp) {
           </Container>
         </Container>
       </Container>
-
-      <Snackbar
-        duration={Snackbar.DURATION_SHORT}
-        visible={state.inputError}
-        onDismiss={handleInputError}
-        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
-        style={{ minHeight: RFValue(50), borderRadius: 4 }}
-        action={{ label: 'Dismiss', onPress: handleInputError }}
-      >
-        <Paragraph
-          style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.WHITE
-          }}
-        >
-          {t(`signup.avatarUploadScreen.inputError`)}
-        </Paragraph>
-      </Snackbar>
     </SafeAreaView>
   );
 }
