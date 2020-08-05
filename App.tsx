@@ -25,6 +25,9 @@ function App() {
 }
 
 export default codePush({
-  checkFrequency: codePush.CheckFrequency.ON_APP_RESUME,
+  deploymentKey: '23b6df88-75df-4a81-be10-dbb5798089f3',
+  updateDialog: { title: 'An update is available!' },
+  installMode: codePush.InstallMode.IMMEDIATE,
+  checkFrequency: codePush.CheckFrequency.ON_APP_START,
   appendReleaseDescription: true
 })(App);
