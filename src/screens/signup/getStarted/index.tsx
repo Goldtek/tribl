@@ -7,11 +7,12 @@ import {
   Keyboard
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Title, Subheading, Paragraph, Snackbar } from 'react-native-paper';
+import { Title, Subheading, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import { useTranslation } from 'react-i18next';
+import { Toast } from '../../../components/rootToaster';
 import { NavigationInterface } from '../../types';
 import Input from '../../../components/input';
 import countriesDB from '../../../libs/countries';
@@ -39,11 +40,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
   const country = countriesDB.getCountry(userDetails?.countryCode);
 
-  const [state, setState] = useState({
-    number: '',
-    inputError: false,
-    loading: false
-  });
+  const [state, setState] = useState({ number: '', loading: false });
 
   const onChangeText = (number: string) => setState({ ...state, number });
 
@@ -58,7 +55,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   });
 
   const handleInputError = () => {
-    setState({ ...state, inputError: !state.inputError });
+    Toast.show(t(`signup.getStartedScreen.inputError`));
   };
 
   const handleSubmit = async () => {
@@ -75,7 +72,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
         addPhoneNumber();
       }
     } catch (error) {
-      setState({ ...state, inputError: !state.inputError, loading: false });
+      setState({ ...state, loading: false });
     }
   };
 
@@ -191,25 +188,6 @@ export default function getStartedScreenScreen(props: ScreenProp) {
           </Fragment>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-      <Snackbar
-        duration={Snackbar.DURATION_SHORT}
-        visible={state.inputError}
-        onDismiss={handleInputError}
-        wrapperStyle={{ top: 0 }}
-        style={{ minHeight: RFValue(50), borderRadius: 4 }}
-        action={{ label: 'Dismiss', onPress: handleInputError }}
-      >
-        <Paragraph
-          style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.WHITE,
-            letterSpacing: 2
-          }}
-        >
-          {t(`signup.getStartedScreen.inputError`)}
-        </Paragraph>
-      </Snackbar>
     </SafeAreaView>
   );
 }
