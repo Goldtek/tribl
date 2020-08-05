@@ -17,6 +17,9 @@ export type RootStackParamList = {
   TriblScreen: undefined;
   LoginScreen: undefined;
   OTPScreen: undefined;
+  NewMessageScreen: undefined;
+  NewChatSearch: undefined;
+  ChatScreen: undefined;
 };
 
 interface StackNavigationInterface extends StackActionHelpers {
