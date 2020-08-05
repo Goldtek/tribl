@@ -14,9 +14,11 @@ export default function SplashScreen(props: ScreenProp) {
   useEffect(() => {
     (async () => {
       const initialLaunch = await Storage.checkInitialLaunch();
-      if (!initialLaunch) {
-        navigation.replace('SignupScreen');
+      if (initialLaunch) {
+        return navigation.replace('WalkThroughScreen');
       }
+
+      navigation.replace('SignupScreen');
     })();
   }, []);
 
