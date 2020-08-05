@@ -1,5 +1,8 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import * as Keychain from 'react-native-keychain';
 import * as APP_CONSTANTS from '../constants';
+import { DEVICE_ID } from '../utils/device';
+import { VerifyOTPIT } from '../graphql/types';
 
 class Storage {
   async checkInitialLaunch() {
@@ -7,22 +10,22 @@ class Storage {
       APP_CONSTANTS.USER_FIRST_LAUNCH
     );
 
-    if (!Boolean(firstTimeLaunch)) return true;
-
-    return true;
+    return Boolean(Number(firstTimeLaunch));
   }
 
-  async getUserAuth() {
-    const authKeys = (await AsyncStorage.getItem(
-      APP_CONSTANTS.USER_AUTH_KEYS
-    )) as string;
-
-    const auth = JSON.parse(authKeys) as APP_CONSTANTS.JwtTokenResult | null;
-    return auth;
+  async setInitialLaunch() {
+    return AsyncStorage.setItem(APP_CONSTANTS.USER_FIRST_LAUNCH, '0');
   }
 
-  async addUserAuth(auth: Object | undefined) {
-    AsyncStorage.setItem(APP_CONSTANTS.USER_AUTH_KEYS, JSON.stringify(auth));
+  async getUserCredentials() {
+    return Keychain.getInternetCredentials(DEVICE_ID);
+  }
+
+  async setUserCredentials({ id_token, refresh_token }: VerifyOTPIT) {
+    return Promise.all([
+      Keychain.resetInternetCredentials(DEVICE_ID),
+      Keychain.setInternetCredentials(DEVICE_ID, id_token, refresh_token)
+    ]);
   }
 }
 
