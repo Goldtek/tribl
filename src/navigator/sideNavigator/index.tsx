@@ -3,7 +3,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
-import Screens from '../../screens';
+import Screens from '../../screens/inbox';
 import { Text } from 'react-native-paper';
 import {
   MaterialCommunityIcons,
@@ -14,6 +14,7 @@ import {
 } from '@expo/vector-icons';
 import BottomNavigator from '../bottomNavigator';
 import CustomDrawerContent from './customDrawerComponent';
+import ChatNavigator from '../chatNavigator';
 
 const Drawer = createDrawerNavigator();
 
@@ -55,7 +56,7 @@ export default function SideDrawerNavigator() {
       />
       <Drawer.Screen
         name="Chat"
-        component={Screens.InboxScreen}
+        component={ChatNavigator}
         options={{
           drawerIcon: () => (
             <Entypo name="new-message" size={24} color={colors.PRIMARY_TEXT} />
