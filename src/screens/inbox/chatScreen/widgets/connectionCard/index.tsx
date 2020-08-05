@@ -1,0 +1,79 @@
+import React, { Fragment } from 'react';
+import { Title, Text, TouchableRipple } from 'react-native-paper';
+import FastImage from 'react-native-fast-image';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { NavigationInterface } from '../../../../types';
+import { useThemeContext } from '../../../../../theme';
+import hexToRGB from '../../../../../utils/hexToRGB';
+
+// IMPORT FOR ALL CUSTOM STYLES
+import { NameContainer } from './styles';
+
+// DEFINE SCREEN PROP TYPES
+interface MemberProp extends NavigationInterface {
+  avatar: string;
+  lastSeen: string;
+  name: string;
+}
+
+function Member(props: MemberProp) {
+  const { colors, fonts } = useThemeContext();
+  const {
+    avatar = 'https://picsum.photos/700',
+    name = 'Paul Maet',
+    lastSeen
+  } = props;
+
+  return (
+    <TouchableRipple
+      style={{
+        height: RFValue(60),
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: RFValue(10),
+        marginTop: RFValue(15),
+        paddingHorizontal: RFValue(20)
+      }}
+      rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
+      onPress={() => {}}
+    >
+      <Fragment>
+        <FastImage
+          resizeMode={FastImage.resizeMode.contain}
+          source={{
+            uri: avatar,
+            priority: FastImage.priority.high
+          }}
+          style={{
+            width: RFValue(60),
+            height: RFValue(60),
+            borderRadius: RFValue(4)
+          }}
+        />
+        <NameContainer>
+          <Title
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
+            }}
+          >
+            {name}
+          </Title>
+          <Text
+            style={{
+              color: colors.SECONDARY_TEXT,
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE)
+            }}
+          >
+            {lastSeen}
+          </Text>
+        </NameContainer>
+      </Fragment>
+    </TouchableRipple>
+  );
+}
+
+export default React.memo(Member);
