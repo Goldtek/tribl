@@ -32,6 +32,15 @@ type Location = {
   state: string;
   __typename: string;
 };
+
+// SECURE USER KEY_CHAIN INTERFACE
+type Credentials = {
+  password: string;
+  service: string;
+  storage: string;
+  username: string;
+};
+
 export interface StoreInterface {
   userDetails: {
     DOB: string;
