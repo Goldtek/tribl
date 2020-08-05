@@ -54,5 +54,18 @@
     "policy": "privacy policy",
     "version": "version 1.0.0",
     "company": "silicon jungle labs"
+  },
+  "chat": {
+    "message": "direct messages",
+    "group": "group chat",
+    "request": "request",
+    "chatTitle": "new chat",
+    "search": "search",
+    "connection": "my connections",
+    "nearby": "nearby",
+    "active": "most active",
+    "new": "new group",
+    "messageTitle": "messages",
+    "online": "online"
   }
 }
