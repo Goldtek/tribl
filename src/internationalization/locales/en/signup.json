@@ -86,7 +86,7 @@
     "birthPlacePlaceholder": "City, State, Country",
     "placePlaceholderInstruction": "Choose selection that provides \n(city, state, country) listing format",
     "submit": "submit",
-    "inputError": "All fields are required",
+    "inputError": "current location and birth place are required",
     "isLocationEnabled": "LOCATION SERVICE NOT ENABLED",
     "locationPermission": "LOCATION PERMISSION NOT GRANTED",
     "currentPosition": "NETWORK TIMEOUT TRY AGAIN",
