@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Button,
-  ProgressBar,
-  Title,
-  Paragraph,
-  Snackbar
-} from 'react-native-paper';
+import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -26,7 +20,8 @@ import { GET_USER_DETAILS } from '../../../graphql/cache/query';
 import { NavigationInterface } from '../../types';
 import { DEVICE_ID } from '../../../utils/device';
 import { useThemeContext } from '../../../theme';
-import useCountDown from './useCountDown';
+import useCountDown from '../../../utils/useCountDown';
+import { Toast } from '../../../components/rootToaster';
 import Storage from '../../../storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -44,11 +39,7 @@ export default function OTPScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({
-    otp: '',
-    inputError: false,
-    loading: false
-  });
+  const [state, setState] = useState({ otp: '', loading: false });
 
   const [sendOtp] = useMutation<OTPInterface>(SEND_USER_OTP, {
     variables: {
@@ -72,7 +63,7 @@ export default function OTPScreen(props: ScreenProp) {
   };
 
   const handleInputError = () => {
-    setState({ ...state });
+    Toast.show(t(`signup.OTPScreen.inputError`));
   };
 
   const handleSubmit = (sentOTP: string) => {
@@ -85,14 +76,14 @@ export default function OTPScreen(props: ScreenProp) {
 
         if (data?.validateOtp) {
           setState({ ...state, loading: false });
-          Storage.addUserAuth(data?.validateOtp);
+          Storage.setUserCredentials(data?.validateOtp);
           navigation.reset({
             index: 0,
             routes: [{ name: 'CreateAccountScreen' }]
           });
         }
       } catch (error) {
-        setState({ ...state, inputError: !state.inputError, loading: false });
+        setState({ ...state, loading: false });
       }
     }, 0);
   };
@@ -241,25 +232,6 @@ export default function OTPScreen(props: ScreenProp) {
           </Container>
         </Container>
       </TouchableWithoutFeedback>
-      <Snackbar
-        duration={Snackbar.DURATION_SHORT}
-        visible={state.inputError}
-        onDismiss={handleInputError}
-        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
-        style={{ minHeight: RFValue(50), borderRadius: 4 }}
-        action={{ label: 'Dismiss', onPress: handleInputError }}
-      >
-        <Paragraph
-          style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.WHITE,
-            letterSpacing: 2
-          }}
-        >
-          {t(`signup.OTPScreen.inputError`)}
-        </Paragraph>
-      </Snackbar>
     </SafeAreaView>
   );
 }
