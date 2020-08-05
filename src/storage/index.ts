@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as Keychain from 'react-native-keychain';
 import * as APP_CONSTANTS from '../constants';
 import { DEVICE_ID } from '../utils/device';
-import { VerifyOTPIT } from '../graphql/types';
+import { VerifyOTPIT, Credentials } from '../graphql/types';
 
 class Storage {
   async checkInitialLaunch() {
@@ -17,7 +17,7 @@ class Storage {
     return AsyncStorage.setItem(APP_CONSTANTS.USER_FIRST_LAUNCH, '0');
   }
 
-  async getUserCredentials() {
+  async getUserCredentials(): Promise<false | Credentials> {
     return Keychain.getInternetCredentials(DEVICE_ID);
   }
 
