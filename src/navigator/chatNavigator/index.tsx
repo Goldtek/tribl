@@ -74,8 +74,8 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
           },
           headerTitleStyle: {
             textTransform: 'uppercase',
-            fontSize: RFValue(fonts.LARGE_SIZE + 1),
-            fontFamily: fonts.WORK_SANS_REGULAR
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD
           }
         }}
       />
