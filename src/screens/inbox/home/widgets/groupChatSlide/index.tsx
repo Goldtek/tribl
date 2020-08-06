@@ -7,13 +7,9 @@ import MemberCard from '../chatMemberCard';
 import MembersData from '../../../../../libs/memberChat/index.json';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface { }
+interface ScreenProp extends NavigationInterface {}
 
 export default function ChannelScreen(props: ScreenProp) {
-  const { navigation } = props;
-
-  const { colors, fonts } = useThemeContext();
-
   const _renderItem = ({ item }: any) => (
     <MemberCard key={item.id} {...item} {...props} />
   );
@@ -24,7 +20,7 @@ export default function ChannelScreen(props: ScreenProp) {
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),
-        paddingBottom: RFValue(120)
+        paddingBottom: RFValue(20)
       }}
       showsVerticalScrollIndicator={false}
       renderItem={_renderItem}
