@@ -3,18 +3,18 @@ import { FlatList } from 'react-native';
 import { NavigationInterface } from '../../../../types';
 import { Divider, TouchableRipple, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { FontAwesome } from '@expo/vector-icons';
 import { useThemeContext } from '../../../../../theme';
 import MemberCard from '../connectionCard';
 import MembersData from '../../../../../libs/members/index.json';
 import hexToRGB from '../../../../../utils/hexToRGB';
 
 import { GroupWrapper, Container } from './styles';
-import { FontAwesome } from '@expo/vector-icons';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function ChannelScreen(props: ScreenProp) {
+export default function ChatSlide(props: ScreenProp) {
   const { navigation } = props;
 
   const { colors, fonts } = useThemeContext();
@@ -23,11 +23,11 @@ export default function ChannelScreen(props: ScreenProp) {
     <MemberCard key={item.id} {...item} {...props} />
   );
 
-  const _seperator = () => (
+  const _separator = () => (
     <Divider
       style={{
-        borderWidth: 1,
-        borderColor: colors.DISABLED,
+        height: 1.5,
+        backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
         marginHorizontal: RFValue(20)
       }}
     />
@@ -71,7 +71,7 @@ export default function ChannelScreen(props: ScreenProp) {
           flexGrow: 1
         }}
         style={{ backgroundColor: colors.WHITE, marginTop: 20 }}
-        ItemSeparatorComponent={_seperator}
+        ItemSeparatorComponent={_separator}
         showsVerticalScrollIndicator={false}
         renderItem={_renderItem}
         keyExtractor={(item) => item.id}

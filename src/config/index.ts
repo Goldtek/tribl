@@ -5,7 +5,7 @@ import Reactotron from 'reactotron-react-native';
 // FIX THIS TO USE ENVIRONMENT VARIABLES (APP SECRETES)
 const ENVIRONMENT_VARIABLES = {
   TRIBL_SERVER_BASE_URI:
-    TRIBL_SERVER_BASE_URI || 'http://52.53.172.167:9700/graphql',
+    TRIBL_SERVER_BASE_URI || 'http://52.53.246.111:9700/graphql',
   GOOGLE_PLACES_API:
     GOOGLE_PLACES_API || 'AIzaSyAJR6mSnhyzyvUAsAOQTpAjoZrNayWe880'
 };
