@@ -49,6 +49,7 @@ android/app/release
 node_modules/
 npm-debug.log
 yarn-error.log
+yarn.lock
 npm-debug.*
 
 # BUCK
