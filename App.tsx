@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { enableScreens } from 'react-native-screens';
 import loadResources from './src/libs/loadResources';
 import codePush from 'react-native-code-push';
-import { Platform } from 'react-native';
+import Storage from './src/storage';
 import AppRouter from './src';
 import './src/internationalization';
 
-Platform.select({ ios: enableScreens() });
+enableScreens();
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     (async () => {
       await SplashScreen.preventAutoHideAsync();
       await loadResources();
-      await SplashScreen.hideAsync();
+      SplashScreen.hideAsync();
+      Storage.checkInitialLaunch();
+      Storage.checkUserCredentials();
       setIsAppReady(true);
     })();
   }, []);

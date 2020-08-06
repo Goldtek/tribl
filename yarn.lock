@@ -3822,6 +3822,11 @@ expo-permissions@~9.0.1:
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-9.0.1.tgz#dc10b58654bbe39bbbed5827369942b01b08055e"
   integrity sha512-CosJgy8XQRN/OFG2JTQDcFxz3XTGi27coCMym/hVXWtQfk0z6PwdRG5IXHfLGuSckwIcgmirrwm2+Zc0X3MmNg==
 
+expo-secure-store@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-9.1.0.tgz#0dc97c04647c0780675bf895296ed7f73b17a16a"
+  integrity sha512-2EHe+9JMb3Ok6xDXk7flboulXkSZrfq6yTPyzpIEyRxBVMIEvpwleCHSgwpC9V+BZ59bH9I8U01zARw/Mhwstg==
+
 expo-splash-screen@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.3.1.tgz#4dd79d9d1ab8135281f7cc5889a68e3003223f37"
@@ -3858,7 +3863,7 @@ expo-updates@^0.2.14:
     fbemitter "^2.1.1"
     uuid "^3.4.0"
 
-expo@~38.0.1:
+expo@^38.0.9:
   version "38.0.9"
   resolved "https://registry.yarnpkg.com/expo/-/expo-38.0.9.tgz#dac9e4ccee0b86747b71c1b3a827d60fe340c81e"
   integrity sha512-xT9h62Vi5e7nqbX+zWCqVw09wCOvoLJTy4cAw3ZE41ENidqCjZAYXv1DXx2LvQcGjZdarHkT2TzJZfl6zHFxDw==
@@ -4712,6 +4717,11 @@ inquirer@^7.2.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
     through "^2.3.6"
+
+install@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/install/-/install-0.13.0.tgz#6af6e9da9dd0987de2ab420f78e60d9c17260776"
+  integrity sha512-zDml/jzr2PKU9I8J/xyZBQn8rPCAY//UOYNmR01XwNwyfhEWObo2SWfSl1+0tm1u6PhxLwDnfsT/6jB7OUxqFA==
 
 interpret@^1.0.0:
   version "1.4.0"
@@ -7484,11 +7494,6 @@ react-native-iphone-x-helper@^1.0.2, react-native-iphone-x-helper@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.1.tgz#645e2ffbbb49e80844bb4cbbe34a126fda1e6772"
   integrity sha512-/VbpIEp8tSNNHIvstuA3Swx610whci1Zpc9mqNkqn14DkMbw+ORviln2u0XyHG1kPvvwTNGZY6QpeFwxYaSdbQ==
-
-react-native-keychain@^6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-6.1.1.tgz#3c14e4df9e5599f8d5a708da75d27f9d2424d7c1"
-  integrity sha512-WYvAg7FbYPyX8jJ1rY/IQGS+6zK5LtNMRa3E8x1n0M5Lmsm/9CHtakzbmqT+rLvFE7DpPBg7qFawMuUoDjjtYA==
 
 react-native-localize@^1.4.0:
   version "1.4.1"
