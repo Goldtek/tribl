@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
@@ -6,34 +6,44 @@ import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Platform } from 'react-native';
 import { useThemeContext } from '../../../../../theme';
-import nearbrSlide from '../nearby';
-import connectionSlide from '../connections';
-import onlineSlide from '../online';
-import activeSlide from '../active';
+import ChatSlide from '../chatSlide';
 import { GLOBAL_HEADER_STYLE } from '../../../../../constants';
+
+const TAB_LIST = [
+  {
+    key: 'connectionSlide',
+    title: 'my connections'
+  },
+  {
+    key: 'nearbySlide',
+    title: 'nearby'
+  },
+  {
+    key: 'onlineSlide',
+    title: 'online'
+  },
+  {
+    key: 'activeSlide',
+    title: 'active'
+  }
+];
 
 export default function TabViewSlider() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [tabIndex, setTabIndex] = React.useState(0);
+  const [tabIndex, setTabIndex] = useState(0);
 
-  const [routes] = React.useState([
-    {
-      key: 'connectionSlide',
-      title: `${t(`community.chat.connection`)}`
-    },
-    { key: 'nearbrSlide', title: `${t(`community.chat.nearby`)}` },
-    { key: 'onlineSlide', title: `${t(`community.chat.online`)}` },
-    { key: 'activeSlide', title: `${t(`community.chat.active`)}` }
-  ]);
+  const [routes] = useState(TAB_LIST);
 
-  const renderScene = SceneMap({
-    connectionSlide,
-    nearbrSlide,
-    onlineSlide,
-    activeSlide
-  });
+  const dynamicRoutes = TAB_LIST.reduce<{
+    [key: string]: (props: any) => JSX.Element;
+  }>((acc, { key }) => {
+    acc[key] = ChatSlide;
+    return acc;
+  }, {});
+
+  const renderScene = SceneMap({ ...dynamicRoutes });
 
   const renderLabel = ({
     route,
@@ -44,14 +54,11 @@ export default function TabViewSlider() {
   }) => (
     <Title
       style={{
-        fontFamily: focused
-          ? fonts.WORK_SANS_SEMI_BOLD
-          : fonts.WORK_SANS_REGULAR,
-        fontSize: RFValue(fonts.LARGE_SIZE + 1),
+        fontFamily: fonts.WORK_SANS_BOLD,
+        fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
         color: focused ? colors.WHITE : colors.PRIMARY_TEXT,
         backgroundColor: focused ? colors.PRIMARY : colors.WHITE,
         textTransform: 'capitalize',
-        display: 'flex',
         borderColor: focused ? colors.PRIMARY : colors.DISABLED,
         borderRadius: 5,
         borderWidth: 0.7,
@@ -66,19 +73,31 @@ export default function TabViewSlider() {
     return (
       <TabBar
         {...props}
-        renderLabel={renderLabel}
+        scrollEnabled={true}
+        // renderLabel={renderLabel}
         style={{
           ...GLOBAL_HEADER_STYLE,
           backgroundColor: colors.WHITE,
+          paddingTop: 5,
           paddingBottom: 10,
-          paddingLeft: RFValue(5)
+          paddingLeft: RFValue(10)
         }}
-        scrollEnabled={true}
         labelStyle={{
-          width: '100%'
+          fontFamily: fonts.WORK_SANS_REGULAR,
+          fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+          color: colors.PRIMARY_TEXT,
+          textTransform: 'capitalize',
+          padding: 10
         }}
-        tabStyle={{ width: 'auto', marginRight: 5 }}
-        indicatorContainerStyle={{ display: 'none' }}
+        tabStyle={{
+          width: 'auto',
+          padding: 0,
+          marginRight: 10,
+          borderRadius: 4,
+          borderColor: colors.INACTIVE,
+          borderWidth: 1
+        }}
+        indicatorContainerStyle={{ display: 'none', height: 0 }}
       />
     );
   };
