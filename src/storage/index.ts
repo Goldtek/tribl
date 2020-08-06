@@ -1,30 +1,51 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import * as Keychain from 'react-native-keychain';
+import * as SecureStore from 'expo-secure-store';
 import * as APP_CONSTANTS from '../constants';
 import { DEVICE_ID } from '../utils/device';
-import { VerifyOTPIT, Credentials } from '../graphql/types';
+import { VerifyOTPIT } from '../graphql/types';
 
 class Storage {
+  protected credentialInstance: VerifyOTPIT | null = null;
+  protected initialLaunch: boolean = false;
+
   async checkInitialLaunch() {
     const firstTimeLaunch = await AsyncStorage.getItem(
       APP_CONSTANTS.USER_FIRST_LAUNCH
     );
 
-    return Boolean(Number(firstTimeLaunch));
+    this.initialLaunch = Boolean(Number(firstTimeLaunch));
+  }
+
+  getInitialLaunch() {
+    return this.initialLaunch;
   }
 
   async setInitialLaunch() {
-    return AsyncStorage.setItem(APP_CONSTANTS.USER_FIRST_LAUNCH, '0');
+    return AsyncStorage.setItem(APP_CONSTANTS.USER_FIRST_LAUNCH, '1');
   }
 
-  async getUserCredentials(): Promise<false | Credentials> {
-    return Keychain.getInternetCredentials(DEVICE_ID);
+  async checkUserCredentials() {
+    if (this.credentialInstance) {
+      return this.credentialInstance;
+    }
+
+    const credentials = await SecureStore.getItemAsync(DEVICE_ID);
+
+    if (!credentials) return null;
+
+    const authCredentials = JSON.parse(credentials) as VerifyOTPIT;
+    this.credentialInstance = authCredentials;
+    return authCredentials;
   }
 
-  async setUserCredentials({ id_token, refresh_token }: VerifyOTPIT) {
+  getUserCredentials() {
+    return this.credentialInstance;
+  }
+
+  async setUserCredentials(credentials: VerifyOTPIT) {
     return Promise.all([
-      Keychain.resetInternetCredentials(DEVICE_ID),
-      Keychain.setInternetCredentials(DEVICE_ID, id_token, refresh_token)
+      SecureStore.deleteItemAsync(DEVICE_ID),
+      SecureStore.setItemAsync(DEVICE_ID, JSON.stringify(credentials))
     ]);
   }
 }
