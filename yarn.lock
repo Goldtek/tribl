@@ -3822,6 +3822,11 @@ expo-permissions@~9.0.1:
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-9.0.1.tgz#dc10b58654bbe39bbbed5827369942b01b08055e"
   integrity sha512-CosJgy8XQRN/OFG2JTQDcFxz3XTGi27coCMym/hVXWtQfk0z6PwdRG5IXHfLGuSckwIcgmirrwm2+Zc0X3MmNg==
 
+expo-secure-store@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-9.1.0.tgz#0dc97c04647c0780675bf895296ed7f73b17a16a"
+  integrity sha512-2EHe+9JMb3Ok6xDXk7flboulXkSZrfq6yTPyzpIEyRxBVMIEvpwleCHSgwpC9V+BZ59bH9I8U01zARw/Mhwstg==
+
 expo-splash-screen@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.3.1.tgz#4dd79d9d1ab8135281f7cc5889a68e3003223f37"
@@ -3858,7 +3863,7 @@ expo-updates@^0.2.14:
     fbemitter "^2.1.1"
     uuid "^3.4.0"
 
-expo@~38.0.1:
+expo@^38.0.9:
   version "38.0.9"
   resolved "https://registry.yarnpkg.com/expo/-/expo-38.0.9.tgz#dac9e4ccee0b86747b71c1b3a827d60fe340c81e"
   integrity sha512-xT9h62Vi5e7nqbX+zWCqVw09wCOvoLJTy4cAw3ZE41ENidqCjZAYXv1DXx2LvQcGjZdarHkT2TzJZfl6zHFxDw==
@@ -4712,6 +4717,11 @@ inquirer@^7.2.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
     through "^2.3.6"
+
+install@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/install/-/install-0.13.0.tgz#6af6e9da9dd0987de2ab420f78e60d9c17260776"
+  integrity sha512-zDml/jzr2PKU9I8J/xyZBQn8rPCAY//UOYNmR01XwNwyfhEWObo2SWfSl1+0tm1u6PhxLwDnfsT/6jB7OUxqFA==
 
 interpret@^1.0.0:
   version "1.4.0"
@@ -7505,6 +7515,11 @@ react-native-modal@^11.5.6:
     prop-types "^15.6.2"
     react-native-animatable "1.3.3"
 
+react-native-modalize@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-modalize/-/react-native-modalize-2.0.5.tgz#1a9df6864850e93a5c7b0c9fb1a0ded30057f8a0"
+  integrity sha512-7xcgMSbJH1VVi+EmcnkWfzvul5pr2RGCPK1oyK818wBHCA4WGRanEVegFyEuGOHk6nz2BL0rQb+cu5oMvh66mQ==
+
 react-native-paper@^3.10.1:
   version "3.11.0"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-3.11.0.tgz#1a2425af211eacb6fae8de9ab6254bdcbad7e1b4"
@@ -7513,6 +7528,11 @@ react-native-paper@^3.10.1:
     "@callstack/react-theme-provider" "^3.0.5"
     color "^3.1.2"
     react-native-safe-area-view "^0.14.9"
+
+react-native-portalize@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-portalize/-/react-native-portalize-1.0.4.tgz#8b87ac903f7557b594afda09bbc815643e8935d9"
+  integrity sha512-DSQOw0wHyqjDx97O2xNHe4Zd9Ao/JVsodk57ikzz44hKeNkeuv1/Bt18TZsP/o0yDrqtM49EstCXK/ILEmKhMQ==
 
 react-native-qrcode-svg@^6.0.6:
   version "6.0.6"

@@ -1,5 +1,5 @@
 import React, { useState, Fragment } from 'react';
-import { ProgressBar, Title, Paragraph, Snackbar } from 'react-native-paper';
+import { ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { KeyboardAvoidingView, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -11,9 +11,10 @@ import { useMutation } from '@apollo/react-hooks';
 import Input from '../../../components/input';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { CreateAccountInterface } from '../../../graphql/types';
+import { Toast } from '../../../components/rootToaster';
 import { CREATE_USER_ACCOUNT } from '../../../graphql/server/mutations';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import LoadingModal from '../../../components/loading';
+import LoadingModal from '../../../components/loadingModal';
 import { validateEmailInput } from '../../../utils/validateEmailInput';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -33,8 +34,6 @@ export default function CreateAccountScreen(props: ScreenProp) {
     firstName: '',
     lastName: '',
     email: '',
-    errorTag: 'inputError',
-    inputError: false,
     loading: false,
     isModalVisible: false
   });
@@ -62,8 +61,8 @@ export default function CreateAccountScreen(props: ScreenProp) {
     }
   );
 
-  const handleInputError = (error?: object) => {
-    setState({ ...state, inputError: !state.inputError, ...error });
+  const handleInputError = (error: string) => {
+    Toast.show(t(`signup.createAccountScreen.${error}`));
   };
 
   const handleSubmit = async () => {
@@ -72,11 +71,11 @@ export default function CreateAccountScreen(props: ScreenProp) {
     const { firstName, lastName, email } = state;
 
     if (!firstName && !lastName && !email) {
-      return handleInputError();
+      return handleInputError('inputError');
     }
 
     if (!validateEmailInput(email)) {
-      return handleInputError({ errorTag: 'emailInputError' });
+      return handleInputError('emailInputError');
     }
 
     setState({ ...state, loading: true });
@@ -259,31 +258,10 @@ export default function CreateAccountScreen(props: ScreenProp) {
           </Container>
         </KeyboardAvoidingView>
       </Container>
-
       <LoadingModal
         title={`${(state.firstName, t('signup.settingPassport'))}`}
         isVisible={state.isModalVisible}
       />
-
-      <Snackbar
-        duration={Snackbar.DURATION_SHORT}
-        visible={state.inputError}
-        onDismiss={handleInputError}
-        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
-        style={{ minHeight: RFValue(50), borderRadius: 4 }}
-        action={{ label: 'Dismiss', onPress: handleInputError }}
-      >
-        <Paragraph
-          style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.WHITE,
-            letterSpacing: 2
-          }}
-        >
-          {t(`signup.createAccountScreen.${state.errorTag}`)}
-        </Paragraph>
-      </Snackbar>
     </Fragment>
   );
 }

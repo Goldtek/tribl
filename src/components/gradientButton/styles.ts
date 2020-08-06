@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 export const Container = styled(LinearGradient)`
-  min-height: ${RFValue(55)}px;
+  height: ${RFValue(55)}px;
   justify-content: center;
   align-items: center;
 `;

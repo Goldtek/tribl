@@ -32,6 +32,7 @@ type Location = {
   state: string;
   __typename: string;
 };
+
 export interface StoreInterface {
   userDetails: {
     DOB: string;

@@ -20,8 +20,8 @@ const resolvers = {
 };
 
 const request = async (operation: Operation) => {
-  const auth = await Storage.getUserAuth();
-  operation.setContext({ headers: { authorization: auth?.id_token } });
+  const credentials = Storage.getUserCredentials();
+  operation.setContext({ headers: { authorization: credentials?.id_token } });
 };
 
 const requestLink = new ApolloLink(

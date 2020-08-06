@@ -1,11 +1,10 @@
-import React, { useState, Fragment, useRef, RefObject } from 'react';
+import React, { useState, Fragment, useRef } from 'react';
 import {
   ActivityIndicator,
   Modal,
   ProgressBar,
   Title,
-  Paragraph,
-  Snackbar
+  Paragraph
 } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -15,6 +14,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import * as Location from 'expo-location';
+import { Toast } from '../../../components/rootToaster';
 import { useTranslation } from 'react-i18next';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
@@ -29,7 +29,7 @@ import {
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Input from '../../../components/input';
-import LoadingModal from '../../../components/loading';
+import LoadingModal from '../../../components/loadingModal';
 import ENVIRONMENT_VARIABLES from '../../../config';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -62,8 +62,6 @@ export default function UserLocationScreen(props: ScreenProp) {
       country: '',
       state: ''
     },
-    errorTag: 'inputError',
-    inputError: false,
     loading: false,
     isModalVisible: false,
     isVisible: false
@@ -81,15 +79,15 @@ export default function UserLocationScreen(props: ScreenProp) {
     }
   });
 
-  const handleInputError = (error?: object) => {
-    setState({ ...state, inputError: !state.inputError, ...error });
+  const handleInputError = (error: string) => {
+    Toast.show(t(`signup.userLocationScreen.${error}`));
   };
 
   const handleSubmit = () => {
     const { locationInput, birthPlaceInput } = state;
 
     if (!locationInput || !birthPlaceInput) {
-      return handleInputError();
+      return handleInputError('inputError');
     }
 
     setState({ ...state, loading: true });
@@ -110,13 +108,13 @@ export default function UserLocationScreen(props: ScreenProp) {
       const isLocationEnabled = await Location.hasServicesEnabledAsync();
 
       if (!isLocationEnabled) {
-        return handleInputError({ errorTag: 'isLocationEnabled' });
+        return handleInputError('isLocationEnabled');
       }
 
       const locationPermission = await Location.requestPermissionsAsync();
 
       if (!locationPermission.granted) {
-        return handleInputError({ errorTag: 'locationPermission' });
+        return handleInputError('locationPermission');
       }
 
       setState({ ...state, isVisible: true });
@@ -127,7 +125,7 @@ export default function UserLocationScreen(props: ScreenProp) {
       });
 
       if (!timestamp) {
-        return handleInputError({ errorTag: 'currentPosition' });
+        return handleInputError('currentPosition');
       }
 
       const [currentLocation] = await Location.reverseGeocodeAsync({
@@ -405,26 +403,6 @@ export default function UserLocationScreen(props: ScreenProp) {
         title={t('signup.preparingPassport')}
         isVisible={state.isModalVisible}
       />
-
-      <Snackbar
-        duration={Snackbar.DURATION_SHORT}
-        visible={state.inputError}
-        onDismiss={handleInputError}
-        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
-        style={{ minHeight: RFValue(50), borderRadius: 4 }}
-        action={{ label: 'Dismiss', onPress: handleInputError }}
-      >
-        <Paragraph
-          style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.WHITE,
-            letterSpacing: 2
-          }}
-        >
-          {t(`signup.userLocationScreen.${state.errorTag}`)}
-        </Paragraph>
-      </Snackbar>
     </SafeAreaView>
   );
 }

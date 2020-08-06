@@ -14,7 +14,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <RootStack.Navigator
-        initialRouteName="WalkThroughScreen"
+        initialRouteName="SplashScreen"
         screenOptions={{
           headerShown: false,
           headerBackTitleStyle: {
@@ -28,6 +28,11 @@ export default function AppNavigator() {
         <RootStack.Screen
           name="WalkThroughScreen"
           component={Screens.WalkThroughScreen}
+        />
+
+        <RootStack.Screen
+          name="SplashScreen"
+          component={Screens.SplashScreen}
         />
 
         <RootStack.Screen name="SignupScreen" component={SignupNavigator} />

@@ -1,0 +1,40 @@
+[
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Katherine Crier",
+    "time": "2:00am",
+    "message": "girl, Isaw your message..",
+    "badge": 3,
+    "id": "1"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "James Clear",
+    "time": "2:00am",
+    "message": "I'm thirsty",
+    "badge": 2,
+    "id": "2"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Toni Morrison",
+    "time": "Yesterday",
+    "message": "Welcome to #GhanaBraids cha..",
+    "badge": 1,
+    "id": "3"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Jasmine Guillory",
+    "time": "Jun 20",
+    "message": "Did you read my latest book",
+    "id": "4"
+  },
+  {
+    "avatar": "https://picsum.photos/700",
+    "name": "Orson Scott",
+    "time": "Jun 4",
+    "message": "Did you read my latest book",
+    "id": "5"
+  }
+]
