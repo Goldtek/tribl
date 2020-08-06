@@ -6,7 +6,7 @@ import InboxIcon from '../../../assets/icons/inboxIcon';
 import CommunityNavigator from '../communityNavigator';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
-import ChatNavigator from '../chatNavigator/chatNavigator';
+import ChatNavigator from '../chatNavigator';
 import Screens from '../../screens';
 
 // IMPORT FOR ALL CUSTOM STYLES
