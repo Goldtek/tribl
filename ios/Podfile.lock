@@ -53,6 +53,8 @@ PODS:
   - EXPermissions (9.0.1):
     - UMCore
     - UMPermissionsInterface
+  - EXSecureStore (9.1.0):
+    - UMCore
   - EXSplashScreen (0.5.0):
     - React
     - UMCore
@@ -403,8 +405,6 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController
-  - RNKeychain (6.1.1):
-    - React
   - RNLocalize (1.4.1):
     - React
   - RNReanimated (1.10.1):
@@ -457,6 +457,7 @@ DEPENDENCIES:
   - EXLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - EXLocation (from `../node_modules/expo-location/ios`)
   - EXPermissions (from `../node_modules/expo-permissions/ios`)
+  - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
   - EXSplashScreen (from `../node_modules/expo/node_modules/expo-splash-screen/ios`)
   - EXSQLite (from `../node_modules/expo-sqlite/ios`)
   - EXUpdates (from `../node_modules/expo-updates/ios`)
@@ -519,7 +520,6 @@ DEPENDENCIES:
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
-  - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -592,6 +592,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-location/ios"
   EXPermissions:
     :path: "../node_modules/expo-permissions/ios"
+  EXSecureStore:
+    :path: "../node_modules/expo-secure-store/ios"
   EXSplashScreen:
     :path: "../node_modules/expo/node_modules/expo-splash-screen/ios"
   EXSQLite:
@@ -674,8 +676,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNImageCropPicker:
     :path: "../node_modules/react-native-image-crop-picker"
-  RNKeychain:
-    :path: "../node_modules/react-native-keychain"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
   RNReanimated:
@@ -734,6 +734,7 @@ SPEC CHECKSUMS:
   EXLinearGradient: 663bf3b9009a96567e98498016e40422631be81d
   EXLocation: e93020e255f52a1cc031e0f45b0a24eb20fc4b55
   EXPermissions: 80ac3acbdb145930079810fe5b08c022b3428aa8
+  EXSecureStore: 321ee488c66ef1af2aa73701f01cdd512f69ecdf
   EXSplashScreen: 9423d258b71afa5bf128a83dcb57b636d9900a74
   EXSQLite: 64611c1b369c0f1e9cae4e551d0aa4478a58cadf
   EXUpdates: f3c4943abb6ab28cc55cbeac4ff4612701f82725
@@ -785,7 +786,6 @@ SPEC CHECKSUMS:
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
   RNGestureHandler: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
   RNImageCropPicker: f0557a908758c4a3f83978894ec7227651529b45
-  RNKeychain: db956c02a018f7dd3a0ea8a6cf3087bc1894bf2b
   RNLocalize: 49634a6a605dcdeb319e9c42a5c2f1aec508694b
   RNReanimated: c2bb7438b57a3d987bb2e4e6e4bca94787e30b02
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
@@ -812,4 +812,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: eb2e7b361d51505d1987fc2ef49ddcf2af325031
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0.beta.1
