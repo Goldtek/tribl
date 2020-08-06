@@ -4,12 +4,13 @@ import CommunityIcon from '../../../assets/icons/communityIcon';
 import PassportIcon from '../../../assets/icons/passportIcon';
 import InboxIcon from '../../../assets/icons/inboxIcon';
 import CommunityNavigator from '../communityNavigator';
+import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
+import ChatNavigator from '../chatNavigator';
 import Screens from '../../screens';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { IconContainer, Label } from './styles';
-import { useTranslation } from 'react-i18next';
 
 export type TabBarIconTypes = { color: string };
 
@@ -44,7 +45,7 @@ export default function BottomNavigator() {
 
       <BottomTab.Screen
         name="InboxScreen"
-        component={Screens.InboxScreen}
+        component={ChatNavigator}
         options={{
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>

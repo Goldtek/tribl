@@ -20,7 +20,7 @@ interface SlideProp extends NavigationInterface {
 
 const TEXT_MAPPER = ['screenOne', 'screenTwo', 'screenThree', 'screenFour'];
 
-export default function Slide(props: SlideProp) {
+function Slide(props: SlideProp) {
   const { t, slideIndex, handleDoneButton } = props;
   const { colors, fonts } = useThemeContext();
 
@@ -93,3 +93,5 @@ export default function Slide(props: SlideProp) {
     </Fragment>
   );
 }
+
+export default React.memo(Slide, () => false);

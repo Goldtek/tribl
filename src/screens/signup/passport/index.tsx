@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
 import { Share } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Title, Paragraph, Subheading, Button } from 'react-native-paper';
+import { Title, Paragraph, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';

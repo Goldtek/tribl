@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useRef } from 'react';
+import React, { Fragment, useState, useRef, useCallback } from 'react';
 import {
   AntDesign,
   SimpleLineIcons,
@@ -54,27 +54,32 @@ export default function contactSlide() {
 
   const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
-  const onChange = (selectedDate: Date) => {
-    const date = `${selectedDate
-      .toLocaleDateString()
-      .substring(0, 6)}${selectedDate?.getFullYear()}`;
-
+  const onChange = useCallback((selectedDate: Date) => {
+    const [month, day] = selectedDate.toLocaleDateString().split('/');
+    const year = selectedDate.getUTCFullYear();
+    const date = `${month}/${day}/${year}`;
     return setState({ ...state, date, showDatePicker: false });
-  };
+  }, []);
 
-  const handleDatePicker = () => {
+  const handleDatePicker = useCallback(() => {
     setState({ ...state, showDatePicker: !state.showDatePicker });
-  };
+  }, [state.showDatePicker]);
 
-  const handleRefControl = (edit: string, focus: string) => () => {
-    setState({ ...state, [edit]: true });
-    inputRef.current[focus].focus();
-  };
+  const handleRefControl = useCallback(
+    (edit: string, focus: string) => () => {
+      setState({ ...state, [edit]: true });
+      inputRef.current[focus].focus();
+    },
+    []
+  );
 
-  const handleInputFocus = (inputField: string) => () => {
-    //@ts-ignore
-    setState({ ...state, [inputField]: !state[inputField] });
-  };
+  const handleInputFocus = useCallback(
+    (inputField: string) => () => {
+      //@ts-ignore
+      setState({ ...state, [inputField]: !state[inputField] });
+    },
+    []
+  );
 
   return (
     <ContactContainer>

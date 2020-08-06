@@ -4,6 +4,7 @@ import { ProgressBar, Title, Paragraph, Snackbar } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../components/gradientButton';
 import { useTranslation } from 'react-i18next';
+import { Toast } from '../../../components/rootToaster';
 import { GET_SELECTABLE_IDENTITIES } from '../../../graphql/cache/query';
 import { StoreInterface } from '../../../graphql/types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -28,7 +29,6 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
   const [state, setState] = useState({
     selectedIdentities: new Map(),
-    inputError: false,
     showInstruction: true
   });
 
@@ -41,7 +41,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   });
 
   const handleInputError = () => {
-    setState({ ...state, inputError: !state.inputError });
+    Toast.show(t(`signup.identifyUserScreen.inputError`));
   };
 
   const handleInstruction = () => {
@@ -156,25 +156,6 @@ export default function IdentifyUserScreen(props: ScreenProp) {
       {state.showInstruction ? (
         <ScrollInstruction onPress={handleInstruction} />
       ) : null}
-
-      <Snackbar
-        duration={Snackbar.DURATION_SHORT}
-        visible={state.inputError}
-        onDismiss={handleInputError}
-        wrapperStyle={{ top: 0, paddingLeft: 10, paddingRight: 10 }}
-        style={{ minHeight: RFValue(50), borderRadius: 4 }}
-        action={{ label: 'Dismiss', onPress: handleInputError }}
-      >
-        <Paragraph
-          style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.WHITE
-          }}
-        >
-          {t(`signup.identifyUserScreen.inputError`)}
-        </Paragraph>
-      </Snackbar>
     </SafeAreaView>
   );
 }

@@ -1,9 +1,9 @@
 import WalkThroughScreen from './walkThrough';
 import PassportScreen from './passport';
-import InboxScreen from './inbox';
+import SplashScreen from './splash';
 
 export default {
   WalkThroughScreen,
   PassportScreen,
-  InboxScreen
+  SplashScreen
 };
