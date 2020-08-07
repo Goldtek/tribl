@@ -6,7 +6,6 @@ import { VerifyOTPIT } from '../graphql/types';
 
 class Storage {
   protected credentialInstance: VerifyOTPIT | null = null;
-  protected tempCredential: VerifyOTPIT | null = null;
   protected initialLaunch: boolean = false;
 
   async checkInitialLaunch() {
