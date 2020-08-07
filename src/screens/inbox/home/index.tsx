@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { NavigationInterface } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -13,9 +12,6 @@ import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-
-// DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
 
 export default function InboxScreen() {
   const { colors, fonts } = useThemeContext();
