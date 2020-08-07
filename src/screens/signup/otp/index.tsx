@@ -39,9 +39,9 @@ export default function OTPScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({ otp: '', loading: false });
+  const [otp, setOtp] = useState('');
 
-  const [sendOtp] = useMutation<OTPInterface>(SEND_USER_OTP, {
+  const [sendOtp, { loading }] = useMutation<OTPInterface>(SEND_USER_OTP, {
     variables: {
       payload: { phoneNumber: data?.userDetails.number, deviceId: DEVICE_ID }
     }
@@ -52,7 +52,7 @@ export default function OTPScreen(props: ScreenProp) {
       payload: {
         phoneNumber: data?.userDetails.number,
         deviceId: DEVICE_ID,
-        otp: state.otp
+        otp
       }
     }
   });
@@ -66,24 +66,23 @@ export default function OTPScreen(props: ScreenProp) {
     Toast.show(t(`signup.OTPScreen.inputError`));
   };
 
-  const handleSubmit = (sentOTP: string) => {
-    if (!sentOTP || state.loading) return handleInputError();
-    setState({ ...state, otp: sentOTP, loading: true });
+  const handleSubmit = (otpValue: string) => {
+    if (!otpValue || loading) return handleInputError();
+    setOtp(otpValue);
 
     setTimeout(async () => {
       try {
         const { data } = await verifyOtp();
 
         if (data?.validateOtp) {
-          setState({ ...state, loading: false });
-          Storage.setUserCredentials(data?.validateOtp);
+          Storage.setCredentialInstance(data?.validateOtp);
           navigation.reset({
             index: 0,
             routes: [{ name: 'CreateAccountScreen' }]
           });
         }
       } catch (error) {
-        setState({ ...state, loading: false });
+        handleInputError();
       }
     }, 0);
   };
@@ -223,11 +222,8 @@ export default function OTPScreen(props: ScreenProp) {
               paddingBottom: RFValue(safeAreaBottom + 60)
             }}
           >
-            <GradientButton
-              loading={state.loading}
-              onPress={() => handleSubmit('')}
-            >
-              {t(`signup.OTPScreen.${state.loading ? 'loading' : 'submit'}`)}
+            <GradientButton loading={loading} onPress={() => handleSubmit('')}>
+              {t(`signup.OTPScreen.${loading ? 'loading' : 'submit'}`)}
             </GradientButton>
           </Container>
         </Container>
