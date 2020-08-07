@@ -2,9 +2,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SignupNavigator from './navigator/signupNavigator';
-import SideDrawerNavigator from './navigator/sideNavigator';
 import { useThemeContext } from './theme';
 import Screens from './screens';
+import DrawerStackNavigator from './navigator/sideNavigator';
 
 const RootStack = createStackNavigator();
 
@@ -39,7 +39,7 @@ export default function AppNavigator() {
 
         <RootStack.Screen
           name="CommunityScreen"
-          component={SideDrawerNavigator}
+          component={DrawerStackNavigator}
         />
       </RootStack.Navigator>
     </NavigationContainer>
