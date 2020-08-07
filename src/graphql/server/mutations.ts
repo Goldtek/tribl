@@ -31,7 +31,6 @@ export const CREATE_USER_ACCOUNT = gql`
   mutation createPassport($payload: CreatePassportInput!) {
     createPassport(input: $payload) {
       success
-      _id
     }
   }
 `;
