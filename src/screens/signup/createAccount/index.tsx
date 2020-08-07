@@ -34,7 +34,6 @@ export default function CreateAccountScreen(props: ScreenProp) {
     firstName: '',
     lastName: '',
     email: '',
-    loading: false,
     isModalVisible: false
   });
 
@@ -48,7 +47,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
     }
   });
 
-  const [createPassport] = useMutation<CreateAccountInterface>(
+  const [createPassport, { loading }] = useMutation<CreateAccountInterface>(
     CREATE_USER_ACCOUNT,
     {
       variables: {
@@ -78,25 +77,23 @@ export default function CreateAccountScreen(props: ScreenProp) {
       return handleInputError('emailInputError');
     }
 
-    setState({ ...state, loading: true });
-
     try {
       const { data } = await createPassport();
 
       if (data?.createPassport.success) {
-        setState({ ...state, loading: false, isModalVisible: true });
+        setState({ ...state, isModalVisible: true });
 
         setTimeout(() => {
           navigation.reset({
             index: 0,
             routes: [{ name: 'AvatarUploadScreen' }]
           });
-          setState({ ...state, loading: false, isModalVisible: false });
+          setState({ ...state, isModalVisible: false });
           addUserDetails();
         }, 3500);
       }
     } catch (error) {
-      setState({ ...state, loading: false });
+      handleInputError('inputError');
     }
   };
 
@@ -248,10 +245,10 @@ export default function CreateAccountScreen(props: ScreenProp) {
               )
             }}
           >
-            <GradientButton loading={state.loading} onPress={handleSubmit}>
+            <GradientButton loading={loading} onPress={handleSubmit}>
               {t(
                 `signup.createAccountScreen.${
-                  state.loading ? 'loading' : 'createAccount'
+                  loading ? 'loading' : 'createAccount'
                 }`
               )}
             </GradientButton>
