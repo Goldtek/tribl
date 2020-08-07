@@ -40,18 +40,18 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
   const country = countriesDB.getCountry(userDetails?.countryCode);
 
-  const [state, setState] = useState({ number: '', loading: false });
+  const [phoneNumber, setPhoneNumber] = useState('');
 
-  const onChangeText = (number: string) => setState({ ...state, number });
+  const onChangeText = (phoneNumber: string) => setPhoneNumber(phoneNumber);
 
-  const [sendOtp] = useMutation<OTPInterface>(SEND_USER_OTP, {
+  const [sendOtp, { loading }] = useMutation<OTPInterface>(SEND_USER_OTP, {
     variables: {
-      payload: { phoneNumber: state.number, deviceId: DEVICE_ID }
+      payload: { phoneNumber, deviceId: DEVICE_ID }
     }
   });
 
   const [addPhoneNumber] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { number: state.number } }
+    variables: { details: { number: phoneNumber } }
   });
 
   const handleInputError = () => {
@@ -59,20 +59,17 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   };
 
   const handleSubmit = async () => {
-    if (!state.number) return handleInputError();
-
-    setState({ ...state, loading: true });
+    if (!phoneNumber) return handleInputError();
 
     try {
       const { data } = await sendOtp();
 
       if (data?.sendOtp.success) {
-        setState({ ...state, loading: false });
         navigation.navigate('OTPScreen');
         addPhoneNumber();
       }
     } catch (error) {
-      setState({ ...state, loading: false });
+      handleInputError();
     }
   };
 
@@ -177,12 +174,8 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                 </TouchableOpacity>
               </Input>
 
-              <GradientButton loading={state.loading} onPress={handleSubmit}>
-                {t(
-                  `signup.getStartedScreen.${
-                    state.loading ? 'loading' : 'submit'
-                  }`
-                )}
+              <GradientButton loading={loading} onPress={handleSubmit}>
+                {t(`signup.getStartedScreen.${loading ? 'loading' : 'submit'}`)}
               </GradientButton>
             </Container>
           </Fragment>
