@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { DEVICE_OS } from '../../utils/device';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
+import Storage from '../../storage';
 
 const SignupStack = createStackNavigator();
 let routeNames = [] as string[];
@@ -35,12 +36,16 @@ export default function SignupNavigator() {
         const handleNavigation = () => {
           const nextRoute = Number(headerTitle.split(' ')[0]) + 1;
 
-          headerTitle
-            ? navigation.navigate(routeNames[nextRoute])
-            : navigation.reset({
-                index: 0,
-                routes: [{ name: 'CommunityScreen' }]
-              });
+          if (headerTitle) {
+            navigation.navigate(routeNames[nextRoute]);
+          }
+
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'CommunityScreen' }]
+          });
+
+          Storage.setUserCredentials();
         };
 
         return {

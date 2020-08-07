@@ -26,10 +26,10 @@ export default function AvatarUploadScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({ avatar: '' });
+  const [avatar, setAvatar] = useState('');
 
   const [addUserImage] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { avatar: state.avatar } }
+    variables: { details: { avatar } }
   });
 
   const handleInputError = () => {
@@ -37,7 +37,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
   };
 
   const handleSubmit = () => {
-    if (!state.avatar) return handleInputError();
+    if (!avatar) return handleInputError();
 
     navigation.navigate('IdentifyUserScreen');
     addUserImage();
@@ -71,7 +71,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
         includeBase64: true
       });
 
-      setState({ ...state, avatar: `data:${mime};base64,${data}` });
+      setAvatar(`data:${mime};base64,${data}`);
       ImagePicker.clean();
     } catch (error) {
       console.error(error);
@@ -163,10 +163,10 @@ export default function AvatarUploadScreen(props: ScreenProp) {
                   overflow: 'hidden'
                 }}
               >
-                {state.avatar ? (
+                {avatar ? (
                   <FastImage
                     source={{
-                      uri: state.avatar,
+                      uri: avatar,
                       priority: FastImage.priority.high
                     }}
                     resizeMode={FastImage.resizeMode.contain}
@@ -210,7 +210,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
             >
               {t(
                 `signup.avatarUploadScreen.${
-                  state.avatar ? 'photoAdded' : 'addAvatar'
+                  avatar ? 'photoAdded' : 'addAvatar'
                 }`
               )}
             </Subheading>
