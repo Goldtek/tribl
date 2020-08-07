@@ -21,9 +21,10 @@ export default function SplashScreen(props: ScreenProp) {
     if (!initialLaunch) {
       return navigation.replace('WalkThroughScreen');
     }
-    const auth = Storage.getUserCredentials();
 
-    if (!auth) {
+    const credentials = Storage.getUserCredentials();
+
+    if (!credentials) {
       return navigation.replace('SignupScreen');
     }
 
