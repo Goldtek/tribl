@@ -6,6 +6,7 @@ import { VerifyOTPIT } from '../graphql/types';
 
 class Storage {
   protected credentialInstance: VerifyOTPIT | null = null;
+  protected tempCredential: VerifyOTPIT | null = null;
   protected initialLaunch: boolean = false;
 
   async checkInitialLaunch() {
@@ -42,10 +43,17 @@ class Storage {
     return this.credentialInstance;
   }
 
-  async setUserCredentials(credentials: VerifyOTPIT) {
+  setCredentialInstance(credentials: VerifyOTPIT) {
+    this.credentialInstance = credentials;
+  }
+
+  async setUserCredentials() {
     return Promise.all([
       SecureStore.deleteItemAsync(DEVICE_ID),
-      SecureStore.setItemAsync(DEVICE_ID, JSON.stringify(credentials))
+      SecureStore.setItemAsync(
+        DEVICE_ID,
+        JSON.stringify(this.credentialInstance)
+      )
     ]);
   }
 }
