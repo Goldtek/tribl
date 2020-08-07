@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/inbox';
-import { Searchbar } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native';
 import hexToRGB from '../../utils/hexToRGB';
@@ -19,10 +18,7 @@ interface ChatNavigatorProps extends NavigationInterface {}
 export default function ChatNavigator(props: ChatNavigatorProps) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
-  const [search, setSearch] = useState('');
   const { t } = useTranslation();
-
-  const onChangeSearch = (query: any) => setSearch(query);
 
   return (
     <ChatStack.Navigator
@@ -61,7 +57,7 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
                 width: RFValue(30),
                 height: RFValue(30)
               }}
-              onPress={() => navigation.navigate('ChatScreen')}
+              onPress={() => navigation.navigate('NewMessageScreen')}
               labelStyle={{ paddingLeft: 3 }}
             >
               <Feather name="message-square" color={colors.WHITE} size={20} />
@@ -83,59 +79,6 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
       <ChatStack.Screen
         name="NewMessageScreen"
         component={Screens.NewMessageScreen}
-        options={{
-          headerTitle: () => null,
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRight: () => (
-            <Searchbar
-              placeholder={t(`community.tabPanel.placeholder`)}
-              onChange={onChangeSearch}
-              value={search}
-              style={{
-                height: '70%',
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.SECONDARY_TEXT,
-                elevation: 0,
-                borderColor: colors.INACTIVE,
-                borderRadius: 4,
-                borderWidth: 1
-              }}
-              iconColor={colors.PRIMARY_TEXT}
-            />
-          ),
-          headerRightContainerStyle: {
-            width: '80%',
-            marginRight: RFValue(10),
-            marginLeft: RFValue(20)
-          }
-        }}
-      />
-
-      <ChatStack.Screen
-        name="NewChatSearch"
-        component={Screens.NewChatSearchScreen}
-        options={{
-          headerTitle: 'black lives matter',
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        }}
-      />
-
-      <ChatStack.Screen
-        name="ChatScreen"
-        component={Screens.ChatScreen}
         options={{
           headerTitle: t(`community.chat.chatTitle`),
           headerTitleStyle: {
