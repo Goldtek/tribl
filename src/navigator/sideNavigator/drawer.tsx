@@ -3,7 +3,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
-import Screens from '../../screens/inbox';
+import Screens from '../../screens';
 import { Text } from 'react-native-paper';
 import {
   MaterialCommunityIcons,
@@ -78,7 +78,7 @@ export default function SideDrawerNavigator() {
       />
       <Drawer.Screen
         name="Connection"
-        component={Screens.InboxScreen}
+        component={Screens.UpcomingScreen}
         options={{
           drawerIcon: () => (
             <SimpleLineIcons
@@ -104,7 +104,7 @@ export default function SideDrawerNavigator() {
 
       <Drawer.Screen
         name="wallet"
-        component={Screens.InboxScreen}
+        component={Screens.UpcomingScreen}
         options={{
           drawerIcon: () => (
             <Feather name="dollar-sign" size={24} color={colors.PRIMARY_TEXT} />
@@ -126,7 +126,7 @@ export default function SideDrawerNavigator() {
 
       <Drawer.Screen
         name="settings"
-        component={Screens.InboxScreen}
+        component={Screens.UpcomingScreen}
         options={{
           drawerIcon: () => (
             <Entypo name="cog" size={24} color={colors.PRIMARY_TEXT} />
@@ -147,7 +147,7 @@ export default function SideDrawerNavigator() {
       />
       <Drawer.Screen
         name="invite"
-        component={Screens.InboxScreen}
+        component={Screens.UpcomingScreen}
         options={{
           drawerIcon: () => (
             <Entypo name="plus" size={24} color={colors.PRIMARY_TEXT} />
@@ -168,7 +168,7 @@ export default function SideDrawerNavigator() {
       />
       <Drawer.Screen
         name="policy"
-        component={Screens.InboxScreen}
+        component={Screens.UpcomingScreen}
         options={{
           drawerIcon: () => (
             <FontAwesome
