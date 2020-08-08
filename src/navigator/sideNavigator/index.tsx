@@ -13,7 +13,6 @@ const DrawerStack = createStackNavigator();
 
 export default function DrawerStackNavigator() {
   const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
 
   return (
     <DrawerStack.Navigator
