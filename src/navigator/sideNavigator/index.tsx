@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Entypo } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
 import DrawerNavigator from './drawer';
 import { useThemeContext } from '../../theme';
 
