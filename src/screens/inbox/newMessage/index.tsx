@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavigationInterface } from '../../types';
+import { SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
@@ -19,27 +20,35 @@ export default function ChatScreen(props: ScreenProp) {
   const onChangeSearch = (query: string) => setSearch(query);
 
   return (
-    <Container>
-      <Cover>
-        <Searchbar
-          placeholder={t(`community.chat.search`)}
-          onChangeText={onChangeSearch}
-          value={search}
-          style={{
-            marginLeft: RFValue(10),
-            marginRight: RFValue(10),
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            color: colors.SECONDARY_TEXT,
-            elevation: 0,
-            borderColor: colors.INACTIVE,
-            borderRadius: 4,
-            borderWidth: 1
-          }}
-          iconColor={colors.PRIMARY_TEXT}
-        />
-      </Cover>
-      <TabSlide />
-    </Container>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        marginTop: RFValue(5),
+        backgroundColor: colors.WHITE
+      }}
+    >
+      <Container>
+        <Cover>
+          <Searchbar
+            placeholder={t(`community.chat.search`)}
+            onChangeText={onChangeSearch}
+            value={search}
+            style={{
+              marginLeft: RFValue(10),
+              marginRight: RFValue(10),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              color: colors.SECONDARY_TEXT,
+              elevation: 0,
+              borderColor: colors.INACTIVE,
+              borderRadius: 4,
+              borderWidth: 1
+            }}
+            iconColor={colors.PRIMARY_TEXT}
+          />
+        </Cover>
+        <TabSlide />
+      </Container>
+    </SafeAreaView>
   );
 }
