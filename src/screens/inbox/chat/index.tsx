@@ -1,17 +1,12 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { NavigationInterface } from '../../types';
-import { Button, TouchableRipple } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { KeyboardAvoidingView } from 'react-native';
 import { GiftedChat, Send } from 'react-native-gifted-chat';
 import { Platform } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import { Ionicons } from '@expo/vector-icons';
 import { IMessage } from './types';
-
-// IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -25,11 +20,21 @@ export default function ChatScreen(props: ScreenProp) {
     setMessages([
       {
         _id: 1,
-        text: 'Hello developer',
+        text: 'Hello bro',
         createdAt: new Date(),
         user: {
           _id: 2,
           name: 'React Native',
+          avatar: 'https://placeimg.com/140/140/any'
+        }
+      },
+      {
+        _id: 2,
+        text: 'Hey man',
+        createdAt: new Date(),
+        user: {
+          _id: 1,
+          name: 'React',
           avatar: 'https://placeimg.com/140/140/any'
         }
       }
@@ -47,48 +52,45 @@ export default function ChatScreen(props: ScreenProp) {
       <GiftedChat
         placeholder="Start typing ..."
         messages={messages}
-        onSend={onSend}
         user={{ _id: 1 }}
+        alwaysShowSend
+        onSend={onSend}
         renderSend={(props) => (
           <Send
             {...props}
             containerStyle={{
-              width: RFValue(35),
-              height: RFValue(35),
-              backgroundColor: colors.PRIMARY,
+              width: RFValue(40),
+              height: RFValue(40),
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: RFValue(35 / 2),
+              backgroundColor: colors.PRIMARY,
+              borderRadius: RFValue(40 / 2),
               marginRight: 10,
-              marginBottom: 5
+              marginVertical: 5
             }}
           >
-            <Ionicons name="ios-send" color={colors.WHITE} size={RFValue(25)} />
+            <Ionicons name="ios-send" color={colors.WHITE} size={RFValue(20)} />
           </Send>
         )}
+        listViewProps={{ style: { marginBottom: RFValue(20) } }}
         textInputProps={{
           style: {
             flex: 1,
-            // height: RFValue(40),
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            paddingLeft: 10,
-            paddingRight: 10,
+            paddingLeft: 20,
+            paddingRight: 20,
+            paddingTop: Platform.select({ ios: RFValue(12) }),
+            paddingBottom: Platform.select({ ios: RFValue(12) }),
             color: colors.PRIMARY_TEXT,
-            borderColor: colors.GREY,
-            borderTopWidth: 1
+            borderRadius: 5,
+            marginHorizontal: 10,
+            marginVertical: 5,
+            borderWidth: 1,
+            borderColor: colors.INACTIVE
           }
         }}
       />
-
-      {Platform.select({
-        android: (
-          <KeyboardAvoidingView
-            behavior="height"
-            keyboardVerticalOffset={RFValue(90)}
-          />
-        )
-      })}
     </SafeAreaView>
   );
 }
