@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
+import { Platform, SafeAreaView } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
@@ -46,7 +46,6 @@ export default function InboxScreen() {
         style={{
           ...GLOBAL_HEADER_STYLE,
           backgroundColor: colors.WHITE,
-          marginBottom: RFValue(30),
           marginTop: RFValue(10)
         }}
         labelStyle={{
@@ -55,6 +54,7 @@ export default function InboxScreen() {
           color: colors.PRIMARY_TEXT,
           textTransform: 'capitalize'
         }}
+        tabStyle={{ width: 'auto', paddingHorizontal: RFValue(20) }}
       />
     );
   };
@@ -62,31 +62,33 @@ export default function InboxScreen() {
   const renderPager = (props: any) => <ScrollPager {...props} />;
 
   return (
-    <Container>
-      {Platform.select({
-        ios: (
-          <TabView
-            navigationState={{ index: tabIndex, routes }}
-            renderScene={renderScene}
-            renderPager={renderPager}
-            renderTabBar={renderTabBar}
-            onIndexChange={setTabIndex}
-            initialLayout={{ width: DEVICE_FULL_WIDTH }}
-            swipeEnabled={false}
-          />
-        ),
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+      <Container>
+        {Platform.select({
+          ios: (
+            <TabView
+              navigationState={{ index: tabIndex, routes }}
+              renderScene={renderScene}
+              renderPager={renderPager}
+              renderTabBar={renderTabBar}
+              onIndexChange={setTabIndex}
+              initialLayout={{ width: DEVICE_FULL_WIDTH }}
+              swipeEnabled={false}
+            />
+          ),
 
-        android: (
-          <TabView
-            navigationState={{ index: tabIndex, routes }}
-            renderScene={renderScene}
-            renderTabBar={renderTabBar}
-            onIndexChange={setTabIndex}
-            initialLayout={{ width: DEVICE_FULL_WIDTH }}
-            swipeEnabled={false}
-          />
-        )
-      })}
-    </Container>
+          android: (
+            <TabView
+              navigationState={{ index: tabIndex, routes }}
+              renderScene={renderScene}
+              renderTabBar={renderTabBar}
+              onIndexChange={setTabIndex}
+              initialLayout={{ width: DEVICE_FULL_WIDTH }}
+              swipeEnabled={false}
+            />
+          )
+        })}
+      </Container>
+    </SafeAreaView>
   );
 }
