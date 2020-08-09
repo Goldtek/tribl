@@ -37,29 +37,27 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow Tribl to access photos and media on your device</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow Tribl to access photos and media on your device</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow Tribl to access photos and media on your device</string>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDefault</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-  <key>UIStatusBarStyle</key>
-  <string>UIStatusBarStyleDefault</string>
-  <key>NSPhotoLibraryUsageDescription</key>
-  <string>Allow Tribl to access photos and media on your device</string>
-  <key>NSCameraUsageDescription</key>
-  <string>Allow Tribl to access photos and media on your device</string>
-  <key>NSMicrophoneUsageDescription</key>
-  <string>Allow Tribl to access photos and media on your device</string>
 </dict>
 </plist>
