@@ -1,11 +1,9 @@
 import InboxScreen from './home';
-import ChatScreen from './chatScreen';
-import NewChatSearchScreen from './newChatSearch';
+import ChatScreen from './chat';
 import NewMessageScreen from './newMessage';
 
 export default {
   InboxScreen,
   ChatScreen,
-  NewMessageScreen,
-  NewChatSearchScreen
+  NewMessageScreen
 };

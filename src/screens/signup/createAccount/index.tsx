@@ -93,7 +93,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
         }, 3500);
       }
     } catch (error) {
-      handleInputError('inputError');
+      handleInputError('serverError');
     }
   };
 

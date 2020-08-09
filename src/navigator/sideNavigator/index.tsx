@@ -1,194 +1,62 @@
 import React from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { useTranslation } from 'react-i18next';
-import { useThemeContext } from '../../theme';
+import { createStackNavigator } from '@react-navigation/stack';
+import { TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Entypo } from '@expo/vector-icons';
+import DrawerNavigator from './drawer';
+import { useThemeContext } from '../../theme';
+
 import Screens from '../../screens/inbox';
-import { Text } from 'react-native-paper';
-import {
-  MaterialCommunityIcons,
-  Entypo,
-  SimpleLineIcons,
-  Feather,
-  FontAwesome
-} from '@expo/vector-icons';
-import BottomNavigator from '../bottomNavigator';
-import CustomDrawerContent from './customDrawerComponent';
-import ChatNavigator from '../chatNavigator';
 
-const Drawer = createDrawerNavigator();
+const DrawerStack = createStackNavigator();
 
-export default function SideDrawerNavigator() {
+export default function DrawerStackNavigator() {
   const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
 
   return (
-    <Drawer.Navigator
-      drawerType="slide"
-      drawerStyle={{ backgroundColor: colors.GREY }}
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      drawerContentOptions={{ itemStyle: { marginVertical: 5 } }}
+    <DrawerStack.Navigator
+      initialRouteName="CommunityScreen"
+      screenOptions={{ headerShown: false }}
     >
-      <Drawer.Screen
-        name="CommunityScreen"
-        component={BottomNavigator}
-        options={{
-          drawerIcon: () => (
-            <MaterialCommunityIcons
-              name="google-circles-communities"
-              size={24}
-              color={colors.PRIMARY_TEXT}
-            />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.community`)}
-            </Text>
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="Chat"
-        component={ChatNavigator}
-        options={{
-          drawerIcon: () => (
-            <Entypo name="new-message" size={24} color={colors.PRIMARY_TEXT} />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.chat`)}
-            </Text>
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="Connection"
-        component={Screens.InboxScreen}
-        options={{
-          drawerIcon: () => (
-            <SimpleLineIcons
-              name="user-follow"
-              size={24}
-              color={colors.PRIMARY_TEXT}
-            />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.request`)}
-            </Text>
-          )
-        }}
-      />
+      <DrawerStack.Screen name="CommunityScreen" component={DrawerNavigator} />
 
-      <Drawer.Screen
-        name="wallet"
-        component={Screens.InboxScreen}
-        options={{
-          drawerIcon: () => (
-            <Feather name="dollar-sign" size={24} color={colors.PRIMARY_TEXT} />
-          ),
-          drawerLabel: () => (
-            <Text
+      <DrawerStack.Screen
+        name="ChatScreen"
+        component={Screens.ChatScreen}
+        options={({ route }) => ({
+          headerShown: true,
+          height: RFValue(90),
+          //@ts-ignore
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerRight: () => (
+            <TouchableRipple
+              onPress={() => {}}
               style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
               }}
             >
-              {t(`community.sideNav.wallet`)}
-            </Text>
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="settings"
-        component={Screens.InboxScreen}
-        options={{
-          drawerIcon: () => (
-            <Entypo name="cog" size={24} color={colors.PRIMARY_TEXT} />
+              <Entypo
+                name="dots-three-vertical"
+                color={colors.PRIMARY_TEXT}
+                size={RFValue(17)}
+              />
+            </TouchableRipple>
           ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.settings`)}
-            </Text>
-          )
-        }}
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 }
+        })}
       />
-      <Drawer.Screen
-        name="invite"
-        component={Screens.InboxScreen}
-        options={{
-          drawerIcon: () => (
-            <Entypo name="plus" size={24} color={colors.PRIMARY_TEXT} />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.invite`)}
-            </Text>
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="policy"
-        component={Screens.InboxScreen}
-        options={{
-          drawerIcon: () => (
-            <FontAwesome
-              name="user-secret"
-              size={24}
-              color={colors.PRIMARY_TEXT}
-            />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.policy`)}
-            </Text>
-          )
-        }}
-      />
-    </Drawer.Navigator>
+    </DrawerStack.Navigator>
   );
 }
