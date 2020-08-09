@@ -1,6 +1,7 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
+import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
@@ -17,6 +18,8 @@ interface MemberProp extends NavigationInterface {
 }
 
 function Member(props: MemberProp) {
+  const navigation = useNavigation();
+
   const { colors, fonts } = useThemeContext();
   const {
     avatar = 'https://picsum.photos/700',
@@ -24,18 +27,21 @@ function Member(props: MemberProp) {
     lastSeen
   } = props;
 
+  const handleNavigation = useCallback(
+    () => navigation.navigate('ChatScreen', { title: name }),
+    []
+  );
+
   return (
     <TouchableRipple
       style={{
-        height: RFValue(60),
+        height: RFValue(80),
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: RFValue(10),
-        marginTop: RFValue(15),
         paddingHorizontal: RFValue(20)
       }}
       rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
-      onPress={() => {}}
+      onPress={handleNavigation}
     >
       <Fragment>
         <FastImage

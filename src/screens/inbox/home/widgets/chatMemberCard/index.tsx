@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../../../types';
@@ -9,7 +10,7 @@ import { useThemeContext } from '../../../../../theme';
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MemberProp extends NavigationInterface {
+interface MemberProp {
   avatar: string;
   lastSeen: string;
   name: string;
@@ -20,6 +21,8 @@ interface MemberProp extends NavigationInterface {
 
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
+  const navigation = useNavigation();
+
   const {
     avatar = 'https://picsum.photos/700',
     name = 'Paul Maet',
@@ -27,6 +30,11 @@ function Member(props: MemberProp) {
     time = ' 3: 02pm',
     badge
   } = props;
+
+  const handleNavigation = useCallback(
+    () => navigation.navigate('ChatScreen', { title: name }),
+    []
+  );
 
   return (
     <TouchableRipple
@@ -38,7 +46,7 @@ function Member(props: MemberProp) {
         paddingLeft: RFValue(15),
         paddingRight: RFValue(15)
       }}
-      onPress={() => {}}
+      onPress={handleNavigation}
     >
       <Fragment>
         <FastImage

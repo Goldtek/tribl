@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationInterface } from '../../types';
+import { NavigationInterface } from '../types';
 import { Button } from 'react-native-paper';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -8,7 +8,7 @@ import { Container, Welcome } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function NewChatSearchScreen(props: ScreenProp) {
+export default function ProfileScreen(props: ScreenProp) {
   return (
     <Container>
       <Button
@@ -18,7 +18,7 @@ export default function NewChatSearchScreen(props: ScreenProp) {
       >
         Press me
       </Button>
-      <Welcome>New Chat Search Screen</Welcome>
+      <Welcome>Screen Under Development</Welcome>
     </Container>
   );
 }

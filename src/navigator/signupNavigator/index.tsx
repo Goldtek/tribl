@@ -37,7 +37,7 @@ export default function SignupNavigator() {
           const nextRoute = Number(headerTitle.split(' ')[0]) + 1;
 
           if (headerTitle) {
-            navigation.navigate(routeNames[nextRoute]);
+            return navigation.navigate(routeNames[nextRoute]);
           }
 
           navigation.reset({

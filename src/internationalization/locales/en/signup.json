@@ -50,6 +50,7 @@
     "email": "Email",
     "createAccount": "create account",
     "inputError": "All fields are required",
+    "serverError": "Passport already exist",
     "emailInputError": "Invalid email address!",
     "registrationError": "Registration failed try again!",
     "loading": "creating..."
