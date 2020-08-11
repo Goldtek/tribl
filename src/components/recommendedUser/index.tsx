@@ -14,10 +14,14 @@ import { TextContainer, OnlineNotifier, AvatarContainer } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp {
   avatar: string;
-  name: string;
-  address: string;
   index: number;
   lastChild: number;
+  firstName: string;
+  lastName: string;
+  currentLocation: {
+    country: string;
+    state: string;
+  }[];
 }
 
 function RecommendedUser(props: RecommendedUserProp) {
@@ -27,11 +31,14 @@ function RecommendedUser(props: RecommendedUserProp) {
 
   const {
     avatar = 'https://picsum.photos/700',
-    name = 'Peter Martin',
-    address = 'New York, NY',
+    firstName = 'Peter',
+    lastName = 'Doe',
     index,
-    lastChild
+    lastChild,
+    currentLocation
   } = props;
+
+  const { state, country } = currentLocation[0];
 
   return (
     <Card
@@ -84,10 +91,11 @@ function RecommendedUser(props: RecommendedUserProp) {
               textTransform: 'capitalize',
               lineHeight: 20,
               marginTop: 0,
-              marginBottom: 0
+              marginBottom: 0,
+              paddingHorizontal: 10
             }}
           >
-            {name}
+            {`${firstName} ${lastName}`}
           </Title>
           <Paragraph
             numberOfLines={1}
@@ -100,7 +108,7 @@ function RecommendedUser(props: RecommendedUserProp) {
               marginBottom: 0
             }}
           >
-            {address}
+            {`${state}, ${country}`}
           </Paragraph>
         </TextContainer>
         <Button
