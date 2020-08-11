@@ -1,14 +1,19 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { GraphQLError } from 'graphql';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
 import { useNavigation } from '@react-navigation/native';
 import JoinCommunity from '../../../components/joinCommunity';
+import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
+import Storage from '../../../storage';
+import { GET_RECOMMENDED_COMMUNITIES } from '../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -18,6 +23,7 @@ import {
   RecommendedCommunityContainer,
   RecentActivitiesList
 } from './styles';
+import { VerifyOTPIT } from '../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -40,10 +46,51 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function HomeScreen(props: ScreenProp) {
+  const credentials = Storage.getUserCredentials();
+  console.tron('cred', credentials);
+  console.log('errorhty', GraphQLError);
+
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
   const navigation = useNavigation();
+
+  const {
+    data: communityData,
+    error: communityError,
+    refetch: communityRefetch
+  } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+
+  console.tron('data', communityData);
+  console.tron('commError', communityError?.message);
+
+  const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
+    variables: {
+      input: {
+        refreshToken: credentials?.refresh_token
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (
+      communityError?.message === 'GraphQL error: provided token has expired'
+    ) {
+      const RefreshToken = async () => {
+        const { data } = await refreshToken();
+        if (data?.refresh_token) {
+          const credentails = {
+            ...credentials,
+            id_token: data?.refresh_token
+          } as VerifyOTPIT;
+          Storage.setCredentialInstance(credentails);
+          Storage.setUserCredentials();
+          communityRefetch();
+        }
+      };
+      RefreshToken();
+    }
+  }, []);
 
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
