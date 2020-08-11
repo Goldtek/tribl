@@ -61,8 +61,8 @@ export default function HomeScreen(props: ScreenProp) {
     refetch: communityRefetch
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
+  const community = communityData?.recommendedCommunities[0];
   console.tron('data', communityData);
-  console.tron('commError', communityError?.message);
 
   const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
     variables: {
@@ -94,7 +94,7 @@ export default function HomeScreen(props: ScreenProp) {
 
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
-  const { recommendedCommunity, recommendedMembers, recentActivities } = props;
+  const { recommendedMembers, recentActivities } = props;
 
   const navigateToSearch = () => navigation.navigate('CommunitySearchScreen');
 
@@ -189,7 +189,7 @@ export default function HomeScreen(props: ScreenProp) {
 
           <RecommendedCommunityContainer>
             <RecommendedCommunity
-              {...recommendedCommunity}
+              {...community}
               onPress={handleJoinCommunity}
             />
           </RecommendedCommunityContainer>
@@ -277,11 +277,6 @@ HomeScreen.defaultProps = {
       avatar: 'https://picsum.photos/700'
     }
   ],
-  recommendedCommunity: {
-    name: 'peter martin',
-    members: '10k member',
-    avatar: 'https://picsum.photos/700'
-  },
   recentActivities: [
     {
       name: 'Alex Muleba',
