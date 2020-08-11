@@ -34,3 +34,12 @@ export const CREATE_USER_ACCOUNT = gql`
     }
   }
 `;
+
+// refresh token
+export const REFRESH_TOKEN = gql`
+  mutation refreshToken($payload: RefreshTokenInput!) {
+    refreshToken(input: $payload) {
+      refresh_token
+    }
+  }
+`;
