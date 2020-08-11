@@ -13,7 +13,10 @@ import { useNavigation } from '@react-navigation/native';
 import JoinCommunity from '../../../components/joinCommunity';
 import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
 import Storage from '../../../storage';
-import { GET_RECOMMENDED_COMMUNITIES } from '../../../graphql/server/query';
+import {
+  GET_RECOMMENDED_COMMUNITIES,
+  GET_RECOMMENDED_MEMBERS
+} from '../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -32,11 +35,6 @@ interface ScreenProp extends NavigationInterface {
     address: string;
     avatar: string;
   }[];
-  recommendedCommunity: {
-    name: string;
-    members: string;
-    avatar: string;
-  };
   recentActivities: {
     name: string;
     action: string;
@@ -61,8 +59,12 @@ export default function HomeScreen(props: ScreenProp) {
     refetch: communityRefetch
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
+  const { data: MembersData } = useQuery(GET_RECOMMENDED_MEMBERS);
+
+  const Members = MembersData?.recommendedMembers;
+  console.tron('members', Members);
+
   const community = communityData?.recommendedCommunities[0];
-  console.tron('data', communityData);
 
   const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
     variables: {
@@ -146,7 +148,7 @@ export default function HomeScreen(props: ScreenProp) {
             showsHorizontalScrollIndicator={false}
             style={{ marginTop: 20, backgroundColor: colors.WHITE }}
           >
-            {recommendedMembers.map((member, index) => (
+            {Members?.map((member: any, index: any) => (
               <RecommendedUser
                 key={index}
                 {...member}
