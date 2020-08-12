@@ -21,11 +21,18 @@ interface ScreenProp extends NavigationInterface {}
 export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const details = props.route.params;
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
   const [routes] = React.useState([
-    { key: 'highlightSlide', title: `${t(`community.tabPanel.highlight`)}` },
+    {
+      key: 'highlightSlide',
+      title: `${t(`community.tabPanel.highlight`)}`,
+      name: details.title,
+      avatar: details.avatar,
+      members: details.members
+    },
     { key: 'channelSlide', title: `${t(`community.tabPanel.channel`)}` },
     { key: 'memberSlide', title: `${t(`community.tabPanel.member`)}` }
   ]);
