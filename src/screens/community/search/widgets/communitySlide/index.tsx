@@ -5,12 +5,13 @@ import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import PopularCommunities from '../../../../../libs/popularCommunities/index.json';
 import PopularCommunity from '../../../../../components/popularCommunity';
 import RecommendedCommunity from '../../../../../components/recommendedCommunity';
-import RecommendedCommunityData from '../../../../../libs/featuredCommunity/index.json';
 import JoinCommunity from '../../../../../components/joinCommunity';
+import { GET_RECOMMENDED_COMMUNITIES } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, CommunityWrapper, PopularContainer } from './styles';
@@ -22,6 +23,10 @@ export default function CommunitySlideScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
+
+  const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+
+  const community = communityData?.recommendedCommunities[2];
 
   const handleJoinCommunity = () => {
     setState({
@@ -44,17 +49,12 @@ export default function CommunitySlideScreen(props: ScreenProp) {
               fontFamily: fonts.WORK_SANS_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
               paddingLeft: RFValue(15),
-              marginBottom: RFValue(20)
+              marginBottom: RFValue(15)
             }}
           >
             {t(`community.tabPanel.featured`)}
           </Title>
-          <RecommendedCommunity
-            avatar={RecommendedCommunityData.avatar}
-            name={RecommendedCommunityData.name}
-            members={RecommendedCommunityData.members}
-            onPress={handleJoinCommunity}
-          />
+          <RecommendedCommunity {...community} onPress={handleJoinCommunity} />
           <PopularContainer>
             <CommunityWrapper>
               <Title
