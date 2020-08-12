@@ -57,7 +57,6 @@ export default function HomeScreen(props: ScreenProp) {
   const { data: MembersData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
   const Members = MembersData?.recommendedMembers;
-  console.tron('members', Members);
 
   const community = communityData?.recommendedCommunities[0];
 
@@ -143,9 +142,9 @@ export default function HomeScreen(props: ScreenProp) {
             showsHorizontalScrollIndicator={false}
             style={{ marginTop: 20, backgroundColor: colors.WHITE }}
           >
-            {Members?.map((member: any, index: any) => (
+            {Members?.map((member: any, index: number) => (
               <RecommendedUser
-                key={index}
+                key={member.id}
                 {...member}
                 index={index}
                 lastChild={Members.length - 1}
