@@ -24,8 +24,8 @@ export const GET_RECOMMENDED_MEMBERS = gql`
   }
 `;
 
-// GET  RECOMMENDED COMMUNITIES
-export const GET_RECOMMENDED_COMMUNITIES = gql`
+// GET  NEARBY MEMBERS
+export const GET_NEARBY_MEMBERS = gql`
   query nearbyMembers {
     nearbyMembers {
       id
@@ -42,8 +42,8 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
   }
 `;
 
-// GET  NEARBY MEMBERS
-export const GET_NEARBY_MEMBERS = gql`
+// GET  RECOMMENDED COMMUNITIES
+export const GET_RECOMMENDED_COMMUNITIES = gql`
   query recommendedCommunities {
     recommendedCommunities {
       id
