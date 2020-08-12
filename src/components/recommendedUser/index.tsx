@@ -3,10 +3,12 @@ import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
+import { useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
+import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, OnlineNotifier, AvatarContainer } from './styles';
@@ -18,6 +20,7 @@ interface RecommendedUserProp {
   lastChild: number;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   currentLocation: {
     country: string;
     state: string;
@@ -35,10 +38,30 @@ function RecommendedUser(props: RecommendedUserProp) {
     lastName = 'Doe',
     index,
     lastChild,
-    currentLocation
+    currentLocation,
+    phoneNumber
   } = props;
 
   const { state, country } = currentLocation[0];
+
+  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+    variables: {
+      payload: {
+        phoneNumber: phoneNumber
+      }
+    }
+  });
+
+  const handleRequest = async () => {
+    try {
+      const { data } = await requestConnection();
+      if (data?.requestConnection) {
+        console.tron('successful');
+      }
+    } catch (error) {
+      console.tron(error);
+    }
+  };
 
   return (
     <Card
@@ -131,7 +154,7 @@ function RecommendedUser(props: RecommendedUserProp) {
             backgroundColor: colors.PRIMARY
           }}
           style={{ borderRadius: 5 }}
-          onPress={() => {}}
+          onPress={handleRequest}
         >
           {t(`community.recommended.add`)}+
         </Button>
