@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { Title, Button, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-
+import { useMutation } from '@apollo/react-hooks';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import Input from '../input';
 import GradientButton from '../gradientButton';
-import { TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
+import {
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Keyboard
+} from 'react-native';
 import { DEVICE_OS } from '../../utils/device';
+import { JOIN_COMMUNITY } from '../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -25,10 +30,31 @@ interface JoinCommunityProp {
 function JoinCommunity(props: JoinCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const [state, setState] = useState({
+    code: ''
+  });
+
+  const [joinCommunity] = useMutation(JOIN_COMMUNITY, {
+    variables: {
+      payload: {
+        code: state.code
+      }
+    }
+  });
 
   const handleRequest = () => {};
 
-  const handleJoin = () => {};
+  const handleJoin = async () => {
+    Keyboard.dismiss();
+    try {
+      const { data } = await joinCommunity();
+      if (data?.joinCommunity) {
+        console.tron('successful');
+      }
+    } catch (error) {
+      console.tron(error);
+    }
+  };
 
   return (
     <Container
@@ -80,6 +106,9 @@ function JoinCommunity(props: JoinCommunityProp) {
                 {t(`community.joinModal.label`)}
               </Paragraph>
               <Input
+                defaultValue={state.code}
+                onChangeText={(code) => setState({ ...state, code })}
+                returnKeyType="next"
                 placeholder={t(`community.joinModal.placeholder`)}
                 placeholderTextColor={colors.INACTIVE}
                 textInputStyle={{
