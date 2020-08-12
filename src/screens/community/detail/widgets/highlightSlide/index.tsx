@@ -24,6 +24,8 @@ import {
 interface SingleCommunityScreenProp extends NavigationInterface {}
 
 export default function SingleCommunity(props: SingleCommunityScreenProp) {
+  const detail = props.route;
+  const { name, avatar, members } = detail;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -39,7 +41,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
             <FastImage
               resizeMode={FastImage.resizeMode.contain}
               source={{
-                uri: 'https://www.linkpicture.com/q/Rectangle-159.png',
+                uri: avatar,
                 priority: FastImage.priority.high
               }}
               style={{
@@ -54,7 +56,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
             <FastImage
               resizeMode={FastImage.resizeMode.contain}
               source={{
-                uri: 'https://www.linkpicture.com/q/Rectangle-159.png',
+                uri: avatar,
                 priority: FastImage.priority.high
               }}
               style={{ width: '20%', height: '50%' }}
@@ -68,7 +70,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                   lineHeight: RFValue(19)
                 }}
               >
-                black lives matter
+                {name}
               </Title>
               <Paragraph
                 style={{
@@ -78,7 +80,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                   color: colors.SECONDARY_TEXT
                 }}
               >
-                100k {t(`community.tabPanel.member`)}
+                {members}
               </Paragraph>
               <Paragraph
                 style={{
