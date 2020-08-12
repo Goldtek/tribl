@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import MembersCard from '../../../../../components/recommendedUser';
 import MembersData from '../../../../../libs/recommendedUsers/index.json';
 import TagData from '../../../../../libs/tags/index.json';
+import { GET_NEARBY_MEMBERS } from '../../../../../graphql/server/query';
 
 import {
   Container,
@@ -24,6 +26,10 @@ interface SingleCommunityScreenProp extends NavigationInterface {}
 export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+
+  const NearbyMembers = nearbyData?.nearbyMembers;
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -145,14 +151,12 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ marginTop: RFValue(15) }}
             >
-              {MembersData.map((members, index) => (
+              {NearbyMembers?.map((member: any, index: number) => (
                 <MembersCard
-                  key={index}
+                  key={member.id}
+                  {...member}
                   index={index}
-                  lastChild={MembersData.length - 1}
-                  avatar={members.avatar}
-                  name={members.name}
-                  address={members.address}
+                  lastChild={NearbyMembers.length - 1}
                 />
               ))}
             </ScrollView>
