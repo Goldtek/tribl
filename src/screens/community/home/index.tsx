@@ -30,11 +30,6 @@ import { VerifyOTPIT } from '../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
-  recommendedMembers: {
-    name: string;
-    address: string;
-    avatar: string;
-  }[];
   recentActivities: {
     name: string;
     action: string;
@@ -96,7 +91,7 @@ export default function HomeScreen(props: ScreenProp) {
 
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
-  const { recommendedMembers, recentActivities } = props;
+  const { recentActivities } = props;
 
   const navigateToSearch = () => navigation.navigate('CommunitySearchScreen');
 
@@ -153,7 +148,7 @@ export default function HomeScreen(props: ScreenProp) {
                 key={index}
                 {...member}
                 index={index}
-                lastChild={recommendedMembers.length - 1}
+                lastChild={Members.length - 1}
               />
             ))}
           </ScrollView>
@@ -227,58 +222,6 @@ export default function HomeScreen(props: ScreenProp) {
 }
 
 HomeScreen.defaultProps = {
-  recommendedMembers: [
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    }
-  ],
   recentActivities: [
     {
       name: 'Alex Muleba',
