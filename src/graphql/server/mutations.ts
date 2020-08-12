@@ -52,3 +52,12 @@ export const JOIN_COMMUNITY = gql`
     }
   }
 `;
+
+// REQUEST CONNECTION
+export const REQUST_CONNECTION = gql`
+  mutation requestConnection($payload: ConnectionInput!) {
+    requestConnection(input: $payload) {
+      success
+    }
+  }
+`;
