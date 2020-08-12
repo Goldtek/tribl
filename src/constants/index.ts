@@ -31,4 +31,7 @@ export interface JwtTokenResult {
   exists: boolean;
   verified: boolean;
   _id: string;
+  refreshToken: {
+    id_token: string;
+  };
 }
