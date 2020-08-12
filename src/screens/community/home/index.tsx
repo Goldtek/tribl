@@ -41,7 +41,6 @@ interface ScreenProp extends NavigationInterface {
 export default function HomeScreen(props: ScreenProp) {
   const credentials = Storage.getUserCredentials();
   console.tron('cred', credentials);
-  console.log('errorhty', GraphQLError);
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
@@ -59,10 +58,9 @@ export default function HomeScreen(props: ScreenProp) {
   const Members = MembersData?.recommendedMembers;
 
   const community = communityData?.recommendedCommunities[0];
-
   const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
     variables: {
-      input: {
+      payload: {
         refreshToken: credentials?.refresh_token
       }
     }
@@ -74,12 +72,13 @@ export default function HomeScreen(props: ScreenProp) {
     ) {
       const RefreshToken = async () => {
         const { data } = await refreshToken();
-        if (data?.refresh_token) {
-          const credentails = {
+        if (data) {
+          console.tron('id', data?.id_token);
+          const Credentails = {
             ...credentials,
-            id_token: data?.refresh_token
+            id_token: data?.refreshToken.id_token
           } as VerifyOTPIT;
-          Storage.setCredentialInstance(credentails);
+          Storage.setCredentialInstance(Credentails);
           Storage.setUserCredentials();
           communityRefetch();
         }
