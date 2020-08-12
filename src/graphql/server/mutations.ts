@@ -39,7 +39,7 @@ export const CREATE_USER_ACCOUNT = gql`
 export const REFRESH_TOKEN = gql`
   mutation refreshToken($payload: RefreshTokenInput!) {
     refreshToken(input: $payload) {
-      refresh_token
+      id_token
     }
   }
 `;
