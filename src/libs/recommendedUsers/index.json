@@ -2,15 +2,19 @@
   {
     "avatar": "https://picsum.photos/700",
     "name": "Peter Martin",
+    "firstName": "Peter",
+    "lastName": "Doe",
     "lastSeen": "2 mins ago",
     "address": "New York, NY",
-    "currentLocation": {
-      "lat": null,
-      "long": null,
-      "country": "USA",
-      "state": "New York, NY",
-      "__typename": "currentLocation"
-    },
+    "currentLocation": [
+      {
+        "lat": null,
+        "long": null,
+        "country": "USA",
+        "state": "New York, NY",
+        "__typename": "currentLocation"
+      }
+    ],
     "birthPlace": {
       "lat": null,
       "long": null,
@@ -24,15 +28,19 @@
   {
     "avatar": "https://picsum.photos/700",
     "name": "Aminatu Diop",
+    "firstName": "Peter",
+    "lastName": "Doe",
     "lastSeen": "2 mins ago",
-    "address": "Brooklyn, NY",
-    "currentLocation": {
-      "lat": null,
-      "long": null,
-      "country": "USA",
-      "state": "Brooklyn, NY",
-      "__typename": "currentLocation"
-    },
+    "address": "New York, NY",
+    "currentLocation": [
+      {
+        "lat": null,
+        "long": null,
+        "country": "USA",
+        "state": "New York, NY",
+        "__typename": "currentLocation"
+      }
+    ],
     "birthPlace": {
       "lat": null,
       "long": null,
@@ -46,15 +54,19 @@
   {
     "avatar": "https://picsum.photos/700",
     "name": "Jennifer Artin",
+    "firstName": "Peter",
+    "lastName": "Doe",
     "lastSeen": "2 mins ago",
     "address": "New York, NY",
-    "currentLocation": {
-      "lat": null,
-      "long": null,
-      "country": "USA",
-      "state": "New York, NY",
-      "__typename": "currentLocation"
-    },
+    "currentLocation": [
+      {
+        "lat": null,
+        "long": null,
+        "country": "USA",
+        "state": "New York, NY",
+        "__typename": "currentLocation"
+      }
+    ],
     "birthPlace": {
       "lat": null,
       "long": null,
