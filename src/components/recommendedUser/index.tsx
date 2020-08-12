@@ -67,7 +67,8 @@ function RecommendedUser(props: RecommendedUserProp) {
     <Card
       onPress={() =>
         navigation.navigate('MemberDetailScreen', {
-          title: `${firstName} ${lastName}`
+          title: `${firstName} ${lastName}`,
+          details: { ...props }
         })
       }
       style={{
