@@ -108,8 +108,9 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
       <CommunityStack.Screen
         name="CommunityDetailScreen"
         component={Screens.CommunityDetailScreen}
-        options={{
-          headerTitle: 'black lives matter',
+        options={({ route }) => ({
+          //@ts-ignore
+          headerTitle: route.params?.title,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -121,14 +122,15 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
-        }}
+        })}
       />
 
       <CommunityStack.Screen
         name="MemberDetailScreen"
         component={Screens.MemberDetailScreen}
-        options={{
-          headerTitle: 'peter martin',
+        options={({ route }) => ({
+          //@ts-ignore
+          headerTitle: route.params?.title,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -140,7 +142,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
-        }}
+        })}
       />
     </CommunityStack.Navigator>
   );
