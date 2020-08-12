@@ -43,3 +43,12 @@ export const REFRESH_TOKEN = gql`
     }
   }
 `;
+
+// JOIN COMMUNITY
+export const JOIN_COMMUNITY = gql`
+  mutation joinCommunity($payload: JoinCommunityInput!) {
+    joinCommunity(input: $payload) {
+      success
+    }
+  }
+`;
