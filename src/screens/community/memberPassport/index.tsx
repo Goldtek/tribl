@@ -161,7 +161,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </CitizenshipContainer>
         ) : null}
 
-        {userDetail?.currentLocation.country &&
+        {userDetail?.currentLocation[0].country &&
         userDetail?.birthPlace.country ? (
           <LocationContainer>
             <Title
@@ -175,7 +175,6 @@ export default function contactSlide(props: MemberDetailProps) {
             >
               {t(`signup.passportScreen.locality`)}
             </Title>
-
             <Location>
               <AntDesign
                 name="home"
@@ -224,7 +223,7 @@ export default function contactSlide(props: MemberDetailProps) {
                   marginBottom: 10
                 }}
               >
-                {`${userDetail?.currentLocation.state} ${userDetail?.currentLocation.country}`}
+                {`${userDetail?.currentLocation[0].state} ${userDetail?.currentLocation[0].country}`}
               </Paragraph>
             </Location>
           </LocationContainer>
