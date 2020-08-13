@@ -75,6 +75,7 @@ export default function OTPScreen(props: ScreenProp) {
         const { data } = await verifyOtp();
 
         if (data?.validateOtp) {
+          console.tron(data?.validateOtp);
           Storage.setCredentialInstance(data?.validateOtp);
           navigation.reset({
             index: 0,
