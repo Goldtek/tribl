@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "719741244172",
+    "firebase_url": "https://tribl-chat-app.firebaseio.com",
+    "project_id": "tribl-chat-app",
+    "storage_bucket": "tribl-chat-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719741244172:android:9020d13e3b986762ff6f29",
+        "android_client_info": {
+          "package_name": "com.tribl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "719741244172-7krsdei8rduaic9gg9v5psdcco8u9dd8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tribl",
+            "certificate_hash": "5af90ee908b3f174c68f0152d26ce32e4871a067"
+          }
+        },
+        {
+          "client_id": "719741244172-qf77ri1ffj9onor66hi6u1mis9a8v2j7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAW7sbb4Pi9yo-gfFebpui_Qe7PO5y6NIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "719741244172-qf77ri1ffj9onor66hi6u1mis9a8v2j7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
