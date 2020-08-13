@@ -4,10 +4,12 @@ import { NavigationInterface } from '../../../../types';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
+import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import RecommendedMembers from '../../../../../components/recommendedUser';
 import MembersData from '../../../../../libs/recommendedUsers/index.json';
+import { GET_NEARBY_MEMBERS } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
@@ -18,6 +20,11 @@ interface ScreenProp extends NavigationInterface {}
 export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+
+  const NearbyMembers = nearbyData?.nearbyMembers;
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -139,12 +146,12 @@ export default function SearchScreen(props: ScreenProp) {
             showsHorizontalScrollIndicator={false}
             style={{ marginTop: 20 }}
           >
-            {MembersData.map((member, index) => (
+            {NearbyMembers?.map((member: any, index: number) => (
               <RecommendedMembers
-                key={index}
+                key={member.id}
                 {...member}
                 index={index}
-                lastChild={MembersData.length - 1}
+                lastChild={NearbyMembers.length - 1}
               />
             ))}
           </ScrollView>

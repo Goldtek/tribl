@@ -34,3 +34,30 @@ export const CREATE_USER_ACCOUNT = gql`
     }
   }
 `;
+
+// refresh token
+export const REFRESH_TOKEN = gql`
+  mutation refreshToken($payload: RefreshTokenInput!) {
+    refreshToken(input: $payload) {
+      id_token
+    }
+  }
+`;
+
+// JOIN COMMUNITY
+export const JOIN_COMMUNITY = gql`
+  mutation joinCommunity($payload: JoinCommunityInput!) {
+    joinCommunity(input: $payload) {
+      success
+    }
+  }
+`;
+
+// REQUEST CONNECTION
+export const REQUEST_CONNECTION = gql`
+  mutation requestConnection($payload: ConnectionInput!) {
+    requestConnection(input: $payload) {
+      success
+    }
+  }
+`;
