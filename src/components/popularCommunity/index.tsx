@@ -23,11 +23,16 @@ function PopularCommunity(props: PopularUserProp) {
 
   const {
     avatar = 'https://picsum.photos/700',
-    name = 'Peter Martin',
-    members = 'New York, NY'
+    name = 'Black lives matter',
+    members = '24k'
   } = props;
 
-  const handleNavigation = () => navigation.navigate('CommunityDetailScreen');
+  const handleNavigation = () =>
+    navigation.navigate('CommunityDetailScreen', {
+      title: name,
+      avatar: avatar,
+      members: members
+    });
 
   return (
     <TouchableRipple

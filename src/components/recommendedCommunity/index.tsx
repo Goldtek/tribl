@@ -18,7 +18,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { avatar, name, members, onPress } = props;
+  const { avatar, name, members = '20 members', onPress } = props;
 
   return (
     <Card

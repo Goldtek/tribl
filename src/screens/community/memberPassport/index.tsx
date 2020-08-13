@@ -3,14 +3,13 @@ import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native';
 import { Title, Paragraph } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import { GET_USER_DETAILS } from '../../../graphql/cache/query';
-import { StoreInterface } from '../../../graphql/types';
-import { useQuery } from '@apollo/react-hooks';
 import UserDetail from '../../../libs/recommendedUsers/index.json';
 import GradientButton from '../../../components/gradientButton';
+import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 
 import {
   ContactContainer,
@@ -26,7 +25,9 @@ import {
   ConnectionCover
 } from './styles';
 
-export default function contactSlide() {
+interface MemberDetailProps {}
+
+export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -34,8 +35,29 @@ export default function contactSlide() {
     connect: false
   });
 
-  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+  //@ts-ignore
+  const passport = { ...props.route.params.details };
+  const phoneNumber = passport.phoneNumber;
   const userDetail = UserDetail[0];
+
+  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+    variables: {
+      payload: {
+        phoneNumber: phoneNumber
+      }
+    }
+  });
+
+  const handleRequest = async () => {
+    try {
+      const { data } = await requestConnection();
+      if (data?.requestConnection) {
+        console.tron('successful');
+      }
+    } catch (error) {
+      console.tron(error);
+    }
+  };
 
   return (
     <ScrollView
@@ -108,7 +130,7 @@ export default function contactSlide() {
           </ConnectionCover>
         </Header>
 
-        <GradientButton onPress={() => {}}>
+        <GradientButton onPress={handleRequest}>
           {t(`community.memberPassport.connect`)}
         </GradientButton>
         {userDetail?.birthPlace.country ? (
@@ -139,7 +161,7 @@ export default function contactSlide() {
           </CitizenshipContainer>
         ) : null}
 
-        {userDetail?.currentLocation.country &&
+        {userDetail?.currentLocation[0].country &&
         userDetail?.birthPlace.country ? (
           <LocationContainer>
             <Title
@@ -153,7 +175,6 @@ export default function contactSlide() {
             >
               {t(`signup.passportScreen.locality`)}
             </Title>
-
             <Location>
               <AntDesign
                 name="home"
@@ -202,7 +223,7 @@ export default function contactSlide() {
                   marginBottom: 10
                 }}
               >
-                {`${userDetail?.currentLocation.state} ${userDetail?.currentLocation.country}`}
+                {`${userDetail?.currentLocation[0].state} ${userDetail?.currentLocation[0].country}`}
               </Paragraph>
             </Location>
           </LocationContainer>

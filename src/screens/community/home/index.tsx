@@ -1,14 +1,22 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { GraphQLError } from 'graphql';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
 import { useNavigation } from '@react-navigation/native';
 import JoinCommunity from '../../../components/joinCommunity';
+import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
+import Storage from '../../../storage';
+import {
+  GET_RECOMMENDED_COMMUNITIES,
+  GET_RECOMMENDED_MEMBERS
+} from '../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -18,19 +26,10 @@ import {
   RecommendedCommunityContainer,
   RecentActivitiesList
 } from './styles';
+import { VerifyOTPIT } from '../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
-  recommendedMembers: {
-    name: string;
-    address: string;
-    avatar: string;
-  }[];
-  recommendedCommunity: {
-    name: string;
-    members: string;
-    avatar: string;
-  };
   recentActivities: {
     name: string;
     action: string;
@@ -40,14 +39,57 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function HomeScreen(props: ScreenProp) {
+  const credentials = Storage.getUserCredentials();
+  console.tron('cred', credentials);
+
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
   const navigation = useNavigation();
 
+  const {
+    data: communityData,
+    error: communityError,
+    refetch: communityRefetch
+  } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+
+  const { data: MembersData } = useQuery(GET_RECOMMENDED_MEMBERS);
+
+  const Members = MembersData?.recommendedMembers;
+
+  const community = communityData?.recommendedCommunities[0];
+  const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
+    variables: {
+      payload: {
+        refreshToken: credentials?.refresh_token
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (
+      communityError?.message === 'GraphQL error: provided token has expired'
+    ) {
+      const RefreshToken = async () => {
+        const { data } = await refreshToken();
+        if (data) {
+          console.tron('id', data?.id_token);
+          const Credentails = {
+            ...credentials,
+            id_token: data?.refreshToken.id_token
+          } as VerifyOTPIT;
+          Storage.setCredentialInstance(Credentails);
+          Storage.setUserCredentials();
+          communityRefetch();
+        }
+      };
+      RefreshToken();
+    }
+  }, []);
+
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
-  const { recommendedCommunity, recommendedMembers, recentActivities } = props;
+  const { recentActivities } = props;
 
   const navigateToSearch = () => navigation.navigate('CommunitySearchScreen');
 
@@ -99,12 +141,12 @@ export default function HomeScreen(props: ScreenProp) {
             showsHorizontalScrollIndicator={false}
             style={{ marginTop: 20, backgroundColor: colors.WHITE }}
           >
-            {recommendedMembers.map((member, index) => (
+            {Members?.map((member: any, index: number) => (
               <RecommendedUser
-                key={index}
+                key={member.id}
                 {...member}
                 index={index}
-                lastChild={recommendedMembers.length - 1}
+                lastChild={Members.length - 1}
               />
             ))}
           </ScrollView>
@@ -142,7 +184,7 @@ export default function HomeScreen(props: ScreenProp) {
 
           <RecommendedCommunityContainer>
             <RecommendedCommunity
-              {...recommendedCommunity}
+              {...community}
               onPress={handleJoinCommunity}
             />
           </RecommendedCommunityContainer>
@@ -178,63 +220,6 @@ export default function HomeScreen(props: ScreenProp) {
 }
 
 HomeScreen.defaultProps = {
-  recommendedMembers: [
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    },
-    {
-      name: 'peter martin',
-      address: '10k member',
-      avatar: 'https://picsum.photos/700'
-    }
-  ],
-  recommendedCommunity: {
-    name: 'peter martin',
-    members: '10k member',
-    avatar: 'https://picsum.photos/700'
-  },
   recentActivities: [
     {
       name: 'Alex Muleba',
