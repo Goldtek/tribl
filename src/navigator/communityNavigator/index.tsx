@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Image, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
-import { Searchbar, Text } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
+import AlgoliaSearch from '../../components/algoliaSearch';
+import AlgoliaList from '../../components/algoliaInboxList';
+import AlgoliaCommunityList from '../../components/algoliaCommunityList ';
 
 const CommunityStack = createStackNavigator();
 
@@ -19,10 +21,7 @@ interface CommunityNavigatorProps extends NavigationInterface {}
 export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
-  const [search, setSearch] = useState('');
   const { t } = useTranslation();
-
-  const onChangeSearch = (query: any) => setSearch(query);
 
   return (
     <CommunityStack.Navigator
@@ -78,29 +77,13 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
           headerRight: () => (
-            <Searchbar
-              placeholder={t(`community.tabPanel.placeholder`)}
-              onChange={onChangeSearch}
-              value={search}
-              style={{
-                height: '70%',
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.SECONDARY_TEXT,
-                elevation: 0,
-                borderColor: colors.INACTIVE,
-                borderRadius: 4,
-                borderWidth: 1
-              }}
-              iconColor={colors.PRIMARY_TEXT}
-            />
+            <AlgoliaSearch indexName="tribl_community_develop">
+              <AlgoliaCommunityList />
+            </AlgoliaSearch>
           ),
           headerRightContainerStyle: {
-            width: '80%',
-            marginRight: RFValue(10),
-            marginLeft: RFValue(20)
+            width: '100%'
           }
         }}
       />
