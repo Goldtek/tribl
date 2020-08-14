@@ -19,19 +19,3 @@ export const GLOBAL_HEADER_STYLE = {
   shadowRadius: 0,
   elevation: 0
 };
-
-// SERVER JWT (RESPONSE) TYPE
-export interface JwtTokenResult {
-  access_token: string;
-  refresh_token: string;
-  id_token: string;
-  scope: string;
-  expires_in: number;
-  token_type: string;
-  exists: boolean;
-  verified: boolean;
-  _id: string;
-  refreshToken: {
-    id_token: string;
-  };
-}
