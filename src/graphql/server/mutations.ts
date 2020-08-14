@@ -19,9 +19,14 @@ export const SEND_USER_OTP = gql`
 export const VALIDATE_USER_OTP = gql`
   mutation validateOtp($payload: ValidateOtpInput!) {
     validateOtp(input: $payload) {
-      id_token
+      firebase_token
       refresh_token
+      access_token
+      expires_in
+      id_token
       verified
+      # token_type
+      # exists
     }
   }
 `;
