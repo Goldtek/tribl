@@ -20,6 +20,7 @@ export type RootStackParamList = {
   NewMessageScreen: undefined;
   NewChatSearch: undefined;
   ChatScreen: { title: string };
+  CommunityDetailScreen: {};
 };
 
 interface StackNavigationInterface extends StackActionHelpers {
