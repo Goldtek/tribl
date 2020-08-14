@@ -9,7 +9,6 @@ import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 
 import { Container } from './style';
-import { NavigationInterface } from '../../screens/types';
 
 interface SearchInterface {
   indexName: string;
