@@ -19,7 +19,7 @@ export type RootStackParamList = {
   OTPScreen: undefined;
   NewMessageScreen: undefined;
   NewChatSearch: undefined;
-  ChatScreen: undefined;
+  ChatScreen: { title: string };
 };
 
 interface StackNavigationInterface extends StackActionHelpers {
