@@ -1,6 +1,5 @@
 import { Resolvers } from 'apollo-client';
 import { ApolloCache } from 'apollo-cache';
-import { JwtTokenResult } from '../constants';
 
 /*
  *************************************************************
@@ -58,6 +57,22 @@ export interface StoreInterface {
  *******************   STORE TYPES     ***********************
  *************************************************************
  */
+
+// SERVER JWT (RESPONSE) TYPE
+export interface JwtTokenResult {
+  access_token: string;
+  refresh_token: string;
+  id_token: string;
+  scope: string;
+  expires_in: number;
+  token_type: string;
+  exists: boolean;
+  verified: boolean;
+  _id: string;
+  refreshToken: {
+    id_token: string;
+  };
+}
 
 // SERVER OTP (RESPONSE) TYPE
 export type OTPInterface = {
