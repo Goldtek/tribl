@@ -27,7 +27,7 @@ function CommunityAlgoliaList(props: any) {
   const _renderItem = useMemo(
     () => ({ item }: any) => (
       <CommunityHighLight
-        attribute="name"
+        attribute="id"
         hit={item}
         //@ts-ignore
         navigation={navigation}
