@@ -52,7 +52,7 @@ function JoinCommunity(props: JoinCommunityProp) {
         console.tron('successful');
       }
     } catch (error) {
-      console.tron(error);
+      console.error(error);
     }
   };
 
