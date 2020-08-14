@@ -5,7 +5,6 @@ import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import TabSlide from './widgets/tabs';
 import AlgoliaSearch from '../../../components/algoliaSearch';
-import Highlight from '../../../components/algoliaInboxCard';
 import AlgoliaList from '../../../components/algoliaInboxList';
 
 // IMPORT FOR ALL CUSTOM STYLES
