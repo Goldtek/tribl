@@ -17,6 +17,8 @@ interface HighlightProp extends NavigationInterface {
   hit: {
     name: string;
     avatar: string;
+    firstName: string;
+    lastName: string;
   };
   highlight(T: any): any[];
   closeModal(): void;
@@ -36,8 +38,15 @@ const Highlight = (props: HighlightProp) => {
     closeModal();
     navigation.navigate('CommunityDetailScreen', {
       title: `${hit.name}`,
-      avatar: `${hit.avatar}`,
-      members: '25k members'
+      avatar: `${hit.avatar}`
+    });
+  };
+
+  const handlePassportNavigation = () => {
+    closeModal();
+    navigation.navigate('MemberDetailScreen', {
+      title: `${hit.firstName} ${hit.lastName}`,
+      avatar: `${hit.avatar}`
     });
   };
 
@@ -46,58 +55,109 @@ const Highlight = (props: HighlightProp) => {
       {highlights.map(({ value }: any, index: number) => {
         const {
           avatar = 'https://picsum.photos/700',
-          name = 'Afrochella',
-          members = '25k members'
+          members = '25k members',
+          location = 'Lagos, Nigeria'
         } = value;
-
         return (
-          <TouchableRipple
-            key={index}
-            style={{
-              height: RFValue(80),
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: '100%'
-            }}
-            rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
-            onPress={handleNavigation}
-          >
-            <Fragment>
-              <FastImage
-                resizeMode={FastImage.resizeMode.contain}
-                source={{
-                  uri: avatar,
-                  priority: FastImage.priority.high
-                }}
+          <Fragment>
+            {hit.name ? (
+              <TouchableRipple
+                key={index}
                 style={{
-                  width: RFValue(60),
-                  height: RFValue(60),
-                  borderRadius: RFValue(4)
+                  height: RFValue(80),
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '100%'
                 }}
-              />
-              <NameContainer>
-                <Title
-                  style={{
-                    color: colors.PRIMARY_TEXT,
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {hit.name}
-                </Title>
-                <Text
-                  style={{
-                    color: colors.SECONDARY_TEXT,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE)
-                  }}
-                >
-                  {members}
-                </Text>
-              </NameContainer>
-            </Fragment>
-          </TouchableRipple>
+                rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
+                onPress={handleNavigation}
+              >
+                <Fragment>
+                  <FastImage
+                    resizeMode={FastImage.resizeMode.contain}
+                    source={{
+                      uri: hit.avatar,
+                      priority: FastImage.priority.high
+                    }}
+                    style={{
+                      width: RFValue(60),
+                      height: RFValue(60),
+                      borderRadius: RFValue(4)
+                    }}
+                  />
+                  <NameContainer>
+                    <Title
+                      style={{
+                        color: colors.PRIMARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: RFValue(fonts.LARGE_SIZE),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {hit.name}
+                    </Title>
+                    <Text
+                      style={{
+                        color: colors.SECONDARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE)
+                      }}
+                    >
+                      {members}
+                    </Text>
+                  </NameContainer>
+                </Fragment>
+              </TouchableRipple>
+            ) : (
+              <TouchableRipple
+                key={index}
+                style={{
+                  height: RFValue(80),
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '100%'
+                }}
+                rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
+                onPress={handlePassportNavigation}
+              >
+                <Fragment>
+                  <FastImage
+                    resizeMode={FastImage.resizeMode.contain}
+                    source={{
+                      uri: avatar,
+                      priority: FastImage.priority.high
+                    }}
+                    style={{
+                      width: RFValue(60),
+                      height: RFValue(60),
+                      borderRadius: RFValue(4)
+                    }}
+                  />
+                  <NameContainer>
+                    <Title
+                      style={{
+                        color: colors.PRIMARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: RFValue(fonts.LARGE_SIZE),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {`${hit.firstName} ${hit.lastName}`}
+                    </Title>
+                    <Text
+                      style={{
+                        color: colors.SECONDARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE)
+                      }}
+                    >
+                      {location}
+                    </Text>
+                  </NameContainer>
+                </Fragment>
+              </TouchableRipple>
+            )}
+          </Fragment>
         );
       })}
     </Text>
