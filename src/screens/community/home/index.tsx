@@ -5,7 +5,6 @@ import { Title, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { GraphQLError } from 'graphql';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
@@ -17,6 +16,7 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS
 } from '../../../graphql/server/query';
+import { VerifyOTPIT } from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -26,7 +26,6 @@ import {
   RecommendedCommunityContainer,
   RecentActivitiesList
 } from './styles';
-import { VerifyOTPIT } from '../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -40,8 +39,6 @@ interface ScreenProp extends NavigationInterface {
 
 export default function HomeScreen(props: ScreenProp) {
   const credentials = Storage.getUserCredentials();
-  console.tron('cred', credentials);
-
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -53,9 +50,13 @@ export default function HomeScreen(props: ScreenProp) {
     refetch: communityRefetch
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
-  const { data: MembersData } = useQuery(GET_RECOMMENDED_MEMBERS);
+  const {
+    data: membersData,
+    error: memberError,
+    refetch: memberRefetch
+  } = useQuery(GET_RECOMMENDED_MEMBERS);
 
-  const Members = MembersData?.recommendedMembers;
+  const Members = membersData?.recommendedMembers;
 
   const community = communityData?.recommendedCommunities[0];
   const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
@@ -67,20 +68,23 @@ export default function HomeScreen(props: ScreenProp) {
   });
 
   useEffect(() => {
+    const expiredToken = 'GraphQL error: provided token has expired';
     if (
-      communityError?.message === 'GraphQL error: provided token has expired'
+      communityError?.message == expiredToken ||
+      memberError?.message == expiredToken
     ) {
       const RefreshToken = async () => {
         const { data } = await refreshToken();
         if (data) {
-          console.tron('id', data?.id_token);
           const Credentails = {
             ...credentials,
             id_token: data?.refreshToken.id_token
           } as VerifyOTPIT;
+
           Storage.setCredentialInstance(Credentails);
           Storage.setUserCredentials();
           communityRefetch();
+          memberRefetch();
         }
       };
       RefreshToken();
