@@ -34,7 +34,6 @@ function AlgoliaSearch(props: SearchInterface) {
     <Container>
       <View
         style={{
-          marginHorizontal: 10,
           paddingHorizontal: 10,
           elevation: 0,
           borderColor: colors.INACTIVE,
@@ -42,7 +41,8 @@ function AlgoliaSearch(props: SearchInterface) {
           borderWidth: 1,
           flexDirection: 'row',
           alignItems: 'center',
-          height: RFValue(40)
+          height: RFValue(40),
+          width: '100%'
         }}
         onStartShouldSetResponder={showSearchModal(true)}
       >
