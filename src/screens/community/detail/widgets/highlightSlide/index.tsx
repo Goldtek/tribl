@@ -25,7 +25,14 @@ interface SingleCommunityScreenProp extends NavigationInterface {}
 
 export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const detail = props.route;
-  const { name, avatar, members } = detail;
+  const { communityDetails } = detail;
+  const {
+    name,
+    avatar,
+    membersCount,
+    description,
+    interests
+  } = communityDetails;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
@@ -89,7 +96,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     color: colors.SECONDARY_TEXT
                   }}
                 >
-                  {members}
+                  {membersCount} {t(`community.tabPanel.member`)}
                 </Paragraph>
                 <Paragraph
                   style={{
@@ -99,8 +106,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     color: colors.PRIMARY_TEXT
                   }}
                 >
-                  We are a global community of block migrants and locals looking
-                  to make connections
+                  {description}
                 </Paragraph>
               </TextContainer>
               <Button
@@ -123,24 +129,26 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 {t(`community.tabPanel.join`)}
               </Button>
             </CardContainer>
-            <TagContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`community.tabPanel.tag`)}
-              </Title>
+            {interests.length > 0 ? (
+              <TagContainer>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {t(`community.tabPanel.tag`)}
+                </Title>
 
-              <Tags>
-                {TagData.map((identity) => (
-                  <TagText key={identity}>{identity}</TagText>
-                ))}
-              </Tags>
-            </TagContainer>
+                <Tags>
+                  {interests.map((identity: any) => (
+                    <TagText key={identity}>{identity}</TagText>
+                  ))}
+                </Tags>
+              </TagContainer>
+            ) : null}
           </Card>
           <Card style={{ marginTop: RFValue(5) }}>
             <Card.Content style={{ paddingLeft: 0 }}>
