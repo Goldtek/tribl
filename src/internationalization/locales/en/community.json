@@ -23,6 +23,7 @@
     "connection": "connections",
     "community": "communities",
     "connect": "connect",
+    "disconnect": "disconnect",
     "bio": "bio",
     "locality": "locality",
     "identity": "identity",
