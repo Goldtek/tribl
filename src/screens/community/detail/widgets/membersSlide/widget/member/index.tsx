@@ -2,9 +2,11 @@ import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../../../../../types';
 import { useThemeContext } from '../../../../../../../theme';
+import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -16,6 +18,7 @@ interface MemberProp extends NavigationInterface {
   firstName: string;
   connected: boolean;
   lastName: string;
+  phoneNumber: string;
 }
 
 function Member(props: MemberProp) {
@@ -25,8 +28,28 @@ function Member(props: MemberProp) {
     lastSeen = '3 mins ago',
     firstName,
     lastName,
-    connected
+    connected,
+    phoneNumber
   } = props;
+
+  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+    variables: {
+      payload: {
+        phoneNumber: phoneNumber
+      }
+    }
+  });
+
+  const handleRequest = async () => {
+    try {
+      const { data } = await requestConnection();
+      if (data?.requestConnection) {
+        console.tron('successful');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <TouchableRipple
@@ -102,7 +125,7 @@ function Member(props: MemberProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            onPress={() => {}}
+            onPress={handleRequest}
           >
             <Feather name="plus" size={20} color={colors.WHITE} />
           </TouchableRipple>
