@@ -29,9 +29,7 @@ export default function SearchScreen(props: ScreenProp) {
     {
       key: 'highlightSlide',
       title: `${t(`community.tabPanel.highlight`)}`,
-      name: details.title,
-      avatar: details.avatar,
-      members: details.members
+      communityDetails: details.details
     },
     { key: 'channelSlide', title: `${t(`community.tabPanel.channel`)}` },
     { key: 'memberSlide', title: `${t(`community.tabPanel.member`)}` }
