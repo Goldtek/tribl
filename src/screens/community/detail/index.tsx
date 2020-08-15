@@ -36,7 +36,11 @@ export default function SearchScreen(props: ScreenProp) {
       title: `${t(`community.tabPanel.channel`)}`,
       communityDetails: details.details
     },
-    { key: 'memberSlide', title: `${t(`community.tabPanel.member`)}` }
+    {
+      key: 'memberSlide',
+      title: `${t(`community.tabPanel.member`)}`,
+      communityDetails: details.details
+    }
   ]);
 
   const renderScene = SceneMap({ highlightSlide, channelSlide, memberSlide });
