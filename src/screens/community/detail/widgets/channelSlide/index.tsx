@@ -13,6 +13,9 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function ChannelScreen(props: ScreenProp) {
   const { navigation } = props;
+  const detail = props.route;
+  const { communityDetails } = detail;
+  const { channels } = communityDetails;
 
   const { colors, fonts } = useThemeContext();
 
@@ -54,7 +57,7 @@ export default function ChannelScreen(props: ScreenProp) {
   return (
     <FlatList
       renderItem={_renderItem}
-      data={ChannelData}
+      data={channels}
       ItemSeparatorComponent={_seperator}
       keyExtractor={(_item, index) => index.toString()}
     />
