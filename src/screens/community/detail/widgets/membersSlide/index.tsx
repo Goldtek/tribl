@@ -19,8 +19,10 @@ interface MemberSlideProp extends NavigationInterface {}
 export default function MemberSlide(props: MemberSlideProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [search, setSearch] = useState('');
-  const onChangeSearch = (query: string) => setSearch(query);
+  const detail = props.route;
+  const { communityDetails } = detail;
+  const { participants } = communityDetails;
+  console.tron('part', participants);
 
   const _renderItem = ({ item }: any) => (
     <MemberCard key={item.id} {...item} {...props} />
@@ -46,7 +48,7 @@ export default function MemberSlide(props: MemberSlideProp) {
       </Title>
 
       <FlatList
-        data={MembersData}
+        data={participants}
         contentContainerStyle={{
           flexGrow: 1,
           marginTop: RFValue(20),
