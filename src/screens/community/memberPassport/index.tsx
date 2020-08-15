@@ -33,7 +33,14 @@ export default function contactSlide(props: MemberDetailProps) {
 
   //@ts-ignore
   const passport = { ...props.route.params.details };
-  const { phoneNumber, connected, currentLocation, birthPlace } = passport;
+  const {
+    phoneNumber,
+    connected,
+    currentLocation,
+    birthPlace,
+    interest,
+    identity
+  } = passport;
   console.tron('pass', passport);
   const userDetail = UserDetail[0];
 
@@ -234,7 +241,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </LocationContainer>
         ) : null}
 
-        {userDetail?.identities.length ? (
+        {identity.length ? (
           <IdentityContainer>
             <Title
               style={{
@@ -249,7 +256,7 @@ export default function contactSlide(props: MemberDetailProps) {
             </Title>
 
             <Identities>
-              {userDetail?.identities.map((identity) => (
+              {identity.map((identity: any) => (
                 <IdentityText key={identity}>{identity}</IdentityText>
               ))}
             </Identities>
