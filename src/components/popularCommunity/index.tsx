@@ -30,15 +30,18 @@ function PopularCommunity(props: PopularUserProp) {
   const handleNavigation = () =>
     navigation.navigate('CommunityDetailScreen', {
       title: name,
-      avatar: avatar,
-      members: members
+      details: props
     });
 
   return (
     <TouchableRipple
       onPress={handleNavigation}
       rippleColor={colors.PRIMARY}
-      style={{ height: RFValue(100), flexDirection: 'row', paddingLeft: 15 }}
+      style={{
+        height: RFValue(100),
+        flexDirection: 'row',
+        paddingLeft: 15
+      }}
     >
       <Fragment>
         <FastImage
@@ -73,7 +76,7 @@ function PopularCommunity(props: PopularUserProp) {
               color: colors.SECONDARY_TEXT
             }}
           >
-            {members}
+            {members} {t(`community.tabPanel.member`)}
           </Paragraph>
           <Paragraph
             style={{
