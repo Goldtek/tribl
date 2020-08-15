@@ -22,7 +22,6 @@ export default function MemberSlide(props: MemberSlideProp) {
   const detail = props.route;
   const { communityDetails } = detail;
   const { participants } = communityDetails;
-  console.tron('part', participants);
 
   const _renderItem = ({ item }: any) => (
     <MemberCard key={item.id} {...item} {...props} />
