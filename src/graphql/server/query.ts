@@ -8,9 +8,8 @@ import gql from 'graphql-tag';
 
 // GET  RECOMMENDED MEMBERS
 export const GET_RECOMMENDED_MEMBERS = gql`
-  query recommendedMembers {
+  query RecommendedMembers {
     recommendedMembers {
-      id
       email
       firstName
       lastName
@@ -20,6 +19,16 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         country
         state
       }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+      birthPlace {
+        id
+      }
+      connected
     }
   }
 `;
@@ -75,6 +84,7 @@ export const GET_POPULAR_COMMUNITIES = gql`
         connected
         firstName
         lastName
+        phoneNumber
       }
     }
   }
