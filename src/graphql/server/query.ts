@@ -52,3 +52,30 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
     }
   }
 `;
+
+//GET POPULAR COMMUNITIES
+export const GET_POPULAR_COMMUNITIES = gql`
+  query popularCommunities {
+    popularCommunities {
+      id
+      name
+      membersCount
+      description
+      avatar
+      interests {
+        id
+        name
+      }
+      channels {
+        id
+        name
+      }
+      participants {
+        id
+        connected
+        firstName
+        lastName
+      }
+    }
+  }
+`;
