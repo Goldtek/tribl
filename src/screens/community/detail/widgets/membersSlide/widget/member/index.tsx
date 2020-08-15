@@ -13,8 +13,9 @@ import { NameContainer } from './styles';
 interface MemberProp extends NavigationInterface {
   avatar: string;
   lastSeen: string;
-  name: string;
-  connect: boolean;
+  firstName: string;
+  connected: boolean;
+  lastName: string;
 }
 
 function Member(props: MemberProp) {
@@ -22,8 +23,9 @@ function Member(props: MemberProp) {
   const {
     avatar = 'https://picsum.photos/700',
     lastSeen = '3 mins ago',
-    name = 'Paul Maet',
-    connect
+    firstName,
+    lastName,
+    connected
   } = props;
 
   return (
@@ -60,7 +62,7 @@ function Member(props: MemberProp) {
               textTransform: 'capitalize'
             }}
           >
-            {name}
+            {`${firstName} ${lastName}`}
           </Title>
           <Text
             style={{
@@ -72,7 +74,7 @@ function Member(props: MemberProp) {
             {lastSeen}
           </Text>
         </NameContainer>
-        {connect ? (
+        {connected ? (
           <TouchableRipple
             style={{
               marginLeft: 'auto',
