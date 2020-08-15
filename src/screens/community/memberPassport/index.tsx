@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useRef } from 'react';
+import React from 'react';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native';
 import { Title, Paragraph } from 'react-native-paper';
@@ -31,13 +31,10 @@ export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({
-    connect: false
-  });
-
   //@ts-ignore
   const passport = { ...props.route.params.details };
-  const phoneNumber = passport.phoneNumber;
+  const { phoneNumber, connected, currentLocation, birthPlace } = passport;
+  console.tron('pass', passport);
   const userDetail = UserDetail[0];
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
@@ -130,9 +127,15 @@ export default function contactSlide(props: MemberDetailProps) {
           </ConnectionCover>
         </Header>
 
-        <GradientButton onPress={handleRequest}>
-          {t(`community.memberPassport.connect`)}
-        </GradientButton>
+        {connected ? (
+          <GradientButton onPress={() => {}}>
+            {t(`community.memberPassport.disconnect`)}
+          </GradientButton>
+        ) : (
+          <GradientButton onPress={handleRequest}>
+            {t(`community.memberPassport.connect`)}
+          </GradientButton>
+        )}
         {userDetail?.birthPlace.country ? (
           <CitizenshipContainer>
             <Title
@@ -161,8 +164,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </CitizenshipContainer>
         ) : null}
 
-        {userDetail?.currentLocation[0].country &&
-        userDetail?.birthPlace.country ? (
+        {currentLocation ? (
           <LocationContainer>
             <Title
               style={{
@@ -175,57 +177,60 @@ export default function contactSlide(props: MemberDetailProps) {
             >
               {t(`signup.passportScreen.locality`)}
             </Title>
-            <Location>
-              <AntDesign
-                name="home"
-                color="#CACEE5"
-                size={20}
-                style={{
-                  padding: RFValue(12),
-                  borderRadius: 4,
-                  margin: 0,
-                  marginRight: 10,
-                  backgroundColor: colors.ACTION
-                }}
-              />
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  marginBottom: 10
-                }}
-              >
-                {`${userDetail?.birthPlace.state} ${userDetail?.birthPlace.country}`}
-              </Paragraph>
-            </Location>
-
-            <Location>
-              <SimpleLineIcons
-                name="location-pin"
-                color="#CACEE5"
-                size={20}
-                style={{
-                  padding: RFValue(12),
-                  borderRadius: 4,
-                  margin: 0,
-                  marginRight: 10,
-                  backgroundColor: colors.ACTION
-                }}
-              />
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  marginBottom: 10
-                }}
-              >
-                {`${userDetail?.currentLocation[0].state} ${userDetail?.currentLocation[0].country}`}
-              </Paragraph>
-            </Location>
+            {birthPlace ? (
+              <Location>
+                <AntDesign
+                  name="home"
+                  color="#CACEE5"
+                  size={20}
+                  style={{
+                    padding: RFValue(12),
+                    borderRadius: 4,
+                    margin: 0,
+                    marginRight: 10,
+                    backgroundColor: colors.ACTION
+                  }}
+                />
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    marginBottom: 10
+                  }}
+                >
+                  {`${currentLocation[0].state} ${currentLocation[0].country}`}
+                </Paragraph>
+              </Location>
+            ) : null}
+            {currentLocation ? (
+              <Location>
+                <SimpleLineIcons
+                  name="location-pin"
+                  color="#CACEE5"
+                  size={20}
+                  style={{
+                    padding: RFValue(12),
+                    borderRadius: 4,
+                    margin: 0,
+                    marginRight: 10,
+                    backgroundColor: colors.ACTION
+                  }}
+                />
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    marginBottom: 10
+                  }}
+                >
+                  {`${currentLocation[0].state} ${currentLocation[0].country}`}
+                </Paragraph>
+              </Location>
+            ) : null}
           </LocationContainer>
         ) : null}
 
