@@ -36,6 +36,8 @@ import {
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
+const recentActivities: any[] = [];
+
 export default function HomeScreen(props: ScreenProp) {
   const credentials = Storage.getUserCredentials();
   const { colors, fonts } = useThemeContext();
@@ -61,11 +63,7 @@ export default function HomeScreen(props: ScreenProp) {
 
   const recommendedMembers = membersData?.recommendedMembers;
 
-  const recommendedCommunity = communityData?.recommendedCommunities;
-
-  const community = recommendedCommunity?.length
-    ? recommendedCommunity.slice(0, 2)
-    : null;
+  const community = communityData?.recommendedCommunities[0];
 
   const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
     variables: {
@@ -81,21 +79,23 @@ export default function HomeScreen(props: ScreenProp) {
       communityError?.message == expiredToken ||
       memberError?.message == expiredToken
     ) {
-      const RefreshToken = async () => {
+      const refreshUserToken = async () => {
         const { data } = await refreshToken();
+
         if (data) {
-          const Credentails = {
+          const newCredentials = {
             ...credentials,
-            id_token: data?.refreshToken.id_token
+            ...refreshToken
           } as VerifyOTPIT;
 
-          Storage.setCredentialInstance(Credentails);
+          Storage.setCredentialInstance(newCredentials);
           Storage.setUserCredentials();
           communityRefetch();
           memberRefetch();
         }
       };
-      RefreshToken();
+
+      refreshUserToken();
     }
   }, []);
 
@@ -269,8 +269,36 @@ export default function HomeScreen(props: ScreenProp) {
                 backgroundColor: colors.WHITE
               }}
             />
+            <RecommendedCommunity
+              {...community}
+              onPress={handleJoinCommunity}
+            />
           </RecommendedCommunityContainer>
         </RecommendedList>
+
+        {recentActivities.length ? (
+          <RecentActivitiesList>
+            <RecommendedListHeader>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: 20,
+                  marginTop: 0,
+                  marginBottom: 30
+                }}
+              >
+                {t(`community.recommended.activity`)}
+              </Title>
+            </RecommendedListHeader>
+
+            {recentActivities.map((activity) => (
+              <RecentActivity key={activity.name} {...activity} />
+            ))}
+          </RecentActivitiesList>
+        ) : null}
       </ScrollView>
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />

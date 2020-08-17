@@ -18,7 +18,7 @@ function App() {
       await loadResources();
       Storage.checkInitialLaunch();
       Storage.checkUserCredentials();
-      await SplashScreen.hideAsync();
+      SplashScreen.hideAsync();
       setIsAppReady(true);
     })();
   }, []);
