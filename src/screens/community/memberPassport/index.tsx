@@ -33,6 +33,16 @@ export default function contactSlide(props: MemberDetailProps) {
 
   //@ts-ignore
   const passport = { ...props.route.params.details };
+  //@ts-ignore
+  const passportDetails = { ...props.route.params.algoliaDetail };
+  const {
+    phoneNumber: number,
+    connected: connect,
+    currentLocation: location,
+    birthPlace: birthLocation,
+    interest: interests,
+    identity: identities
+  } = passportDetails;
   const {
     phoneNumber,
     connected,
@@ -41,13 +51,12 @@ export default function contactSlide(props: MemberDetailProps) {
     interest,
     identity
   } = passport;
-  console.tron('pass', passport);
   const userDetail = UserDetail[0];
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: {
       payload: {
-        phoneNumber: phoneNumber
+        phoneNumber: phoneNumber || number
       }
     }
   });
@@ -134,7 +143,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </ConnectionCover>
         </Header>
 
-        {connected ? (
+        {connected || connect ? (
           <GradientButton onPress={() => {}}>
             {t(`community.memberPassport.disconnect`)}
           </GradientButton>
@@ -171,7 +180,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </CitizenshipContainer>
         ) : null}
 
-        {currentLocation ? (
+        {currentLocation || location ? (
           <LocationContainer>
             <Title
               style={{
@@ -211,7 +220,7 @@ export default function contactSlide(props: MemberDetailProps) {
                 </Paragraph>
               </Location>
             ) : null}
-            {currentLocation ? (
+            {birthPlace || birthLocation ? (
               <Location>
                 <SimpleLineIcons
                   name="location-pin"
@@ -241,7 +250,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </LocationContainer>
         ) : null}
 
-        {identity.length ? (
+        {identity?.length || identities?.length ? (
           <IdentityContainer>
             <Title
               style={{
@@ -256,30 +265,40 @@ export default function contactSlide(props: MemberDetailProps) {
             </Title>
 
             <Identities>
-              {identity.map((identity: any) => (
+              {identity?.map((identity: any) => (
+                <IdentityText key={identity}>{identity}</IdentityText>
+              ))}{' '}
+              ||{' '}
+              {identities?.map((identity: any) => (
                 <IdentityText key={identity}>{identity}</IdentityText>
               ))}
             </Identities>
           </IdentityContainer>
         ) : null}
 
-        <InterestContainer>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase'
-            }}
-          >
-            {t(`signup.passportScreen.interest`)}
-          </Title>
-          <Identities>
-            {userDetail?.interests.map((interest) => (
-              <IdentityText key={interest}>{interest}</IdentityText>
-            ))}
-          </Identities>
-        </InterestContainer>
+        {interest?.length || interests?.length ? (
+          <InterestContainer>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`signup.passportScreen.interest`)}
+            </Title>
+            <Identities>
+              {interest?.map((interest: any) => (
+                <IdentityText key={interest}>{interest}</IdentityText>
+              ))}{' '}
+              ||{' '}
+              {interests?.map((interest: any) => (
+                <IdentityText key={interest}>{interest}</IdentityText>
+              ))}
+            </Identities>
+          </InterestContainer>
+        ) : null}
       </ContactContainer>
     </ScrollView>
   );
