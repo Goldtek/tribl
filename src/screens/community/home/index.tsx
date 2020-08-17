@@ -9,7 +9,6 @@ import { useQuery } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
-import { useNavigation } from '@react-navigation/native';
 import RecentActivity from '../../../components/recentActivity';
 import JoinCommunity from '../../../components/joinCommunity';
 import { GenerateFirebaseTokenIT } from '../../../graphql/types';
@@ -243,6 +242,10 @@ export default function HomeScreen(props: ScreenProp) {
                 marginTop: 10,
                 backgroundColor: colors.WHITE
               }}
+            />
+            <RecommendedCommunity
+              {...community}
+              onPress={handleJoinCommunity}
             />
           </RecommendedCommunityContainer>
         </RecommendedList>
