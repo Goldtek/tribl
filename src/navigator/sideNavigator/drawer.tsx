@@ -103,28 +103,6 @@ export default function SideDrawerNavigator() {
       />
 
       <Drawer.Screen
-        name="wallet"
-        component={Screens.UpcomingScreen}
-        options={{
-          drawerIcon: () => (
-            <Feather name="dollar-sign" size={24} color={colors.PRIMARY_TEXT} />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.wallet`)}
-            </Text>
-          )
-        }}
-      />
-
-      <Drawer.Screen
         name="settings"
         component={Screens.UpcomingScreen}
         options={{
@@ -145,27 +123,7 @@ export default function SideDrawerNavigator() {
           )
         }}
       />
-      <Drawer.Screen
-        name="invite"
-        component={Screens.UpcomingScreen}
-        options={{
-          drawerIcon: () => (
-            <Entypo name="plus" size={24} color={colors.PRIMARY_TEXT} />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.invite`)}
-            </Text>
-          )
-        }}
-      />
+
       <Drawer.Screen
         name="policy"
         component={Screens.UpcomingScreen}
