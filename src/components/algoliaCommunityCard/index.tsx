@@ -38,7 +38,8 @@ const Highlight = (props: HighlightProp) => {
     closeModal();
     navigation.navigate('CommunityDetailScreen', {
       title: `${hit.name}`,
-      avatar: `${hit.avatar}`
+      avatar: `${hit.avatar}`,
+      communityHit: hit
     });
   };
 
@@ -46,7 +47,8 @@ const Highlight = (props: HighlightProp) => {
     closeModal();
     navigation.navigate('MemberDetailScreen', {
       title: `${hit.firstName} ${hit.lastName}`,
-      avatar: `${hit.avatar}`
+      avatar: `${hit.avatar}`,
+      algoliaDetail: hit
     });
   };
 
