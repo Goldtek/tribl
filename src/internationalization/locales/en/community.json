@@ -24,10 +24,15 @@
     "community": "communities",
     "connect": "connect",
     "disconnect": "disconnect",
+    "message": "message",
     "bio": "bio",
     "locality": "locality",
     "identity": "identity",
-    "interest": "interest"
+    "interest": "interest",
+    "block": "block",
+    "report": "report",
+    "removeConnection": "remove connection",
+    "copy": "copy profile URL"
   },
   "tabPanel": {
     "member": "members",
@@ -50,7 +55,7 @@
     "chat": "chat",
     "request": "connection requests",
     "wallet": "add wallet",
-    "settings": "privacy settings",
+    "settings": "account settings",
     "invite": "invite friend",
     "policy": "privacy policy",
     "version": "version 1.0.0",
