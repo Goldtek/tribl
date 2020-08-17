@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native';
 import { Title, Paragraph } from 'react-native-paper';
@@ -30,6 +30,9 @@ interface MemberDetailProps {}
 export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const [state, setState] = useState({
+    loading: false
+  });
 
   //@ts-ignore
   const passport = { ...props.route.params.details };
@@ -62,15 +65,26 @@ export default function contactSlide(props: MemberDetailProps) {
   });
 
   const handleRequest = async () => {
+    setState({
+      ...state,
+      loading: true
+    });
     try {
       const { data } = await requestConnection();
       if (data?.requestConnection) {
-        console.tron('successful');
+        setState({
+          ...state,
+          loading: false
+        });
       }
     } catch (error) {
-      console.error(error);
+      setState({
+        ...state,
+        loading: false
+      });
     }
   };
+  const { loading } = state;
 
   return (
     <ScrollView
@@ -145,10 +159,10 @@ export default function contactSlide(props: MemberDetailProps) {
 
         {connected || connect ? (
           <GradientButton onPress={() => {}}>
-            {t(`community.memberPassport.disconnect`)}
+            {t(`community.memberPassport.message`)}
           </GradientButton>
         ) : (
-          <GradientButton onPress={handleRequest}>
+          <GradientButton onPress={handleRequest} loading={loading}>
             {t(`community.memberPassport.connect`)}
           </GradientButton>
         )}
