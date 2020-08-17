@@ -18,7 +18,8 @@ enum COLORS {
   OFFWHITE = '#FBFCFF',
   INPUT = '#E5E5E5',
   SHADOW = 'F5F5F5',
-  BLACK = '#000000'
+  BLACK = '#000000',
+  RED = '#FB4E4E'
 }
 
 // All app font sizes
@@ -52,6 +53,7 @@ declare module 'styled-components' {
       INPUT: string;
       SHADOW: string;
       BLACK: string;
+      RED: string;
     };
 
     // All Global App Font Sizes
