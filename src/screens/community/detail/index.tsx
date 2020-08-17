@@ -29,7 +29,7 @@ export default function SearchScreen(props: ScreenProp) {
     {
       key: 'highlightSlide',
       title: `${t(`community.tabPanel.highlight`)}`,
-      communityDetails: details.details
+      communityDetails: details.details || details.communityHit
     },
     {
       key: 'channelSlide',
