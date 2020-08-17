@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, SafeAreaView } from 'react-native';
-import { ProgressBar, Title, Paragraph, Snackbar } from 'react-native-paper';
+import { ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../components/gradientButton';
 import { useTranslation } from 'react-i18next';

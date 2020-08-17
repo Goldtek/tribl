@@ -1,15 +1,35 @@
 import styled from 'styled-components/native';
+import { RFValue } from 'react-native-responsive-fontsize';
 
-export const Container = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  background-color: ${({ theme }) => theme.colors.WHITE};
+export const HeaderContainer = styled.View`
+  width: 100%;
+  padding: 0px 20px 20px 20px;
+  background-color: ${({ theme }) => theme.colors.PRIMARY};
 `;
 
-export const Welcome = styled.Text`
-  font-size: ${({ theme }) => theme.fonts.LARGE_SIZE}px;
-  font-family: ${({ theme }) => theme.fonts.WORK_SANS_REGULAR};
-  color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
-  text-transform: capitalize;
+export const ImageContainer = styled.View`
+  flex-direction: row;
+  margin-top: ${RFValue(20)}px;
+`;
+
+export const ImageTextContainer = styled.View`
+  flex: 1;
+  margin-left: 20px;
+  justify-content: space-between;
+  padding-bottom: 10px;
+`;
+
+export const ImageIconContainer = styled.View`
+  flex-direction: row;
+  margin-top: ${RFValue(15)}px;
+`;
+
+export const SocialMediaButton = styled.TouchableHighlight`
+  width: ${RFValue(40)}px;
+  height: ${RFValue(40)}px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background-color: #8da4ff;
+  margin-right: 15px;
 `;
