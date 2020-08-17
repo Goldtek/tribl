@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Image, Platform } from 'react-native';
+import { Image, Platform, TouchableHighlight } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
-import { Feather } from '@expo/vector-icons';
-import { TouchableHighlight } from 'react-native';
+import { Feather, Entypo } from '@expo/vector-icons';
+import { Menu, Divider, TouchableRipple } from 'react-native-paper';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import AlgoliaSearch from '../../components/algoliaSearch';
-import AlgoliaList from '../../components/algoliaInboxList';
 import AlgoliaCommunityList from '../../components/algoliaCommunityList ';
 
 const CommunityStack = createStackNavigator();
@@ -22,6 +22,26 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const [menu, setMenu] = useState(false);
+  const showMenu = () => setMenu(!menu);
+
+  const { top: safeAreaTop } = useSafeAreaInsets();
+
+  const getMenuHeight = useCallback(() => {
+    switch (true) {
+      case Math.ceil(safeAreaTop) <= 20:
+        return Math.ceil(safeAreaTop + 50);
+
+      case Math.ceil(safeAreaTop) <= 36:
+        return Math.ceil(safeAreaTop + 50);
+
+      case Math.ceil(safeAreaTop) <= 44:
+        return Math.ceil(safeAreaTop + 35);
+
+      default:
+        return Math.ceil(safeAreaTop);
+    }
+  }, []);
 
   return (
     <CommunityStack.Navigator
@@ -120,6 +140,118 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
           },
+          headerRight: () => (
+            <Menu
+              visible={menu}
+              onDismiss={showMenu}
+              anchor={
+                <TouchableRipple
+                  rippleColor={colors.PRIMARY}
+                  onPress={showMenu}
+                  style={{
+                    padding: RFValue(3),
+                    paddingTop: RFValue(6),
+                    paddingBottom: RFValue(6),
+                    backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                    borderRadius: 4,
+                    borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                    borderWidth: 1
+                  }}
+                >
+                  <Entypo
+                    name="dots-three-vertical"
+                    color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                    size={20}
+                  />
+                </TouchableRipple>
+              }
+              contentStyle={{
+                right: 10,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                paddingTop: 0,
+                paddingBottom: 0,
+                overflow: Platform.select({ android: 'hidden' })
+              }}
+              style={{ top: RFValue(getMenuHeight()) }}
+            >
+              <Menu.Item
+                onPress={() => {}}
+                title={t(`community.memberPassport.block`)}
+                style={{
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.RED,
+                  textAlign: 'center',
+                  textTransform: 'capitalize'
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title={t(`community.memberPassport.report`)}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.RED,
+                  textAlign: 'center',
+                  textTransform: 'capitalize'
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title={t(`community.memberPassport.removeConnection`)}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title={t(`community.memberPassport.copy`)}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              />
+            </Menu>
+          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
