@@ -59,7 +59,7 @@ function RecommendedUser(props: RecommendedUserProp) {
         console.tron('successful');
       }
     } catch (error) {
-      console.tron(error);
+      console.error(error);
     }
   };
 

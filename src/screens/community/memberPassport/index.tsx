@@ -55,7 +55,7 @@ export default function contactSlide(props: MemberDetailProps) {
         console.tron('successful');
       }
     } catch (error) {
-      console.tron(error);
+      console.error(error);
     }
   };
 
