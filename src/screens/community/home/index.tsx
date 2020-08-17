@@ -34,14 +34,9 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {
-  recentActivities: {
-    name: string;
-    action: string;
-    avatar: string;
-    date: string;
-  }[];
-}
+interface ScreenProp extends NavigationInterface {}
+
+const recentActivities: any[] = [];
 
 export default function HomeScreen(props: ScreenProp) {
   const credentials = Storage.getUserCredentials();
@@ -70,6 +65,7 @@ export default function HomeScreen(props: ScreenProp) {
   const recommendedMembers = membersData?.recommendedMembers;
 
   const community = communityData?.recommendedCommunities[0];
+
   const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
     variables: {
       payload: {
@@ -84,21 +80,23 @@ export default function HomeScreen(props: ScreenProp) {
       communityError?.message == expiredToken ||
       memberError?.message == expiredToken
     ) {
-      const RefreshToken = async () => {
+      const refreshUserToken = async () => {
         const { data } = await refreshToken();
+
         if (data) {
-          const Credentails = {
+          const newCredentials = {
             ...credentials,
-            id_token: data?.refreshToken.id_token
+            ...refreshToken
           } as VerifyOTPIT;
 
-          Storage.setCredentialInstance(Credentails);
+          Storage.setCredentialInstance(newCredentials);
           Storage.setUserCredentials();
           communityRefetch();
           memberRefetch();
         }
       };
-      RefreshToken();
+
+      refreshUserToken();
     }
   }, []);
 
@@ -255,30 +253,36 @@ export default function HomeScreen(props: ScreenProp) {
               {...community}
               onPress={handleJoinCommunity}
             />
+            <RecommendedCommunity
+              {...community}
+              onPress={handleJoinCommunity}
+            />
           </RecommendedCommunityContainer>
         </RecommendedList>
 
-        <RecentActivitiesList>
-          <RecommendedListHeader>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize',
-                lineHeight: 20,
-                marginTop: 0,
-                marginBottom: 30
-              }}
-            >
-              {t(`community.recommended.activity`)}
-            </Title>
-          </RecommendedListHeader>
+        {recentActivities.length ? (
+          <RecentActivitiesList>
+            <RecommendedListHeader>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: 20,
+                  marginTop: 0,
+                  marginBottom: 30
+                }}
+              >
+                {t(`community.recommended.activity`)}
+              </Title>
+            </RecommendedListHeader>
 
-          {recentActivities.map((activity) => (
-            <RecentActivity key={activity.name} {...activity} />
-          ))}
-        </RecentActivitiesList>
+            {recentActivities.map((activity) => (
+              <RecentActivity key={activity.name} {...activity} />
+            ))}
+          </RecentActivitiesList>
+        ) : null}
       </ScrollView>
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
@@ -286,44 +290,3 @@ export default function HomeScreen(props: ScreenProp) {
     </Fragment>
   );
 }
-
-HomeScreen.defaultProps = {
-  recentActivities: [
-    {
-      name: 'Alex Muleba',
-      action: 'sent money to Uche Nnadi',
-      avatar: 'https://picsum.photos/700',
-      date: '2m ago'
-    },
-    {
-      name: 'Blair Bashen',
-      action: 'Joined #Afropolitan',
-      avatar: 'https://picsum.photos/700',
-      date: '10m ago'
-    },
-    {
-      name: 'Kobla',
-      action: 'Joined #AustineJusticeCoalition',
-      avatar: 'https://picsum.photos/700',
-      date: '45m ago'
-    },
-    {
-      name: 'Erikan O.',
-      action: 'Donated to #BlackLivesMatter',
-      avatar: 'https://picsum.photos/700',
-      date: '2h ago'
-    },
-    {
-      name: 'Josephine Kellner',
-      action: 'sent money to Jasmine',
-      avatar: 'https://picsum.photos/700',
-      date: '8h ago'
-    },
-    {
-      name: 'Spencer Evans',
-      action: 'added mutual connection Mbiyimoh',
-      avatar: 'https://picsum.photos/700',
-      date: '12h ago'
-    }
-  ]
-};
