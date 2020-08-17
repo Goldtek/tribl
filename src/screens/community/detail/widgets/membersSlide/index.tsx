@@ -7,6 +7,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import MemberCard from './widget/member';
 import MembersData from '../../../../../libs/members/index.json';
+import AlgoliaSearch from '../../../../../components/algoliaSearch';
+import AlgoliaList from '../../../../../components/algoliaInboxList';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -26,23 +28,9 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   return (
     <Container>
-      <Searchbar
-        placeholder={t(`community.tabPanel.search`)}
-        onChangeText={onChangeSearch}
-        value={search}
-        style={{
-          marginLeft: RFValue(15),
-          marginRight: RFValue(15),
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(fonts.LARGE_SIZE),
-          color: colors.SECONDARY_TEXT,
-          elevation: 0,
-          borderColor: colors.INACTIVE,
-          borderRadius: 4,
-          borderWidth: 1
-        }}
-        iconColor={colors.PRIMARY_TEXT}
-      />
+      <AlgoliaSearch indexName="tribl_community_develop">
+        <AlgoliaList />
+      </AlgoliaSearch>
       <Title
         style={{
           color: colors.PRIMARY_TEXT,
