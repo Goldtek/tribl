@@ -42,10 +42,20 @@ export const GET_NEARBY_MEMBERS = gql`
       firstName
       lastName
       phoneNumber
+      connected
       currentLocation {
         id
         country
         state
+      }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+      birthPlace {
+        id
       }
     }
   }
