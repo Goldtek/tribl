@@ -10,7 +10,8 @@
     "view": "view all",
     "join": "join",
     "add": "add",
-    "activity": "recent activity"
+    "activity": "recent activity",
+    "myCommunity": "my communities"
   },
   "joinModal": {
     "title": "enter your referral code below",
