@@ -131,3 +131,15 @@ export const GET_MY_COMMUNITIES = gql`
     }
   }
 `;
+
+//GET MY CONNECTIONS
+export const GET_MY_CONNECTIONS = gql`
+  query myConnections {
+    myConnections {
+      firstName
+      lastName
+      id
+      phoneNumber
+    }
+  }
+`;
