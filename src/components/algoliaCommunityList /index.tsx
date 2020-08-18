@@ -93,12 +93,14 @@ function CommunityAlgoliaList(props: any) {
         data={hits}
         keyExtractor={(item: any) => item.objectID}
         ItemSeparatorComponent={_separator}
+        showsVerticalScrollIndicator={false}
         onEndReached={() => hasMore && refine()}
         renderItem={_renderItem}
         style={{
           width: '100%',
           paddingHorizontal: RFValue(20)
         }}
+        contentContainerStyle={{ paddingBottom: RFValue(60) }}
       />
     </Results>
   );
