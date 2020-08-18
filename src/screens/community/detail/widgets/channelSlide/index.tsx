@@ -7,12 +7,13 @@ import ChannelData from '../../../../../libs/channels/index.json';
 import { Paragraph, Divider, TouchableRipple } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import { useThemeContext } from '../../../../../theme';
+import { useNavigation } from '@react-navigation/native';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function ChannelScreen(props: ScreenProp) {
-  const { navigation } = props;
+  const navigation = useNavigation();
   const detail = props.route;
   const { communityDetails } = detail;
   const { channels } = communityDetails;
@@ -22,7 +23,11 @@ export default function ChannelScreen(props: ScreenProp) {
   const _renderItem = useMemo(
     () => ({ item }: { item: { name: string } }) => (
       <TouchableRipple
-        onPress={() => {}}
+        onPress={() =>
+          navigation.navigate('ChatScreen', {
+            title: `${item.name}`
+          })
+        }
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
