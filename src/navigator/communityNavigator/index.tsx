@@ -13,6 +13,7 @@ import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import AlgoliaSearch from '../../components/algoliaSearch';
 import AlgoliaCommunityList from '../../components/algoliaCommunityList ';
+import GradientButton from '../../components/gradientButton';
 
 const CommunityStack = createStackNavigator();
 
@@ -84,6 +85,19 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </TouchableHighlight>
           ),
+          headerRight: () => (
+            <GradientButton
+              gradientContainerstyle={{
+                width: RFValue(30),
+                height: RFValue(30),
+                marginBottom: RFValue(20)
+              }}
+              onPress={() => navigation.navigate('NewMessageScreen')}
+              labelStyle={{ paddingLeft: 3 }}
+            >
+              <Feather name="message-square" color={colors.WHITE} size={20} />
+            </GradientButton>
+          ),
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: { marginRight: 10 }
@@ -97,13 +111,33 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
+          headerLeft: (props) => (
+            <TouchableHighlight
+              {...props}
+              onPress={navigation.toggleDrawer}
+              underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                borderRadius: RFValue(20),
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <Feather
+                name="menu"
+                size={RFValue(25)}
+                color={colors.PRIMARY_TEXT}
+              />
+            </TouchableHighlight>
+          ),
           headerRight: () => (
             <AlgoliaSearch indexName="tribl_community_develop">
               <AlgoliaCommunityList />
             </AlgoliaSearch>
           ),
           headerRightContainerStyle: {
-            width: '100%'
+            width: '80%'
           }
         }}
       />
@@ -258,6 +292,24 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
+      />
+      <CommunityStack.Screen
+        name="NewMessageScreen"
+        component={Screens.NewMessageScreen}
+        options={{
+          headerTitle: t(`community.chat.chatTitle`),
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        }}
       />
     </CommunityStack.Navigator>
   );
