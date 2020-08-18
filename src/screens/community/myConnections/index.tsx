@@ -62,30 +62,32 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         <AlgoliaSearch indexName="tribl_passport_staging">
           <AlgoliaList />
         </AlgoliaSearch>
-        <Title
-          style={{
-            color: colors.PRIMARY_TEXT,
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            marginTop: RFValue(20),
-            marginLeft: RFValue(10),
-            textTransform: 'capitalize'
-          }}
-        >
-          {t(`community.tabPanel.memberTitle`)}
-        </Title>
         {myConnection?.length ? (
-          <FlatList
-            data={myConnection}
-            contentContainerStyle={{
-              flexGrow: 1,
-              marginTop: RFValue(10),
-              paddingBottom: RFValue(120)
-            }}
-            showsVerticalScrollIndicator={false}
-            renderItem={_renderItem}
-            keyExtractor={(item) => item.id}
-          />
+          <Fragment>
+            <Title
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                marginTop: RFValue(20),
+                marginLeft: RFValue(10),
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`community.tabPanel.memberTitle`)}
+            </Title>
+            <FlatList
+              data={myConnection}
+              contentContainerStyle={{
+                flexGrow: 1,
+                marginTop: RFValue(10),
+                paddingBottom: RFValue(120)
+              }}
+              showsVerticalScrollIndicator={false}
+              renderItem={_renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          </Fragment>
         ) : (
           <Text
             style={{
