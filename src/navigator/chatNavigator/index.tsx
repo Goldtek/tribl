@@ -55,7 +55,8 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
             <GradientButton
               gradientContainerstyle={{
                 width: RFValue(30),
-                height: RFValue(30)
+                height: RFValue(30),
+                marginBottom: RFValue(20)
               }}
               onPress={() => navigation.navigate('NewMessageScreen')}
               labelStyle={{ paddingLeft: 3 }}
