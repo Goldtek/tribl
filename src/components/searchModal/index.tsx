@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useEffect, useRef, ReactNode } from 'react';
-import { connectSearchBox } from 'react-instantsearch-native';
 import { Searchbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import { TextInput } from 'react-native';
 import algolia from 'algoliasearch';
-import { InstantSearch } from 'react-instantsearch-native';
+import { InstantSearch, connectSearchBox } from 'react-instantsearch-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
@@ -60,6 +59,7 @@ function SearchModal(props: ModalProp) {
 
   const _searchBox = ({ currentRefinement, refine }: any) => (
     <Searchbar
+      autoFocus
       ref={inputRef}
       value={currentRefinement}
       onChangeText={(value) => refine(value)}
