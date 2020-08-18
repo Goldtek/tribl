@@ -38,7 +38,6 @@ export default function MemberSlide(props: MemberSlideProp) {
           fontFamily: fonts.WORK_SANS_SEMI_BOLD,
           fontSize: RFValue(fonts.LARGE_SIZE),
           marginTop: RFValue(20),
-          marginBottom: RFValue(10),
           marginLeft: RFValue(10),
           textTransform: 'capitalize'
         }}
@@ -50,7 +49,7 @@ export default function MemberSlide(props: MemberSlideProp) {
         data={participants}
         contentContainerStyle={{
           flexGrow: 1,
-          marginTop: RFValue(20),
+          marginTop: RFValue(10),
           paddingBottom: RFValue(120)
         }}
         showsVerticalScrollIndicator={false}
