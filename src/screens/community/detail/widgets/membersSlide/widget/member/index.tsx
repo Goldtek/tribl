@@ -123,7 +123,11 @@ function Member(props: MemberProp) {
               })
             }
           >
-            <Feather name="send" size={20} color={colors.PRIMARY_TEXT} />
+            <Feather
+              name="message-square"
+              size={20}
+              color={colors.PRIMARY_TEXT}
+            />
           </TouchableRipple>
         ) : (
           <TouchableRipple
