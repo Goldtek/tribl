@@ -100,6 +100,7 @@ function AlgoliaList(props: any) {
           paddingHorizontal: RFValue(20),
           marginTop: RFValue(30)
         }}
+        contentContainerStyle={{ paddingBottom: RFValue(60) }}
       />
     </Results>
   );
