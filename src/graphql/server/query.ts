@@ -99,3 +99,35 @@ export const GET_POPULAR_COMMUNITIES = gql`
     }
   }
 `;
+
+//GET MY COMMUNITIES
+export const GET_MY_COMMUNITIES = gql`
+  query myCommunities {
+    myCommunities {
+      id
+      description
+      avatar
+      channels {
+        id
+        name
+      }
+      membersCount
+      interests {
+        id
+        name
+      }
+      participants {
+        id
+        firstName
+        lastName
+        phoneNumber
+        avatar
+        currentLocation {
+          id
+          country
+          state
+        }
+      }
+    }
+  }
+`;
