@@ -14,9 +14,11 @@ import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
 import Storage from '../../../storage';
 import {
   GET_RECOMMENDED_COMMUNITIES,
-  GET_RECOMMENDED_MEMBERS
+  GET_RECOMMENDED_MEMBERS,
+  GET_MY_COMMUNITIES
 } from '../../../graphql/server/query';
 import { VerifyOTPIT } from '../../../graphql/types';
+import MyCommunity from '../../../components/myCommunities';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -45,6 +47,8 @@ export default function HomeScreen(props: ScreenProp) {
 
   const navigation = useNavigation();
 
+  const { data: myCommunityData } = useQuery(GET_MY_COMMUNITIES);
+
   const {
     data: communityData,
     error: communityError,
@@ -56,6 +60,8 @@ export default function HomeScreen(props: ScreenProp) {
     error: memberError,
     refetch: memberRefetch
   } = useQuery(GET_RECOMMENDED_MEMBERS);
+
+  const myCommunity = myCommunityData?.myCommunities;
 
   const Members = membersData?.recommendedMembers;
 
@@ -112,6 +118,40 @@ export default function HomeScreen(props: ScreenProp) {
         nestedScrollEnabled
         contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
       >
+        {myCommunity?.length ? (
+          <RecommendedList>
+            <RecommendedListHeader>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: 20,
+                  marginTop: 0,
+                  marginBottom: 0
+                }}
+              >
+                {t(`community.recommended.myCommunity`)}
+              </Title>
+            </RecommendedListHeader>
+
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ marginTop: 10, backgroundColor: colors.WHITE }}
+            >
+              {myCommunity?.map((member: any, index: number) => (
+                <MyCommunity
+                  key={member.id}
+                  {...member}
+                  index={index}
+                  lastChild={Members.length - 1}
+                />
+              ))}
+            </ScrollView>
+          </RecommendedList>
+        ) : null}
         <RecommendedList>
           <RecommendedListHeader>
             <Title
