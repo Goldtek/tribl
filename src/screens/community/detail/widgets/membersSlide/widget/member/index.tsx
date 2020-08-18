@@ -3,6 +3,7 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
 import { useMutation } from '@apollo/react-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../../../../../types';
 import { useThemeContext } from '../../../../../../../theme';
@@ -23,6 +24,7 @@ interface MemberProp extends NavigationInterface {
 
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
+  const navigation = useNavigation();
   const {
     avatar = 'https://picsum.photos/700',
     lastSeen = '3 mins ago',
@@ -61,7 +63,12 @@ function Member(props: MemberProp) {
         paddingLeft: RFValue(10),
         paddingRight: RFValue(10)
       }}
-      onPress={() => {}}
+      onPress={() =>
+        navigation.navigate('MemberDetailScreen', {
+          title: `${firstName} ${lastName}`,
+          details: { ...props }
+        })
+      }
     >
       <Fragment>
         <FastImage
@@ -110,7 +117,11 @@ function Member(props: MemberProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            onPress={() => {}}
+            onPress={() =>
+              navigation.navigate('ChatScreen', {
+                title: `${firstName} ${lastName}`
+              })
+            }
           >
             <Feather name="send" size={20} color={colors.PRIMARY_TEXT} />
           </TouchableRipple>
