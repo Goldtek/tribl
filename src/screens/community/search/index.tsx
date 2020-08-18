@@ -15,13 +15,18 @@ import { GLOBAL_HEADER_STYLE } from '../../../constants';
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: { params: { index: number } };
+}
 
 export default function SearchScreen(props: ScreenProp) {
+  const {
+    params: { index }
+  } = props.route;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [tabIndex, setTabIndex] = React.useState(0);
+  const [tabIndex, setTabIndex] = React.useState(index);
 
   const [routes] = React.useState([
     { key: 'memberSlide', title: `${t(`community.tabPanel.member`)}` },
