@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens';
+import Screen from '../../screens/community/index';
 import { Text } from 'react-native-paper';
 import {
   MaterialCommunityIcons,
@@ -77,7 +78,7 @@ export default function SideDrawerNavigator() {
         }}
       />
       <Drawer.Screen
-        name="Connection"
+        name="ConnectionRequest"
         component={Screens.UpcomingScreen}
         options={{
           drawerIcon: () => (
@@ -97,6 +98,31 @@ export default function SideDrawerNavigator() {
               }}
             >
               {t(`community.sideNav.request`)}
+            </Text>
+          )
+        }}
+      />
+      <Drawer.Screen
+        name="MyConnections"
+        component={Screen.MyConnectionScreen}
+        options={{
+          drawerIcon: () => (
+            <SimpleLineIcons
+              name="user"
+              size={24}
+              color={colors.PRIMARY_TEXT}
+            />
+          ),
+          drawerLabel: () => (
+            <Text
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(13),
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`community.sideNav.connection`)}
             </Text>
           )
         }}
