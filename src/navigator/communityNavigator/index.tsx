@@ -136,9 +136,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               <AlgoliaCommunityList />
             </AlgoliaSearch>
           ),
-          headerRightContainerStyle: {
-            width: '80%'
-          }
+          headerRightContainerStyle: { width: '85%' }
         }}
       />
 
