@@ -21,7 +21,7 @@ import { Container, RecommendedList, RecommendedListHeader } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function MemberSearch(props: ScreenProp) {
+function MemberSlideScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -48,7 +48,7 @@ export default function MemberSearch(props: ScreenProp) {
 
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
 
-  const NearbyMembers = nearbyData?.nearbyMembers;
+  const nearbyMembers = nearbyData?.nearbyMembers;
 
   const _renderRecommendedMember = useMemo(
     () => ({ item, index }: any) => (
@@ -175,7 +175,7 @@ export default function MemberSearch(props: ScreenProp) {
             </TouchableRipple>
           </RecommendedListHeader>
           <FlatList
-            data={NearbyMembers}
+            data={nearbyMembers}
             horizontal={true}
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
@@ -201,3 +201,5 @@ export default function MemberSearch(props: ScreenProp) {
     </ScrollView>
   );
 }
+
+export default React.memo(MemberSlideScreen);
