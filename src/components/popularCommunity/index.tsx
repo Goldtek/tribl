@@ -13,7 +13,7 @@ import { TextConatiner } from './styles';
 interface PopularUserProp {
   avatar: string;
   name: string;
-  members: string;
+  membersCount: string;
 }
 
 function PopularCommunity(props: PopularUserProp) {
@@ -24,7 +24,7 @@ function PopularCommunity(props: PopularUserProp) {
   const {
     avatar = 'https://picsum.photos/700',
     name = 'Black lives matter',
-    members = '24k'
+    membersCount
   } = props;
 
   const handleNavigation = () =>
@@ -76,7 +76,7 @@ function PopularCommunity(props: PopularUserProp) {
               color: colors.SECONDARY_TEXT
             }}
           >
-            {members} {t(`community.tabPanel.member`)}
+            {membersCount} {t(`community.tabPanel.member`)}
           </Paragraph>
           <Paragraph
             style={{

@@ -9,7 +9,7 @@ import { DEVICE_FULL_WIDTH } from '../../utils/device';
 // DEFINE SCREEN PROP TYPES
 interface RecommendedCommunityProp {
   name: string;
-  members: string;
+  membersCount: string;
   avatar: string;
   onPress(): void;
 }
@@ -18,7 +18,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { avatar, name, members = '20 members', onPress } = props;
+  const { avatar, name, membersCount, onPress } = props;
 
   return (
     <Card
@@ -50,7 +50,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
       </Card.Content>
       <Card.Title
         title={name}
-        subtitle={members}
+        subtitle={`${membersCount} ${t(`community.tabPanel.member`)}`}
         titleStyle={{
           fontFamily: fonts.WORK_SANS_SEMI_BOLD,
           fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
