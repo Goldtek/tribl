@@ -173,3 +173,12 @@ export const GET_SINGLE_COMMUNITY = gql`
     }
   }
 `;
+
+//GET CHENNELS OF A COMMUNITY
+export const GET_COMMUNITY_CHANNELS = gql`
+  query communityChannels($id: ID!) {
+    communityChannels(communityId: $id) {
+      name
+    }
+  }
+`;
