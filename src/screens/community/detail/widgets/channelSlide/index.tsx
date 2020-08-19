@@ -2,8 +2,6 @@ import React, { useMemo, Fragment } from 'react';
 import { FlatList } from 'react-native';
 import { NavigationInterface } from '../../../../types';
 import { RFValue } from 'react-native-responsive-fontsize';
-import ChannelData from '../../../../../libs/channels/index.json';
-
 import { Paragraph, Divider, TouchableRipple } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import { useThemeContext } from '../../../../../theme';
