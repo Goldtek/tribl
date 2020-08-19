@@ -74,9 +74,9 @@ export default function OTPScreen(props: ScreenProp) {
         const { data } = await verifyOtp();
 
         if (data?.validateOtp) {
-          Storage.setCredentialInstance(data?.validateOtp);
+          Storage.setUserCredentials(data?.validateOtp);
 
-          if (!data.validateOtp.exists) {
+          if (!data.validateOtp.verified) {
             return navigation.reset({
               index: 0,
               routes: [{ name: 'CreateAccountScreen' }]
