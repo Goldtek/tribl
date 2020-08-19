@@ -42,11 +42,12 @@ class Storage {
     return this.credentialInstance;
   }
 
-  setCredentialInstance(credentials: VerifyOTPIT) {
-    this.credentialInstance = credentials;
+  setUserCredentials(credentials: VerifyOTPIT) {
+    this.credentialInstance = { ...this.credentialInstance, ...credentials };
+    this.setUserSecuredCredentials();
   }
 
-  async setUserCredentials() {
+  async setUserSecuredCredentials() {
     return Promise.all([
       SecureStore.deleteItemAsync(DEVICE_ID),
       SecureStore.setItemAsync(
