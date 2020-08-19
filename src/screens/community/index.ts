@@ -4,7 +4,9 @@ import CommunityDetailScreen from './detail';
 import MemberDetailScreen from './memberPassport';
 import NewMessageScreen from '../inbox/newMessage';
 import MyConnectionScreen from './myConnections';
-import ConnectionRequest from './connectionRequest';
+import ConnectionRequestScreen from './connectionRequest';
+import AccountSettingScreen from './accountSettings';
+import PrivacyScreen from './accountSettings/privacy';
 
 export default {
   HomeScreen,
@@ -13,5 +15,7 @@ export default {
   MemberDetailScreen,
   NewMessageScreen,
   MyConnectionScreen,
-  ConnectionRequest
+  ConnectionRequestScreen,
+  AccountSettingScreen,
+  PrivacyScreen
 };
