@@ -7,8 +7,6 @@ import { GroupInterface } from '../screens/inbox/types';
 
 const batch = firechat.batch();
 
-// ------ Setup -------- //
-
 class Firechat {
   private userId: string = '';
 
