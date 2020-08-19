@@ -30,6 +30,6 @@ export const SocialMediaButton = styled.TouchableHighlight`
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-  background-color: #8da4ff;
+  background-color: ${({ theme }) => theme.colors.PRIMARY_LIGHT};
   margin-right: 15px;
 `;
