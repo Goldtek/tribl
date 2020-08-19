@@ -1,32 +1,58 @@
 import React, { Fragment } from 'react';
-import { NavigationInterface } from '../../../types';
+import { Keyboard } from 'react-native';
+import { useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
+import { Feather, AntDesign } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
+import { NavigationInterface } from '../../../types';
 import { useThemeContext } from '../../../../theme';
-import { Feather, AntDesign } from '@expo/vector-icons';
+import { ACCEPT_CONNECTION } from '../../../../graphql/server/mutations';
 
 import { NameContainer } from './styles';
 
-interface ConnectionProp extends NavigationInterface {
+interface ConnectionRequestProp extends NavigationInterface {
   avatar: string;
   lastSeen: string;
   firstName: string;
   connected: boolean;
   lastName: string;
   phoneNumber: string;
+  refetch: VoidFunction;
 }
 
-const Connection = (props: ConnectionProp) => {
+const ConnectionRequest = (props: ConnectionRequestProp) => {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const {
     avatar = 'https://picsum.photos/700',
     lastSeen = '3 mins ago',
     firstName,
-    lastName
+    lastName,
+    phoneNumber,
+    refetch
   } = props;
+
+  const [acceptConnection] = useMutation(ACCEPT_CONNECTION, {
+    variables: {
+      payload: {
+        phoneNumber: phoneNumber
+      }
+    }
+  });
+
+  const handleAcceptConnection = async () => {
+    Keyboard.dismiss();
+    try {
+      const { data } = await acceptConnection();
+      if (data?.acceptConnection) {
+        refetch();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <TouchableRipple
       style={{
@@ -105,7 +131,7 @@ const Connection = (props: ConnectionProp) => {
             justifyContent: 'center',
             alignItems: 'center'
           }}
-          onPress={() => {}}
+          onPress={handleAcceptConnection}
         >
           <AntDesign name="check" size={17} color={colors.WHITE} />
         </TouchableRipple>
@@ -114,4 +140,4 @@ const Connection = (props: ConnectionProp) => {
   );
 };
 
-export default Connection;
+export default ConnectionRequest;
