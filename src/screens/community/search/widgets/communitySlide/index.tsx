@@ -24,7 +24,7 @@ import { Container, CommunityWrapper, PopularContainer } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function CommunitySlideScreen(props: ScreenProp) {
+function CommunitySlideScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
@@ -135,3 +135,5 @@ export default function CommunitySlideScreen(props: ScreenProp) {
     </Fragment>
   );
 }
+
+export default React.memo(CommunitySlideScreen);
