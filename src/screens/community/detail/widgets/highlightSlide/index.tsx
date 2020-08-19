@@ -8,8 +8,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import MembersCard from '../../../../../components/recommendedUser';
-import TagData from '../../../../../libs/tags/index.json';
-import { GET_NEARBY_MEMBERS } from '../../../../../graphql/server/query';
+import {
+  GET_NEARBY_MEMBERS,
+  GET_SINGLE_COMMUNITY
+} from '../../../../../graphql/server/query';
 import JoinCommunity from '../../../../../components/joinCommunity';
 
 import {
@@ -26,18 +28,18 @@ interface SingleCommunityScreenProp extends NavigationInterface {}
 export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const detail = props.route;
   const { communityDetails } = detail;
-  const {
-    name,
-    avatar,
-    membersCount,
-    description,
-    interests
-  } = communityDetails;
+  const { id } = communityDetails;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+
+  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
+    variables: {
+      id
+    }
+  });
 
   const handleJoinCommunity = () => {
     setState({
@@ -47,6 +49,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
   };
 
   const NearbyMembers = nearbyData?.nearbyMembers;
+  const SingleCommunity = communityData?.Community[0];
 
   return (
     <Fragment>
@@ -57,7 +60,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
               <FastImage
                 resizeMode={FastImage.resizeMode.contain}
                 source={{
-                  uri: avatar,
+                  uri: SingleCommunity?.avatar,
                   priority: FastImage.priority.high
                 }}
                 style={{
@@ -72,7 +75,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
               <FastImage
                 resizeMode={FastImage.resizeMode.contain}
                 source={{
-                  uri: avatar,
+                  uri: SingleCommunity?.avatar,
                   priority: FastImage.priority.high
                 }}
                 style={{ width: '20%', height: '50%' }}
@@ -86,7 +89,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     lineHeight: RFValue(19)
                   }}
                 >
-                  {name}
+                  {SingleCommunity?.name}
                 </Title>
                 <Paragraph
                   style={{
@@ -96,7 +99,8 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     color: colors.SECONDARY_TEXT
                   }}
                 >
-                  {membersCount} {t(`community.tabPanel.member`)}
+                  {SingleCommunity?.membersCount}{' '}
+                  {t(`community.tabPanel.member`)}
                 </Paragraph>
                 <Paragraph
                   style={{
@@ -106,7 +110,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     color: colors.PRIMARY_TEXT
                   }}
                 >
-                  {description}
+                  {SingleCommunity?.description}
                 </Paragraph>
               </TextContainer>
               <Button
@@ -129,7 +133,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 {t(`community.tabPanel.join`)}
               </Button>
             </CardContainer>
-            {interests.length > 0 ? (
+            {SingleCommunity?.interests?.length ? (
               <TagContainer>
                 <Title
                   style={{
@@ -143,7 +147,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 </Title>
 
                 <Tags>
-                  {interests.map((identity: any) => (
+                  {SingleCommunity?.interests.map((identity: any) => (
                     <TagText key={identity}>{identity}</TagText>
                   ))}
                 </Tags>
