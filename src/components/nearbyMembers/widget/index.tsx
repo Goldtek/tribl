@@ -42,23 +42,19 @@ function NearbyModal(props: PopularUserProp) {
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: {
-      payload: {
-        phoneNumber: phoneNumber
-      }
+      payload: { phoneNumber }
     }
   });
 
   const handleRequest = async () => {
     setLoading(true);
-    console.tron('gggggg');
     try {
-      const { data } = await requestConnection();
-      console.tron('jjj', data);
+      const { data, loading } = await requestConnection();
       if (data?.requestConnection) {
-        setLoading(false);
+        setLoading(loading);
       }
     } catch (error) {
-      setLoading(false);
+      setLoading(loading);
     }
   };
 
