@@ -182,3 +182,27 @@ export const GET_COMMUNITY_CHANNELS = gql`
     }
   }
 `;
+
+//GET PARTICIPANTS OF A COMMUNITY
+export const GET_COMMUNITY_MEMBERS = gql`
+  query communityMemberscommunityChannels($id: ID!) {
+    communityMembers(communityId: $id) {
+      id
+      firstName
+      lastName
+      phoneNumber
+      currentLocation {
+        id
+        state
+        country
+      }
+      interest {
+        name
+      }
+      identity {
+        name
+      }
+      connected
+    }
+  }
+`;
