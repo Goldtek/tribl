@@ -63,6 +63,18 @@
     "version": "version 1.0.0",
     "company": "silicon jungle labs"
   },
+  "accountSettings": {
+    "privacy": "privacy",
+    "notification": "notifications",
+    "number": "add/change number",
+    "delete": "delete my account",
+    "interest": "interests",
+    "identity": "identity",
+    "age": "age",
+    "locality": "locality",
+    "link": "linked accounts",
+    "blocked": "blocked accounts"
+  },
   "chat": {
     "message": "direct messages",
     "group": "group chat",
