@@ -23,10 +23,9 @@ export const VALIDATE_USER_OTP = gql`
       refresh_token
       access_token
       expires_in
+      token_type
       id_token
       verified
-      # token_type
-      # exists
     }
   }
 `;

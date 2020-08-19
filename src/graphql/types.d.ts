@@ -60,18 +60,16 @@ export interface StoreInterface {
 
 // SERVER JWT (RESPONSE) TYPE
 export interface JwtTokenResult {
-  access_token: string;
+  firebase_token: string;
   refresh_token: string;
-  id_token: string;
-  scope: string;
+  access_token: string;
   expires_in: number;
   token_type: string;
-  exists: boolean;
   verified: boolean;
+  id_token: string;
+  exists: boolean;
+  scope: string;
   _id: string;
-  refreshToken: {
-    id_token: string;
-  };
 }
 
 // SERVER OTP (RESPONSE) TYPE
@@ -86,6 +84,14 @@ interface VerifyOTPIT extends JwtTokenResult {
 
 export type VerifyOTPInterface = {
   validateOtp: VerifyOTPIT;
+};
+
+export type RefreshTokenInterface = {
+  refreshToken: VerifyOTPIT;
+};
+
+export type GenerateFirebaseTokenIT = {
+  generateFirebaseToken: VerifyOTPIT;
 };
 
 // SERVER CREATE ACCOUNT (RESPONSE) TYPE
