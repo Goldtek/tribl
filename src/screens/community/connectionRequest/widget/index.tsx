@@ -8,7 +8,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationInterface } from '../../../types';
 import { useThemeContext } from '../../../../theme';
-import { ACCEPT_CONNECTION } from '../../../../graphql/server/mutations';
+import {
+  ACCEPT_CONNECTION,
+  REJECT_CONNECTION
+} from '../../../../graphql/server/mutations';
 
 import { NameContainer } from './styles';
 
@@ -42,6 +45,14 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
     }
   });
 
+  const [declineConnection] = useMutation(REJECT_CONNECTION, {
+    variables: {
+      payload: {
+        phoneNumber: phoneNumber
+      }
+    }
+  });
+
   const handleAcceptConnection = async () => {
     Keyboard.dismiss();
     try {
@@ -53,6 +64,19 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
       console.error(error);
     }
   };
+
+  const handleDeclineConnection = async () => {
+    Keyboard.dismiss();
+    try {
+      const { data } = await declineConnection();
+      if (data?.declineConnection) {
+        refetch();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <TouchableRipple
       style={{
@@ -116,7 +140,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             justifyContent: 'center',
             alignItems: 'center'
           }}
-          onPress={() => {}}
+          onPress={handleDeclineConnection}
         >
           <Feather name="x" size={17} color={colors.WHITE} />
         </TouchableRipple>
