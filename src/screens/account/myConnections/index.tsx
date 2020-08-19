@@ -1,37 +1,39 @@
 import React, { Fragment } from 'react';
+import { NavigationInterface } from '../../types';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
-import { StatusBar, FlatList } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { StatusBar, FlatList, TouchableHighlight } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
-import { Entypo } from '@expo/vector-icons';
-import ConnectionRequest from './widget';
-import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
+import AlgoliaSearch from '../../../components/algoliaSearch';
+import AlgoliaList from '../../../components/algoliaInboxList';
+import Connection from './widget';
+import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
+import hexToRGB from '../../../utils/hexToRGB';
+
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ConnectionRequestScreenProp extends NavigationInterface {}
+interface MyConnectionScreenProp extends NavigationInterface {}
 
-export default function ConnectionRequestScreen(
-  props: ConnectionRequestScreenProp
-) {
+export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeArea();
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { data, refetch } = useQuery(GET_CONNECTION_REQUEST);
+  const { data } = useQuery(GET_MY_CONNECTIONS);
 
-  const myConnection = data?.connectionRequests;
+  const myConnection = data?.myConnections;
 
   const _renderItem = ({ item }: any) => (
-    <ConnectionRequest key={item.id} {...item} {...props} refetch={refetch} />
+    <Connection key={item.id} {...item} {...props} />
   );
 
   return (
@@ -47,17 +49,35 @@ export default function ConnectionRequestScreen(
               textTransform: 'capitalize'
             }}
           >
-            {t(`community.sideNav.request`)}
+            {t(`community.sideNav.connection`)}
           </Text>
         )}
         headerLeft={() => (
-          <TouchableRipple onPress={() => props.navigation.goBack()}>
-            <Entypo name="chevron-left" size={30} color={colors.PRIMARY} />
-          </TouchableRipple>
+          <TouchableHighlight
+            {...props}
+            onPress={props.navigation.toggleDrawer}
+            underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
+            style={{
+              height: RFValue(40),
+              width: RFValue(40),
+              borderRadius: RFValue(20),
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Feather
+              name="menu"
+              size={RFValue(25)}
+              color={colors.PRIMARY_TEXT}
+            />
+          </TouchableHighlight>
         )}
         style={{ paddingTop: top }}
       />
       <Container>
+        <AlgoliaSearch indexName="tribl_passport_staging">
+          <AlgoliaList />
+        </AlgoliaSearch>
         {myConnection?.length ? (
           <Fragment>
             <Title
@@ -93,7 +113,7 @@ export default function ConnectionRequestScreen(
               textAlign: 'center'
             }}
           >
-            You don't have any connection request.
+            You currently don't have any connection
           </Text>
         )}
       </Container>
