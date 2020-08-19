@@ -68,6 +68,7 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
       id
       avatar
       name
+      membersCount
     }
   }
 `;
@@ -96,6 +97,7 @@ export const GET_POPULAR_COMMUNITIES = gql`
         lastName
         phoneNumber
       }
+      membersCount
     }
   }
 `;
