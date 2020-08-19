@@ -6,34 +6,47 @@ import { Platform } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import { Ionicons } from '@expo/vector-icons';
-import { IMessage } from './types';
+import { MessageInterface } from '../types';
+import { fireAuth } from '../../../firebase/config';
+import Firechat from '../../../firebase';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: {
+    params: { title: string; avatar: string; chatId: string };
+  };
+}
 
 export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
+  const { chatId } = props.route.params;
 
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const userId = fireAuth.currentUser?.uid as string;
+
+  const [messages, setMessages] = useState<MessageInterface[]>([]);
 
   useEffect(() => {
+    if (!chatId) return;
+
+    Firechat.getChatMessages(chatId);
+
     setMessages([
       {
-        _id: 1,
+        _id: '1',
         text: 'Hello bro',
         createdAt: new Date(),
         user: {
-          _id: 2,
+          _id: '2',
           name: 'React Native',
           avatar: 'https://placeimg.com/140/140/any'
         }
       },
       {
-        _id: 2,
+        _id: '20',
         text: 'Hey man',
         createdAt: new Date(),
         user: {
-          _id: 1,
+          _id: userId,
           name: 'React',
           avatar: 'https://placeimg.com/140/140/any'
         }
@@ -41,7 +54,7 @@ export default function ChatScreen(props: ScreenProp) {
     ]);
   }, []);
 
-  const onSend = useCallback((messages: IMessage[] = []) => {
+  const onSend = useCallback((messages: MessageInterface[] = []) => {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages)
     );
@@ -52,7 +65,7 @@ export default function ChatScreen(props: ScreenProp) {
       <GiftedChat
         placeholder="Start typing ..."
         messages={messages}
-        user={{ _id: 1 }}
+        user={{ _id: userId }}
         alwaysShowSend
         onSend={onSend}
         renderSend={(props) => (
