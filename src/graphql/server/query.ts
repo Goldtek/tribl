@@ -155,3 +155,21 @@ export const GET_CONNECTION_REQUEST = gql`
     }
   }
 `;
+
+//GET ONE COMMUNITY
+export const GET_SINGLE_COMMUNITY = gql`
+  query community($id: ID!) {
+    Community(id: $id) {
+      name
+      description
+      id
+      avatar
+      description
+      interests {
+        id
+        name
+      }
+      membersCount
+    }
+  }
+`;
