@@ -79,7 +79,7 @@ export default function SideDrawerNavigator() {
       />
       <Drawer.Screen
         name="ConnectionRequest"
-        component={Screens.UpcomingScreen}
+        component={Screen.ConnectionRequest}
         options={{
           drawerIcon: () => (
             <SimpleLineIcons
