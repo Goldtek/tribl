@@ -11,24 +11,26 @@ import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
 import { Entypo } from '@expo/vector-icons';
 import ConnectionRequest from './widget';
-import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
+import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
 import memberData from '../../../libs/members/index.json';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MyConnectionScreenProp extends NavigationInterface {}
+interface ConnectionRequestScreenProp extends NavigationInterface {}
 
-export default function ProfileScreen(props: MyConnectionScreenProp) {
+export default function ConnectionRequestScreen(
+  props: ConnectionRequestScreenProp
+) {
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeArea();
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { data } = useQuery(GET_MY_CONNECTIONS);
+  const { data } = useQuery(GET_CONNECTION_REQUEST);
 
-  const myConnection = data?.myConnections;
+  const myConnection = data?.connectionRequests;
 
   const _renderItem = ({ item }: any) => (
     <ConnectionRequest key={item.id} {...item} {...props} />
@@ -58,31 +60,44 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         style={{ paddingTop: top }}
       />
       <Container>
-        <Fragment>
-          <Title
+        {myConnection?.length ? (
+          <Fragment>
+            <Title
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                marginTop: RFValue(20),
+                marginLeft: RFValue(10),
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`community.tabPanel.memberTitle`)}
+            </Title>
+            <FlatList
+              data={memberData}
+              contentContainerStyle={{
+                flexGrow: 1,
+                marginTop: RFValue(10),
+                paddingBottom: RFValue(120)
+              }}
+              showsVerticalScrollIndicator={false}
+              renderItem={_renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          </Fragment>
+        ) : (
+          <Text
             style={{
-              color: colors.PRIMARY_TEXT,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
-              marginTop: RFValue(20),
-              marginLeft: RFValue(10),
-              textTransform: 'capitalize'
+              fontFamily: fonts.WORK_SANS_BOLD,
+              margin: RFValue(20),
+              textAlign: 'center'
             }}
           >
-            {t(`community.tabPanel.memberTitle`)}
-          </Title>
-          <FlatList
-            data={memberData}
-            contentContainerStyle={{
-              flexGrow: 1,
-              marginTop: RFValue(10),
-              paddingBottom: RFValue(120)
-            }}
-            showsVerticalScrollIndicator={false}
-            renderItem={_renderItem}
-            keyExtractor={(item) => item.id}
-          />
-        </Fragment>
+            You don't have any connection request.
+          </Text>
+        )}
       </Container>
     </Fragment>
   );
