@@ -79,7 +79,7 @@ export default function SideDrawerNavigator() {
       />
       <Drawer.Screen
         name="ConnectionRequest"
-        component={Screen.ConnectionRequest}
+        component={Screen.ConnectionRequestScreen}
         options={{
           drawerIcon: () => (
             <SimpleLineIcons
@@ -130,7 +130,7 @@ export default function SideDrawerNavigator() {
 
       <Drawer.Screen
         name="settings"
-        component={Screens.UpcomingScreen}
+        component={Screen.AccountSettingScreen}
         options={{
           drawerIcon: () => (
             <Entypo name="cog" size={24} color={colors.PRIMARY_TEXT} />
