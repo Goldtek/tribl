@@ -8,6 +8,7 @@ enum COLORS {
   ONLINE = '#7ED321',
   WARNING = '#F6A609',
   PRIMARY = '#718CFB',
+  PRIMARY_LIGHT = '#8DA4FF',
   SECONDARY = '#A875FF',
   PRIMARY_TEXT = '#535D7E',
   SECONDARY_TEXT = '#A9AEBE',
@@ -42,6 +43,7 @@ declare module 'styled-components' {
       ONLINE: string;
       WARNING: string;
       PRIMARY: string;
+      PRIMARY_LIGHT: string;
       SECONDARY: string;
       PRIMARY_TEXT: string;
       SECONDARY_TEXT: string;
