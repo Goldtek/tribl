@@ -53,7 +53,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         )}
         headerLeft={() => (
           <TouchableRipple onPress={() => props.navigation.goBack()}>
-            <Entypo name="chevron-left" size={25} color={colors.PRIMARY} />
+            <Entypo name="chevron-left" size={30} color={colors.PRIMARY} />
           </TouchableRipple>
         )}
         style={{ paddingTop: top }}
