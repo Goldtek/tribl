@@ -9,7 +9,6 @@ import { Platform } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import communitySlide from './widgets/communitySlide';
 import memberSlide from './widgets/membersSlide';
-import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -85,21 +84,23 @@ export default function SearchScreen(props: ScreenProp) {
       {Platform.select({
         ios: (
           <TabView
-            navigationState={{ index: tabIndex, routes }}
+            lazy
             renderScene={renderScene}
             renderPager={renderPager}
             renderTabBar={renderTabBar}
             onIndexChange={setTabIndex}
+            navigationState={{ index: tabIndex, routes }}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
           />
         ),
 
         android: (
           <TabView
-            navigationState={{ index: tabIndex, routes }}
+            lazy
             renderScene={renderScene}
             renderTabBar={renderTabBar}
             onIndexChange={setTabIndex}
+            navigationState={{ index: tabIndex, routes }}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
           />
         )
