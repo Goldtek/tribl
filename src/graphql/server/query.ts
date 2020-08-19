@@ -150,6 +150,7 @@ export const GET_CONNECTION_REQUEST = gql`
     connectionRequests {
       firstName
       lastName
+      phoneNumber
       connected
     }
   }
