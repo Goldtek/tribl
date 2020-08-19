@@ -1,10 +1,14 @@
-import React from 'react';
-import { SafeAreaView, ScrollView } from 'react-native';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
-import { Share } from 'react-native';
+import { Share, ScrollView, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Title, Paragraph, Button } from 'react-native-paper';
+import {
+  Title,
+  Paragraph,
+  Button,
+  ActivityIndicator
+} from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
@@ -30,6 +34,8 @@ export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
+  const [imageLoad, setImageLoad] = useState(true);
+
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
 
   const userDetails = data?.userDetails;
@@ -51,7 +57,7 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.PRIMARY }}>
       <StatusBar translucent style="light" />
       <ScrollView
         bounces={false}
@@ -90,12 +96,22 @@ export default function PassportScreen(props: ScreenProp) {
                 priority: FastImage.priority.high
               }}
               resizeMode={FastImage.resizeMode.cover}
+              onLoadEnd={() => setImageLoad(false)}
               style={{
                 width: RFValue(120),
                 height: RFValue(120),
+                justifyContent: 'center',
                 borderRadius: 4
               }}
-            />
+            >
+              {imageLoad && (
+                <ActivityIndicator
+                  animating={true}
+                  size={RFValue(50)}
+                  color={colors.WHITE}
+                />
+              )}
+            </FastImage>
 
             <ImageTextContainer>
               <Paragraph
@@ -148,7 +164,10 @@ export default function PassportScreen(props: ScreenProp) {
               fontSize: RFValue(fonts.LARGE_SIZE),
               textTransform: 'capitalize'
             }}
-            contentStyle={{ height: RFValue(55), backgroundColor: '#8DA4FF' }}
+            contentStyle={{
+              height: RFValue(55),
+              backgroundColor: colors.PRIMARY_LIGHT
+            }}
             style={{
               width: '100%',
               height: RFValue(55),
