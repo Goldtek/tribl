@@ -1,11 +1,13 @@
 import React, { useMemo, Fragment } from 'react';
 import { FlatList } from 'react-native';
-import { NavigationInterface } from '../../../../types';
+import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useNavigation } from '@react-navigation/native';
 import { Paragraph, Divider, TouchableRipple } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
+import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
-import { useNavigation } from '@react-navigation/native';
+import { GET_COMMUNITY_CHANNELS } from '../../../../../graphql/server/query';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -14,9 +16,16 @@ export default function ChannelScreen(props: ScreenProp) {
   const navigation = useNavigation();
   const detail = props.route;
   const { communityDetails } = detail;
-  const { channels } = communityDetails;
-
+  const { id } = communityDetails;
   const { colors, fonts } = useThemeContext();
+
+  const { data } = useQuery(GET_COMMUNITY_CHANNELS, {
+    variables: {
+      id
+    }
+  });
+
+  const channels = data?.communityChannels;
 
   const _renderItem = useMemo(
     () => ({ item }: { item: { name: string } }) => (
