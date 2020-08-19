@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { NavigationInterface } from '../../types';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -7,13 +6,12 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { StatusBar, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
 import { Entypo } from '@expo/vector-icons';
 import ConnectionRequest from './widget';
 import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
-import memberData from '../../../libs/members/index.json';
-
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
@@ -28,12 +26,12 @@ export default function ConnectionRequestScreen(
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { data } = useQuery(GET_CONNECTION_REQUEST);
+  const { data, refetch } = useQuery(GET_CONNECTION_REQUEST);
 
   const myConnection = data?.connectionRequests;
 
   const _renderItem = ({ item }: any) => (
-    <ConnectionRequest key={item.id} {...item} {...props} />
+    <ConnectionRequest key={item.id} {...item} {...props} refetch={refetch} />
   );
 
   return (
@@ -75,7 +73,7 @@ export default function ConnectionRequestScreen(
               {t(`community.tabPanel.memberTitle`)}
             </Title>
             <FlatList
-              data={memberData}
+              data={myConnection}
               contentContainerStyle={{
                 flexGrow: 1,
                 marginTop: RFValue(10),
