@@ -143,3 +143,14 @@ export const GET_MY_CONNECTIONS = gql`
     }
   }
 `;
+
+//GET MY CONNECTION REQUESTS
+export const GET_CONNECTION_REQUEST = gql`
+  query connectionRequests {
+    connectionRequests {
+      firstName
+      lastName
+      connected
+    }
+  }
+`;
