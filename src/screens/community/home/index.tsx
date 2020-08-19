@@ -1,22 +1,32 @@
-import React, { Fragment, useState, useEffect, useMemo } from 'react';
+import React, {
+  Fragment,
+  useState,
+  useEffect,
+  useMemo,
+  useLayoutEffect
+} from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
+import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import { useNavigation } from '@react-navigation/native';
+import RecentActivity from '../../../components/recentActivity';
 import JoinCommunity from '../../../components/joinCommunity';
+import { GenerateFirebaseTokenIT } from '../../../graphql/types';
 import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
-import { FlatList } from 'react-native-gesture-handler';
+import Firechat from '../../../firebase';
 import Storage from '../../../storage';
 import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
-  GET_MY_COMMUNITIES
+  GET_MY_COMMUNITIES,
+  GET_FIREBASE_TOKEN
 } from '../../../graphql/server/query';
 import { VerifyOTPIT } from '../../../graphql/types';
 import MyCommunity from '../../../components/myCommunities';
@@ -39,67 +49,34 @@ interface ScreenProp extends NavigationInterface {}
 const recentActivities: any[] = [];
 
 export default function HomeScreen(props: ScreenProp) {
-  const credentials = Storage.getUserCredentials();
+  const { navigation } = props;
+
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const navigation = useNavigation();
+  const [state, setState] = useState({ showJoinCommunityModal: false });
 
   const { data: myCommunityData } = useQuery(GET_MY_COMMUNITIES);
-
-  const {
-    data: communityData,
-    error: communityError,
-    refetch: communityRefetch
-  } = useQuery(GET_RECOMMENDED_COMMUNITIES);
-
-  const {
-    data: membersData,
-    error: memberError,
-    refetch: memberRefetch
-  } = useQuery(GET_RECOMMENDED_MEMBERS);
+  const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+  const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
   const myCommunity = myCommunityData?.myCommunities;
-
   const recommendedMembers = membersData?.recommendedMembers;
-
   const community = communityData?.recommendedCommunities[0];
 
-  const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
-    variables: {
-      payload: {
-        refreshToken: credentials?.refresh_token
+  const { data: firebase, loading } = useQuery<GenerateFirebaseTokenIT>(
+    GET_FIREBASE_TOKEN
+  );
+
+  useLayoutEffect(() => {
+    const getFirebaseToken = async () => {
+      if (firebase?.generateFirebaseToken) {
+        Storage.setUserCredentials(firebase?.generateFirebaseToken);
+        Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
       }
-    }
-  });
-
-  useEffect(() => {
-    const expiredToken = 'GraphQL error: provided token has expired';
-    if (
-      communityError?.message == expiredToken ||
-      memberError?.message == expiredToken
-    ) {
-      const refreshUserToken = async () => {
-        const { data } = await refreshToken();
-
-        if (data) {
-          const newCredentials = {
-            ...credentials,
-            ...refreshToken
-          } as VerifyOTPIT;
-
-          Storage.setCredentialInstance(newCredentials);
-          Storage.setUserCredentials();
-          communityRefetch();
-          memberRefetch();
-        }
-      };
-
-      refreshUserToken();
-    }
-  }, []);
-
-  const [state, setState] = useState({ showJoinCommunityModal: false });
+    };
+    getFirebaseToken();
+  }, [loading]);
 
   const navigateToSearch = (index: number) => () => {
     navigation.navigate('CommunitySearchScreen', { index });
