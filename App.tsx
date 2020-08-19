@@ -1,8 +1,7 @@
 import React, { useState, useLayoutEffect } from 'react';
-import * as SplashScreen from 'expo-splash-screen';
 import { enableScreens } from 'react-native-screens';
-import loadResources from './src/libs/loadResources';
 import codePush from 'react-native-code-push';
+import loadResources from './src/libs/loadResources';
 import Storage from './src/storage';
 import AppRouter from './src';
 import './src/internationalization';
@@ -14,11 +13,9 @@ function App() {
 
   useLayoutEffect(() => {
     (async () => {
-      await SplashScreen.preventAutoHideAsync();
       await loadResources();
       Storage.checkInitialLaunch();
       Storage.checkUserCredentials();
-      SplashScreen.hideAsync();
       setIsAppReady(true);
     })();
   }, []);
