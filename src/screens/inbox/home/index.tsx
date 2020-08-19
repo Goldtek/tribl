@@ -39,10 +39,7 @@ export default function InboxScreen() {
       <TabBar
         {...props}
         scrollEnabled={true}
-        indicatorStyle={{
-          backgroundColor: colors.PRIMARY,
-          height: RFValue(4)
-        }}
+        indicatorStyle={{ backgroundColor: colors.PRIMARY, height: RFValue(4) }}
         style={{
           ...GLOBAL_HEADER_STYLE,
           backgroundColor: colors.WHITE,
