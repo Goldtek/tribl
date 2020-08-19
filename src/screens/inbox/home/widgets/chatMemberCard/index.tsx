@@ -1,40 +1,40 @@
 import React, { Fragment, useCallback } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
+import { format } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { NavigationInterface } from '../../../../types';
+import { GroupInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MemberProp {
-  avatar: string;
-  lastSeen: string;
-  name: string;
-  text: string;
-  time: string;
-  badge: number;
-}
+interface MemberProp extends GroupInterface {}
 
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
   const {
+    id: chatId,
     avatar = 'https://picsum.photos/700',
     name = 'Paul Maet',
-    text = 'Girl, I saw your message...',
-    time = ' 3: 02pm',
-    badge
+    displayMessage = 'Girl, I saw your message...',
+    lastMessageTime,
+    unseenCount
   } = props;
 
   const handleNavigation = useCallback(
-    () => navigation.navigate('ChatScreen', { title: name }),
+    () => navigation.navigate('ChatScreen', { title: name, avatar, chatId }),
     []
   );
+
+  const formatMessageTime = useCallback(() => {
+    if (!lastMessageTime) return;
+    return format(new Date(lastMessageTime), 'p');
+  }, []);
 
   return (
     <TouchableRipple
@@ -50,7 +50,7 @@ function Member(props: MemberProp) {
     >
       <Fragment>
         <FastImage
-          resizeMode={FastImage.resizeMode.contain}
+          resizeMode={FastImage.resizeMode.cover}
           source={{
             uri: avatar,
             priority: FastImage.priority.high
@@ -79,7 +79,7 @@ function Member(props: MemberProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            {text}
+            {displayMessage}
           </Text>
         </NameContainer>
         <TimeStamp>
@@ -90,9 +90,9 @@ function Member(props: MemberProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            {time}
+            {formatMessageTime()}
           </Text>
-          {badge ? (
+          {unseenCount ? (
             <BadgeWrapper>
               <Text
                 style={{
@@ -101,7 +101,7 @@ function Member(props: MemberProp) {
                   fontSize: RFValue(fonts.SMALL_SIZE)
                 }}
               >
-                {badge}
+                {unseenCount}
               </Text>
             </BadgeWrapper>
           ) : null}
