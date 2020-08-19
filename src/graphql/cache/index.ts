@@ -38,7 +38,8 @@ cache.writeData<StoreInterface>({
       identities: [],
       interests: [],
       userId: '',
-      avatar: 'https://bit.ly/39kcTOS',
+      avatar:
+        'https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp',
       __typename: 'userDetails'
     }
   }
