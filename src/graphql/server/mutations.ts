@@ -61,3 +61,12 @@ export const REQUEST_CONNECTION = gql`
     }
   }
 `;
+
+//ACCEPT CONNECTION
+export const ACCEPT_CONNECTION = gql`
+  Mutation acceptConnection($payload: ConnectionInput!){
+    acceptConnection(input: $payload){
+      success
+    }
+  }
+`;
