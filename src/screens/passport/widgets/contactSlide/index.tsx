@@ -42,6 +42,8 @@ export default function contactSlide() {
 
   const [state, setState] = useState({
     date: '',
+    firstName: '',
+    lastName: '',
     editLastName: false,
     editFirstName: false,
     focusedFirstName: false,
@@ -81,6 +83,13 @@ export default function contactSlide() {
     []
   );
 
+  const onChangeText = useCallback(
+    (inputFieldLabel: string) => (value: string) => {
+      setState({ ...state, [inputFieldLabel]: value });
+    },
+    []
+  );
+
   return (
     <ContactContainer>
       <Container>
@@ -106,7 +115,7 @@ export default function contactSlide() {
           ref={(e) => (inputRef.current.firstName = e)}
           value={userDetails?.firstName}
           editable={state.editFirstName}
-          onChangeText={(text) => console.log({ text })}
+          onChangeText={onChangeText('firstName')}
           onFocus={handleInputFocus('focusedFirstName')}
           onBlur={handleInputFocus('focusedFirstName')}
           style={{
@@ -144,7 +153,7 @@ export default function contactSlide() {
           ref={(e) => (inputRef.current.lastName = e)}
           value={userDetails?.lastName}
           editable={state.editLastName}
-          onChangeText={(text) => console.log({ text })}
+          onChangeText={onChangeText('lastName')}
           onFocus={handleInputFocus('focusedLastName')}
           onBlur={handleInputFocus('focusedLastName')}
           style={{
