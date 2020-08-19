@@ -6,7 +6,7 @@ import { Switch } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import PrivacyModal from './widget';
+import { AntDesign } from '@expo/vector-icons';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, ToggleContainer, ToggleCover } from './styles';
@@ -19,9 +19,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
-  const [text, setText] = useState({
-    value: ''
-  });
+  const [text, setText] = useState({ value: '' });
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   const showPrivacyModal = useCallback(
