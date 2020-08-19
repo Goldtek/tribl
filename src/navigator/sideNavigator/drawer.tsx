@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens';
-import Screen from '../../screens/community/index';
+import Screen from '../../screens/account';
+import AccountNavigator from '../accountNavigator';
 import { Text } from 'react-native-paper';
 import {
   MaterialCommunityIcons,
@@ -52,27 +53,6 @@ export default function SideDrawerNavigator() {
               }}
             >
               {t(`community.sideNav.community`)}
-            </Text>
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="Chat"
-        component={ChatNavigator}
-        options={{
-          drawerIcon: () => (
-            <Entypo name="new-message" size={24} color={colors.PRIMARY_TEXT} />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.chat`)}
             </Text>
           )
         }}
@@ -130,7 +110,7 @@ export default function SideDrawerNavigator() {
 
       <Drawer.Screen
         name="settings"
-        component={Screen.AccountSettingScreen}
+        component={AccountNavigator}
         options={{
           drawerIcon: () => (
             <Entypo name="cog" size={24} color={colors.PRIMARY_TEXT} />
