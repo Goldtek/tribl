@@ -291,11 +291,22 @@ PODS:
     - React-Core (= 0.63.0)
     - React-jsi (= 0.63.0)
     - ReactCommon/turbomodule/core (= 0.63.0)
+  - Firebase/Auth (6.28.1):
+    - Firebase/CoreOnly
+    - FirebaseAuth (~> 6.7.0)
   - Firebase/CoreOnly (6.28.1):
     - FirebaseCore (= 6.9.1)
+  - Firebase/Database (6.28.1):
+    - Firebase/CoreOnly
+    - FirebaseDatabase (~> 6.4.0)
   - Firebase/Firestore (6.28.1):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 1.16.2)
+  - FirebaseAuth (6.7.1):
+    - FirebaseCore (~> 6.8)
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.7)
+    - GoogleUtilities/Environment (~> 6.7)
+    - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseCore (6.9.1):
     - FirebaseCoreDiagnostics (~> 1.3)
     - GoogleUtilities/Environment (~> 6.7)
@@ -305,6 +316,9 @@ PODS:
     - GoogleUtilities/Environment (~> 6.7)
     - GoogleUtilities/Logger (~> 6.7)
     - nanopb (~> 1.30905.0)
+  - FirebaseDatabase (6.4.0):
+    - FirebaseCore (~> 6.8)
+    - leveldb-library (~> 1.22)
   - FirebaseFirestore (1.16.3):
     - abseil/algorithm (= 0.20200225.0)
     - abseil/base (= 0.20200225.0)
@@ -373,12 +387,23 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - GoogleDataTransport (7.1.0):
+  - GoogleDataTransport (7.2.0):
     - nanopb (~> 1.30905.0)
-  - GoogleUtilities/Environment (6.7.1):
-    - PromisesObjC (~> 1.2)
-  - GoogleUtilities/Logger (6.7.1):
+  - GoogleUtilities/AppDelegateSwizzler (6.7.2):
     - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (6.7.2):
+    - PromisesObjC (~> 1.2)
+  - GoogleUtilities/Logger (6.7.2):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/Network (6.7.2):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (6.7.2)"
+  - GoogleUtilities/Reachability (6.7.2):
+    - GoogleUtilities/Logger
   - "gRPC-C++ (1.28.2)":
     - "gRPC-C++/Implementation (= 1.28.2)"
     - "gRPC-C++/Interface (= 1.28.2)"
@@ -403,6 +428,7 @@ PODS:
     - BoringSSL-GRPC (= 0.0.7)
     - gRPC-Core/Interface (= 1.28.2)
   - gRPC-Core/Interface (1.28.2)
+  - GTMSessionFetcher/Core (1.4.0)
   - JWT (3.0.0-beta.12):
     - Base64 (~> 1.1.2)
   - leveldb-library (1.22)
@@ -676,10 +702,18 @@ PODS:
     - React
     - SDWebImage (~> 5.8)
     - SDWebImageWebPCoder (~> 0.6.1)
-  - RNFBApp (8.3.0):
+  - RNFBApp (8.3.1):
     - Firebase/CoreOnly (~> 6.28.1)
     - React
-  - RNFBFirestore (7.5.1):
+  - RNFBAuth (8.3.3):
+    - Firebase/Auth (~> 6.28.1)
+    - React
+    - RNFBApp
+  - RNFBDatabase (7.4.2):
+    - Firebase/Database (~> 6.28.1)
+    - React
+    - RNFBApp
+  - RNFBFirestore (7.5.3):
     - Firebase/Firestore (~> 6.28.1)
     - React
     - RNFBApp
@@ -809,6 +843,8 @@ DEPENDENCIES:
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+  - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
+  - "RNFBDatabase (from `../node_modules/@react-native-firebase/database`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
@@ -842,8 +878,10 @@ SPEC REPOS:
     - CocoaAsyncSocket
     - CocoaLibEvent
     - Firebase
+    - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreDiagnostics
+    - FirebaseDatabase
     - FirebaseFirestore
     - Flipper
     - Flipper-DoubleConversion
@@ -856,6 +894,7 @@ SPEC REPOS:
     - GoogleUtilities
     - "gRPC-C++"
     - gRPC-Core
+    - GTMSessionFetcher
     - JWT
     - leveldb-library
     - libwebp
@@ -981,6 +1020,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fast-image"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
+  RNFBAuth:
+    :path: "../node_modules/@react-native-firebase/auth"
+  RNFBDatabase:
+    :path: "../node_modules/@react-native-firebase/database"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNGestureHandler:
@@ -1054,8 +1097,10 @@ SPEC CHECKSUMS:
   FBLazyVector: 6f1045c66f816849b33c4ff28930b611e89059a0
   FBReactNativeSpec: e856d5103d749483f86f53afafd8df4ed8a776bd
   Firebase: ed042590caa0029392257529a8003c25ee82bc18
+  FirebaseAuth: a818d73466d51db897d3bf3c0f3baa3dae7fd4c0
   FirebaseCore: 687b8e6a0a4337b898a6326d68254c2f80c143af
   FirebaseCoreDiagnostics: 7535fe695737f8c5b350584292a70b7f8ff0357b
+  FirebaseDatabase: 55e69fe802ccb438d9c6ee51eb32fd425d5409d3
   FirebaseFirestore: 5ea7b0878363f9ec66bdcee0c29ad875d1b511ac
   Flipper: 33585e2d9810fe5528346be33bcf71b37bb7ae13
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
@@ -1066,10 +1111,11 @@ SPEC CHECKSUMS:
   FlipperKit: bc68102cd4952a258a23c9c1b316c7bec1fecf83
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  GoogleDataTransport: af0c79193dc59acd37630b4833d0dc6912ae6bd5
-  GoogleUtilities: e121a3867449ce16b0e35ddf1797ea7a389ffdf2
+  GoogleDataTransport: 672fb0ce96fe7f7f31d43672fca62ad2c9c86f7b
+  GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   "gRPC-C++": 13d8ccef97d5c3c441b7e3c529ef28ebee86fad2
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
+  GTMSessionFetcher: 6f5c8abbab8a9bce4bb3f057e317728ec6182b10
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
@@ -1108,8 +1154,10 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 83540fb5d71f28bd34990d8fabccb8d91e5d957e
   RNDeviceInfo: 5be12a5bfbb8da3528c43ee4373abd9c30d04616
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
-  RNFBApp: d55b3a69d199cff25ecf4f3bf41a86c47aa37d57
-  RNFBFirestore: 85df763f15f97c0cc8ec0a429aaa18dc8196e386
+  RNFBApp: abbab9c96e6d2f1cada6401c9138d3f8cb2ae930
+  RNFBAuth: 0cb359f04e97d76a6c3122adb519bb7c5c64f15c
+  RNFBDatabase: 654cc97f24c44395cc934aa6d661311fe31ff604
+  RNFBFirestore: e6de55217697a483c9dd54c2676fd82967b19349
   RNGestureHandler: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
   RNImageCropPicker: f0557a908758c4a3f83978894ec7227651529b45
   RNLocalize: 49634a6a605dcdeb319e9c42a5c2f1aec508694b
@@ -1138,4 +1186,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: eb2e7b361d51505d1987fc2ef49ddcf2af325031
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0.beta.1
