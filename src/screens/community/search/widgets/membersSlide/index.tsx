@@ -21,7 +21,7 @@ import { Container, RecommendedList, RecommendedListHeader } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function SearchScreen(props: ScreenProp) {
+export default function MemberSearch(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
