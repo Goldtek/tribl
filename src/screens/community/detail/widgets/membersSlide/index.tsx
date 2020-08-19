@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FlatList } from 'react-native';
 import { NavigationInterface } from '../../../../types';
-import { Title, Searchbar } from 'react-native-paper';
+import { Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import MemberCard from './widget/member';
-import MembersData from '../../../../../libs/members/index.json';
 import AlgoliaSearch from '../../../../../components/algoliaSearch';
 import AlgoliaList from '../../../../../components/algoliaInboxList';
+import { GET_COMMUNITY_MEMBERS } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -21,7 +22,15 @@ export default function MemberSlide(props: MemberSlideProp) {
   const { t } = useTranslation();
   const detail = props.route;
   const { communityDetails } = detail;
-  const { participants } = communityDetails;
+  const { id } = communityDetails;
+
+  const { data } = useQuery(GET_COMMUNITY_MEMBERS, {
+    variables: {
+      id
+    }
+  });
+
+  const participants = data?.communityMembers;
 
   const _renderItem = ({ item }: any) => (
     <MemberCard key={item.id} {...item} {...props} />
