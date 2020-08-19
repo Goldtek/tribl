@@ -34,12 +34,12 @@ export default function SearchScreen(props: ScreenProp) {
     {
       key: 'channelSlide',
       title: `${t(`community.tabPanel.channel`)}`,
-      communityDetails: details.details
+      communityDetails: details.details || details.communityHit
     },
     {
       key: 'memberSlide',
       title: `${t(`community.tabPanel.member`)}`,
-      communityDetails: details.details
+      communityDetails: details.details || details.communityHit
     }
   ]);
 
