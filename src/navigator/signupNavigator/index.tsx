@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { DEVICE_OS } from '../../utils/device';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
-import Storage from '../../storage';
 
 const SignupStack = createStackNavigator();
 let routeNames = [] as string[];
@@ -44,8 +43,6 @@ export default function SignupNavigator() {
             index: 0,
             routes: [{ name: 'CommunityScreen' }]
           });
-
-          Storage.setUserCredentials();
         };
 
         return {
