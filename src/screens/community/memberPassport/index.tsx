@@ -30,14 +30,13 @@ interface MemberDetailProps {}
 export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [state, setState] = useState({
-    loading: false
-  });
+  const [state, setState] = useState({ loading: false });
 
   //@ts-ignore
   const passport = { ...props.route.params.details };
   //@ts-ignore
   const passportDetails = { ...props.route.params.algoliaDetail };
+
   const {
     phoneNumber: number,
     connected: connect,
@@ -46,6 +45,7 @@ export default function contactSlide(props: MemberDetailProps) {
     interest: interests,
     identity: identities
   } = passportDetails;
+
   const {
     phoneNumber,
     connected,
@@ -56,34 +56,22 @@ export default function contactSlide(props: MemberDetailProps) {
   } = passport;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: {
-      payload: {
-        phoneNumber: phoneNumber || number
-      }
-    }
+    variables: { payload: { phoneNumber } }
   });
 
   const handleRequest = async () => {
-    setState({
-      ...state,
-      loading: true
-    });
+    setState({ ...state, loading: true });
+
     try {
       const { data } = await requestConnection();
+
       if (data?.requestConnection) {
-        setState({
-          ...state,
-          loading: false
-        });
+        setState({ ...state, loading: false });
       }
     } catch (error) {
-      setState({
-        ...state,
-        loading: false
-      });
+      setState({ ...state, loading: false });
     }
   };
-  const { loading } = state;
 
   return (
     <ScrollView
@@ -161,7 +149,7 @@ export default function contactSlide(props: MemberDetailProps) {
             {t(`community.memberPassport.message`)}
           </GradientButton>
         ) : (
-          <GradientButton onPress={handleRequest} loading={loading}>
+          <GradientButton onPress={handleRequest} loading={state.loading}>
             {t(`community.memberPassport.connect`)}
           </GradientButton>
         )}

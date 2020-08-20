@@ -19,7 +19,6 @@ import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
 import JoinCommunity from '../../../components/joinCommunity';
 import { GenerateFirebaseTokenIT } from '../../../graphql/types';
-import MyCommunity from '../../../components/myCommunities';
 import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
 import Firechat from '../../../firebase';
 import Storage from '../../../storage';

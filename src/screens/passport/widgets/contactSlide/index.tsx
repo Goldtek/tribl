@@ -35,6 +35,7 @@ import {
   ButtonDot,
   EditTextInput
 } from './styles';
+import formatMessageTime from '../../../../utils/timesince';
 
 export default function contactSlide() {
   const { colors, fonts } = useThemeContext();
@@ -57,9 +58,7 @@ export default function contactSlide() {
   const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
   const onChange = useCallback((selectedDate: Date) => {
-    const [month, day] = selectedDate.toLocaleDateString().split('/');
-    const year = selectedDate.getUTCFullYear();
-    const date = `${month}/${day}/${year}`;
+    const date = formatMessageTime(selectedDate);
     return setState({ ...state, date, showDatePicker: false });
   }, []);
 
