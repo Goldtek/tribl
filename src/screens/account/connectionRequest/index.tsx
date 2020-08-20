@@ -23,10 +23,10 @@ interface ConnectionRequestScreenProp extends NavigationInterface {}
 export default function ConnectionRequestScreen(
   props: ConnectionRequestScreenProp
 ) {
+  const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeArea();
   const { t } = useTranslation();
-  const navigation = useNavigation();
 
   const { data, refetch } = useQuery(GET_CONNECTION_REQUEST);
 

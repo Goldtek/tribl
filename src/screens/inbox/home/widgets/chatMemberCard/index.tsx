@@ -6,6 +6,7 @@ import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GroupInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
+import formatMessageTime from '../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
@@ -31,9 +32,9 @@ function Member(props: MemberProp) {
     []
   );
 
-  const formatMessageTime = useCallback(() => {
+  const formatDate = useCallback(() => {
     if (!lastMessageTime) return;
-    return format(new Date(lastMessageTime), 'p');
+    return formatMessageTime(lastMessageTime);
   }, []);
 
   return (
@@ -87,10 +88,12 @@ function Member(props: MemberProp) {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE)
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'capitalize',
+              marginVertical: 5
             }}
           >
-            {formatMessageTime()}
+            {formatDate()}
           </Text>
           {unseenCount ? (
             <BadgeWrapper>
