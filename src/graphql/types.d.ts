@@ -106,3 +106,9 @@ export type CreateAccountInterface = {
 export type IdentitiesInterface = {
   Identity: { name: string; id: string }[];
 };
+
+// SERVER UPDATE USER PASSPORT (RESPONSE) TYPE
+export type UpdatePassportInterface = {
+  success: boolean;
+  _id: string;
+};
