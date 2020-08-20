@@ -8,6 +8,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { Platform } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import communitySlide from './widgets/communitySlide';
+import { StatusBar } from 'expo-status-bar';
 import memberSlide from './widgets/membersSlide';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -81,6 +82,7 @@ export default function SearchScreen(props: ScreenProp) {
 
   return (
     <Container>
+      <StatusBar translucent animated style="dark" />
       {Platform.select({
         ios: (
           <TabView

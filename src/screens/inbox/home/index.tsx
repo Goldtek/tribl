@@ -8,6 +8,7 @@ import { useThemeContext } from '../../../theme';
 import groupChatSlide from './widgets/groupChatSlide';
 import directMessageSlide from './widgets/directMessageSlide';
 import requestSlide from './widgets/requestSlide';
+import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -60,6 +61,7 @@ export default function InboxScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+      <StatusBar translucent animated style="dark" />
       <Container>
         {Platform.select({
           ios: (
