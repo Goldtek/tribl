@@ -17,10 +17,11 @@ import { Container } from './styles';
 interface MyConnectionScreenProp extends NavigationInterface {}
 
 export default function ProfileScreen(props: MyConnectionScreenProp) {
+  const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeArea();
   const { t } = useTranslation();
-  const navigation = useNavigation();
+
   return (
     <Container>
       <TouchableRipple

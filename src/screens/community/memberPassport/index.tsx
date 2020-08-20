@@ -32,6 +32,7 @@ export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
+
   const [state, setState] = useState({
     loading: false,
     pending: false
@@ -41,12 +42,14 @@ export default function contactSlide(props: MemberDetailProps) {
   const passport = { ...props.route.params.details };
   //@ts-ignore
   const passportDetails = { ...props.route.params.algoliaDetail };
+
   const {
     phoneNumber: number,
     firstName: fName,
     lastName: lName,
     id: Id
   } = passportDetails;
+
   const { phoneNumber, firstName, lastName, id: PId } = passport;
   const id = Id || PId;
 
@@ -59,11 +62,7 @@ export default function contactSlide(props: MemberDetailProps) {
   );
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: {
-      payload: {
-        phoneNumber: phoneNumber || number
-      }
-    }
+    variables: { payload: { phoneNumber } }
   });
 
   const { data: passportData } = useQuery(GET_SINGLE_PASSPORT, {
@@ -73,13 +72,13 @@ export default function contactSlide(props: MemberDetailProps) {
   });
 
   const SinglePassport = passportData?.singlePassport;
+
   const handleRequest = async () => {
-    setState({
-      ...state,
-      loading: true
-    });
+    setState({ ...state, loading: true });
+
     try {
       const { data } = await requestConnection();
+
       if (data?.requestConnection) {
         setState({
           ...state,
@@ -88,12 +87,10 @@ export default function contactSlide(props: MemberDetailProps) {
         });
       }
     } catch (error) {
-      setState({
-        ...state,
-        loading: false
-      });
+      setState({ ...state, loading: false });
     }
   };
+
   const { loading, pending } = state;
 
   return (
@@ -209,7 +206,7 @@ export default function contactSlide(props: MemberDetailProps) {
             {t(`community.memberPassport.requested`)}
           </Button>
         ) : (
-          <GradientButton onPress={handleRequest} loading={loading}>
+          <GradientButton onPress={handleRequest} loading={state.loading}>
             {t(`community.memberPassport.connect`)}
           </GradientButton>
         )}
