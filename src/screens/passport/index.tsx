@@ -66,7 +66,7 @@ export default function PassportScreen(props: ScreenProp) {
         paddingTop: RFValue(paddingTop)
       }}
     >
-      {/* <StatusBar translucent animated style="light" /> */}
+      <StatusBar translucent animated style="light" />
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
