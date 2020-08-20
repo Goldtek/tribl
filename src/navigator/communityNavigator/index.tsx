@@ -60,7 +60,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               style={{
                 width: RFValue(50),
                 height: RFValue(50),
-                right: Platform.select({ android: RFValue(20) }),
                 resizeMode: 'contain'
               }}
             />
