@@ -14,6 +14,7 @@ import hexToRGB from '../../../../utils/hexToRGB';
 import { GET_USER_DETAILS } from '../../../../graphql/cache/query';
 import { StoreInterface } from '../../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
+import formatMessageTime from '../../../../utils/timesince';
 
 import {
   ContactContainer,
@@ -35,7 +36,6 @@ import {
   ButtonDot,
   EditTextInput
 } from './styles';
-import formatMessageTime from '../../../../utils/timesince';
 
 export default function contactSlide() {
   const { colors, fonts } = useThemeContext();
