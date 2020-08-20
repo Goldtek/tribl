@@ -3,6 +3,7 @@ import { NavigationInterface } from '../../../../types';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useMutation } from '@apollo/react-hooks';
 import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
@@ -11,7 +12,10 @@ import PopularCommunities from '../../../../../libs/popularCommunities/index.jso
 import PopularCommunity from '../../../../../components/popularCommunity';
 import RecommendedCommunity from '../../../../../components/recommendedCommunity';
 import JoinCommunity from '../../../../../components/joinCommunity';
-import { GET_RECOMMENDED_COMMUNITIES } from '../../../../../graphql/server/query';
+import {
+  GET_RECOMMENDED_COMMUNITIES,
+  GET_POPULAR_COMMUNITIES
+} from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, CommunityWrapper, PopularContainer } from './styles';
@@ -25,8 +29,10 @@ export default function CommunitySlideScreen(props: ScreenProp) {
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
   const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+  const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES);
 
   const community = communityData?.recommendedCommunities[2];
+  const popular = popularData?.popularCommunities;
 
   const handleJoinCommunity = () => {
     setState({
@@ -104,13 +110,8 @@ export default function CommunitySlideScreen(props: ScreenProp) {
               </TouchableRipple>
             </CommunityWrapper>
 
-            {PopularCommunities.map((community, index) => (
-              <PopularCommunity
-                key={index}
-                name={community.name}
-                avatar={community.avatar}
-                members={community.members}
-              />
+            {popular?.map((community: any) => (
+              <PopularCommunity key={community.id} {...community} />
             ))}
           </PopularContainer>
         </Container>

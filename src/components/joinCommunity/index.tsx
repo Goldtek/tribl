@@ -31,7 +31,8 @@ function JoinCommunity(props: JoinCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({
-    code: ''
+    code: '',
+    loading: false
   });
 
   const [joinCommunity] = useMutation(JOIN_COMMUNITY, {
@@ -46,13 +47,23 @@ function JoinCommunity(props: JoinCommunityProp) {
 
   const handleJoin = async () => {
     Keyboard.dismiss();
+    setState({
+      ...state,
+      loading: true
+    });
     try {
       const { data } = await joinCommunity();
       if (data?.joinCommunity) {
-        console.tron('successful');
+        setState({
+          ...state,
+          loading: false
+        });
       }
     } catch (error) {
-      console.error(error);
+      setState({
+        ...state,
+        loading: false
+      });
     }
   };
 
@@ -145,6 +156,7 @@ function JoinCommunity(props: JoinCommunityProp) {
                 </Button>
                 <GradientButton
                   onPress={handleJoin}
+                  loading={state.loading}
                   labelStyle={{
                     color: colors.WHITE,
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,

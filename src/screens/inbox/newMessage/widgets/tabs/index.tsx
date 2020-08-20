@@ -50,7 +50,8 @@ export default function TabViewSlider() {
         style={{
           ...GLOBAL_HEADER_STYLE,
           backgroundColor: colors.WHITE,
-          paddingTop: RFValue(5)
+          paddingTop: RFValue(5),
+          marginTop: RFValue(5)
         }}
         labelStyle={{
           width: 'auto',

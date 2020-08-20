@@ -14,9 +14,11 @@ import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
 import Storage from '../../../storage';
 import {
   GET_RECOMMENDED_COMMUNITIES,
-  GET_RECOMMENDED_MEMBERS
+  GET_RECOMMENDED_MEMBERS,
+  GET_MY_COMMUNITIES
 } from '../../../graphql/server/query';
 import { VerifyOTPIT } from '../../../graphql/types';
+import MyCommunity from '../../../components/myCommunities';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -41,8 +43,11 @@ export default function HomeScreen(props: ScreenProp) {
   const credentials = Storage.getUserCredentials();
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  console.tron('cred', credentials);
 
   const navigation = useNavigation();
+
+  const { data: myCommunityData } = useQuery(GET_MY_COMMUNITIES);
 
   const {
     data: communityData,
@@ -56,7 +61,9 @@ export default function HomeScreen(props: ScreenProp) {
     refetch: memberRefetch
   } = useQuery(GET_RECOMMENDED_MEMBERS);
 
-  const Members = membersData?.recommendedMembers;
+  const myCommunity = myCommunityData?.myCommunities;
+
+  const recommendedMembers = membersData?.recommendedMembers;
 
   const community = communityData?.recommendedCommunities[0];
   const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
@@ -95,7 +102,9 @@ export default function HomeScreen(props: ScreenProp) {
 
   const { recentActivities } = props;
 
-  const navigateToSearch = () => navigation.navigate('CommunitySearchScreen');
+  const navigateToSearch = (index: number) => () => {
+    navigation.navigate('CommunitySearchScreen', { index });
+  };
 
   const handleJoinCommunity = () => {
     setState({
@@ -111,6 +120,40 @@ export default function HomeScreen(props: ScreenProp) {
         nestedScrollEnabled
         contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
       >
+        {myCommunity?.length ? (
+          <RecommendedList>
+            <RecommendedListHeader>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: 20,
+                  marginTop: 0,
+                  marginBottom: 0
+                }}
+              >
+                {t(`community.recommended.myCommunity`)}
+              </Title>
+            </RecommendedListHeader>
+
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ marginTop: 10, backgroundColor: colors.WHITE }}
+            >
+              {myCommunity?.map((member: any, index: number) => (
+                <MyCommunity
+                  key={member.id}
+                  {...member}
+                  index={index}
+                  lastChild={recommendedMembers.length - 1}
+                />
+              ))}
+            </ScrollView>
+          </RecommendedList>
+        ) : null}
         <RecommendedList>
           <RecommendedListHeader>
             <Title
@@ -129,7 +172,7 @@ export default function HomeScreen(props: ScreenProp) {
 
             <Button
               mode="text"
-              onPress={navigateToSearch}
+              onPress={navigateToSearch(0)}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -145,12 +188,12 @@ export default function HomeScreen(props: ScreenProp) {
             showsHorizontalScrollIndicator={false}
             style={{ marginTop: 20, backgroundColor: colors.WHITE }}
           >
-            {Members?.map((member: any, index: number) => (
+            {recommendedMembers?.map((member: any, index: number) => (
               <RecommendedUser
                 key={member.id}
                 {...member}
                 index={index}
-                lastChild={Members.length - 1}
+                lastChild={recommendedMembers.length - 1}
               />
             ))}
           </ScrollView>
@@ -174,7 +217,7 @@ export default function HomeScreen(props: ScreenProp) {
 
             <Button
               mode="text"
-              onPress={navigateToSearch}
+              onPress={navigateToSearch(1)}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),

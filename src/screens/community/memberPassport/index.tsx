@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native';
 import { Title, Paragraph } from 'react-native-paper';
@@ -30,34 +30,61 @@ interface MemberDetailProps {}
 export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
   const [state, setState] = useState({
-    connect: false
+    loading: false
   });
 
   //@ts-ignore
   const passport = { ...props.route.params.details };
-  const phoneNumber = passport.phoneNumber;
+  //@ts-ignore
+  const passportDetails = { ...props.route.params.algoliaDetail };
+  const {
+    phoneNumber: number,
+    connected: connect,
+    currentLocation: location,
+    birthPlace: birthLocation,
+    interest: interests,
+    identity: identities
+  } = passportDetails;
+  const {
+    phoneNumber,
+    connected,
+    currentLocation,
+    birthPlace,
+    interest,
+    identity
+  } = passport;
   const userDetail = UserDetail[0];
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: {
       payload: {
-        phoneNumber: phoneNumber
+        phoneNumber: phoneNumber || number
       }
     }
   });
 
   const handleRequest = async () => {
+    setState({
+      ...state,
+      loading: true
+    });
     try {
       const { data } = await requestConnection();
       if (data?.requestConnection) {
-        console.tron('successful');
+        setState({
+          ...state,
+          loading: false
+        });
       }
     } catch (error) {
-      console.error(error);
+      setState({
+        ...state,
+        loading: false
+      });
     }
   };
+  const { loading } = state;
 
   return (
     <ScrollView
@@ -130,9 +157,15 @@ export default function contactSlide(props: MemberDetailProps) {
           </ConnectionCover>
         </Header>
 
-        <GradientButton onPress={handleRequest}>
-          {t(`community.memberPassport.connect`)}
-        </GradientButton>
+        {connected || connect ? (
+          <GradientButton onPress={() => {}}>
+            {t(`community.memberPassport.message`)}
+          </GradientButton>
+        ) : (
+          <GradientButton onPress={handleRequest} loading={loading}>
+            {t(`community.memberPassport.connect`)}
+          </GradientButton>
+        )}
         {userDetail?.birthPlace.country ? (
           <CitizenshipContainer>
             <Title
@@ -161,8 +194,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </CitizenshipContainer>
         ) : null}
 
-        {userDetail?.currentLocation[0].country &&
-        userDetail?.birthPlace.country ? (
+        {currentLocation || location ? (
           <LocationContainer>
             <Title
               style={{
@@ -175,61 +207,64 @@ export default function contactSlide(props: MemberDetailProps) {
             >
               {t(`signup.passportScreen.locality`)}
             </Title>
-            <Location>
-              <AntDesign
-                name="home"
-                color="#CACEE5"
-                size={20}
-                style={{
-                  padding: RFValue(12),
-                  borderRadius: 4,
-                  margin: 0,
-                  marginRight: 10,
-                  backgroundColor: colors.ACTION
-                }}
-              />
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  marginBottom: 10
-                }}
-              >
-                {`${userDetail?.birthPlace.state} ${userDetail?.birthPlace.country}`}
-              </Paragraph>
-            </Location>
-
-            <Location>
-              <SimpleLineIcons
-                name="location-pin"
-                color="#CACEE5"
-                size={20}
-                style={{
-                  padding: RFValue(12),
-                  borderRadius: 4,
-                  margin: 0,
-                  marginRight: 10,
-                  backgroundColor: colors.ACTION
-                }}
-              />
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  marginBottom: 10
-                }}
-              >
-                {`${userDetail?.currentLocation[0].state} ${userDetail?.currentLocation[0].country}`}
-              </Paragraph>
-            </Location>
+            {birthPlace ? (
+              <Location>
+                <AntDesign
+                  name="home"
+                  color="#CACEE5"
+                  size={20}
+                  style={{
+                    padding: RFValue(12),
+                    borderRadius: 4,
+                    margin: 0,
+                    marginRight: 10,
+                    backgroundColor: colors.ACTION
+                  }}
+                />
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    marginBottom: 10
+                  }}
+                >
+                  {`${currentLocation[0].state} ${currentLocation[0].country}`}
+                </Paragraph>
+              </Location>
+            ) : null}
+            {birthPlace || birthLocation ? (
+              <Location>
+                <SimpleLineIcons
+                  name="location-pin"
+                  color="#CACEE5"
+                  size={20}
+                  style={{
+                    padding: RFValue(12),
+                    borderRadius: 4,
+                    margin: 0,
+                    marginRight: 10,
+                    backgroundColor: colors.ACTION
+                  }}
+                />
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    marginBottom: 10
+                  }}
+                >
+                  {`${currentLocation[0].state} ${currentLocation[0].country}`}
+                </Paragraph>
+              </Location>
+            ) : null}
           </LocationContainer>
         ) : null}
 
-        {userDetail?.identities.length ? (
+        {identity?.length || identities?.length ? (
           <IdentityContainer>
             <Title
               style={{
@@ -244,30 +279,40 @@ export default function contactSlide(props: MemberDetailProps) {
             </Title>
 
             <Identities>
-              {userDetail?.identities.map((identity) => (
+              {identity?.map((identity: any) => (
+                <IdentityText key={identity}>{identity}</IdentityText>
+              ))}{' '}
+              ||{' '}
+              {identities?.map((identity: any) => (
                 <IdentityText key={identity}>{identity}</IdentityText>
               ))}
             </Identities>
           </IdentityContainer>
         ) : null}
 
-        <InterestContainer>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase'
-            }}
-          >
-            {t(`signup.passportScreen.interest`)}
-          </Title>
-          <Identities>
-            {userDetail?.interests.map((interest) => (
-              <IdentityText key={interest}>{interest}</IdentityText>
-            ))}
-          </Identities>
-        </InterestContainer>
+        {interest?.length || interests?.length ? (
+          <InterestContainer>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`signup.passportScreen.interest`)}
+            </Title>
+            <Identities>
+              {interest?.map((interest: any) => (
+                <IdentityText key={interest}>{interest}</IdentityText>
+              ))}{' '}
+              ||{' '}
+              {interests?.map((interest: any) => (
+                <IdentityText key={interest}>{interest}</IdentityText>
+              ))}
+            </Identities>
+          </InterestContainer>
+        ) : null}
       </ContactContainer>
     </ScrollView>
   );

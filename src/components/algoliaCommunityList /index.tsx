@@ -1,14 +1,18 @@
 import React, { useMemo } from 'react';
-import { connectInfiniteHits } from 'react-instantsearch-native';
-import { Divider } from 'react-native-paper';
+import {
+  connectInfiniteHits,
+  connectStateResults
+} from 'react-instantsearch-native';
+import { Divider, Text } from 'react-native-paper';
 import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import hexToRGB from '../../utils/hexToRGB';
 import { useThemeContext } from '../../theme';
 import CommunityHighLight from '../algoliaCommunityCard';
 
 function CommunityAlgoliaList(props: any) {
-  const { colors } = useThemeContext();
+  const { colors, fonts } = useThemeContext();
 
   const { hits, hasMore, refine, navigation, closeModal } = props;
 
@@ -37,18 +41,68 @@ function CommunityAlgoliaList(props: any) {
     []
   );
 
+  const Results = connectStateResults(
+    ({ searchState, searchResults, children }: any) => {
+      return searchResults && searchResults.nbHits !== 0 ? (
+        children
+      ) : searchState && !searchState.query ? (
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item
+            flexDirection="row"
+            alignItems="center"
+            margin={30}
+          >
+            <SkeletonPlaceholder.Item
+              width={60}
+              height={60}
+              borderRadius={50}
+            />
+            <SkeletonPlaceholder.Item marginLeft={20}>
+              <SkeletonPlaceholder.Item
+                width={120}
+                height={20}
+                borderRadius={4}
+              />
+              <SkeletonPlaceholder.Item
+                marginTop={6}
+                width={80}
+                height={20}
+                borderRadius={4}
+              />
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+      ) : (
+        <Text
+          style={{
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            margin: RFValue(20),
+            textAlign: 'center'
+          }}
+        >
+          No results have been found for {searchState.query}.
+        </Text>
+      );
+    }
+  );
+
   return (
-    <FlatList
-      data={hits}
-      keyExtractor={(item: any) => item.objectID}
-      ItemSeparatorComponent={_separator}
-      onEndReached={() => hasMore && refine()}
-      renderItem={_renderItem}
-      style={{
-        width: '100%',
-        paddingHorizontal: RFValue(20)
-      }}
-    />
+    <Results>
+      <FlatList
+        data={hits}
+        keyExtractor={(item: any) => item.objectID}
+        ItemSeparatorComponent={_separator}
+        showsVerticalScrollIndicator={false}
+        onEndReached={() => hasMore && refine()}
+        renderItem={_renderItem}
+        style={{
+          width: '100%',
+          paddingHorizontal: RFValue(20)
+        }}
+        contentContainerStyle={{ paddingBottom: RFValue(60) }}
+      />
+    </Results>
   );
 }
 

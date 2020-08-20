@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens';
+import Screen from '../../screens/community/index';
 import { Text } from 'react-native-paper';
 import {
   MaterialCommunityIcons,
@@ -77,8 +78,8 @@ export default function SideDrawerNavigator() {
         }}
       />
       <Drawer.Screen
-        name="Connection"
-        component={Screens.UpcomingScreen}
+        name="ConnectionRequest"
+        component={Screen.ConnectionRequestScreen}
         options={{
           drawerIcon: () => (
             <SimpleLineIcons
@@ -101,13 +102,16 @@ export default function SideDrawerNavigator() {
           )
         }}
       />
-
       <Drawer.Screen
-        name="wallet"
-        component={Screens.UpcomingScreen}
+        name="MyConnections"
+        component={Screen.MyConnectionScreen}
         options={{
           drawerIcon: () => (
-            <Feather name="dollar-sign" size={24} color={colors.PRIMARY_TEXT} />
+            <SimpleLineIcons
+              name="user"
+              size={24}
+              color={colors.PRIMARY_TEXT}
+            />
           ),
           drawerLabel: () => (
             <Text
@@ -118,7 +122,7 @@ export default function SideDrawerNavigator() {
                 textTransform: 'capitalize'
               }}
             >
-              {t(`community.sideNav.wallet`)}
+              {t(`community.sideNav.connection`)}
             </Text>
           )
         }}
@@ -126,7 +130,7 @@ export default function SideDrawerNavigator() {
 
       <Drawer.Screen
         name="settings"
-        component={Screens.UpcomingScreen}
+        component={Screen.AccountSettingScreen}
         options={{
           drawerIcon: () => (
             <Entypo name="cog" size={24} color={colors.PRIMARY_TEXT} />
@@ -145,27 +149,7 @@ export default function SideDrawerNavigator() {
           )
         }}
       />
-      <Drawer.Screen
-        name="invite"
-        component={Screens.UpcomingScreen}
-        options={{
-          drawerIcon: () => (
-            <Entypo name="plus" size={24} color={colors.PRIMARY_TEXT} />
-          ),
-          drawerLabel: () => (
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.sideNav.invite`)}
-            </Text>
-          )
-        }}
-      />
+
       <Drawer.Screen
         name="policy"
         component={Screens.UpcomingScreen}

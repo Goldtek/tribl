@@ -10,7 +10,8 @@
     "view": "view all",
     "join": "join",
     "add": "add",
-    "activity": "recent activity"
+    "activity": "recent activity",
+    "myCommunity": "my communities"
   },
   "joinModal": {
     "title": "enter your referral code below",
@@ -23,10 +24,16 @@
     "connection": "connections",
     "community": "communities",
     "connect": "connect",
+    "disconnect": "disconnect",
+    "message": "message",
     "bio": "bio",
     "locality": "locality",
     "identity": "identity",
-    "interest": "interest"
+    "interest": "interest",
+    "block": "block",
+    "report": "report",
+    "removeConnection": "remove connection",
+    "copy": "copy profile URL"
   },
   "tabPanel": {
     "member": "members",
@@ -48,12 +55,25 @@
     "community": "community",
     "chat": "chat",
     "request": "connection requests",
+    "connection": "my connections",
     "wallet": "add wallet",
-    "settings": "privacy settings",
+    "settings": "account settings",
     "invite": "invite friend",
     "policy": "privacy policy",
     "version": "version 1.0.0",
     "company": "silicon jungle labs"
+  },
+  "accountSettings": {
+    "privacy": "privacy",
+    "notification": "notifications",
+    "number": "add/change number",
+    "delete": "delete my account",
+    "interest": "interests",
+    "identity": "identity",
+    "age": "age",
+    "locality": "locality",
+    "link": "linked accounts",
+    "blocked": "blocked accounts"
   },
   "chat": {
     "message": "direct messages",
