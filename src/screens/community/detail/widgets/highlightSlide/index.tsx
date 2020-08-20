@@ -8,8 +8,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import MembersCard from '../../../../../components/recommendedUser';
-import TagData from '../../../../../libs/tags/index.json';
-import { GET_NEARBY_MEMBERS } from '../../../../../graphql/server/query';
+import {
+  GET_NEARBY_MEMBERS,
+  GET_SINGLE_COMMUNITY
+} from '../../../../../graphql/server/query';
 import JoinCommunity from '../../../../../components/joinCommunity';
 
 import {
@@ -25,12 +27,19 @@ interface SingleCommunityScreenProp extends NavigationInterface {}
 
 export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const detail = props.route;
-  const { name, avatar, members } = detail;
+  const { communityDetails } = detail;
+  const { id } = communityDetails;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+
+  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
+    variables: {
+      id
+    }
+  });
 
   const handleJoinCommunity = () => {
     setState({
@@ -40,6 +49,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
   };
 
   const NearbyMembers = nearbyData?.nearbyMembers;
+  const SingleCommunity = communityData?.Community[0];
 
   return (
     <Fragment>
@@ -50,7 +60,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
               <FastImage
                 resizeMode={FastImage.resizeMode.contain}
                 source={{
-                  uri: avatar,
+                  uri: SingleCommunity?.avatar,
                   priority: FastImage.priority.high
                 }}
                 style={{
@@ -65,7 +75,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
               <FastImage
                 resizeMode={FastImage.resizeMode.contain}
                 source={{
-                  uri: avatar,
+                  uri: SingleCommunity?.avatar,
                   priority: FastImage.priority.high
                 }}
                 style={{ width: '20%', height: '50%' }}
@@ -79,7 +89,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     lineHeight: RFValue(19)
                   }}
                 >
-                  {name}
+                  {SingleCommunity?.name}
                 </Title>
                 <Paragraph
                   style={{
@@ -89,7 +99,8 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     color: colors.SECONDARY_TEXT
                   }}
                 >
-                  {members}
+                  {SingleCommunity?.membersCount}{' '}
+                  {t(`community.tabPanel.member`)}
                 </Paragraph>
                 <Paragraph
                   style={{
@@ -99,8 +110,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     color: colors.PRIMARY_TEXT
                   }}
                 >
-                  We are a global community of block migrants and locals looking
-                  to make connections
+                  {SingleCommunity?.description}
                 </Paragraph>
               </TextContainer>
               <Button
@@ -123,24 +133,26 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 {t(`community.tabPanel.join`)}
               </Button>
             </CardContainer>
-            <TagContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`community.tabPanel.tag`)}
-              </Title>
+            {SingleCommunity?.interests?.length ? (
+              <TagContainer>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {t(`community.tabPanel.tag`)}
+                </Title>
 
-              <Tags>
-                {TagData.map((identity) => (
-                  <TagText key={identity}>{identity}</TagText>
-                ))}
-              </Tags>
-            </TagContainer>
+                <Tags>
+                  {SingleCommunity?.interests.map((identity: any) => (
+                    <TagText key={identity}>{identity}</TagText>
+                  ))}
+                </Tags>
+              </TagContainer>
+            ) : null}
           </Card>
           <Card style={{ marginTop: RFValue(5) }}>
             <Card.Content style={{ paddingLeft: 0 }}>

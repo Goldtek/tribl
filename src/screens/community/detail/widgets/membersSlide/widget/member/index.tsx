@@ -2,9 +2,12 @@ import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
+import { useMutation } from '@apollo/react-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../../../../../types';
 import { useThemeContext } from '../../../../../../../theme';
+import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -13,18 +16,42 @@ import { NameContainer } from './styles';
 interface MemberProp extends NavigationInterface {
   avatar: string;
   lastSeen: string;
-  name: string;
-  connect: boolean;
+  firstName: string;
+  connected: boolean;
+  lastName: string;
+  phoneNumber: string;
 }
 
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
+  const navigation = useNavigation();
   const {
     avatar = 'https://picsum.photos/700',
     lastSeen = '3 mins ago',
-    name = 'Paul Maet',
-    connect
+    firstName,
+    lastName,
+    connected,
+    phoneNumber
   } = props;
+
+  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+    variables: {
+      payload: {
+        phoneNumber: phoneNumber
+      }
+    }
+  });
+
+  const handleRequest = async () => {
+    try {
+      const { data } = await requestConnection();
+      if (data?.requestConnection) {
+        console.tron('successful');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <TouchableRipple
@@ -36,7 +63,12 @@ function Member(props: MemberProp) {
         paddingLeft: RFValue(10),
         paddingRight: RFValue(10)
       }}
-      onPress={() => {}}
+      onPress={() =>
+        navigation.navigate('MemberDetailScreen', {
+          title: `${firstName} ${lastName}`,
+          details: { ...props }
+        })
+      }
     >
       <Fragment>
         <FastImage
@@ -60,7 +92,7 @@ function Member(props: MemberProp) {
               textTransform: 'capitalize'
             }}
           >
-            {name}
+            {`${firstName} ${lastName}`}
           </Title>
           <Text
             style={{
@@ -72,7 +104,7 @@ function Member(props: MemberProp) {
             {lastSeen}
           </Text>
         </NameContainer>
-        {connect ? (
+        {connected ? (
           <TouchableRipple
             style={{
               marginLeft: 'auto',
@@ -85,9 +117,17 @@ function Member(props: MemberProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            onPress={() => {}}
+            onPress={() =>
+              navigation.navigate('ChatScreen', {
+                title: `${firstName} ${lastName}`
+              })
+            }
           >
-            <Feather name="send" size={20} color={colors.PRIMARY_TEXT} />
+            <Feather
+              name="message-square"
+              size={20}
+              color={colors.PRIMARY_TEXT}
+            />
           </TouchableRipple>
         ) : (
           <TouchableRipple
@@ -100,7 +140,7 @@ function Member(props: MemberProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            onPress={() => {}}
+            onPress={handleRequest}
           >
             <Feather name="plus" size={20} color={colors.WHITE} />
           </TouchableRipple>

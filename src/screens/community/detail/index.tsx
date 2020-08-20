@@ -29,12 +29,18 @@ export default function SearchScreen(props: ScreenProp) {
     {
       key: 'highlightSlide',
       title: `${t(`community.tabPanel.highlight`)}`,
-      name: details.title,
-      avatar: details.avatar,
-      members: details.members
+      communityDetails: details.details || details.communityHit
     },
-    { key: 'channelSlide', title: `${t(`community.tabPanel.channel`)}` },
-    { key: 'memberSlide', title: `${t(`community.tabPanel.member`)}` }
+    {
+      key: 'channelSlide',
+      title: `${t(`community.tabPanel.channel`)}`,
+      communityDetails: details.details || details.communityHit
+    },
+    {
+      key: 'memberSlide',
+      title: `${t(`community.tabPanel.member`)}`,
+      communityDetails: details.details || details.communityHit
+    }
   ]);
 
   const renderScene = SceneMap({ highlightSlide, channelSlide, memberSlide });

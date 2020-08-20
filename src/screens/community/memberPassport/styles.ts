@@ -27,7 +27,9 @@ export const IdentityText = styled.Text`
   border-radius: 4px;
 `;
 
-export const InterestContainer = styled.View``;
+export const InterestContainer = styled.View`
+  margin-top: ${RFValue(20)}px;
+`;
 
 export const LocationContainer = styled.View``;
 

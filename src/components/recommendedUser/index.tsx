@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
@@ -31,6 +31,7 @@ function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
 
   const {
     avatar = 'https://picsum.photos/700',
@@ -53,13 +54,14 @@ function RecommendedUser(props: RecommendedUserProp) {
   });
 
   const handleRequest = async () => {
+    setLoading(true);
     try {
       const { data } = await requestConnection();
       if (data?.requestConnection) {
-        console.tron('successful');
+        setLoading(false);
       }
     } catch (error) {
-      console.error(error);
+      setLoading(false);
     }
   };
 
@@ -140,6 +142,7 @@ function RecommendedUser(props: RecommendedUserProp) {
           </Paragraph>
         </TextContainer>
         <Button
+          loading={loading}
           mode="contained"
           uppercase={false}
           labelStyle={{

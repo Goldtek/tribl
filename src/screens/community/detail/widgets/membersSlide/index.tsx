@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FlatList } from 'react-native';
 import { NavigationInterface } from '../../../../types';
-import { Title, Searchbar } from 'react-native-paper';
+import { Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import MemberCard from './widget/member';
-import MembersData from '../../../../../libs/members/index.json';
 import AlgoliaSearch from '../../../../../components/algoliaSearch';
 import AlgoliaList from '../../../../../components/algoliaInboxList';
+import { GET_COMMUNITY_MEMBERS } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -19,8 +20,17 @@ interface MemberSlideProp extends NavigationInterface {}
 export default function MemberSlide(props: MemberSlideProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [search, setSearch] = useState('');
-  const onChangeSearch = (query: string) => setSearch(query);
+  const detail = props.route;
+  const { communityDetails } = detail;
+  const { id } = communityDetails;
+
+  const { data } = useQuery(GET_COMMUNITY_MEMBERS, {
+    variables: {
+      id
+    }
+  });
+
+  const participants = data?.communityMembers;
 
   const _renderItem = ({ item }: any) => (
     <MemberCard key={item.id} {...item} {...props} />
@@ -37,7 +47,6 @@ export default function MemberSlide(props: MemberSlideProp) {
           fontFamily: fonts.WORK_SANS_SEMI_BOLD,
           fontSize: RFValue(fonts.LARGE_SIZE),
           marginTop: RFValue(20),
-          marginBottom: RFValue(10),
           marginLeft: RFValue(10),
           textTransform: 'capitalize'
         }}
@@ -46,10 +55,10 @@ export default function MemberSlide(props: MemberSlideProp) {
       </Title>
 
       <FlatList
-        data={MembersData}
+        data={participants}
         contentContainerStyle={{
           flexGrow: 1,
-          marginTop: RFValue(20),
+          marginTop: RFValue(10),
           paddingBottom: RFValue(120)
         }}
         showsVerticalScrollIndicator={false}

@@ -61,3 +61,21 @@ export const REQUEST_CONNECTION = gql`
     }
   }
 `;
+
+//ACCEPT CONNECTION
+export const ACCEPT_CONNECTION = gql`
+  mutation acceptConnection($payload: ConnectionInput!) {
+    acceptConnection(input: $payload) {
+      success
+    }
+  }
+`;
+
+//REJECT CONECTION
+export const REJECT_CONNECTION = gql`
+  mutation declineConnection($payload: ConnectionInput!) {
+    declineConnection(input: $payload) {
+      success
+    }
+  }
+`;
