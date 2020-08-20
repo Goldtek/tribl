@@ -4,6 +4,7 @@ import {
   TransitionPresets
 } from '@react-navigation/stack';
 import { Button } from 'react-native-paper';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import Screens from '../../screens/signup';
 import GetStartedNavigator from './getStartedNavigator';
 import { useThemeContext } from '../../theme';
@@ -11,6 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { DEVICE_OS } from '../../utils/device';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
+import { GET_USER_DETAILS } from '../../graphql/cache/query';
+import { StoreInterface, UpdatePassportInterface } from '../../graphql/types';
+import { UPDATE_USER_PASSPORT } from '../../graphql/server/mutations';
 
 const SignupStack = createStackNavigator();
 let routeNames = [] as string[];
@@ -18,6 +22,38 @@ let routeNames = [] as string[];
 export default function SignupNavigator() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+
+  const userDetails = data?.userDetails;
+
+  const [updatePassport] = useMutation<UpdatePassportInterface>(
+    UPDATE_USER_PASSPORT,
+    {
+      variables: {
+        payload: {
+          dob: { formatted: userDetails?.DOB },
+          avatar: userDetails?.avatar,
+          lastName: userDetails?.lastName,
+          firstName: userDetails?.firstName,
+          interests: userDetails?.interests,
+          identities: userDetails?.identities,
+          currentLocation: {
+            lat: userDetails?.currentLocation.lat,
+            long: userDetails?.currentLocation.long,
+            country: userDetails?.currentLocation.country,
+            state: userDetails?.currentLocation.state
+          },
+          birthPlace: {
+            lat: userDetails?.birthPlace.lat,
+            long: userDetails?.birthPlace.long,
+            country: userDetails?.birthPlace.country,
+            state: userDetails?.birthPlace.state
+          }
+        }
+      }
+    }
+  );
 
   return (
     <SignupStack.Navigator
@@ -32,17 +68,21 @@ export default function SignupNavigator() {
           routeNames = navigationState.routeNames;
         }
 
-        const handleNavigation = () => {
+        const handleNavigation = async () => {
           const nextRoute = Number(headerTitle.split(' ')[0]) + 1;
 
           if (headerTitle) {
             return navigation.navigate(routeNames[nextRoute]);
           }
 
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'CommunityScreen' }]
-          });
+          const { data } = await updatePassport();
+
+          if (data?.success) {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'CommunityScreen' }]
+            });
+          }
         };
 
         return {

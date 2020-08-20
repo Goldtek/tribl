@@ -1,6 +1,7 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import * as Updates from 'expo-updates';
+import { Alert } from 'react-native';
 import { enableScreens } from 'react-native-screens';
-import codePush from 'react-native-code-push';
 import loadResources from './src/libs/loadResources';
 import Storage from './src/storage';
 import AppRouter from './src';
@@ -8,25 +9,35 @@ import './src/internationalization';
 
 enableScreens();
 
-function App() {
+export default function App() {
   const [isAppReady, setIsAppReady] = useState(false);
 
   useLayoutEffect(() => {
-    (async () => {
-      await loadResources();
-      Storage.checkInitialLaunch();
-      Storage.checkUserCredentials();
-      setIsAppReady(true);
-    })();
+    loadApp();
   }, []);
+
+  useEffect(() => {
+    checkAppUpdates();
+  }, []);
+
+  const loadApp = async () => {
+    await loadResources();
+    Storage.checkInitialLaunch();
+    Storage.checkUserCredentials();
+    setIsAppReady(true);
+  };
+
+  const checkAppUpdates = async () => {
+    const update = await Updates.checkForUpdateAsync();
+    if (update.isAvailable) {
+      await Updates.fetchUpdateAsync();
+      Alert.alert('UPDATE AVAILABLE', 'DOWNLOADING UPDATES NOW...');
+      // ... notify user of update ...
+      await Updates.reloadAsync();
+    }
+    // Prompt the user when an update is available
+    // and then display a "downloading" modal
+  };
 
   return isAppReady ? <AppRouter /> : null;
 }
-
-export default codePush({
-  deploymentKey: '23b6df88-75df-4a81-be10-dbb5798089f3',
-  updateDialog: { title: 'An update is available!' },
-  installMode: codePush.InstallMode.IMMEDIATE,
-  checkFrequency: codePush.CheckFrequency.ON_APP_START,
-  appendReleaseDescription: true
-})(App);
