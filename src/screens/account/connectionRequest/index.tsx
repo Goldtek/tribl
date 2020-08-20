@@ -38,7 +38,7 @@ export default function ConnectionRequestScreen(
 
   return (
     <Fragment>
-      <StatusBar backgroundColor={colors.WHITE} barStyle="dark-content" />
+      <StatusBar translucent barStyle="dark-content" />
       <Header
         title={() => (
           <Text

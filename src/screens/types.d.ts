@@ -14,6 +14,7 @@ export type RootStackParamList = {
   NewMessageScreen: undefined;
   CommunityScreen: undefined;
   NewChatSearch: undefined;
+  PrivacyScreen: undefined;
   ProfileScreen: undefined;
   SignupScreen: undefined;
   InboxScreen: undefined;
