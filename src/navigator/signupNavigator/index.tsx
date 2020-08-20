@@ -36,8 +36,8 @@ export default function SignupNavigator() {
           avatar: userDetails?.avatar,
           lastName: userDetails?.lastName,
           firstName: userDetails?.firstName,
-          interests: userDetails?.interests,
-          identities: userDetails?.identities,
+          interest: userDetails?.interests,
+          identity: userDetails?.identities,
           currentLocation: {
             lat: userDetails?.currentLocation.lat,
             long: userDetails?.currentLocation.long,
