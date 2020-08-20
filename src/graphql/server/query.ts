@@ -208,3 +208,13 @@ export const GET_COMMUNITY_MEMBERS = gql`
     }
   }
 `;
+
+//GET ALL IDENTITIES
+export const GET_ALL_IDENTITIES = gql`
+  query Identity {
+    Identity {
+      id
+      name
+    }
+  }
+`;
