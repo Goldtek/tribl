@@ -10,6 +10,7 @@ import { useThemeContext } from '../../../theme';
 import highlightSlide from './widgets/highlightSlide';
 import channelSlide from './widgets/channelSlide';
 import memberSlide from './widgets/membersSlide';
+import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -91,6 +92,7 @@ export default function SearchScreen(props: ScreenProp) {
   const renderPager = (props: any) => <ScrollPager {...props} />;
   return (
     <Container>
+      <StatusBar translucent animated style="dark" />
       {Platform.select({
         ios: (
           <TabView
