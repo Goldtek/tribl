@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
-import { Share, ScrollView } from 'react-native';
+import { Share, ScrollView, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
   Title,
@@ -12,10 +12,7 @@ import {
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { FontAwesome } from '@expo/vector-icons';
-import {
-  SafeAreaView,
-  useSafeAreaInsets
-} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationInterface } from '../types';
 import { useThemeContext } from '../../theme';
 import { GET_USER_DETAILS } from '../../graphql/cache/query';
@@ -39,7 +36,7 @@ export default function PassportScreen(props: ScreenProp) {
   const { t } = useTranslation();
 
   const [imageLoad, setImageLoad] = useState(true);
-  const { bottom: paddingBottom } = useSafeAreaInsets();
+  const { bottom: paddingBottom, top: paddingTop } = useSafeAreaInsets();
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
 
@@ -66,10 +63,10 @@ export default function PassportScreen(props: ScreenProp) {
       style={{
         flex: 1,
         backgroundColor: colors.PRIMARY,
-        paddingBottom: RFValue(-paddingBottom)
+        paddingTop: RFValue(paddingTop)
       }}
     >
-      <StatusBar translucent style="light" />
+      <StatusBar backgroundColor={colors.PRIMARY} style="light" />
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
