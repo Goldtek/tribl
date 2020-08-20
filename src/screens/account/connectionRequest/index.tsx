@@ -1,16 +1,16 @@
 import React, { Fragment } from 'react';
-import { Text, TouchableRipple, Title } from 'react-native-paper';
+import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
-import { StatusBar, FlatList, TouchableHighlight } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { FlatList, TouchableHighlight } from 'react-native';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
 import { Feather } from '@expo/vector-icons';
 import ConnectionRequest from './widget';
+import { StatusBar } from 'expo-status-bar';
 import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
 
@@ -38,7 +38,7 @@ export default function ConnectionRequestScreen(
 
   return (
     <Fragment>
-      <StatusBar translucent barStyle="dark-content" />
+      <StatusBar translucent animated style="dark" />
       <Header
         title={() => (
           <Text
