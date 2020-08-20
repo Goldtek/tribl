@@ -6,7 +6,7 @@ import { Switch } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import { AntDesign } from '@expo/vector-icons';
+import PrivacyModal from './widget';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, ToggleContainer, ToggleCover } from './styles';
