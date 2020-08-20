@@ -57,7 +57,7 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.PRIMARY }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <StatusBar translucent style="light" />
       <ScrollView
         bounces={false}
