@@ -1,5 +1,5 @@
-import React, { Fragment, useState, useCallback } from 'react';
-import { ScrollView } from 'react-native';
+import React, { Fragment, useState, useCallback, useMemo } from 'react';
+import { ScrollView, FlatList } from 'react-native';
 import { NavigationInterface } from '../../../../types';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import MembersData from '../../../../../libs/recommendedUsers/index.json';
 import { GET_NEARBY_MEMBERS } from '../../../../../graphql/server/query';
 import NearbyModal from '../../../../../components/nearbyMembers';
 import ActiveModal from '../../../../../components/activeMembers';
+import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
@@ -48,6 +49,18 @@ export default function SearchScreen(props: ScreenProp) {
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
 
   const NearbyMembers = nearbyData?.nearbyMembers;
+
+  const _renderRecommendedMember = useMemo(
+    () => ({ item, index }: any) => (
+      <RecommendedMembers
+        key={item.id}
+        {...item}
+        index={index}
+        lastChild={NearbyMembers?.length - 1}
+      />
+    ),
+    []
+  );
 
   return (
     <ScrollView
@@ -103,20 +116,16 @@ export default function SearchScreen(props: ScreenProp) {
               </Fragment>
             </TouchableRipple>
           </RecommendedListHeader>
-          <ScrollView
+          <FlatList
+            data={MembersData}
             horizontal={true}
+            renderItem={_renderRecommendedMember}
+            ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            style={{ marginTop: 20 }}
-          >
-            {MembersData.map((member, index) => (
-              <RecommendedMembers
-                key={index}
-                {...member}
-                index={index}
-                lastChild={MembersData.length - 1}
-              />
-            ))}
-          </ScrollView>
+            contentContainerStyle={{
+              marginTop: 20
+            }}
+          />
         </RecommendedList>
         <RecommendedList>
           <RecommendedListHeader>
@@ -165,20 +174,16 @@ export default function SearchScreen(props: ScreenProp) {
               </Fragment>
             </TouchableRipple>
           </RecommendedListHeader>
-          <ScrollView
+          <FlatList
+            data={NearbyMembers}
             horizontal={true}
+            renderItem={_renderRecommendedMember}
+            ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            style={{ marginTop: 20 }}
-          >
-            {NearbyMembers?.map((member: any, index: number) => (
-              <RecommendedMembers
-                key={member.id}
-                {...member}
-                index={index}
-                lastChild={NearbyMembers.length - 1}
-              />
-            ))}
-          </ScrollView>
+            contentContainerStyle={{
+              marginTop: 20
+            }}
+          />
         </RecommendedList>
       </Container>
       <NearbyModal
