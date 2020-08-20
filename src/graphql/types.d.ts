@@ -50,11 +50,6 @@ export interface StoreInterface {
     birthPlace: Location;
     __typename: string;
   };
-
-  selectableIdentities: {
-    identities: string[];
-    __typename: string;
-  };
 }
 
 /*
@@ -84,4 +79,9 @@ export type CreateAccountInterface = {
     success: boolean;
     _id: string;
   };
+};
+
+// USER SELECTABLE IDENTITIES (RESPONSE) TYPE
+export type IdentitiesInterface = {
+  Identity: { name: string; id: string }[];
 };

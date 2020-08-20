@@ -19,6 +19,11 @@ interface HighlightProp extends NavigationInterface {
     avatar: string;
     firstName: string;
     lastName: string;
+    membersCount: string;
+    currentLocation: {
+      country: string;
+      state: string;
+    }[];
   };
   highlight(T: any): any[];
   closeModal(): void;
@@ -51,14 +56,12 @@ const Highlight = (props: HighlightProp) => {
       algoliaDetail: hit
     });
   };
-
   return (
     <Text>
       {highlights.map(({ value }: any, index: number) => {
         const {
           avatar = 'https://picsum.photos/700',
-          members = '25k members',
-          location = 'Lagos, Nigeria'
+          membersCount = '25k members'
         } = value;
         return (
           <Fragment>
@@ -105,7 +108,7 @@ const Highlight = (props: HighlightProp) => {
                         fontSize: RFValue(fonts.MEDIUM_SIZE)
                       }}
                     >
-                      {members}
+                      {hit.membersCount}
                     </Text>
                   </NameContainer>
                 </Fragment>
@@ -153,7 +156,7 @@ const Highlight = (props: HighlightProp) => {
                         fontSize: RFValue(fonts.MEDIUM_SIZE)
                       }}
                     >
-                      {location}
+                      {hit.currentLocation}
                     </Text>
                   </NameContainer>
                 </Fragment>
