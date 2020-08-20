@@ -22,7 +22,7 @@ interface PopularUserProp {
   closeNearbyModal(): void;
 }
 
-function PopularCommunity(props: PopularUserProp) {
+function NearbyModal(props: PopularUserProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -127,4 +127,4 @@ function PopularCommunity(props: PopularUserProp) {
   );
 }
 
-export default React.memo(PopularCommunity, () => false);
+export default React.memo(NearbyModal, () => false);
