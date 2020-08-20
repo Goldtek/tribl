@@ -12,6 +12,7 @@ import RecommendedMembers from '../../../../../components/recommendedUser';
 import MembersData from '../../../../../libs/recommendedUsers/index.json';
 import { GET_NEARBY_MEMBERS } from '../../../../../graphql/server/query';
 import NearbyModal from '../../../../../components/nearbyMembers';
+import ActiveModal from '../../../../../components/activeMembers';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
@@ -26,9 +27,19 @@ export default function SearchScreen(props: ScreenProp) {
 
   const [isVisible, setIsVisible] = useState(false);
 
+  const [visible, setVisible] = useState(false);
+
   const showNearbyModal = useCallback(
     (isVisible: boolean) => () => {
       setIsVisible(isVisible);
+      return true;
+    },
+    []
+  );
+
+  const showActiveModal = useCallback(
+    (visible: boolean) => () => {
+      setVisible(visible);
       return true;
     },
     []
@@ -62,7 +73,7 @@ export default function SearchScreen(props: ScreenProp) {
             </Title>
             <TouchableRipple
               rippleColor={colors.PRIMARY}
-              onPress={() => {}}
+              onPress={showActiveModal(true)}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -173,6 +184,12 @@ export default function SearchScreen(props: ScreenProp) {
       <NearbyModal
         closeNearbyModal={showNearbyModal(false)}
         isVisible={isVisible}
+        //@ts-ignore
+        navigation={navigation}
+      />
+      <ActiveModal
+        closeActiveModal={showActiveModal(false)}
+        isVisible={visible}
         //@ts-ignore
         navigation={navigation}
       />
