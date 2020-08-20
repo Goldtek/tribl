@@ -4,7 +4,7 @@ import { StackActionHelpers } from '@react-navigation/native';
 
 // App Navigation prop types
 export type RootStackParamList = {
-  CommunitySearchScreen: undefined;
+  CommunitySearchScreen: { index: number };
   SelectCountryScreen: undefined;
   CreateAccountScreen: undefined;
   AvatarUploadScreen: undefined;
