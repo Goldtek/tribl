@@ -54,7 +54,6 @@ export default function contactSlide(props: MemberDetailProps) {
     interest,
     identity
   } = passport;
-  const userDetail = UserDetail[0];
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: {
@@ -166,35 +165,8 @@ export default function contactSlide(props: MemberDetailProps) {
             {t(`community.memberPassport.connect`)}
           </GradientButton>
         )}
-        {userDetail?.birthPlace.country ? (
-          <CitizenshipContainer>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginTop: RFValue(10)
-              }}
-            >
-              {t(`community.memberPassport.bio`)}
-            </Title>
 
-            <Paragraph
-              style={{
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize'
-              }}
-            >
-              founder/head of growth @betribl team lead e-commerce @facbook
-              founder @youngbljaustin
-            </Paragraph>
-          </CitizenshipContainer>
-        ) : null}
-
-        {currentLocation || location ? (
+        {currentLocation || location || birthLocation || birthPlace ? (
           <LocationContainer>
             <Title
               style={{
@@ -202,12 +174,13 @@ export default function contactSlide(props: MemberDetailProps) {
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
                 color: colors.PRIMARY_TEXT,
                 textTransform: 'uppercase',
-                marginBottom: 10
+                marginBottom: 10,
+                marginTop: 40
               }}
             >
               {t(`signup.passportScreen.locality`)}
             </Title>
-            {birthPlace ? (
+            {birthPlace || birthLocation ? (
               <Location>
                 <AntDesign
                   name="home"
@@ -230,11 +203,11 @@ export default function contactSlide(props: MemberDetailProps) {
                     marginBottom: 10
                   }}
                 >
-                  {`${currentLocation[0].state} ${currentLocation[0].country}`}
+                  {`${birthPlace[0].state} ${birthPlace[0].country}`}
                 </Paragraph>
               </Location>
             ) : null}
-            {birthPlace || birthLocation ? (
+            {currentLocation || location ? (
               <Location>
                 <SimpleLineIcons
                   name="location-pin"

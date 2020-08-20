@@ -5,14 +5,14 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../components/gradientButton';
 import { useTranslation } from 'react-i18next';
 import { Toast } from '../../../components/rootToaster';
-import { GET_SELECTABLE_IDENTITIES } from '../../../graphql/cache/query';
-import { StoreInterface } from '../../../graphql/types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import IdentityButton from './widgets/identityButton';
 import ScrollInstruction from './widgets/scrollInstruction';
+import { GET_ALL_IDENTITIES } from '../../../graphql/server/query';
+import { IdentitiesInterface } from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -23,7 +23,6 @@ interface ScreenProp extends NavigationInterface {}
 export default function IdentifyUserScreen(props: ScreenProp) {
   const { navigation } = props;
 
-  const { data } = useQuery<StoreInterface>(GET_SELECTABLE_IDENTITIES);
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -31,6 +30,8 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     selectedIdentities: new Map(),
     showInstruction: true
   });
+
+  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
@@ -135,11 +136,11 @@ export default function IdentifyUserScreen(props: ScreenProp) {
               marginTop: RFValue(20)
             }}
           >
-            {data?.selectableIdentities.identities.map((identity) => (
+            {data?.Identity?.map((identity) => (
               <IdentityButton
-                key={identity}
-                identity={identity}
-                selected={state.selectedIdentities.get(identity)}
+                key={identity.id}
+                identity={identity.name}
+                selected={state.selectedIdentities.get(identity.name)}
                 handleSelect={handleSelect}
               />
             ))}

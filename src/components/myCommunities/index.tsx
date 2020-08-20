@@ -14,7 +14,7 @@ interface MyCommunityProp {
   index: number;
 }
 
-function MyCommunity(props: MyCommunityProp) {
+export default function MyCommunity(props: MyCommunityProp) {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
 
@@ -54,5 +54,3 @@ function MyCommunity(props: MyCommunityProp) {
     </TouchableRipple>
   );
 }
-
-export default React.memo(MyCommunity, () => false);

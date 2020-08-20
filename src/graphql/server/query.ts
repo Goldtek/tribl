@@ -10,6 +10,7 @@ import gql from 'graphql-tag';
 export const GET_RECOMMENDED_MEMBERS = gql`
   query RecommendedMembers {
     recommendedMembers {
+      id
       email
       firstName
       lastName
@@ -205,6 +206,16 @@ export const GET_COMMUNITY_MEMBERS = gql`
         name
       }
       connected
+    }
+  }
+`;
+
+//GET ALL IDENTITIES
+export const GET_ALL_IDENTITIES = gql`
+  query Identity {
+    Identity {
+      id
+      name
     }
   }
 `;

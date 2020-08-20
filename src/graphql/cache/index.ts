@@ -40,27 +40,6 @@ cache.writeData<StoreInterface>({
       userId: '',
       avatar: 'https://bit.ly/39kcTOS',
       __typename: 'userDetails'
-    },
-
-    selectableIdentities: {
-      identities: [
-        'afro-indian',
-        'creole',
-        'caribbean',
-        'afro-latin',
-        'afro-canadian',
-        'afro-asian',
-        'west african',
-        'african',
-        'east african',
-        'black',
-        'afro-european',
-        'gullah',
-        'diaspora',
-        'mixed',
-        'african american'
-      ],
-      __typename: 'selectedIdentities'
     }
   }
 });

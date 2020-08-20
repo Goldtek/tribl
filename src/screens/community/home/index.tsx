@@ -1,7 +1,8 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -11,6 +12,7 @@ import RecentActivity from '../../../components/recentActivity';
 import { useNavigation } from '@react-navigation/native';
 import JoinCommunity from '../../../components/joinCommunity';
 import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
+import { FlatList } from 'react-native-gesture-handler';
 import Storage from '../../../storage';
 import {
   GET_RECOMMENDED_COMMUNITIES,
@@ -19,6 +21,8 @@ import {
 } from '../../../graphql/server/query';
 import { VerifyOTPIT } from '../../../graphql/types';
 import MyCommunity from '../../../components/myCommunities';
+import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
+import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -113,6 +117,30 @@ export default function HomeScreen(props: ScreenProp) {
     });
   };
 
+  const _renderMyCommunityItem = useMemo(
+    () => ({ item, index }: any) => (
+      <MyCommunity
+        key={item.id}
+        {...item}
+        index={index}
+        lastChild={myCommunity?.length - 1}
+      />
+    ),
+    []
+  );
+
+  const _renderRecommendedMember = useMemo(
+    () => ({ item, index }: any) => (
+      <RecommendedUser
+        key={item.id}
+        {...item}
+        index={index}
+        lastChild={recommendedMembers?.length - 1}
+      />
+    ),
+    []
+  );
+
   return (
     <Fragment>
       <ScrollView
@@ -137,21 +165,17 @@ export default function HomeScreen(props: ScreenProp) {
                 {t(`community.recommended.myCommunity`)}
               </Title>
             </RecommendedListHeader>
-
-            <ScrollView
+            <FlatList
+              data={myCommunity}
+              ListEmptyComponent={<MyCommunitySkeleton skelentonSize={4} />}
               horizontal={true}
+              renderItem={_renderMyCommunityItem}
               showsHorizontalScrollIndicator={false}
-              style={{ marginTop: 10, backgroundColor: colors.WHITE }}
-            >
-              {myCommunity?.map((member: any, index: number) => (
-                <MyCommunity
-                  key={member.id}
-                  {...member}
-                  index={index}
-                  lastChild={recommendedMembers.length - 1}
-                />
-              ))}
-            </ScrollView>
+              contentContainerStyle={{
+                marginTop: 10,
+                backgroundColor: colors.WHITE
+              }}
+            />
           </RecommendedList>
         ) : null}
         <RecommendedList>
@@ -183,20 +207,17 @@ export default function HomeScreen(props: ScreenProp) {
               {t(`community.recommended.view`)}
             </Button>
           </RecommendedListHeader>
-          <ScrollView
+          <FlatList
+            data={recommendedMembers}
             horizontal={true}
+            renderItem={_renderRecommendedMember}
+            ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            style={{ marginTop: 20, backgroundColor: colors.WHITE }}
-          >
-            {recommendedMembers?.map((member: any, index: number) => (
-              <RecommendedUser
-                key={member.id}
-                {...member}
-                index={index}
-                lastChild={recommendedMembers.length - 1}
-              />
-            ))}
-          </ScrollView>
+            contentContainerStyle={{
+              marginTop: 20,
+              backgroundColor: colors.WHITE
+            }}
+          />
         </RecommendedList>
 
         <RecommendedList>
