@@ -7,7 +7,6 @@ import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import UserDetail from '../../../libs/recommendedUsers/index.json';
 import GradientButton from '../../../components/gradientButton';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 
