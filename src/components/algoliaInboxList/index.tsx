@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, Fragment } from 'react';
 import {
   connectInfiniteHits,
   connectStateResults
@@ -46,32 +46,112 @@ function AlgoliaList(props: any) {
       return searchResults && searchResults.nbHits !== 0 ? (
         children
       ) : searchState && !searchState.query ? (
-        <SkeletonPlaceholder>
-          <SkeletonPlaceholder.Item
-            flexDirection="row"
-            alignItems="center"
-            margin={30}
-          >
+        <Fragment>
+          <SkeletonPlaceholder>
             <SkeletonPlaceholder.Item
-              width={60}
-              height={60}
-              borderRadius={50}
-            />
-            <SkeletonPlaceholder.Item marginLeft={20}>
+              flexDirection="row"
+              alignItems="center"
+              margin={10}
+            >
               <SkeletonPlaceholder.Item
-                width={120}
-                height={20}
-                borderRadius={4}
+                width={60}
+                height={60}
+                borderRadius={50}
               />
-              <SkeletonPlaceholder.Item
-                marginTop={6}
-                width={80}
-                height={20}
-                borderRadius={4}
-              />
+              <SkeletonPlaceholder.Item marginLeft={20}>
+                <SkeletonPlaceholder.Item
+                  width={120}
+                  height={20}
+                  borderRadius={4}
+                />
+                <SkeletonPlaceholder.Item
+                  marginTop={6}
+                  width={80}
+                  height={20}
+                  borderRadius={4}
+                />
+              </SkeletonPlaceholder.Item>
             </SkeletonPlaceholder.Item>
-          </SkeletonPlaceholder.Item>
-        </SkeletonPlaceholder>
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder>
+            <SkeletonPlaceholder.Item
+              flexDirection="row"
+              alignItems="center"
+              margin={10}
+            >
+              <SkeletonPlaceholder.Item
+                width={60}
+                height={60}
+                borderRadius={50}
+              />
+              <SkeletonPlaceholder.Item marginLeft={20}>
+                <SkeletonPlaceholder.Item
+                  width={120}
+                  height={20}
+                  borderRadius={4}
+                />
+                <SkeletonPlaceholder.Item
+                  marginTop={6}
+                  width={80}
+                  height={20}
+                  borderRadius={4}
+                />
+              </SkeletonPlaceholder.Item>
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder>
+            <SkeletonPlaceholder.Item
+              flexDirection="row"
+              alignItems="center"
+              margin={10}
+            >
+              <SkeletonPlaceholder.Item
+                width={60}
+                height={60}
+                borderRadius={50}
+              />
+              <SkeletonPlaceholder.Item marginLeft={20}>
+                <SkeletonPlaceholder.Item
+                  width={120}
+                  height={20}
+                  borderRadius={4}
+                />
+                <SkeletonPlaceholder.Item
+                  marginTop={6}
+                  width={80}
+                  height={20}
+                  borderRadius={4}
+                />
+              </SkeletonPlaceholder.Item>
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder>
+            <SkeletonPlaceholder.Item
+              flexDirection="row"
+              alignItems="center"
+              margin={10}
+            >
+              <SkeletonPlaceholder.Item
+                width={60}
+                height={60}
+                borderRadius={50}
+              />
+              <SkeletonPlaceholder.Item marginLeft={20}>
+                <SkeletonPlaceholder.Item
+                  width={120}
+                  height={20}
+                  borderRadius={4}
+                />
+                <SkeletonPlaceholder.Item
+                  marginTop={6}
+                  width={80}
+                  height={20}
+                  borderRadius={4}
+                />
+              </SkeletonPlaceholder.Item>
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder>
+        </Fragment>
       ) : (
         <Text
           style={{

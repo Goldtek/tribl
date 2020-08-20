@@ -47,7 +47,7 @@ const Highlight = (props: HighlightProp) => {
         const {
           avatar = 'https://picsum.photos/700',
           firstName,
-          lastName = 'Matt',
+          lastName,
           lastSeen = '2 mins ago'
         } = value;
 
