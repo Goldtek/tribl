@@ -219,3 +219,13 @@ export const GET_ALL_IDENTITIES = gql`
     }
   }
 `;
+
+//GET ALL IDENTITIES
+export const GET_ALL_IDENTITIES = gql`
+  query Identity {
+    Identity {
+      id
+      name
+    }
+  }
+`;
