@@ -38,18 +38,8 @@ export default function SignupNavigator() {
           firstName: userDetails?.firstName,
           interest: userDetails?.interest,
           identity: userDetails?.identity,
-          currentLocation: {
-            lat: userDetails?.currentLocation.lat,
-            long: userDetails?.currentLocation.long,
-            country: userDetails?.currentLocation.country,
-            state: userDetails?.currentLocation.state
-          },
-          birthPlace: {
-            lat: userDetails?.birthPlace.lat,
-            long: userDetails?.birthPlace.long,
-            country: userDetails?.birthPlace.country,
-            state: userDetails?.birthPlace.state
-          }
+          currentLocation: userDetails?.currentLocation[0],
+          birthPlace: userDetails?.birthPlace[0]
         }
       }
     }
@@ -86,18 +76,8 @@ export default function SignupNavigator() {
                 firstName: userDetails?.firstName,
                 interest: userDetails?.interest,
                 identity: userDetails?.identity,
-                currentLocation: {
-                  lat: userDetails?.currentLocation.lat,
-                  long: userDetails?.currentLocation.long,
-                  country: userDetails?.currentLocation.country,
-                  state: userDetails?.currentLocation.state
-                },
-                birthPlace: {
-                  lat: userDetails?.birthPlace.lat,
-                  long: userDetails?.birthPlace.long,
-                  country: userDetails?.birthPlace.country,
-                  state: userDetails?.birthPlace.state
-                }
+                currentLocation: userDetails?.currentLocation[0],
+                birthPlace: userDetails?.birthPlace[0]
               }
             });
 
