@@ -36,12 +36,3 @@ export const GET_USER_DETAILS = gql`
     }
   }
 `;
-
-// GET USER SELECTABLE IDENTITIES
-export const GET_SELECTABLE_IDENTITIES = gql`
-  query GetUserSelectableIdentities {
-    selectableIdentities @client {
-      identities
-    }
-  }
-`;
