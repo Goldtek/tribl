@@ -56,7 +56,7 @@ function MemberSlideScreen(props: ScreenProp) {
         key={item.id}
         {...item}
         index={index}
-        lastChild={NearbyMembers?.length - 1}
+        lastChild={nearbyMembers?.length - 1}
       />
     ),
     []
@@ -122,9 +122,8 @@ function MemberSlideScreen(props: ScreenProp) {
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              marginTop: 20
-            }}
+            keyExtractor={(_, index: number) => index.toString()}
+            contentContainerStyle={{ marginTop: 20 }}
           />
         </RecommendedList>
         <RecommendedList>
@@ -180,9 +179,8 @@ function MemberSlideScreen(props: ScreenProp) {
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              marginTop: 20
-            }}
+            keyExtractor={(item: any) => item.id}
+            contentContainerStyle={{ marginTop: 20 }}
           />
         </RecommendedList>
       </Container>
