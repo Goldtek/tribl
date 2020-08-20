@@ -12,7 +12,7 @@ import Input from '../../../components/input';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { CreateAccountInterface } from '../../../graphql/types';
 import { Toast } from '../../../components/rootToaster';
-import { CREATE_USER_ACCOUNT } from '../../../graphql/server/mutations';
+import { CREATE_USER_PASSPORT } from '../../../graphql/server/mutations';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import LoadingModal from '../../../components/loadingModal';
 import { validateEmailInput } from '../../../utils/validateEmailInput';
@@ -48,7 +48,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
   });
 
   const [createPassport, { loading }] = useMutation<CreateAccountInterface>(
-    CREATE_USER_ACCOUNT,
+    CREATE_USER_PASSPORT,
     {
       variables: {
         payload: {
