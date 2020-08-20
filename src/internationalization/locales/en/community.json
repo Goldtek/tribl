@@ -73,7 +73,10 @@
     "age": "age",
     "locality": "locality",
     "link": "linked accounts",
-    "blocked": "blocked accounts"
+    "blocked": "blocked accounts",
+    "passport": "passport",
+    "public": "public",
+    "private": "private"
   },
   "chat": {
     "message": "direct messages",
