@@ -5,6 +5,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { RecyclerListView, DataProvider } from 'recyclerlistview';
 import { AntDesign } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { StatusBar } from 'expo-status-bar';
 import { getCountryLayout } from '../../../utils/LayoutUtil';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
@@ -74,6 +75,7 @@ export default function SelectCountryScreen(props: ScreenProp) {
         backgroundColor: colors.WHITE
       }}
     >
+      <StatusBar translucent animated style="light" />
       <Container>
         <Title
           style={{
