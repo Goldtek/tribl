@@ -31,7 +31,7 @@ export const VALIDATE_USER_OTP = gql`
 `;
 
 // VALIDATE USER OTP
-export const CREATE_USER_ACCOUNT = gql`
+export const CREATE_USER_PASSPORT = gql`
   mutation createPassport($payload: CreatePassportInput!) {
     createPassport(input: $payload) {
       success
@@ -39,7 +39,16 @@ export const CREATE_USER_ACCOUNT = gql`
   }
 `;
 
-// refresh token
+// UPDATE USER PASSPORT
+export const UPDATE_USER_PASSPORT = gql`
+  mutation updatePassport($payload: UpdatePassportInput!) {
+    updatePassport(input: $payload) {
+      success
+    }
+  }
+`;
+
+// REFRESH TOKEN
 export const REFRESH_TOKEN = gql`
   mutation refreshToken($payload: RefreshTokenInput!) {
     refreshToken(input: $payload) {
