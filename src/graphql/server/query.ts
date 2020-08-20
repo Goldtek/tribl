@@ -10,6 +10,7 @@ import gql from 'graphql-tag';
 export const GET_RECOMMENDED_MEMBERS = gql`
   query RecommendedMembers {
     recommendedMembers {
+      id
       email
       firstName
       lastName
