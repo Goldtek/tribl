@@ -31,6 +31,7 @@ import {
   // SpotifyButton,
   // ButtonDot,
 } from './styles';
+import formatMessageTime from '../../../../utils/timesince';
 
 export default function contactSlide() {
   const { colors, fonts } = useThemeContext();
