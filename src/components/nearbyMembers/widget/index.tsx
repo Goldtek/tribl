@@ -1,9 +1,11 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
+import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextConatiner } from './styles';
@@ -35,6 +37,30 @@ function NearbyModal(props: PopularUserProp) {
     navigation,
     closeNearbyModal
   } = props;
+
+  const [loading, setLoading] = useState(false);
+
+  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+    variables: {
+      payload: {
+        phoneNumber: phoneNumber
+      }
+    }
+  });
+
+  const handleRequest = async () => {
+    setLoading(true);
+    console.tron('gggggg');
+    try {
+      const { data } = await requestConnection();
+      console.tron('jjj', data);
+      if (data?.requestConnection) {
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  };
 
   const handleNavigation = () => {
     closeNearbyModal();
@@ -97,7 +123,7 @@ function NearbyModal(props: PopularUserProp) {
             </Paragraph>
           </TextConatiner>
           <Button
-            loading={false}
+            loading={loading}
             mode="contained"
             uppercase={false}
             labelStyle={{
@@ -117,7 +143,7 @@ function NearbyModal(props: PopularUserProp) {
               height: RFValue(30),
               marginRight: RFValue(15)
             }}
-            onPress={() => {}}
+            onPress={handleRequest}
           >
             {t(`community.recommended.add`)}+
           </Button>
