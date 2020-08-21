@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
-import RecentActivity from '../../../components/recentActivity';
 import { useNavigation } from '@react-navigation/native';
 import JoinCommunity from '../../../components/joinCommunity';
 import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
@@ -34,14 +33,7 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {
-  recentActivities: {
-    name: string;
-    action: string;
-    avatar: string;
-    date: string;
-  }[];
-}
+interface ScreenProp extends NavigationInterface {}
 
 export default function HomeScreen(props: ScreenProp) {
   const credentials = Storage.getUserCredentials();
@@ -69,7 +61,12 @@ export default function HomeScreen(props: ScreenProp) {
 
   const recommendedMembers = membersData?.recommendedMembers;
 
-  const community = communityData?.recommendedCommunities[0];
+  const recommendedCommunity = communityData?.recommendedCommunities;
+
+  const community = recommendedCommunity?.length
+    ? recommendedCommunity.slice(0, 2)
+    : null;
+
   const [refreshToken] = useMutation<VerifyOTPIT>(REFRESH_TOKEN, {
     variables: {
       payload: {
@@ -104,8 +101,6 @@ export default function HomeScreen(props: ScreenProp) {
 
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
-  const { recentActivities } = props;
-
   const navigateToSearch = (index: number) => () => {
     navigation.navigate('CommunitySearchScreen', { index });
   };
@@ -136,6 +131,18 @@ export default function HomeScreen(props: ScreenProp) {
         {...item}
         index={index}
         lastChild={recommendedMembers?.length - 1}
+      />
+    ),
+    []
+  );
+
+  const _renderRecommendedCommunity = useMemo(
+    () => ({ item, index }: any) => (
+      <RecommendedCommunity
+        key={item.id}
+        {...item}
+        index={index}
+        onPress={handleJoinCommunity}
       />
     ),
     []
@@ -249,36 +256,18 @@ export default function HomeScreen(props: ScreenProp) {
               {t(`community.recommended.view`)}
             </Button>
           </RecommendedListHeader>
-
           <RecommendedCommunityContainer>
-            <RecommendedCommunity
-              {...community}
-              onPress={handleJoinCommunity}
+            <FlatList
+              data={community}
+              renderItem={_renderRecommendedCommunity}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                marginTop: 10,
+                backgroundColor: colors.WHITE
+              }}
             />
           </RecommendedCommunityContainer>
         </RecommendedList>
-
-        <RecentActivitiesList>
-          <RecommendedListHeader>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize',
-                lineHeight: 20,
-                marginTop: 0,
-                marginBottom: 30
-              }}
-            >
-              {t(`community.recommended.activity`)}
-            </Title>
-          </RecommendedListHeader>
-
-          {recentActivities.map((activity) => (
-            <RecentActivity key={activity.name} {...activity} />
-          ))}
-        </RecentActivitiesList>
       </ScrollView>
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
@@ -286,44 +275,3 @@ export default function HomeScreen(props: ScreenProp) {
     </Fragment>
   );
 }
-
-HomeScreen.defaultProps = {
-  recentActivities: [
-    {
-      name: 'Alex Muleba',
-      action: 'sent money to Uche Nnadi',
-      avatar: 'https://picsum.photos/700',
-      date: '2m ago'
-    },
-    {
-      name: 'Blair Bashen',
-      action: 'Joined #Afropolitan',
-      avatar: 'https://picsum.photos/700',
-      date: '10m ago'
-    },
-    {
-      name: 'Kobla',
-      action: 'Joined #AustineJusticeCoalition',
-      avatar: 'https://picsum.photos/700',
-      date: '45m ago'
-    },
-    {
-      name: 'Erikan O.',
-      action: 'Donated to #BlackLivesMatter',
-      avatar: 'https://picsum.photos/700',
-      date: '2h ago'
-    },
-    {
-      name: 'Josephine Kellner',
-      action: 'sent money to Jasmine',
-      avatar: 'https://picsum.photos/700',
-      date: '8h ago'
-    },
-    {
-      name: 'Spencer Evans',
-      action: 'added mutual connection Mbiyimoh',
-      avatar: 'https://picsum.photos/700',
-      date: '12h ago'
-    }
-  ]
-};
