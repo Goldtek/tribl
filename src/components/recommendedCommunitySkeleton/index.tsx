@@ -102,15 +102,6 @@ function RecommendedCommunity({
               marginBottom: 0
             }}
             left={({ size }) => (
-              // <FastImage
-              //   resizeMode={FastImage.resizeMode.contain}
-              //   source={{ uri: avatar, priority: FastImage.priority.high }}
-              //   style={{
-              //     width: RFValue(size),
-              //     height: RFValue(size + 2),
-              //     borderRadius: 5
-              //   }}
-              // />
               <SkeletonPlaceholder>
                 <SkeletonPlaceholder.Item alignItems="center" margin={10}>
                   <SkeletonPlaceholder.Item
