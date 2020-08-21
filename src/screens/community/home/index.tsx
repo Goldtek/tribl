@@ -22,6 +22,7 @@ import { VerifyOTPIT } from '../../../graphql/types';
 import MyCommunity from '../../../components/myCommunities';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
+import RecommendedCommunitySkeleton from '../../../components/recommendedCommunitySkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -261,6 +262,9 @@ export default function HomeScreen(props: ScreenProp) {
               data={community}
               renderItem={_renderRecommendedCommunity}
               showsVerticalScrollIndicator={false}
+              ListEmptyComponent={
+                <RecommendedCommunitySkeleton skelentonSize={4} />
+              }
               contentContainerStyle={{
                 marginTop: 10,
                 backgroundColor: colors.WHITE
