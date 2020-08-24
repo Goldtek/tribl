@@ -76,6 +76,7 @@
     "react-native-skeleton-content": "^1.0.18",
     "react-native-skeleton-placeholder": "^2.0.7",
     "react-native-smooth-phone-input": "^1.0.3",
+    "react-native-spotify-auth": "wiyarmir/react-native-spotify-auth",
     "react-native-svg": "^12.1.0",
     "react-native-swiper": "^1.6.0",
     "react-native-tab-view": "^2.14.4",
