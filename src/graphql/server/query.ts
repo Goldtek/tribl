@@ -30,6 +30,9 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         id
       }
       connected
+      avatar
+      connectionCount
+      communityCount
     }
   }
 `;
@@ -44,6 +47,9 @@ export const GET_NEARBY_MEMBERS = gql`
       lastName
       phoneNumber
       connected
+      avatar
+      communityCount
+      connectionCount
       currentLocation {
         id
         country
@@ -70,6 +76,7 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
       avatar
       name
       membersCount
+      isMember
     }
   }
 `;
@@ -83,6 +90,7 @@ export const GET_POPULAR_COMMUNITIES = gql`
       membersCount
       description
       avatar
+      isMember
       interests {
         id
         name
@@ -163,7 +171,6 @@ export const GET_CONNECTION_REQUEST = gql`
 export const GET_SINGLE_COMMUNITY = gql`
   query community($id: ID!) {
     Community(id: $id) {
-      name
       description
       id
       avatar
@@ -173,6 +180,43 @@ export const GET_SINGLE_COMMUNITY = gql`
         name
       }
       membersCount
+      isMember
+      name
+    }
+  }
+`;
+
+//GET ONE PASSPORT
+export const GET_SINGLE_PASSPORT = gql`
+  query singlePassport($id: String) {
+    singlePassport(id: $id) {
+      id
+      email
+      firstName
+      lastName
+      phoneNumber
+      connected
+      avatar
+      communityCount
+      connectionCount
+      currentLocation {
+        id
+        country
+        state
+      }
+      identity {
+        id
+        name
+      }
+      interest {
+        id
+        name
+      }
+      birthPlace {
+        id
+        state
+        country
+      }
     }
   }
 `;
