@@ -47,8 +47,8 @@ export interface PassportInterface {
   identity: string[];
   connectionCount: number;
   communityCount: number;
-  currentLocation: Location;
-  birthPlace: Location;
+  currentLocation: Location[];
+  birthPlace: Location[];
   __typename: string;
 }
 
