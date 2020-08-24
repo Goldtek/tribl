@@ -15,6 +15,7 @@ import { GET_USER_DETAILS } from '../../../../graphql/cache/query';
 import { StoreInterface } from '../../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../utils/timesince';
+import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
 
 import {
   ContactContainer,
@@ -51,6 +52,11 @@ export default function contactSlide() {
     focusedLastName: false,
     showDatePicker: false
   });
+
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const test = userData?.myPassport;
+  console.tron({ test });
+  // console.tron({ userDetails });
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const userDetails = data?.userDetails;
@@ -177,7 +183,7 @@ export default function contactSlide() {
             marginBottom: 0
           }}
         >
-          {t(`signup.passportScreen.DOB`)}
+          {t(`signup.passportScreen.dob`)}
         </Title>
 
         <Button
@@ -196,7 +202,7 @@ export default function contactSlide() {
           contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
           onPress={handleDatePicker}
         >
-          {state.date ? state.date : t(`signup.passportScreen.DOB`)}
+          {state.date ? state.date : t(`signup.passportScreen.dob`)}
         </Button>
 
         <DateTimePicker
@@ -303,7 +309,7 @@ export default function contactSlide() {
         </LocationContainer>
       ) : null}
 
-      {userDetails?.identities.length ? (
+      {userDetails?.identity.length ? (
         <IdentityContainer>
           <Title
             style={{
@@ -318,7 +324,7 @@ export default function contactSlide() {
           </Title>
 
           <Identities>
-            {userDetails?.identities.map((identity) => (
+            {userDetails?.identity.map((identity) => (
               <IdentityText key={identity}>{identity}</IdentityText>
             ))}
           </Identities>
