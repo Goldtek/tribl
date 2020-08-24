@@ -41,7 +41,7 @@ export default function contactSlide(props: MemberDetailProps) {
     connected: connect,
     currentLocation: location,
     birthPlace: birthLocation,
-    interest: interests,
+    interest: dob,
     identity: identities
   } = passportDetails;
 
@@ -224,7 +224,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </LocationContainer>
         ) : null}
 
-        {identity?.length || identities?.length ? (
+        {identity?.length ? (
           <IdentityContainer>
             <Title
               style={{
@@ -241,16 +241,12 @@ export default function contactSlide(props: MemberDetailProps) {
             <Identities>
               {identity?.map((identity: any) => (
                 <IdentityText key={identity}>{identity}</IdentityText>
-              ))}{' '}
-              ||{' '}
-              {identities?.map((identity: any) => (
-                <IdentityText key={identity}>{identity}</IdentityText>
               ))}
             </Identities>
           </IdentityContainer>
         ) : null}
 
-        {interest?.length || interests?.length ? (
+        {interest?.length ? (
           <InterestContainer>
             <Title
               style={{
@@ -264,10 +260,6 @@ export default function contactSlide(props: MemberDetailProps) {
             </Title>
             <Identities>
               {interest?.map((interest: any) => (
-                <IdentityText key={interest}>{interest}</IdentityText>
-              ))}{' '}
-              ||{' '}
-              {interests?.map((interest: any) => (
                 <IdentityText key={interest}>{interest}</IdentityText>
               ))}
             </Identities>

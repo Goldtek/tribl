@@ -120,7 +120,7 @@ function MemberSlideScreen(props: ScreenProp) {
             data={MembersData}
             horizontal={true}
             renderItem={_renderRecommendedMember}
-            ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
+            ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(_, index: number) => index.toString()}
             contentContainerStyle={{ marginTop: 20 }}
@@ -177,7 +177,7 @@ function MemberSlideScreen(props: ScreenProp) {
             data={nearbyMembers}
             horizontal={true}
             renderItem={_renderRecommendedMember}
-            ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
+            ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item: any) => item.id}
             contentContainerStyle={{ marginTop: 20 }}

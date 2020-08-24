@@ -32,12 +32,12 @@ export default function SignupNavigator() {
     {
       variables: {
         payload: {
-          dob: { formatted: userDetails?.DOB },
+          dob: { formatted: userDetails?.dob },
           avatar: userDetails?.avatar,
           lastName: userDetails?.lastName,
           firstName: userDetails?.firstName,
-          interest: userDetails?.interests,
-          identity: userDetails?.identities,
+          interest: userDetails?.interest,
+          identity: userDetails?.identity,
           currentLocation: {
             lat: userDetails?.currentLocation.lat,
             long: userDetails?.currentLocation.long,
@@ -78,6 +78,29 @@ export default function SignupNavigator() {
           const { data } = await updatePassport();
 
           if (data?.success) {
+            return console.tron({
+              payload: {
+                dob: { formatted: userDetails?.dob },
+                avatar: userDetails?.avatar,
+                lastName: userDetails?.lastName,
+                firstName: userDetails?.firstName,
+                interest: userDetails?.interest,
+                identity: userDetails?.identity,
+                currentLocation: {
+                  lat: userDetails?.currentLocation.lat,
+                  long: userDetails?.currentLocation.long,
+                  country: userDetails?.currentLocation.country,
+                  state: userDetails?.currentLocation.state
+                },
+                birthPlace: {
+                  lat: userDetails?.birthPlace.lat,
+                  long: userDetails?.birthPlace.long,
+                  country: userDetails?.birthPlace.country,
+                  state: userDetails?.birthPlace.state
+                }
+              }
+            });
+
             navigation.reset({
               index: 0,
               routes: [{ name: 'CommunityScreen' }]
