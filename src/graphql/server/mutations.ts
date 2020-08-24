@@ -75,7 +75,7 @@ export const REQUEST_CONNECTION = gql`
   }
 `;
 
-//ACCEPT CONNECTION
+// ACCEPT CONNECTION
 export const ACCEPT_CONNECTION = gql`
   mutation acceptConnection($payload: ConnectionInput!) {
     acceptConnection(input: $payload) {
@@ -84,11 +84,21 @@ export const ACCEPT_CONNECTION = gql`
   }
 `;
 
-//REJECT CONECTION
+// REJECT CONNECTION
 export const REJECT_CONNECTION = gql`
   mutation declineConnection($payload: ConnectionInput!) {
     declineConnection(input: $payload) {
       success
+    }
+  }
+`;
+
+// UPLOAD USER AVATAR
+export const UPLOAD_USER_AVATAR = gql`
+  mutation uploadCloudinaryFile($payload: Upload!) {
+    uploadCloudinaryFile(file: $payload) {
+      success
+      url
     }
   }
 `;
