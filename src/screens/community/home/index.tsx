@@ -263,7 +263,7 @@ export default function HomeScreen(props: ScreenProp) {
               renderItem={_renderRecommendedCommunity}
               showsVerticalScrollIndicator={false}
               ListEmptyComponent={
-                <RecommendedCommunitySkeleton skelentonSize={4} />
+                <RecommendedCommunitySkeleton skelentonSize={1} />
               }
               contentContainerStyle={{
                 marginTop: 10,
