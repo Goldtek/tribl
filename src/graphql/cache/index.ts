@@ -14,13 +14,19 @@ const cache = new InMemoryCache({ freezeResults: true });
 cache.writeData<StoreInterface>({
   data: {
     userDetails: {
-      DOB: '',
+      dob: '',
       email: '',
-      number: '',
+      phoneNumber: '',
       countryCode: DEVICE_DEFAULT_COUNTRY,
       firstName: '',
       lastName: '',
-      citizenship: '',
+      citizenShip: '',
+      connectionCount: 0,
+      communityCount: 0,
+      connected: '',
+      identity: [],
+      interest: [],
+      userId: '',
       currentLocation: {
         lat: null,
         long: null,
@@ -35,9 +41,6 @@ cache.writeData<StoreInterface>({
         state: '',
         __typename: 'birthPlace'
       },
-      identities: [],
-      interests: [],
-      userId: '',
       avatar:
         'https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp',
       __typename: 'userDetails'
