@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
@@ -25,6 +25,7 @@ interface RecommendedUserProp {
     country: string;
     state: string;
   }[];
+  connected: string;
 }
 
 function RecommendedUser(props: RecommendedUserProp) {
@@ -32,6 +33,7 @@ function RecommendedUser(props: RecommendedUserProp) {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [pending, setPending] = useState(false);
 
   const {
     avatar = 'https://picsum.photos/700',
@@ -40,7 +42,8 @@ function RecommendedUser(props: RecommendedUserProp) {
     index,
     lastChild,
     currentLocation,
-    phoneNumber
+    phoneNumber,
+    connected
   } = props;
 
   const { state, country } = currentLocation[0];
@@ -59,11 +62,20 @@ function RecommendedUser(props: RecommendedUserProp) {
       const { data } = await requestConnection();
       if (data?.requestConnection) {
         setLoading(false);
+        setPending(true);
       }
     } catch (error) {
       setLoading(false);
     }
   };
+
+  const handleMessageNavigation = useCallback(
+    () =>
+      navigation.navigate('ChatScreen', {
+        title: `${firstName} ${lastName}`
+      }),
+    []
+  );
 
   return (
     <Card
@@ -110,7 +122,6 @@ function RecommendedUser(props: RecommendedUserProp) {
           />
           <OnlineNotifier />
         </AvatarContainer>
-
         <TextContainer>
           <Title
             numberOfLines={1}
@@ -141,27 +152,72 @@ function RecommendedUser(props: RecommendedUserProp) {
             {`${state}, ${country}`}
           </Paragraph>
         </TextContainer>
-        <Button
-          loading={loading}
-          mode="contained"
-          uppercase={false}
-          labelStyle={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            textTransform: 'capitalize',
-            color: colors.WHITE
-          }}
-          contentStyle={{
-            width: '100%',
-            paddingLeft: 10,
-            paddingRight: 10,
-            backgroundColor: colors.PRIMARY
-          }}
-          style={{ borderRadius: 5 }}
-          onPress={handleRequest}
-        >
-          {t(`community.recommended.add`)}+
-        </Button>
+        {connected == 'PENDING' || pending ? (
+          <Button
+            disabled={true}
+            mode="contained"
+            uppercase={false}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'capitalize',
+              color: colors.PRIMARY_TEXT
+            }}
+            contentStyle={{
+              width: '100%',
+              paddingLeft: 10,
+              paddingRight: 10,
+              backgroundColor: colors.DISABLED
+            }}
+            style={{ borderRadius: 5 }}
+          >
+            {t(`community.recommended.pending`)}
+          </Button>
+        ) : connected == 'CONNECTED' ? (
+          <Button
+            loading={loading}
+            mode="contained"
+            uppercase={false}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'capitalize',
+              color: colors.WHITE
+            }}
+            contentStyle={{
+              width: '100%',
+              paddingLeft: 10,
+              paddingRight: 10,
+              backgroundColor: colors.PRIMARY
+            }}
+            style={{ borderRadius: 5 }}
+            onPress={handleMessageNavigation}
+          >
+            {t(`community.recommended.message`)}
+          </Button>
+        ) : (
+          <Button
+            loading={loading}
+            mode="contained"
+            uppercase={false}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'capitalize',
+              color: colors.WHITE
+            }}
+            contentStyle={{
+              width: '100%',
+              paddingLeft: 10,
+              paddingRight: 10,
+              backgroundColor: colors.PRIMARY
+            }}
+            style={{ borderRadius: 5 }}
+            onPress={handleRequest}
+          >
+            {t(`community.recommended.add`)}+
+          </Button>
+        )}
       </Card.Content>
     </Card>
   );
