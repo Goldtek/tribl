@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Button, Card } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
@@ -12,13 +12,14 @@ interface RecommendedCommunityProp {
   membersCount: string;
   avatar: string;
   onPress(): void;
+  isMember: boolean;
 }
 
 function RecommendedCommunity(props: RecommendedCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { avatar, name, membersCount, onPress } = props;
+  const { avatar, name, membersCount, onPress, isMember } = props;
 
   return (
     <Card
@@ -83,17 +84,33 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
           />
         )}
         right={() => (
-          <Button
-            mode="text"
-            onPress={onPress}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              left: 15
-            }}
-          >
-            {t(`community.recommended.join`)}
-          </Button>
+          <Fragment>
+            {isMember ? (
+              <Button
+                mode="text"
+                onPress={() => {}}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  left: 15
+                }}
+              >
+                {t(`community.recommended.leave`)}
+              </Button>
+            ) : (
+              <Button
+                mode="text"
+                onPress={onPress}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  left: 15
+                }}
+              >
+                {t(`community.recommended.join`)}
+              </Button>
+            )}
+          </Fragment>
         )}
         style={{ flex: 1, paddingLeft: 0 }}
       />
