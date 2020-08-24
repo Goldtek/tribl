@@ -2,22 +2,20 @@ import React, { Fragment } from 'react';
 import { TouchableRipple } from 'react-native-paper';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { RFValue } from 'react-native-responsive-fontsize';
-import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
-import { useNavigation } from '@react-navigation/native';
 
 // DEFINE SCREEN PROP TYPES
 interface MyCommunitySkeletonProp {
-  skelentonSize?: number;
+  skeletonSize?: number;
 }
 
 export default function MyCommunitySkeleton({
-  skelentonSize = 1
+  skeletonSize = 1
 }: MyCommunitySkeletonProp) {
   const { colors } = useThemeContext();
   return (
     <Fragment>
-      {[...Array(skelentonSize)].map((_, index) => (
+      {[...Array(skeletonSize)].map((_, index) => (
         <TouchableRipple
           key={index}
           style={{
