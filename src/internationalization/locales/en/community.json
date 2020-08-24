@@ -9,9 +9,12 @@
     "community": "recommended community",
     "view": "view all",
     "join": "join",
+    "pending": "pending",
     "add": "add",
     "activity": "recent activity",
-    "myCommunity": "my communities"
+    "myCommunity": "my communities",
+    "leave": "leave",
+    "message": "message"
   },
   "joinModal": {
     "title": "enter your referral code below",
@@ -33,7 +36,10 @@
     "block": "block",
     "report": "report",
     "removeConnection": "remove connection",
-    "copy": "copy profile URL"
+    "copy": "copy profile URL",
+    "pending": "pending",
+    "blocked": "blocked",
+    "requested": "requested"
   },
   "tabPanel": {
     "member": "members",
@@ -49,7 +55,8 @@
     "view": "view all",
     "placeholder": "Search by name or tag",
     "search": "Search",
-    "memberTitle": "community members"
+    "memberTitle": "community members",
+    "leave": "leave"
   },
   "sideNav": {
     "community": "community",
