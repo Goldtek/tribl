@@ -14,6 +14,7 @@ interface PopularUserProp {
   avatar: string;
   name: string;
   membersCount: string;
+  isMember: boolean;
 }
 
 function PopularCommunity(props: PopularUserProp) {
@@ -24,7 +25,8 @@ function PopularCommunity(props: PopularUserProp) {
   const {
     avatar = 'https://picsum.photos/700',
     name = 'Black lives matter',
-    membersCount
+    membersCount,
+    isMember
   } = props;
 
   const handleNavigation = () =>
@@ -51,8 +53,8 @@ function PopularCommunity(props: PopularUserProp) {
             priority: FastImage.priority.high
           }}
           style={{
-            width: RFValue(100),
-            height: RFValue(100),
+            width: RFValue(120),
+            height: RFValue(120),
             borderRadius: RFValue(15)
           }}
         />
@@ -78,17 +80,31 @@ function PopularCommunity(props: PopularUserProp) {
           >
             {membersCount} {t(`community.tabPanel.member`)}
           </Paragraph>
-          <Paragraph
-            style={{
-              fontSize: fonts.MEDIUM_SIZE,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              lineHeight: RFValue(19),
-              color: colors.PRIMARY,
-              textTransform: 'uppercase'
-            }}
-          >
-            {t(`community.recommended.join`)}
-          </Paragraph>
+          {isMember ? (
+            <Paragraph
+              style={{
+                fontSize: fonts.MEDIUM_SIZE,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                lineHeight: RFValue(19),
+                color: colors.PRIMARY,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`community.recommended.leave`)}
+            </Paragraph>
+          ) : (
+            <Paragraph
+              style={{
+                fontSize: fonts.MEDIUM_SIZE,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                lineHeight: RFValue(19),
+                color: colors.PRIMARY,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`community.recommended.join`)}
+            </Paragraph>
+          )}
         </TextConatiner>
       </Fragment>
     </TouchableRipple>
