@@ -49,7 +49,6 @@ export default function contactSlide(props: MemberDetailProps) {
   } = passportDetails;
   const { phoneNumber, firstName, lastName, id: PId } = passport;
   const id = Id || PId;
-  console.tron('id', id);
 
   const handleMessageNavigation = useCallback(
     () =>
@@ -74,7 +73,6 @@ export default function contactSlide(props: MemberDetailProps) {
   });
 
   const SinglePassport = passportData?.singlePassport;
-  console.tron('jj', SinglePassport);
   const handleRequest = async () => {
     setState({
       ...state,
