@@ -39,7 +39,10 @@ export default function OTPScreen(props: ScreenProp) {
 
   const [sendOtp] = useMutation(SEND_USER_OTP, {
     variables: {
-      payload: { phoneNumber: data?.userDetails.number, deviceId: DEVICE_ID }
+      payload: {
+        phoneNumber: data?.userDetails.phoneNumber,
+        deviceId: DEVICE_ID
+      }
     }
   });
 
@@ -48,7 +51,7 @@ export default function OTPScreen(props: ScreenProp) {
     {
       variables: {
         payload: {
-          phoneNumber: data?.userDetails.number,
+          phoneNumber: data?.userDetails.phoneNumber,
           deviceId: DEVICE_ID,
           otp
         }
@@ -147,7 +150,8 @@ export default function OTPScreen(props: ScreenProp) {
               lineHeight: RFValue(22)
             }}
           >
-            {t(`signup.OTPScreen.paragraph`) + ` ${data?.userDetails.number}`}
+            {t(`signup.OTPScreen.paragraph`) +
+              ` ${data?.userDetails.phoneNumber}`}
           </Paragraph>
 
           <Container style={{ height: RFValue(100), marginTop: 10 }}>
