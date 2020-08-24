@@ -3,7 +3,6 @@ import { NavigationInterface } from '../../../../types';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useMutation } from '@apollo/react-hooks';
 import { ScrollView, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
@@ -15,7 +14,6 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_POPULAR_COMMUNITIES
 } from '../../../../../graphql/server/query';
-import FeatuedCommunitySkeleton from '../../../../../components/recommendedCommunitySkeleton';
 import PopularCommunitySkeleton from '../../../../../components/popularCommunitySkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
