@@ -11,17 +11,17 @@ import { TextContainer, AvatarContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserSkeletonProp {
-  skelentonSize?: number;
+  skeletonSize?: number;
 }
 
 export default function RecommendedUserSkeleton({
-  skelentonSize = 1
+  skeletonSize = 1
 }: RecommendedUserSkeletonProp) {
   const { colors } = useThemeContext();
 
   return (
     <Fragment>
-      {[...Array(skelentonSize)].map((_, index) => (
+      {[...Array(skeletonSize)].map((_, index) => (
         <Card
           key={index}
           style={{
