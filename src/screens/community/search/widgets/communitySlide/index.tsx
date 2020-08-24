@@ -34,7 +34,6 @@ export default function CommunitySlideScreen(props: ScreenProp) {
 
   const community = communityData?.recommendedCommunities[0];
   const popular = popularData?.popularCommunities;
-  console.tron('fe', community);
   const _renderPopularCommunityItem = useMemo(
     () => ({ item, index }: any) => (
       <PopularCommunity key={item.id} {...item} index={index} />

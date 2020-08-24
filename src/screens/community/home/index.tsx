@@ -40,7 +40,6 @@ export default function HomeScreen(props: ScreenProp) {
   const credentials = Storage.getUserCredentials();
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  console.tron('cred', credentials);
 
   const navigation = useNavigation();
 
