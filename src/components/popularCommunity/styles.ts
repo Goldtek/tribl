@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-export const TextConatiner = styled.View`
+export const TextContainer = styled.View`
   flex: 1;
   height: 100%;
   margin-left: ${RFValue(10)}px;

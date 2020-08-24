@@ -8,7 +8,7 @@ import { useThemeContext } from '../../../theme';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { TextConatiner } from './styles';
+import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface PopularUserProp {
@@ -96,7 +96,7 @@ function NearbyModal(props: PopularUserProp) {
               borderRadius: RFValue(10)
             }}
           />
-          <TextConatiner>
+          <TextContainer>
             <Title
               style={{
                 color: colors.PRIMARY_TEXT,
@@ -119,7 +119,7 @@ function NearbyModal(props: PopularUserProp) {
             >
               {`${state}, ${country}`}
             </Paragraph>
-          </TextConatiner>
+          </TextContainer>
           {connected == 'PENDING' ? (
             <Button
               mode="text"

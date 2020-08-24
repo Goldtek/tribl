@@ -34,6 +34,8 @@ export default function SplashScreen(props: ScreenProp) {
   };
 
   const handleAuthentication = async () => {
+    await Storage.checkInitialLaunch();
+
     const initialLaunch = Storage.getInitialLaunch();
 
     if (!initialLaunch) {

@@ -299,6 +299,14 @@ export const GET_USER_PASSPORT = gql`
       phoneNumber
       connectionCount
       communityCount
+      currentLocation {
+        country
+        state
+      }
+      birthPlace {
+        country
+        state
+      }
     }
   }
 `;

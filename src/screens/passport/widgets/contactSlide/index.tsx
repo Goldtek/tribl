@@ -1,18 +1,12 @@
-import React, { Fragment, useState, useRef, useCallback } from 'react';
-import {
-  AntDesign,
-  SimpleLineIcons,
-  FontAwesome,
-  Feather
-} from '@expo/vector-icons';
+import React, { useState, useRef, useCallback } from 'react';
+import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
 import { Button, IconButton, Title, Paragraph } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../theme';
 import hexToRGB from '../../../../utils/hexToRGB';
-import { GET_USER_DETAILS } from '../../../../graphql/cache/query';
-import { StoreInterface } from '../../../../graphql/types';
+import { MyPassportInterface } from '../../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../utils/timesince';
 import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
@@ -31,19 +25,25 @@ import {
   LocationContainer,
   Location,
   CitizenshipContainer,
-  LinkAccountsContainer,
-  InstagramButton,
-  SpotifyButton,
-  ButtonDot,
   EditTextInput
+  // LinkAccountsContainer,
+  // InstagramButton,
+  // SpotifyButton,
+  // ButtonDot,
 } from './styles';
 
 export default function contactSlide() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+
+  const currentLocation = userDetails?.currentLocation[0];
+  const birthPlace = userDetails?.birthPlace[0];
+
   const [state, setState] = useState({
-    date: '',
+    date: userDetails?.dob,
     firstName: '',
     lastName: '',
     editLastName: false,
@@ -52,14 +52,6 @@ export default function contactSlide() {
     focusedLastName: false,
     showDatePicker: false
   });
-
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
-  const test = userData?.myPassport;
-  console.tron({ test });
-  // console.tron({ userDetails });
-
-  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
-  const userDetails = data?.userDetails;
 
   const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
@@ -214,7 +206,7 @@ export default function contactSlide() {
         />
       </DOBContainer>
 
-      {userDetails?.birthPlace.country ? (
+      {birthPlace ? (
         <CitizenshipContainer>
           <Title
             style={{
@@ -235,13 +227,12 @@ export default function contactSlide() {
               textTransform: 'capitalize'
             }}
           >
-            {userDetails?.birthPlace.country}
+            {birthPlace?.country}
           </Paragraph>
         </CitizenshipContainer>
       ) : null}
 
-      {userDetails?.currentLocation.country &&
-      userDetails?.birthPlace.country ? (
+      {currentLocation && birthPlace ? (
         <LocationContainer>
           <Title
             style={{
@@ -277,7 +268,7 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              {`${userDetails?.birthPlace.state} ${userDetails?.birthPlace.country}`}
+              {`${birthPlace.state} ${birthPlace.country}`}
             </Paragraph>
           </Location>
 
@@ -303,7 +294,7 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              {`${userDetails?.currentLocation.state} ${userDetails?.currentLocation.country}`}
+              {`${currentLocation.state} ${currentLocation.country}`}
             </Paragraph>
           </Location>
         </LocationContainer>
@@ -331,34 +322,37 @@ export default function contactSlide() {
         </IdentityContainer>
       ) : null}
 
-      <InterestContainer>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'uppercase'
-          }}
-        >
-          {t(`signup.passportScreen.interest`)}
-        </Title>
-        <IconButton
-          onPress={() => console.log('Pressed')}
-          icon="plus"
-          color={colors.PRIMARY_TEXT}
-          size={20}
-          style={{
-            width: RFValue(50),
-            height: RFValue(40),
-            borderRadius: 4,
-            margin: 0,
-            marginTop: 10,
-            borderColor: colors.INACTIVE,
-            borderWidth: RFValue(1.2)
-          }}
-        />
-      </InterestContainer>
+      {userDetails?.interest.length ? (
+        <InterestContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
+            }}
+          >
+            {t(`signup.passportScreen.interest`)}
+          </Title>
+          <IconButton
+            onPress={() => console.log('Pressed')}
+            icon="plus"
+            color={colors.PRIMARY_TEXT}
+            size={20}
+            style={{
+              width: RFValue(50),
+              height: RFValue(40),
+              borderRadius: 4,
+              margin: 0,
+              marginTop: 10,
+              borderColor: colors.INACTIVE,
+              borderWidth: RFValue(1.2)
+            }}
+          />
+        </InterestContainer>
+      ) : null}
 
+      {/* 
       <LinkAccountsContainer>
         <Title
           style={{
@@ -441,6 +435,7 @@ export default function contactSlide() {
           {t(`signup.passportScreen.spotifySubTitle`)}
         </Paragraph>
       </LinkAccountsContainer>
+     */}
     </ContactContainer>
   );
 }
