@@ -243,10 +243,6 @@ export default function HomeScreen(props: ScreenProp) {
                 backgroundColor: colors.WHITE
               }}
             />
-            <RecommendedCommunity
-              {...community}
-              onPress={handleJoinCommunity}
-            />
           </RecommendedCommunityContainer>
         </RecommendedList>
 
