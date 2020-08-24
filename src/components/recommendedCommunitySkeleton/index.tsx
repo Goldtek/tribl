@@ -1,9 +1,7 @@
 import React, { Fragment } from 'react';
-import { Button, Card } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { useTranslation } from 'react-i18next';
-import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
 
