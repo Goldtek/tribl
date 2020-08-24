@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ImageResizer from 'react-native-image-resizer';
 import { ProgressBar, Title, Paragraph, Subheading } from 'react-native-paper';
 import { TouchableHighlight, SafeAreaView } from 'react-native';
+import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { Toast } from '../../../components/rootToaster';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
@@ -12,7 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
-import { useMutation } from '@apollo/react-hooks';
+import cloudinaryUpload from '../../../utils/cloudinaryUpload';
+import { UPLOAD_USER_AVATAR } from '../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, GradientContainer } from './styles';
@@ -26,21 +28,37 @@ export default function AvatarUploadScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [avatar, setAvatar] = useState('');
+  const [avatar, setAvatar] = useState<{
+    uri: string;
+    formData: FormData | null;
+    loading: boolean;
+  }>({ uri: '', formData: null, loading: false });
 
   const [addUserImage] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { avatar } }
+    variables: { details: { avatar: avatar.uri } }
   });
 
-  const handleInputError = () => {
-    Toast.show(t(`signup.avatarUploadScreen.inputError`));
+  const [uploadUserImage] = useMutation(UPLOAD_USER_AVATAR, {
+    variables: { payload: avatar?.formData }
+  });
+
+  const handleInputError = (error: string) => {
+    Toast.show(t(`signup.avatarUploadScreen.${error}`));
   };
 
-  const handleSubmit = () => {
-    if (!avatar) return handleInputError();
+  const handleSubmit = async () => {
+    if (!avatar) return handleInputError('inputError');
 
-    navigation.navigate('IdentifyUserScreen');
-    addUserImage();
+    try {
+      const { data } = await uploadUserImage();
+
+      console.log({ data });
+
+      navigation.navigate('IdentifyUserScreen');
+      addUserImage();
+    } catch (error) {
+      handleInputError('uploadError');
+    }
   };
 
   const handleAvatar = async () => {
@@ -64,14 +82,22 @@ export default function AvatarUploadScreen(props: ScreenProp) {
         undefined
       );
 
-      const { mime, data } = await ImagePicker.openCropper({
+      const {
+        mime,
+        data,
+        filename,
+        cropRect,
+        path: file
+      } = await ImagePicker.openCropper({
         path: resizedImage,
         width: RFValue(90),
         height: RFValue(90),
         includeBase64: true
       });
 
-      setAvatar(`data:${mime};base64,${data}`);
+      const formData = cloudinaryUpload({ file, mime, filename, cropRect });
+
+      setAvatar({ ...avatar, uri: `data:${mime};base64,${data}`, formData });
       ImagePicker.clean();
     } catch (error) {
       console.error(error);
@@ -163,10 +189,10 @@ export default function AvatarUploadScreen(props: ScreenProp) {
                   overflow: 'hidden'
                 }}
               >
-                {avatar ? (
+                {avatar.uri ? (
                   <FastImage
                     source={{
-                      uri: avatar,
+                      uri: avatar.uri,
                       priority: FastImage.priority.high
                     }}
                     resizeMode={FastImage.resizeMode.contain}
@@ -217,8 +243,12 @@ export default function AvatarUploadScreen(props: ScreenProp) {
           </Container>
 
           <Container style={{ width: '100%' }}>
-            <GradientButton onPress={handleSubmit}>
-              {t(`signup.avatarUploadScreen.submit`)}
+            <GradientButton onPress={handleSubmit} loading={avatar.loading}>
+              {t(
+                `signup.avatarUploadScreen.${
+                  avatar.loading ? 'upload' : 'submit'
+                }`
+              )}
             </GradientButton>
           </Container>
         </Container>

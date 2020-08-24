@@ -45,7 +45,7 @@ export default function PassportScreen(props: ScreenProp) {
       const { action } = await Share.share({
         title: t(`signup.passportScreen.title`),
         message: t(`signup.passportScreen.sharePassportMessage`),
-        url: userDetails?.avatar
+        url: 'www.jointribl.com'
       });
 
       if (action === Share.dismissedAction) return;
@@ -125,7 +125,7 @@ export default function PassportScreen(props: ScreenProp) {
               >
                 {`${userDetails?.firstName} ${userDetails?.lastName}`}
               </Paragraph>
-
+              {/* 
               <ImageIconContainer>
                 <SocialMediaButton
                   onPress={() => console.log('Pressed')}
@@ -148,6 +148,7 @@ export default function PassportScreen(props: ScreenProp) {
                   />
                 </SocialMediaButton>
               </ImageIconContainer>
+            */}
             </ImageTextContainer>
           </ImageContainer>
 
