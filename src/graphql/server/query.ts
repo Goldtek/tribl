@@ -310,3 +310,33 @@ export const GET_USER_PASSPORT = gql`
     }
   }
 `;
+
+// GET USER PROFILE
+export const GET_USER_PASSPORT = gql`
+  query myPassport {
+    myPassport {
+      id
+      dob {
+        formatted
+      }
+      email
+      avatar
+      verified
+      interest {
+        id
+        name
+      }
+      identity {
+        id
+        name
+      }
+      lastName
+      firstName
+      connected
+      citizenShip
+      phoneNumber
+      connectionCount
+      communityCount
+    }
+  }
+`;
