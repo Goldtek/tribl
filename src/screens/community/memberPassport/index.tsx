@@ -43,12 +43,7 @@ export default function contactSlide(props: MemberDetailProps) {
   //@ts-ignore
   const passportDetails = { ...props.route.params.algoliaDetail };
 
-  const {
-    phoneNumber: number,
-    firstName: fName,
-    lastName: lName,
-    id: Id
-  } = passportDetails;
+  const { firstName: fName, lastName: lName, id: Id } = passportDetails;
 
   const { phoneNumber, firstName, lastName, id: PId } = passport;
   const id = Id || PId;

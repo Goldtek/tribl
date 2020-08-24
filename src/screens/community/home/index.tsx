@@ -1,14 +1,7 @@
-import React, {
-  Fragment,
-  useState,
-  useEffect,
-  useMemo,
-  useLayoutEffect
-} from 'react';
+import React, { Fragment, useState, useMemo, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
@@ -20,16 +13,15 @@ import { useNavigation } from '@react-navigation/native';
 import RecentActivity from '../../../components/recentActivity';
 import JoinCommunity from '../../../components/joinCommunity';
 import { GenerateFirebaseTokenIT } from '../../../graphql/types';
-import { REFRESH_TOKEN } from '../../../graphql/server/mutations';
 import Firechat from '../../../firebase';
 import Storage from '../../../storage';
 import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   GET_MY_COMMUNITIES,
-  GET_FIREBASE_TOKEN
+  GET_FIREBASE_TOKEN,
+  GET_USER_PASSPORT
 } from '../../../graphql/server/query';
-import { VerifyOTPIT } from '../../../graphql/types';
 import MyCommunity from '../../../components/myCommunities';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
@@ -57,6 +49,7 @@ export default function HomeScreen(props: ScreenProp) {
 
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
+  useQuery(GET_USER_PASSPORT);
   const { data: myCommunityData } = useQuery(GET_MY_COMMUNITIES);
   const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
@@ -69,7 +62,7 @@ export default function HomeScreen(props: ScreenProp) {
     GET_FIREBASE_TOKEN
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const getFirebaseToken = async () => {
       if (firebase?.generateFirebaseToken) {
         Storage.setUserCredentials(firebase?.generateFirebaseToken);
@@ -106,8 +99,8 @@ export default function HomeScreen(props: ScreenProp) {
     () => ({ item, index }: any) => (
       <RecommendedUser
         key={item.id}
-        {...item}
         index={index}
+        {...item}
         lastChild={recommendedMembers?.length - 1}
       />
     ),
@@ -129,8 +122,8 @@ export default function HomeScreen(props: ScreenProp) {
   return (
     <Fragment>
       <ScrollView
-        showsVerticalScrollIndicator={false}
         nestedScrollEnabled
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
       >
         <StatusBar translucent animated style="dark" />
@@ -153,7 +146,7 @@ export default function HomeScreen(props: ScreenProp) {
             </RecommendedListHeader>
             <FlatList
               data={myCommunity}
-              ListEmptyComponent={<MyCommunitySkeleton skelentonSize={4} />}
+              ListEmptyComponent={<MyCommunitySkeleton skeletonSize={4} />}
               horizontal={true}
               renderItem={_renderMyCommunityItem}
               showsHorizontalScrollIndicator={false}
@@ -197,10 +190,11 @@ export default function HomeScreen(props: ScreenProp) {
             data={recommendedMembers}
             horizontal={true}
             renderItem={_renderRecommendedMember}
-            ListEmptyComponent={<RecommendedUserSkeleton skelentonSize={4} />}
+            ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
               marginTop: 20,
+              paddingHorizontal: 15,
               backgroundColor: colors.WHITE
             }}
           />
@@ -247,10 +241,6 @@ export default function HomeScreen(props: ScreenProp) {
                 marginTop: 10,
                 backgroundColor: colors.WHITE
               }}
-            />
-            <RecommendedCommunity
-              {...community}
-              onPress={handleJoinCommunity}
             />
           </RecommendedCommunityContainer>
         </RecommendedList>

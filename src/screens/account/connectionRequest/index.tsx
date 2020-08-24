@@ -55,7 +55,7 @@ export default function ConnectionRequestScreen(
         headerLeft={() => (
           <TouchableHighlight
             {...props}
-            onPress={props.navigation.toggleDrawer}
+            onPress={navigation.toggleDrawer}
             underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
             style={{
               height: RFValue(40),

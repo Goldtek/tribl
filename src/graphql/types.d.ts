@@ -108,7 +108,7 @@ export type CreateAccountInterface = {
 };
 
 export type MyPassportInterface = {
-  validateOtp: VerifyOTPIT;
+  myPassport: PassportInterface;
 };
 
 // USER SELECTABLE IDENTITIES (RESPONSE) TYPE
