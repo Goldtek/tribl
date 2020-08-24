@@ -3,13 +3,14 @@ import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native';
 import { Title, Paragraph, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
+import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
 
 import {
   ContactContainer,
@@ -32,7 +33,8 @@ export default function contactSlide(props: MemberDetailProps) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [state, setState] = useState({
-    loading: false
+    loading: false,
+    pending: false
   });
 
   //@ts-ignore
@@ -41,24 +43,13 @@ export default function contactSlide(props: MemberDetailProps) {
   const passportDetails = { ...props.route.params.algoliaDetail };
   const {
     phoneNumber: number,
-    connected: connect,
-    currentLocation: location,
-    birthPlace: birthLocation,
-    interest: interests,
-    identity: identities,
     firstName: fName,
-    lastName: lName
+    lastName: lName,
+    id: Id
   } = passportDetails;
-  const {
-    phoneNumber,
-    connected,
-    currentLocation,
-    birthPlace,
-    interest,
-    identity,
-    firstName,
-    lastName
-  } = passport;
+  const { phoneNumber, firstName, lastName, id: PId } = passport;
+  const id = Id || PId;
+  console.tron('id', id);
 
   const handleMessageNavigation = useCallback(
     () =>
@@ -76,6 +67,14 @@ export default function contactSlide(props: MemberDetailProps) {
     }
   });
 
+  const { data: passportData } = useQuery(GET_SINGLE_PASSPORT, {
+    variables: {
+      id
+    }
+  });
+
+  const SinglePassport = passportData?.singlePassport;
+  console.tron('jj', SinglePassport);
   const handleRequest = async () => {
     setState({
       ...state,
@@ -86,7 +85,8 @@ export default function contactSlide(props: MemberDetailProps) {
       if (data?.requestConnection) {
         setState({
           ...state,
-          loading: false
+          loading: false,
+          pending: true
         });
       }
     } catch (error) {
@@ -96,7 +96,7 @@ export default function contactSlide(props: MemberDetailProps) {
       });
     }
   };
-  const { loading } = state;
+  const { loading, pending } = state;
 
   return (
     <ScrollView
@@ -114,7 +114,7 @@ export default function contactSlide(props: MemberDetailProps) {
           <FastImage
             resizeMode={FastImage.resizeMode.cover}
             source={{
-              uri: 'https://picsum.photos/700',
+              uri: SinglePassport?.avatar,
               priority: FastImage.priority.high
             }}
             style={{
@@ -132,7 +132,7 @@ export default function contactSlide(props: MemberDetailProps) {
                   fontSize: fonts.LARGE_SIZE
                 }}
               >
-                1
+                {SinglePassport?.connectionCount}
               </Paragraph>
               <Paragraph
                 style={{
@@ -153,7 +153,7 @@ export default function contactSlide(props: MemberDetailProps) {
                   fontSize: fonts.LARGE_SIZE
                 }}
               >
-                2
+                {SinglePassport?.communityCount}
               </Paragraph>
               <Paragraph
                 style={{
@@ -169,7 +169,7 @@ export default function contactSlide(props: MemberDetailProps) {
           </ConnectionCover>
         </Header>
 
-        {connected || connect ? (
+        {SinglePassport?.connected === 'CONNECTED' ? (
           <Button
             onPress={handleMessageNavigation}
             mode="outlined"
@@ -189,13 +189,34 @@ export default function contactSlide(props: MemberDetailProps) {
           >
             {t(`community.memberPassport.message`)}
           </Button>
+        ) : pending || SinglePassport?.connected === 'PENDING' ? (
+          <Button
+            disabled={true}
+            mode="contained"
+            color={colors.PRIMARY_TEXT}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
+            }}
+            contentStyle={{ height: RFValue(55) }}
+            style={{
+              width: '100%',
+              height: RFValue(55),
+              borderRadius: 4,
+              marginTop: RFValue(20),
+              backgroundColor: colors.DISABLED
+            }}
+          >
+            {t(`community.memberPassport.requested`)}
+          </Button>
         ) : (
           <GradientButton onPress={handleRequest} loading={loading}>
             {t(`community.memberPassport.connect`)}
           </GradientButton>
         )}
 
-        {currentLocation || location || birthLocation || birthPlace ? (
+        {SinglePassport?.currentLocation || SinglePassport?.birthLocation ? (
           <LocationContainer>
             <Title
               style={{
@@ -209,7 +230,7 @@ export default function contactSlide(props: MemberDetailProps) {
             >
               {t(`signup.passportScreen.locality`)}
             </Title>
-            {birthPlace || birthLocation ? (
+            {SinglePassport?.birthPlace ? (
               <Location>
                 <AntDesign
                   name="home"
@@ -232,11 +253,11 @@ export default function contactSlide(props: MemberDetailProps) {
                     marginBottom: 10
                   }}
                 >
-                  {`${birthPlace[0].state} ${birthPlace[0].country}`}
+                  {`${SinglePassport?.birthPlace[0].state} ${SinglePassport?.birthPlace[0].country}`}
                 </Paragraph>
               </Location>
             ) : null}
-            {currentLocation || location ? (
+            {SinglePassport?.currentLocation ? (
               <Location>
                 <SimpleLineIcons
                   name="location-pin"
@@ -259,14 +280,14 @@ export default function contactSlide(props: MemberDetailProps) {
                     marginBottom: 10
                   }}
                 >
-                  {`${currentLocation[0].state} ${currentLocation[0].country}`}
+                  {`${SinglePassport?.currentLocation[0].state} ${SinglePassport?.currentLocation[0].country}`}
                 </Paragraph>
               </Location>
             ) : null}
           </LocationContainer>
         ) : null}
 
-        {identity?.length || identities?.length ? (
+        {SinglePassport?.identity?.length ? (
           <IdentityContainer>
             <Title
               style={{
@@ -281,18 +302,14 @@ export default function contactSlide(props: MemberDetailProps) {
             </Title>
 
             <Identities>
-              {identity?.map((identity: any) => (
-                <IdentityText key={identity}>{identity}</IdentityText>
-              ))}{' '}
-              ||{' '}
-              {identities?.map((identity: any) => (
-                <IdentityText key={identity}>{identity}</IdentityText>
+              {SinglePassport?.identity?.map((identity: any) => (
+                <IdentityText key={identity.id}>{identity.name}</IdentityText>
               ))}
             </Identities>
           </IdentityContainer>
         ) : null}
 
-        {interest?.length || interests?.length ? (
+        {SinglePassport?.interest?.length ? (
           <InterestContainer>
             <Title
               style={{
@@ -305,12 +322,8 @@ export default function contactSlide(props: MemberDetailProps) {
               {t(`signup.passportScreen.interest`)}
             </Title>
             <Identities>
-              {interest?.map((interest: any) => (
-                <IdentityText key={interest}>{interest}</IdentityText>
-              ))}{' '}
-              ||{' '}
-              {interests?.map((interest: any) => (
-                <IdentityText key={interest}>{interest}</IdentityText>
+              {SinglePassport?.interest?.map((interest: any) => (
+                <IdentityText key={interest.id}>{interest.name}</IdentityText>
               ))}
             </Identities>
           </InterestContainer>
