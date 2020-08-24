@@ -16,11 +16,11 @@ import { TextContainer, OnlineNotifier, AvatarContainer } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp {
   avatar: string;
-  index: number;
-  lastChild: number;
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  index: number;
+  lastChild: number;
   currentLocation: {
     country: string;
     state: string;
@@ -28,7 +28,7 @@ interface RecommendedUserProp {
   connected: string;
 }
 
-function RecommendedUser(props: RecommendedUserProp) {
+export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -39,9 +39,9 @@ function RecommendedUser(props: RecommendedUserProp) {
     avatar = 'https://picsum.photos/700',
     firstName = 'Peter',
     lastName = 'Doe',
-    index,
-    lastChild,
     currentLocation,
+    lastChild,
+    index,
     phoneNumber,
     connected
   } = props;
@@ -49,11 +49,7 @@ function RecommendedUser(props: RecommendedUserProp) {
   const { state, country } = currentLocation[0];
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: {
-      payload: {
-        phoneNumber: phoneNumber
-      }
-    }
+    variables: { payload: { phoneNumber: phoneNumber } }
   });
 
   const handleRequest = async () => {
@@ -91,8 +87,7 @@ function RecommendedUser(props: RecommendedUserProp) {
         alignItems: 'center',
         borderRadius: 5,
         marginBottom: 20,
-        marginLeft: 15,
-        marginRight: index === lastChild ? 15 : 0,
+        marginRight: index === lastChild ? 0 : 15,
         borderWidth: 0.5,
         borderColor: hexToRGB(colors.DISABLED, 0.3)
       }}
@@ -222,5 +217,3 @@ function RecommendedUser(props: RecommendedUserProp) {
     </Card>
   );
 }
-
-export default React.memo(RecommendedUser);
