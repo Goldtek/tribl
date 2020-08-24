@@ -7,17 +7,9 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import cache from './cache';
-import { cacheResolvers } from './cache/resolvers';
-import { serverResolvers } from './server/resolvers';
+import resolvers from './cache/resolvers';
 import ENVIRONMENT_VARIABLES from '../config';
 import Storage from '../storage';
-
-const resolvers = {
-  Mutation: {
-    ...cacheResolvers.Mutation,
-    ...serverResolvers.Mutation
-  }
-};
 
 const request = async (operation: Operation) => {
   const credentials = Storage.getUserCredentials();
