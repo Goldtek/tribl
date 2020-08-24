@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
@@ -29,11 +29,12 @@ function PopularCommunity(props: PopularUserProp) {
     isMember
   } = props;
 
-  const handleNavigation = () =>
+  const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
       title: name,
       details: props
     });
+  }, []);
 
   return (
     <TouchableRipple
@@ -41,21 +42,19 @@ function PopularCommunity(props: PopularUserProp) {
       rippleColor={colors.PRIMARY}
       style={{
         height: RFValue(100),
+        alignItems: 'center',
         flexDirection: 'row',
         paddingLeft: 15
       }}
     >
       <Fragment>
         <FastImage
-          resizeMode={FastImage.resizeMode.contain}
-          source={{
-            uri: avatar,
-            priority: FastImage.priority.high
-          }}
+          resizeMode={FastImage.resizeMode.cover}
+          source={{ uri: avatar, priority: FastImage.priority.high }}
           style={{
-            width: RFValue(120),
-            height: RFValue(120),
-            borderRadius: RFValue(15)
+            width: RFValue(100),
+            height: RFValue(85),
+            borderRadius: RFValue(5)
           }}
         />
         <TextConatiner>

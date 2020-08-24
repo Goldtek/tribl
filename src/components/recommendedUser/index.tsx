@@ -73,14 +73,16 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     []
   );
 
+  const handleNavigation = useCallback(() => {
+    navigation.navigate('MemberDetailScreen', {
+      title: `${firstName} ${lastName}`,
+      details: { ...props }
+    });
+  }, []);
+
   return (
     <Card
-      onPress={() =>
-        navigation.navigate('MemberDetailScreen', {
-          title: `${firstName} ${lastName}`,
-          details: { ...props }
-        })
-      }
+      onPress={handleNavigation}
       style={{
         width: RFValue(DEVICE_FULL_WIDTH / 3),
         height: RFValue(200),
