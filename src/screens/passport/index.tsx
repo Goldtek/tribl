@@ -72,7 +72,8 @@ export default function PassportScreen(props: ScreenProp) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           backgroundColor: colors.WHITE,
-          marginTop: RFValue(20)
+          marginTop: RFValue(20),
+          paddingBottom: RFValue(20)
         }}
       >
         <HeaderContainer>
