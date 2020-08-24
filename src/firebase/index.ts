@@ -117,8 +117,8 @@ class Firechat {
     });
   }
 
-  // THIS METHOD GETS USERS CONVERSATIONS
-  async getUserGroupMessages() {
+  // THIS METHOD GETS USERS DIRECT MESSAGES
+  async getUserConversations() {
     // get user chat history via userId
     const groups = await firechat
       .collection(ROOM_TYPES.USER_CONVERSATIONS)
@@ -127,10 +127,42 @@ class Firechat {
 
     if (!groups.exists) return null;
 
-    const { groupMessages } = groups.data() as {
+    return groups.data() as {
       groupMessages: string[];
       channelLists: string[];
+      directMessages: string[];
     };
+  }
+
+  // THIS METHOD GETS USERS DIRECT MESSAGES
+  async getUserDirectMessages() {
+    // get user chat history via userId
+    const groups = await this.getUserConversations();
+
+    if (!groups) return null;
+
+    const directMessages = groups?.directMessages;
+
+    const directMessagesData = await firechat
+      .collection(ROOM_TYPES.GROUPS)
+      .where(firestore.FieldPath.documentId(), 'in', directMessages)
+      .get();
+
+    const userDirectMessages = directMessagesData.docs.map(
+      (directDm) => directDm.data() as GroupInterface
+    );
+
+    return userDirectMessages;
+  }
+
+  // THIS METHOD GETS USERS CONVERSATIONS
+  async getUserGroupMessages(): Promise<GroupInterface[] | null> {
+    // get user chat history via userId
+    const groups = await this.getUserConversations();
+
+    if (!groups) return null;
+
+    const groupMessages = groups?.groupMessages;
 
     const groupMessagesData = await firechat
       .collection(ROOM_TYPES.GROUPS)
