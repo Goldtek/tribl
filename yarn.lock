@@ -7861,6 +7861,10 @@ react-native-smooth-phone-input@^1.0.3:
     lodash.orderby "^4.6.0"
     prop-types "^15.6.2"
 
+react-native-spotify-auth@wiyarmir/react-native-spotify-auth:
+  version "0.0.2"
+  resolved "https://codeload.github.com/wiyarmir/react-native-spotify-auth/tar.gz/a12ee5bd1a11a67462d04c50d2b54f2a053815df"
+
 react-native-svg@^12.1.0:
   version "12.1.0"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-12.1.0.tgz#acfe48c35cd5fca3d5fd767abae0560c36cfc03d"
