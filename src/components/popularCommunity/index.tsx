@@ -7,7 +7,7 @@ import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { TextConatiner } from './styles';
+import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface PopularUserProp {
@@ -55,7 +55,7 @@ function PopularCommunity(props: PopularUserProp) {
             borderRadius: RFValue(5)
           }}
         />
-        <TextConatiner>
+        <TextContainer>
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
@@ -88,7 +88,7 @@ function PopularCommunity(props: PopularUserProp) {
           >
             {t(`community.recommended.join`)}
           </Paragraph>
-        </TextConatiner>
+        </TextContainer>
       </Fragment>
     </TouchableRipple>
   );

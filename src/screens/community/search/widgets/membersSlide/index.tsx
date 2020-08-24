@@ -123,7 +123,7 @@ function MemberSlideScreen(props: ScreenProp) {
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(_, index: number) => index.toString()}
-            contentContainerStyle={{ marginTop: 20 }}
+            contentContainerStyle={{ marginTop: 20, paddingHorizontal: 15 }}
           />
         </RecommendedList>
         <RecommendedList>
@@ -180,7 +180,7 @@ function MemberSlideScreen(props: ScreenProp) {
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item: any) => item.id}
-            contentContainerStyle={{ marginTop: 20 }}
+            contentContainerStyle={{ marginTop: 20, paddingHorizontal: 15 }}
           />
         </RecommendedList>
       </Container>

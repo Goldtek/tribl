@@ -24,6 +24,7 @@ import {
 import MyCommunity from '../../../components/myCommunities';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
+import checkAppUpdates from '../../../libs/updates';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -66,6 +67,7 @@ export default function HomeScreen(props: ScreenProp) {
         Storage.setUserCredentials(firebase?.generateFirebaseToken);
         Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
       }
+      await checkAppUpdates();
     };
     getFirebaseToken();
   }, [loading]);
