@@ -11,21 +11,21 @@ import {
 } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
-import { FontAwesome } from '@expo/vector-icons';
+// import { FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationInterface } from '../types';
 import { useThemeContext } from '../../theme';
-import { GET_USER_DETAILS } from '../../graphql/cache/query';
-import { StoreInterface } from '../../graphql/types';
 import TabViewSlider from './widgets/tabs';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
+import { MyPassportInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   HeaderContainer,
   ImageContainer,
-  ImageTextContainer,
-  ImageIconContainer,
-  SocialMediaButton
+  ImageTextContainer
+  // ImageIconContainer,
+  // SocialMediaButton
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -36,11 +36,11 @@ export default function PassportScreen(props: ScreenProp) {
   const { t } = useTranslation();
 
   const [imageLoad, setImageLoad] = useState(true);
-  const { bottom: paddingBottom, top: paddingTop } = useSafeAreaInsets();
+  const { top: paddingTop } = useSafeAreaInsets();
 
-  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
-  const userDetails = data?.userDetails;
+  const userDetails = userData?.myPassport;
 
   const onShare = async () => {
     try {
@@ -137,7 +137,7 @@ export default function PassportScreen(props: ScreenProp) {
                 {`${userDetails?.firstName} ${userDetails?.lastName}`}
               </Paragraph>
 
-              <ImageIconContainer>
+              {/* <ImageIconContainer>
                 <SocialMediaButton
                   onPress={() => console.log('Pressed')}
                   underlayColor={colors.DISABLED}
@@ -159,6 +159,8 @@ export default function PassportScreen(props: ScreenProp) {
                   />
                 </SocialMediaButton>
               </ImageIconContainer>
+            
+             */}
             </ImageTextContainer>
           </ImageContainer>
 
