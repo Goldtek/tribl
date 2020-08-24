@@ -36,7 +36,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
-        identities: [...Array.from(state.selectedIdentities.values())]
+        identity: [...Array.from(state.selectedIdentities.values())]
       }
     }
   });
