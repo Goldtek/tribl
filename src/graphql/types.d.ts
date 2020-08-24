@@ -32,23 +32,28 @@ type Location = {
   __typename: string;
 };
 
+export interface PassportInterface {
+  dob: string;
+  email: string;
+  avatar: string;
+  userId: string;
+  countryCode: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  citizenShip: string | null;
+  connected: string;
+  interest: string[];
+  identity: string[];
+  connectionCount: number;
+  communityCount: number;
+  currentLocation: Location;
+  birthPlace: Location;
+  __typename: string;
+}
+
 export interface StoreInterface {
-  userDetails: {
-    DOB: string;
-    email: string;
-    avatar: string;
-    userId: string;
-    countryCode: string;
-    firstName: string;
-    lastName: string;
-    number: string;
-    citizenship: string;
-    identities: string[];
-    interests: string[];
-    currentLocation: Location;
-    birthPlace: Location;
-    __typename: string;
-  };
+  userDetails: PassportInterface;
 }
 
 /*
@@ -100,6 +105,10 @@ export type CreateAccountInterface = {
     success: boolean;
     _id: string;
   };
+};
+
+export type MyPassportInterface = {
+  validateOtp: VerifyOTPIT;
 };
 
 // USER SELECTABLE IDENTITIES (RESPONSE) TYPE

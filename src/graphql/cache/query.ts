@@ -10,13 +10,13 @@ import gql from 'graphql-tag';
 export const GET_USER_DETAILS = gql`
   query GetUserDetails {
     userDetails @client {
-      DOB
+      dob
       email
-      number
+      phoneNumber
       countryCode
       firstName
       lastName
-      citizenship
+      citizenShip
       currentLocation {
         lat
         long
@@ -29,8 +29,8 @@ export const GET_USER_DETAILS = gql`
         country
         state
       }
-      identities
-      interests
+      identity
+      interest
       userId
       avatar
     }
