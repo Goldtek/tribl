@@ -14,7 +14,7 @@ export const CardContainer = styled.View`
 
 export const TextContainer = styled.View`
   flex: 1;
-  padding: 0px 10px;
+  padding: 0px 5px;
 `;
 
 export const TagContainer = styled.View`
