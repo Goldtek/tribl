@@ -47,13 +47,11 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   const onChangeText = (phoneNumber: string) => setPhoneNumber(phoneNumber);
 
   const [sendOtp, { loading }] = useMutation<OTPInterface>(SEND_USER_OTP, {
-    variables: {
-      payload: { phoneNumber, deviceId: DEVICE_ID }
-    }
+    variables: { payload: { phoneNumber, deviceId: DEVICE_ID } }
   });
 
   const [addPhoneNumber] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { number: phoneNumber } }
+    variables: { details: { phoneNumber: phoneNumber } }
   });
 
   const handleInputError = () => {
