@@ -5,9 +5,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { useThemeContext } from '../../../theme';
-import groupChatSlide from './widgets/groupChatSlide';
+// import groupChatSlide from './widgets/groupChatSlide';
 import directMessageSlide from './widgets/directMessageSlide';
 import requestSlide from './widgets/requestSlide';
+import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -24,13 +25,13 @@ export default function InboxScreen() {
       key: 'directMessageSlide',
       title: t('community.chat.message')
     },
-    { key: 'groupChatSlide', title: t('community.chat.group') },
+    // { key: 'groupChatSlide', title: t('community.chat.group') },
     { key: 'requestSlide', title: t('community.chat.request') }
   ]);
 
   const renderScene = SceneMap({
     directMessageSlide,
-    groupChatSlide,
+    // groupChatSlide,
     requestSlide
   });
 
@@ -38,15 +39,13 @@ export default function InboxScreen() {
     return (
       <TabBar
         {...props}
-        scrollEnabled={true}
-        indicatorStyle={{
-          backgroundColor: colors.PRIMARY,
-          height: RFValue(4)
-        }}
+        // scrollEnabled={true}
+        indicatorStyle={{ backgroundColor: colors.PRIMARY, height: RFValue(4) }}
         style={{
           ...GLOBAL_HEADER_STYLE,
           backgroundColor: colors.WHITE,
-          marginTop: RFValue(10)
+          marginTop: RFValue(10),
+          marginHorizontal: RFValue(15)
         }}
         labelStyle={{
           fontFamily: fonts.WORK_SANS_BOLD,
@@ -54,7 +53,7 @@ export default function InboxScreen() {
           color: colors.PRIMARY_TEXT,
           textTransform: 'capitalize'
         }}
-        tabStyle={{ width: 'auto', paddingHorizontal: RFValue(20) }}
+        // tabStyle={{ width: 'auto', paddingHorizontal: RFValue(20) }}
       />
     );
   };
@@ -63,6 +62,7 @@ export default function InboxScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+      <StatusBar translucent animated style="dark" />
       <Container>
         {Platform.select({
           ios: (

@@ -13,7 +13,9 @@ import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { GET_USER_DETAILS } from '../../../../../graphql/cache/query';
 import { StoreInterface } from '../../../../../graphql/types';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import formatMessageTime from '../../../../../utils/timesince';
+import { ADD_USER_DETAILS } from '../../../../../graphql/cache/mutations';
 
 import {
   ContactContainer,
@@ -49,16 +51,21 @@ export default function contactSlide() {
     showDatePicker: false
   });
 
+  const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
+    variables: { details: { dob: state.date } }
+  });
+
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const userDetails = data?.userDetails;
 
   const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
   const onChange = useCallback((selectedDate: Date) => {
-    const [month, day] = selectedDate.toLocaleDateString().split('/');
-    const year = selectedDate.getUTCFullYear();
-    const date = `${month}/${day}/${year}`;
-    return setState({ ...state, date, showDatePicker: false });
+    const date = formatMessageTime(selectedDate);
+    setState({ ...state, date, showDatePicker: false });
+    setTimeout(() => {
+      return addUserDetails();
+    }, 0);
   }, []);
 
   const handleDatePicker = useCallback(() => {
@@ -169,7 +176,7 @@ export default function contactSlide() {
             marginBottom: 0
           }}
         >
-          {t(`signup.passportScreen.DOB`)}
+          {t(`signup.passportScreen.dob`)}
         </Title>
 
         <Button
@@ -188,7 +195,7 @@ export default function contactSlide() {
           contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
           onPress={handleDatePicker}
         >
-          {state.date ? state.date : t(`signup.passportScreen.DOB`)}
+          {state.date ? state.date : t(`signup.passportScreen.dob`)}
         </Button>
 
         <DateTimePicker
@@ -295,7 +302,7 @@ export default function contactSlide() {
         </LocationContainer>
       ) : null}
 
-      {userDetails?.identities.length ? (
+      {userDetails?.identity.length ? (
         <IdentityContainer>
           <Title
             style={{
@@ -310,7 +317,7 @@ export default function contactSlide() {
           </Title>
 
           <Identities>
-            {userDetails?.identities.map((identity) => (
+            {userDetails?.identity.map((identity) => (
               <IdentityText key={identity}>{identity}</IdentityText>
             ))}
           </Identities>

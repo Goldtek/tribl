@@ -1,7 +1,7 @@
 import { GET_USER_DETAILS } from './query';
 import { StoreInterface, AppResolvers } from '../types';
 
-export const cacheResolvers: AppResolvers = {
+const cacheResolvers: AppResolvers = {
   Mutation: {
     // CHANGE USER DEFAULT DETAILS MUTATION
     addUserDetails: (_, { details }: { details: Object }, { cache }) => {
@@ -24,3 +24,5 @@ export const cacheResolvers: AppResolvers = {
     }
   }
 };
+
+export default cacheResolvers;

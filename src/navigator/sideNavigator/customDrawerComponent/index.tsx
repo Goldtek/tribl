@@ -4,18 +4,24 @@ import { useThemeContext } from '../../../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Text } from 'react-native-paper';
+import { useQuery } from '@apollo/react-hooks';
 import {
   DrawerContentScrollView,
   DrawerItemList
 } from '@react-navigation/drawer';
 import FastImage from 'react-native-fast-image';
+import { GET_USER_PASSPORT } from '../../../graphql/server/query';
+import { MyPassportInterface } from '../../../graphql/types';
 
 import { DrawerFooter, ProfileContainer } from './styles';
 
 export default function CustomDrawerComponent(props: any) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { avatar = 'https://picsum.photos/700' } = props;
+
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
+  const userDetails = userData?.myPassport;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -24,7 +30,7 @@ export default function CustomDrawerComponent(props: any) {
           <FastImage
             resizeMode={FastImage.resizeMode.contain}
             source={{
-              uri: avatar,
+              uri: userDetails?.avatar,
               priority: FastImage.priority.high
             }}
             style={{
@@ -42,7 +48,7 @@ export default function CustomDrawerComponent(props: any) {
               paddingTop: RFValue(10)
             }}
           >
-            kamilah wells
+            {`${userDetails?.firstName} ${userDetails?.lastName}`}
           </Text>
         </ProfileContainer>
         <DrawerItemList {...props} />

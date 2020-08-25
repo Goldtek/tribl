@@ -1,14 +1,12 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useMemo } from 'react';
 import { NavigationInterface } from '../../../../types';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useMutation } from '@apollo/react-hooks';
-import { ScrollView } from 'react-native';
+import { ScrollView, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
-import PopularCommunities from '../../../../../libs/popularCommunities/index.json';
 import PopularCommunity from '../../../../../components/popularCommunity';
 import RecommendedCommunity from '../../../../../components/recommendedCommunity';
 import JoinCommunity from '../../../../../components/joinCommunity';
@@ -16,6 +14,7 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_POPULAR_COMMUNITIES
 } from '../../../../../graphql/server/query';
+import PopularCommunitySkeleton from '../../../../../components/popularCommunitySkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, CommunityWrapper, PopularContainer } from './styles';
@@ -23,7 +22,7 @@ import { Container, CommunityWrapper, PopularContainer } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function CommunitySlideScreen(props: ScreenProp) {
+function CommunitySlideScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
@@ -31,8 +30,14 @@ export default function CommunitySlideScreen(props: ScreenProp) {
   const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
   const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES);
 
-  const community = communityData?.recommendedCommunities[2];
+  const community = communityData?.recommendedCommunities[0];
   const popular = popularData?.popularCommunities;
+  const _renderPopularCommunityItem = useMemo(
+    () => ({ item, index }: any) => (
+      <PopularCommunity key={item.id} {...item} index={index} />
+    ),
+    []
+  );
 
   const handleJoinCommunity = () => {
     setState({
@@ -61,6 +66,7 @@ export default function CommunitySlideScreen(props: ScreenProp) {
             {t(`community.tabPanel.featured`)}
           </Title>
           <RecommendedCommunity {...community} onPress={handleJoinCommunity} />
+
           <PopularContainer>
             <CommunityWrapper>
               <Title
@@ -110,9 +116,14 @@ export default function CommunitySlideScreen(props: ScreenProp) {
               </TouchableRipple>
             </CommunityWrapper>
 
-            {popular?.map((community: any) => (
-              <PopularCommunity key={community.id} {...community} />
-            ))}
+            <FlatList
+              data={popular}
+              renderItem={_renderPopularCommunityItem}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={
+                <PopularCommunitySkeleton skelentonSize={3} />
+              }
+            />
           </PopularContainer>
         </Container>
       </ScrollView>
@@ -122,3 +133,5 @@ export default function CommunitySlideScreen(props: ScreenProp) {
     </Fragment>
   );
 }
+
+export default React.memo(CommunitySlideScreen);

@@ -153,11 +153,38 @@ export default function UserLocationScreen(props: ScreenProp) {
 
   const handleBirthLocation = (
     data: GooglePlaceData,
-    _details: GooglePlaceDetail | null = null
+    details: GooglePlaceDetail | null = null
   ): void => {
     // 'details' is provided when fetchDetails = true
+
+    const address = details?.address_components.reduce(
+      (acc, address) => {
+        const { long_name, types } = address;
+
+        if (types.length) {
+          types.forEach((type) => {
+            // this is the selected location state
+            if (type === 'administrative_area_level_1') acc.state = long_name;
+
+            // this is the selected location country
+            if (type === 'country') acc.country = long_name;
+          });
+        }
+
+        return acc;
+      },
+      { country: '', state: '' }
+    );
+
+    const birthPlace = {
+      lat: details?.geometry.location.lat as number,
+      long: details?.geometry.location.lng as number,
+      country: address?.country as string,
+      state: address?.state as string
+    };
+
     const { description } = data;
-    setState({ ...state, birthPlaceInput: description });
+    setState({ ...state, birthPlaceInput: description, birthPlace });
   };
 
   return (
@@ -307,20 +334,21 @@ export default function UserLocationScreen(props: ScreenProp) {
 
                 <GooglePlacesAutocomplete
                   ref={birthPlaceRef}
-                  placeholder={t(
-                    `signup.userLocationScreen.birthPlacePlaceholder`
-                  )}
+                  fetchDetails={true}
                   returnKeyType="done"
                   value={state.birthPlaceInput}
                   suppressDefaultStyles={true}
                   enablePoweredByContainer={false}
                   onPress={handleBirthLocation}
                   onFail={(error) => console.error(error)}
+                  GooglePlacesDetailsQuery={{ type: '(regions)' }}
                   query={{
-                    types: '(regions)',
                     key: ENVIRONMENT_VARIABLES.GOOGLE_PLACES_API,
                     language: 'en'
                   }}
+                  placeholder={t(
+                    `signup.userLocationScreen.birthPlacePlaceholder`
+                  )}
                   styles={{
                     textInputContainer: {
                       height: RFValue(60),
@@ -329,7 +357,7 @@ export default function UserLocationScreen(props: ScreenProp) {
                       borderColor: colors.INACTIVE,
                       borderWidth: 1
                     },
-                    row: { paddingTop: 10, paddingBottom: 10 },
+                    row: { paddingTop: 15, paddingBottom: 15 },
                     separator: {
                       borderColor: colors.DISABLED,
                       borderWidth: 0.5
@@ -350,10 +378,10 @@ export default function UserLocationScreen(props: ScreenProp) {
                 <Paragraph
                   style={{
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
                     color: colors.PRIMARY_TEXT,
                     textAlign: 'center',
-                    marginTop: 5
+                    marginTop: 10
                   }}
                 >
                   {t(`signup.userLocationScreen.placePlaceholderInstruction`)}

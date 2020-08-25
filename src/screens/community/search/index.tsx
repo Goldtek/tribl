@@ -8,8 +8,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { Platform } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import communitySlide from './widgets/communitySlide';
+import { StatusBar } from 'expo-status-bar';
 import memberSlide from './widgets/membersSlide';
-import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -82,24 +82,27 @@ export default function SearchScreen(props: ScreenProp) {
 
   return (
     <Container>
+      <StatusBar translucent animated style="dark" />
       {Platform.select({
         ios: (
           <TabView
-            navigationState={{ index: tabIndex, routes }}
+            lazy
             renderScene={renderScene}
             renderPager={renderPager}
             renderTabBar={renderTabBar}
             onIndexChange={setTabIndex}
+            navigationState={{ index: tabIndex, routes }}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
           />
         ),
 
         android: (
           <TabView
-            navigationState={{ index: tabIndex, routes }}
+            lazy
             renderScene={renderScene}
             renderTabBar={renderTabBar}
             onIndexChange={setTabIndex}
+            navigationState={{ index: tabIndex, routes }}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
           />
         )

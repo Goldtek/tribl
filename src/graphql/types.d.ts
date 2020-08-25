@@ -1,6 +1,5 @@
 import { Resolvers } from 'apollo-client';
 import { ApolloCache } from 'apollo-cache';
-import { JwtTokenResult } from '../constants';
 
 /*
  *************************************************************
@@ -33,23 +32,28 @@ type Location = {
   __typename: string;
 };
 
+export interface PassportInterface {
+  dob: string;
+  email: string;
+  avatar: string;
+  userId: string;
+  countryCode: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  citizenShip: string | null;
+  connected: string;
+  interest: string[];
+  identity: string[];
+  connectionCount: number;
+  communityCount: number;
+  currentLocation: Location[];
+  birthPlace: Location[];
+  __typename: string;
+}
+
 export interface StoreInterface {
-  userDetails: {
-    DOB: string;
-    email: string;
-    avatar: string;
-    userId: string;
-    countryCode: string;
-    firstName: string;
-    lastName: string;
-    number: string;
-    citizenship: string;
-    identities: string[];
-    interests: string[];
-    currentLocation: Location;
-    birthPlace: Location;
-    __typename: string;
-  };
+  userDetails: PassportInterface;
 }
 
 /*
@@ -58,6 +62,20 @@ export interface StoreInterface {
  *******************   STORE TYPES     ***********************
  *************************************************************
  */
+
+// SERVER JWT (RESPONSE) TYPE
+export interface JwtTokenResult {
+  firebase_token: string;
+  refresh_token: string;
+  access_token: string;
+  expires_in: number;
+  token_type: string;
+  verified: boolean;
+  id_token: string;
+  exists: boolean;
+  scope: string;
+  _id: string;
+}
 
 // SERVER OTP (RESPONSE) TYPE
 export type OTPInterface = {
@@ -73,6 +91,14 @@ export type VerifyOTPInterface = {
   validateOtp: VerifyOTPIT;
 };
 
+export type RefreshTokenInterface = {
+  refreshToken: VerifyOTPIT;
+};
+
+export type GenerateFirebaseTokenIT = {
+  generateFirebaseToken: VerifyOTPIT;
+};
+
 // SERVER CREATE ACCOUNT (RESPONSE) TYPE
 export type CreateAccountInterface = {
   createPassport: {
@@ -81,7 +107,17 @@ export type CreateAccountInterface = {
   };
 };
 
+export type MyPassportInterface = {
+  myPassport: PassportInterface;
+};
+
 // USER SELECTABLE IDENTITIES (RESPONSE) TYPE
 export type IdentitiesInterface = {
   Identity: { name: string; id: string }[];
+};
+
+// SERVER UPDATE USER PASSPORT (RESPONSE) TYPE
+export type UpdatePassportInterface = {
+  success: boolean;
+  _id: string;
 };

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, Subheading, Paragraph } from 'react-native-paper';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
@@ -35,6 +36,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  changeNavigationBarColor(colors.WHITE, true, true);
 
   const userDetails = data?.userDetails;
 
@@ -45,13 +47,11 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   const onChangeText = (phoneNumber: string) => setPhoneNumber(phoneNumber);
 
   const [sendOtp, { loading }] = useMutation<OTPInterface>(SEND_USER_OTP, {
-    variables: {
-      payload: { phoneNumber, deviceId: DEVICE_ID }
-    }
+    variables: { payload: { phoneNumber, deviceId: DEVICE_ID } }
   });
 
   const [addPhoneNumber] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { number: phoneNumber } }
+    variables: { details: { phoneNumber: phoneNumber } }
   });
 
   const handleInputError = () => {

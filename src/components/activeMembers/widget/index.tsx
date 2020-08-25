@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { TextConatiner } from './styles';
+import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ActiveUserProp {
@@ -72,7 +72,7 @@ function ActiveModal(props: ActiveUserProp) {
               borderRadius: RFValue(10)
             }}
           />
-          <TextConatiner>
+          <TextContainer>
             <Title
               style={{
                 color: colors.PRIMARY_TEXT,
@@ -95,7 +95,7 @@ function ActiveModal(props: ActiveUserProp) {
             >
               {`${state}, ${country}`}
             </Paragraph>
-          </TextConatiner>
+          </TextContainer>
           <Button
             loading={false}
             mode="contained"

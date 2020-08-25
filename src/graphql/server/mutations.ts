@@ -19,15 +19,19 @@ export const SEND_USER_OTP = gql`
 export const VALIDATE_USER_OTP = gql`
   mutation validateOtp($payload: ValidateOtpInput!) {
     validateOtp(input: $payload) {
-      id_token
+      firebase_token
       refresh_token
+      access_token
+      expires_in
+      token_type
+      id_token
       verified
     }
   }
 `;
 
 // VALIDATE USER OTP
-export const CREATE_USER_ACCOUNT = gql`
+export const CREATE_USER_PASSPORT = gql`
   mutation createPassport($payload: CreatePassportInput!) {
     createPassport(input: $payload) {
       success
@@ -35,7 +39,16 @@ export const CREATE_USER_ACCOUNT = gql`
   }
 `;
 
-// refresh token
+// UPDATE USER PASSPORT
+export const UPDATE_USER_PASSPORT = gql`
+  mutation updatePassport($payload: UpdatePassportInput!) {
+    updatePassport(input: $payload) {
+      success
+    }
+  }
+`;
+
+// REFRESH TOKEN
 export const REFRESH_TOKEN = gql`
   mutation refreshToken($payload: RefreshTokenInput!) {
     refreshToken(input: $payload) {
@@ -62,7 +75,7 @@ export const REQUEST_CONNECTION = gql`
   }
 `;
 
-//ACCEPT CONNECTION
+// ACCEPT CONNECTION
 export const ACCEPT_CONNECTION = gql`
   mutation acceptConnection($payload: ConnectionInput!) {
     acceptConnection(input: $payload) {
@@ -71,11 +84,21 @@ export const ACCEPT_CONNECTION = gql`
   }
 `;
 
-//REJECT CONECTION
+// REJECT CONNECTION
 export const REJECT_CONNECTION = gql`
   mutation declineConnection($payload: ConnectionInput!) {
     declineConnection(input: $payload) {
       success
+    }
+  }
+`;
+
+// UPLOAD USER AVATAR
+export const UPLOAD_USER_AVATAR = gql`
+  mutation uploadCloudinaryFile($payload: Upload!) {
+    uploadCloudinaryFile(file: $payload) {
+      success
+      url
     }
   }
 `;

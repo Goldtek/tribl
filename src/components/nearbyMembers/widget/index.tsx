@@ -8,7 +8,7 @@ import { useThemeContext } from '../../../theme';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { TextConatiner } from './styles';
+import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface PopularUserProp {
@@ -16,6 +16,7 @@ interface PopularUserProp {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  connected: string;
   currentLocation: {
     country: string;
     state: string;
@@ -35,7 +36,8 @@ function NearbyModal(props: PopularUserProp) {
     currentLocation,
     phoneNumber,
     navigation,
-    closeNearbyModal
+    closeNearbyModal,
+    connected
   } = props;
 
   const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ function NearbyModal(props: PopularUserProp) {
   const handleRequest = async () => {
     setLoading(true);
     try {
-      const { data, loading } = await requestConnection();
+      const { data } = await requestConnection();
       if (data?.requestConnection) {
         setLoading(loading);
       }
@@ -94,7 +96,7 @@ function NearbyModal(props: PopularUserProp) {
               borderRadius: RFValue(10)
             }}
           />
-          <TextConatiner>
+          <TextContainer>
             <Title
               style={{
                 color: colors.PRIMARY_TEXT,
@@ -117,32 +119,59 @@ function NearbyModal(props: PopularUserProp) {
             >
               {`${state}, ${country}`}
             </Paragraph>
-          </TextConatiner>
-          <Button
-            loading={loading}
-            mode="contained"
-            uppercase={false}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              textTransform: 'capitalize',
-              color: colors.WHITE
-            }}
-            contentStyle={{
-              backgroundColor: colors.PRIMARY,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-            style={{
-              borderRadius: 5,
-              width: RFValue(65),
-              height: RFValue(30),
-              marginRight: RFValue(15)
-            }}
-            onPress={handleRequest}
-          >
-            {t(`community.recommended.add`)}+
-          </Button>
+          </TextContainer>
+          {connected == 'PENDING' ? (
+            <Button
+              mode="text"
+              disabled={true}
+              uppercase={false}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize',
+                color: colors.PRIMARY_TEXT
+              }}
+              contentStyle={{
+                backgroundColor: colors.DISABLED,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              style={{
+                borderRadius: 5,
+                width: RFValue(80),
+                height: RFValue(30),
+                marginRight: RFValue(15)
+              }}
+            >
+              {t(`community.recommended.pending`)}
+            </Button>
+          ) : (
+            <Button
+              loading={loading}
+              mode="contained"
+              uppercase={false}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                backgroundColor: colors.PRIMARY,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              style={{
+                borderRadius: 5,
+                width: RFValue(65),
+                height: RFValue(30),
+                marginRight: RFValue(15)
+              }}
+              onPress={handleRequest}
+            >
+              {t(`community.recommended.add`)}+
+            </Button>
+          )}
         </Fragment>
       </TouchableRipple>
     </Fragment>
