@@ -108,18 +108,6 @@ export default function HomeScreen(props: ScreenProp) {
     []
   );
 
-  const _renderRecommendedCommunity = useMemo(
-    () => ({ item, index }: any) => (
-      <RecommendedCommunity
-        key={item.id}
-        {...item}
-        index={index}
-        onPress={handleJoinCommunity}
-      />
-    ),
-    []
-  );
-
   return (
     <Fragment>
       <ScrollView
@@ -231,18 +219,12 @@ export default function HomeScreen(props: ScreenProp) {
             </Button>
           </RecommendedListHeader>
           <RecommendedCommunityContainer>
-            <FlatList
-              data={community}
-              renderItem={_renderRecommendedCommunity}
-              showsVerticalScrollIndicator={false}
-              ListEmptyComponent={
-                <RecommendedCommunitySkeleton skelentonSize={1} />
-              }
-              contentContainerStyle={{
-                marginTop: 10,
-                backgroundColor: colors.WHITE
-              }}
-            />
+            {community ? (
+              <RecommendedCommunity
+                {...community}
+                onPress={handleJoinCommunity}
+              />
+            ) : null}
           </RecommendedCommunityContainer>
         </RecommendedList>
 

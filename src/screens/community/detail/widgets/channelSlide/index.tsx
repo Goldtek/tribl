@@ -19,13 +19,11 @@ export default function ChannelScreen(props: ScreenProp) {
   const { id } = communityDetails;
   const { colors, fonts } = useThemeContext();
 
-  const { data } = useQuery(GET_COMMUNITY_CHANNELS, {
-    variables: {
-      id
-    }
-  });
+  const { data } = useQuery(GET_COMMUNITY_CHANNELS, { variables: { id } });
 
   const channels = data?.communityChannels;
+
+  console.log(channels);
 
   const _renderItem = useMemo(
     () => ({ item }: { item: { name: string } }) => (
