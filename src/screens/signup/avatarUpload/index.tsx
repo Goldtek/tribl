@@ -14,7 +14,8 @@ import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import cloudinaryUpload, {
-  CloudinaryUploadType
+  CloudinaryUploadType,
+  CloudinaryResponseType
 } from '../../../utils/cloudinaryUpload';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -25,6 +26,7 @@ interface ScreenProp extends NavigationInterface {}
 
 type StateType = {
   uri: string;
+  secure_url: string;
   formData: FormData | null;
   loading: boolean;
   imageData: CloudinaryUploadType;
@@ -38,13 +40,14 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
   const [avatar, setAvatar] = useState<StateType>({
     uri: '',
+    secure_url: '',
     formData: null,
-    imageData: { file: '', mime: '', filename: '', cropRect: null },
+    imageData: { uri: '', mime: '', filename: '', cropRect: null },
     loading: false
   });
 
   const [addUserImage] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { avatar: avatar.uri } }
+    variables: { details: { avatar: avatar.secure_url } }
   });
 
   const handleInputError = (error: string) => {
@@ -56,17 +59,19 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
     setAvatar({ ...avatar, loading: true });
 
-    const formData = await cloudinaryUpload(avatar.imageData);
+    try {
+      const formData = await cloudinaryUpload(avatar.imageData);
+      const { secure_url } = (await formData.json()) as CloudinaryResponseType;
 
-    if (!formData.ok) {
+      setAvatar({ ...avatar, secure_url });
+      setTimeout(() => {
+        navigation.navigate('IdentifyUserScreen');
+        addUserImage();
+      }, 0);
+    } catch (error) {
       setAvatar({ ...avatar, loading: false });
       handleInputError('uploadError');
     }
-
-    return console.tron('DOWN', { formData });
-
-    navigation.navigate('IdentifyUserScreen');
-    addUserImage();
   };
 
   const handleAvatar = async () => {
@@ -103,9 +108,9 @@ export default function AvatarUploadScreen(props: ScreenProp) {
         includeBase64: true
       });
 
-      const imageData = { mime, filename, cropRect, file };
-
-      setAvatar({ ...avatar, uri: `data:${mime};base64,${data}`, imageData });
+      const uri = `data:${mime};base64,${data}`;
+      const imageData = { mime, filename, cropRect, uri };
+      setAvatar({ ...avatar, uri, imageData });
       ImagePicker.clean();
     } catch (error) {
       console.error(error);
