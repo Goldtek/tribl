@@ -58,6 +58,9 @@ export default function contactSlide() {
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const userDetails = data?.userDetails;
 
+  const currentLocation = userDetails?.currentLocation[0];
+  const birthPlace = userDetails?.birthPlace[0];
+
   const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
   const onChange = useCallback((selectedDate: Date) => {
@@ -207,7 +210,7 @@ export default function contactSlide() {
         />
       </DOBContainer>
 
-      {userDetails?.birthPlace.country ? (
+      {birthPlace ? (
         <CitizenshipContainer>
           <Title
             style={{
@@ -228,13 +231,12 @@ export default function contactSlide() {
               textTransform: 'capitalize'
             }}
           >
-            {userDetails?.birthPlace.country}
+            {birthPlace?.country}
           </Paragraph>
         </CitizenshipContainer>
       ) : null}
 
-      {userDetails?.currentLocation.country &&
-      userDetails?.birthPlace.country ? (
+      {currentLocation && birthPlace ? (
         <LocationContainer>
           <Title
             style={{
@@ -270,7 +272,7 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              {`${userDetails?.birthPlace.state} ${userDetails?.birthPlace.country}`}
+              {`${birthPlace.state} ${birthPlace.country}`}
             </Paragraph>
           </Location>
 
@@ -296,7 +298,7 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              {`${userDetails?.currentLocation.state} ${userDetails?.currentLocation.country}`}
+              {`${currentLocation.state} ${currentLocation.country}`}
             </Paragraph>
           </Location>
         </LocationContainer>
