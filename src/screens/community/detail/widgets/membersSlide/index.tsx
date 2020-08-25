@@ -24,13 +24,9 @@ export default function MemberSlide(props: MemberSlideProp) {
   const { communityDetails } = detail;
   const { id } = communityDetails;
 
-  const { data } = useQuery(GET_COMMUNITY_MEMBERS, {
-    variables: {
-      id
-    }
-  });
+  const { data } = useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
 
-  const participants = data?.communityMembers;
+  const participants = data?.communityMembers || [];
 
   const _renderItem = ({ item }: any) => (
     <MemberCard key={item.id} {...item} {...props} />
