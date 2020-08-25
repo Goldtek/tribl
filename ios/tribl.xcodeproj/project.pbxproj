@@ -14,6 +14,7 @@
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		70F1111603FA566076B13A82 /* libPods-tribl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F41E644215A2C662A98F2824 /* libPods-tribl.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		F43344F5A59204C7F078B6F1 /* libPods-tribl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6DF3FD817AD261A6E4A8477 /* libPods-tribl.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */

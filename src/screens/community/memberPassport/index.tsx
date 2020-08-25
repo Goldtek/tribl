@@ -33,10 +33,7 @@ export default function contactSlide(props: MemberDetailProps) {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const [state, setState] = useState({
-    loading: false,
-    pending: false
-  });
+  const [state, setState] = useState({ loading: false, pending: false });
 
   //@ts-ignore
   const passport = { ...props.route.params.details };
@@ -61,9 +58,7 @@ export default function contactSlide(props: MemberDetailProps) {
   });
 
   const { data: passportData } = useQuery(GET_SINGLE_PASSPORT, {
-    variables: {
-      id
-    }
+    variables: { id }
   });
 
   const SinglePassport = passportData?.singlePassport;
