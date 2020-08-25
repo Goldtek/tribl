@@ -598,11 +598,11 @@ PODS:
   - React-jsinspector (0.63.0)
   - react-native-blur (0.8.0):
     - React
-  - react-native-image-resizer (1.2.3):
+  - react-native-image-resizer (1.2.6):
     - React
-  - react-native-netinfo (5.9.5):
+  - react-native-netinfo (5.9.6):
     - React
-  - react-native-safe-area-context (3.1.1):
+  - react-native-safe-area-context (3.1.7):
     - React
   - React-RCTActionSheet (0.63.0):
     - React-Core/RCTActionSheetHeaders (= 0.63.0)
@@ -664,15 +664,15 @@ PODS:
     - React-Core (= 0.63.0)
     - React-cxxreact (= 0.63.0)
     - React-jsi (= 0.63.0)
-  - RNCAsyncStorage (1.11.0):
+  - RNCAsyncStorage (1.12.0):
     - React
   - RNCClipboard (1.2.3):
     - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNDateTimePicker (2.6.1):
+  - RNDateTimePicker (2.6.2):
     - React
-  - RNDeviceInfo (5.6.3):
+  - RNDeviceInfo (5.6.5):
     - React
   - RNFastImage (8.3.2):
     - React
@@ -695,20 +695,20 @@ PODS:
     - RNFBApp
   - RNGestureHandler (1.7.0):
     - React
-  - RNImageCropPicker (0.32.2):
+  - RNImageCropPicker (0.32.3):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.32.2)
+    - RNImageCropPicker/QBImagePickerController (= 0.32.3)
     - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.32.2):
+  - RNImageCropPicker/QBImagePickerController (0.32.3):
     - React-Core
     - React-RCTImage
     - TOCropViewController
   - RNLocalize (1.4.1):
     - React
-  - RNReanimated (1.10.1):
+  - RNReanimated (1.13.0):
     - React
-  - RNScreens (2.9.0):
+  - RNScreens (2.10.1):
     - React
   - RNSVG (12.1.0):
     - React
@@ -1086,9 +1086,9 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 0e0cb4e170ca72d4bb1179843d08dcbea3d100ac
   React-jsinspector: fc661eff8edbfb7e22119382c13f33bcadde0f3c
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
-  react-native-netinfo: a53b00d949b6456913aaf507d9dba90c4008c611
-  react-native-safe-area-context: 344b969c45af3d8464d36e8dea264942992ef033
+  react-native-image-resizer: cbfc171bad1c33a5b146281873f9e88c54439d79
+  react-native-netinfo: 38a1e0b3e89b48e4b5833ed475d8df5f049f6f90
+  react-native-safe-area-context: 955ecfce672683b495d9294d2f154a9ad1d9796b
   React-RCTActionSheet: aadd91a1d6cbfae50dd41f140004f816e9e47ade
   React-RCTAnimation: 7fa2ef6c0ef1e3f0b7d2261c827ec94412deb5e6
   React-RCTBlob: ccbbc70295aee3a76a70323b48f63fb7a7fcffd6
@@ -1099,21 +1099,21 @@ SPEC CHECKSUMS:
   React-RCTText: ba503bf4cce41881ca258ba789c33e017955efdd
   React-RCTVibration: 77ab1cf4a5eb854b88ad5ed3e9d8509ed124525e
   ReactCommon: f63556ee9e41e9802257228237e5e660451a03cf
-  RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
+  RNCAsyncStorage: 2a692bcb9b69b76a2f1a95f33db057129700af64
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNDateTimePicker: 83540fb5d71f28bd34990d8fabccb8d91e5d957e
-  RNDeviceInfo: 5be12a5bfbb8da3528c43ee4373abd9c30d04616
+  RNDateTimePicker: 968ccf716b3b6aee07849641966005924de5c0f9
+  RNDeviceInfo: c5f8f3a456adcbba405ace475254b08febc4c095
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
   RNFBApp: abbab9c96e6d2f1cada6401c9138d3f8cb2ae930
   RNFBAuth: 0cb359f04e97d76a6c3122adb519bb7c5c64f15c
   RNFBDatabase: 654cc97f24c44395cc934aa6d661311fe31ff604
   RNFBFirestore: e6de55217697a483c9dd54c2676fd82967b19349
   RNGestureHandler: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
-  RNImageCropPicker: f0557a908758c4a3f83978894ec7227651529b45
+  RNImageCropPicker: 54e5ea3d0e298ed51e1441a2fa0a0e7c90ee256d
   RNLocalize: 49634a6a605dcdeb319e9c42a5c2f1aec508694b
-  RNReanimated: c2bb7438b57a3d987bb2e4e6e4bca94787e30b02
-  RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
+  RNReanimated: 89f5e0a04d1dd52fbf27e7e7030d8f80a646a3fc
+  RNScreens: b748efec66e095134c7166ca333b628cd7e6f3e2
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   SDWebImage: cf6922231e95550934da2ada0f20f2becf2ceba9
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21

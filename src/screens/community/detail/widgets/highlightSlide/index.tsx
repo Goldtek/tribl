@@ -1,8 +1,8 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useMemo } from 'react';
 import { NavigationInterface } from '../../../../types';
 import { Card, Title, Paragraph, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { ScrollView } from 'react-native';
+import { ScrollView, FlatList } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
@@ -12,6 +12,7 @@ import {
   GET_NEARBY_MEMBERS,
   GET_SINGLE_COMMUNITY
 } from '../../../../../graphql/server/query';
+import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
 
 import {
@@ -36,9 +37,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
 
   const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
-    variables: {
-      id
-    }
+    variables: { id }
   });
 
   const handleJoinCommunity = () => {
@@ -48,7 +47,19 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
     });
   };
 
-  const NearbyMembers = nearbyData?.nearbyMembers;
+  const _renderRecommendedMember = useMemo(
+    () => ({ item, index }: any) => (
+      <MembersCard
+        key={item.id}
+        {...item}
+        index={index}
+        lastChild={nearbyMembers.length - 1}
+      />
+    ),
+    []
+  );
+
+  const nearbyMembers = nearbyData?.nearbyMembers;
   const SingleCommunity = communityData?.Community[0];
 
   return (
@@ -195,21 +206,21 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
               >
                 {t(`community.tabPanel.nearby`)}
               </Title>
-              <ScrollView
+
+              <FlatList
+                data={nearbyMembers}
                 horizontal={true}
-                alwaysBounceHorizontal={false}
+                renderItem={_renderRecommendedMember}
+                ListEmptyComponent={
+                  <RecommendedUserSkeleton skeletonSize={4} />
+                }
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ marginTop: RFValue(15) }}
-              >
-                {NearbyMembers?.map((member: any, index: number) => (
-                  <MembersCard
-                    key={member.id}
-                    {...member}
-                    index={index}
-                    lastChild={NearbyMembers.length - 1}
-                  />
-                ))}
-              </ScrollView>
+                contentContainerStyle={{
+                  marginTop: 20,
+                  paddingHorizontal: 15,
+                  backgroundColor: colors.WHITE
+                }}
+              />
             </Card.Content>
           </Card>
         </Container>
