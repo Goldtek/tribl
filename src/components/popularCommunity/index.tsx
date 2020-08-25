@@ -22,12 +22,7 @@ function PopularCommunity(props: PopularUserProp) {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
-  const {
-    avatar = 'https://picsum.photos/700',
-    name = 'Black lives matter',
-    membersCount,
-    isMember
-  } = props;
+  const { avatar, name, membersCount, isMember } = props;
 
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
