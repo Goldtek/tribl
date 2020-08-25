@@ -68,18 +68,18 @@ export default function SignupNavigator() {
           const { data } = await updatePassport();
 
           if (data?.success) {
-            return console.tron({
-              payload: {
-                dob: { formatted: userDetails?.dob },
-                avatar: userDetails?.avatar,
-                lastName: userDetails?.lastName,
-                firstName: userDetails?.firstName,
-                interest: userDetails?.interest,
-                identity: userDetails?.identity,
-                currentLocation: userDetails?.currentLocation[0],
-                birthPlace: userDetails?.birthPlace[0]
-              }
-            });
+            // console.tron({
+            //   payload: {
+            //     dob: { formatted: userDetails?.dob },
+            //     avatar: userDetails?.avatar,
+            //     lastName: userDetails?.lastName,
+            //     firstName: userDetails?.firstName,
+            //     interest: userDetails?.interest,
+            //     identity: userDetails?.identity,
+            //     currentLocation: userDetails?.currentLocation[0],
+            //     birthPlace: userDetails?.birthPlace[0]
+            //   }
+            // });
 
             navigation.reset({
               index: 0,
