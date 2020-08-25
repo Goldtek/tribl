@@ -35,18 +35,14 @@ function Member(props: MemberProp) {
   } = props;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: {
-      payload: {
-        phoneNumber: phoneNumber
-      }
-    }
+    variables: { payload: { phoneNumber: phoneNumber } }
   });
 
   const handleRequest = async () => {
     try {
       const { data } = await requestConnection();
       if (data?.requestConnection) {
-        console.tron('successful');
+        console.log('successful');
       }
     } catch (error) {
       console.error(error);
