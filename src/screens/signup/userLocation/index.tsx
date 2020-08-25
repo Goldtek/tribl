@@ -70,11 +70,10 @@ export default function UserLocationScreen(props: ScreenProp) {
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
-        currentLocation: {
-          ...state.currentLocation,
-          __typename: 'currentLocation'
-        },
-        birthPlace: { ...state.birthPlace, __typename: 'birthPlace' }
+        currentLocation: [
+          { ...state.currentLocation, __typename: 'currentLocation' }
+        ],
+        birthPlace: [{ ...state.birthPlace, __typename: 'birthPlace' }]
       }
     }
   });
