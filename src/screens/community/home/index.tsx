@@ -224,7 +224,9 @@ export default function HomeScreen(props: ScreenProp) {
                 {...community}
                 onPress={handleJoinCommunity}
               />
-            ) : null}
+            ) : (
+              <RecommendedCommunitySkeleton />
+            )}
           </RecommendedCommunityContainer>
         </RecommendedList>
 

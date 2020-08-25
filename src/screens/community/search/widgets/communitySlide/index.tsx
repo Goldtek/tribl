@@ -120,6 +120,7 @@ function CommunitySlideScreen(props: ScreenProp) {
               data={popular}
               renderItem={_renderPopularCommunityItem}
               showsVerticalScrollIndicator={false}
+              keyExtractor={(item: any) => item.id}
               ListEmptyComponent={
                 <PopularCommunitySkeleton skelentonSize={3} />
               }

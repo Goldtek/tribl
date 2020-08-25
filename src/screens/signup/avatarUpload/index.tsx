@@ -13,8 +13,9 @@ import { useTranslation } from 'react-i18next';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
-import cloudinaryUpload from '../../../utils/cloudinaryUpload';
-import { UPLOAD_USER_AVATAR } from '../../../graphql/server/mutations';
+import cloudinaryUpload, {
+  CloudinaryUploadType
+} from '../../../utils/cloudinaryUpload';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, GradientContainer } from './styles';
@@ -22,24 +23,28 @@ import { Container, GradientContainer } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
+type StateType = {
+  uri: string;
+  formData: FormData | null;
+  loading: boolean;
+  imageData: CloudinaryUploadType;
+};
+
 export default function AvatarUploadScreen(props: ScreenProp) {
   const { navigation } = props;
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [avatar, setAvatar] = useState<{
-    uri: string;
-    formData: FormData | null;
-    loading: boolean;
-  }>({ uri: '', formData: null, loading: false });
+  const [avatar, setAvatar] = useState<StateType>({
+    uri: '',
+    formData: null,
+    imageData: { file: '', mime: '', filename: '', cropRect: null },
+    loading: false
+  });
 
   const [addUserImage] = useMutation(ADD_USER_DETAILS, {
     variables: { details: { avatar: avatar.uri } }
-  });
-
-  const [uploadUserImage] = useMutation(UPLOAD_USER_AVATAR, {
-    variables: { payload: avatar?.formData }
   });
 
   const handleInputError = (error: string) => {
@@ -49,16 +54,19 @@ export default function AvatarUploadScreen(props: ScreenProp) {
   const handleSubmit = async () => {
     if (!avatar) return handleInputError('inputError');
 
-    try {
-      const { data } = await uploadUserImage();
+    setAvatar({ ...avatar, loading: true });
 
-      console.log({ data });
+    const formData = await cloudinaryUpload(avatar.imageData);
 
-      navigation.navigate('IdentifyUserScreen');
-      addUserImage();
-    } catch (error) {
+    if (!formData.ok) {
+      setAvatar({ ...avatar, loading: false });
       handleInputError('uploadError');
     }
+
+    return console.tron('DOWN', { formData });
+
+    navigation.navigate('IdentifyUserScreen');
+    addUserImage();
   };
 
   const handleAvatar = async () => {
@@ -95,9 +103,9 @@ export default function AvatarUploadScreen(props: ScreenProp) {
         includeBase64: true
       });
 
-      const formData = cloudinaryUpload({ file, mime, filename, cropRect });
+      const imageData = { mime, filename, cropRect, file };
 
-      setAvatar({ ...avatar, uri: `data:${mime};base64,${data}`, formData });
+      setAvatar({ ...avatar, uri: `data:${mime};base64,${data}`, imageData });
       ImagePicker.clean();
     } catch (error) {
       console.error(error);

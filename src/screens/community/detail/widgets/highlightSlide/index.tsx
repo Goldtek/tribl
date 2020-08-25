@@ -40,6 +40,9 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
     variables: { id }
   });
 
+  const nearbyMembers = nearbyData?.nearbyMembers;
+  const SingleCommunity = communityData?.Community[0];
+
   const handleJoinCommunity = () => {
     setState({
       ...state,
@@ -53,14 +56,11 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
         key={item.id}
         {...item}
         index={index}
-        lastChild={nearbyMembers.length - 1}
+        lastChild={nearbyMembers?.length - 1}
       />
     ),
     []
   );
-
-  const nearbyMembers = nearbyData?.nearbyMembers;
-  const SingleCommunity = communityData?.Community[0];
 
   return (
     <Fragment>
