@@ -1,22 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 import { NavigationInterface } from '../../../../types';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../../../theme';
 import MemberCard from '../chatMemberCard';
-import MembersData from '../../../../../libs/memberChat/index.json';
+import Firechat from '../../../../../firebase';
+import { GroupInterface } from '../../../types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function ChannelScreen(props: ScreenProp) {
-  const _renderItem = ({ item }: any) => (
-    <MemberCard key={item.id} {...item} {...props} />
+function GroupChatSlide(props: ScreenProp) {
+  const [groups, setGroups] = useState<GroupInterface[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const groups = await Firechat.getUserGroupMessages();
+      if (groups) setGroups(groups);
+    })();
+  }, []);
+
+  const _renderItem = ({ item }: { item: GroupInterface }) => (
+    <MemberCard {...item} {...props} />
   );
 
   return (
     <FlatList
-      data={MembersData}
+      data={groups}
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),
@@ -28,3 +37,5 @@ export default function ChannelScreen(props: ScreenProp) {
     />
   );
 }
+
+export default React.memo(GroupChatSlide);

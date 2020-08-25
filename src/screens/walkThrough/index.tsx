@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'react-native-paper';
 import Swiper from 'react-native-swiper';
@@ -21,6 +22,7 @@ interface ScreenProp extends NavigationInterface {}
 export default function WalkThroughScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
+  changeNavigationBarColor(colors.SECONDARY, false, true);
 
   const { t } = useTranslation();
 

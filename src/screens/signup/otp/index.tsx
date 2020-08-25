@@ -10,11 +10,7 @@ import {
   VALIDATE_USER_OTP,
   SEND_USER_OTP
 } from '../../../graphql/server/mutations';
-import {
-  StoreInterface,
-  OTPInterface,
-  VerifyOTPInterface
-} from '../../../graphql/types';
+import { StoreInterface, VerifyOTPInterface } from '../../../graphql/types';
 import GradientButton from '../../../components/gradientButton';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
 import { NavigationInterface } from '../../types';
@@ -41,21 +37,27 @@ export default function OTPScreen(props: ScreenProp) {
 
   const [otp, setOtp] = useState('');
 
-  const [sendOtp, { loading }] = useMutation<OTPInterface>(SEND_USER_OTP, {
-    variables: {
-      payload: { phoneNumber: data?.userDetails.number, deviceId: DEVICE_ID }
-    }
-  });
-
-  const [verifyOtp] = useMutation<VerifyOTPInterface>(VALIDATE_USER_OTP, {
+  const [sendOtp] = useMutation(SEND_USER_OTP, {
     variables: {
       payload: {
-        phoneNumber: data?.userDetails.number,
-        deviceId: DEVICE_ID,
-        otp
+        phoneNumber: data?.userDetails.phoneNumber,
+        deviceId: DEVICE_ID
       }
     }
   });
+
+  const [verifyOtp, { loading }] = useMutation<VerifyOTPInterface>(
+    VALIDATE_USER_OTP,
+    {
+      variables: {
+        payload: {
+          phoneNumber: data?.userDetails.phoneNumber,
+          deviceId: DEVICE_ID,
+          otp
+        }
+      }
+    }
+  );
 
   const resendOtp = () => {
     sendOtp();
@@ -75,10 +77,18 @@ export default function OTPScreen(props: ScreenProp) {
         const { data } = await verifyOtp();
 
         if (data?.validateOtp) {
-          Storage.setCredentialInstance(data?.validateOtp);
+          Storage.setUserCredentials(data?.validateOtp);
+
+          if (!data.validateOtp.verified) {
+            return navigation.reset({
+              index: 0,
+              routes: [{ name: 'CreateAccountScreen' }]
+            });
+          }
+
           navigation.reset({
             index: 0,
-            routes: [{ name: 'CreateAccountScreen' }]
+            routes: [{ name: 'CommunityScreen' }]
           });
         }
       } catch (error) {
@@ -140,7 +150,8 @@ export default function OTPScreen(props: ScreenProp) {
               lineHeight: RFValue(22)
             }}
           >
-            {t(`signup.OTPScreen.paragraph`) + ` ${data?.userDetails.number}`}
+            {t(`signup.OTPScreen.paragraph`) +
+              ` ${data?.userDetails.phoneNumber}`}
           </Paragraph>
 
           <Container style={{ height: RFValue(100), marginTop: 10 }}>

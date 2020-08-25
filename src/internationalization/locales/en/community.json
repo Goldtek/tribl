@@ -4,15 +4,20 @@
     "inbox": "inbox",
     "passport": "passport"
   },
+
   "recommended": {
     "members": "recommended members",
     "community": "recommended community",
     "view": "view all",
     "join": "join",
+    "pending": "pending",
     "add": "add",
     "activity": "recent activity",
-    "myCommunity": "my communities"
+    "myCommunity": "my communities",
+    "leave": "leave",
+    "message": "message"
   },
+
   "joinModal": {
     "title": "enter your referral code below",
     "label": "referral code",
@@ -20,6 +25,7 @@
     "join": "join",
     "request": "request"
   },
+
   "memberPassport": {
     "connection": "connections",
     "community": "communities",
@@ -33,8 +39,12 @@
     "block": "block",
     "report": "report",
     "removeConnection": "remove connection",
-    "copy": "copy profile URL"
+    "copy": "copy profile URL",
+    "pending": "pending",
+    "blocked": "blocked",
+    "requested": "requested"
   },
+
   "tabPanel": {
     "member": "members",
     "community": "communities",
@@ -49,8 +59,10 @@
     "view": "view all",
     "placeholder": "Search by name or tag",
     "search": "Search",
-    "memberTitle": "community members"
+    "memberTitle": "community members",
+    "leave": "leave"
   },
+
   "sideNav": {
     "community": "community",
     "chat": "chat",
@@ -63,6 +75,7 @@
     "version": "version 1.0.0",
     "company": "silicon jungle labs"
   },
+
   "accountSettings": {
     "privacy": "privacy",
     "notification": "notifications",
@@ -78,6 +91,7 @@
     "public": "public",
     "private": "private"
   },
+
   "chat": {
     "message": "direct messages",
     "group": "group chat",

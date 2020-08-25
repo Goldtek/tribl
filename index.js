@@ -2,7 +2,10 @@ import 'react-native-gesture-handler';
 import { LogBox } from 'react-native';
 import { registerRootComponent } from 'expo';
 
-LogBox.ignoreLogs(['ReactNative.NativeModules.LottieAnimationView']);
+LogBox.ignoreLogs([
+  'ReactNative.NativeModules.LottieAnimationView',
+  'VirtualizedLists should never be nested'
+]);
 
 import App from './App';
 

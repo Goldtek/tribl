@@ -1,16 +1,16 @@
 import React, { Fragment } from 'react';
-import { Text, TouchableRipple, Title } from 'react-native-paper';
+import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
-import { StatusBar, FlatList, TouchableHighlight } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { FlatList, TouchableHighlight } from 'react-native';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
 import { Feather } from '@expo/vector-icons';
 import ConnectionRequest from './widget';
+import { StatusBar } from 'expo-status-bar';
 import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
 
@@ -23,10 +23,10 @@ interface ConnectionRequestScreenProp extends NavigationInterface {}
 export default function ConnectionRequestScreen(
   props: ConnectionRequestScreenProp
 ) {
+  const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeArea();
   const { t } = useTranslation();
-  const navigation = useNavigation();
 
   const { data, refetch } = useQuery(GET_CONNECTION_REQUEST);
 
@@ -38,7 +38,7 @@ export default function ConnectionRequestScreen(
 
   return (
     <Fragment>
-      <StatusBar backgroundColor={colors.WHITE} barStyle="dark-content" />
+      <StatusBar translucent animated style="dark" />
       <Header
         title={() => (
           <Text
@@ -55,7 +55,7 @@ export default function ConnectionRequestScreen(
         headerLeft={() => (
           <TouchableHighlight
             {...props}
-            onPress={props.navigation.toggleDrawer}
+            onPress={navigation.toggleDrawer}
             underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
             style={{
               height: RFValue(40),

@@ -64,7 +64,9 @@
     "photoAdded": "photo added",
     "selectAvatar": "Select Avatar",
     "inputError": "Image is required or skip this setup",
-    "submit": "next"
+    "uploadError": "Failed uploading image, please try again",
+    "upload": "uploading",
+    "submit": "upload"
   },
 
   "identifyUserScreen": {
@@ -98,12 +100,12 @@
     "title": "Tribl passport",
     "subTitle": "Welcome to Tribl. Use this passport to \nidentify, connect, & engage.",
     "sharePassport": "share my passport",
-    "sharePassportMessage": "Download Tribl and come join me in our community",
+    "sharePassportMessage": "Join Tribl’s waitlist to become part of the community",
     "contactCard": "contact card",
     "QRCode": "QR code",
     "firstName": "first name",
     "lastName": "last name",
-    "DOB": "add birthdate",
+    "dob": "add birthdate",
     "citizenship": "citizenship",
     "locality": "locality",
     "identity": "identity",

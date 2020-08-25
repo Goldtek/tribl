@@ -1,8 +1,8 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useMemo } from 'react';
 import { NavigationInterface } from '../../../../types';
 import { Card, Title, Paragraph, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { ScrollView } from 'react-native';
+import { ScrollView, FlatList } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
@@ -12,6 +12,7 @@ import {
   GET_NEARBY_MEMBERS,
   GET_SINGLE_COMMUNITY
 } from '../../../../../graphql/server/query';
+import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
 
 import {
@@ -36,9 +37,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
 
   const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
-    variables: {
-      id
-    }
+    variables: { id }
   });
 
   const handleJoinCommunity = () => {
@@ -48,7 +47,19 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
     });
   };
 
-  const NearbyMembers = nearbyData?.nearbyMembers;
+  const _renderRecommendedMember = useMemo(
+    () => ({ item, index }: any) => (
+      <MembersCard
+        key={item.id}
+        {...item}
+        index={index}
+        lastChild={nearbyMembers.length - 1}
+      />
+    ),
+    []
+  );
+
+  const nearbyMembers = nearbyData?.nearbyMembers;
   const SingleCommunity = communityData?.Community[0];
 
   return (
@@ -78,11 +89,12 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                   uri: SingleCommunity?.avatar,
                   priority: FastImage.priority.high
                 }}
-                style={{ width: '20%', height: '50%' }}
+                style={{ width: '25%', height: '50%' }}
               />
               <TextContainer>
                 <Title
                   style={{
+                    color: colors.PRIMARY_TEXT,
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: fonts.LARGE_SIZE,
                     textTransform: 'capitalize',
@@ -95,44 +107,69 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                   style={{
                     fontSize: fonts.MEDIUM_SIZE - 1,
                     fontFamily: fonts.WORK_SANS_REGULAR,
-                    lineHeight: RFValue(13),
+                    lineHeight: RFValue(10),
                     color: colors.SECONDARY_TEXT
                   }}
                 >
                   {SingleCommunity?.membersCount}{' '}
                   {t(`community.tabPanel.member`)}
                 </Paragraph>
-                <Paragraph
-                  style={{
-                    fontSize: fonts.MEDIUM_SIZE - 1,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    lineHeight: RFValue(13),
-                    color: colors.PRIMARY_TEXT
-                  }}
-                >
-                  {SingleCommunity?.description}
-                </Paragraph>
+                {SingleCommunity?.description ? (
+                  <Paragraph
+                    style={{
+                      fontSize: fonts.MEDIUM_SIZE - 1,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(13),
+                      color: colors.PRIMARY_TEXT
+                    }}
+                  >
+                    {SingleCommunity?.description}
+                  </Paragraph>
+                ) : null}
               </TextContainer>
-              <Button
-                mode="contained"
-                style={{
-                  width: '20%',
-                  height: RFValue(40),
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 4
-                }}
-                labelStyle={{
-                  fontSize: fonts.LARGE_SIZE,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  color: colors.WHITE,
-                  textTransform: 'capitalize'
-                }}
-                onPress={handleJoinCommunity}
-              >
-                {t(`community.tabPanel.join`)}
-              </Button>
+              {SingleCommunity?.isMember ? (
+                <Button
+                  mode="contained"
+                  style={{
+                    width: '22%',
+                    height: RFValue(40),
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 4
+                  }}
+                  labelStyle={{
+                    fontSize: fonts.LARGE_SIZE,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    color: colors.WHITE,
+                    textTransform: 'capitalize'
+                  }}
+                  onPress={() => {}}
+                >
+                  {t(`community.tabPanel.leave`)}
+                </Button>
+              ) : (
+                <Button
+                  mode="contained"
+                  style={{
+                    width: '20%',
+                    height: RFValue(40),
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 4
+                  }}
+                  labelStyle={{
+                    fontSize: fonts.LARGE_SIZE,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    color: colors.WHITE,
+                    textTransform: 'capitalize'
+                  }}
+                  onPress={handleJoinCommunity}
+                >
+                  {t(`community.tabPanel.join`)}
+                </Button>
+              )}
             </CardContainer>
+
             {SingleCommunity?.interests?.length ? (
               <TagContainer>
                 <Title
@@ -148,7 +185,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
 
                 <Tags>
                   {SingleCommunity?.interests.map((identity: any) => (
-                    <TagText key={identity}>{identity}</TagText>
+                    <TagText key={identity.id}>{identity.name}</TagText>
                   ))}
                 </Tags>
               </TagContainer>
@@ -169,21 +206,21 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
               >
                 {t(`community.tabPanel.nearby`)}
               </Title>
-              <ScrollView
+
+              <FlatList
+                data={nearbyMembers}
                 horizontal={true}
-                alwaysBounceHorizontal={false}
+                renderItem={_renderRecommendedMember}
+                ListEmptyComponent={
+                  <RecommendedUserSkeleton skeletonSize={4} />
+                }
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ marginTop: RFValue(15) }}
-              >
-                {NearbyMembers?.map((member: any, index: number) => (
-                  <MembersCard
-                    key={member.id}
-                    {...member}
-                    index={index}
-                    lastChild={NearbyMembers.length - 1}
-                  />
-                ))}
-              </ScrollView>
+                contentContainerStyle={{
+                  marginTop: 20,
+                  paddingHorizontal: 15,
+                  backgroundColor: colors.WHITE
+                }}
+              />
             </Card.Content>
           </Card>
         </Container>
