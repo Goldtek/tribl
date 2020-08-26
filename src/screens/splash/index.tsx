@@ -1,8 +1,9 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import { RefreshTokenInterface } from '../../graphql/types';
 import { REFRESH_TOKEN } from '../../graphql/server/mutations';
+import checkAppUpdates from '../../libs/updates';
 import { NavigationInterface } from '../types';
 import Storage from '../../storage';
 
@@ -17,8 +18,9 @@ export default function SplashScreen(props: ScreenProp) {
 
   const credentials = Storage.getUserCredentials();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     handleAuthentication();
+    checkAppUpdates();
   }, []);
 
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN, {
