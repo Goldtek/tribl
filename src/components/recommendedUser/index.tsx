@@ -45,9 +45,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     phoneNumber,
     connected
   } = props;
-
-  const { state, country } = currentLocation[0];
-
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
@@ -146,7 +143,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               marginBottom: 0
             }}
           >
-            {`${state}, ${country}`}
+            {`${currentLocation[0]?.state}, ${currentLocation[0]?.country}`}
           </Paragraph>
         </TextContainer>
         {connected == 'PENDING' || pending ? (

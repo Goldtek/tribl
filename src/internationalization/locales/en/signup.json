@@ -76,7 +76,8 @@
     "inputError": "Select an identity or skip this setup",
     "scrollUp": "On selecting an identity you can scroll up for more options",
     "closeScrollUp": "close",
-    "submit": "next"
+    "submit": "next",
+    "done": "done"
   },
 
   "userLocationScreen": {

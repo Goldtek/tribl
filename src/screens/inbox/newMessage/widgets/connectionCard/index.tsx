@@ -15,6 +15,8 @@ interface MemberProp extends NavigationInterface {
   avatar: string;
   lastSeen: string;
   name: string;
+  firstName: string;
+  lastName: string;
 }
 
 function Member(props: MemberProp) {
@@ -24,11 +26,14 @@ function Member(props: MemberProp) {
   const {
     avatar = 'https://picsum.photos/700',
     name = 'Paul Maet',
+    firstName,
+    lastName,
     lastSeen
   } = props;
 
   const handleNavigation = useCallback(
-    () => navigation.navigate('ChatScreen', { title: name }),
+    () =>
+      navigation.navigate('ChatScreen', { title: `${firstName} ${lastName}` }),
     []
   );
 
@@ -65,7 +70,7 @@ function Member(props: MemberProp) {
               textTransform: 'capitalize'
             }}
           >
-            {name}
+            {`${firstName} ${lastName}`}
           </Title>
           <Text
             style={{

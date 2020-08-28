@@ -23,8 +23,6 @@ export default function ChannelScreen(props: ScreenProp) {
 
   const channels = data?.communityChannels;
 
-  console.log(channels);
-
   const _renderItem = useMemo(
     () => ({ item }: { item: { name: string } }) => (
       <TouchableRipple

@@ -1,9 +1,11 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useCallback } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
+import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -13,6 +15,7 @@ interface ActiveUserProp {
   avatar: string;
   firstName: string;
   lastName: string;
+  connected: string;
   phoneNumber: string;
   currentLocation: {
     country: string;
@@ -30,11 +33,34 @@ function ActiveModal(props: ActiveUserProp) {
     avatar = 'https://picsum.photos/700',
     firstName,
     lastName,
+    connected,
     currentLocation,
     phoneNumber,
     navigation,
     closeActiveModal
   } = props;
+
+  const [loading, setLoading] = useState(false);
+  const [pending, setPending] = useState(false);
+
+  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+    variables: {
+      payload: { phoneNumber }
+    }
+  });
+
+  const handleRequest = async () => {
+    setLoading(true);
+    try {
+      const { data } = await requestConnection();
+      if (data?.requestConnection) {
+        setLoading(false);
+        setPending(true);
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  };
 
   const handleNavigation = () => {
     closeActiveModal();
@@ -43,6 +69,14 @@ function ActiveModal(props: ActiveUserProp) {
       details: { ...props }
     });
   };
+
+  const handleMessageNavigation = useCallback(
+    () =>
+      navigation.navigate('ChatScreen', {
+        title: `${firstName} ${lastName}`
+      }),
+    []
+  );
 
   const { state, country } = currentLocation[0];
 
@@ -96,31 +130,83 @@ function ActiveModal(props: ActiveUserProp) {
               {`${state}, ${country}`}
             </Paragraph>
           </TextContainer>
-          <Button
-            loading={false}
-            mode="contained"
-            uppercase={false}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              textTransform: 'capitalize',
-              color: colors.WHITE
-            }}
-            contentStyle={{
-              backgroundColor: colors.PRIMARY,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-            style={{
-              borderRadius: 5,
-              width: RFValue(65),
-              height: RFValue(30),
-              marginRight: RFValue(15)
-            }}
-            onPress={() => {}}
-          >
-            {t(`community.recommended.add`)}+
-          </Button>
+          {connected == 'PENDING' || pending ? (
+            <Button
+              mode="text"
+              disabled={true}
+              uppercase={false}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize',
+                color: colors.PRIMARY_TEXT
+              }}
+              contentStyle={{
+                backgroundColor: colors.DISABLED,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              style={{
+                borderRadius: 5,
+                width: RFValue(80),
+                height: RFValue(30),
+                marginRight: RFValue(15)
+              }}
+            >
+              {t(`community.recommended.pending`)}
+            </Button>
+          ) : connected == 'CONNECTED' ? (
+            <Button
+              mode="contained"
+              uppercase={false}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize',
+                color: colors.PRIMARY_TEXT
+              }}
+              contentStyle={{
+                backgroundColor: colors.DISABLED,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              style={{
+                borderRadius: 5,
+                width: RFValue(80),
+                height: RFValue(30),
+                marginRight: RFValue(15)
+              }}
+              onPress={handleMessageNavigation}
+            >
+              {t(`community.recommended.message`)}
+            </Button>
+          ) : (
+            <Button
+              loading={loading}
+              mode="contained"
+              uppercase={false}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                backgroundColor: colors.PRIMARY,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              style={{
+                borderRadius: 5,
+                width: RFValue(65),
+                height: RFValue(30),
+                marginRight: RFValue(15)
+              }}
+              onPress={handleRequest}
+            >
+              {t(`community.recommended.add`)}+
+            </Button>
+          )}
         </Fragment>
       </TouchableRipple>
     </Fragment>

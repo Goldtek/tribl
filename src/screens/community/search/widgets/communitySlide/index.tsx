@@ -15,6 +15,7 @@ import {
   GET_POPULAR_COMMUNITIES
 } from '../../../../../graphql/server/query';
 import PopularCommunitySkeleton from '../../../../../components/popularCommunitySkeleton';
+import RecommendedCommunitySkeleton from '../../../../../components/recommendedCommunitySkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, CommunityWrapper, PopularContainer } from './styles';
@@ -30,7 +31,10 @@ function CommunitySlideScreen(props: ScreenProp) {
   const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
   const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES);
 
-  const community = communityData?.recommendedCommunities[0];
+  const community = communityData?.recommendedCommunities;
+  const randomCommunity =
+    community?.length &&
+    community[Math.floor(Math.random() * community.length)];
   const popular = popularData?.popularCommunities;
   const _renderPopularCommunityItem = useMemo(
     () => ({ item, index }: any) => (
@@ -65,7 +69,14 @@ function CommunitySlideScreen(props: ScreenProp) {
           >
             {t(`community.tabPanel.featured`)}
           </Title>
-          <RecommendedCommunity {...community} onPress={handleJoinCommunity} />
+          {community ? (
+            <RecommendedCommunity
+              {...randomCommunity}
+              onPress={handleJoinCommunity}
+            />
+          ) : (
+            <RecommendedCommunitySkeleton />
+          )}
 
           <PopularContainer>
             <CommunityWrapper>

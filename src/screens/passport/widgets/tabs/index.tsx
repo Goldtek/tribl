@@ -8,7 +8,7 @@ import React from 'react';
 import ContactSlide from '../contactSlide';
 // import QRcodeSlide from '../QRcodeSlide';
 
-export default function TabViewSlider() {
+export default function TabViewSlider(props: any) {
   // const { colors, fonts } = useThemeContext();
   // const { t } = useTranslation();
 
@@ -62,6 +62,5 @@ export default function TabViewSlider() {
   //     />
   //   )
   // }) as JSX.Element | null;
-
-  return <ContactSlide />;
+  return <ContactSlide getUserDetails={props.getUserDetails} />;
 }

@@ -5,6 +5,7 @@ import { Divider, TouchableRipple, Button, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
+import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import MemberCard from './widgets/connectionCard';
@@ -12,6 +13,10 @@ import AlgoliaSearch from '../../../components/algoliaSearch';
 import AlgoliaList from '../../../components/algoliaInboxList';
 import hexToRGB from '../../../utils/hexToRGB';
 import MembersData from '../../../libs/members/index.json';
+import {
+  GET_NEARBY_MEMBERS,
+  GET_MY_CONNECTIONS
+} from '../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -28,9 +33,28 @@ export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
+  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+  const nearbyMembers = nearbyData?.nearbyMembers;
+
+  const { data: connectionData } = useQuery(GET_MY_CONNECTIONS);
+
+  const myConnection = connectionData?.myConnections;
+
   const [filter, setFilter] = useState(
     t(`community.chat.connection`) as string
   );
+
+  const [data, setData] = useState(myConnection);
+
+  const handleConnectionClick = () => {
+    setFilter(t(`community.chat.connection`));
+    setData(myConnection);
+  };
+
+  const handleNearbyClick = () => {
+    setFilter(t(`community.chat.nearby`));
+    setData(nearbyMembers);
+  };
 
   const _separator = () =>
     useMemo(
@@ -66,7 +90,7 @@ export default function ChatScreen(props: ScreenProp) {
         <FilterContainer>
           <Button
             mode="contained"
-            onPress={() => setFilter(t(`community.chat.connection`))}
+            onPress={handleConnectionClick}
             labelStyle={{
               color:
                 filter === t(`community.chat.connection`)
@@ -89,7 +113,7 @@ export default function ChatScreen(props: ScreenProp) {
           </Button>
           <Button
             mode="contained"
-            onPress={() => setFilter(t(`community.chat.nearby`))}
+            onPress={handleNearbyClick}
             labelStyle={{
               color:
                 filter === t(`community.chat.nearby`)
@@ -143,7 +167,7 @@ export default function ChatScreen(props: ScreenProp) {
         </TouchableRipple>
 
         <FlatList
-          data={MembersData}
+          data={data}
           renderItem={_renderItem}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={_separator}
