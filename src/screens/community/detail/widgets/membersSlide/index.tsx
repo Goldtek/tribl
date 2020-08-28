@@ -34,7 +34,7 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   return (
     <Container>
-      <AlgoliaSearch indexName="tribl_community_develop">
+      <AlgoliaSearch indexName="tribl_community_members_develop">
         <AlgoliaList />
       </AlgoliaSearch>
       <Title
