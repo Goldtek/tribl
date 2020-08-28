@@ -59,6 +59,23 @@ export const IdentityText = styled.Text`
   border-radius: 4px;
 `;
 
+export const AddIdentity = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  font-size: ${({ theme }) => RFValue(theme.fonts.MEDIUM_SIZE)}px;
+  color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
+  width: 60px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-top: 10px;
+  margin-right: 10px;
+  padding: ${RFValue(10)}px;
+  border-width: ${RFValue(1.2)}px;
+  border-color: ${({ theme }) => theme.colors.INACTIVE};
+  text-transform: uppercase;
+  border-radius: 4px;
+`;
+
 export const InterestContainer = styled.View``;
 
 export const LocationContainer = styled.View``;
