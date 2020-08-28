@@ -102,3 +102,12 @@ export const UPLOAD_USER_AVATAR = gql`
     }
   }
 `;
+
+//UPDATE PASSPORT
+export const UPDATE_PASSPORT = gql`
+  mutation updatePassport($payload: UpdatePassportInput!) {
+    updatePassport(input: $payload) {
+      success
+    }
+  }
+`;
