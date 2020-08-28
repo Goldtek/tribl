@@ -45,9 +45,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     phoneNumber,
     connected
   } = props;
-
-  // const { state, country } = currentLocation[0];
-
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
