@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
-import { format } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -19,16 +18,21 @@ function Member(props: MemberProp) {
   const navigation = useNavigation();
 
   const {
+    avatar,
+    name,
     id: chatId,
-    avatar = 'https://picsum.photos/700',
-    name = 'Paul Maet',
-    displayMessage = 'Girl, I saw your message...',
+    displayMessage,
     lastMessageTime,
     unseenCount
   } = props;
 
   const handleNavigation = useCallback(
-    () => navigation.navigate('ChatScreen', { title: name, avatar, chatId }),
+    () =>
+      navigation.navigate('DirectChatScreen', {
+        title: name,
+        avatar,
+        chatId
+      }),
     []
   );
 
