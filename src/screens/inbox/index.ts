@@ -1,9 +1,11 @@
 import InboxScreen from './home';
-import ChatScreen from './chat';
+import DirectChatScreen from './directChat';
+import ConnectionChatScreen from './connectionChat';
 import NewMessageScreen from './newMessage';
 
 export default {
   InboxScreen,
-  ChatScreen,
+  DirectChatScreen,
+  ConnectionChatScreen,
   NewMessageScreen
 };

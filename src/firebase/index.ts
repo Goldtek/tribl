@@ -1,9 +1,11 @@
-import firestore from '@react-native-firebase/firestore';
+import firestore, {
+  FirebaseFirestoreTypes
+} from '@react-native-firebase/firestore';
 
 import { firechat, database, fireAuth } from './config';
 
+import { GroupInterface, MessageInterface } from '../screens/inbox/types';
 import { ROOM_TYPES, ChatRoom } from './types';
-import { GroupInterface } from '../screens/inbox/types';
 
 const batch = firechat.batch();
 
@@ -18,101 +20,92 @@ class Firechat {
   }
 
   // // THIS METHOD CREATES A CHANNEL AND GROUP
-  // async createRoom(roomId: string, payload: ChatRoom) {
-  //   const timestamp = firestore.FieldValue.serverTimestamp();
+  async createRoom(roomId: string, payload: ChatRoom) {
+    const timestamp = new Date().toString();
 
-  //   // get chat collection via roomID
-  //   const chatroom = firechat.collection(payload.roomType).doc(roomId);
+    // get chat collection via roomID
+    const chatroom = firechat.collection(payload.roomType).doc(roomId.trim());
 
-  //   // make a write batch for chatroom collection via roomId
-  //   batch.set(
-  //     chatroom,
-  //     {
-  //       members: { [this.userId]: true },
-  //       createdAt: timestamp,
-  //       updatedAt: timestamp
-  //     },
-  //     { merge: true }
-  //   );
+    // make a write batch for chatroom collection via roomId
+    batch.set(
+      chatroom,
+      {
+        id: roomId.trim(),
+        name: payload.name,
+        unseenCount: 0,
+        members: payload.receivers,
+        displayMessage: payload.message.text,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      },
+      { merge: true }
+    );
 
-  //   const receivers = this.getUserConversations(payload);
+    payload.receivers.forEach(({ receiverId }) => {
+      const docRef = firechat
+        .collection(ROOM_TYPES.USER_CONVERSATIONS)
+        .doc(receiverId);
 
-  //   receivers.forEach((receiver) =>
-  //     batch.set(receiver, { [payload.roomType]: [roomId] })
-  //   );
+      batch.set(
+        docRef,
+        {
+          [payload.conversationType]: firestore.FieldValue.arrayUnion(roomId)
+        },
+        { merge: true }
+      );
+    });
 
-  //   return batch.commit();
-  // }
+    return batch.commit();
+  }
 
   // // THIS METHOD ADDS A NEW MEMBER TO CHANNEL OR GROUP
   // async addMemberToRoom(roomId: string, payload: ChatRoom) {
-  //   return tribl
+  //   return firechat
   //     .doc(`${payload.roomType}/${roomId}`)
   //     .collection('members')
   //     .add({ [this.userId]: true });
   // }
 
-  // // THIS METHOD SENDS A NEW MESSAGE
-  // async sendMessage(roomId: string, payload: ChatRoom) {
-  //   const conversationRoom = tribl.doc(`${ROOM_TYPES.CONVERSATIONS}/${roomId}`);
-  //   const timestamp = firestore.FieldValue.serverTimestamp();
-
-  //   conversationRoom.update({
-  //     displayMessage: 'Hello world',
-  //     lastMessageTime: timestamp,
-  //     unseenCount: 10
-  //   });
-
-  //   conversationRoom
-  //     .collection('messages')
-  //     .add({ ...payload, createdAt: timestamp });
-  // }
-
-  // // THIS METHOD GETS USERS CONVERSATIONS
-  // getUserConversations(payload: ChatRoom) {
-  //   // get user chat history via userId
-  //   const userConversions = firechat
-  //     .collection(ROOM_TYPES.USER_CONVERSATIONS)
-  //     .doc(this.userId);
-
-  //   // get receiver chat history via receiverId
-  //   const receiverConversions = payload.receivers?.map((receiver) =>
-  //     firechat.collection(ROOM_TYPES.USER_CONVERSATIONS).doc(receiver)
-  //   ) as FirebaseFirestoreTypes.DocumentReference[];
-
-  //   return [userConversions, ...receiverConversions];
-  // }
-
   // // THIS METHOD CREATES USER CONVERSATION REF OBJECT
-  // async createUserConversation(userId: string, payload: UserConversation) {
-  //   return tribl
-  //     .doc(`${ROOM_TYPES.CHANNELS}/${userId}`)
+  // async createUserConversation(userId: string, payload: any) {
+  //   return firechat
+  //     .doc(`${ROOM_TYPES.USER_CONVERSATIONS}/${userId}`)
   //     .update({
   //       [payload.conversationType]: firestore.FieldValue.arrayUnion(
   //         payload.conversationId
   //       )
   //     })
   //     .catch((error) => {
-  //       tribl.doc(`${ROOM_TYPES.CHANNELS}/${userId}`).set({
+  //       firechat.doc(`${ROOM_TYPES.USER_CONVERSATIONS}/${userId}`).set({
   //         [payload.conversationType]: [payload.conversationId]
   //       });
   //     });
   // }
 
-  // USER ONLINE STATUS METHOD TO TRACK USER PRESENCE
-  async onlineStatus(userId: string) {
-    const userStatusRef = database.ref(`/status/${userId}`);
+  // THIS METHOD CREATES A NEW MESSAGE
+  async sendMessage(chatId: string, message: MessageInterface) {
+    const timestamp = new Date().toString();
 
-    // Set the user online status to be through
-    userStatusRef.set({
-      state: 'online',
-      last_changed: firestore.FieldValue.serverTimestamp()
-    });
+    await firechat
+      .collection(ROOM_TYPES.CONVERSATIONS)
+      .doc(chatId.trim())
+      .collection(ROOM_TYPES.CHATS)
+      .doc(message._id)
+      .set({
+        ...message,
+        replayCount: 0,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      });
 
-    return userStatusRef.onDisconnect().update({
-      state: 'offline',
-      last_changed: firestore.FieldValue.serverTimestamp()
-    });
+    await firechat
+      .collection(ROOM_TYPES.GROUPS)
+      .doc(chatId.trim())
+      .update({
+        updatedAt: timestamp,
+        displayMessage: message.text,
+        unseenCount: firestore.FieldValue.increment(1)
+      });
   }
 
   // THIS METHOD GETS USERS DIRECT MESSAGES
@@ -120,7 +113,7 @@ class Firechat {
     // get user chat history via userId
     const groups = await firechat
       .collection(ROOM_TYPES.USER_CONVERSATIONS)
-      .doc(this.userId)
+      .doc(this.userId.trim())
       .get();
 
     if (!groups.exists) return null;
@@ -133,7 +126,7 @@ class Firechat {
   }
 
   // THIS METHOD GETS USERS DIRECT MESSAGES
-  async getUserDirectMessages() {
+  async getUserDirectMessages(): Promise<FirebaseFirestoreTypes.Query | null> {
     // get user chat history via userId
     const groups = await this.getUserConversations();
 
@@ -141,20 +134,14 @@ class Firechat {
 
     const directMessages = groups?.directMessages;
 
-    const directMessagesData = await firechat
+    return firechat
       .collection(ROOM_TYPES.GROUPS)
       .where(firestore.FieldPath.documentId(), 'in', directMessages)
-      .get();
-
-    const userDirectMessages = directMessagesData.docs.map(
-      (directDm) => directDm.data() as GroupInterface
-    );
-
-    return userDirectMessages;
+      .limit(30);
   }
 
   // THIS METHOD GETS USERS CONVERSATIONS
-  async getUserGroupMessages(): Promise<GroupInterface[] | null> {
+  async getUserGroupMessages(): Promise<FirebaseFirestoreTypes.Query | null> {
     // get user chat history via userId
     const groups = await this.getUserConversations();
 
@@ -162,29 +149,35 @@ class Firechat {
 
     const groupMessages = groups?.groupMessages;
 
-    const groupMessagesData = await firechat
+    return firechat
       .collection(ROOM_TYPES.GROUPS)
       .where(firestore.FieldPath.documentId(), 'in', groupMessages)
-      .get();
+      .limit(30);
+  }
 
-    const userGroup = groupMessagesData.docs.map(
-      (group) => group.data() as GroupInterface
-    );
-
-    return userGroup;
+  // GET ROOM CHAT MESSAGES
+  getChatMessages(chatId: string) {
+    return firechat
+      .collection(ROOM_TYPES.CONVERSATIONS)
+      .doc(chatId.trim())
+      .collection(ROOM_TYPES.CHATS)
+      .orderBy('createdAt', 'desc');
   }
 
   // USER ONLINE STATUS METHOD TO TRACK USER PRESENCE
-  async getChatMessages(chatId: string) {
-    const chatMessages = await firechat
-      .doc(ROOM_TYPES.CONVERSATIONS)
-      .collection(chatId)
-      .doc('messages')
-      .get();
+  async onlineStatus(userId: string) {
+    const userStatusRef = database.ref(`/status/${userId.trim()}`);
 
-    const messages = chatMessages.data();
+    // Set the user online status to be through
+    userStatusRef.set({
+      state: 'online',
+      last_changed: firestore.FieldValue.serverTimestamp()
+    });
 
-    console.tron({ messages });
+    return userStatusRef.onDisconnect().update({
+      state: 'offline',
+      last_changed: firestore.FieldValue.serverTimestamp()
+    });
   }
 }
 

@@ -48,7 +48,7 @@ export default function contactSlide(props: MemberDetailProps) {
 
   const handleMessageNavigation = useCallback(
     () =>
-      navigation.navigate('ChatScreen', {
+      navigation.navigate('ConnectionChatScreen', {
         title: `${firstName} ${lastName}` || `${fName} ${lName}`
       }),
     []

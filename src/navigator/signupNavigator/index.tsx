@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   createStackNavigator,
   TransitionPresets
@@ -25,21 +25,36 @@ export default function SignupNavigator() {
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
 
+  const [update, setUpdate] = useState(false);
+
   const userDetails = data?.userDetails;
+
+  const currentLocation = userDetails?.currentLocation[0];
+  const birthPlace = userDetails?.birthPlace[0];
 
   const [updatePassport] = useMutation<UpdatePassportInterface>(
     UPDATE_USER_PASSPORT,
     {
       variables: {
         payload: {
-          dob: { formatted: userDetails?.dob },
+          dob: { formatted: userDetails?.dob.formatted },
           avatar: userDetails?.avatar,
           lastName: userDetails?.lastName,
           firstName: userDetails?.firstName,
           interest: userDetails?.interest,
           identity: userDetails?.identity,
-          currentLocation: userDetails?.currentLocation[0],
-          birthPlace: userDetails?.birthPlace[0]
+          currentLocation: {
+            lat: currentLocation?.lat,
+            long: currentLocation?.long,
+            country: currentLocation?.country,
+            state: currentLocation?.state
+          },
+          birthPlace: {
+            lat: birthPlace?.lat,
+            long: birthPlace?.long,
+            country: birthPlace?.country,
+            state: birthPlace?.state
+          }
         }
       }
     }
@@ -65,22 +80,11 @@ export default function SignupNavigator() {
             return navigation.navigate(routeNames[nextRoute]);
           }
 
+          setUpdate(!update);
           const { data } = await updatePassport();
 
-          if (data?.success) {
-            return console.tron({
-              payload: {
-                dob: { formatted: userDetails?.dob },
-                avatar: userDetails?.avatar,
-                lastName: userDetails?.lastName,
-                firstName: userDetails?.firstName,
-                interest: userDetails?.interest,
-                identity: userDetails?.identity,
-                currentLocation: userDetails?.currentLocation[0],
-                birthPlace: userDetails?.birthPlace[0]
-              }
-            });
-
+          if (data?.updatePassport.success) {
+            setUpdate(!update);
             navigation.reset({
               index: 0,
               routes: [{ name: 'CommunityScreen' }]
@@ -98,6 +102,7 @@ export default function SignupNavigator() {
           headerRight: () => (
             <Button
               mode="text"
+              loading={update}
               color={colors.PRIMARY}
               labelStyle={{
                 fontSize: fonts.MEDIUM_SIZE,

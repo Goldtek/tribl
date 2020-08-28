@@ -1,10 +1,13 @@
+import { MessageInterface } from '../screens/inbox/types';
+
 // CHAT ROOM TYPES
 export enum ROOM_TYPES {
   CHANNELS = 'channels',
   GROUPS = 'groups',
   CONVERSATIONS = 'conversations',
   MESSAGE_REPLY = 'messageReply',
-  USER_CONVERSATIONS = 'userConversations'
+  USER_CONVERSATIONS = 'userConversations',
+  CHATS = 'CHATS'
 }
 
 export enum CONVERSATION_TYPES {
@@ -14,6 +17,13 @@ export enum CONVERSATION_TYPES {
 }
 
 export interface ChatRoom {
-  receivers?: string[];
+  conversationType: CONVERSATION_TYPES;
+  message: MessageInterface;
+  name: string;
+  receivers: {
+    title: string;
+    avatar: string;
+    receiverId: string;
+  }[];
   roomType: ROOM_TYPES.CHANNELS | ROOM_TYPES.GROUPS;
 }
