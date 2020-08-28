@@ -31,10 +31,10 @@ import {
   LocationContainer,
   Location,
   CitizenshipContainer,
-  LinkAccountsContainer,
-  InstagramButton,
-  SpotifyButton,
-  ButtonDot,
+  // LinkAccountsContainer,
+  // InstagramButton,
+  // SpotifyButton,
+  // ButtonDot,
   EditTextInput
 } from './styles';
 
@@ -42,8 +42,15 @@ export default function contactSlide() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({
-    date: '',
+  const [state, setState] = useState<{
+    date: Date | null;
+    editLastName: boolean;
+    editFirstName: boolean;
+    focusedFirstName: boolean;
+    focusedLastName: boolean;
+    showDatePicker: boolean;
+  }>({
+    date: null,
     editLastName: false,
     editFirstName: false,
     focusedFirstName: false,
@@ -52,7 +59,11 @@ export default function contactSlide() {
   });
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
-    variables: { details: { dob: state.date } }
+    variables: {
+      details: {
+        dob: { formatted: state.date?.toString(), __typename: 'dateOfBirth' }
+      }
+    }
   });
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
@@ -63,12 +74,9 @@ export default function contactSlide() {
 
   const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
-  const onChange = useCallback((selectedDate: Date) => {
-    const date = formatMessageTime(selectedDate);
+  const onChange = useCallback((date: Date) => {
     setState({ ...state, date, showDatePicker: false });
-    setTimeout(() => {
-      return addUserDetails();
-    }, 0);
+    setTimeout(() => addUserDetails(), 0);
   }, []);
 
   const handleDatePicker = useCallback(() => {
@@ -198,7 +206,9 @@ export default function contactSlide() {
           contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
           onPress={handleDatePicker}
         >
-          {state.date ? state.date : t(`signup.passportScreen.dob`)}
+          {state.date
+            ? formatMessageTime(state.date)
+            : t(`signup.passportScreen.dob`)}
         </Button>
 
         <DateTimePicker
@@ -354,7 +364,7 @@ export default function contactSlide() {
         />
       </InterestContainer>
 
-      <LinkAccountsContainer>
+      {/* <LinkAccountsContainer>
         <Title
           style={{
             fontFamily: fonts.WORK_SANS_BOLD,
@@ -436,6 +446,7 @@ export default function contactSlide() {
           {t(`signup.passportScreen.spotifySubTitle`)}
         </Paragraph>
       </LinkAccountsContainer>
+     */}
     </ContactContainer>
   );
 }

@@ -8,7 +8,7 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "publish-ota-updates": "expo publish",
-    "clean-project": "react-native clean-project-project"
+    "clean-project": "react-native clean-project-auto"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
