@@ -19,6 +19,7 @@ interface HighlightProp extends NavigationInterface {
     firstName: string;
     lastName: string;
     avatar: string;
+    id: string;
   };
   highlight(T: any): any[];
   closeModal(): void;
@@ -36,8 +37,10 @@ const Highlight = (props: HighlightProp) => {
 
   const handleNavigation = () => {
     closeModal();
-    navigation.navigate('ChatScreen', {
-      title: `${hit.firstName} ${hit.lastName}`
+    navigation.navigate('ConnectionChatScreen', {
+      title: `${hit.firstName} ${hit.lastName}`,
+      avatar: hit.avatar,
+      receiverId: hit.id
     });
   };
 
