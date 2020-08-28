@@ -15,7 +15,19 @@ function GroupChatSlide(props: ScreenProp) {
   useEffect(() => {
     (async () => {
       const groups = await Firechat.getUserGroupMessages();
-      if (groups) setGroups(groups);
+      if (!groups) return;
+
+      const unsubscribe = groups.onSnapshot({
+        next: (snapshot) => {
+          const groupConversations = snapshot.docs.map((documentSnapshot) => {
+            return documentSnapshot.data() as GroupInterface;
+          });
+
+          setGroups(groupConversations);
+        }
+      });
+
+      return () => unsubscribe();
     })();
   }, []);
 
