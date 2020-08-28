@@ -7,17 +7,17 @@ import { DEVICE_FULL_WIDTH } from '../../utils/device';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedCommunitySkeletonProp {
-  skelentonSize?: number;
+  skeletonSize?: number;
 }
 
-function RecommendedCommunity({
-  skelentonSize = 1
+function RecommendedCommunitySkeleton({
+  skeletonSize = 1
 }: RecommendedCommunitySkeletonProp) {
   const { colors, fonts } = useThemeContext();
 
   return (
     <Fragment>
-      {[...Array(skelentonSize)].map((_, index) => (
+      {[...Array(skeletonSize)].map((_, index) => (
         <Card
           style={{
             width: '100%',
@@ -131,4 +131,4 @@ function RecommendedCommunity({
   );
 }
 
-export default React.memo(RecommendedCommunity);
+export default React.memo(RecommendedCommunitySkeleton);
