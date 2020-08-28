@@ -44,9 +44,7 @@ export default function ChatScreen(props: ScreenProp) {
           return documentSnapshot.data() as MessageInterface;
         });
 
-        setMessages((prevMessages) =>
-          GiftedChat.append(prevMessages, conversations)
-        );
+        setMessages(conversations);
       }
     });
 
