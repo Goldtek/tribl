@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
+import { TouchableRipple, Text } from 'react-native-paper';
+import { AntDesign } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../theme';
 import { Modalize } from 'react-native-modalize';
@@ -18,9 +20,13 @@ interface ModalProp {
 }
 
 function PrivacyModal(props: any) {
-  const { isVisible, closePrivacyModal, parentCallback } = props;
+  const { isVisible, closePrivacyModal, privacyValue, index } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const [state, setState] = useState({
+    value: props.selectedData
+  });
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -36,18 +42,32 @@ function PrivacyModal(props: any) {
     }
   }, [isVisible]);
 
-  const Data = [
+  enum privacyOptions {
+    EVERYONE,
+    CONNECTIONS,
+    ME
+  }
+
+  const handleChange = async (item: any) => {
+    setState({
+      ...state,
+      value: item
+    });
+    props.privacyValue(state.value);
+  };
+
+  const privacyList = [
     {
-      key: 'everybody',
-      text: 'everybody'
+      key: privacyOptions.EVERYONE,
+      text: privacyOptions.EVERYONE
     },
     {
-      key: 'my connections',
-      text: 'my connections'
+      key: privacyOptions.CONNECTIONS,
+      text: privacyOptions.CONNECTIONS
     },
     {
-      key: 'nobody',
-      text: 'nobody'
+      key: privacyOptions.ME,
+      text: privacyOptions.ME
     }
   ];
 
@@ -67,7 +87,83 @@ function PrivacyModal(props: any) {
             backgroundColor: 'transparent'
           }}
         >
-          <RadioButton Data={Data} parentCallBack={parentCallback} />
+          <TouchableRipple
+            onPress={() => handleChange(privacyOptions.EVERYONE)}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: RFValue(15),
+              paddingHorizontal: RFValue(15)
+            }}
+          >
+            <Fragment>
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: fonts.LARGE_SIZE + 2,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {privacyOptions[0]}
+              </Text>
+              {state.value === privacyOptions.EVERYONE ? (
+                <AntDesign name="check" size={25} color={colors.PRIMARY_TEXT} />
+              ) : null}
+            </Fragment>
+          </TouchableRipple>
+
+          <TouchableRipple
+            onPress={() => handleChange(privacyOptions.CONNECTIONS)}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: RFValue(15),
+              paddingHorizontal: RFValue(15)
+            }}
+          >
+            <Fragment>
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: fonts.LARGE_SIZE + 2,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {privacyOptions[1]}
+              </Text>
+              {state.value === privacyOptions.CONNECTIONS ? (
+                <AntDesign name="check" size={25} color={colors.PRIMARY_TEXT} />
+              ) : null}
+            </Fragment>
+          </TouchableRipple>
+
+          <TouchableRipple
+            onPress={() => handleChange(privacyOptions.ME)}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: RFValue(15),
+              paddingHorizontal: RFValue(15)
+            }}
+          >
+            <Fragment>
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: fonts.LARGE_SIZE + 2,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {privacyOptions[2]}
+              </Text>
+              {state.value === privacyOptions.ME ? (
+                <AntDesign name="check" size={25} color={colors.PRIMARY_TEXT} />
+              ) : null}
+            </Fragment>
+          </TouchableRipple>
         </Container>
       </Modalize>
     </Portal>
