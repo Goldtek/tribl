@@ -20,3 +20,7 @@ export const ToggleCover = styled.View`
   flex-direction: row;
   align-items: center;
 `;
+
+export const PrivacyOption = styled.View`
+  padding: 0 20px;
+`;
