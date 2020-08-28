@@ -15,6 +15,7 @@ import { TextContainer, OnlineNotifier, AvatarContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp {
+  id: string;
   avatar: string;
   firstName: string;
   lastName: string;
@@ -36,15 +37,17 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const [pending, setPending] = useState(false);
 
   const {
-    avatar = 'https://picsum.photos/700',
-    firstName = 'Peter',
-    lastName = 'Doe',
+    avatar,
+    firstName,
+    lastName,
     currentLocation,
     lastChild,
     index,
     phoneNumber,
     connected
   } = props;
+
+  if (!currentLocation.length) return null;
 
   const { state, country } = currentLocation[0];
 
@@ -67,8 +70,10 @@ export default function RecommendedUser(props: RecommendedUserProp) {
 
   const handleMessageNavigation = useCallback(
     () =>
-      navigation.navigate('ChatScreen', {
-        title: `${firstName} ${lastName}`
+      navigation.navigate('ConnectionChatScreen', {
+        title: `${firstName} ${lastName}`,
+        avatar,
+        receiverId: props.id
       }),
     []
   );
