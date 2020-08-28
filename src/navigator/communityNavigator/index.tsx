@@ -131,7 +131,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             </TouchableHighlight>
           ),
           headerRight: () => (
-            <AlgoliaSearch indexName="tribl_community_develop">
+            <AlgoliaSearch indexName="tribl_passport_staging">
               <AlgoliaCommunityList />
             </AlgoliaSearch>
           ),
