@@ -55,15 +55,17 @@ export default function AvatarUploadScreen(props: ScreenProp) {
   };
 
   const handleSubmit = async () => {
-    if (!avatar) return handleInputError('inputError');
+    if (!avatar.uri) return handleInputError('inputError');
 
     setAvatar({ ...avatar, loading: true });
 
     try {
       const formData = await cloudinaryUpload(avatar.imageData);
+
       const { secure_url } = (await formData.json()) as CloudinaryResponseType;
 
       setAvatar({ ...avatar, secure_url });
+
       setTimeout(() => {
         navigation.navigate('IdentifyUserScreen');
         addUserImage();
@@ -83,7 +85,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
         mediaType: 'photo'
       })) as Image;
 
-      if (size > 300000) divider = size / 300000;
+      if (size > 300000) divider = size / 900000;
 
       const { uri: resizedImage } = await ImageResizer.createResizedImage(
         path,
@@ -95,16 +97,10 @@ export default function AvatarUploadScreen(props: ScreenProp) {
         undefined
       );
 
-      const {
-        mime,
-        data,
-        filename,
-        cropRect,
-        path: file
-      } = await ImagePicker.openCropper({
+      const { mime, data, filename, cropRect } = await ImagePicker.openCropper({
         path: resizedImage,
-        width: RFValue(90),
-        height: RFValue(90),
+        width: RFValue(200),
+        height: RFValue(200),
         includeBase64: true
       });
 
