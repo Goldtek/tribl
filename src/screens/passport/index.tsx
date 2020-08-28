@@ -51,11 +51,13 @@ export default function PassportScreen(props: ScreenProp) {
 
   const onShare = async () => {
     try {
-      const { action } = await Share.share({
-        title: t(`signup.passportScreen.title`),
-        message: t(`signup.passportScreen.sharePassportMessage`),
-        url: userDetails?.avatar
-      });
+      const { action } = await Share.share(
+        {
+          title: t(`signup.passportScreen.title`),
+          message: t(`signup.passportScreen.sharePassportMessage`)
+        },
+        { dialogTitle: t(`signup.passportScreen.title`) }
+      );
 
       if (action === Share.dismissedAction) return;
 

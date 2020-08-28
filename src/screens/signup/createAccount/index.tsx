@@ -52,9 +52,9 @@ export default function CreateAccountScreen(props: ScreenProp) {
     {
       variables: {
         payload: {
-          firstName: state.firstName,
-          lastName: state.lastName,
-          email: state.email
+          firstName: state.firstName.toLowerCase().trim(),
+          lastName: state.lastName.toLowerCase().trim(),
+          email: state.email.toLowerCase().trim()
         }
       }
     }

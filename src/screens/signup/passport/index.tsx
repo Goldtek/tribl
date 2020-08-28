@@ -15,16 +15,16 @@ import { useThemeContext } from '../../../theme';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
 import { StoreInterface } from '../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
-import { FontAwesome } from '@expo/vector-icons';
+// import { FontAwesome } from '@expo/vector-icons';
 import TabViewSlider from './widgets/tabs';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   HeaderContainer,
   ImageContainer,
-  ImageTextContainer,
-  ImageIconContainer,
-  SocialMediaButton
+  ImageTextContainer
+  // ImageIconContainer,
+  // SocialMediaButton
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -42,11 +42,13 @@ export default function PassportScreen(props: ScreenProp) {
 
   const onShare = async () => {
     try {
-      const { action } = await Share.share({
-        title: t(`signup.passportScreen.title`),
-        message: t(`signup.passportScreen.sharePassportMessage`),
-        url: 'www.jointribl.com'
-      });
+      const { action } = await Share.share(
+        {
+          title: t(`signup.passportScreen.title`),
+          message: t(`signup.passportScreen.sharePassportMessage`)
+        },
+        { dialogTitle: t(`signup.passportScreen.title`) }
+      );
 
       if (action === Share.dismissedAction) return;
 

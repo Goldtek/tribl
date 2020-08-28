@@ -8,6 +8,8 @@ export interface MessageInterface {
   _id: string;
   text: string;
   createdAt: Date;
+  updatedAt: Date;
+  replayCount: number;
   user: User;
   image?: string;
   video?: string;
@@ -38,7 +40,11 @@ export interface GroupInterface {
   unseenCount: number;
   displayMessage: string;
   lastMessageTime: Date;
-  members: string[];
+  members: {
+    title: string;
+    avatar: string;
+    receiverId: string;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }

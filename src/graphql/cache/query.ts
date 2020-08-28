@@ -10,7 +10,9 @@ import gql from 'graphql-tag';
 export const GET_USER_DETAILS = gql`
   query GetUserDetails {
     userDetails @client {
-      dob
+      dob {
+        formatted
+      }
       email
       phoneNumber
       countryCode
@@ -31,7 +33,6 @@ export const GET_USER_DETAILS = gql`
       }
       identity
       interest
-      userId
       avatar
     }
   }

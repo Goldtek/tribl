@@ -12,6 +12,7 @@ export type RootStackParamList = {
   UserLocationScreen: undefined;
   WalkThroughScreen: undefined;
   NewMessageScreen: undefined;
+  NewMessageScreen: undefined;
   CommunityScreen: undefined;
   NewChatSearch: undefined;
   PrivacyScreen: undefined;
@@ -21,10 +22,10 @@ export type RootStackParamList = {
   TriblScreen: undefined;
   LoginScreen: undefined;
   OTPScreen: undefined;
-  ChatScreen: { title: string };
   CommunityDetailScreen: {};
   MemberDetailScreen: {};
-  NewMessageScreen: undefined;
+  ChatScreen: { title: string };
+  ConnectionChatScreen: { title: string; avatar: string; receiverId: string };
 };
 
 interface StackNavigationInterface extends StackActionHelpers {
