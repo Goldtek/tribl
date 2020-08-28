@@ -43,7 +43,7 @@ export default function contactSlide() {
   const birthPlace = userDetails?.birthPlace[0];
 
   const [state, setState] = useState({
-    date: userDetails?.dob,
+    date: userDetails?.dob.formatted,
     firstName: '',
     lastName: '',
     editLastName: false,
