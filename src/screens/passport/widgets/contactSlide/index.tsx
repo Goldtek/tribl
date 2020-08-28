@@ -59,7 +59,7 @@ export default function contactSlide(props: any) {
   const [isVisible, setIsVisible] = useState(false);
 
   const [state, setState] = useState({
-    date: userDetails?.dob,
+    date: userDetails?.dob.formatted,
     firstName: userDetails?.firstName,
     lastName: userDetails?.lastName,
     disableLastName: true,
