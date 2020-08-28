@@ -11,6 +11,7 @@ import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
+import PassportSkeleton from './widget';
 
 import {
   ContactContainer,
@@ -57,9 +58,12 @@ export default function contactSlide(props: MemberDetailProps) {
     variables: { payload: { phoneNumber } }
   });
 
-  const { data: passportData } = useQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
+  const { loading: passportLoading, data: passportData } = useQuery(
+    GET_SINGLE_PASSPORT,
+    {
+      variables: { id }
+    }
+  );
 
   const SinglePassport = passportData?.singlePassport;
 
@@ -94,226 +98,230 @@ export default function contactSlide(props: MemberDetailProps) {
       }}
       style={{ backgroundColor: colors.WHITE }}
     >
-      <ContactContainer>
-        <Header>
-          <FastImage
-            resizeMode={FastImage.resizeMode.cover}
-            source={{
-              uri: SinglePassport?.avatar,
-              priority: FastImage.priority.high
-            }}
-            style={{
-              width: RFValue(100),
-              height: RFValue(80),
-              borderRadius: 4
-            }}
-          />
-          <ConnectionCover>
-            <Connection>
-              <Paragraph
+      {passportLoading ? (
+        <PassportSkeleton />
+      ) : (
+        <ContactContainer>
+          <Header>
+            <FastImage
+              resizeMode={FastImage.resizeMode.cover}
+              source={{
+                uri: SinglePassport?.avatar,
+                priority: FastImage.priority.high
+              }}
+              style={{
+                width: RFValue(100),
+                height: RFValue(80),
+                borderRadius: 4
+              }}
+            />
+            <ConnectionCover>
+              <Connection>
+                <Paragraph
+                  style={{
+                    color: colors.PRIMARY_TEXT,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: fonts.LARGE_SIZE
+                  }}
+                >
+                  {SinglePassport?.connectionCount}
+                </Paragraph>
+                <Paragraph
+                  style={{
+                    fontSize: fonts.MEDIUM_SIZE,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {t(`community.memberPassport.connection`)}
+                </Paragraph>
+              </Connection>
+              <Connection>
+                <Paragraph
+                  style={{
+                    color: colors.PRIMARY_TEXT,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: fonts.LARGE_SIZE
+                  }}
+                >
+                  {SinglePassport?.communityCount}
+                </Paragraph>
+                <Paragraph
+                  style={{
+                    fontSize: fonts.MEDIUM_SIZE,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {t(`community.memberPassport.community`)}
+                </Paragraph>
+              </Connection>
+            </ConnectionCover>
+          </Header>
+
+          {SinglePassport?.connected === 'CONNECTED' ? (
+            <Button
+              onPress={handleMessageNavigation}
+              mode="outlined"
+              color={colors.SECONDARY_TEXT}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{ height: RFValue(55) }}
+              style={{
+                width: '100%',
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20)
+              }}
+            >
+              {t(`community.memberPassport.message`)}
+            </Button>
+          ) : pending || SinglePassport?.connected === 'PENDING' ? (
+            <Button
+              disabled={true}
+              mode="contained"
+              color={colors.PRIMARY_TEXT}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{ height: RFValue(55) }}
+              style={{
+                width: '100%',
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                backgroundColor: colors.DISABLED
+              }}
+            >
+              {t(`community.memberPassport.requested`)}
+            </Button>
+          ) : (
+            <GradientButton onPress={handleRequest} loading={loading}>
+              {t(`community.memberPassport.connect`)}
+            </GradientButton>
+          )}
+
+          {SinglePassport?.currentLocation || SinglePassport?.birthLocation ? (
+            <LocationContainer>
+              <Title
                 style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
                   color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: fonts.LARGE_SIZE
+                  textTransform: 'uppercase',
+                  marginBottom: 10,
+                  marginTop: 40
                 }}
               >
-                {SinglePassport?.connectionCount}
-              </Paragraph>
-              <Paragraph
+                {t(`signup.passportScreen.locality`)}
+              </Title>
+              {SinglePassport?.birthPlace ? (
+                <Location>
+                  <AntDesign
+                    name="home"
+                    color="#CACEE5"
+                    size={20}
+                    style={{
+                      padding: RFValue(12),
+                      borderRadius: 4,
+                      margin: 0,
+                      marginRight: 10,
+                      backgroundColor: colors.ACTION
+                    }}
+                  />
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${SinglePassport?.birthPlace[0].state} ${SinglePassport?.birthPlace[0].country}`}
+                  </Paragraph>
+                </Location>
+              ) : null}
+              {SinglePassport?.currentLocation ? (
+                <Location>
+                  <SimpleLineIcons
+                    name="location-pin"
+                    color="#CACEE5"
+                    size={20}
+                    style={{
+                      padding: RFValue(12),
+                      borderRadius: 4,
+                      margin: 0,
+                      marginRight: 10,
+                      backgroundColor: colors.ACTION
+                    }}
+                  />
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${SinglePassport?.currentLocation[0].state} ${SinglePassport?.currentLocation[0].country}`}
+                  </Paragraph>
+                </Location>
+              ) : null}
+            </LocationContainer>
+          ) : null}
+
+          {SinglePassport?.identity?.length ? (
+            <IdentityContainer>
+              <Title
                 style={{
-                  fontSize: fonts.MEDIUM_SIZE,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase',
+                  marginBottom: 10
+                }}
+              >
+                {t(`signup.passportScreen.identity`)}
+              </Title>
+
+              <Identities>
+                {SinglePassport?.identity?.map((identity: any) => (
+                  <IdentityText key={identity.id}>{identity.name}</IdentityText>
+                ))}
+              </Identities>
+            </IdentityContainer>
+          ) : null}
+
+          {SinglePassport?.interest?.length ? (
+            <InterestContainer>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
                   color: colors.PRIMARY_TEXT,
                   textTransform: 'uppercase'
                 }}
               >
-                {t(`community.memberPassport.connection`)}
-              </Paragraph>
-            </Connection>
-            <Connection>
-              <Paragraph
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: fonts.LARGE_SIZE
-                }}
-              >
-                {SinglePassport?.communityCount}
-              </Paragraph>
-              <Paragraph
-                style={{
-                  fontSize: fonts.MEDIUM_SIZE,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`community.memberPassport.community`)}
-              </Paragraph>
-            </Connection>
-          </ConnectionCover>
-        </Header>
-
-        {SinglePassport?.connected === 'CONNECTED' ? (
-          <Button
-            onPress={handleMessageNavigation}
-            mode="outlined"
-            color={colors.SECONDARY_TEXT}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{ height: RFValue(55) }}
-            style={{
-              width: '100%',
-              height: RFValue(55),
-              borderRadius: 4,
-              marginTop: RFValue(20)
-            }}
-          >
-            {t(`community.memberPassport.message`)}
-          </Button>
-        ) : pending || SinglePassport?.connected === 'PENDING' ? (
-          <Button
-            disabled={true}
-            mode="contained"
-            color={colors.PRIMARY_TEXT}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{ height: RFValue(55) }}
-            style={{
-              width: '100%',
-              height: RFValue(55),
-              borderRadius: 4,
-              marginTop: RFValue(20),
-              backgroundColor: colors.DISABLED
-            }}
-          >
-            {t(`community.memberPassport.requested`)}
-          </Button>
-        ) : (
-          <GradientButton onPress={handleRequest} loading={state.loading}>
-            {t(`community.memberPassport.connect`)}
-          </GradientButton>
-        )}
-
-        {SinglePassport?.currentLocation || SinglePassport?.birthLocation ? (
-          <LocationContainer>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginBottom: 10,
-                marginTop: 40
-              }}
-            >
-              {t(`signup.passportScreen.locality`)}
-            </Title>
-            {SinglePassport?.birthPlace ? (
-              <Location>
-                <AntDesign
-                  name="home"
-                  color="#CACEE5"
-                  size={20}
-                  style={{
-                    padding: RFValue(12),
-                    borderRadius: 4,
-                    margin: 0,
-                    marginRight: 10,
-                    backgroundColor: colors.ACTION
-                  }}
-                />
-                <Paragraph
-                  style={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize',
-                    marginBottom: 10
-                  }}
-                >
-                  {`${SinglePassport?.birthPlace[0].state} ${SinglePassport?.birthPlace[0].country}`}
-                </Paragraph>
-              </Location>
-            ) : null}
-            {SinglePassport?.currentLocation ? (
-              <Location>
-                <SimpleLineIcons
-                  name="location-pin"
-                  color="#CACEE5"
-                  size={20}
-                  style={{
-                    padding: RFValue(12),
-                    borderRadius: 4,
-                    margin: 0,
-                    marginRight: 10,
-                    backgroundColor: colors.ACTION
-                  }}
-                />
-                <Paragraph
-                  style={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize',
-                    marginBottom: 10
-                  }}
-                >
-                  {`${SinglePassport?.currentLocation[0].state} ${SinglePassport?.currentLocation[0].country}`}
-                </Paragraph>
-              </Location>
-            ) : null}
-          </LocationContainer>
-        ) : null}
-
-        {SinglePassport?.identity?.length ? (
-          <IdentityContainer>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginBottom: 10
-              }}
-            >
-              {t(`signup.passportScreen.identity`)}
-            </Title>
-
-            <Identities>
-              {SinglePassport?.identity?.map((identity: any) => (
-                <IdentityText key={identity.id}>{identity.name}</IdentityText>
-              ))}
-            </Identities>
-          </IdentityContainer>
-        ) : null}
-
-        {SinglePassport?.interest?.length ? (
-          <InterestContainer>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase'
-              }}
-            >
-              {t(`signup.passportScreen.interest`)}
-            </Title>
-            <Identities>
-              {SinglePassport?.interest?.map((interest: any) => (
-                <IdentityText key={interest.id}>{interest.name}</IdentityText>
-              ))}
-            </Identities>
-          </InterestContainer>
-        ) : null}
-      </ContactContainer>
+                {t(`signup.passportScreen.interest`)}
+              </Title>
+              <Identities>
+                {SinglePassport?.interest?.map((interest: any) => (
+                  <IdentityText key={interest.id}>{interest.name}</IdentityText>
+                ))}
+              </Identities>
+            </InterestContainer>
+          ) : null}
+        </ContactContainer>
+      )}
     </ScrollView>
   );
 }
