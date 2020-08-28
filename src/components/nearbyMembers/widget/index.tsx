@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useCallback } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation } from '@apollo/react-hooks';
@@ -30,7 +30,7 @@ function NearbyModal(props: PopularUserProp) {
   const { t } = useTranslation();
 
   const {
-    avatar = 'https://picsum.photos/700',
+    avatar,
     firstName,
     lastName,
     currentLocation,
@@ -41,6 +41,7 @@ function NearbyModal(props: PopularUserProp) {
   } = props;
 
   const [loading, setLoading] = useState(false);
+  const [pending, setPending] = useState(false);
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: {
@@ -53,12 +54,21 @@ function NearbyModal(props: PopularUserProp) {
     try {
       const { data } = await requestConnection();
       if (data?.requestConnection) {
-        setLoading(loading);
+        setLoading(false);
+        setPending(true);
       }
     } catch (error) {
-      setLoading(loading);
+      setLoading(false);
     }
   };
+
+  const handleMessageNavigation = useCallback(
+    () =>
+      navigation.navigate('ChatScreen', {
+        title: `${firstName} ${lastName}`
+      }),
+    []
+  );
 
   const handleNavigation = () => {
     closeNearbyModal();
@@ -120,7 +130,7 @@ function NearbyModal(props: PopularUserProp) {
               {`${state}, ${country}`}
             </Paragraph>
           </TextContainer>
-          {connected == 'PENDING' ? (
+          {connected == 'PENDING' || pending ? (
             <Button
               mode="text"
               disabled={true}
@@ -144,6 +154,31 @@ function NearbyModal(props: PopularUserProp) {
               }}
             >
               {t(`community.recommended.pending`)}
+            </Button>
+          ) : connected == 'CONNECTED' ? (
+            <Button
+              mode="contained"
+              uppercase={false}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize',
+                color: colors.PRIMARY_TEXT
+              }}
+              contentStyle={{
+                backgroundColor: colors.DISABLED,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              style={{
+                borderRadius: 5,
+                width: RFValue(80),
+                height: RFValue(30),
+                marginRight: RFValue(15)
+              }}
+              onPress={handleMessageNavigation}
+            >
+              {t(`community.recommended.message`)}
             </Button>
           ) : (
             <Button
