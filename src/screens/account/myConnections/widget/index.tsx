@@ -10,6 +10,7 @@ import { Feather } from '@expo/vector-icons';
 import { NameContainer } from './styles';
 
 interface ConnectionProp extends NavigationInterface {
+  id: string;
   avatar: string;
   lastSeen: string;
   firstName: string;
@@ -21,12 +22,9 @@ interface ConnectionProp extends NavigationInterface {
 const Connection = (props: ConnectionProp) => {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
-  const {
-    avatar = 'https://picsum.photos/700',
-    lastSeen = '3 mins ago',
-    firstName,
-    lastName
-  } = props;
+
+  const { id, avatar, lastSeen = '3 mins ago', firstName, lastName } = props;
+
   return (
     <TouchableRipple
       style={{
@@ -91,8 +89,10 @@ const Connection = (props: ConnectionProp) => {
             alignItems: 'center'
           }}
           onPress={() =>
-            navigation.navigate('ChatScreen', {
-              title: `${firstName} ${lastName}`
+            navigation.navigate('ConnectionChatScreen', {
+              title: `${firstName} ${lastName}`,
+              avatar: avatar,
+              receiverId: id
             })
           }
         >
