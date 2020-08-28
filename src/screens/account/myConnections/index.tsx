@@ -1,13 +1,12 @@
 import React, { Fragment } from 'react';
 import { NavigationInterface } from '../../types';
-import { Text, TouchableRipple, Title } from 'react-native-paper';
+import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
 import { StatusBar, FlatList, TouchableHighlight } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
 import AlgoliaSearch from '../../../components/algoliaSearch';
@@ -26,15 +25,12 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeArea();
   const { t } = useTranslation();
-  const navigation = useNavigation();
 
   const { data } = useQuery(GET_MY_CONNECTIONS);
 
   const myConnection = data?.myConnections;
 
-  const _renderItem = ({ item }: any) => (
-    <Connection key={item.id} {...item} {...props} />
-  );
+  const _renderItem = ({ item }: any) => <Connection key={item.id} {...item} />;
 
   return (
     <Fragment>
@@ -97,7 +93,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
               contentContainerStyle={{
                 flexGrow: 1,
                 marginTop: RFValue(10),
-                paddingBottom: RFValue(120)
+                paddingBottom: RFValue(60)
               }}
               showsVerticalScrollIndicator={false}
               renderItem={_renderItem}
