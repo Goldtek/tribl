@@ -23,7 +23,7 @@ export default function RecommendedUserSkeleton({
     <Fragment>
       {[...Array(skeletonSize)].map((_, index) => (
         <Card
-          key={index}
+          key={index.toString()}
           style={{
             width: RFValue(DEVICE_FULL_WIDTH / 3),
             height: RFValue(200),
