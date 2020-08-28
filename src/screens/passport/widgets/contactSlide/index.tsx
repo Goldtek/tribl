@@ -23,7 +23,7 @@ import { MyPassportInterface } from '../../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../utils/timesince';
 import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
-import IdentityModal from '../interestModal';
+import IdentityModal from '../identityModal';
 
 import {
   ContactContainer,

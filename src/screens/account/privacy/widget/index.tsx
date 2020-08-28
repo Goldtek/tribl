@@ -8,7 +8,6 @@ import { useThemeContext } from '../../../../theme';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../../../utils/device';
-import RadioButton from './radioButton ';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -20,7 +19,7 @@ interface ModalProp {
 }
 
 function PrivacyModal(props: any) {
-  const { isVisible, closePrivacyModal, privacyValue, index } = props;
+  const { isVisible, closePrivacyModal } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
