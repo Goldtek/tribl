@@ -161,7 +161,7 @@ class Firechat {
       .collection(ROOM_TYPES.CONVERSATIONS)
       .doc(chatId.trim())
       .collection(ROOM_TYPES.CHATS)
-      .limit(20);
+      .orderBy('createdAt', 'desc');
   }
 
   // USER ONLINE STATUS METHOD TO TRACK USER PRESENCE
