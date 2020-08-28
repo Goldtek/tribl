@@ -33,10 +33,9 @@ type Location = {
 };
 
 export interface PassportInterface {
-  dob: string;
+  dob: { formatted: string | null; __typename: string };
   email: string;
   avatar: string;
-  userId: string;
   countryCode: string;
   firstName: string;
   lastName: string;
@@ -107,6 +106,7 @@ export type CreateAccountInterface = {
   };
 };
 
+// USER PASSPORT (RESPONSE) TYPE
 export type MyPassportInterface = {
   myPassport: PassportInterface;
 };
@@ -118,6 +118,8 @@ export type IdentitiesInterface = {
 
 // SERVER UPDATE USER PASSPORT (RESPONSE) TYPE
 export type UpdatePassportInterface = {
-  success: boolean;
-  _id: string;
+  updatePassport: {
+    success: boolean;
+    __typename: string;
+  };
 };
