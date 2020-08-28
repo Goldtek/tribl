@@ -10,7 +10,7 @@ import {
   ActivityIndicator
 } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 // import { FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationInterface } from '../types';
@@ -18,12 +18,15 @@ import { useThemeContext } from '../../theme';
 import TabViewSlider from './widgets/tabs';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
 import { MyPassportInterface } from '../../graphql/types';
-
+import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   HeaderContainer,
   ImageContainer,
-  ImageTextContainer
+  ImageTextContainer,
+  Connection,
+  ConnectionCover,
+  Cover
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
@@ -34,13 +37,17 @@ interface ScreenProp extends NavigationInterface {}
 export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
-  const [imageLoad, setImageLoad] = useState(true);
-  const { top: paddingTop } = useSafeAreaInsets();
-
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const { data: userData, refetch } = useQuery<MyPassportInterface>(
+    GET_USER_PASSPORT
+  );
 
   const userDetails = userData?.myPassport;
+  const [state, setState] = useState({
+    details: {},
+    loading: false
+  });
+  const [imageLoad, setImageLoad] = useState(true);
+  const { top: paddingTop } = useSafeAreaInsets();
 
   const onShare = async () => {
     try {
@@ -55,6 +62,67 @@ export default function PassportScreen(props: ScreenProp) {
       // PROFILE SHARED HERE
     } catch (error) {
       console.error(error.message);
+    }
+  };
+
+  const getUserDetails = (childData: any) => {
+    setState({
+      ...state,
+      details: childData
+    });
+  };
+  //@ts-ignore
+  const firstName = state?.details?.firstName;
+  //@ts-ignore
+  const lastName = state?.details?.lastName;
+  //@ts-ignore
+  const dob = state?.details?.date;
+  //@ts-ignore
+  const identity = state?.details?.selectedIdentity || [];
+  const SelectedIdentities = Array.from(identity?.values());
+
+  const [updatePassport] = useMutation(UPDATE_PASSPORT, {
+    variables: {
+      payload: {
+        firstName: firstName,
+        lastName: lastName,
+        dob: dob,
+        identity: SelectedIdentities,
+        currentLocation: {
+          state: userDetails?.currentLocation[0].state,
+          country: userDetails?.currentLocation[0].country,
+          long: userDetails?.currentLocation[0].long,
+          lat: userDetails?.currentLocation[0].lat
+        },
+        birthPlace: {
+          state: userDetails?.currentLocation[0].state,
+          country: userDetails?.currentLocation[0].country,
+          long: userDetails?.currentLocation[0].long,
+          lat: userDetails?.currentLocation[0].lat
+        }
+      }
+    }
+  });
+
+  const handleRequest = async () => {
+    setState({
+      ...state,
+      loading: true
+    });
+    try {
+      const { data } = await updatePassport();
+      if (data?.updatePassport) {
+        refetch();
+        setState({
+          ...state,
+          loading: false
+        });
+      }
+    } catch (error) {
+      setState({
+        ...state,
+        loading: false
+      });
     }
   };
 
@@ -77,30 +145,26 @@ export default function PassportScreen(props: ScreenProp) {
         }}
       >
         <HeaderContainer>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
-              color: colors.WHITE,
-              textTransform: 'capitalize',
-              lineHeight: RFValue(30)
-            }}
-          >
-            {t(`signup.passportScreen.title`)}
-          </Title>
-
-          <Paragraph
-            style={{
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.LARGE_SIZE - 1),
-              color: colors.WHITE,
-              marginTop: RFValue(10),
-              lineHeight: RFValue(22)
-            }}
-          >
-            {t(`signup.passportScreen.subTitle`)}
-          </Paragraph>
-
+          <Cover>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+                color: colors.WHITE,
+                textTransform: 'capitalize',
+                lineHeight: RFValue(30)
+              }}
+            >
+              {t(`signup.passportScreen.title`)}
+            </Title>
+            <Button
+              labelStyle={{ color: colors.WHITE }}
+              onPress={handleRequest}
+              loading={state.loading}
+            >
+              Done
+            </Button>
+          </Cover>
           <ImageContainer>
             <FastImage
               source={{
@@ -132,11 +196,72 @@ export default function PassportScreen(props: ScreenProp) {
                   fontSize: RFValue(fonts.LARGE_SIZE - 2),
                   paddingRight: 20,
                   lineHeight: 21,
-                  color: colors.WHITE
+                  color: colors.WHITE,
+                  textTransform: 'capitalize'
                 }}
               >
                 {`${userDetails?.firstName} ${userDetails?.lastName}`}
               </Paragraph>
+              <Paragraph
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  paddingRight: 20,
+                  lineHeight: 16,
+                  color: colors.WHITE,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {`${userDetails?.currentLocation[0].state} ${userDetails?.currentLocation[0].country}`}
+              </Paragraph>
+              <ConnectionCover>
+                <Connection>
+                  <Paragraph
+                    style={{
+                      color: colors.WHITE,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: fonts.LARGE_SIZE + 1,
+                      lineHeight: 20
+                    }}
+                  >
+                    {userDetails?.connectionCount}
+                  </Paragraph>
+                  <Paragraph
+                    style={{
+                      fontSize: fonts.MEDIUM_SIZE - 1,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.WHITE,
+                      textTransform: 'uppercase',
+                      lineHeight: 13
+                    }}
+                  >
+                    {t(`community.memberPassport.connection`)}
+                  </Paragraph>
+                </Connection>
+                <Connection>
+                  <Paragraph
+                    style={{
+                      color: colors.WHITE,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: fonts.LARGE_SIZE + 1,
+                      lineHeight: 20
+                    }}
+                  >
+                    {userDetails?.communityCount}
+                  </Paragraph>
+                  <Paragraph
+                    style={{
+                      fontSize: fonts.MEDIUM_SIZE - 1,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.WHITE,
+                      textTransform: 'uppercase',
+                      lineHeight: 13
+                    }}
+                  >
+                    {t(`community.memberPassport.community`)}
+                  </Paragraph>
+                </Connection>
+              </ConnectionCover>
 
               {/* <ImageIconContainer>
                 <SocialMediaButton
@@ -192,7 +317,7 @@ export default function PassportScreen(props: ScreenProp) {
             {t(`signup.passportScreen.sharePassport`)}
           </Button>
         </HeaderContainer>
-        <TabViewSlider />
+        <TabViewSlider getUserDetails={getUserDetails} />
       </ScrollView>
     </SafeAreaView>
   );

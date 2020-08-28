@@ -56,7 +56,10 @@ export default function HomeScreen(props: ScreenProp) {
 
   const myCommunity = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers;
-  const community = communityData?.recommendedCommunities[0];
+  const community = communityData?.recommendedCommunities;
+  const randomCommunity =
+    community?.length &&
+    community[Math.floor(Math.random() * community.length)];
 
   const { data: firebase, loading } = useQuery<GenerateFirebaseTokenIT>(
     GET_FIREBASE_TOKEN
@@ -221,7 +224,7 @@ export default function HomeScreen(props: ScreenProp) {
           <RecommendedCommunityContainer>
             {community ? (
               <RecommendedCommunity
-                {...community}
+                {...randomCommunity}
                 onPress={handleJoinCommunity}
               />
             ) : (
