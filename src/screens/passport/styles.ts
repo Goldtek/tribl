@@ -15,7 +15,6 @@ export const ImageContainer = styled.View`
 export const ImageTextContainer = styled.View`
   flex: 1;
   margin-left: 20px;
-  justify-content: space-between;
   padding-bottom: 10px;
 `;
 
@@ -32,4 +31,22 @@ export const SocialMediaButton = styled.TouchableHighlight`
   border-radius: 4px;
   background-color: ${({ theme }) => theme.colors.PRIMARY_LIGHT};
   margin-right: 15px;
+`;
+
+export const ConnectionCover = styled.View`
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: ${RFValue(15)}px;
+  margin-right: ${RFValue(15)}px;
+`;
+
+export const Connection = styled.View`
+  align-items: center;
+`;
+
+export const Cover = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;
