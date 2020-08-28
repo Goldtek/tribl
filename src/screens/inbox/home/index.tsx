@@ -39,7 +39,6 @@ export default function InboxScreen() {
     return (
       <TabBar
         {...props}
-        // scrollEnabled={true}
         indicatorStyle={{ backgroundColor: colors.PRIMARY, height: RFValue(4) }}
         style={{
           ...GLOBAL_HEADER_STYLE,
@@ -67,24 +66,25 @@ export default function InboxScreen() {
         {Platform.select({
           ios: (
             <TabView
+              lazy
               navigationState={{ index: tabIndex, routes }}
               renderScene={renderScene}
               renderPager={renderPager}
               renderTabBar={renderTabBar}
               onIndexChange={setTabIndex}
               initialLayout={{ width: DEVICE_FULL_WIDTH }}
-              swipeEnabled={false}
             />
           ),
 
           android: (
             <TabView
+              lazy
+              swipeEnabled={true}
               navigationState={{ index: tabIndex, routes }}
               renderScene={renderScene}
               renderTabBar={renderTabBar}
               onIndexChange={setTabIndex}
               initialLayout={{ width: DEVICE_FULL_WIDTH }}
-              swipeEnabled={false}
             />
           )
         })}

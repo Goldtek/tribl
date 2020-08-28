@@ -23,17 +23,10 @@ function Member(props: MemberProp) {
   const navigation = useNavigation();
 
   const { colors, fonts } = useThemeContext();
-  const {
-    avatar = 'https://picsum.photos/700',
-    name = 'Paul Maet',
-    firstName,
-    lastName,
-    lastSeen
-  } = props;
+  const { avatar, name, firstName, lastName, lastSeen } = props;
 
   const handleNavigation = useCallback(
-    () =>
-      navigation.navigate('ChatScreen', { title: `${firstName} ${lastName}` }),
+    () => navigation.navigate('DirectChatScreen', { title: name }),
     []
   );
 
