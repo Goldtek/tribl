@@ -35,17 +35,20 @@ const cloudinaryUpload = async (payload: CloudinaryUploadType) => {
 
   const data = new FormData();
   data.append('file', uri);
-  data.append('upload_preset', ENVIRONMENT_VARIABLES.CLOUDINARY_PRESET);
-  data.append('cloud_name', ENVIRONMENT_VARIABLES.CLOUDINARY_NAME);
   data.append('mimetype', mime);
   data.append('name', filename);
   data.append('width', String(cropRect?.width));
   data.append('height', String(cropRect?.height));
+  data.append('upload_preset', ENVIRONMENT_VARIABLES.CLOUDINARY_PRESET);
+  data.append('cloud_name', ENVIRONMENT_VARIABLES.CLOUDINARY_NAME);
 
   return fetch(CLOUDINARY_URL, {
     method: 'POST',
     body: data,
-    headers: { 'content-type': 'application/json' }
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      accept: 'application/json'
+    }
   });
 };
 
