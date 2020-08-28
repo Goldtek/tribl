@@ -147,10 +147,11 @@ export const GET_MY_COMMUNITIES = gql`
 export const GET_MY_CONNECTIONS = gql`
   query myConnections {
     myConnections {
+      id
       firstName
       lastName
-      id
       phoneNumber
+      avatar
     }
   }
 `;
