@@ -8,7 +8,7 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container } from '../styles';
+import { Container, Cover } from '../styles';
 import { TFunction } from 'i18next';
 
 // DEFINE SCREEN PROP TYPES
@@ -31,8 +31,48 @@ function Slide(props: SlideProp) {
           <Image
             source={require('../../../../assets/images/sliderOneImage.png')}
             style={{
+              resizeMode: 'cover',
+              width: '100%',
+              height: RFPercentage(50)
+            }}
+          />
+        )}
+        {slideIndex === 1 && (
+          <Cover>
+            <Image
+              source={require('../../../../assets/images/sliderTwoImage2.png')}
+              style={{
+                resizeMode: 'cover',
+                width: '50%',
+                height: RFPercentage(50)
+              }}
+            />
+            <Image
+              source={require('../../../../assets/images/sliderTwoImage.png')}
+              style={{
+                resizeMode: 'cover',
+                width: '50%',
+                height: RFPercentage(50)
+              }}
+            />
+          </Cover>
+        )}
+        {slideIndex === 2 && (
+          <Image
+            source={require('../../../../assets/images/sliderThreeImage.png')}
+            style={{
+              resizeMode: 'cover',
+              width: '100%',
+              height: RFPercentage(50)
+            }}
+          />
+        )}
+        {slideIndex === 3 && (
+          <Image
+            source={require('../../../../assets/images/sliderFourImage.png')}
+            style={{
               resizeMode: 'contain',
-              width: RFPercentage(90),
+              width: '100%',
               height: RFPercentage(50)
             }}
           />
@@ -52,7 +92,8 @@ function Slide(props: SlideProp) {
               fontFamily: fonts.WORK_SANS_BOLD,
               fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
               color: colors.WHITE,
-              lineHeight: RFValue(30)
+              lineHeight: RFValue(30),
+              textAlign: 'center'
             }}
           >
             {t(`walkThrough.${TEXT_MAPPER[slideIndex]}.title`)}
