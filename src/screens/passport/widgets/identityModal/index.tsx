@@ -33,14 +33,6 @@ function IdentityModal(props: any) {
 
   const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
 
-  //   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
-  //     variables: {
-  //       details: {
-  //         identity: [...Array.from(state.selectedIdentities.values())]
-  //       }
-  //     }
-  //   });
-
   const handleSelect = (selected: string) => {
     if (!state.selectedIdentities.has(selected)) {
       props.identity(state.selectedIdentities);
