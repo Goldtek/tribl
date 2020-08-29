@@ -12,3 +12,9 @@ export const Container = styled.View`
   justify-content: center;
   align-items: center;
 `;
+
+export const Cover = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
