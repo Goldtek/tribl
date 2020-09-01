@@ -327,3 +327,23 @@ export const GET_USER_PASSPORT = gql`
     }
   }
 `;
+
+//GET ALL MEMBERS ON THE APP
+export const GET_ALL_MEMBERS = gql`
+  query Passport {
+    Passport {
+      id
+      phoneNumber
+      verified
+      firstName
+      lastName
+      email
+      connected
+      currentLocation {
+        state
+        country
+        id
+      }
+    }
+  }
+`;
