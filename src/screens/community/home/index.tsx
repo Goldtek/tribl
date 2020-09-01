@@ -182,6 +182,7 @@ export default function HomeScreen(props: ScreenProp) {
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
+            keyExtractor={(_, index: number) => index.toString()}
             contentContainerStyle={{
               marginTop: 20,
               paddingHorizontal: 15,
