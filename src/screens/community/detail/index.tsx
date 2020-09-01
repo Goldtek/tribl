@@ -23,7 +23,6 @@ export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const details = props.route.params;
-  console.tron('a', details.details.isMember);
   const [tabIndex, setTabIndex] = React.useState(0);
 
   const [routes] = React.useState(
