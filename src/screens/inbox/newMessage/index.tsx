@@ -12,10 +12,10 @@ import MemberCard from './widgets/connectionCard';
 import AlgoliaSearch from '../../../components/algoliaSearch';
 import AlgoliaList from '../../../components/algoliaInboxList';
 import hexToRGB from '../../../utils/hexToRGB';
-import MembersData from '../../../libs/members/index.json';
 import {
   GET_NEARBY_MEMBERS,
-  GET_MY_CONNECTIONS
+  GET_MY_CONNECTIONS,
+  GET_ALL_MEMBERS
 } from '../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -37,14 +37,14 @@ export default function ChatScreen(props: ScreenProp) {
   const nearbyMembers = nearbyData?.nearbyMembers;
 
   const { data: connectionData } = useQuery(GET_MY_CONNECTIONS);
-
   const myConnection = connectionData?.myConnections;
 
-  const [filter, setFilter] = useState(
-    t(`community.chat.connection`) as string
-  );
+  const { data: allMembersData } = useQuery(GET_ALL_MEMBERS);
+  const allMembers = allMembersData?.Passport;
 
-  const [data, setData] = useState(myConnection);
+  const [filter, setFilter] = useState(t(`community.chat.all`) as string);
+
+  const [data, setData] = useState(allMembers);
 
   const handleConnectionClick = () => {
     setFilter(t(`community.chat.connection`));
@@ -54,6 +54,11 @@ export default function ChatScreen(props: ScreenProp) {
   const handleNearbyClick = () => {
     setFilter(t(`community.chat.nearby`));
     setData(nearbyMembers);
+  };
+
+  const handleAllMembersClick = () => {
+    setFilter(t(`community.chat.all`));
+    setData(allMembers);
   };
 
   const _separator = () =>
@@ -90,6 +95,30 @@ export default function ChatScreen(props: ScreenProp) {
         <FilterContainer>
           <Button
             mode="contained"
+            onPress={handleAllMembersClick}
+            labelStyle={{
+              color:
+                filter === t(`community.chat.all`)
+                  ? colors.WHITE
+                  : colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              textTransform: 'capitalize'
+            }}
+            contentStyle={{
+              paddingVertical: 8,
+              paddingHorizontal: 5,
+              backgroundColor:
+                filter === t(`community.chat.all`)
+                  ? colors.PRIMARY
+                  : colors.WHITE
+            }}
+            style={{ borderRadius: 4 }}
+          >
+            {t(`community.chat.all`)}
+          </Button>
+
+          <Button
+            mode="contained"
             onPress={handleConnectionClick}
             labelStyle={{
               color:
@@ -107,7 +136,7 @@ export default function ChatScreen(props: ScreenProp) {
                   ? colors.PRIMARY
                   : colors.WHITE
             }}
-            style={{ borderRadius: 4 }}
+            style={{ borderRadius: 4, marginLeft: 20 }}
           >
             {t(`community.chat.connection`)}
           </Button>
