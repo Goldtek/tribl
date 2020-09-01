@@ -23,26 +23,36 @@ export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const details = props.route.params;
-
+  console.tron('a', details.details.isMember);
   const [tabIndex, setTabIndex] = React.useState(0);
 
-  const [routes] = React.useState([
-    {
-      key: 'highlightSlide',
-      title: `${t(`community.tabPanel.highlight`)}`,
-      communityDetails: details.details || details.communityHit
-    },
-    {
-      key: 'channelSlide',
-      title: `${t(`community.tabPanel.channel`)}`,
-      communityDetails: details.details || details.communityHit
-    },
-    {
-      key: 'memberSlide',
-      title: `${t(`community.tabPanel.member`)}`,
-      communityDetails: details.details || details.communityHit
-    }
-  ]);
+  const [routes] = React.useState(
+    details.details.isMember
+      ? [
+          {
+            key: 'highlightSlide',
+            title: `${t(`community.tabPanel.highlight`)}`,
+            communityDetails: details.details || details.communityHit
+          },
+          {
+            key: 'channelSlide',
+            title: `${t(`community.tabPanel.channel`)}`,
+            communityDetails: details.details || details.communityHit
+          },
+          {
+            key: 'memberSlide',
+            title: `${t(`community.tabPanel.member`)}`,
+            communityDetails: details.details || details.communityHit
+          }
+        ]
+      : [
+          {
+            key: 'highlightSlide',
+            title: `${t(`community.tabPanel.highlight`)}`,
+            communityDetails: details.details || details.communityHit
+          }
+        ]
+  );
 
   const renderScene = SceneMap({ highlightSlide, channelSlide, memberSlide });
 
