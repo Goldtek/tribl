@@ -17,6 +17,7 @@ import {
   GET_MY_CONNECTIONS,
   GET_ALL_MEMBERS
 } from '../../../graphql/server/query';
+import Skeleton from './widgets/newMessageSkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -199,6 +200,7 @@ export default function ChatScreen(props: ScreenProp) {
           data={data}
           renderItem={_renderItem}
           keyExtractor={(item) => item.id}
+          ListEmptyComponent={<Skeleton />}
           ItemSeparatorComponent={_separator}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
