@@ -12,6 +12,7 @@ import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
 import JoinCommunity from '../../../components/joinCommunity';
 import { GenerateFirebaseTokenIT } from '../../../graphql/types';
+import CheckAppUpdates from '../../../libs/updates';
 import Firechat from '../../../firebase';
 import Storage from '../../../storage';
 import {
@@ -259,6 +260,8 @@ export default function HomeScreen(props: ScreenProp) {
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
       ) : null}
+
+      <CheckAppUpdates />
     </Fragment>
   );
 }

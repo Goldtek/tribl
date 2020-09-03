@@ -58,30 +58,6 @@ class Firechat {
     return batch.commit();
   }
 
-  // // THIS METHOD ADDS A NEW MEMBER TO CHANNEL OR GROUP
-  // async addMemberToRoom(roomId: string, payload: ChatRoom) {
-  //   return firechat
-  //     .doc(`${payload.roomType}/${roomId}`)
-  //     .collection('members')
-  //     .add({ [this.userId]: true });
-  // }
-
-  // // THIS METHOD CREATES USER CONVERSATION REF OBJECT
-  // async createUserConversation(userId: string, payload: any) {
-  //   return firechat
-  //     .doc(`${ROOM_TYPES.USER_CONVERSATIONS}/${userId}`)
-  //     .update({
-  //       [payload.conversationType]: firestore.FieldValue.arrayUnion(
-  //         payload.conversationId
-  //       )
-  //     })
-  //     .catch((error) => {
-  //       firechat.doc(`${ROOM_TYPES.USER_CONVERSATIONS}/${userId}`).set({
-  //         [payload.conversationType]: [payload.conversationId]
-  //       });
-  //     });
-  // }
-
   // THIS METHOD CREATES A NEW MESSAGE
   async sendMessage(chatId: string, message: MessageInterface) {
     const timestamp = new Date().toString();
