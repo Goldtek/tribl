@@ -28,16 +28,6 @@ function Slide(props: SlideProp) {
     <Fragment>
       <Container style={{ flex: 1 }}>
         {slideIndex === 0 && (
-          <Image
-            source={require('../../../../assets/images/sliderOneImage.png')}
-            style={{
-              resizeMode: 'cover',
-              width: '100%',
-              height: RFPercentage(50)
-            }}
-          />
-        )}
-        {slideIndex === 1 && (
           <Cover>
             <Image
               source={require('../../../../assets/images/sliderTwoImage2.png')}
@@ -57,7 +47,7 @@ function Slide(props: SlideProp) {
             />
           </Cover>
         )}
-        {slideIndex === 2 && (
+        {slideIndex === 1 && (
           <Image
             source={require('../../../../assets/images/sliderThreeImage.png')}
             style={{
@@ -67,6 +57,17 @@ function Slide(props: SlideProp) {
             }}
           />
         )}
+        {slideIndex === 2 && (
+          <Image
+            source={require('../../../../assets/images/sliderOneImage.png')}
+            style={{
+              resizeMode: 'cover',
+              width: '100%',
+              height: RFPercentage(50)
+            }}
+          />
+        )}
+
         {slideIndex === 3 && (
           <Image
             source={require('../../../../assets/images/sliderFourImage.png')}
