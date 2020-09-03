@@ -88,19 +88,21 @@ export default function PassportScreen(props: ScreenProp) {
       payload: {
         firstName: firstName,
         lastName: lastName,
-        dob: dob,
+        dob: {
+          formatted: dob
+        },
         identity: SelectedIdentities,
         currentLocation: {
-          state: userDetails?.currentLocation[0].state,
-          country: userDetails?.currentLocation[0].country,
-          long: userDetails?.currentLocation[0].long,
-          lat: userDetails?.currentLocation[0].lat
+          state: userDetails?.currentLocation[0]?.state,
+          country: userDetails?.currentLocation[0]?.country,
+          long: userDetails?.currentLocation[0]?.long,
+          lat: userDetails?.currentLocation[0]?.lat
         },
         birthPlace: {
-          state: userDetails?.currentLocation[0].state,
-          country: userDetails?.currentLocation[0].country,
-          long: userDetails?.currentLocation[0].long,
-          lat: userDetails?.currentLocation[0].lat
+          state: userDetails?.currentLocation[0]?.state,
+          country: userDetails?.currentLocation[0]?.country,
+          long: userDetails?.currentLocation[0]?.long,
+          lat: userDetails?.currentLocation[0]?.lat
         }
       }
     }

@@ -13,6 +13,7 @@ import ConnectionRequest from './widget';
 import { StatusBar } from 'expo-status-bar';
 import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
+import Skeleton from './widget/connectionRequestSkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -28,9 +29,9 @@ export default function ConnectionRequestScreen(
   const { top } = useSafeArea();
   const { t } = useTranslation();
 
-  const { data, refetch } = useQuery(GET_CONNECTION_REQUEST);
+  const { loading, data, refetch } = useQuery(GET_CONNECTION_REQUEST);
 
-  const myConnection = data?.connectionRequests;
+  const connectionRequest = data?.connectionRequests;
 
   const _renderItem = ({ item }: any) => (
     <ConnectionRequest key={item.id} {...item} {...props} refetch={refetch} />
@@ -75,7 +76,9 @@ export default function ConnectionRequestScreen(
         style={{ paddingTop: top }}
       />
       <Container>
-        {myConnection?.length ? (
+        {loading ? (
+          <Skeleton />
+        ) : connectionRequest?.length ? (
           <Fragment>
             <Title
               style={{
@@ -87,10 +90,10 @@ export default function ConnectionRequestScreen(
                 textTransform: 'capitalize'
               }}
             >
-              {t(`community.tabPanel.memberTitle`)}
+              {t(`community.sideNav.request`)}
             </Title>
             <FlatList
-              data={myConnection}
+              data={connectionRequest}
               contentContainerStyle={{
                 flexGrow: 1,
                 marginTop: RFValue(10),

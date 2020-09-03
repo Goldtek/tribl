@@ -1,7 +1,8 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Button, Card } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
@@ -18,12 +19,20 @@ interface RecommendedCommunityProp {
 function RecommendedCommunity(props: RecommendedCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const navigation = useNavigation();
 
   const { avatar, name, membersCount, onPress, isMember } = props;
 
+  const handleNavigation = useCallback(() => {
+    navigation.navigate('CommunityDetailScreen', {
+      title: name,
+      details: props
+    });
+  }, []);
+
   return (
     <Card
-      onPress={() => {}}
+      onPress={handleNavigation}
       style={{
         width: '100%',
         height: RFValue(300),

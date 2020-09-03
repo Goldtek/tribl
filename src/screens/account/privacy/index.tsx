@@ -20,24 +20,72 @@ interface MyConnectionScreenProp extends NavigationInterface {}
 export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const { data } = useQuery(GET_USER_PASSPORT);
+  const userDetails = data?.myPassport;
+  const privacySetting = userDetails?.privacy;
+
   const [isVisible, setIsVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [index, setIndex] = useState(Number || undefined);
-
-  const { data } = useQuery(GET_USER_PASSPORT);
-
-  const userDetails = data?.myPassport;
-  const privacySetting = userDetails?.privacy;
 
   const [privacy, setPrivacy] = useState({
     identity: privacySetting?.identity,
     locality: privacySetting?.locality,
     interest: privacySetting?.interest,
     age: privacySetting?.age,
-    selectedData: null
+    selectedData: null,
+    name: null,
+    visibility: privacySetting?.visibility
   });
   const selectedData = privacy.selectedData;
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
+  enum visibilityToggle {
+    PRIVATE,
+    PUBLIC
+  }
+  const [updatePassport] = useMutation(UPDATE_PASSPORT, {
+    variables: {
+      payload: {
+        privacy: {
+          visibility: privacy.visibility
+        },
+        currentLocation: {
+          state: userDetails?.currentLocation[0].state,
+          country: userDetails?.currentLocation[0].country,
+          long: userDetails?.currentLocation[0].long,
+          lat: userDetails?.currentLocation[0].lat
+        },
+        birthPlace: {
+          state: userDetails?.currentLocation[0].state,
+          country: userDetails?.currentLocation[0].country,
+          long: userDetails?.currentLocation[0].long,
+          lat: userDetails?.currentLocation[0].lat
+        }
+      }
+    }
+  });
+
+  const toggleSwitch = async () => {
+    setIsEnabled((previousState) => !previousState);
+    if (isEnabled) {
+      setPrivacy({
+        ...privacy,
+        visibility: visibilityToggle[1]
+      });
+    }
+    if (!isEnabled) {
+      setPrivacy({
+        ...privacy,
+        visibility: visibilityToggle[0]
+      });
+    }
+    try {
+      const { data } = await updatePassport();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const showPrivacyModal = useCallback(
     (isVisible: boolean, index?: any) => () => {
@@ -47,6 +95,24 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         setPrivacy({
           ...privacy,
           selectedData: privacy?.identity
+        });
+      }
+      if (index == 1) {
+        setPrivacy({
+          ...privacy,
+          selectedData: privacy?.locality
+        });
+      }
+      if (index == 2) {
+        setPrivacy({
+          ...privacy,
+          selectedData: privacy?.interest
+        });
+      }
+      if (index == 3) {
+        setPrivacy({
+          ...privacy,
+          selectedData: privacy?.age
         });
       }
       return true;
@@ -219,9 +285,9 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
                 marginRight: RFValue(20)
               }}
             >
-              {isEnabled
-                ? t(`community.accountSettings.private`)
-                : t(`community.accountSettings.public`)}
+              {privacy.visibility == null
+                ? t(`community.accountSettings.public`)
+                : privacy.visibility}
             </Text>
             <Switch
               trackColor={{ false: colors.DISABLED, true: colors.ONLINE }}
