@@ -11,7 +11,7 @@ import hexToRGB from '../../utils/hexToRGB';
 import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { TextContainer, OnlineNotifier, AvatarContainer } from './styles';
+import { TextContainer, AvatarContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp {
@@ -48,8 +48,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   } = props;
 
   if (!currentLocation.length) return null;
-
-  const { state, country } = currentLocation[0];
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
@@ -122,7 +120,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               borderRadius: RFValue(70)
             }}
           />
-          <OnlineNotifier />
+          {/* <OnlineNotifier /> */}
         </AvatarContainer>
         <TextContainer>
           <Title
