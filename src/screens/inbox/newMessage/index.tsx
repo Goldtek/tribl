@@ -106,7 +106,7 @@ export default function ChatScreen(props: ScreenProp) {
               textTransform: 'capitalize'
             }}
             contentStyle={{
-              paddingVertical: 8,
+              paddingVertical: 7,
               paddingHorizontal: 5,
               backgroundColor:
                 filter === t(`community.chat.all`)
@@ -130,14 +130,14 @@ export default function ChatScreen(props: ScreenProp) {
               textTransform: 'capitalize'
             }}
             contentStyle={{
-              paddingVertical: 8,
+              paddingVertical: 7,
               paddingHorizontal: 5,
               backgroundColor:
                 filter === t(`community.chat.connection`)
                   ? colors.PRIMARY
                   : colors.WHITE
             }}
-            style={{ borderRadius: 4, marginLeft: 20 }}
+            style={{ borderRadius: 4, marginLeft: 15 }}
           >
             {t(`community.chat.connection`)}
           </Button>
@@ -153,14 +153,17 @@ export default function ChatScreen(props: ScreenProp) {
               textTransform: 'capitalize'
             }}
             contentStyle={{
-              paddingVertical: 8,
+              paddingVertical: 7,
               paddingHorizontal: 5,
               backgroundColor:
                 filter === t(`community.chat.nearby`)
                   ? colors.PRIMARY
                   : colors.WHITE
             }}
-            style={{ marginHorizontal: 20, borderRadius: 4 }}
+            style={{
+              marginHorizontal: 15,
+              borderRadius: 4
+            }}
           >
             {t(`community.chat.nearby`)}
           </Button>
