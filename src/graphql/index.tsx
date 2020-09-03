@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { Alert } from 'react-native';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { ApolloLink, Observable, Operation } from 'apollo-link';
 import { ApolloProvider as Provider } from '@apollo/react-hooks';
@@ -40,18 +39,12 @@ export const client = new ApolloClient<NormalizedCacheObject>({
     onError(({ graphQLErrors, networkError }) => {
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
       if (graphQLErrors) {
-        Alert.alert(
-          'graphQLErrors',
-          JSON.stringify({ ENVIRONMENT_VARIABLES, graphQLErrors })
-        );
+        // send error via sentry
       }
 
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
       if (networkError) {
-        Alert.alert(
-          'networkError',
-          JSON.stringify({ ENVIRONMENT_VARIABLES, networkError })
-        );
+        // send error via sentry
       }
     }),
     requestLink,
