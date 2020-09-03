@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert } from 'react-native';
+import RNRestart from 'react-native-restart';
 import {
   setJSExceptionHandler,
   setNativeExceptionHandler
@@ -16,10 +17,17 @@ export default function GlobalErrorBoundary(props: GlobalErrorProps) {
     Alert.alert(
       'Unexpected error occurred',
       `
-          Something went wrong 😞😞😞, and we sincerely apologize for this.
-          We have reported this to our team ! Please close the app and start again!
-          `,
-      [{ text: 'Close', onPress: () => exceptionHandler(e.message) }]
+  Something went wrong 😞😞😞 \nand we sincerely apologize for this. \nWe have reported this to our team!\n Please close the app and start again!
+  `,
+      [
+        {
+          text: 'Close',
+          onPress: () => {
+            exceptionHandler(e.message);
+            RNRestart.Restart();
+          }
+        }
+      ]
     );
   };
 
@@ -28,7 +36,7 @@ export default function GlobalErrorBoundary(props: GlobalErrorProps) {
     // E.g. reporting error using sentry
   };
 
-  setJSExceptionHandler(errorHandler, true);
+  setJSExceptionHandler(errorHandler);
 
   setNativeExceptionHandler(exceptionHandler, true);
 

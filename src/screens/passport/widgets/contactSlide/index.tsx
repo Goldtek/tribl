@@ -141,13 +141,14 @@ export default function contactSlide(props: any) {
           onFocus={() => setState({ ...state, disableFirstName: false })}
           onBlur={() => setState({ ...state, disableFirstName: true })}
           style={{
+            height: 30,
             fontFamily: fonts.WORK_SANS_REGULAR,
             fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
             color: colors.PRIMARY_TEXT,
             backgroundColor: colors.WHITE,
             borderBottomWidth: disableFirstName ? 0 : 2,
             borderColor: colors.PRIMARY,
-            height: 30
+            textTransform: 'capitalize'
           }}
         />
       </Container>
@@ -184,13 +185,14 @@ export default function contactSlide(props: any) {
           onFocus={() => setState({ ...state, disableLastName: false })}
           onBlur={() => setState({ ...state, disableLastName: true })}
           style={{
+            height: 30,
             fontFamily: fonts.WORK_SANS_REGULAR,
             fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
             color: colors.PRIMARY_TEXT,
             backgroundColor: colors.WHITE,
             borderBottomWidth: disableLastName ? 0 : 2,
             borderColor: colors.PRIMARY,
-            height: 30
+            textTransform: 'capitalize'
           }}
         />
       </Container>
