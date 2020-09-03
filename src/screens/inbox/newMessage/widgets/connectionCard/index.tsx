@@ -26,7 +26,10 @@ function Member(props: MemberProp) {
   const { avatar, name, firstName, lastName, lastSeen } = props;
 
   const handleNavigation = useCallback(
-    () => navigation.navigate('DirectChatScreen', { title: name }),
+    () =>
+      navigation.navigate('DirectChatScreen', {
+        title: `${firstName} ${lastName}`
+      }),
     []
   );
 
