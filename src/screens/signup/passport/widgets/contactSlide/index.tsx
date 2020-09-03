@@ -1,11 +1,13 @@
-import React, { Fragment, useState, useRef, useCallback } from 'react';
+import React, { Fragment, useState, useCallback } from 'react';
+import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
 import {
-  AntDesign,
-  SimpleLineIcons,
-  FontAwesome,
-  Feather
-} from '@expo/vector-icons';
-import { Button, IconButton, Title, Paragraph } from 'react-native-paper';
+  Button,
+  IconButton,
+  Title,
+  Paragraph,
+  TextInput,
+  TouchableRipple
+} from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -16,6 +18,7 @@ import { StoreInterface } from '../../../../../graphql/types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../../utils/timesince';
 import { ADD_USER_DETAILS } from '../../../../../graphql/cache/mutations';
+import IdentityModal from '../identityModal';
 
 import {
   ContactContainer,
@@ -23,7 +26,7 @@ import {
   LastNameContainer,
   DOBContainer,
   Container,
-  TextInput,
+  // TextInput,
   InterestContainer,
   IdentityContainer,
   Identities,
@@ -31,6 +34,7 @@ import {
   LocationContainer,
   Location,
   CitizenshipContainer,
+  AddIdentity,
   // LinkAccountsContainer,
   // InstagramButton,
   // SpotifyButton,
@@ -42,6 +46,11 @@ export default function contactSlide() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
+  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+  const userDetails = data?.userDetails;
+
+  const [isVisible, setIsVisible] = useState(false);
+
   const [state, setState] = useState<{
     date: Date | null;
     editLastName: boolean;
@@ -49,30 +58,55 @@ export default function contactSlide() {
     focusedFirstName: boolean;
     focusedLastName: boolean;
     showDatePicker: boolean;
+    disableLastName: boolean;
+    disableFirstName: boolean;
+    firstName: string | undefined;
+    lastName: string | undefined;
+    selectedIdentity: [];
   }>({
     date: null,
+    firstName: userDetails?.firstName,
+    lastName: userDetails?.lastName,
     editLastName: false,
     editFirstName: false,
     focusedFirstName: false,
     focusedLastName: false,
-    showDatePicker: false
+    showDatePicker: false,
+    disableFirstName: true,
+    disableLastName: true,
+    selectedIdentity: []
   });
+
+  const showIdentityModal = useCallback(
+    (isVisible: boolean) => () => {
+      setIsVisible(isVisible);
+      return true;
+    },
+    []
+  );
+
+  const getIdentity = (childData: any) => {
+    setState({
+      ...state,
+      selectedIdentity: childData
+    });
+  };
+
+  const SelectedIdentities = Array.from(state.selectedIdentity.values());
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
-        dob: { formatted: state.date?.toString(), __typename: 'dateOfBirth' }
+        firstName: state.firstName,
+        lastName: state.lastName,
+        dob: { formatted: state.date?.toString(), __typename: 'dateOfBirth' },
+        identity: SelectedIdentities
       }
     }
   });
 
-  const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
-  const userDetails = data?.userDetails;
-
   const currentLocation = userDetails?.currentLocation[0];
   const birthPlace = userDetails?.birthPlace[0];
-
-  const inputRef = useRef({ firstName: {}, lastName: {} }) as any;
 
   const onChange = useCallback((date: Date) => {
     setState({ ...state, date, showDatePicker: false });
@@ -83,21 +117,13 @@ export default function contactSlide() {
     setState({ ...state, showDatePicker: !state.showDatePicker });
   }, [state.showDatePicker]);
 
-  const handleRefControl = useCallback(
-    (edit: string, focus: string) => () => {
-      setState({ ...state, [edit]: true });
-      inputRef.current[focus].focus();
-    },
-    []
-  );
-
-  const handleInputFocus = useCallback(
-    (inputField: string) => () => {
-      //@ts-ignore
-      setState({ ...state, [inputField]: !state[inputField] });
-    },
-    []
-  );
+  const {
+    firstName,
+    lastName,
+    disableFirstName,
+    disableLastName,
+    date
+  } = state;
 
   return (
     <ContactContainer>
@@ -115,26 +141,31 @@ export default function contactSlide() {
           </Title>
           <EditTextInput
             underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
-            onPress={handleRefControl('editFirstName', 'firstName')}
+            onPress={() => setState({ ...state, disableFirstName: false })}
           >
             <Feather name="edit" size={RFValue(20)} color={colors.INACTIVE} />
           </EditTextInput>
         </FirstNameContainer>
         <TextInput
-          ref={(e) => (inputRef.current.firstName = e)}
-          value={userDetails?.firstName}
-          editable={state.editFirstName}
-          onChangeText={(text) => console.log({ text })}
-          onFocus={handleInputFocus('focusedFirstName')}
-          onBlur={handleInputFocus('focusedFirstName')}
+          value={firstName}
+          onChangeText={(firstName: string) =>
+            setState({
+              ...state,
+              firstName,
+              disableFirstName: false
+            })
+          }
+          disabled={disableFirstName}
+          onFocus={() => setState({ ...state, disableFirstName: false })}
+          onBlur={() => setState({ ...state, disableFirstName: true })}
           style={{
             fontFamily: fonts.WORK_SANS_REGULAR,
             fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
             color: colors.PRIMARY_TEXT,
-            borderBottomWidth: 2,
-            borderBottomColor: state.focusedFirstName
-              ? colors.PRIMARY
-              : colors.WHITE
+            backgroundColor: colors.WHITE,
+            borderBottomWidth: disableFirstName ? 0 : 2,
+            borderColor: colors.PRIMARY,
+            height: 30
           }}
         />
       </Container>
@@ -153,26 +184,31 @@ export default function contactSlide() {
           </Title>
           <EditTextInput
             underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
-            onPress={handleRefControl('editLastName', 'lastName')}
+            onPress={() => setState({ ...state, disableLastName: false })}
           >
             <Feather name="edit" size={RFValue(20)} color={colors.INACTIVE} />
           </EditTextInput>
         </LastNameContainer>
         <TextInput
-          ref={(e) => (inputRef.current.lastName = e)}
-          value={userDetails?.lastName}
-          editable={state.editLastName}
-          onChangeText={(text) => console.log({ text })}
-          onFocus={handleInputFocus('focusedLastName')}
-          onBlur={handleInputFocus('focusedLastName')}
+          value={lastName}
+          onChangeText={(lastName: string) =>
+            setState({
+              ...state,
+              lastName,
+              disableLastName: false
+            })
+          }
+          disabled={disableLastName}
+          onFocus={() => setState({ ...state, disableLastName: false })}
+          onBlur={() => setState({ ...state, disableLastName: true })}
           style={{
             fontFamily: fonts.WORK_SANS_REGULAR,
             fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
             color: colors.PRIMARY_TEXT,
-            borderBottomWidth: 2,
-            borderBottomColor: state.focusedLastName
-              ? colors.PRIMARY
-              : colors.WHITE
+            backgroundColor: colors.WHITE,
+            borderBottomWidth: disableLastName ? 0 : 2,
+            borderColor: colors.PRIMARY,
+            height: 30
           }}
         />
       </Container>
@@ -314,29 +350,40 @@ export default function contactSlide() {
         </LocationContainer>
       ) : null}
 
-      {userDetails?.identity.length ? (
-        <IdentityContainer>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase',
-              marginBottom: 10
-            }}
-          >
-            {t(`signup.passportScreen.identity`)}
-          </Title>
+      <IdentityContainer>
+        <Title
+          style={{
+            fontFamily: fonts.WORK_SANS_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.PRIMARY_TEXT,
+            textTransform: 'uppercase',
+            marginBottom: 10
+          }}
+        >
+          {t(`signup.passportScreen.identity`)}
+        </Title>
 
-          <Identities>
-            {userDetails?.identity.map((identity) => (
-              <IdentityText key={identity}>{identity}</IdentityText>
-            ))}
-          </Identities>
-        </IdentityContainer>
-      ) : null}
+        <Identities>
+          {userDetails?.identity.length ? (
+            <Fragment>
+              {userDetails.identity.map((identity) => (
+                <IdentityText key={identity}>{identity}</IdentityText>
+              ))}
+            </Fragment>
+          ) : (
+            <Fragment>
+              {SelectedIdentities?.map((identity) => (
+                <IdentityText key={identity}>{identity}</IdentityText>
+              ))}
+            </Fragment>
+          )}
+          <TouchableRipple onPress={showIdentityModal(true)}>
+            <AddIdentity>+</AddIdentity>
+          </TouchableRipple>
+        </Identities>
+      </IdentityContainer>
 
-      <InterestContainer>
+      {/* <InterestContainer>
         <Title
           style={{
             fontFamily: fonts.WORK_SANS_BOLD,
@@ -362,7 +409,7 @@ export default function contactSlide() {
             borderWidth: RFValue(1.2)
           }}
         />
-      </InterestContainer>
+      </InterestContainer> */}
 
       {/* <LinkAccountsContainer>
         <Title
@@ -447,6 +494,11 @@ export default function contactSlide() {
         </Paragraph>
       </LinkAccountsContainer>
      */}
+      <IdentityModal
+        isVisible={isVisible}
+        closeIdentityModal={showIdentityModal(false)}
+        identity={getIdentity}
+      />
     </ContactContainer>
   );
 }
