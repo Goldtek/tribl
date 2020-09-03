@@ -46,23 +46,29 @@ export default function RecommendedUserSkeleton({
           >
             <AvatarContainer>
               <SkeletonPlaceholder>
-                <SkeletonPlaceholder.Item alignItems="center" margin={10}>
+                <SkeletonPlaceholder.Item
+                  alignItems="center"
+                  margin={RFValue(8)}
+                >
                   <SkeletonPlaceholder.Item
-                    width={70}
-                    height={70}
-                    borderRadius={50}
+                    width={RFValue(65)}
+                    height={RFValue(65)}
+                    borderRadius={RFValue(50)}
                   />
-                  <SkeletonPlaceholder.Item alignItems="center" marginTop={20}>
+                  <SkeletonPlaceholder.Item
+                    alignItems="center"
+                    marginTop={RFValue(15)}
+                  >
                     <SkeletonPlaceholder.Item
-                      width={120}
-                      height={20}
-                      borderRadius={4}
+                      width={RFValue(110)}
+                      height={RFValue(20)}
+                      borderRadius={RFValue(4)}
                     />
                     <SkeletonPlaceholder.Item
-                      marginTop={6}
-                      width={80}
-                      height={20}
-                      borderRadius={4}
+                      marginTop={RFValue(4)}
+                      width={RFValue(80)}
+                      height={RFValue(20)}
+                      borderRadius={RFValue(4)}
                     />
                   </SkeletonPlaceholder.Item>
                 </SkeletonPlaceholder.Item>
@@ -71,12 +77,15 @@ export default function RecommendedUserSkeleton({
 
             <TextContainer>
               <SkeletonPlaceholder>
-                <SkeletonPlaceholder.Item alignItems="center" margin={20}>
+                <SkeletonPlaceholder.Item
+                  alignItems="center"
+                  margin={RFValue(10)}
+                >
                   <SkeletonPlaceholder.Item alignItems="center">
                     <SkeletonPlaceholder.Item
-                      width={80}
-                      height={20}
-                      borderRadius={4}
+                      width={RFValue(80)}
+                      height={RFValue(20)}
+                      borderRadius={RFValue(4)}
                     />
                   </SkeletonPlaceholder.Item>
                 </SkeletonPlaceholder.Item>

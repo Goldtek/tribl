@@ -27,15 +27,16 @@ export default function MyCommunitySkeleton({
             borderWidth: RFValue(1.2),
             borderRadius: RFValue(4),
             borderColor: colors.PRIMARY,
-            marginLeft: RFValue(15)
+            marginLeft: RFValue(15),
+            marginTop: RFValue(10)
           }}
         >
           <SkeletonPlaceholder>
-            <SkeletonPlaceholder.Item alignItems="center" margin={10}>
+            <SkeletonPlaceholder.Item alignItems="center" margin={RFValue(10)}>
               <SkeletonPlaceholder.Item
-                width={80}
-                height={80}
-                borderRadius={70}
+                width={RFValue(80)}
+                height={RFValue(80)}
+                borderRadius={RFValue(70)}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder>
