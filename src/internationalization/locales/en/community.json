@@ -105,5 +105,15 @@
     "messageTitle": "messages",
     "online": "online",
     "all": "all"
+  },
+
+  "update": {
+    "title": "limited update release",
+    "version": "1.1.1",
+    "update": "this update",
+    "change1": "new communities",
+    "change2": "bug fixes and improvement",
+    "yes": "yes",
+    "no": "no"
   }
 }
