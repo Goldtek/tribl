@@ -80,6 +80,7 @@ export default function DirectDMScreen(props: ScreenProp) {
   return (
     <FlatList
       data={directMessages}
+      extraData={state}
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),
