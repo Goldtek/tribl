@@ -4,21 +4,21 @@
   "getStarted": "get started",
   "screenOne": {
     "title": "Find your Tribe",
-    "subTitle": "Discover community discussions and \n connect with like-minded people"
+    "subTitle": "Join interest-based groups"
   },
 
   "screenTwo": {
-    "title": "Join nearby Events",
-    "subTitle": "Attend Tribl Experiences and meet \n familiar strangers in your city"
+    "title": "Meet familiar strangers",
+    "subTitle": "chat and connect with people like you"
   },
 
   "screenThree": {
-    "title": "Travel and Explore",
-    "subTitle": "Join travel groups and explore the \n world as a local"
+    "title": "Join the movement",
+    "subTitle": "Harness black voives and buying power"
   },
 
   "screenFour": {
-    "title": "Travel and Explore",
-    "subTitle": "Lorem ipsum dolor sit amet, \n consectetur adipiscing elia."
+    "title": "Community",
+    "subTitle": "Find your tribe"
   }
 }
