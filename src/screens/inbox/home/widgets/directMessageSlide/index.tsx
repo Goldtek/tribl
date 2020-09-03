@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Text } from 'react-native-paper';
 import MemberCard from '../chatMemberCard';
 import { NavigationInterface } from '../../../../types';
 import Firechat from '../../../../../firebase';
@@ -10,23 +11,22 @@ import { fireAuth } from '../../../../../firebase/config';
 import ChatCardSkeleton from '../../../../../components/chatCardSkeleton';
 
 import { Container } from './styles';
-import { Text } from 'react-native-paper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function DirectDMScreen(props: ScreenProp) {
-  const { colors, fonts } = useThemeContext();
+  const { fonts } = useThemeContext();
   const userId = fireAuth.currentUser?.uid as string;
 
-  const [state, setState] = useState(true);
+  const [chatHistory, setChatHistory] = useState(true);
 
   const [directMessages, setDirectMessages] = useState<GroupInterface[]>([]);
 
   useEffect(() => {
     (async () => {
       const directMessages = await Firechat.getUserDirectMessages();
-      if (!directMessages) setState(false);
+      if (!directMessages) setChatHistory(false);
 
       const unsubscribe = directMessages?.onSnapshot({
         next: (snapshot) => {
@@ -57,30 +57,17 @@ export default function DirectDMScreen(props: ScreenProp) {
   );
 
   const renderEmptyList = useMemo(
-    () => () =>
-      state ? (
-        <Container>
-          <ChatCardSkeleton skeletonSize={3} />
-        </Container>
-      ) : (
-        <Text
-          style={{
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            margin: RFValue(20),
-            textAlign: 'center'
-          }}
-        >
-          You currently don't have any messages
-        </Text>
-      ),
+    () => () => (
+      <Container>
+        <ChatCardSkeleton skeletonSize={3} />
+      </Container>
+    ),
     []
   );
 
-  return (
+  return chatHistory ? (
     <FlatList
       data={directMessages}
-      extraData={state}
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),
@@ -91,5 +78,16 @@ export default function DirectDMScreen(props: ScreenProp) {
       renderItem={_renderItem}
       keyExtractor={(item) => item.id}
     />
+  ) : (
+    <Text
+      style={{
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        fontFamily: fonts.WORK_SANS_BOLD,
+        margin: RFValue(20),
+        textAlign: 'center'
+      }}
+    >
+      You currently don't have any messages
+    </Text>
   );
 }
