@@ -10,7 +10,10 @@ import { useThemeContext } from '../../../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import RecommendedMembers from '../../../../../components/recommendedUser';
 import MembersData from '../../../../../libs/recommendedUsers/index.json';
-import { GET_NEARBY_MEMBERS } from '../../../../../graphql/server/query';
+import {
+  GET_NEARBY_MEMBERS,
+  GET_RECOMMENDED_MEMBERS
+} from '../../../../../graphql/server/query';
 import NearbyModal from '../../../../../components/nearbyMembers';
 import ActiveModal from '../../../../../components/activeMembers';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
@@ -46,17 +49,31 @@ function MemberSlideScreen(props: ScreenProp) {
     []
   );
 
-  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+  const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
+  const recommendedMembers = membersData?.recommendedMembers;
 
+  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
   const nearbyMembers = nearbyData?.nearbyMembers;
 
-  const _renderRecommendedMember = useMemo(
+  const _renderNearbyMember = useMemo(
     () => ({ item, index }: any) => (
       <RecommendedMembers
         key={item.id}
         {...item}
         index={index}
         lastChild={nearbyMembers?.length - 1}
+      />
+    ),
+    []
+  );
+
+  const _renderRecommendedMember = useMemo(
+    () => ({ item, index }: any) => (
+      <RecommendedMembers
+        key={item.id}
+        index={index}
+        {...item}
+        lastChild={recommendedMembers?.length - 1}
       />
     ),
     []
@@ -117,7 +134,7 @@ function MemberSlideScreen(props: ScreenProp) {
             </TouchableRipple>
           </RecommendedListHeader>
           <FlatList
-            data={MembersData}
+            data={recommendedMembers}
             horizontal={true}
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
@@ -176,7 +193,7 @@ function MemberSlideScreen(props: ScreenProp) {
           <FlatList
             data={nearbyMembers}
             horizontal={true}
-            renderItem={_renderRecommendedMember}
+            renderItem={_renderNearbyMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item: any) => item.id}

@@ -103,6 +103,7 @@
     "active": "most active",
     "new": "new group",
     "messageTitle": "messages",
-    "online": "online"
+    "online": "online",
+    "all": "all"
   }
 }

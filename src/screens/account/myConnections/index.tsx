@@ -14,6 +14,7 @@ import AlgoliaList from '../../../components/algoliaInboxList';
 import Connection from './widget';
 import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
+import Skeleton from './widget/myConnectionSkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -26,7 +27,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { top } = useSafeArea();
   const { t } = useTranslation();
 
-  const { data } = useQuery(GET_MY_CONNECTIONS);
+  const { loading, data } = useQuery(GET_MY_CONNECTIONS);
 
   const myConnection = data?.myConnections;
 
@@ -74,7 +75,9 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         <AlgoliaSearch indexName="tribl_passport_staging">
           <AlgoliaList />
         </AlgoliaSearch>
-        {myConnection?.length ? (
+        {loading ? (
+          <Skeleton />
+        ) : myConnection?.length ? (
           <Fragment>
             <Title
               style={{
@@ -86,7 +89,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
                 textTransform: 'capitalize'
               }}
             >
-              {t(`community.tabPanel.memberTitle`)}
+              {t(`community.sideNav.connection`)}
             </Title>
             <FlatList
               data={myConnection}

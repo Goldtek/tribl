@@ -23,7 +23,7 @@ interface ModalProp {
 }
 
 function PrivacyModal(props: any) {
-  const { isVisible, closePrivacyModal } = props;
+  const { isVisible, closePrivacyModal, index } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -55,6 +55,21 @@ function PrivacyModal(props: any) {
     ME
   }
 
+  enum privacyItems {
+    identity,
+    locality,
+    interest,
+    age
+  }
+  const params =
+    index == 0
+      ? privacyItems[0]
+      : index == 1
+      ? privacyItems[1]
+      : index == 2
+      ? privacyItems[2]
+      : privacyItems[3];
+
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
@@ -83,21 +98,12 @@ function PrivacyModal(props: any) {
       value: item
     });
     props.privacyValue(state.value);
-  };
-  const privacyList = [
-    {
-      key: privacyOptions.EVERYONE,
-      text: privacyOptions.EVERYONE
-    },
-    {
-      key: privacyOptions.CONNECTIONS,
-      text: privacyOptions.CONNECTIONS
-    },
-    {
-      key: privacyOptions.ME,
-      text: privacyOptions.ME
+    try {
+      const { data } = await updatePassport();
+    } catch (error) {
+      console.error(error);
     }
-  ];
+  };
 
   return (
     <Portal>
