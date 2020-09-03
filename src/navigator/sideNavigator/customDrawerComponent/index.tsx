@@ -57,7 +57,7 @@ export default function CustomDrawerComponent(props: any) {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(13),
+              fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
               textAlign: 'center',
               lineHeight: RFValue(15)
             }}
@@ -68,7 +68,7 @@ export default function CustomDrawerComponent(props: any) {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(13),
+              fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
               textAlign: 'center',
               lineHeight: RFValue(15),
               textTransform: 'capitalize'
