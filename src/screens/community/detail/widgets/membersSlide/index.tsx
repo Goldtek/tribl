@@ -8,7 +8,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import MemberCard from './widget/member';
 import AlgoliaSearch from '../../../../../components/algoliaSearch';
-import AlgoliaList from '../../../../../components/algoliaInboxList';
+import AlgoliaList from '../../../../../components/algoliaCommunityMembersList';
 import { GET_COMMUNITY_MEMBERS } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
