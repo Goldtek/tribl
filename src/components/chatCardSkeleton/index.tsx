@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 // DEFINE SCREEN PROP TYPES
 interface ChatCardSkeletonProp {
@@ -14,24 +15,24 @@ function ChatCardSkeleton({ skeletonSize = 1 }: ChatCardSkeletonProp) {
           <SkeletonPlaceholder.Item
             flexDirection="row"
             alignItems="center"
-            margin={10}
+            margin={RFValue(10)}
           >
             <SkeletonPlaceholder.Item
-              width={60}
-              height={60}
-              borderRadius={50}
+              width={RFValue(60)}
+              height={RFValue(60)}
+              borderRadius={RFValue(50)}
             />
-            <SkeletonPlaceholder.Item marginLeft={20}>
+            <SkeletonPlaceholder.Item marginLeft={RFValue(20)}>
               <SkeletonPlaceholder.Item
-                width={120}
-                height={20}
-                borderRadius={4}
+                width={RFValue(120)}
+                height={RFValue(20)}
+                borderRadius={RFValue(4)}
               />
               <SkeletonPlaceholder.Item
-                marginTop={6}
-                width={80}
-                height={20}
-                borderRadius={4}
+                marginTop={RFValue(6)}
+                width={RFValue(80)}
+                height={RFValue(20)}
+                borderRadius={RFValue(4)}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>

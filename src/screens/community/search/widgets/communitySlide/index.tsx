@@ -77,7 +77,6 @@ function CommunitySlideScreen(props: ScreenProp) {
           ) : (
             <RecommendedCommunitySkeleton />
           )}
-
           <PopularContainer>
             <CommunityWrapper>
               <Title
@@ -132,9 +131,7 @@ function CommunitySlideScreen(props: ScreenProp) {
               renderItem={_renderPopularCommunityItem}
               showsVerticalScrollIndicator={false}
               keyExtractor={(item: any) => item.id}
-              ListEmptyComponent={
-                <PopularCommunitySkeleton skelentonSize={3} />
-              }
+              ListEmptyComponent={<PopularCommunitySkeleton skeletonSize={3} />}
             />
           </PopularContainer>
         </Container>

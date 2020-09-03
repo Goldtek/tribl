@@ -41,13 +41,14 @@ function RecommendedCommunitySkeleton({
             <SkeletonPlaceholder>
               <SkeletonPlaceholder.Item
                 alignItems="center"
-                margin={10}
-                marginTop={20}
+                margin={RFValue(10)}
+                marginTop={RFValue(20)}
+                marginBottom={RFValue(20)}
               >
                 <SkeletonPlaceholder.Item
-                  width={220}
-                  height={220}
-                  borderRadius={4}
+                  width={RFValue(200)}
+                  height={RFValue(200)}
+                  borderRadius={RFValue(4)}
                 />
               </SkeletonPlaceholder.Item>
             </SkeletonPlaceholder>
@@ -58,9 +59,9 @@ function RecommendedCommunitySkeleton({
                 <SkeletonPlaceholder.Item>
                   <SkeletonPlaceholder.Item alignItems="center">
                     <SkeletonPlaceholder.Item
-                      width={80}
-                      height={20}
-                      borderRadius={4}
+                      width={RFValue(80)}
+                      height={RFValue(20)}
+                      borderRadius={RFValue(4)}
                     />
                   </SkeletonPlaceholder.Item>
                 </SkeletonPlaceholder.Item>
@@ -71,9 +72,9 @@ function RecommendedCommunitySkeleton({
                 <SkeletonPlaceholder.Item>
                   <SkeletonPlaceholder.Item alignItems="center">
                     <SkeletonPlaceholder.Item
-                      width={80}
-                      height={20}
-                      borderRadius={4}
+                      width={RFValue(80)}
+                      height={RFValue(20)}
+                      borderRadius={RFValue(4)}
                     />
                   </SkeletonPlaceholder.Item>
                 </SkeletonPlaceholder.Item>
@@ -101,23 +102,29 @@ function RecommendedCommunitySkeleton({
             }}
             left={({ size }) => (
               <SkeletonPlaceholder>
-                <SkeletonPlaceholder.Item alignItems="center" margin={10}>
+                <SkeletonPlaceholder.Item
+                  alignItems="center"
+                  margin={RFValue(10)}
+                >
                   <SkeletonPlaceholder.Item
                     width={size}
                     height={size + 2}
-                    borderRadius={4}
+                    borderRadius={RFValue(4)}
                   />
                 </SkeletonPlaceholder.Item>
               </SkeletonPlaceholder>
             )}
             right={() => (
               <SkeletonPlaceholder>
-                <SkeletonPlaceholder.Item alignItems="center" margin={20}>
+                <SkeletonPlaceholder.Item
+                  alignItems="center"
+                  margin={RFValue(20)}
+                >
                   <SkeletonPlaceholder.Item alignItems="center">
                     <SkeletonPlaceholder.Item
-                      width={80}
-                      height={20}
-                      borderRadius={4}
+                      width={RFValue(80)}
+                      height={RFValue(20)}
+                      borderRadius={RFValue(4)}
                     />
                   </SkeletonPlaceholder.Item>
                 </SkeletonPlaceholder.Item>

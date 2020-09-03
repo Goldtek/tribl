@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 // DEFINE SCREEN PROP TYPES
 interface ConnectionRequestkeletonProps {
@@ -14,80 +15,90 @@ export default function ConnectionRequestSkeleton({
       {[...Array(skeletonSize)].map((_, index) => (
         <SkeletonPlaceholder key={index.toString()}>
           <SkeletonPlaceholder.Item
-            marginTop={30}
-            marginLeft={15}
+            marginTop={RFValue(30)}
+            marginLeft={RFValue(15)}
             flexDirection="row"
             alignItems="center"
           >
             <SkeletonPlaceholder.Item
-              width={70}
-              height={70}
-              borderRadius={15}
+              width={RFValue(70)}
+              height={RFValue(70)}
+              borderRadius={RFValue(15)}
             />
-            <SkeletonPlaceholder.Item justifyContent="center" marginLeft={40}>
+            <SkeletonPlaceholder.Item
+              justifyContent="center"
+              marginLeft={RFValue(40)}
+            >
               <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
+                width={RFValue(150)}
+                height={RFValue(20)}
+                borderRadius={RFValue(4)}
+                marginTop={RFValue(10)}
               />
               <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
+                width={RFValue(150)}
+                height={RFValue(20)}
+                borderRadius={RFValue(4)}
+                marginTop={RFValue(10)}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>
           <SkeletonPlaceholder.Item
-            marginTop={30}
-            marginLeft={15}
+            marginTop={RFValue(30)}
+            marginLeft={RFValue(15)}
             flexDirection="row"
             alignItems="center"
           >
             <SkeletonPlaceholder.Item
-              width={70}
-              height={70}
-              borderRadius={15}
+              width={RFValue(70)}
+              height={RFValue(70)}
+              borderRadius={RFValue(15)}
             />
-            <SkeletonPlaceholder.Item justifyContent="center" marginLeft={40}>
+            <SkeletonPlaceholder.Item
+              justifyContent="center"
+              marginLeft={RFValue(40)}
+            >
               <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
+                width={RFValue(150)}
+                height={RFValue(20)}
+                borderRadius={RFValue(4)}
+                marginTop={RFValue(10)}
               />
               <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
+                width={RFValue(150)}
+                height={RFValue(20)}
+                borderRadius={RFValue(4)}
+                marginTop={RFValue(10)}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>
+
           <SkeletonPlaceholder.Item
-            marginTop={30}
-            marginLeft={15}
+            marginTop={RFValue(30)}
+            marginLeft={RFValue(15)}
             flexDirection="row"
             alignItems="center"
           >
             <SkeletonPlaceholder.Item
-              width={70}
-              height={70}
-              borderRadius={15}
+              width={RFValue(70)}
+              height={RFValue(70)}
+              borderRadius={RFValue(15)}
             />
-            <SkeletonPlaceholder.Item justifyContent="center" marginLeft={40}>
+            <SkeletonPlaceholder.Item
+              justifyContent="center"
+              marginLeft={RFValue(40)}
+            >
               <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
+                width={RFValue(150)}
+                height={RFValue(20)}
+                borderRadius={RFValue(4)}
+                marginTop={RFValue(10)}
               />
               <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
+                width={RFValue(150)}
+                height={RFValue(20)}
+                borderRadius={RFValue(4)}
+                marginTop={RFValue(10)}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>
