@@ -34,7 +34,10 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   return (
     <Container>
-      <AlgoliaSearch indexName="tribl_community_members_develop">
+      <AlgoliaSearch
+        indexName="tribl_community_members_staging"
+        filters={`"communityId": ${id}`}
+      >
         <AlgoliaList />
       </AlgoliaSearch>
       <Title
