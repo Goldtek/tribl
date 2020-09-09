@@ -59,9 +59,9 @@
   "avatarUploadScreen": {
     "title": "photo",
     "subTitle": "setup 3",
-    "paragraph": "Add a pic with personality to give \ncommunity members a sense of who \nyou are.",
+    "paragraph": "Add a pic with personality to give community members a sense of who you are.",
     "addAvatar": "add passport photo",
-    "photoAdded": "photo added",
+    "photoAdded": "add photo",
     "selectAvatar": "Select Avatar",
     "inputError": "Image is required or skip this setup",
     "uploadError": "Failed uploading image, please try again",
@@ -99,7 +99,7 @@
 
   "passportScreen": {
     "title": "Tribl passport",
-    "subTitle": "Welcome to Tribl. Use this passport to \nidentify, connect, & engage.",
+    "subTitle": "Welcome to Tribl. Use this passport to identify, connect, & engage.",
     "sharePassport": "share my passport",
     "sharePassportMessage": "Join Tribl’s waitlist to become part of the community \nwww.jointribl.com",
     "contactCard": "contact card",

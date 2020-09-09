@@ -3,22 +3,17 @@
   "nextWalkThrough": "next",
   "getStarted": "get started",
   "screenOne": {
-    "title": "Find your Tribe",
+    "title": "Find Your Tribe",
     "subTitle": "Join interest-based groups"
   },
 
   "screenTwo": {
     "title": "Meet familiar strangers",
-    "subTitle": "chat and connect with people like you"
+    "subTitle": "Chat with like-minded socialites"
   },
 
   "screenThree": {
     "title": "Join the movement",
-    "subTitle": "Harness black voives and buying power"
-  },
-
-  "screenFour": {
-    "title": "Community",
-    "subTitle": "Find your tribe"
+    "subTitle": "Harness black voices & buying power"
   }
 }
