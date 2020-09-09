@@ -20,18 +20,20 @@ interface MemberProp extends NavigationInterface {
   connected: boolean;
   lastName: string;
   phoneNumber: string;
+  id: string;
 }
 
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const {
-    avatar = 'https://picsum.photos/700',
+    avatar,
     lastSeen = '3 mins ago',
     firstName,
     lastName,
     connected,
-    phoneNumber
+    phoneNumber,
+    id
   } = props;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
@@ -47,6 +49,14 @@ function Member(props: MemberProp) {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleNavigation = () => {
+    navigation.navigate('ConnectionChatScreen', {
+      title: `${firstName} ${lastName}`,
+      avatar: avatar,
+      receiverId: id
+    });
   };
 
   return (
@@ -113,11 +123,7 @@ function Member(props: MemberProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            onPress={() =>
-              navigation.navigate('ChatScreen', {
-                title: `${firstName} ${lastName}`
-              })
-            }
+            onPress={handleNavigation}
           >
             <Feather
               name="message-square"

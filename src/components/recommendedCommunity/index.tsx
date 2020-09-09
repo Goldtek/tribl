@@ -46,6 +46,8 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         style={{
           width: DEVICE_FULL_WIDTH - 30,
           height: RFValue(230),
+          justifyContent: 'center',
+          alignItems: 'center',
           paddingTop: 0,
           paddingBottom: 0,
           paddingLeft: 0,
@@ -55,7 +57,11 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         <FastImage
           resizeMode={FastImage.resizeMode.contain}
           source={{ uri: avatar, priority: FastImage.priority.high }}
-          style={{ width: '100%', height: '100%', borderRadius: 4 }}
+          style={{
+            width: '100%',
+            height: '90%',
+            borderRadius: 4
+          }}
         />
       </Card.Content>
       <Card.Title
@@ -83,10 +89,10 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         }}
         left={({ size }) => (
           <FastImage
-            resizeMode={FastImage.resizeMode.contain}
+            resizeMode={FastImage.resizeMode.cover}
             source={{ uri: avatar, priority: FastImage.priority.high }}
             style={{
-              width: RFValue(size),
+              width: RFValue(size + 2),
               height: RFValue(size + 2),
               borderRadius: 5
             }}

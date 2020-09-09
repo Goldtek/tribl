@@ -29,7 +29,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const {
-    avatar = 'https://picsum.photos/700',
+    avatar,
     lastSeen = '3 mins ago',
     firstName,
     lastName,

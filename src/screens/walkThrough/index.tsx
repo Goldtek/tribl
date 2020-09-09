@@ -71,7 +71,7 @@ export default function WalkThroughScreen(props: ScreenProp) {
         />
       ))}
 
-      {currentSlide !== 3 && (
+      {currentSlide !== 2 && (
         <Button
           mode="text"
           color={colors.WHITE}
@@ -94,7 +94,7 @@ export default function WalkThroughScreen(props: ScreenProp) {
       <StatusBar translucent animated style="light" />
       <SafeAreaView style={{ flex: 1, width: '100%', alignItems: 'center' }}>
         <Container style={{ height: '5%', alignItems: 'flex-end' }}>
-          {currentSlide !== 3 && (
+          {currentSlide !== 2 && (
             <Button
               mode="text"
               color={colors.WHITE}
@@ -103,7 +103,7 @@ export default function WalkThroughScreen(props: ScreenProp) {
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 textTransform: 'capitalize'
               }}
-              onPress={() => swiperRef.current?.scrollBy(3, true)}
+              onPress={() => swiperRef.current?.scrollBy(2, true)}
             >
               {t('walkThrough.skipWalkThrough')}
             </Button>
@@ -114,11 +114,11 @@ export default function WalkThroughScreen(props: ScreenProp) {
           ref={swiperRef}
           loop={false}
           bounces={true}
-          showsPagination={currentSlide !== 3 ? true : false}
+          showsPagination={currentSlide !== 2 ? true : false}
           onIndexChanged={handleSlideChange}
           renderPagination={renderPagination}
         >
-          {[...Array(4)].map((_, slideIndex) => (
+          {[...Array(3)].map((_, slideIndex) => (
             <Slide
               t={t}
               key={slideIndex}
