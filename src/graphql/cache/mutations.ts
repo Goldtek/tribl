@@ -12,3 +12,10 @@ export const ADD_USER_DETAILS = gql`
     addUserDetails(details: $details) @client
   }
 `;
+
+// ADD COMMUNITY SEARCH INDEX
+export const ADD_COMMUNITY_SEARCH_INDEX = gql`
+  mutation AddCommunitySearchIndex($communitySearchIndex: Number!) {
+    addCommunitySearchIndex(communitySearchIndex: $communitySearchIndex) @client
+  }
+`;
