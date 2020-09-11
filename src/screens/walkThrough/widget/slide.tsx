@@ -67,17 +67,6 @@ function Slide(props: SlideProp) {
             }}
           />
         )}
-
-        {/* {slideIndex === 3 && (
-          <Image
-            source={require('../../../../assets/images/sliderFourImage.png')}
-            style={{
-              resizeMode: 'contain',
-              width: '100%',
-              height: RFPercentage(50)
-            }}
-          />
-        )} */}
       </Container>
 
       {/* REDUCE CONTENT HEIGHT FOR SCREENS LESS THAN 375 (IPHONE 8 DOWN) */}
