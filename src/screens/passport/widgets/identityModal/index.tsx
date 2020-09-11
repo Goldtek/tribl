@@ -28,27 +28,30 @@ function IdentityModal(props: any) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({
-    selectedIdentities: new Map()
+    selectedIdentities: new Map(),
+    selectedId: new Map()
   });
-
   const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
 
-  const handleSelect = (selected: string) => {
+  const handleSelect = (selected: string, id: string) => {
     if (!state.selectedIdentities.has(selected)) {
-      props.identity(state.selectedIdentities);
+      props.identity(state.selectedIdentities, state.selectedId);
       return setState({
         ...state,
         selectedIdentities: new Map(
           state.selectedIdentities.set(selected, selected)
-        )
+        ),
+        selectedId: new Map(state.selectedId.set(id, id))
       });
     }
 
     state.selectedIdentities.delete(selected);
-    props.identity(state.selectedIdentities);
+    state.selectedId.delete(id);
+    props.identity(state.selectedIdentities, state.selectedId);
     setState({
       ...state,
-      selectedIdentities: new Map(state.selectedIdentities)
+      selectedIdentities: new Map(state.selectedIdentities),
+      selectedId: new Map(state.selectedId)
     });
   };
 
@@ -114,14 +117,20 @@ function IdentityModal(props: any) {
               marginTop: RFValue(20)
             }}
           >
-            {data?.Identity?.map((identity) => (
-              <IdentityButton
-                key={identity.id}
-                identity={identity.name}
-                selected={state.selectedIdentities.get(identity.name)}
-                handleSelect={handleSelect}
-              />
-            ))}
+            {data?.Identity?.map((identity) => {
+              return (
+                <IdentityButton
+                  key={identity.id}
+                  identity={identity.name}
+                  selected={
+                    state.selectedIdentities.get(identity.name) &&
+                    state.selectedId.get(identity.id)
+                  }
+                  id={identity.id}
+                  handleSelect={handleSelect}
+                />
+              );
+            })}
           </Container>
 
           <Container style={{ marginTop: RFValue(10) }}>
