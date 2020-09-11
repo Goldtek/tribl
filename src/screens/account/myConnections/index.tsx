@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { NavigationInterface } from '../../types';
 import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -6,11 +6,11 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
+import PTRView from 'react-native-pull-to-refresh';
 import { StatusBar, FlatList, TouchableHighlight } from 'react-native';
+import SearchInput, { createFilter } from 'react-native-search-filter';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
-import AlgoliaSearch from '../../../components/algoliaSearch';
-import AlgoliaList from '../../../components/algoliaInboxList';
 import Connection from './widget';
 import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -27,11 +27,45 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { top } = useSafeArea();
   const { t } = useTranslation();
 
-  const { loading, data } = useQuery(GET_MY_CONNECTIONS);
-
+  const { loading, data, refetch } = useQuery(GET_MY_CONNECTIONS);
   const myConnection = data?.myConnections;
 
+  const filterConnections = myConnection
+    ?.slice()
+    .sort(function (a: any, b: any) {
+      if (a.firstName < b.firstName) {
+        return -1;
+      }
+      if (a.firstName > b.firstName) {
+        return 1;
+      }
+      return 0;
+    });
+
+  const [search, setSearch] = useState({
+    searchTerm: ''
+  });
+
+  const searchUpdated = (text: any) => {
+    setSearch({ searchTerm: text });
+  };
+
+  const KeysToFilter = ['firstName', 'lastName'];
+
+  const filteredWords =
+    filterConnections &&
+    filterConnections?.filter(createFilter(search.searchTerm, KeysToFilter));
+
   const _renderItem = ({ item }: any) => <Connection key={item.id} {...item} />;
+
+  const _refresh = () => {
+    return new Promise((resolve) => {
+      refetch();
+      setTimeout(() => {
+        resolve();
+      }, 2000);
+    });
+  };
 
   return (
     <Fragment>
@@ -71,50 +105,64 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         )}
         style={{ paddingTop: top }}
       />
+
       <Container>
-        <AlgoliaSearch indexName="tribl_passport_staging">
-          <AlgoliaList />
-        </AlgoliaSearch>
-        {loading ? (
-          <Skeleton />
-        ) : myConnection?.length ? (
-          <Fragment>
-            <Title
+        <SearchInput
+          onChangeText={(text) => searchUpdated(text)}
+          placeholder="Search"
+          style={{
+            height: RFValue(40),
+            alignItems: 'center',
+            elevation: 0,
+            borderWidth: 1,
+            borderColor: colors.INACTIVE,
+            borderRadius: 4,
+            paddingHorizontal: 10,
+            marginHorizontal: 15
+          }}
+        />
+        <PTRView onRefresh={_refresh} style={{ marginTop: RFValue(10) }}>
+          {loading ? (
+            <Skeleton />
+          ) : myConnection?.length ? (
+            <Fragment>
+              <Title
+                style={{
+                  color: colors.PRIMARY_TEXT,
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  marginTop: RFValue(20),
+                  marginLeft: RFValue(10),
+                  textTransform: 'capitalize'
+                }}
+              >
+                {t(`community.sideNav.connection`)}
+              </Title>
+              <FlatList
+                data={filteredWords}
+                contentContainerStyle={{
+                  flexGrow: 1,
+                  marginTop: RFValue(10),
+                  paddingBottom: RFValue(60)
+                }}
+                showsVerticalScrollIndicator={false}
+                renderItem={_renderItem}
+                keyExtractor={(item) => item.id}
+              />
+            </Fragment>
+          ) : (
+            <Text
               style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.LARGE_SIZE),
-                marginTop: RFValue(20),
-                marginLeft: RFValue(10),
-                textTransform: 'capitalize'
+                fontFamily: fonts.WORK_SANS_BOLD,
+                margin: RFValue(20),
+                textAlign: 'center'
               }}
             >
-              {t(`community.sideNav.connection`)}
-            </Title>
-            <FlatList
-              data={myConnection}
-              contentContainerStyle={{
-                flexGrow: 1,
-                marginTop: RFValue(10),
-                paddingBottom: RFValue(60)
-              }}
-              showsVerticalScrollIndicator={false}
-              renderItem={_renderItem}
-              keyExtractor={(item) => item.id}
-            />
-          </Fragment>
-        ) : (
-          <Text
-            style={{
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              margin: RFValue(20),
-              textAlign: 'center'
-            }}
-          >
-            You currently don't have any connection
-          </Text>
-        )}
+              You currently don't have any connection
+            </Text>
+          )}
+        </PTRView>
       </Container>
     </Fragment>
   );
