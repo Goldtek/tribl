@@ -103,10 +103,55 @@ export const UPLOAD_USER_AVATAR = gql`
   }
 `;
 
-//UPDATE PASSPORT
+// UPDATE PASSPORT
 export const UPDATE_PASSPORT = gql`
   mutation updatePassport($payload: UpdatePassportInput!) {
     updatePassport(input: $payload) {
+      success
+    }
+  }
+`;
+
+// SEND DIRECT MESSAGE
+export const SEND_DIRECT_MESSAGE = gql`
+  mutation createDirectMessage($payload: ComposeDirectMessageInput!) {
+    createDirectMessage(input: $payload) {
+      success
+    }
+  }
+`;
+
+// SEND MESSAGE REQUEST
+export const CREATE_MESSAGE_REQUEST = gql`
+  mutation createMessageRequest($payload: MessageRequest) {
+    createMessageRequest(input: $payload) {
+      success
+    }
+  }
+`;
+
+// DELETE MESSAGE REQUEST
+export const DELETE_MESSAGE_REQUEST = gql`
+  mutation deleteMessageRequest($payload: MessageRequest) {
+    deleteMessageRequest(input: $payload) {
+      success
+    }
+  }
+`;
+
+// ACCEPT MESSAGE REQUEST
+export const ACCEPT_MESSAGE_REQUEST = gql`
+  mutation updateMessageRequest($payload: MessageRequest) {
+    updateMessageRequest(input: $payload) {
+      success
+    }
+  }
+`;
+
+// MARK MESSAGE READ
+export const MARK_MESSAGE_READ = gql`
+  mutation markMessageAsRead($payload: MarkMessageAsReadInput!) {
+    markMessageAsRead(input: $payload) {
       success
     }
   }

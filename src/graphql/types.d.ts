@@ -32,6 +32,50 @@ type Location = {
   __typename: string;
 };
 
+enum UserAvailability {
+  OFFLINE = 'OFFLINE',
+  ONLINE = 'ONLINE'
+}
+
+export enum Status {
+  PENDING = 'PENDING',
+  NOT_CONNECTED = 'NOT_CONNECTED',
+  BLOCKED = 'BLOCKED',
+  ACCEPTED = 'ACCEPTED',
+  CONNECTED = 'CONNECTED'
+}
+
+type DirectMessage = {
+  id: String;
+  conversationId: String;
+  senderId: String;
+  receiverId: String;
+  content: String;
+  createdAt: Date;
+  readAt: Date;
+};
+
+type MessageRequest = {
+  id: String;
+  senderId: String;
+  approvedAt: Date;
+  createdAt: !Date;
+};
+
+type Spam = {
+  id: String;
+  directMessage: DirectMessage;
+};
+
+type Conversation = {
+  id: string;
+  spam: Spam;
+  messageRequest: MessageRequest;
+  participants: PassportInterface;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export interface PassportInterface {
   id?: string;
   dob: {
@@ -46,9 +90,11 @@ export interface PassportInterface {
   countryCode: string;
   firstName: string;
   lastName: string;
+  status: UserAvailability | null;
   phoneNumber: string;
   citizenShip: string | null;
-  connected: string;
+  connected: Status | null;
+  conversation: Conversation | null;
   interest: string[];
   identity: string[];
   connectionCount: number;
@@ -117,6 +163,16 @@ export type CreateAccountInterface = {
 // USER PASSPORT (RESPONSE) TYPE
 export type MyPassportInterface = {
   myPassport: PassportInterface;
+};
+
+// USER CONNECTIONS (RESPONSE) TYPE
+export type MyConnectionsInterface = {
+  myConnections: PassportInterface[];
+};
+
+// COMMUNITY USER SINGLE PASSPORT (RESPONSE) TYPE
+export type UserPassportInterface = {
+  singlePassport: PassportInterface;
 };
 
 // USER SELECTABLE IDENTITIES (RESPONSE) TYPE

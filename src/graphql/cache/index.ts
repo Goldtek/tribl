@@ -29,7 +29,9 @@ cache.writeData<StoreInterface>({
       citizenShip: '',
       connectionCount: 0,
       communityCount: 0,
-      connected: '',
+      connected: null,
+      status: null,
+      conversation: null,
       identity: [],
       interest: [],
       currentLocation: [
