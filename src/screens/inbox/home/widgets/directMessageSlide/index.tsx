@@ -2,13 +2,13 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Text } from 'react-native-paper';
-import MemberCard from '../chatMemberCard';
+import DirectChatCard from '../directChatCard';
 import { NavigationInterface } from '../../../../types';
 import Firechat from '../../../../../firebase';
 import { useThemeContext } from '../../../../../theme';
-import { GroupInterface } from '../../../types';
-import { fireAuth } from '../../../../../firebase/config';
+import { ConversationInterface } from '../../../types';
 import ChatCardSkeleton from '../../../../../components/chatCardSkeleton';
+import { ROOM_TYPES } from '../../../../../firebase/types';
 
 import { Container } from './styles';
 
@@ -17,43 +17,50 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function DirectDMScreen(props: ScreenProp) {
   const { fonts } = useThemeContext();
-  const userId = fireAuth.currentUser?.uid as string;
 
   const [chatHistory, setChatHistory] = useState(true);
 
-  const [directMessages, setDirectMessages] = useState<GroupInterface[]>([]);
+  const [directMessages, setDirectMessages] = useState<ConversationInterface[]>(
+    []
+  );
 
   useEffect(() => {
+    let unsubscribe: any = null;
+
     (async () => {
-      const directMessages = await Firechat.getUserDirectMessages();
-      if (!directMessages) setChatHistory(false);
+      const userConservations = await Firechat.getUserConversations(
+        ROOM_TYPES.CONVERSATIONS
+      );
 
-      const unsubscribe = directMessages?.onSnapshot({
-        next: (snapshot) => {
-          const groupConversations = snapshot.docs.map((documentSnapshot) => {
-            const message = documentSnapshot.data() as GroupInterface;
+      unsubscribe = userConservations?.onSnapshot({
+        next: async (snapshot) => {
+          if (!snapshot.docs.length) return setChatHistory(false);
 
-            const [directMessageIcons] = message.members.filter(
-              ({ receiverId }) => receiverId !== userId
-            );
+          const conversationIds = snapshot.docs.map((document) => document.id);
 
-            return {
-              ...message,
-              name: directMessageIcons.title,
-              avatar: directMessageIcons.avatar
-            };
+          const userDirectMessages = await Firechat.getConversationMessages(
+            conversationIds
+          );
+
+          userDirectMessages?.onSnapshot({
+            next: (snapshot) => {
+              const directMessages = snapshot.docs.map((document) => {
+                const message = document.data() as ConversationInterface;
+                return { ...message, id: document.id };
+              });
+
+              setDirectMessages(directMessages);
+            }
           });
-
-          setDirectMessages(groupConversations);
         }
       });
-
-      return () => unsubscribe && unsubscribe();
     })();
+
+    return () => unsubscribe && unsubscribe();
   }, []);
 
-  const _renderItem = ({ item }: { item: GroupInterface }) => (
-    <MemberCard key={item.id} {...item} />
+  const _renderItem = ({ item }: { item: ConversationInterface }) => (
+    <DirectChatCard key={item.id} {...item} />
   );
 
   const renderEmptyList = useMemo(
