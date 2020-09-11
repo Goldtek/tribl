@@ -1,10 +1,9 @@
-import React, { Fragment, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { FlatList } from 'react-native';
-import { Divider, TouchableRipple, Button, Text } from 'react-native-paper';
+import { Divider, Button, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
-import { FontAwesome } from '@expo/vector-icons';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
@@ -18,6 +17,8 @@ import {
   GET_ALL_MEMBERS
 } from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
+import { GET_USER_PASSPORT } from '../../../graphql/server/query';
+import { MyPassportInterface } from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -34,32 +35,79 @@ export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+  const { loading: nearbyLoading, data: nearbyData } = useQuery(
+    GET_NEARBY_MEMBERS
+  );
   const nearbyMembers = nearbyData?.nearbyMembers;
 
-  const { data: connectionData } = useQuery(GET_MY_CONNECTIONS);
+  const { loading: connectionLoading, data: connectionData } = useQuery(
+    GET_MY_CONNECTIONS
+  );
   const myConnection = connectionData?.myConnections;
 
-  const { data: allMembersData } = useQuery(GET_ALL_MEMBERS);
+  const { loading: allMembersLoading, data: allMembersData } = useQuery(
+    GET_ALL_MEMBERS
+  );
   const allMembers = allMembersData?.Passport;
+
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport?.id;
+
+  const filteredMembers = allMembers?.filter((member: any) => {
+    return member.id !== userDetails;
+  });
 
   const [filter, setFilter] = useState(t(`community.chat.all`) as string);
 
-  const [data, setData] = useState(allMembers);
+  const filterAll = filteredMembers?.slice().sort(function (a: any, b: any) {
+    if (a.firstName < b.firstName) {
+      return -1;
+    }
+    if (a.firstName > b.firstName) {
+      return 1;
+    }
+    return 0;
+  });
+
+  const filterConncetion = myConnection
+    ?.slice()
+    .sort(function (a: any, b: any) {
+      if (a.firstName < b.firstName) {
+        return -1;
+      }
+      if (a.firstName > b.firstName) {
+        return 1;
+      }
+      return 0;
+    });
+
+  const filterNearby = nearbyMembers?.slice().sort(function (a: any, b: any) {
+    if (a.firstName < b.firstName) {
+      return -1;
+    }
+    if (a.firstName > b.firstName) {
+      return 1;
+    }
+    return 0;
+  });
+
+  const data =
+    filter == t(`community.chat.all`)
+      ? filterAll
+      : filter == t(`community.chat.connection`)
+      ? filterConncetion
+      : filterNearby;
 
   const handleConnectionClick = () => {
     setFilter(t(`community.chat.connection`));
-    setData(myConnection);
   };
 
   const handleNearbyClick = () => {
     setFilter(t(`community.chat.nearby`));
-    setData(nearbyMembers);
   };
 
   const handleAllMembersClick = () => {
     setFilter(t(`community.chat.all`));
-    setData(allMembers);
   };
 
   const _separator = () =>
@@ -169,7 +217,7 @@ export default function ChatScreen(props: ScreenProp) {
           </Button>
         </FilterContainer>
 
-        <TouchableRipple
+        {/* <TouchableRipple
           style={{
             backgroundColor: colors.WHITE,
             paddingHorizontal: RFValue(20),
@@ -197,18 +245,31 @@ export default function ChatScreen(props: ScreenProp) {
             </GroupContainer>
             <Divider />
           </Fragment>
-        </TouchableRipple>
-
-        <FlatList
-          data={data}
-          renderItem={_renderItem}
-          keyExtractor={(item) => item.id}
-          ListEmptyComponent={<Skeleton />}
-          ItemSeparatorComponent={_separator}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
-          style={{ backgroundColor: colors.WHITE, paddingTop: 10 }}
-        />
+        </TouchableRipple> */}
+        {allMembersLoading || connectionLoading || nearbyLoading ? (
+          <Skeleton />
+        ) : data?.length ? (
+          <FlatList
+            data={data}
+            renderItem={_renderItem}
+            keyExtractor={(item) => item.id}
+            ItemSeparatorComponent={_separator}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+            style={{ backgroundColor: colors.WHITE, paddingTop: 10 }}
+          />
+        ) : (
+          <Text
+            style={{
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              margin: RFValue(20),
+              textAlign: 'center'
+            }}
+          >
+            There is no member
+          </Text>
+        )}
       </Container>
     </SafeAreaView>
   );
