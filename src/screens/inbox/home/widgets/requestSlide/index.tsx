@@ -1,13 +1,16 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Text } from 'react-native-paper';
 import { NavigationInterface } from '../../../../types';
-import MemberCard from '../chatMemberCard';
+import Firechat from '../../../../../firebase';
+import MessageRequestCard from '../messageRequestCard';
 import ChatCardSkeleton from '../../../../../components/chatCardSkeleton';
+import { ConversationInterface } from '../../../types';
+import { ROOM_TYPES } from '../../../../../firebase/types';
+import { useThemeContext } from '../../../../../theme';
 
 import { Container } from './styles';
-import { Text } from 'react-native-paper';
-import { useThemeContext } from '../../../../../theme';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -15,36 +18,63 @@ interface ScreenProp extends NavigationInterface {}
 export default function ChannelScreen(props: ScreenProp) {
   const { fonts } = useThemeContext();
 
-  const [state, setState] = useState(false);
+  const [requestHistory, setRequestHistory] = useState(true);
 
-  const _renderItem = ({ item }: any) => (
-    <MemberCard key={item.id} {...item} {...props} />
+  const [messageRequests, setMessageRequests] = useState<
+    ConversationInterface[]
+  >([]);
+
+  useEffect(() => {
+    let unsubscribe: any = null;
+
+    (async () => {
+      const userConservations = await Firechat.getUserConversations(
+        ROOM_TYPES.MESSAGE_REQUEST
+      );
+
+      unsubscribe = userConservations?.onSnapshot({
+        next: async (snapshot) => {
+          if (!snapshot.docs.length) return setRequestHistory(false);
+
+          const conversationIds = snapshot.docs.map((document) => document.id);
+
+          const userMessageRequest = await Firechat.getConversationMessages(
+            conversationIds
+          );
+
+          userMessageRequest?.onSnapshot({
+            next: (snapshot) => {
+              const messagesRequests = snapshot.docs.map((document) => {
+                const message = document.data() as ConversationInterface;
+                return { ...message, id: document.id };
+              });
+
+              setMessageRequests(messagesRequests);
+            }
+          });
+        }
+      });
+    })();
+
+    return () => unsubscribe && unsubscribe();
+  }, []);
+
+  const _renderItem = ({ item }: { item: ConversationInterface }) => (
+    <MessageRequestCard key={item.id} {...item} {...props} />
   );
 
   const renderEmptyList = useMemo(
-    () => () =>
-      state ? (
-        <Container>
-          <ChatCardSkeleton skeletonSize={3} />
-        </Container>
-      ) : (
-        <Text
-          style={{
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            margin: RFValue(20),
-            textAlign: 'center'
-          }}
-        >
-          You currently don't have any request connection
-        </Text>
-      ),
+    () => () => (
+      <Container>
+        <ChatCardSkeleton skeletonSize={3} />
+      </Container>
+    ),
     []
   );
 
-  return (
+  return requestHistory ? (
     <FlatList
-      data={[]}
+      data={messageRequests}
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),
@@ -55,5 +85,16 @@ export default function ChannelScreen(props: ScreenProp) {
       renderItem={_renderItem}
       keyExtractor={(item: any) => item.id}
     />
+  ) : (
+    <Text
+      style={{
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        fontFamily: fonts.WORK_SANS_BOLD,
+        margin: RFValue(20),
+        textAlign: 'center'
+      }}
+    >
+      You currently don't have any request connection
+    </Text>
   );
 }
