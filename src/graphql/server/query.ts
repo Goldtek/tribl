@@ -160,6 +160,7 @@ export const GET_MY_CONNECTIONS = gql`
 export const GET_CONNECTION_REQUEST = gql`
   query connectionRequests {
     connectionRequests {
+      avatar
       firstName
       lastName
       phoneNumber
@@ -282,6 +283,9 @@ export const GET_USER_PASSPORT = gql`
       id
       dob {
         formatted
+        day
+        month
+        year
       }
       email
       avatar
