@@ -15,6 +15,10 @@ import Connection from './widget';
 import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/myConnectionSkeleton';
+import {
+  MyConnectionsInterface,
+  PassportInterface
+} from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
