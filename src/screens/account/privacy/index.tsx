@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useCallback } from 'react';
+import React, { Fragment, useState, useCallback, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { AntDesign } from '@expo/vector-icons';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -12,7 +12,7 @@ import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { UPDATE_PASSPORT } from '../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, ToggleContainer, ToggleCover } from './styles';
+import { Container, ToggleContainer, ToggleCover, Cover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionScreenProp extends NavigationInterface {}
@@ -28,17 +28,15 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const [isVisible, setIsVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [index, setIndex] = useState(Number || undefined);
-
   const [privacy, setPrivacy] = useState({
     identity: privacySetting?.identity,
     locality: privacySetting?.locality,
     interest: privacySetting?.interest,
     age: privacySetting?.age,
-    selectedData: null,
     name: null,
     visibility: privacySetting?.visibility
   });
-  const selectedData = privacy.selectedData;
+  const [settingsInview, setSettingsInview] = useState();
 
   enum visibilityToggle {
     PRIVATE,
@@ -68,18 +66,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
   const toggleSwitch = async () => {
     setIsEnabled((previousState) => !previousState);
-    if (isEnabled) {
-      setPrivacy({
-        ...privacy,
-        visibility: visibilityToggle[1]
-      });
-    }
-    if (!isEnabled) {
-      setPrivacy({
-        ...privacy,
-        visibility: visibilityToggle[0]
-      });
-    }
+
     try {
       const { data } = await updatePassport();
     } catch (error) {
@@ -88,33 +75,10 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   };
 
   const showPrivacyModal = useCallback(
-    (isVisible: boolean, index?: any) => () => {
+    (isVisible: boolean, index?: any, item?: any) => () => {
       setIsVisible(isVisible);
       setIndex(index);
-      if (index == 0) {
-        setPrivacy({
-          ...privacy,
-          selectedData: privacy?.identity
-        });
-      }
-      if (index == 1) {
-        setPrivacy({
-          ...privacy,
-          selectedData: privacy?.locality
-        });
-      }
-      if (index == 2) {
-        setPrivacy({
-          ...privacy,
-          selectedData: privacy?.interest
-        });
-      }
-      if (index == 3) {
-        setPrivacy({
-          ...privacy,
-          selectedData: privacy?.age
-        });
-      }
+      setSettingsInview(item);
       return true;
     },
     []
@@ -130,22 +94,19 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     if (index == 1) {
       setPrivacy({
         ...privacy,
-        locality: childData,
-        selectedData: privacySetting?.locality
+        locality: childData
       });
     }
     if (index == 2) {
       setPrivacy({
         ...privacy,
-        interest: childData,
-        selectedData: privacySetting?.interest
+        interest: childData
       });
     }
     if (index == 3) {
       setPrivacy({
         ...privacy,
-        age: childData,
-        selectedData: privacySetting?.age
+        age: childData
       });
     }
   };
@@ -157,6 +118,26 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     t(`community.accountSettings.age`)
   ];
 
+  useEffect(() => {
+    if (privacy.visibility == visibilityToggle[0]) {
+      setIsEnabled(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isEnabled) {
+      setPrivacy({
+        ...privacy,
+        visibility: visibilityToggle[0]
+      });
+    } else {
+      setPrivacy({
+        ...privacy,
+        visibility: visibilityToggle[1]
+      });
+    }
+  }, [isEnabled]);
+
   return (
     <Fragment>
       <Container>
@@ -164,7 +145,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           <Fragment>
             <TouchableRipple
               key={index}
-              onPress={showPrivacyModal(true, index)}
+              onPress={showPrivacyModal(true, index, item)}
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
@@ -184,26 +165,29 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
                 >
                   {item}
                 </Text>
-                {item == 'identity' ? (
-                  <Text>{privacy.identity}</Text>
-                ) : item == 'locality' ? (
-                  <Text>{privacy.locality}</Text>
-                ) : item == 'interest' ? (
-                  <Text>{privacy.interest}</Text>
-                ) : item == 'age' ? (
-                  <Text>{privacy.age}</Text>
-                ) : null}
-                <AntDesign
-                  name="caretright"
-                  size={20}
-                  color={colors.PRIMARY_TEXT}
-                />
+                <Cover>
+                  {item == 'identity' ? (
+                    <Text>{privacy.identity}</Text>
+                  ) : item == 'locality' ? (
+                    <Text>{privacy.locality}</Text>
+                  ) : item == 'interest' ? (
+                    <Text>{privacy.interest}</Text>
+                  ) : item == 'age' ? (
+                    <Text>{privacy.age}</Text>
+                  ) : null}
+                  <AntDesign
+                    name="caretright"
+                    size={20}
+                    color={colors.PRIMARY_TEXT}
+                    style={{ paddingLeft: RFValue(30) }}
+                  />
+                </Cover>
               </Fragment>
             </TouchableRipple>
             <Divider style={{ backgroundColor: colors.INPUT }} />
           </Fragment>
         ))}
-        <TouchableRipple
+        {/* <TouchableRipple
           onPress={() => {}}
           style={{
             flexDirection: 'row',
@@ -231,37 +215,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
               color={colors.PRIMARY_TEXT}
             />
           </Fragment>
-        </TouchableRipple>
-        <Divider style={{ backgroundColor: colors.INPUT }} />
-        <TouchableRipple
-          onPress={() => {}}
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            height: RFValue(50),
-            paddingHorizontal: RFValue(25)
-          }}
-        >
-          <Fragment>
-            <Text
-              style={{
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: fonts.LARGE_SIZE,
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.accountSettings.passport`)}
-            </Text>
-            <Text></Text>
-            <AntDesign
-              name="caretright"
-              size={20}
-              color={colors.PRIMARY_TEXT}
-            />
-          </Fragment>
-        </TouchableRipple>
+        </TouchableRipple> */}
         <Divider style={{ backgroundColor: colors.INPUT }} />
 
         <ToggleContainer>
@@ -305,7 +259,8 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         isVisible={isVisible}
         privacyValue={getPrivacySetting}
         index={index}
-        selectedData={selectedData}
+        inView={settingsInview}
+        privacyValues={privacy}
       />
     </Fragment>
   );
