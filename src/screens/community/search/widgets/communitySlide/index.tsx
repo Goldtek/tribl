@@ -32,9 +32,7 @@ function CommunitySlideScreen(props: ScreenProp) {
   const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES);
 
   const community = communityData?.recommendedCommunities;
-  const randomCommunity =
-    community?.length &&
-    community[Math.floor(Math.random() * community.length)];
+  const randomCommunity = communityData?.recommendedCommunities[0];
   const popular = popularData?.popularCommunities;
   const _renderPopularCommunityItem = useMemo(
     () => ({ item, index }: any) => (
@@ -92,38 +90,6 @@ function CommunitySlideScreen(props: ScreenProp) {
               >
                 {t(`community.tabPanel.popular`)}
               </Title>
-
-              <TouchableRipple
-                onPress={() => {}}
-                rippleColor={colors.PRIMARY}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingRight: 15,
-                  padding: 5
-                }}
-              >
-                <Fragment>
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginTop: 0,
-                      marginBottom: 0,
-                      marginRight: 5
-                    }}
-                  >
-                    {t(`community.tabPanel.view`)}
-                  </Paragraph>
-                  <Feather
-                    name="arrow-right"
-                    size={RFValue(fonts.LARGE_SIZE)}
-                    color={colors.PRIMARY_TEXT}
-                  />
-                </Fragment>
-              </TouchableRipple>
             </CommunityWrapper>
 
             <FlatList
