@@ -9,7 +9,9 @@ import { Platform } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import communitySlide from './widgets/communitySlide';
 import { StatusBar } from 'expo-status-bar';
+import { useMutation } from '@apollo/react-hooks';
 import memberSlide from './widgets/membersSlide';
+import { ADD_COMMUNITY_SEARCH_INDEX } from '../../../graphql/cache/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -25,6 +27,7 @@ export default function SearchScreen(props: ScreenProp) {
   } = props.route;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const [changeCommunitySearchIndex] = useMutation(ADD_COMMUNITY_SEARCH_INDEX);
 
   const [tabIndex, setTabIndex] = React.useState(index);
 
@@ -34,6 +37,11 @@ export default function SearchScreen(props: ScreenProp) {
   ]);
 
   const renderScene = SceneMap({ memberSlide, communitySlide });
+
+  const handleIndexChange = (index: number) => {
+    setTabIndex(index);
+    changeCommunitySearchIndex({ variables: { communitySearchIndex: index } });
+  };
 
   const renderLabel = ({
     route,
@@ -90,7 +98,7 @@ export default function SearchScreen(props: ScreenProp) {
             renderScene={renderScene}
             renderPager={renderPager}
             renderTabBar={renderTabBar}
-            onIndexChange={setTabIndex}
+            onIndexChange={handleIndexChange}
             navigationState={{ index: tabIndex, routes }}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
           />
@@ -101,7 +109,7 @@ export default function SearchScreen(props: ScreenProp) {
             lazy
             renderScene={renderScene}
             renderTabBar={renderTabBar}
-            onIndexChange={setTabIndex}
+            onIndexChange={handleIndexChange}
             navigationState={{ index: tabIndex, routes }}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
           />
