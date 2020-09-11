@@ -43,9 +43,6 @@ function Member(props: MemberProp) {
   const handleRequest = async () => {
     try {
       const { data } = await requestConnection();
-      if (data?.requestConnection) {
-        console.log('successful');
-      }
     } catch (error) {
       console.error(error);
     }
