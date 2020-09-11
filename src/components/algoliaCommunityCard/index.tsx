@@ -9,7 +9,7 @@ import { NavigationInterface } from '../../screens/types';
 import hexToRGB from '../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { NameContainer } from './style';
+import { NameContainer, Container } from './style';
 
 // DEFINE SCREEN PROP TYPES
 interface HighlightProp extends NavigationInterface {
@@ -57,7 +57,7 @@ const Highlight = (props: HighlightProp) => {
     });
   };
   return (
-    <Text>
+    <Container>
       {highlights.map(({ value }: any, index: number) => {
         const state = hit?.currentLocation?.state;
         const country = hit?.currentLocation?.country;
@@ -67,10 +67,11 @@ const Highlight = (props: HighlightProp) => {
               <TouchableRipple
                 key={index}
                 style={{
+                  flex: 1,
+                  width: '100%',
                   height: RFValue(80),
                   flexDirection: 'row',
-                  alignItems: 'center',
-                  width: '100%'
+                  alignItems: 'center'
                 }}
                 rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
                 onPress={handleNavigation}
@@ -164,7 +165,7 @@ const Highlight = (props: HighlightProp) => {
           </Fragment>
         );
       })}
-    </Text>
+    </Container>
   );
 };
 
