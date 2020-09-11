@@ -33,7 +33,14 @@ type Location = {
 };
 
 export interface PassportInterface {
-  dob: { formatted: string | null; __typename: string };
+  id: string;
+  dob: {
+    day: number;
+    month: number;
+    year: number;
+    formatted: string | null;
+    __typename: string;
+  };
   email: string;
   avatar: string;
   countryCode: string;
@@ -53,6 +60,7 @@ export interface PassportInterface {
 
 export interface StoreInterface {
   userDetails: PassportInterface;
+  communitySearchIndex: number;
 }
 
 /*
