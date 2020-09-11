@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GiftedChat, Send } from 'react-native-gifted-chat';
 import { Platform } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import uniquePushId from 'unique-push-id';
 import { useThemeContext } from '../../../theme';
 import { Ionicons } from '@expo/vector-icons';
 import { MessageInterface } from '../types';
@@ -12,9 +11,9 @@ import { fireAuth } from '../../../firebase/config';
 import Firechat from '../../../firebase';
 import { MyPassportInterface } from '../../../graphql/types';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { ROOM_TYPES } from '../../../firebase/types';
-import { CONVERSATION_TYPES } from '../../../firebase/types';
+import { CREATE_MESSAGE_REQUEST } from '../../../graphql/server/mutations';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -24,61 +23,28 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function ConnectionChatScreen(props: ScreenProp) {
+  const { receiverId } = props.route.params;
+
   const { colors, fonts } = useThemeContext();
 
   const userId = fireAuth.currentUser?.uid as string;
-  const chatId = uniquePushId();
+
+  const [sendMessage] = useMutation(CREATE_MESSAGE_REQUEST);
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
 
-  const [firstTime, setFirstTime] = useState(true);
-
   const [messages, setMessages] = useState<MessageInterface[]>([]);
-
-  useEffect(() => {
-    const chatMessages = Firechat.getChatMessages(chatId);
-
-    const unsubscribe = chatMessages.onSnapshot({
-      next: (snapshot) => {
-        const conversations = snapshot.docs.map((documentSnapshot) => {
-          return documentSnapshot.data() as MessageInterface;
-        });
-
-        setMessages(GiftedChat.append(messages, conversations));
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
-
-    if (firstTime) {
-      setFirstTime(false);
-
-      setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
-
-      await Firechat.createRoom(chatId, {
-        message: message,
-        name: props.route.params.title,
-        receivers: [
-          { ...props.route.params },
-          {
-            title: `${userDetails?.firstName} ${userDetails?.lastName}`,
-            avatar: `${userDetails?.avatar}`,
-            receiverId: userId
-          }
-        ],
-        roomType: ROOM_TYPES.GROUPS,
-        conversationType: CONVERSATION_TYPES.DIRECT_MESSAGES
-      });
-    }
-
-    await Firechat.sendMessage(chatId, message);
+    await sendMessage({
+      variables: { payload: { receiverId, content: message.text } }
+    });
   }, []);
+
+  useEffect(() => {}, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
@@ -90,7 +56,8 @@ export default function ConnectionChatScreen(props: ScreenProp) {
           avatar: userDetails?.avatar,
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
-        alwaysShowSend
+        alwaysShowSend={true}
+        isLoadingEarlier={true}
         onSend={onSend}
         renderSend={(props) => (
           <Send
