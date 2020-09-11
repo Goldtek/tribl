@@ -5,6 +5,7 @@ import { Title, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
+import * as Updates from 'expo-updates';
 import { useQuery } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
@@ -47,7 +48,10 @@ export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({ showJoinCommunityModal: false });
+  const [state, setState] = useState({
+    showJoinCommunityModal: false,
+    update: false
+  });
 
   useQuery(GET_USER_PASSPORT);
   const { data: myCommunityData } = useQuery(GET_MY_COMMUNITIES);
@@ -71,7 +75,15 @@ export default function HomeScreen(props: ScreenProp) {
       }
     };
     getFirebaseToken();
+    checkUpdate();
   }, [loading]);
+
+  const checkUpdate = async () => {
+    const update = await Updates.checkForUpdateAsync();
+    setState({ ...state, update: update.isAvailable });
+  };
+
+  const cancelUpdate = () => setState({ ...state, update: false });
 
   const navigateToSearch = (index: number) => () => {
     navigation.navigate('CommunitySearchScreen', { index: index });
@@ -255,11 +267,12 @@ export default function HomeScreen(props: ScreenProp) {
           </RecentActivitiesList>
         ) : null}
       </ScrollView>
+
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
       ) : null}
 
-      <CheckAppUpdates />
+      {state.update ? <CheckAppUpdates cancelUpdate={cancelUpdate} /> : null}
     </Fragment>
   );
 }
