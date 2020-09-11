@@ -2,30 +2,39 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { NavigationInterface } from '../../types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GiftedChat, Send } from 'react-native-gifted-chat';
-import { Platform } from 'react-native';
+import { Platform, KeyboardAvoidingView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import { Ionicons } from '@expo/vector-icons';
 import { MessageInterface } from '../types';
 import { fireAuth } from '../../../firebase/config';
 import Firechat from '../../../firebase';
 import { MyPassportInterface } from '../../../graphql/types';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
-import { useQuery } from '@apollo/react-hooks';
+import { SEND_DIRECT_MESSAGE } from '../../../graphql/server/mutations';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { DEVICE_OS } from '../../../utils/device';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
   route: {
-    params: { title: string; avatar: string; chatId: string };
+    params: {
+      title: string;
+      avatar: string;
+      chatId: string;
+      receiverId: string;
+    };
   };
 }
 
 export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
 
-  const { chatId } = props.route.params;
+  const { chatId, receiverId } = props.route.params;
 
   const userId = fireAuth.currentUser?.uid as string;
+
+  const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
@@ -40,8 +49,13 @@ export default function ChatScreen(props: ScreenProp) {
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
-        const conversations = snapshot.docs.map((documentSnapshot) => {
-          return documentSnapshot.data() as MessageInterface;
+        const conversations = snapshot.docs.map((document) => {
+          const message = document.data();
+          return {
+            ...message,
+            user: { _id: message.senderId },
+            _id: document.id
+          } as MessageInterface;
         });
 
         setMessages(conversations);
@@ -53,7 +67,10 @@ export default function ChatScreen(props: ScreenProp) {
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
-    await Firechat.sendMessage(chatId, message);
+
+    await sendMessage({
+      variables: { payload: { receiverId, content: message.text } }
+    });
   }, []);
 
   return (
@@ -103,7 +120,15 @@ export default function ChatScreen(props: ScreenProp) {
             borderColor: colors.INACTIVE
           }
         }}
+        isKeyboardInternallyHandled={true}
+        renderAvatar={() => null}
       />
+      {DEVICE_OS === 'ios' && (
+        <KeyboardAvoidingView
+          behavior="padding"
+          keyboardVerticalOffset={RFValue(-170)}
+        />
+      )}
     </SafeAreaView>
   );
 }
