@@ -1,10 +1,21 @@
-import React, { useState, useMemo, useEffect, useRef, ReactNode } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  ReactNode,
+  Fragment
+} from 'react';
 import { Searchbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import { TextInput } from 'react-native';
 import algolia from 'algoliasearch';
-import { InstantSearch, connectSearchBox } from 'react-instantsearch-native';
+import {
+  InstantSearch,
+  connectSearchBox,
+  Configure
+} from 'react-instantsearch-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
@@ -21,6 +32,7 @@ interface ModalProp extends NavigationInterface {
   indexName: string;
   children: React.ReactElement<ReactNode | any>;
   closeSearchModal(): void;
+  filters?: any;
 }
 
 const searchClient = algolia('RX45YY5JC5', 'b637454d460aa7a6288a6066c8341ac4');
@@ -31,7 +43,8 @@ function SearchModal(props: ModalProp) {
     closeSearchModal,
     indexName,
     children,
-    navigation
+    navigation,
+    filters
   } = props;
 
   const { colors, fonts } = useThemeContext();
@@ -58,29 +71,52 @@ function SearchModal(props: ModalProp) {
   };
 
   const _searchBox = ({ currentRefinement, refine }: any) => (
-    <Searchbar
-      autoFocus
-      ref={inputRef}
-      value={currentRefinement}
-      onChangeText={(value) => refine(value)}
-      placeholder={t(`community.chat.search`)}
-      style={{
-        marginLeft: RFValue(10),
-        marginRight: RFValue(10),
-        fontFamily: fonts.WORK_SANS_REGULAR,
-        fontSize: RFValue(fonts.LARGE_SIZE),
-        color: colors.SECONDARY_TEXT,
-        marginHorizontal: 15,
-        elevation: 0,
-        borderColor: colors.INACTIVE,
-        borderRadius: 4,
-        borderWidth: 1
-      }}
-      iconColor={colors.PRIMARY_TEXT}
-    />
+    <Fragment>
+      <Searchbar
+        autoFocus
+        ref={inputRef}
+        value={currentRefinement}
+        onChangeText={(value) => refine(value)}
+        placeholder={t(`community.chat.search`)}
+        style={{
+          marginLeft: RFValue(10),
+          marginRight: RFValue(10),
+          fontFamily: fonts.WORK_SANS_REGULAR,
+          fontSize: RFValue(fonts.LARGE_SIZE),
+          color: colors.SECONDARY_TEXT,
+          marginHorizontal: 15,
+          elevation: 0,
+          borderColor: colors.INACTIVE,
+          borderRadius: 4,
+          borderWidth: 1
+        }}
+        iconColor={colors.PRIMARY_TEXT}
+      />
+    </Fragment>
   );
 
   const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), []);
+
+  // const queries = [
+  //   {
+  //     indexName: 'tribl_passport_staging',
+  //     query: 'search in categories index',
+  //     params: {
+  //       hitsPerPage: 3
+  //     }
+  //   },
+  //   {
+  //     indexName: 'tribl_community_staging',
+  //     query: 'first search in products',
+  //     params: {
+  //       hitsPerPage: 3
+  //     }
+  //   }
+  // ];
+
+  // client.multipleQueries(queries).then(({ results }: any) => {
+  //   console.log(results);
+  // });
 
   return (
     <Portal>
@@ -95,7 +131,9 @@ function SearchModal(props: ModalProp) {
             searchState={state.search}
             onSearchStateChange={onSearchStateChange}
           >
+            <Configure filters={filters} hitsPerPage={8} distinct />
             <AlgoliaSearchBox />
+
             {React.cloneElement(children, { navigation, closeModal })}
           </InstantSearch>
         }
