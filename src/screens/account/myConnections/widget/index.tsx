@@ -6,24 +6,17 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
 import { Feather } from '@expo/vector-icons';
+import { PassportInterface } from '../../../../graphql/types';
 
 import { NameContainer } from './styles';
 
-interface ConnectionProp extends NavigationInterface {
-  id: string;
-  avatar: string;
-  lastSeen: string;
-  firstName: string;
-  connected: boolean;
-  lastName: string;
-  phoneNumber: string;
-}
+interface ConnectionProp extends PassportInterface {}
 
 const Connection = (props: ConnectionProp) => {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { id, avatar, lastSeen = '3 mins ago', firstName, lastName } = props;
+  const { id, avatar, firstName, lastName, conversation } = props;
 
   return (
     <TouchableRipple
@@ -73,7 +66,7 @@ const Connection = (props: ConnectionProp) => {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            {lastSeen}
+            3 mins ago
           </Text>
         </NameContainer>
         <TouchableRipple
@@ -89,10 +82,11 @@ const Connection = (props: ConnectionProp) => {
             alignItems: 'center'
           }}
           onPress={() =>
-            navigation.navigate('ConnectionChatScreen', {
+            navigation.navigate('DirectChatScreen', {
               title: `${firstName} ${lastName}`,
               avatar: avatar,
-              receiverId: id
+              receiverId: id,
+              chatId: conversation?.id
             })
           }
         >
