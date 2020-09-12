@@ -14,7 +14,6 @@ const cache = new InMemoryCache({ freezeResults: true });
 cache.writeData<StoreInterface>({
   data: {
     userDetails: {
-      id: '',
       dob: {
         formatted: null,
         day: 0,
