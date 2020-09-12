@@ -37,3 +37,10 @@ export const GET_USER_DETAILS = gql`
     }
   }
 `;
+
+// GET COMMUNITY SEARCH INDEX
+export const GET_COMMUNITY_SEARCH_INDEX = gql`
+  query GetCommunitySearchIndex {
+    communitySearchIndex @client
+  }
+`;

@@ -10,7 +10,7 @@ import { NavigationInterface } from '../../screens/types';
 import hexToRGB from '../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { NameContainer } from './style';
+import { NameContainer, Container } from './style';
 
 // DEFINE SCREEN PROP TYPES
 interface HighlightProp extends NavigationInterface {
@@ -45,23 +45,18 @@ const Highlight = (props: HighlightProp) => {
   };
 
   return (
-    <Text>
+    <Container>
       {highlights.map(({ value }: any, index: number) => {
-        const {
-          avatar = 'https://picsum.photos/700',
-          firstName,
-          lastName,
-          lastSeen = '2 mins ago'
-        } = value;
+        const { avatar, firstName, lastName, lastSeen = '2 mins ago' } = value;
 
         return (
           <TouchableRipple
             key={index}
             style={{
               height: RFValue(80),
+              width: '100%',
               flexDirection: 'row',
-              alignItems: 'center',
-              width: '100%'
+              alignItems: 'center'
             }}
             rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
             onPress={handleNavigation}
@@ -70,7 +65,7 @@ const Highlight = (props: HighlightProp) => {
               <FastImage
                 resizeMode={FastImage.resizeMode.contain}
                 source={{
-                  uri: avatar,
+                  uri: hit.avatar,
                   priority: FastImage.priority.high
                 }}
                 style={{
@@ -104,7 +99,7 @@ const Highlight = (props: HighlightProp) => {
           </TouchableRipple>
         );
       })}
-    </Text>
+    </Container>
   );
 };
 

@@ -12,6 +12,7 @@ import { Container } from './style';
 
 interface SearchInterface {
   indexName: string;
+  filters?: any;
   children: React.ReactElement<ReactNode>;
 }
 
@@ -62,6 +63,7 @@ function AlgoliaSearch(props: SearchInterface) {
         isVisible={isVisible}
         indexName={props.indexName}
         closeSearchModal={showSearchModal(false)}
+        filters={props.filters}
         //@ts-ignore
         navigation={navigation}
       >

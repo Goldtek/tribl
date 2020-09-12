@@ -57,9 +57,7 @@ export default function HomeScreen(props: ScreenProp) {
   const myCommunity = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers;
   const community = communityData?.recommendedCommunities;
-  const randomCommunity =
-    community?.length &&
-    community[Math.floor(Math.random() * community.length)];
+  const randomCommunity = communityData?.recommendedCommunities[1];
 
   const { data: firebase, loading } = useQuery<GenerateFirebaseTokenIT>(
     GET_FIREBASE_TOKEN
@@ -76,7 +74,7 @@ export default function HomeScreen(props: ScreenProp) {
   }, [loading]);
 
   const navigateToSearch = (index: number) => () => {
-    navigation.navigate('CommunitySearchScreen', { index });
+    navigation.navigate('CommunitySearchScreen', { index: index });
   };
 
   const handleJoinCommunity = () => {

@@ -9,7 +9,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import RecommendedMembers from '../../../../../components/recommendedUser';
-import MembersData from '../../../../../libs/recommendedUsers/index.json';
 import {
   GET_NEARBY_MEMBERS,
   GET_RECOMMENDED_MEMBERS

@@ -9,7 +9,7 @@ import { NavigationInterface } from '../../screens/types';
 import hexToRGB from '../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { NameContainer } from './style';
+import { NameContainer, Container } from './style';
 
 // DEFINE SCREEN PROP TYPES
 interface HighlightProp extends NavigationInterface {
@@ -23,7 +23,7 @@ interface HighlightProp extends NavigationInterface {
     currentLocation: {
       country: string;
       state: string;
-    }[];
+    };
   };
   highlight(T: any): any[];
   closeModal(): void;
@@ -57,22 +57,21 @@ const Highlight = (props: HighlightProp) => {
     });
   };
   return (
-    <Text>
+    <Container>
       {highlights.map(({ value }: any, index: number) => {
-        const {
-          avatar = 'https://picsum.photos/700',
-          membersCount = '25k members'
-        } = value;
+        const state = hit?.currentLocation?.state;
+        const country = hit?.currentLocation?.country;
         return (
           <Fragment>
             {hit.name ? (
               <TouchableRipple
                 key={index}
                 style={{
+                  flex: 1,
+                  width: '100%',
                   height: RFValue(80),
                   flexDirection: 'row',
-                  alignItems: 'center',
-                  width: '100%'
+                  alignItems: 'center'
                 }}
                 rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
                 onPress={handleNavigation}
@@ -117,10 +116,11 @@ const Highlight = (props: HighlightProp) => {
               <TouchableRipple
                 key={index}
                 style={{
+                  flex: 1,
+                  width: '100%',
                   height: RFValue(80),
                   flexDirection: 'row',
-                  alignItems: 'center',
-                  width: '100%'
+                  alignItems: 'center'
                 }}
                 rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
                 onPress={handlePassportNavigation}
@@ -129,7 +129,7 @@ const Highlight = (props: HighlightProp) => {
                   <FastImage
                     resizeMode={FastImage.resizeMode.contain}
                     source={{
-                      uri: avatar,
+                      uri: hit.avatar,
                       priority: FastImage.priority.high
                     }}
                     style={{
@@ -156,7 +156,7 @@ const Highlight = (props: HighlightProp) => {
                         fontSize: RFValue(fonts.MEDIUM_SIZE)
                       }}
                     >
-                      {hit.currentLocation}
+                      {`${state} ${country}`}
                     </Text>
                   </NameContainer>
                 </Fragment>
@@ -165,7 +165,7 @@ const Highlight = (props: HighlightProp) => {
           </Fragment>
         );
       })}
-    </Text>
+    </Container>
   );
 };
 

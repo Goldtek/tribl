@@ -160,6 +160,7 @@ export const GET_MY_CONNECTIONS = gql`
 export const GET_CONNECTION_REQUEST = gql`
   query connectionRequests {
     connectionRequests {
+      avatar
       firstName
       lastName
       phoneNumber
@@ -236,6 +237,7 @@ export const GET_COMMUNITY_MEMBERS = gql`
   query communityMemberscommunityChannels($id: ID!) {
     communityMembers(communityId: $id) {
       id
+      avatar
       firstName
       lastName
       phoneNumber
@@ -281,6 +283,9 @@ export const GET_USER_PASSPORT = gql`
       id
       dob {
         formatted
+        day
+        month
+        year
       }
       email
       avatar
@@ -333,6 +338,7 @@ export const GET_ALL_MEMBERS = gql`
   query Passport {
     Passport {
       id
+      avatar
       phoneNumber
       verified
       firstName

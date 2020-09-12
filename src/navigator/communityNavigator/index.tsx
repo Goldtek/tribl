@@ -14,6 +14,8 @@ import { GLOBAL_HEADER_STYLE } from '../../constants';
 import AlgoliaSearch from '../../components/algoliaSearch';
 import AlgoliaCommunityList from '../../components/algoliaCommunityList ';
 import GradientButton from '../../components/gradientButton';
+import { useQuery } from '@apollo/react-hooks';
+import { GET_COMMUNITY_SEARCH_INDEX } from '../../graphql/cache/query';
 
 const CommunityStack = createStackNavigator();
 
@@ -25,7 +27,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const { t } = useTranslation();
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
-
+  const { data } = useQuery(GET_COMMUNITY_SEARCH_INDEX);
   const { top: safeAreaTop } = useSafeAreaInsets();
 
   const getMenuHeight = useCallback(() => {
@@ -106,7 +108,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
       <CommunityStack.Screen
         name="CommunitySearchScreen"
         component={Screens.SearchScreen}
-        options={{
+        options={({ route }) => ({
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
@@ -130,13 +132,21 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </TouchableHighlight>
           ),
-          headerRight: () => (
-            <AlgoliaSearch indexName="tribl_passport_staging">
-              <AlgoliaCommunityList />
-            </AlgoliaSearch>
-          ),
+          // tribl_passport_staging
+          headerRight: () => {
+            const indexName = [
+              'tribl_passport_staging',
+              'tribl_community_staging'
+            ];
+
+            return (
+              <AlgoliaSearch indexName={indexName[data.communitySearchIndex]}>
+                <AlgoliaCommunityList />
+              </AlgoliaSearch>
+            );
+          },
           headerRightContainerStyle: { width: '85%' }
-        }}
+        })}
       />
 
       <CommunityStack.Screen
@@ -178,7 +188,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               anchor={
                 <TouchableRipple
                   rippleColor={colors.PRIMARY}
-                  onPress={showMenu}
+                  onPress={() => {}}
                   style={{
                     padding: RFValue(3),
                     paddingTop: RFValue(6),

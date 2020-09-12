@@ -31,7 +31,7 @@ function AlgoliaList(props: any) {
   const _renderItem = useMemo(
     () => ({ item }: any) => (
       <HighLight
-        attribute="communityId"
+        attribute="id"
         hit={item}
         //@ts-ignore
         navigation={navigation}

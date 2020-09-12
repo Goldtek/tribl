@@ -20,7 +20,7 @@ interface ActiveUserProp {
   currentLocation: {
     country: string;
     state: string;
-  }[];
+  };
   navigation: any;
   closeActiveModal(): void;
 }
@@ -30,7 +30,7 @@ function ActiveModal(props: ActiveUserProp) {
   const { t } = useTranslation();
 
   const {
-    avatar = 'https://picsum.photos/700',
+    avatar,
     firstName,
     lastName,
     connected,
@@ -78,7 +78,7 @@ function ActiveModal(props: ActiveUserProp) {
     []
   );
 
-  const { state, country } = currentLocation[0];
+  const { state, country } = currentLocation;
 
   return (
     <Fragment>

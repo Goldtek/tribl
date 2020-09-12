@@ -16,7 +16,6 @@ export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
 
   const credentials = Storage.getUserCredentials();
-
   useEffect(() => {
     handleAuthentication();
   }, []);

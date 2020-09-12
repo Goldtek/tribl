@@ -63,6 +63,7 @@ export default function contactSlide() {
     firstName: string | undefined;
     lastName: string | undefined;
     selectedIdentity: [];
+    selectedId: [];
   }>({
     date: null,
     firstName: userDetails?.firstName,
@@ -74,7 +75,8 @@ export default function contactSlide() {
     showDatePicker: false,
     disableFirstName: true,
     disableLastName: true,
-    selectedIdentity: []
+    selectedIdentity: [],
+    selectedId: []
   });
 
   const showIdentityModal = useCallback(
@@ -85,22 +87,36 @@ export default function contactSlide() {
     []
   );
 
-  const getIdentity = (childData: any) => {
+  const getIdentity = (childData: any, idData: any) => {
     setState({
       ...state,
-      selectedIdentity: childData
+      selectedIdentity: childData,
+      selectedId: idData
     });
   };
 
   const SelectedIdentities = Array.from(state.selectedIdentity.values());
+
+  const SelectedIdentitiesID = Array.from(state.selectedId.values());
+
+  const newDate = state.date ? formatMessageTime(state.date) : null;
+  const dob = newDate?.split('/');
+  const day = dob?.length ? parseInt(dob[0]) : null;
+  const month = dob?.length ? parseInt(dob[1]) : null;
+  const year = dob?.length ? parseInt(dob[2]) : null;
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
         firstName: state.firstName,
         lastName: state.lastName,
-        dob: { formatted: state.date?.toString(), __typename: 'dateOfBirth' },
-        identity: SelectedIdentities
+        dob: {
+          day: day,
+          month: month,
+          year: year,
+          __typename: 'dateOfBirth'
+        },
+        identity: SelectedIdentitiesID
       }
     }
   });
@@ -108,14 +124,14 @@ export default function contactSlide() {
   const currentLocation = userDetails?.currentLocation[0];
   const birthPlace = userDetails?.birthPlace[0];
 
-  const onChange = useCallback((date: Date) => {
+  const onChange = (date: Date) => {
     setState({ ...state, date, showDatePicker: false });
     setTimeout(() => addUserDetails(), 0);
-  }, []);
+  };
 
-  const handleDatePicker = useCallback(() => {
+  const handleDatePicker = () => {
     setState({ ...state, showDatePicker: !state.showDatePicker });
-  }, [state.showDatePicker]);
+  };
 
   const {
     firstName,

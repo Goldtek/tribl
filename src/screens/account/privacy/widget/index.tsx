@@ -28,7 +28,7 @@ function PrivacyModal(props: any) {
   const { t } = useTranslation();
 
   const [state, setState] = useState({
-    value: props.selectedData
+    value: props.privacyValues[props.inView]
   });
 
   const modalizeRef = useRef<Modalize>(null);
@@ -44,10 +44,21 @@ function PrivacyModal(props: any) {
   useEffect(() => {
     if (isVisible) {
       openModal();
+      props.privacyValue(state.value);
+      setState({
+        ...state,
+        value: props.privacyValues[props.inView]
+      });
     } else {
       closeModal();
     }
   }, [isVisible]);
+
+  useEffect(() => {
+    if (isVisible) {
+      props.privacyValue(state.value);
+    }
+  }, [state.value]);
 
   enum privacyOptions {
     EVERYONE,
@@ -86,7 +97,7 @@ function PrivacyModal(props: any) {
           lat: userDetails?.currentLocation[0].lat
         },
         privacy: {
-          identity: state.value
+          [params]: state.value
         }
       }
     }
@@ -97,7 +108,7 @@ function PrivacyModal(props: any) {
       ...state,
       value: item
     });
-    props.privacyValue(state.value);
+
     try {
       const { data } = await updatePassport();
     } catch (error) {

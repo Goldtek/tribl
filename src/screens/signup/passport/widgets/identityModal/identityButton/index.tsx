@@ -10,15 +10,16 @@ import { GradientContainer, Identity } from './styles';
 interface IdentityButtonProp {
   identity: string;
   selected: boolean;
-  handleSelect(T: string): void;
+  id: string;
+  handleSelect(T: string, K: string): void;
 }
 
 function IdentityButton(props: IdentityButtonProp) {
-  const { identity, handleSelect, selected } = props;
+  const { identity, handleSelect, selected, id } = props;
 
   const { colors } = useThemeContext();
 
-  const onPress = () => handleSelect(identity);
+  const onPress = () => handleSelect(identity, id);
 
   return (
     <TouchableHighlight

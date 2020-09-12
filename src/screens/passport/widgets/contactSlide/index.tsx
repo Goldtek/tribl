@@ -46,7 +46,7 @@ import {
   // ButtonDot,
 } from './styles';
 
-export default function contactSlide(props: any) {
+function contactSlide(props: any) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -60,23 +60,24 @@ export default function contactSlide(props: any) {
 
   const [state, setState] = useState({
     //@ts-ignore
-    date: userDetails?.dob?.formatted,
+    date: `${userDetails?.dob?.day}/${userDetails?.dob?.month}/${userDetails?.dob?.year}`,
     firstName: userDetails?.firstName,
     lastName: userDetails?.lastName,
     disableLastName: true,
     disableFirstName: true,
     showDatePicker: false,
-    selectedIdentity: []
+    selectedIdentity: [],
+    selectedId: []
   });
 
-  const onChange = useCallback((selectedDate: Date) => {
+  const onChange = (selectedDate: Date) => {
     const date = formatMessageTime(selectedDate);
     return setState({ ...state, date, showDatePicker: false });
-  }, []);
+  };
 
-  const handleDatePicker = useCallback(() => {
+  const handleDatePicker = () => {
     setState({ ...state, showDatePicker: !state.showDatePicker });
-  }, [state.showDatePicker]);
+  };
 
   const showIdentityModal = useCallback(
     (isVisible: boolean) => () => {
@@ -86,10 +87,11 @@ export default function contactSlide(props: any) {
     []
   );
 
-  const getIdentity = (childData: any) => {
+  const getIdentity = (childData: any, idData: any) => {
     setState({
       ...state,
-      selectedIdentity: childData
+      selectedIdentity: childData,
+      selectedId: idData
     });
   };
 
@@ -354,8 +356,8 @@ export default function contactSlide(props: any) {
             </Fragment>
           ) : (
             <Fragment>
-              {userDetails?.identity.map((identity) => (
-                <IdentityText key={identity}>{identity}</IdentityText>
+              {userDetails?.identity.map((identity: any) => (
+                <IdentityText key={identity.id}>{identity.name}</IdentityText>
               ))}
             </Fragment>
           )}
@@ -487,3 +489,6 @@ export default function contactSlide(props: any) {
     </ContactContainer>
   );
 }
+
+// export default React.memo(contactSlide, () => false);
+export default React.memo(contactSlide);

@@ -67,17 +67,6 @@ function Slide(props: SlideProp) {
             }}
           />
         )}
-
-        {slideIndex === 3 && (
-          <Image
-            source={require('../../../../assets/images/sliderFourImage.png')}
-            style={{
-              resizeMode: 'contain',
-              width: '100%',
-              height: RFPercentage(50)
-            }}
-          />
-        )}
       </Container>
 
       {/* REDUCE CONTENT HEIGHT FOR SCREENS LESS THAN 375 (IPHONE 8 DOWN) */}
@@ -94,7 +83,8 @@ function Slide(props: SlideProp) {
               fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
               color: colors.WHITE,
               lineHeight: RFValue(30),
-              textAlign: 'center'
+              textAlign: 'center',
+              textTransform: 'capitalize'
             }}
           >
             {t(`walkThrough.${TEXT_MAPPER[slideIndex]}.title`)}
@@ -112,7 +102,7 @@ function Slide(props: SlideProp) {
           </Subheading>
         </Container>
 
-        {slideIndex === 3 && (
+        {slideIndex === 2 && (
           <Button
             mode="contained"
             color={colors.WHITE}

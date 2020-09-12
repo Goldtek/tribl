@@ -37,7 +37,11 @@ export default function SignupNavigator() {
     {
       variables: {
         payload: {
-          dob: { formatted: userDetails?.dob.formatted },
+          dob: {
+            day: userDetails?.dob.day,
+            month: userDetails?.dob.month,
+            year: userDetails?.dob.year
+          },
           avatar: userDetails?.avatar,
           lastName: userDetails?.lastName,
           firstName: userDetails?.firstName,

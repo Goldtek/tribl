@@ -78,10 +78,17 @@ export default function PassportScreen(props: ScreenProp) {
   //@ts-ignore
   const lastName = state?.details?.lastName;
   //@ts-ignore
-  const dob = state?.details?.date;
+  const dob = state?.details?.date?.split('/');
+  const day = dob?.length ? parseInt(dob[0]) : null;
+  const month = dob?.length ? parseInt(dob[1]) : null;
+  const year = dob?.length ? parseInt(dob[2]) : null;
+
   //@ts-ignore
   const identity = state?.details?.selectedIdentity || [];
   const SelectedIdentities = Array.from(identity?.values());
+  //@ts-ignore
+  const identityID = state?.details?.selectedId || [];
+  const SelectedIdentitiesID = Array.from(identityID?.values());
 
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -89,9 +96,11 @@ export default function PassportScreen(props: ScreenProp) {
         firstName: firstName,
         lastName: lastName,
         dob: {
-          formatted: dob
+          day: day,
+          month: month,
+          year: year
         },
-        identity: SelectedIdentities,
+        identity: SelectedIdentitiesID,
         currentLocation: {
           state: userDetails?.currentLocation[0]?.state,
           country: userDetails?.currentLocation[0]?.country,
@@ -138,7 +147,7 @@ export default function PassportScreen(props: ScreenProp) {
         paddingTop: RFValue(paddingTop)
       }}
     >
-      <StatusBar translucent animated style="light" />
+      <StatusBar translucent animated style="dark" />
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
