@@ -33,7 +33,7 @@ type Location = {
 };
 
 export interface PassportInterface {
-  id: string;
+  id?: string;
   dob: {
     day: number;
     month: number;

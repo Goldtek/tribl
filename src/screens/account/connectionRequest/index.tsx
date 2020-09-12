@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import PTRView from 'react-native-pull-to-refresh';
@@ -27,25 +27,16 @@ export default function ConnectionRequestScreen(
 ) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
-  const { top } = useSafeArea();
+  const { top } = useSafeAreaInsets();
   const { t } = useTranslation();
 
-  const { loading, data, refetch } = useQuery(GET_CONNECTION_REQUEST);
+  const { data, refetch } = useQuery(GET_CONNECTION_REQUEST);
 
   const connectionRequest = data?.connectionRequests;
 
   const _renderItem = ({ item }: any) => (
     <ConnectionRequest key={item.id} {...item} {...props} refetch={refetch} />
   );
-
-  const _refresh = () => {
-    return new Promise((resolve) => {
-      refetch();
-      setTimeout(() => {
-        resolve();
-      }, 2000);
-    });
-  };
 
   return (
     <Fragment>
@@ -86,10 +77,8 @@ export default function ConnectionRequestScreen(
         style={{ paddingTop: top }}
       />
       <Container>
-        <PTRView onRefresh={_refresh} style={{ marginTop: RFValue(10) }}>
-          {loading ? (
-            <Skeleton />
-          ) : connectionRequest?.length ? (
+        <PTRView onRefresh={refetch} style={{ marginTop: RFValue(10) }}>
+          {connectionRequest?.length ? (
             <Fragment>
               <Title
                 style={{
@@ -110,8 +99,9 @@ export default function ConnectionRequestScreen(
                   marginTop: RFValue(10),
                   paddingBottom: RFValue(120)
                 }}
-                showsVerticalScrollIndicator={false}
                 renderItem={_renderItem}
+                ListEmptyComponent={<Skeleton />}
+                showsVerticalScrollIndicator={false}
                 keyExtractor={(item) => item.id}
               />
             </Fragment>

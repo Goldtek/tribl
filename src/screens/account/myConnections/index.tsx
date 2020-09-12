@@ -2,7 +2,7 @@ import React, { Fragment, useState } from 'react';
 import { NavigationInterface } from '../../types';
 import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
@@ -24,31 +24,25 @@ interface MyConnectionScreenProp extends NavigationInterface {}
 
 export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { colors, fonts } = useThemeContext();
-  const { top } = useSafeArea();
+  const { top } = useSafeAreaInsets();
   const { t } = useTranslation();
 
-  const { loading, data, refetch } = useQuery(GET_MY_CONNECTIONS);
+  const { data, refetch } = useQuery(GET_MY_CONNECTIONS);
   const myConnection = data?.myConnections;
 
   const filterConnections = myConnection
     ?.slice()
     .sort(function (a: any, b: any) {
-      if (a.firstName < b.firstName) {
-        return -1;
-      }
-      if (a.firstName > b.firstName) {
-        return 1;
-      }
+      if (a.firstName < b.firstName) return -1;
+
+      if (a.firstName > b.firstName) return 1;
+
       return 0;
     });
 
-  const [search, setSearch] = useState({
-    searchTerm: ''
-  });
+  const [search, setSearch] = useState({ searchTerm: '' });
 
-  const searchUpdated = (text: any) => {
-    setSearch({ searchTerm: text });
-  };
+  const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const KeysToFilter = ['firstName', 'lastName'];
 
@@ -57,15 +51,6 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     filterConnections?.filter(createFilter(search.searchTerm, KeysToFilter));
 
   const _renderItem = ({ item }: any) => <Connection key={item.id} {...item} />;
-
-  const _refresh = () => {
-    return new Promise((resolve) => {
-      refetch();
-      setTimeout(() => {
-        resolve();
-      }, 2000);
-    });
-  };
 
   return (
     <Fragment>
@@ -121,10 +106,8 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
             marginHorizontal: 15
           }}
         />
-        <PTRView onRefresh={_refresh} style={{ marginTop: RFValue(10) }}>
-          {loading ? (
-            <Skeleton />
-          ) : myConnection?.length ? (
+        <PTRView onRefresh={refetch} style={{ marginTop: RFValue(10) }}>
+          {myConnection?.length ? (
             <Fragment>
               <Title
                 style={{
@@ -145,6 +128,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
                   marginTop: RFValue(10),
                   paddingBottom: RFValue(60)
                 }}
+                ListEmptyComponent={<Skeleton />}
                 showsVerticalScrollIndicator={false}
                 renderItem={_renderItem}
                 keyExtractor={(item) => item.id}
