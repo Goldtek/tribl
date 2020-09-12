@@ -5,12 +5,14 @@ import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useQuery } from '@apollo/react-hooks';
 import { Platform } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import highlightSlide from './widgets/highlightSlide';
 import channelSlide from './widgets/channelSlide';
 import memberSlide from './widgets/membersSlide';
 import { StatusBar } from 'expo-status-bar';
+import { GET_SINGLE_COMMUNITY } from '../../../graphql/server/query';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -23,35 +25,29 @@ export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const details = props.route.params;
-  const [tabIndex, setTabIndex] = React.useState(0);
+  const id = details?.details?.id || details?.communityHit?.id;
 
-  const [routes] = React.useState(
-    details.details.isMember
-      ? [
-          {
-            key: 'highlightSlide',
-            title: `${t(`community.tabPanel.highlight`)}`,
-            communityDetails: details.details || details.communityHit
-          },
-          {
-            key: 'channelSlide',
-            title: `${t(`community.tabPanel.channel`)}`,
-            communityDetails: details.details || details.communityHit
-          },
-          {
-            key: 'memberSlide',
-            title: `${t(`community.tabPanel.member`)}`,
-            communityDetails: details.details || details.communityHit
-          }
-        ]
-      : [
-          {
-            key: 'highlightSlide',
-            title: `${t(`community.tabPanel.highlight`)}`,
-            communityDetails: details.details || details.communityHit
-          }
-        ]
-  );
+  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
+    variables: { id }
+  });
+  const [tabIndex, setTabIndex] = React.useState(0);
+  const [routes] = React.useState([
+    {
+      key: 'highlightSlide',
+      title: `${t(`community.tabPanel.highlight`)}`,
+      communityDetails: details.details || details.communityHit
+    },
+    {
+      key: 'channelSlide',
+      title: `${t(`community.tabPanel.channel`)}`,
+      communityDetails: details.details || details.communityHit
+    },
+    {
+      key: 'memberSlide',
+      title: `${t(`community.tabPanel.member`)}`,
+      communityDetails: details.details || details.communityHit
+    }
+  ]);
 
   const renderScene = SceneMap({ highlightSlide, channelSlide, memberSlide });
 
@@ -98,6 +94,14 @@ export default function SearchScreen(props: ScreenProp) {
     );
   };
 
+  const handleIndexChange = (index: number) => {
+    if (communityData?.Community?.isMember) {
+      setTabIndex(index);
+    } else {
+      setTabIndex(0);
+    }
+  };
+
   const renderPager = (props: any) => <ScrollPager {...props} />;
   return (
     <Container>
@@ -109,7 +113,7 @@ export default function SearchScreen(props: ScreenProp) {
             renderScene={renderScene}
             renderPager={renderPager}
             renderTabBar={renderTabBar}
-            onIndexChange={setTabIndex}
+            onIndexChange={handleIndexChange}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
           />
         ),
@@ -119,7 +123,7 @@ export default function SearchScreen(props: ScreenProp) {
             navigationState={{ index: tabIndex, routes }}
             renderScene={renderScene}
             renderTabBar={renderTabBar}
-            onIndexChange={setTabIndex}
+            onIndexChange={handleIndexChange}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
           />
         )

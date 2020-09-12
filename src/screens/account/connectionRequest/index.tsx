@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
+import PTRView from 'react-native-pull-to-refresh';
 import { FlatList, TouchableHighlight } from 'react-native';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
@@ -36,6 +37,15 @@ export default function ConnectionRequestScreen(
   const _renderItem = ({ item }: any) => (
     <ConnectionRequest key={item.id} {...item} {...props} refetch={refetch} />
   );
+
+  const _refresh = () => {
+    return new Promise((resolve) => {
+      refetch();
+      setTimeout(() => {
+        resolve();
+      }, 2000);
+    });
+  };
 
   return (
     <Fragment>
@@ -76,46 +86,48 @@ export default function ConnectionRequestScreen(
         style={{ paddingTop: top }}
       />
       <Container>
-        {loading ? (
-          <Skeleton />
-        ) : connectionRequest?.length ? (
-          <Fragment>
-            <Title
+        <PTRView onRefresh={_refresh} style={{ marginTop: RFValue(10) }}>
+          {loading ? (
+            <Skeleton />
+          ) : connectionRequest?.length ? (
+            <Fragment>
+              <Title
+                style={{
+                  color: colors.PRIMARY_TEXT,
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  marginTop: RFValue(20),
+                  marginLeft: RFValue(10),
+                  textTransform: 'capitalize'
+                }}
+              >
+                {t(`community.sideNav.request`)}
+              </Title>
+              <FlatList
+                data={connectionRequest}
+                contentContainerStyle={{
+                  flexGrow: 1,
+                  marginTop: RFValue(10),
+                  paddingBottom: RFValue(120)
+                }}
+                showsVerticalScrollIndicator={false}
+                renderItem={_renderItem}
+                keyExtractor={(item) => item.id}
+              />
+            </Fragment>
+          ) : (
+            <Text
               style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.LARGE_SIZE),
-                marginTop: RFValue(20),
-                marginLeft: RFValue(10),
-                textTransform: 'capitalize'
+                fontFamily: fonts.WORK_SANS_BOLD,
+                margin: RFValue(20),
+                textAlign: 'center'
               }}
             >
-              {t(`community.sideNav.request`)}
-            </Title>
-            <FlatList
-              data={connectionRequest}
-              contentContainerStyle={{
-                flexGrow: 1,
-                marginTop: RFValue(10),
-                paddingBottom: RFValue(120)
-              }}
-              showsVerticalScrollIndicator={false}
-              renderItem={_renderItem}
-              keyExtractor={(item) => item.id}
-            />
-          </Fragment>
-        ) : (
-          <Text
-            style={{
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              margin: RFValue(20),
-              textAlign: 'center'
-            }}
-          >
-            You don't have any connection request.
-          </Text>
-        )}
+              You don't have any connection request.
+            </Text>
+          )}
+        </PTRView>
       </Container>
     </Fragment>
   );

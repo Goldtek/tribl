@@ -9,7 +9,7 @@ import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
 import { NavigationInterface } from '../../screens/types';
-import { GET_NEARBY_MEMBERS } from '../../graphql/server/query';
+import { GET_RECOMMENDED_MEMBERS } from '../../graphql/server/query';
 import ActiveMember from './widget';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -27,9 +27,9 @@ function ActiveModal(props: ModalProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+  const { data: recommendedData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
-  const NearbyMembers = nearbyData?.nearbyMembers;
+  const recommendedMembers = recommendedData?.recommendedMembers;
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -77,12 +77,12 @@ function ActiveModal(props: ModalProp) {
             alignItems: 'center'
           }}
         >
-          {NearbyMembers?.map((member: any, index: number) => (
+          {recommendedMembers?.map((member: any, index: number) => (
             <ActiveMember
               key={member.id}
               {...member}
               index={index}
-              lastChild={NearbyMembers.length - 1}
+              lastChild={recommendedMembers.length - 1}
               navigation={navigation}
               closeActiveModal={closeActiveModal}
             />

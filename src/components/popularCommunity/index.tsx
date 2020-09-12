@@ -44,7 +44,7 @@ function PopularCommunity(props: PopularUserProp) {
     >
       <Fragment>
         <FastImage
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode={FastImage.resizeMode.contain}
           source={{ uri: avatar, priority: FastImage.priority.high }}
           style={{
             width: RFValue(100),
