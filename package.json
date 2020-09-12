@@ -86,8 +86,7 @@
     "react-native-tab-view": "^2.14.4",
     "react-native-unimodules": "~0.10.0",
     "recyclerlistview": "^3.0.0",
-    "styled-components": "^5.1.1",
-    "unique-push-id": "^1.0.2"
+    "styled-components": "^5.1.1"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
