@@ -12,21 +12,12 @@ import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
+import { PassportInterface } from '../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
-interface RecommendedUserProp {
-  id: string;
-  avatar: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
+interface RecommendedUserProp extends PassportInterface {
   index: number;
   lastChild: number;
-  currentLocation: {
-    country: string;
-    state: string;
-  }[];
-  connected: string;
 }
 
 export default function RecommendedUser(props: RecommendedUserProp) {
@@ -37,6 +28,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const [pending, setPending] = useState(false);
 
   const {
+    id,
     avatar,
     firstName,
     lastName,
@@ -44,7 +36,8 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     lastChild,
     index,
     phoneNumber,
-    connected
+    connected,
+    conversation
   } = props;
 
   if (!currentLocation.length) return null;
@@ -68,11 +61,15 @@ export default function RecommendedUser(props: RecommendedUserProp) {
 
   const handleMessageNavigation = useCallback(
     () =>
-      navigation.navigate('ConnectionChatScreen', {
-        title: `${firstName} ${lastName}`,
-        avatar,
-        receiverId: props.id
-      }),
+      navigation.navigate(
+        conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+        {
+          title: `${firstName} ${lastName}`,
+          avatar,
+          receiverId: id,
+          chatId: conversation?.id
+        }
+      ),
     []
   );
 
