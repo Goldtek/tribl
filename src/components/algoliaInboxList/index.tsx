@@ -10,11 +10,12 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import hexToRGB from '../../utils/hexToRGB';
 import { useThemeContext } from '../../theme';
 import HighLight from '../algoliaInboxCard';
+import { PassportInterface } from '../../graphql/types';
 
 function AlgoliaList(props: any) {
   const { colors, fonts } = useThemeContext();
 
-  const { hits, hasMore, refine, navigation, closeModal } = props;
+  const { hits, hasMore, refine, closeModal } = props;
 
   const _separator = useMemo(
     () => () => (
@@ -34,7 +35,6 @@ function AlgoliaList(props: any) {
         attribute="firstName"
         hit={item}
         //@ts-ignore
-        navigation={navigation}
         closeModal={closeModal}
       />
     ),
@@ -171,7 +171,7 @@ function AlgoliaList(props: any) {
     <Results>
       <FlatList
         data={hits}
-        keyExtractor={(item: any) => item.objectID}
+        keyExtractor={(item: PassportInterface) => item.id}
         ItemSeparatorComponent={_separator}
         onEndReached={() => hasMore && refine()}
         renderItem={_renderItem}
