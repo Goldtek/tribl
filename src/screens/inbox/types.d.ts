@@ -39,8 +39,5 @@ export interface ConversationInterface {
     createdAt: Date;
     receiverId: string;
   };
-  members: {
-    id: string;
-    readAt: Date;
-  }[];
+  members: { id: string; readAt: Date }[];
 }
