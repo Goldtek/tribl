@@ -8,32 +8,26 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../../../../../types';
 import { useThemeContext } from '../../../../../../../theme';
 import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
+import { PassportInterface } from '../../../../../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MemberProp extends NavigationInterface {
-  avatar: string;
-  lastSeen: string;
-  firstName: string;
-  connected: boolean;
-  lastName: string;
-  phoneNumber: string;
-  id: string;
-}
+interface MemberProp extends PassportInterface {}
 
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+
   const {
     avatar,
-    lastSeen = '3 mins ago',
     firstName,
     lastName,
     connected,
     phoneNumber,
-    id
+    id,
+    conversation
   } = props;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
@@ -49,11 +43,15 @@ function Member(props: MemberProp) {
   };
 
   const handleNavigation = () => {
-    navigation.navigate('ConnectionChatScreen', {
-      title: `${firstName} ${lastName}`,
-      avatar: avatar,
-      receiverId: id
-    });
+    navigation.navigate(
+      conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      {
+        title: `${firstName} ${lastName}`,
+        avatar: avatar,
+        receiverId: id,
+        chatId: conversation?.id
+      }
+    );
   };
 
   return (
@@ -104,7 +102,7 @@ function Member(props: MemberProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            {lastSeen}
+            '3 mins ago'
           </Text>
         </NameContainer>
         {connected ? (
