@@ -21,13 +21,12 @@ import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
-import { NavigationInterface } from '../../screens/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ModalProp extends NavigationInterface {
+interface ModalProp {
   isVisible: boolean;
   indexName: string;
   children: React.ReactElement<ReactNode | any>;
@@ -38,14 +37,7 @@ interface ModalProp extends NavigationInterface {
 const searchClient = algolia('RX45YY5JC5', 'b637454d460aa7a6288a6066c8341ac4');
 
 function SearchModal(props: ModalProp) {
-  const {
-    isVisible,
-    closeSearchModal,
-    indexName,
-    children,
-    navigation,
-    filters
-  } = props;
+  const { isVisible, closeSearchModal, indexName, children, filters } = props;
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
@@ -97,27 +89,6 @@ function SearchModal(props: ModalProp) {
 
   const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), []);
 
-  // const queries = [
-  //   {
-  //     indexName: 'tribl_passport_staging',
-  //     query: 'search in categories index',
-  //     params: {
-  //       hitsPerPage: 3
-  //     }
-  //   },
-  //   {
-  //     indexName: 'tribl_community_staging',
-  //     query: 'first search in products',
-  //     params: {
-  //       hitsPerPage: 3
-  //     }
-  //   }
-  // ];
-
-  // client.multipleQueries(queries).then(({ results }: any) => {
-  //   console.log(results);
-  // });
-
   return (
     <Portal>
       <Modalize
@@ -134,7 +105,7 @@ function SearchModal(props: ModalProp) {
             <Configure filters={filters} hitsPerPage={8} distinct />
             <AlgoliaSearchBox />
 
-            {React.cloneElement(children, { navigation, closeModal })}
+            {React.cloneElement(children, { closeModal })}
           </InstantSearch>
         }
       >
