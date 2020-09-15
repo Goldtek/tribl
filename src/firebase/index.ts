@@ -19,12 +19,13 @@ class Firechat {
   // THIS METHOD GETS USERS DIRECT MESSAGES
   async getUserConversations(
     conversationType: ROOM_TYPES
-  ): Promise<FirebaseFirestoreTypes.CollectionReference> {
+  ): Promise<FirebaseFirestoreTypes.Query> {
     // get user chat history via userId
     return firechat
       .collection(ROOM_TYPES.USERS)
       .doc(this.userId.trim())
-      .collection(conversationType);
+      .collection(conversationType)
+      .where(firestore.FieldPath.documentId(), '>', '0');
   }
 
   // THIS METHOD GETS USERS DIRECT MESSAGES
