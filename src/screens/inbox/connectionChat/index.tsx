@@ -7,13 +7,11 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import { Ionicons } from '@expo/vector-icons';
 import { MessageInterface } from '../types';
-import { fireAuth } from '../../../firebase/config';
 import Firechat from '../../../firebase';
 import { MyPassportInterface } from '../../../graphql/types';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { ROOM_TYPES } from '../../../firebase/types';
-import { CREATE_MESSAGE_REQUEST } from '../../../graphql/server/mutations';
+import { SEND_DIRECT_MESSAGE } from '../../../graphql/server/mutations';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -25,11 +23,11 @@ interface ScreenProp extends NavigationInterface {
 export default function ConnectionChatScreen(props: ScreenProp) {
   const { receiverId } = props.route.params;
 
+  const [chatId, setChatId] = useState<string | null>(null);
+
   const { colors, fonts } = useThemeContext();
 
-  const userId = fireAuth.currentUser?.uid as string;
-
-  const [sendMessage] = useMutation(CREATE_MESSAGE_REQUEST);
+  const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
@@ -37,14 +35,36 @@ export default function ConnectionChatScreen(props: ScreenProp) {
 
   const [messages, setMessages] = useState<MessageInterface[]>([]);
 
+  useEffect(() => {
+    if (!chatId) return;
+
+    const chatMessages = Firechat.getChatMessages(chatId);
+
+    const unsubscribe = chatMessages.onSnapshot({
+      next: (snapshot) => {
+        const conversations = snapshot.docs.map((document) => {
+          const message = document.data();
+          return {
+            ...message,
+            user: { _id: message.senderId },
+            _id: document.id
+          } as MessageInterface;
+        });
+
+        setMessages(conversations);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [chatId]);
+
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
     await sendMessage({
       variables: { payload: { receiverId, content: message.text } }
     });
+    setChatId('');
   }, []);
-
-  useEffect(() => {}, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
@@ -52,7 +72,7 @@ export default function ConnectionChatScreen(props: ScreenProp) {
         placeholder="Start typing ..."
         messages={messages}
         user={{
-          _id: userId,
+          _id: userDetails?.id as string,
           avatar: userDetails?.avatar,
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}

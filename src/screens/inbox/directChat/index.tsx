@@ -11,7 +11,10 @@ import { fireAuth } from '../../../firebase/config';
 import Firechat from '../../../firebase';
 import { MyPassportInterface } from '../../../graphql/types';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
-import { SEND_DIRECT_MESSAGE } from '../../../graphql/server/mutations';
+import {
+  MARK_MESSAGE_READ,
+  SEND_DIRECT_MESSAGE
+} from '../../../graphql/server/mutations';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { DEVICE_OS } from '../../../utils/device';
 
@@ -32,9 +35,9 @@ export default function ChatScreen(props: ScreenProp) {
 
   const { chatId, receiverId } = props.route.params;
 
-  const userId = fireAuth.currentUser?.uid as string;
-
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
+
+  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ);
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
@@ -59,6 +62,9 @@ export default function ChatScreen(props: ScreenProp) {
         });
 
         setMessages(conversations);
+        markConversationAsRead({
+          variables: { payload: { conversationId: chatId } }
+        });
       }
     });
 
@@ -66,11 +72,13 @@ export default function ChatScreen(props: ScreenProp) {
   }, []);
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
-    const [message] = messages;
-
-    await sendMessage({
-      variables: { payload: { receiverId, content: message.text } }
+    const payloadMessages = messages.map((message) => {
+      return sendMessage({
+        variables: { payload: { receiverId, content: message.text } }
+      });
     });
+
+    await Promise.all(payloadMessages);
   }, []);
 
   return (
@@ -79,7 +87,7 @@ export default function ChatScreen(props: ScreenProp) {
         placeholder="Start typing ..."
         messages={messages}
         user={{
-          _id: userId,
+          _id: userDetails?.id as string,
           avatar: userDetails?.avatar,
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
