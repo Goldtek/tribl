@@ -13,6 +13,7 @@ const cache = new InMemoryCache({ freezeResults: true });
 
 cache.writeData<StoreInterface>({
   data: {
+    //@ts-ignore
     userDetails: {
       dob: {
         formatted: null,

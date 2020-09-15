@@ -121,19 +121,19 @@ export const SEND_DIRECT_MESSAGE = gql`
   }
 `;
 
-// SEND MESSAGE REQUEST
-export const CREATE_MESSAGE_REQUEST = gql`
-  mutation createMessageRequest($payload: MessageRequest) {
-    createMessageRequest(input: $payload) {
+// DELETE MESSAGE REQUEST
+export const DELETE_MESSAGE_REQUEST = gql`
+  mutation deleteMessageRequest($payload: DeleteMessageRequestInput!) {
+    deleteMessageRequest(input: $payload) {
       success
     }
   }
 `;
 
-// DELETE MESSAGE REQUEST
-export const DELETE_MESSAGE_REQUEST = gql`
-  mutation deleteMessageRequest($payload: MessageRequest) {
-    deleteMessageRequest(input: $payload) {
+// BLOCK MESSAGE REQUEST
+export const BLOCK_MESSAGE_REQUEST = gql`
+  mutation blockMessageRequest($payload: BlockMessageRequestInput!) {
+    blockMessageRequest(input: $payload) {
       success
     }
   }
@@ -141,8 +141,8 @@ export const DELETE_MESSAGE_REQUEST = gql`
 
 // ACCEPT MESSAGE REQUEST
 export const ACCEPT_MESSAGE_REQUEST = gql`
-  mutation updateMessageRequest($payload: MessageRequest) {
-    updateMessageRequest(input: $payload) {
+  mutation acceptMessageRequest($payload: AcceptMessageRequestInput!) {
+    acceptMessageRequest(input: $payload) {
       success
     }
   }
@@ -150,8 +150,8 @@ export const ACCEPT_MESSAGE_REQUEST = gql`
 
 // MARK MESSAGE READ
 export const MARK_MESSAGE_READ = gql`
-  mutation markMessageAsRead($payload: MarkMessageAsReadInput!) {
-    markMessageAsRead(input: $payload) {
+  mutation markConversationAsRead($payload: MarkMessageAsReadInput!) {
+    markConversationAsRead(input: $payload) {
       success
     }
   }

@@ -77,7 +77,7 @@ type Conversation = {
 };
 
 export interface PassportInterface {
-  id?: string;
+  id: string;
   dob: {
     day: number;
     month: number;
@@ -140,40 +140,25 @@ interface VerifyOTPIT extends JwtTokenResult {
   __typename: string;
 }
 
-export type VerifyOTPInterface = {
-  validateOtp: VerifyOTPIT;
-};
+export type VerifyOTPInterface = { validateOtp: VerifyOTPIT };
 
-export type RefreshTokenInterface = {
-  refreshToken: VerifyOTPIT;
-};
+export type RefreshTokenInterface = { refreshToken: VerifyOTPIT };
 
-export type GenerateFirebaseTokenIT = {
-  generateFirebaseToken: VerifyOTPIT;
-};
+export type GenerateFirebaseTokenIT = { generateFirebaseToken: VerifyOTPIT };
 
 // SERVER CREATE ACCOUNT (RESPONSE) TYPE
 export type CreateAccountInterface = {
-  createPassport: {
-    success: boolean;
-    _id: string;
-  };
+  createPassport: { success: boolean; _id: string };
 };
 
 // USER PASSPORT (RESPONSE) TYPE
-export type MyPassportInterface = {
-  myPassport: PassportInterface;
-};
+export type MyPassportInterface = { myPassport: PassportInterface };
 
 // USER CONNECTIONS (RESPONSE) TYPE
-export type MyConnectionsInterface = {
-  myConnections: PassportInterface[];
-};
+export type MyConnectionsInterface = { myConnections: PassportInterface[] };
 
 // COMMUNITY USER SINGLE PASSPORT (RESPONSE) TYPE
-export type UserPassportInterface = {
-  singlePassport: PassportInterface;
-};
+export type UserPassportInterface = { singlePassport: PassportInterface };
 
 // USER SELECTABLE IDENTITIES (RESPONSE) TYPE
 export type IdentitiesInterface = {
@@ -182,8 +167,15 @@ export type IdentitiesInterface = {
 
 // SERVER UPDATE USER PASSPORT (RESPONSE) TYPE
 export type UpdatePassportInterface = {
-  updatePassport: {
-    success: boolean;
-    __typename: string;
-  };
+  updatePassport: { success: boolean; __typename: string };
+};
+
+// ACCEPT MESSAGE REQUEST (RESPONSE) TYPE
+export type AcceptMessageRequestInterface = {
+  updateMessageRequest: { success: boolean; __typename: string };
+};
+
+// DELETE MESSAGE REQUEST (RESPONSE) TYPE
+export type DeleteMessageRequestInterface = {
+  deleteMessageRequest: { success: boolean; __typename: string };
 };
