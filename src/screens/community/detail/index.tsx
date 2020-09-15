@@ -115,6 +115,7 @@ export default function SearchScreen(props: ScreenProp) {
             renderTabBar={renderTabBar}
             onIndexChange={handleIndexChange}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
+            swipeEnabled={false}
           />
         ),
 
@@ -125,6 +126,7 @@ export default function SearchScreen(props: ScreenProp) {
             renderTabBar={renderTabBar}
             onIndexChange={handleIndexChange}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
+            swipeEnabled={false}
           />
         )
       })}

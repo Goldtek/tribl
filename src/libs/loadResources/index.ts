@@ -21,7 +21,8 @@ export default async function AppLoading() {
     require('../../../assets/images/splash.png'),
     require('../../../assets/images/icon.png'),
     require('../../../assets/images/sliderOneImage.png'),
-    require('../../../assets/images/logo.png')
+    require('../../../assets/images/logo.png'),
+    require('../../../assets/images/update.png')
   ]);
 
   const fontAssets = cacheFonts([

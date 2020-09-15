@@ -46,26 +46,32 @@ export default function contactSlide(props: MemberDetailProps) {
   const { phoneNumber, firstName, lastName, id: PId } = passport;
   const id = Id || PId;
 
-  const handleMessageNavigation = useCallback(
-    () =>
-      navigation.navigate('ConnectionChatScreen', {
-        title: `${firstName} ${lastName}` || `${fName} ${lName}`
-      }),
-    []
-  );
-
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber } }
   });
 
-  const { loading: passportLoading, data: passportData } = useQuery(
-    GET_SINGLE_PASSPORT,
-    {
-      variables: { id }
-    }
-  );
+  const {
+    loading: passportLoading,
+    data: passportData
+  } = useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
 
   const SinglePassport = passportData?.singlePassport;
+
+  const handleMessageNavigation = useCallback(
+    () =>
+      navigation.navigate(
+        SinglePassport?.conversation.id
+          ? 'DirectChatScreen'
+          : 'ConnectionChatScreen',
+        {
+          receiverId: id,
+          avatar: SinglePassport?.avatar,
+          chatId: SinglePassport?.conversation.id,
+          title: `${firstName} ${lastName}` || `${fName} ${lName}`
+        }
+      ),
+    []
+  );
 
   const handleRequest = async () => {
     setState({ ...state, loading: true });
@@ -74,11 +80,7 @@ export default function contactSlide(props: MemberDetailProps) {
       const { data } = await requestConnection();
 
       if (data?.requestConnection) {
-        setState({
-          ...state,
-          loading: false,
-          pending: true
-        });
+        setState({ ...state, loading: false, pending: true });
       }
     } catch (error) {
       setState({ ...state, loading: false });

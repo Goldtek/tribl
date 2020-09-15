@@ -50,7 +50,9 @@ function contactSlide(props: any) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const { data: userData, loading } = useQuery<MyPassportInterface>(
+    GET_USER_PASSPORT
+  );
   const userDetails = userData?.myPassport;
 
   const currentLocation = userDetails?.currentLocation[0];
@@ -58,17 +60,35 @@ function contactSlide(props: any) {
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const [state, setState] = useState({
-    //@ts-ignore
-    date: `${userDetails?.dob?.day}/${userDetails?.dob?.month}/${userDetails?.dob?.year}`,
-    firstName: userDetails?.firstName,
-    lastName: userDetails?.lastName,
+  const [state, setState] = useState<{
+    date?: string;
+    firstName?: string;
+    lastName?: string;
+    disableLastName: boolean;
+    disableFirstName: boolean;
+    showDatePicker: boolean;
+    selectedIdentity: string[];
+    selectedId: string[];
+  }>({
+    date: '',
+    firstName: '',
+    lastName: '',
     disableLastName: true,
     disableFirstName: true,
     showDatePicker: false,
     selectedIdentity: [],
     selectedId: []
   });
+
+  useEffect(() => {
+    if (loading) return;
+    setState({
+      ...state,
+      date: `${userDetails?.dob?.day}/${userDetails?.dob?.month}/${userDetails?.dob?.year}`,
+      firstName: userDetails?.firstName,
+      lastName: userDetails?.lastName
+    });
+  }, [userData?.myPassport.id]);
 
   const onChange = (selectedDate: Date) => {
     const date = formatMessageTime(selectedDate);

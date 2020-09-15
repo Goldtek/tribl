@@ -15,24 +15,22 @@ function ChatCardSkeleton({ skeletonSize = 1 }: ChatCardSkeletonProp) {
           <SkeletonPlaceholder.Item
             flexDirection="row"
             alignItems="center"
-            margin={RFValue(10)}
+            height={RFValue(60)}
           >
             <SkeletonPlaceholder.Item
-              width={RFValue(60)}
-              height={RFValue(60)}
-              borderRadius={RFValue(50)}
+              width={RFValue(50)}
+              height={RFValue(50)}
+              borderRadius={RFValue(4)}
             />
             <SkeletonPlaceholder.Item marginLeft={RFValue(20)}>
               <SkeletonPlaceholder.Item
-                width={RFValue(120)}
-                height={RFValue(20)}
-                borderRadius={RFValue(4)}
+                width={RFValue(110)}
+                height={RFValue(15)}
               />
               <SkeletonPlaceholder.Item
-                marginTop={RFValue(6)}
-                width={RFValue(80)}
-                height={RFValue(20)}
-                borderRadius={RFValue(4)}
+                marginTop={RFValue(5)}
+                width={RFValue(150)}
+                height={RFValue(7)}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>

@@ -9113,11 +9113,6 @@ union-value@^1.0.0:
     is-extendable "^0.1.1"
     set-value "^2.0.1"
 
-unique-push-id@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/unique-push-id/-/unique-push-id-1.0.2.tgz#7f08de6a5f6444e03e286213f0a17d50f9cad5a2"
-  integrity sha1-fwjeal9kROA+KGIT8KF9UPnK1aI=
-
 unique-string@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/unique-string/-/unique-string-1.0.0.tgz#9e1057cca851abb93398f8b33ae187b99caec11a"

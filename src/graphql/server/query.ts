@@ -29,6 +29,9 @@ export const GET_RECOMMENDED_MEMBERS = gql`
       birthPlace {
         id
       }
+      conversation {
+        id
+      }
       connected
       avatar
       connectionCount
@@ -62,6 +65,9 @@ export const GET_NEARBY_MEMBERS = gql`
         name
       }
       birthPlace {
+        id
+      }
+      conversation {
         id
       }
     }
@@ -105,6 +111,9 @@ export const GET_POPULAR_COMMUNITIES = gql`
         firstName
         lastName
         phoneNumber
+        conversation {
+          id
+        }
       }
       membersCount
     }
@@ -138,6 +147,9 @@ export const GET_MY_COMMUNITIES = gql`
           country
           state
         }
+        conversation {
+          id
+        }
       }
     }
   }
@@ -152,6 +164,9 @@ export const GET_MY_CONNECTIONS = gql`
       lastName
       phoneNumber
       avatar
+      conversation {
+        id
+      }
     }
   }
 `;
@@ -219,6 +234,9 @@ export const GET_SINGLE_PASSPORT = gql`
         state
         country
       }
+      conversation {
+        id
+      }
     }
   }
 `;
@@ -253,6 +271,9 @@ export const GET_COMMUNITY_MEMBERS = gql`
         name
       }
       connected
+      conversation {
+        id
+      }
     }
   }
 `;
@@ -329,6 +350,9 @@ export const GET_USER_PASSPORT = gql`
         locality
         visibility
       }
+      conversation {
+        id
+      }
     }
   }
 `;
@@ -348,6 +372,9 @@ export const GET_ALL_MEMBERS = gql`
       currentLocation {
         state
         country
+        id
+      }
+      conversation {
         id
       }
     }

@@ -11,9 +11,9 @@ export const TimeStamp = styled.View`
 `;
 
 export const BadgeWrapper = styled.View`
-  width: ${RFValue(15)}px;
-  height: ${RFValue(15)}px;
-  border-radius: 5px;
+  width: ${RFValue(10)}px;
+  height: ${RFValue(10)}px;
+  border-radius: ${RFValue(10)}px;
   background-color: ${({ theme }) => theme.colors.PRIMARY};
   align-items: center;
   justify-content: center;

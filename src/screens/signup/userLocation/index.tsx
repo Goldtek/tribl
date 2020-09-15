@@ -132,12 +132,12 @@ export default function UserLocationScreen(props: ScreenProp) {
         longitude: coords.longitude
       });
 
-      const { region, country, city } = currentLocation;
+      const { region, country } = currentLocation;
 
       setState({
         ...state,
         isVisible: false,
-        locationInput: `${city}, ${region}, ${country}`,
+        locationInput: `${region}, ${country}`,
         currentLocation: {
           lat: coords.latitude,
           long: coords.longitude,

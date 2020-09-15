@@ -77,45 +77,48 @@ export default function ConnectionRequestScreen(
         style={{ paddingTop: top }}
       />
       <Container>
+        {connectionRequest?.length ? (
+          <Title
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              marginTop: RFValue(20),
+              marginLeft: RFValue(10),
+              textTransform: 'capitalize'
+            }}
+          >
+            {t(`community.sideNav.request`)}
+          </Title>
+        ) : null}
+
         <PTRView onRefresh={refetch} style={{ marginTop: RFValue(10) }}>
-          {connectionRequest?.length ? (
-            <Fragment>
-              <Title
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  marginTop: RFValue(20),
-                  marginLeft: RFValue(10),
-                  textTransform: 'capitalize'
-                }}
-              >
-                {t(`community.sideNav.request`)}
-              </Title>
-              <FlatList
-                data={connectionRequest}
-                contentContainerStyle={{
-                  flexGrow: 1,
-                  marginTop: RFValue(10),
-                  paddingBottom: RFValue(120)
-                }}
-                renderItem={_renderItem}
-                ListEmptyComponent={<Skeleton />}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={(item) => item.id}
-              />
-            </Fragment>
-          ) : (
-            <Text
-              style={{
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_BOLD,
-                margin: RFValue(20),
-                textAlign: 'center'
+          {connectionRequest ? (
+            <FlatList
+              data={connectionRequest}
+              contentContainerStyle={{
+                flexGrow: 1,
+                marginTop: RFValue(10),
+                paddingBottom: RFValue(120)
               }}
-            >
-              You don't have any connection request.
-            </Text>
+              renderItem={_renderItem}
+              ListEmptyComponent={
+                <Text
+                  style={{
+                    fontSize: RFValue(fonts.LARGE_SIZE),
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    margin: RFValue(20),
+                    textAlign: 'center'
+                  }}
+                >
+                  You don't have any connection request.
+                </Text>
+              }
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item) => item.id}
+            />
+          ) : (
+            <Skeleton />
           )}
         </PTRView>
       </Container>

@@ -15,28 +15,29 @@ import { GET_COMMUNITY_MEMBERS } from '../../../../../graphql/server/query';
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MemberSlideProp extends NavigationInterface {}
+interface MemberSlideProp extends NavigationInterface {
+  route: { communityDetails: { id: string } };
+}
 
 export default function MemberSlide(props: MemberSlideProp) {
+  const { communityDetails } = props.route;
+
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const detail = props.route;
-  const { communityDetails } = detail;
-  const { id } = communityDetails;
 
-  const { data } = useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
+  const { data } = useQuery(GET_COMMUNITY_MEMBERS, {
+    variables: { id: communityDetails.id }
+  });
 
   const participants = data?.communityMembers || [];
 
-  const _renderItem = ({ item }: any) => (
-    <MemberCard key={item.id} {...item} {...props} />
-  );
+  const _renderItem = ({ item }: any) => <MemberCard key={item.id} {...item} />;
 
   return (
     <Container>
       <AlgoliaSearch
         indexName="tribl_community_members_staging"
-        filters={`"communityId": ${id}`}
+        filters={`"communityId": ${communityDetails.id}`}
       >
         <AlgoliaList />
       </AlgoliaSearch>

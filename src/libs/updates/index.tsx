@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Title, Button, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import * as Updates from 'expo-updates';
-import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import GradientButton from '../../components/gradientButton';
-import { TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback, Image } from 'react-native';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -20,29 +19,22 @@ import {
 
 // DEFINE SCREEN PROP TYPES
 
-export default function CheckAppUpdates() {
+type CheckUpdateProps = { cancelUpdate: () => void };
+
+export default function CheckAppUpdates(props: CheckUpdateProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [state, setState] = useState({ loading: false, update: false });
-
-  useEffect(() => {
-    checkUpdate();
-  }, []);
-
-  const checkUpdate = async () => {
-    const update = await Updates.checkForUpdateAsync();
-    setState({ ...state, update: update.isAvailable });
-  };
+  const [loading, setLoading] = useState(false);
 
   const handleUpdate = async () => {
-    setState({ ...state, loading: !state.loading });
+    setLoading(!loading);
     await Updates.fetchUpdateAsync();
-    setState({ ...state, loading: !state.loading });
+    setLoading(!loading);
     await Updates.reloadAsync();
   };
 
-  return state.update ? (
+  return (
     <Container
       blurType="light"
       blurAmount={5}
@@ -52,17 +44,12 @@ export default function CheckAppUpdates() {
         <BlurContents>
           <BlurContentsContainer style={{ elevation: 6 }}>
             <ImageContainer>
-              <FastImage
-                resizeMode={FastImage.resizeMode.cover}
-                source={{
-                  uri:
-                    'https://www.linkpicture.com/q/mPngtreemflying-rocket_3718748.png',
-                  priority: FastImage.priority.high
-                }}
+              <Image
+                source={require('../../../assets/images/update.png')}
                 style={{
-                  width: RFValue(50),
-                  height: RFValue(70),
-                  borderRadius: RFValue(70)
+                  width: RFValue(80),
+                  height: RFValue(80),
+                  resizeMode: 'contain'
                 }}
               />
             </ImageContainer>
@@ -133,7 +120,7 @@ export default function CheckAppUpdates() {
             <ButtonContainer>
               <GradientButton
                 onPress={handleUpdate}
-                loading={state.loading}
+                loading={loading}
                 labelStyle={{
                   color: colors.WHITE,
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
@@ -154,7 +141,7 @@ export default function CheckAppUpdates() {
               </GradientButton>
               <Button
                 mode="outlined"
-                onPress={() => setState({ ...state, update: false })}
+                onPress={() => props.cancelUpdate()}
                 labelStyle={{
                   color: colors.SECONDARY_TEXT,
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
@@ -181,5 +168,5 @@ export default function CheckAppUpdates() {
         </BlurContents>
       </TouchableWithoutFeedback>
     </Container>
-  ) : null;
+  );
 }

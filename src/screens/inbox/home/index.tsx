@@ -6,8 +6,8 @@ import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { useThemeContext } from '../../../theme';
 // import groupChatSlide from './widgets/groupChatSlide';
-import directMessageSlide from './widgets/directMessageSlide';
-import requestSlide from './widgets/requestSlide';
+import directMessageSlide from './directMessageSlide';
+import requestSlide from './messageRequestSlide';
 import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
@@ -67,6 +67,7 @@ export default function InboxScreen() {
           ios: (
             <TabView
               lazy
+              swipeEnabled={false}
               navigationState={{ index: tabIndex, routes }}
               renderScene={renderScene}
               renderPager={renderPager}
@@ -79,7 +80,7 @@ export default function InboxScreen() {
           android: (
             <TabView
               lazy
-              swipeEnabled={true}
+              swipeEnabled={false}
               navigationState={{ index: tabIndex, routes }}
               renderScene={renderScene}
               renderTabBar={renderTabBar}

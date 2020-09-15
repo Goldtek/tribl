@@ -32,8 +32,52 @@ type Location = {
   __typename: string;
 };
 
+enum UserAvailability {
+  OFFLINE = 'OFFLINE',
+  ONLINE = 'ONLINE'
+}
+
+export enum Status {
+  PENDING = 'PENDING',
+  NOT_CONNECTED = 'NOT_CONNECTED',
+  BLOCKED = 'BLOCKED',
+  ACCEPTED = 'ACCEPTED',
+  CONNECTED = 'CONNECTED'
+}
+
+type DirectMessage = {
+  id: String;
+  conversationId: String;
+  senderId: String;
+  receiverId: String;
+  content: String;
+  createdAt: Date;
+  readAt: Date;
+};
+
+type MessageRequest = {
+  id: String;
+  senderId: String;
+  approvedAt: Date;
+  createdAt: !Date;
+};
+
+type Spam = {
+  id: String;
+  directMessage: DirectMessage;
+};
+
+type Conversation = {
+  id: string;
+  spam: Spam;
+  messageRequest: MessageRequest;
+  participants: PassportInterface;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export interface PassportInterface {
-  id?: string;
+  id: string;
   dob: {
     day: number;
     month: number;
@@ -46,9 +90,11 @@ export interface PassportInterface {
   countryCode: string;
   firstName: string;
   lastName: string;
+  status: UserAvailability | null;
   phoneNumber: string;
   citizenShip: string | null;
-  connected: string;
+  connected: Status | null;
+  conversation: Conversation | null;
   interest: string[];
   identity: string[];
   connectionCount: number;
@@ -94,30 +140,25 @@ interface VerifyOTPIT extends JwtTokenResult {
   __typename: string;
 }
 
-export type VerifyOTPInterface = {
-  validateOtp: VerifyOTPIT;
-};
+export type VerifyOTPInterface = { validateOtp: VerifyOTPIT };
 
-export type RefreshTokenInterface = {
-  refreshToken: VerifyOTPIT;
-};
+export type RefreshTokenInterface = { refreshToken: VerifyOTPIT };
 
-export type GenerateFirebaseTokenIT = {
-  generateFirebaseToken: VerifyOTPIT;
-};
+export type GenerateFirebaseTokenIT = { generateFirebaseToken: VerifyOTPIT };
 
 // SERVER CREATE ACCOUNT (RESPONSE) TYPE
 export type CreateAccountInterface = {
-  createPassport: {
-    success: boolean;
-    _id: string;
-  };
+  createPassport: { success: boolean; _id: string };
 };
 
 // USER PASSPORT (RESPONSE) TYPE
-export type MyPassportInterface = {
-  myPassport: PassportInterface;
-};
+export type MyPassportInterface = { myPassport: PassportInterface };
+
+// USER CONNECTIONS (RESPONSE) TYPE
+export type MyConnectionsInterface = { myConnections: PassportInterface[] };
+
+// COMMUNITY USER SINGLE PASSPORT (RESPONSE) TYPE
+export type UserPassportInterface = { singlePassport: PassportInterface };
 
 // USER SELECTABLE IDENTITIES (RESPONSE) TYPE
 export type IdentitiesInterface = {
@@ -126,8 +167,15 @@ export type IdentitiesInterface = {
 
 // SERVER UPDATE USER PASSPORT (RESPONSE) TYPE
 export type UpdatePassportInterface = {
-  updatePassport: {
-    success: boolean;
-    __typename: string;
-  };
+  updatePassport: { success: boolean; __typename: string };
+};
+
+// ACCEPT MESSAGE REQUEST (RESPONSE) TYPE
+export type AcceptMessageRequestInterface = {
+  updateMessageRequest: { success: boolean; __typename: string };
+};
+
+// DELETE MESSAGE REQUEST (RESPONSE) TYPE
+export type DeleteMessageRequestInterface = {
+  deleteMessageRequest: { success: boolean; __typename: string };
 };
