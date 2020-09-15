@@ -101,6 +101,7 @@ export default function SearchScreen(props: ScreenProp) {
             onIndexChange={handleIndexChange}
             navigationState={{ index: tabIndex, routes }}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
+            swipeEnabled={false}
           />
         ),
 
@@ -112,6 +113,7 @@ export default function SearchScreen(props: ScreenProp) {
             onIndexChange={handleIndexChange}
             navigationState={{ index: tabIndex, routes }}
             initialLayout={{ width: DEVICE_FULL_WIDTH }}
+            swipeEnabled={false}
           />
         )
       })}
