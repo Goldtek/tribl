@@ -21,12 +21,7 @@ import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { MyPassportInterface } from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import {
-  Container,
-  GroupWrapper,
-  FilterContainer,
-  GroupContainer
-} from './styles';
+import { Container, FilterContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -48,6 +43,7 @@ export default function ChatScreen(props: ScreenProp) {
   const { loading: allMembersLoading, data: allMembersData } = useQuery(
     GET_ALL_MEMBERS
   );
+
   const allMembers = allMembersData?.Passport;
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
@@ -60,34 +56,28 @@ export default function ChatScreen(props: ScreenProp) {
   const [filter, setFilter] = useState(t(`community.chat.all`) as string);
 
   const filterAll = filteredMembers?.slice().sort(function (a: any, b: any) {
-    if (a.firstName < b.firstName) {
-      return -1;
-    }
-    if (a.firstName > b.firstName) {
-      return 1;
-    }
+    if (a.firstName < b.firstName) return -1;
+
+    if (a.firstName > b.firstName) return 1;
+
     return 0;
   });
 
   const filterConncetion = myConnection
     ?.slice()
     .sort(function (a: any, b: any) {
-      if (a.firstName < b.firstName) {
-        return -1;
-      }
-      if (a.firstName > b.firstName) {
-        return 1;
-      }
+      if (a.firstName < b.firstName) return -1;
+
+      if (a.firstName > b.firstName) return 1;
+
       return 0;
     });
 
   const filterNearby = nearbyMembers?.slice().sort(function (a: any, b: any) {
-    if (a.firstName < b.firstName) {
-      return -1;
-    }
-    if (a.firstName > b.firstName) {
-      return 1;
-    }
+    if (a.firstName < b.firstName) return -1;
+
+    if (a.firstName > b.firstName) return 1;
+
     return 0;
   });
 
@@ -251,6 +241,7 @@ export default function ChatScreen(props: ScreenProp) {
         ) : data?.length ? (
           <FlatList
             data={data}
+            bounces={false}
             renderItem={_renderItem}
             keyExtractor={(item) => item.id}
             ItemSeparatorComponent={_separator}
@@ -267,7 +258,7 @@ export default function ChatScreen(props: ScreenProp) {
               textAlign: 'center'
             }}
           >
-            There is no member
+            There are no members nearby at this time
           </Text>
         )}
       </Container>

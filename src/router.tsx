@@ -5,6 +5,7 @@ import SignupNavigator from './navigator/signupNavigator';
 import DrawerStackNavigator from './navigator/sideNavigator';
 import { useThemeContext } from './theme';
 import Screens from './screens';
+import { navigationRef } from './constants';
 
 const RootStack = createStackNavigator();
 
@@ -12,7 +13,7 @@ export default function AppNavigator() {
   const { fonts, colors } = useThemeContext();
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <RootStack.Navigator
         initialRouteName="SplashScreen"
         screenOptions={{

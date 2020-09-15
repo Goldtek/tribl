@@ -42,10 +42,9 @@ export default function PassportScreen(props: ScreenProp) {
   );
 
   const userDetails = userData?.myPassport;
-  const [state, setState] = useState({
-    details: {},
-    loading: false
-  });
+
+  const [state, setState] = useState({ details: {}, loading: false });
+
   const [imageLoad, setImageLoad] = useState(true);
   const { top: paddingTop } = useSafeAreaInsets();
 
