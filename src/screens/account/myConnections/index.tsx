@@ -31,18 +31,19 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { top } = useSafeAreaInsets();
   const { t } = useTranslation();
 
-  const { data, refetch } = useQuery(GET_MY_CONNECTIONS);
+  const { data, refetch } = useQuery<MyConnectionsInterface>(
+    GET_MY_CONNECTIONS
+  );
+
   const myConnection = data?.myConnections;
 
-  const filterConnections = myConnection
-    ?.slice()
-    .sort(function (a: any, b: any) {
-      if (a.firstName < b.firstName) return -1;
+  const filterConnections = myConnection?.slice().sort(function (a, b) {
+    if (a.firstName < b.firstName) return -1;
 
-      if (a.firstName > b.firstName) return 1;
+    if (a.firstName > b.firstName) return 1;
 
-      return 0;
-    });
+    return 0;
+  });
 
   const [search, setSearch] = useState({ searchTerm: '' });
 
@@ -54,7 +55,9 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     filterConnections &&
     filterConnections?.filter(createFilter(search.searchTerm, KeysToFilter));
 
-  const _renderItem = ({ item }: any) => <Connection key={item.id} {...item} />;
+  const _renderItem = ({ item }: { item: PassportInterface }) => (
+    <Connection key={item.id} {...item} />
+  );
 
   return (
     <Fragment>
@@ -99,6 +102,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         <SearchInput
           onChangeText={(text) => searchUpdated(text)}
           placeholder="Search"
+          placeholderTextColor={colors.PRIMARY_TEXT}
           style={{
             height: RFValue(40),
             alignItems: 'center',
@@ -110,45 +114,49 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
             marginHorizontal: 15
           }}
         />
+
+        {myConnection?.length ? (
+          <Title
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              marginTop: RFValue(20),
+              marginLeft: RFValue(10),
+              textTransform: 'capitalize'
+            }}
+          >
+            {t(`community.sideNav.connection`)}
+          </Title>
+        ) : null}
+
         <PTRView onRefresh={refetch} style={{ marginTop: RFValue(10) }}>
-          {myConnection?.length ? (
-            <Fragment>
-              <Title
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  marginTop: RFValue(20),
-                  marginLeft: RFValue(10),
-                  textTransform: 'capitalize'
-                }}
-              >
-                {t(`community.sideNav.connection`)}
-              </Title>
-              <FlatList
-                data={filteredWords}
-                contentContainerStyle={{
-                  flexGrow: 1,
-                  marginTop: RFValue(10),
-                  paddingBottom: RFValue(60)
-                }}
-                ListEmptyComponent={<Skeleton />}
-                showsVerticalScrollIndicator={false}
-                renderItem={_renderItem}
-                keyExtractor={(item) => item.id}
-              />
-            </Fragment>
-          ) : (
-            <Text
-              style={{
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_BOLD,
-                margin: RFValue(20),
-                textAlign: 'center'
+          {myConnection ? (
+            <FlatList
+              data={filteredWords}
+              contentContainerStyle={{
+                flexGrow: 1,
+                marginTop: RFValue(10),
+                paddingBottom: RFValue(60)
               }}
-            >
-              You currently don't have any connection
-            </Text>
+              ListEmptyComponent={
+                <Text
+                  style={{
+                    fontSize: RFValue(fonts.LARGE_SIZE),
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    margin: RFValue(20),
+                    textAlign: 'center'
+                  }}
+                >
+                  You currently don't have any connection
+                </Text>
+              }
+              showsVerticalScrollIndicator={false}
+              renderItem={_renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          ) : (
+            <Skeleton />
           )}
         </PTRView>
       </Container>

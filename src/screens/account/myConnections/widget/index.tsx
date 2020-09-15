@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { NavigationInterface } from '../../../types';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -12,7 +11,7 @@ import { NameContainer } from './styles';
 
 interface ConnectionProp extends PassportInterface {}
 
-const Connection = (props: ConnectionProp) => {
+export default function Connection(props: ConnectionProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
@@ -99,6 +98,4 @@ const Connection = (props: ConnectionProp) => {
       </Fragment>
     </TouchableRipple>
   );
-};
-
-export default Connection;
+}
