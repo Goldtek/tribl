@@ -2,13 +2,9 @@ import React, { Fragment } from 'react';
 import { NavigationInterface } from '../../types';
 import { Text, TouchableRipple, Divider } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useSafeArea } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { StatusBar } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons';
 import { useThemeContext } from '../../../theme';
-import Header from '../../../components/header';
-import { Entypo, AntDesign } from '@expo/vector-icons';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -19,7 +15,6 @@ interface MyConnectionScreenProp extends NavigationInterface {}
 export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
-  const { top } = useSafeArea();
   const { t } = useTranslation();
 
   return (
