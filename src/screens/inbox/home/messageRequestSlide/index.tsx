@@ -1,55 +1,55 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Text } from 'react-native-paper';
-import DirectChatCard from '../directChatCard';
-import { NavigationInterface } from '../../../../types';
-import Firechat from '../../../../../firebase';
-import { useThemeContext } from '../../../../../theme';
-import { ConversationInterface } from '../../../types';
-import ChatCardSkeleton from '../../../../../components/chatCardSkeleton';
-import { ROOM_TYPES } from '../../../../../firebase/types';
+import { NavigationInterface } from '../../../types';
+import Firechat from '../../../../firebase';
+import MessageRequestCard from './widget';
+import ChatCardSkeleton from '../../../../components/chatCardSkeleton';
+import { ConversationInterface } from '../../types';
+import { ROOM_TYPES } from '../../../../firebase/types';
+import { useThemeContext } from '../../../../theme';
 
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function DirectDMScreen(props: ScreenProp) {
+export default function ChannelScreen(props: ScreenProp) {
   const { fonts } = useThemeContext();
 
-  const [chatHistory, setChatHistory] = useState(true);
+  const [requestHistory, setRequestHistory] = useState(true);
 
-  const [directMessages, setDirectMessages] = useState<ConversationInterface[]>(
-    []
-  );
+  const [messageRequests, setMessageRequests] = useState<
+    ConversationInterface[]
+  >([]);
 
   useEffect(() => {
     let unsubscribe: any = null;
 
     (async () => {
       const userConservations = await Firechat.getUserConversations(
-        ROOM_TYPES.CONVERSATIONS
+        ROOM_TYPES.MESSAGE_REQUEST
       );
 
       unsubscribe = userConservations?.onSnapshot({
         next: async (snapshot) => {
-          if (!snapshot.docs.length) return setChatHistory(false);
+          if (!snapshot.docs.length) return setRequestHistory(false);
 
           const conversationIds = snapshot.docs.map((document) => document.id);
 
-          const userDirectMessages = await Firechat.getConversationMessages(
+          const userMessageRequest = await Firechat.getConversationMessages(
             conversationIds
           );
 
-          userDirectMessages?.onSnapshot({
+          userMessageRequest?.onSnapshot({
             next: (snapshot) => {
-              const directMessages = snapshot.docs.map((document) => {
+              const messagesRequests = snapshot.docs.map((document) => {
                 const message = document.data() as ConversationInterface;
                 return { ...message, id: document.id };
               });
 
-              setDirectMessages(directMessages);
+              setMessageRequests(messagesRequests);
             }
           });
         }
@@ -60,7 +60,7 @@ export default function DirectDMScreen(props: ScreenProp) {
   }, []);
 
   const _renderItem = ({ item }: { item: ConversationInterface }) => (
-    <DirectChatCard key={item.id} {...item} />
+    <MessageRequestCard key={item.id} {...item} {...props} />
   );
 
   const renderEmptyList = useMemo(
@@ -72,9 +72,9 @@ export default function DirectDMScreen(props: ScreenProp) {
     []
   );
 
-  return chatHistory ? (
+  return requestHistory ? (
     <FlatList
-      data={directMessages}
+      data={messageRequests}
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),
@@ -83,7 +83,7 @@ export default function DirectDMScreen(props: ScreenProp) {
       ListEmptyComponent={renderEmptyList}
       showsVerticalScrollIndicator={false}
       renderItem={_renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item: any) => item.id}
     />
   ) : (
     <Text
@@ -94,7 +94,7 @@ export default function DirectDMScreen(props: ScreenProp) {
         textAlign: 'center'
       }}
     >
-      You currently don't have any messages
+      You currently don't have any request connection
     </Text>
   );
 }
