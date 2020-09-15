@@ -1,32 +1,26 @@
 import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
 import { connectHighlight } from 'react-instantsearch-native';
-
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
-import { NavigationInterface } from '../../screens/types';
 import hexToRGB from '../../utils/hexToRGB';
+import { rootNavigator } from '../../constants';
+import { PassportInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
 
 // DEFINE SCREEN PROP TYPES
-interface HighlightProp extends NavigationInterface {
+interface HighlightProp {
   attribute: string;
-  hit: {
-    firstName: string;
-    lastName: string;
-    avatar: string;
-    id: string;
-  };
+  hit: PassportInterface;
   highlight(T: any): any[];
   closeModal(): void;
 }
 
 const Highlight = (props: HighlightProp) => {
-  const { attribute, hit, highlight, navigation, closeModal } = props;
+  const { attribute, hit, highlight, closeModal } = props;
   const highlights = highlight({
     highlightProperty: '_highlightResult',
     attribute,
@@ -37,18 +31,21 @@ const Highlight = (props: HighlightProp) => {
 
   const handleNavigation = () => {
     closeModal();
-    navigation.navigate('ConnectionChatScreen', {
-      title: `${hit.firstName} ${hit.lastName}`,
-      avatar: hit.avatar,
-      receiverId: hit.id
-    });
+
+    rootNavigator.navigate(
+      hit.conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      {
+        title: `${hit.firstName} ${hit.lastName}`,
+        avatar: hit.avatar,
+        receiverId: hit.id,
+        chatId: hit.conversation?.id
+      }
+    );
   };
 
   return (
     <Container>
-      {highlights.map(({ value }: any, index: number) => {
-        const { avatar, firstName, lastName, lastSeen = '2 mins ago' } = value;
-
+      {highlights.map((_, index: number) => {
         return (
           <TouchableRipple
             key={index}
@@ -92,7 +89,7 @@ const Highlight = (props: HighlightProp) => {
                     fontSize: RFValue(fonts.MEDIUM_SIZE)
                   }}
                 >
-                  {lastSeen}
+                  '2 mins ago'
                 </Text>
               </NameContainer>
             </Fragment>

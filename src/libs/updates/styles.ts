@@ -39,7 +39,7 @@ export const ImageContainer = styled.View`
   justify-content: center;
   align-items: center;
   align-self: center;
-  border-radius: ${RFValue(60)}px;
+  border-radius: ${RFValue(50)}px;
 `;
 
 export const TextContainer = styled.View`

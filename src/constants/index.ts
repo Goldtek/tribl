@@ -4,6 +4,9 @@
  ****************************************************************
  */
 
+import * as React from 'react';
+import { NavigationContainerRef } from '@react-navigation/native';
+
 // ALL ASYNC STORAGE CONSTANTS
 export const USER_FIRST_LAUNCH = '@FIRST_TIME_LAUNCH';
 export const USER_AUTH_KEYS: string = '@USER_AUTH_KEYS';
@@ -18,4 +21,14 @@ export const GLOBAL_HEADER_STYLE = {
   shadowOffset: { height: 0 },
   shadowRadius: 0,
   elevation: 0
+};
+
+// GLOBAL ROOT NAVIGATOR
+
+export const navigationRef = React.createRef<NavigationContainerRef>();
+
+export const rootNavigator = {
+  navigate(name: string, params: object = {}) {
+    navigationRef.current?.navigate(name, params);
+  }
 };

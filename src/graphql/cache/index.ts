@@ -13,6 +13,7 @@ const cache = new InMemoryCache({ freezeResults: true });
 
 cache.writeData<StoreInterface>({
   data: {
+    //@ts-ignore
     userDetails: {
       dob: {
         formatted: null,
@@ -29,7 +30,9 @@ cache.writeData<StoreInterface>({
       citizenShip: '',
       connectionCount: 0,
       communityCount: 0,
-      connected: '',
+      connected: null,
+      status: null,
+      conversation: null,
       identity: [],
       interest: [],
       currentLocation: [

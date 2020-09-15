@@ -1,16 +1,10 @@
-interface User {
-  _id: string;
-  name: string;
-  avatar: string;
-}
-
 export interface MessageInterface {
   _id: string;
   text: string;
   createdAt: Date;
   updatedAt: Date;
   replayCount: number;
-  user: User;
+  user: { _id: string };
   image?: string;
   video?: string;
   audio?: string;
@@ -33,18 +27,17 @@ interface QuickReplies {
   keepIt?: boolean;
 }
 
-export interface GroupInterface {
+export interface ConversationInterface {
   id: string;
   avatar: string;
   name: string;
-  unseenCount: number;
-  displayMessage: string;
-  lastMessageTime: Date;
-  members: {
-    title: string;
-    avatar: string;
+  lastMessage: {
+    text: string;
+    image?: string;
+    video?: string;
+    audio?: string;
+    createdAt: Date;
     receiverId: string;
-  }[];
-  createdAt: Date;
-  updatedAt: Date;
+  };
+  members: { id: string; readAt: Date }[];
 }

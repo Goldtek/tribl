@@ -64,8 +64,6 @@ function AlgoliaSearch(props: SearchInterface) {
         indexName={props.indexName}
         closeSearchModal={showSearchModal(false)}
         filters={props.filters}
-        //@ts-ignore
-        navigation={navigation}
       >
         {props.children}
       </SearchModal>

@@ -26,6 +26,12 @@ export type RootStackParamList = {
   MemberDetailScreen: {};
   ChatScreen: { title: string };
   ConnectionChatScreen: { title: string; avatar: string; receiverId: string };
+  DirectChatScreen: {
+    title: string;
+    avatar: string;
+    receiverId: string;
+    chatId: string;
+  };
 };
 
 interface StackNavigationInterface extends StackActionHelpers {

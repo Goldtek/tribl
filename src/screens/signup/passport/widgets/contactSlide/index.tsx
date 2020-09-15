@@ -111,6 +111,7 @@ export default function contactSlide() {
         firstName: state.firstName,
         lastName: state.lastName,
         dob: {
+          formatted: null,
           day: day,
           month: month,
           year: year,

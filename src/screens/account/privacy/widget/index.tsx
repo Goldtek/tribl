@@ -20,15 +20,18 @@ import { Container } from './styles';
 interface ModalProp {
   isVisible: boolean;
   closePrivacyModal(): void;
+  index: number;
+  privacyValues: any;
+  inView: any;
 }
 
-function PrivacyModal(props: any) {
-  const { isVisible, closePrivacyModal, index } = props;
+function PrivacyModal(props: ModalProp) {
+  const { isVisible, closePrivacyModal, index, privacyValues, inView } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
   const [state, setState] = useState({
-    value: props.privacyValues[props.inView]
+    value: privacyValues[inView]
   });
 
   const modalizeRef = useRef<Modalize>(null);
@@ -44,20 +47,13 @@ function PrivacyModal(props: any) {
   useEffect(() => {
     if (isVisible) {
       openModal();
-      props.privacyValue(state.value);
-      setState({
-        ...state,
-        value: props.privacyValues[props.inView]
-      });
-    } else {
-      closeModal();
-    }
+      privacyValues(state.value);
+      setState({ ...state, value: privacyValues[inView] });
+    } else closeModal();
   }, [isVisible]);
 
   useEffect(() => {
-    if (isVisible) {
-      props.privacyValue(state.value);
-    }
+    if (isVisible) privacyValues(state.value);
   }, [state.value]);
 
   enum privacyOptions {
@@ -72,6 +68,7 @@ function PrivacyModal(props: any) {
     interest,
     age
   }
+
   const params =
     index == 0
       ? privacyItems[0]
@@ -104,10 +101,7 @@ function PrivacyModal(props: any) {
   });
 
   const handleChange = async (item: any) => {
-    setState({
-      ...state,
-      value: item
-    });
+    setState({ ...state, value: item });
 
     try {
       const { data } = await updatePassport();

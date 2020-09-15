@@ -95,6 +95,44 @@ export default function DrawerStackNavigator() {
           headerLeftContainerStyle: { paddingLeft: 10 }
         })}
       />
+
+      <DrawerStack.Screen
+        name="MessageRequestScreen"
+        component={Screens.MessageRequestScreen}
+        options={({ route }) => ({
+          headerShown: true,
+          height: RFValue(90),
+          //@ts-ignore
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerRight: () => (
+            <TouchableRipple
+              onPress={() => {}}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Entypo
+                name="dots-three-vertical"
+                color={colors.PRIMARY_TEXT}
+                size={RFValue(17)}
+              />
+            </TouchableRipple>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 }
+        })}
+      />
     </DrawerStack.Navigator>
   );
 }
