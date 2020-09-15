@@ -36,10 +36,11 @@ function RequestChatCard(props: RequestChatCard) {
   const receiverPassport = passportData?.singlePassport;
 
   const handleNavigation = useCallback(() => {
-    navigation.navigate('DirectChatScreen', {
+    navigation.navigate('MessageRequestScreen', {
       title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
       avatar: receiverPassport?.avatar,
-      receiverId: lastMessage.receiverId,
+      receiverId: receiver.id,
+      senderId: sender.id,
       chatId
     });
   }, [loading]);
