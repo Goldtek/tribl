@@ -67,6 +67,7 @@ export default function InboxScreen() {
           ios: (
             <TabView
               lazy
+              swipeEnabled={false}
               navigationState={{ index: tabIndex, routes }}
               renderScene={renderScene}
               renderPager={renderPager}
@@ -79,7 +80,7 @@ export default function InboxScreen() {
           android: (
             <TabView
               lazy
-              swipeEnabled={true}
+              swipeEnabled={false}
               navigationState={{ index: tabIndex, routes }}
               renderScene={renderScene}
               renderTabBar={renderTabBar}
