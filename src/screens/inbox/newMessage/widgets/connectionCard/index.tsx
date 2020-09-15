@@ -6,32 +6,31 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
+import { PassportInterface } from '../../../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MemberProp extends NavigationInterface {
-  avatar: string;
-  lastSeen: string;
-  name: string;
-  firstName: string;
-  lastName: string;
-}
+interface MemberProp extends PassportInterface {}
 
 function Member(props: MemberProp) {
   const navigation = useNavigation();
-
   const { colors, fonts } = useThemeContext();
-  const { avatar, name, firstName, lastName, lastSeen } = props;
 
-  const handleNavigation = useCallback(
-    () =>
-      navigation.navigate('DirectChatScreen', {
+  const { id, avatar, firstName, lastName, conversation } = props;
+
+  const handleNavigation = useCallback(() => {
+    navigation.navigate(
+      conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      {
+        avatar,
+        receiverId: id,
+        chatId: conversation?.id,
         title: `${firstName} ${lastName}`
-      }),
-    []
-  );
+      }
+    );
+  }, []);
 
   return (
     <TouchableRipple
@@ -75,7 +74,7 @@ function Member(props: MemberProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            {lastSeen}
+            3 min ago
           </Text>
         </NameContainer>
       </Fragment>
