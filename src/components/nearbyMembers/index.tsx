@@ -32,6 +32,14 @@ function NearbyModal(props: ModalProp) {
 
   const NearbyMembers = nearbyData?.nearbyMembers;
 
+  const filterMembers = NearbyMembers?.slice().sort(function (a: any, b: any) {
+    if (a.firstName < b.firstName) return -1;
+
+    if (a.firstName > b.firstName) return 1;
+
+    return 0;
+  });
+
   const modalizeRef = useRef<Modalize>(null);
 
   const openModal = () => modalizeRef.current?.open();
@@ -78,7 +86,7 @@ function NearbyModal(props: ModalProp) {
             alignItems: 'center'
           }}
         >
-          {NearbyMembers?.map((member: PassportInterface, index: number) => (
+          {filterMembers?.map((member: PassportInterface) => (
             <NearbyMember
               key={member.id}
               {...member}

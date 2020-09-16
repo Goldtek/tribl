@@ -31,6 +31,16 @@ function ActiveModal(props: ModalProp) {
 
   const recommendedMembers = recommendedData?.recommendedMembers;
 
+  const filterMembers = recommendedMembers
+    ?.slice()
+    .sort(function (a: any, b: any) {
+      if (a.firstName < b.firstName) return -1;
+
+      if (a.firstName > b.firstName) return 1;
+
+      return 0;
+    });
+
   const modalizeRef = useRef<Modalize>(null);
 
   const openModal = () => modalizeRef.current?.open();
@@ -77,7 +87,7 @@ function ActiveModal(props: ModalProp) {
             alignItems: 'center'
           }}
         >
-          {recommendedMembers?.map((member: PassportInterface) => (
+          {filterMembers?.map((member: PassportInterface) => (
             <ActiveMember
               key={member.id}
               {...member}
