@@ -119,13 +119,24 @@ export default function PassportScreen(props: ScreenProp) {
               <Paragraph
                 style={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                  fontSize: RFValue(fonts.LARGE_SIZE),
                   paddingRight: 20,
                   lineHeight: 21,
                   color: colors.WHITE
                 }}
               >
                 {`${userDetails?.firstName} ${userDetails?.lastName}`}
+              </Paragraph>
+              <Paragraph
+                style={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  paddingRight: 20,
+                  lineHeight: 21,
+                  color: colors.WHITE
+                }}
+              >
+                {`${userDetails?.currentLocation[0].state} ${userDetails?.currentLocation[0].country}`}
               </Paragraph>
               {/* 
               <ImageIconContainer>
