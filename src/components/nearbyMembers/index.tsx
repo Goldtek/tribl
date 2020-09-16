@@ -11,18 +11,19 @@ import { DEVICE_FULL_HEIGHT } from '../../utils/device';
 import { NavigationInterface } from '../../screens/types';
 import { GET_NEARBY_MEMBERS } from '../../graphql/server/query';
 import NearbyMember from './widget';
+import { PassportInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ModalProp extends NavigationInterface {
+interface ModalProp {
   isVisible: boolean;
   closeNearbyModal(): void;
 }
 
 function NearbyModal(props: ModalProp) {
-  const { isVisible, closeNearbyModal, navigation } = props;
+  const { isVisible, closeNearbyModal } = props;
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
@@ -77,13 +78,10 @@ function NearbyModal(props: ModalProp) {
             alignItems: 'center'
           }}
         >
-          {NearbyMembers?.map((member: any, index: number) => (
+          {NearbyMembers?.map((member: PassportInterface, index: number) => (
             <NearbyMember
               key={member.id}
               {...member}
-              index={index}
-              lastChild={NearbyMembers.length - 1}
-              navigation={navigation}
               closeNearbyModal={closeNearbyModal}
             />
           ))}

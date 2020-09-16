@@ -1,7 +1,7 @@
 // CHAT ROOM TYPES
 export enum ROOM_TYPES {
   USERS = 'users',
-  CHATS = 'chats',
+  CHATS = 'messages',
   GROUPS = 'groups',
   CHANNELS = 'channels',
   MESSAGE_REPLY = 'messageReply',

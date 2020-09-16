@@ -36,6 +36,7 @@ export default function ChannelScreen(props: ScreenProp) {
         next: async (snapshot) => {
           if (!snapshot.docs.length) return setRequestHistory(false);
 
+          setRequestHistory(true);
           const conversationIds = snapshot.docs.map((document) => document.id);
 
           const userMessageRequest = await Firechat.getConversationMessages(
@@ -44,12 +45,12 @@ export default function ChannelScreen(props: ScreenProp) {
 
           userMessageRequest?.onSnapshot({
             next: (snapshot) => {
-              const messagesRequests = snapshot.docs.map((document) => {
+              const messages = snapshot.docs.map((document) => {
                 const message = document.data() as ConversationInterface;
                 return { ...message, id: document.id };
               });
 
-              setMessageRequests(messagesRequests);
+              setMessageRequests(messages);
             }
           });
         }
@@ -74,6 +75,7 @@ export default function ChannelScreen(props: ScreenProp) {
 
   return requestHistory ? (
     <FlatList
+      bounces={false}
       data={messageRequests}
       contentContainerStyle={{
         flexGrow: 1,
