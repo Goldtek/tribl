@@ -36,6 +36,7 @@ export default function DirectDMScreen(props: ScreenProp) {
         next: async (snapshot) => {
           if (!snapshot.docs.length) return setChatHistory(false);
 
+          setChatHistory(true);
           const conversationIds = snapshot.docs.map((document) => document.id);
 
           const userDirectMessages = await Firechat.getConversationMessages(
@@ -74,6 +75,7 @@ export default function DirectDMScreen(props: ScreenProp) {
 
   return chatHistory ? (
     <FlatList
+      bounces={false}
       data={directMessages}
       contentContainerStyle={{
         flexGrow: 1,

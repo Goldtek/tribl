@@ -5,7 +5,6 @@ import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { useQuery } from '@apollo/react-hooks';
-import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import RecommendedMembers from '../../../../../components/recommendedUser';
@@ -26,7 +25,6 @@ interface ScreenProp extends NavigationInterface {}
 function MemberSlideScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const navigation = useNavigation();
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -80,6 +78,7 @@ function MemberSlideScreen(props: ScreenProp) {
 
   return (
     <ScrollView
+      bounces={false}
       showsVerticalScrollIndicator={false}
       nestedScrollEnabled
       style={{ flexGrow: 1 }}
@@ -203,14 +202,10 @@ function MemberSlideScreen(props: ScreenProp) {
       <NearbyModal
         closeNearbyModal={showNearbyModal(false)}
         isVisible={isVisible}
-        //@ts-ignore
-        navigation={navigation}
       />
       <ActiveModal
         closeActiveModal={showActiveModal(false)}
         isVisible={visible}
-        //@ts-ignore
-        navigation={navigation}
       />
     </ScrollView>
   );

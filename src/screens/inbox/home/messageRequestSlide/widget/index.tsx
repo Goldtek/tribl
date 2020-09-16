@@ -10,6 +10,7 @@ import { useThemeContext } from '../../../../../theme';
 import formatMessageTime from '../../../../../utils/timesince';
 import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { UserPassportInterface } from '../../../../../graphql/types';
+import { fireAuth } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
@@ -23,8 +24,10 @@ function RequestChatCard(props: RequestChatCard) {
 
   const { id: chatId, lastMessage, members } = props;
 
+  const userId = fireAuth.currentUser?.uid;
+
   const [sender, receiver] = members.sort((a) => {
-    if (a.id !== lastMessage.receiverId) return -1;
+    if (a.id !== userId) return -1;
     return 0;
   });
 
@@ -39,7 +42,6 @@ function RequestChatCard(props: RequestChatCard) {
     navigation.navigate('MessageRequestScreen', {
       title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
       avatar: receiverPassport?.avatar,
-      receiverId: receiver.id,
       senderId: sender.id,
       chatId
     });

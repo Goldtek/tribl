@@ -1,17 +1,26 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { NavigationInterface } from '../../types';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GiftedChat, Send } from 'react-native-gifted-chat';
-import { Platform } from 'react-native';
+import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
+import { KeyboardAvoidingView, Platform } from 'react-native';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../theme';
 import { Ionicons } from '@expo/vector-icons';
+import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
 import Firechat from '../../../firebase';
-import { MyPassportInterface } from '../../../graphql/types';
-import { GET_USER_PASSPORT } from '../../../graphql/server/query';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { NavigationInterface } from '../../types';
 import { SEND_DIRECT_MESSAGE } from '../../../graphql/server/mutations';
+import {
+  MyPassportInterface,
+  UserPassportInterface
+} from '../../../graphql/types';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
+import { fireAuth } from '../../../firebase/config';
+import { DEVICE_OS } from '../../../utils/device';
+import hexToRGB from '../../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -21,19 +30,32 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function ConnectionChatScreen(props: ScreenProp) {
-  const { receiverId } = props.route.params;
+  const { receiverId, avatar } = props.route.params;
 
   const [chatId, setChatId] = useState<string | null>(null);
 
   const { colors, fonts } = useThemeContext();
 
+  const userId = fireAuth.currentUser?.uid;
+
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
+
+  const { data: receiverPassport, loading, refetch } = useQuery<
+    UserPassportInterface
+  >(GET_SINGLE_PASSPORT, { variables: { id: receiverId } });
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
+  const receiverDetails = receiverPassport?.singlePassport;
 
   const [messages, setMessages] = useState<MessageInterface[]>([]);
+
+  useEffect(() => {
+    if (receiverDetails?.conversation && receiverDetails?.conversation.id) {
+      setChatId(receiverDetails?.conversation.id);
+    }
+  }, [loading, receiverDetails?.conversation]);
 
   useEffect(() => {
     if (!chatId) return;
@@ -46,7 +68,7 @@ export default function ConnectionChatScreen(props: ScreenProp) {
           const message = document.data();
           return {
             ...message,
-            user: { _id: message.senderId },
+            user: { _id: message.senderId, avatar },
             _id: document.id
           } as MessageInterface;
         });
@@ -60,10 +82,11 @@ export default function ConnectionChatScreen(props: ScreenProp) {
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
-    await sendMessage({
+    sendMessage({
       variables: { payload: { receiverId, content: message.text } }
     });
-    setChatId('');
+
+    if (!receiverDetails?.conversation) refetch();
   }, []);
 
   return (
@@ -72,7 +95,7 @@ export default function ConnectionChatScreen(props: ScreenProp) {
         placeholder="Start typing ..."
         messages={messages}
         user={{
-          _id: userDetails?.id as string,
+          _id: userId as string,
           avatar: userDetails?.avatar,
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
@@ -96,12 +119,15 @@ export default function ConnectionChatScreen(props: ScreenProp) {
             <Ionicons name="ios-send" color={colors.WHITE} size={RFValue(20)} />
           </Send>
         )}
-        listViewProps={{ style: { marginBottom: RFValue(20) } }}
+        listViewProps={{
+          showsVerticalScrollIndicator: false,
+          style: { marginBottom: RFValue(15) }
+        }}
         textInputProps={{
           style: {
             flex: 1,
             fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontFamily: fonts.WORK_SANS_MEDIUM,
             paddingLeft: 20,
             paddingRight: 20,
             paddingTop: Platform.select({ ios: RFValue(12) }),
@@ -114,7 +140,38 @@ export default function ConnectionChatScreen(props: ScreenProp) {
             borderColor: colors.INACTIVE
           }
         }}
+        renderAvatar={(props) => (
+          <Avatar
+            {...props}
+            imageStyle={{
+              left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
+              right: {}
+            }}
+          />
+        )}
+        renderBubble={(props) => (
+          <Bubble
+            {...props}
+            wrapperStyle={{
+              right: {
+                backgroundColor: colors.PRIMARY,
+                borderRadius: 7
+              },
+              left: {
+                backgroundColor: hexToRGB(colors.DISABLED, 0.7),
+                borderRadius: 7
+              }
+            }}
+          />
+        )}
+        isKeyboardInternallyHandled={true}
       />
+      {DEVICE_OS === 'ios' && (
+        <KeyboardAvoidingView
+          behavior="padding"
+          keyboardVerticalOffset={RFValue(-170)}
+        />
+      )}
     </SafeAreaView>
   );
 }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { useThemeContext } from '../../../theme';
 // import groupChatSlide from './widgets/groupChatSlide';
@@ -57,38 +57,18 @@ export default function InboxScreen() {
     );
   };
 
-  const renderPager = (props: any) => <ScrollPager {...props} />;
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <StatusBar translucent animated style="dark" />
       <Container>
-        {Platform.select({
-          ios: (
-            <TabView
-              lazy
-              swipeEnabled={false}
-              navigationState={{ index: tabIndex, routes }}
-              renderScene={renderScene}
-              renderPager={renderPager}
-              renderTabBar={renderTabBar}
-              onIndexChange={setTabIndex}
-              initialLayout={{ width: DEVICE_FULL_WIDTH }}
-            />
-          ),
-
-          android: (
-            <TabView
-              lazy
-              swipeEnabled={false}
-              navigationState={{ index: tabIndex, routes }}
-              renderScene={renderScene}
-              renderTabBar={renderTabBar}
-              onIndexChange={setTabIndex}
-              initialLayout={{ width: DEVICE_FULL_WIDTH }}
-            />
-          )
-        })}
+        <TabView
+          lazy
+          navigationState={{ index: tabIndex, routes }}
+          renderScene={renderScene}
+          renderTabBar={renderTabBar}
+          onIndexChange={setTabIndex}
+          initialLayout={{ width: DEVICE_FULL_WIDTH }}
+        />
       </Container>
     </SafeAreaView>
   );

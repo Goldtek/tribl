@@ -3,7 +3,6 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
@@ -21,6 +20,18 @@ function Member(props: MemberProp) {
   const { id, avatar, firstName, lastName, conversation } = props;
 
   const handleNavigation = useCallback(() => {
+    if (
+      conversation?.messageRequest &&
+      !conversation?.messageRequest.approvedAt
+    ) {
+      return navigation.navigate('MessageRequestScreen', {
+        avatar,
+        senderId: id,
+        chatId: conversation?.id,
+        title: `${firstName} ${lastName}`
+      });
+    }
+
     navigation.navigate(
       conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
       {
