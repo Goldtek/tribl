@@ -18,6 +18,8 @@ import { StoreInterface } from '../../../../../graphql/types';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../../utils/timesince';
 import { ADD_USER_DETAILS } from '../../../../../graphql/cache/mutations';
+import { GET_ALL_IDENTITIES } from '../../../../../graphql/server/query';
+import { IdentitiesInterface } from '../../../../../graphql/types';
 import IdentityModal from '../identityModal';
 
 import {
@@ -45,6 +47,9 @@ import {
 export default function contactSlide() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const { data: IdentityData } = useQuery<IdentitiesInterface>(
+    GET_ALL_IDENTITIES
+  );
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const userDetails = data?.userDetails;
@@ -105,6 +110,14 @@ export default function contactSlide() {
   const month = dob?.length ? parseInt(dob[1]) : null;
   const year = dob?.length ? parseInt(dob[2]) : null;
 
+  const userIdentities = IdentityData?.Identity.map(
+    (item: { name: string; id: string }) => {
+      if (userDetails?.identity.includes(item.id)) {
+        return item.name;
+      }
+    }
+  ).filter((item) => item !== undefined);
+
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
@@ -116,8 +129,7 @@ export default function contactSlide() {
           month: month,
           year: year,
           __typename: 'dateOfBirth'
-        },
-        identity: SelectedIdentitiesID
+        }
       }
     }
   });
@@ -165,6 +177,7 @@ export default function contactSlide() {
         </FirstNameContainer>
         <TextInput
           value={firstName}
+          onSubmitEditing={() => setTimeout(() => addUserDetails(), 0)}
           onChangeText={(firstName: string) =>
             setState({
               ...state,
@@ -208,6 +221,7 @@ export default function contactSlide() {
         </LastNameContainer>
         <TextInput
           value={lastName}
+          onSubmitEditing={() => setTimeout(() => addUserDetails(), 0)}
           onChangeText={(lastName: string) =>
             setState({
               ...state,
@@ -383,8 +397,8 @@ export default function contactSlide() {
         <Identities>
           {userDetails?.identity.length ? (
             <Fragment>
-              {userDetails.identity.map((identity) => (
-                <IdentityText key={identity}>{identity}</IdentityText>
+              {userIdentities?.map((identity, index) => (
+                <IdentityText key={index}>{identity}</IdentityText>
               ))}
             </Fragment>
           ) : (

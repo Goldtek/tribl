@@ -50,7 +50,7 @@ export default function ChatScreen(props: ScreenProp) {
   const userDetails = userData?.myPassport?.id;
 
   const filteredMembers = allMembers?.filter((member: any) => {
-    return member.id !== userDetails;
+    return member.id !== userDetails && member.verified == true;
   });
 
   const [filter, setFilter] = useState(t(`community.chat.all`) as string);

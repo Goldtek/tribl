@@ -15,7 +15,8 @@
     "activity": "recent activity",
     "myCommunity": "my communities",
     "leave": "leave",
-    "message": "message"
+    "message": "message",
+    "newCommunity": "new communities coming soon!"
   },
 
   "joinModal": {

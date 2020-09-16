@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useMemo } from 'react';
 import { NavigationInterface } from '../../../../types';
-import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
-import { Feather } from '@expo/vector-icons';
+import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ScrollView, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +15,7 @@ import {
 } from '../../../../../graphql/server/query';
 import PopularCommunitySkeleton from '../../../../../components/popularCommunitySkeleton';
 import RecommendedCommunitySkeleton from '../../../../../components/recommendedCommunitySkeleton';
+import ComingSoonCommunities from '../../../../../components/recommendedCommunity/comingSoon';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, CommunityWrapper, PopularContainer } from './styles';
@@ -28,9 +28,13 @@ function CommunitySlideScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
-  const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
-  const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES);
-
+  const {
+    loading: recommendedCommunityLoading,
+    data: communityData
+  } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+  const { loading: popularCommunityLoading, data: popularData } = useQuery(
+    GET_POPULAR_COMMUNITIES
+  );
   const community = communityData?.recommendedCommunities;
   const randomCommunity = communityData?.recommendedCommunities[0];
   const popular = popularData?.popularCommunities;
@@ -66,38 +70,50 @@ function CommunitySlideScreen(props: ScreenProp) {
           >
             {t(`community.tabPanel.featured`)}
           </Title>
-          {community ? (
+          {recommendedCommunityLoading ? (
+            <RecommendedCommunitySkeleton />
+          ) : community.length ? (
             <RecommendedCommunity
               {...randomCommunity}
               onPress={handleJoinCommunity}
             />
           ) : (
-            <RecommendedCommunitySkeleton />
+            <ComingSoonCommunities />
           )}
-          <PopularContainer>
-            <CommunityWrapper>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  lineHeight: 20,
-                  marginTop: 0,
-                  marginBottom: 0
-                }}
-              >
-                {t(`community.tabPanel.popular`)}
-              </Title>
-            </CommunityWrapper>
 
-            <FlatList
-              data={popular}
-              renderItem={_renderPopularCommunityItem}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item: any) => item.id}
-              ListEmptyComponent={<PopularCommunitySkeleton skeletonSize={3} />}
-            />
+          <PopularContainer>
+            {popularCommunityLoading ? (
+              <PopularCommunitySkeleton skeletonSize={3} />
+            ) : (
+              <Fragment>
+                {popular.length ? (
+                  <Fragment>
+                    <CommunityWrapper>
+                      <Title
+                        style={{
+                          fontFamily: fonts.WORK_SANS_BOLD,
+                          fontSize: RFValue(fonts.LARGE_SIZE),
+                          color: colors.PRIMARY_TEXT,
+                          textTransform: 'capitalize',
+                          lineHeight: 20,
+                          marginTop: 0,
+                          marginBottom: 0
+                        }}
+                      >
+                        {t(`community.tabPanel.popular`)}
+                      </Title>
+                    </CommunityWrapper>
+
+                    <FlatList
+                      data={popular}
+                      renderItem={_renderPopularCommunityItem}
+                      showsVerticalScrollIndicator={false}
+                      keyExtractor={(item: any) => item.id}
+                    />
+                  </Fragment>
+                ) : null}
+              </Fragment>
+            )}
           </PopularContainer>
         </Container>
       </ScrollView>

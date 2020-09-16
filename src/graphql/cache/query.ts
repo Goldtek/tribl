@@ -12,6 +12,9 @@ export const GET_USER_DETAILS = gql`
     userDetails @client {
       dob {
         formatted
+        day
+        month
+        year
       }
       email
       phoneNumber

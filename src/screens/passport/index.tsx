@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
@@ -30,6 +30,7 @@ import {
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
+import PassportSkeleton from './widgets/passportSkeleton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -37,7 +38,7 @@ interface ScreenProp extends NavigationInterface {}
 export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { data: userData, refetch } = useQuery<MyPassportInterface>(
+  const { loading, data: userData, refetch } = useQuery<MyPassportInterface>(
     GET_USER_PASSPORT
   );
 
@@ -156,126 +157,130 @@ export default function PassportScreen(props: ScreenProp) {
           paddingBottom: RFValue(20)
         }}
       >
-        <HeaderContainer>
-          <Cover>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
-                color: colors.WHITE,
-                textTransform: 'capitalize',
-                lineHeight: RFValue(30)
-              }}
-            >
-              {t(`signup.passportScreen.title`)}
-            </Title>
-            <Button
-              labelStyle={{ color: colors.WHITE }}
-              onPress={handleRequest}
-              loading={state.loading}
-            >
-              Done
-            </Button>
-          </Cover>
-          <ImageContainer>
-            <FastImage
-              source={{
-                uri: userDetails?.avatar,
-                priority: FastImage.priority.high
-              }}
-              resizeMode={FastImage.resizeMode.cover}
-              onLoadEnd={() => setImageLoad(false)}
-              style={{
-                width: RFValue(120),
-                height: RFValue(120),
-                justifyContent: 'center',
-                borderRadius: 4
-              }}
-            >
-              {imageLoad && (
-                <ActivityIndicator
-                  animating={true}
-                  size={RFValue(50)}
-                  color={colors.WHITE}
-                />
-              )}
-            </FastImage>
+        {loading ? (
+          <PassportSkeleton />
+        ) : (
+          <Fragment>
+            <HeaderContainer>
+              <Cover>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+                    color: colors.WHITE,
+                    textTransform: 'capitalize',
+                    lineHeight: RFValue(30)
+                  }}
+                >
+                  {t(`signup.passportScreen.title`)}
+                </Title>
+                <Button
+                  labelStyle={{ color: colors.WHITE }}
+                  onPress={handleRequest}
+                  loading={state.loading}
+                >
+                  Done
+                </Button>
+              </Cover>
+              <ImageContainer>
+                <FastImage
+                  source={{
+                    uri: userDetails?.avatar,
+                    priority: FastImage.priority.high
+                  }}
+                  resizeMode={FastImage.resizeMode.cover}
+                  onLoadEnd={() => setImageLoad(false)}
+                  style={{
+                    width: RFValue(120),
+                    height: RFValue(120),
+                    justifyContent: 'center',
+                    borderRadius: 4
+                  }}
+                >
+                  {imageLoad && (
+                    <ActivityIndicator
+                      animating={true}
+                      size={RFValue(50)}
+                      color={colors.WHITE}
+                    />
+                  )}
+                </FastImage>
 
-            <ImageTextContainer>
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                  paddingRight: 20,
-                  lineHeight: 21,
-                  color: colors.WHITE,
-                  textTransform: 'capitalize'
-                }}
-              >
-                {`${userDetails?.firstName} ${userDetails?.lastName}`}
-              </Paragraph>
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  paddingRight: 20,
-                  lineHeight: 16,
-                  color: colors.WHITE,
-                  textTransform: 'capitalize'
-                }}
-              >
-                {`${userDetails?.currentLocation[0].state} ${userDetails?.currentLocation[0].country}`}
-              </Paragraph>
-              <ConnectionCover>
-                <Connection>
+                <ImageTextContainer>
                   <Paragraph
                     style={{
-                      color: colors.WHITE,
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: fonts.LARGE_SIZE + 1,
-                      lineHeight: 20
+                      fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                      paddingRight: 20,
+                      lineHeight: 21,
+                      color: colors.WHITE,
+                      textTransform: 'capitalize'
                     }}
                   >
-                    {userDetails?.connectionCount}
+                    {`${userDetails?.firstName} ${userDetails?.lastName}`}
                   </Paragraph>
                   <Paragraph
                     style={{
-                      fontSize: fonts.MEDIUM_SIZE - 1,
                       fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      paddingRight: 20,
+                      lineHeight: 16,
                       color: colors.WHITE,
-                      textTransform: 'uppercase',
-                      lineHeight: 13
+                      textTransform: 'capitalize'
                     }}
                   >
-                    {t(`community.memberPassport.connection`)}
+                    {`${userDetails?.currentLocation[0].state} ${userDetails?.currentLocation[0].country}`}
                   </Paragraph>
-                </Connection>
-                <Connection>
-                  <Paragraph
-                    style={{
-                      color: colors.WHITE,
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: fonts.LARGE_SIZE + 1,
-                      lineHeight: 20
-                    }}
-                  >
-                    {userDetails?.communityCount}
-                  </Paragraph>
-                  <Paragraph
-                    style={{
-                      fontSize: fonts.MEDIUM_SIZE - 1,
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      color: colors.WHITE,
-                      textTransform: 'uppercase',
-                      lineHeight: 13
-                    }}
-                  >
-                    {t(`community.memberPassport.community`)}
-                  </Paragraph>
-                </Connection>
-              </ConnectionCover>
+                  <ConnectionCover>
+                    <Connection>
+                      <Paragraph
+                        style={{
+                          color: colors.WHITE,
+                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                          fontSize: fonts.LARGE_SIZE + 1,
+                          lineHeight: 20
+                        }}
+                      >
+                        {userDetails?.connectionCount}
+                      </Paragraph>
+                      <Paragraph
+                        style={{
+                          fontSize: fonts.MEDIUM_SIZE - 1,
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.WHITE,
+                          textTransform: 'uppercase',
+                          lineHeight: 13
+                        }}
+                      >
+                        {t(`community.memberPassport.connection`)}
+                      </Paragraph>
+                    </Connection>
+                    <Connection>
+                      <Paragraph
+                        style={{
+                          color: colors.WHITE,
+                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                          fontSize: fonts.LARGE_SIZE + 1,
+                          lineHeight: 20
+                        }}
+                      >
+                        {userDetails?.communityCount}
+                      </Paragraph>
+                      <Paragraph
+                        style={{
+                          fontSize: fonts.MEDIUM_SIZE - 1,
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.WHITE,
+                          textTransform: 'uppercase',
+                          lineHeight: 13
+                        }}
+                      >
+                        {t(`community.memberPassport.community`)}
+                      </Paragraph>
+                    </Connection>
+                  </ConnectionCover>
 
-              {/* <ImageIconContainer>
+                  {/* <ImageIconContainer>
                 <SocialMediaButton
                   onPress={() => console.log('Pressed')}
                   underlayColor={colors.DISABLED}
@@ -299,37 +304,39 @@ export default function PassportScreen(props: ScreenProp) {
               </ImageIconContainer>
             
              */}
-            </ImageTextContainer>
-          </ImageContainer>
+                </ImageTextContainer>
+              </ImageContainer>
 
-          <Button
-            icon={{
-              uri: 'https://img.icons8.com/ios-filled/96/000000/share-3.png'
-            }}
-            mode="text"
-            color={colors.WHITE}
-            uppercase={false}
-            loading={false}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{
-              height: RFValue(55),
-              backgroundColor: colors.PRIMARY_LIGHT
-            }}
-            style={{
-              width: '100%',
-              height: RFValue(55),
-              marginTop: RFValue(10)
-            }}
-            onPress={onShare}
-          >
-            {t(`signup.passportScreen.sharePassport`)}
-          </Button>
-        </HeaderContainer>
-        <TabViewSlider getUserDetails={getUserDetails} />
+              <Button
+                icon={{
+                  uri: 'https://img.icons8.com/ios-filled/96/000000/share-3.png'
+                }}
+                mode="text"
+                color={colors.WHITE}
+                uppercase={false}
+                loading={false}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{
+                  height: RFValue(55),
+                  backgroundColor: colors.PRIMARY_LIGHT
+                }}
+                style={{
+                  width: '100%',
+                  height: RFValue(55),
+                  marginTop: RFValue(10)
+                }}
+                onPress={onShare}
+              >
+                {t(`signup.passportScreen.sharePassport`)}
+              </Button>
+            </HeaderContainer>
+            <TabViewSlider getUserDetails={getUserDetails} />
+          </Fragment>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

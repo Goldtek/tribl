@@ -117,7 +117,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               borderRadius: RFValue(70)
             }}
           />
-          {/* <OnlineNotifier /> */}
         </AvatarContainer>
         <TextContainer>
           <Title
@@ -170,9 +169,8 @@ export default function RecommendedUser(props: RecommendedUserProp) {
           >
             {t(`community.recommended.pending`)}
           </Button>
-        ) : connected == 'CONNECTED' ? (
+        ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
           <Button
-            loading={loading}
             mode="contained"
             uppercase={false}
             labelStyle={{

@@ -163,7 +163,8 @@ export default function contactSlide(props: MemberDetailProps) {
             </ConnectionCover>
           </Header>
 
-          {SinglePassport?.connected === 'CONNECTED' ? (
+          {SinglePassport?.connected == 'CONNECTED' ||
+          SinglePassport?.connected == 'ACCEPTED' ? (
             <Button
               onPress={handleMessageNavigation}
               mode="outlined"

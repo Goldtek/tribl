@@ -133,7 +133,9 @@ function IdentityModal(props: any) {
             })}
           </Container>
 
-          <Container style={{ marginTop: RFValue(10) }}>
+          <Container
+            style={{ marginTop: RFValue(10), marginBottom: RFValue(50) }}
+          >
             <GradientButton onPress={() => closeModal()}>
               {t(`signup.identifyUserScreen.done`)}
             </GradientButton>
