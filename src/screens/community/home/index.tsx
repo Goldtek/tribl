@@ -130,6 +130,7 @@ export default function HomeScreen(props: ScreenProp) {
   return (
     <Fragment>
       <ScrollView
+        bounces={false}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}

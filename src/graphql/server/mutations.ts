@@ -150,8 +150,8 @@ export const ACCEPT_MESSAGE_REQUEST = gql`
 
 // MARK MESSAGE READ
 export const MARK_MESSAGE_READ = gql`
-  mutation markConversationAsRead($payload: MarkMessageAsReadInput!) {
-    markConversationAsRead(input: $payload) {
+  mutation markMessageAsRead($payload: MarkMessageAsReadInput!) {
+    markMessageAsRead(input: $payload) {
       success
     }
   }

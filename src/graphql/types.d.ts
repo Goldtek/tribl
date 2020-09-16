@@ -51,15 +51,63 @@ type DirectMessage = {
   senderId: String;
   receiverId: String;
   content: String;
-  createdAt: Date;
-  readAt: Date;
+  createdAt: {
+    day: number;
+    month: number;
+    year: number;
+    hour: number;
+    minute: number;
+    second: number;
+    nanosecond: number;
+    timeZoneOffsetSeconds: number;
+    timeZoneId: number | null;
+    formatted: string | null;
+    __typename: string;
+  };
+  readAt: {
+    day: number;
+    month: number;
+    year: number;
+    hour: number;
+    minute: number;
+    second: number;
+    nanosecond: number;
+    timeZoneOffsetSeconds: number;
+    timeZoneId: number | null;
+    formatted: string | null;
+    __typename: string;
+  };
 };
 
 type MessageRequest = {
   id: String;
   senderId: String;
-  approvedAt: Date;
-  createdAt: !Date;
+  approvedAt?: {
+    day: number;
+    month: number;
+    year: number;
+    hour: number;
+    minute: number;
+    second: number;
+    nanosecond: number;
+    timeZoneOffsetSeconds: number;
+    timeZoneId: number | null;
+    formatted: string | null;
+    __typename: string;
+  };
+  createdAt: {
+    day: number;
+    month: number;
+    year: number;
+    hour: number;
+    minute: number;
+    second: number;
+    nanosecond: number;
+    timeZoneOffsetSeconds: number;
+    timeZoneId: number | null;
+    formatted: string | null;
+    __typename: string;
+  };
 };
 
 type Spam = {
@@ -72,8 +120,32 @@ type Conversation = {
   spam: Spam;
   messageRequest: MessageRequest;
   participants: PassportInterface;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: {
+    day: number;
+    month: number;
+    year: number;
+    hour: number;
+    minute: number;
+    second: number;
+    nanosecond: number;
+    formatted: string | null;
+    timeZoneId: number | null;
+    timeZoneOffsetSeconds: number;
+    __typename: string;
+  };
+  updatedAt: {
+    day: number;
+    month: number;
+    year: number;
+    hour: number;
+    minute: number;
+    second: number;
+    nanosecond: number;
+    timeZoneOffsetSeconds: number;
+    timeZoneId: number | null;
+    formatted: string | null;
+    __typename: string;
+  };
 };
 
 export interface PassportInterface {
@@ -172,10 +244,15 @@ export type UpdatePassportInterface = {
 
 // ACCEPT MESSAGE REQUEST (RESPONSE) TYPE
 export type AcceptMessageRequestInterface = {
-  updateMessageRequest: { success: boolean; __typename: string };
+  acceptMessageRequest: { success: boolean; __typename: string };
 };
 
 // DELETE MESSAGE REQUEST (RESPONSE) TYPE
 export type DeleteMessageRequestInterface = {
   deleteMessageRequest: { success: boolean; __typename: string };
+};
+
+// BLOCK MESSAGE REQUEST (RESPONSE) TYPE
+export type BlockMessageRequestInterface = {
+  blockMessageRequest: { success: boolean; __typename: string };
 };

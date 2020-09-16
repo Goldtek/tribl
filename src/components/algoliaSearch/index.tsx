@@ -6,7 +6,6 @@ import { Octicons } from '@expo/vector-icons';
 import SearchModal from '../searchModal';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
-import { useNavigation } from '@react-navigation/native';
 
 import { Container } from './style';
 
@@ -19,7 +18,6 @@ interface SearchInterface {
 function AlgoliaSearch(props: SearchInterface) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const navigation = useNavigation();
 
   const [isVisible, setIsVisible] = useState(false);
 
