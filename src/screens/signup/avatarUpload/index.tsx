@@ -243,11 +243,9 @@ export default function AvatarUploadScreen(props: ScreenProp) {
                 marginTop: 20
               }}
             >
-              {t(
-                `signup.avatarUploadScreen.${
-                  avatar ? 'photoAdded' : 'addAvatar'
-                }`
-              )}
+              {avatar.uri
+                ? t(`signup.avatarUploadScreen.photoAdded`)
+                : t(`signup.avatarUploadScreen.addAvatar`)}
             </Subheading>
           </Container>
 
