@@ -42,6 +42,9 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     PRIVATE,
     PUBLIC
   }
+
+  const identities = userDetails?.identity.map((item: any) => item.id);
+
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
@@ -50,7 +53,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           month: userDetails?.dob?.month,
           year: userDetails?.dob?.year
         },
-        identity: userDetails?.identity,
+        identity: identities,
         privacy: {
           visibility: privacy.visibility,
           identity: privacySetting?.identity,
@@ -76,7 +79,6 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
   const toggleSwitch = async () => {
     setIsEnabled((previousState) => !previousState);
-
     try {
       const { data } = await updatePassport();
     } catch (error) {

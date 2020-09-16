@@ -37,7 +37,7 @@ function PrivacyModal(props: any) {
 
   const closeModal = () => modalizeRef.current?.close();
 
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
 
@@ -81,6 +81,8 @@ function PrivacyModal(props: any) {
       ? privacyItems[2]
       : privacyItems[3];
 
+  const identities = userDetails?.identity.map((item: any) => item.id);
+
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
@@ -89,7 +91,7 @@ function PrivacyModal(props: any) {
           month: userDetails?.dob?.month,
           year: userDetails?.dob?.year
         },
-        identity: userDetails?.identity,
+        identity: identities,
         currentLocation: {
           state: userDetails?.currentLocation[0].state,
           country: userDetails?.currentLocation[0].country,
