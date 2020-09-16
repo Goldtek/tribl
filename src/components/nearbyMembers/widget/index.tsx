@@ -155,26 +155,28 @@ function NearbyModal(props: PopularUserProp) {
             >
               {t(`community.recommended.pending`)}
             </Button>
-          ) : connected == 'CONNECTED' ? (
+          ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
             <Button
-              mode="contained"
+              mode="text"
               uppercase={false}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
                 textTransform: 'capitalize',
-                color: colors.PRIMARY_TEXT
+                color: colors.WHITE
               }}
               contentStyle={{
-                backgroundColor: colors.DISABLED,
+                backgroundColor: colors.PRIMARY,
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                paddingHorizontal: 0
               }}
               style={{
                 borderRadius: 5,
-                width: RFValue(80),
+                width: RFValue(90),
                 height: RFValue(30),
-                marginRight: RFValue(15)
+                marginRight: RFValue(15),
+                paddingHorizontal: 0
               }}
               onPress={handleMessageNavigation}
             >
