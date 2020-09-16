@@ -5,19 +5,20 @@ import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
+import hexToRGB from '../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface PopularUserProp {
+interface PopularCommunityProp {
   avatar: string;
   name: string;
   membersCount: string;
   isMember: boolean;
 }
 
-function PopularCommunity(props: PopularUserProp) {
+function PopularCommunity(props: PopularCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -34,7 +35,7 @@ function PopularCommunity(props: PopularUserProp) {
   return (
     <TouchableRipple
       onPress={handleNavigation}
-      rippleColor={colors.PRIMARY}
+      rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
       style={{
         height: RFValue(100),
         alignItems: 'center',
@@ -44,11 +45,11 @@ function PopularCommunity(props: PopularUserProp) {
     >
       <Fragment>
         <FastImage
-          resizeMode={FastImage.resizeMode.contain}
+          resizeMode={FastImage.resizeMode.cover}
           source={{ uri: avatar, priority: FastImage.priority.high }}
           style={{
-            width: RFValue(100),
-            height: RFValue(85),
+            width: RFValue(90),
+            height: RFValue(80),
             borderRadius: RFValue(5)
           }}
         />
