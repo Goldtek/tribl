@@ -27,6 +27,11 @@ interface QuickReplies {
   keepIt?: boolean;
 }
 
+interface OnlinePresence {
+  status: 'online' | 'offline';
+  lastSeen: number;
+}
+
 export interface ConversationInterface {
   id: string;
   avatar: string;

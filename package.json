@@ -86,6 +86,7 @@
     "react-native-tab-view": "^2.14.4",
     "react-native-unimodules": "~0.10.0",
     "recyclerlistview": "^3.0.0",
+    "since-time-ago": "^1.1.1",
     "styled-components": "^5.1.1"
   },
   "devDependencies": {

@@ -4,6 +4,7 @@ export enum ROOM_TYPES {
   CHATS = 'messages',
   GROUPS = 'groups',
   CHANNELS = 'channels',
+  PRESENCE = 'presence',
   MESSAGE_REPLY = 'messageReply',
   CONVERSATIONS = 'conversations',
   MESSAGE_REQUEST = 'messageRequests'
