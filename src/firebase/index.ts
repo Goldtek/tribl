@@ -2,7 +2,7 @@ import firestore, {
   FirebaseFirestoreTypes
 } from '@react-native-firebase/firestore';
 
-import { firechat, database, fireAuth } from './config';
+import { firechat, fireAuth } from './config';
 
 import { ROOM_TYPES } from './types';
 
@@ -12,7 +12,10 @@ class Firechat {
   async signIn(firebaseToken: string) {
     fireAuth.signInWithCustomToken(firebaseToken);
     fireAuth.onAuthStateChanged(async (user) => {
-      if (user) this.userId = user.uid;
+      if (user) {
+        this.userId = user.uid;
+        await this.onlineStatus();
+      }
     });
   }
 
@@ -46,22 +49,6 @@ class Firechat {
       .doc(chatId.trim())
       .collection(ROOM_TYPES.CHATS)
       .orderBy('createdAt', 'desc');
-  }
-
-  // USER ONLINE STATUS METHOD TO TRACK USER PRESENCE
-  async onlineStatus(userId: string) {
-    const userStatusRef = database.ref(`/status/${userId.trim()}`);
-
-    // Set the user online status to be through
-    userStatusRef.set({
-      state: 'online',
-      last_changed: firestore.FieldValue.serverTimestamp()
-    });
-
-    return userStatusRef.onDisconnect().update({
-      state: 'offline',
-      last_changed: firestore.FieldValue.serverTimestamp()
-    });
   }
 }
 

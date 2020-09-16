@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
@@ -6,6 +6,9 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
+import { OnlinePresence } from '../../../types';
+import Firechat from '../../../../../firebase';
+import formatMessageTime from '../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -18,6 +21,11 @@ function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
 
   const { id, avatar, firstName, lastName, conversation } = props;
+
+  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
+    status: 'offline',
+    lastSeen: new Date().getTime()
+  });
 
   const handleNavigation = useCallback(() => {
     if (
