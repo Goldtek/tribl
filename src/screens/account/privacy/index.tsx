@@ -28,7 +28,6 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const [isVisible, setIsVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [index, setIndex] = useState(Number || undefined);
-
   const [privacy, setPrivacy] = useState({
     identity: privacySetting?.identity,
     locality: privacySetting?.locality,
@@ -37,19 +36,27 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     name: null,
     visibility: privacySetting?.visibility
   });
-
   const [settingsInview, setSettingsInview] = useState();
 
   enum visibilityToggle {
     PRIVATE,
     PUBLIC
   }
-
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
+        dob: {
+          day: userDetails?.dob?.day,
+          month: userDetails?.dob?.month,
+          year: userDetails?.dob?.year
+        },
+        identity: userDetails?.identity,
         privacy: {
-          visibility: privacy.visibility
+          visibility: privacy.visibility,
+          identity: privacySetting?.identity,
+          locality: privacySetting?.locality,
+          interest: privacySetting?.interest,
+          age: privacySetting?.age
         },
         currentLocation: {
           state: userDetails?.currentLocation[0].state,
