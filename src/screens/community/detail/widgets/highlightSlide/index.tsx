@@ -65,7 +65,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
 
   return (
     <Fragment>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
         <Container>
           {loading ? (
             <Skeleton />
