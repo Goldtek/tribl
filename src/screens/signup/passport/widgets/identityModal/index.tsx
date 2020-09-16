@@ -12,6 +12,7 @@ import { DEVICE_FULL_HEIGHT } from '../../../../../utils/device';
 import { GET_ALL_IDENTITIES } from '../../../../../graphql/server/query';
 import { IdentitiesInterface } from '../../../../../graphql/types';
 import IdentityButton from './identityButton';
+import { ADD_USER_DETAILS } from '../../../../../graphql/cache/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -44,7 +45,6 @@ function IdentityModal(props: any) {
         selectedId: new Map(state.selectedId.set(id, id))
       });
     }
-
     state.selectedIdentities.delete(selected);
     state.selectedId.delete(id);
     props.identity(state.selectedIdentities, state.selectedId);
@@ -55,6 +55,15 @@ function IdentityModal(props: any) {
     });
   };
 
+  const SelectedIdentitiesID = Array.from(state.selectedId.values());
+
+  const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
+    variables: {
+      details: {
+        identity: SelectedIdentitiesID
+      }
+    }
+  });
   const modalizeRef = useRef<Modalize>(null);
 
   const openModal = () => modalizeRef.current?.open();
@@ -133,8 +142,15 @@ function IdentityModal(props: any) {
             })}
           </Container>
 
-          <Container style={{ marginTop: RFValue(10) }}>
-            <GradientButton onPress={() => closeModal()}>
+          <Container
+            style={{ marginTop: RFValue(10), marginBottom: RFValue(50) }}
+          >
+            <GradientButton
+              onPress={() => {
+                closeModal();
+                setTimeout(() => addUserDetails(), 0);
+              }}
+            >
               {t(`signup.identifyUserScreen.done`)}
             </GradientButton>
           </Container>
