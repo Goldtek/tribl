@@ -20,18 +20,15 @@ import { Container } from './styles';
 interface ModalProp {
   isVisible: boolean;
   closePrivacyModal(): void;
-  index: number;
-  privacyValues: any;
-  inView: any;
 }
 
-function PrivacyModal(props: ModalProp) {
-  const { isVisible, closePrivacyModal, index, privacyValues, inView } = props;
+function PrivacyModal(props: any) {
+  const { isVisible, closePrivacyModal, index } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
   const [state, setState] = useState({
-    value: privacyValues[inView]
+    value: props.privacyValues[props.inView]
   });
 
   const modalizeRef = useRef<Modalize>(null);
@@ -40,20 +37,27 @@ function PrivacyModal(props: ModalProp) {
 
   const closeModal = () => modalizeRef.current?.close();
 
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
 
   useEffect(() => {
     if (isVisible) {
       openModal();
-      privacyValues(state.value);
-      setState({ ...state, value: privacyValues[inView] });
-    } else closeModal();
+      props.privacyValue(state.value);
+      setState({
+        ...state,
+        value: props.privacyValues[props.inView]
+      });
+    } else {
+      closeModal();
+    }
   }, [isVisible]);
 
   useEffect(() => {
-    if (isVisible) privacyValues(state.value);
+    if (isVisible) {
+      props.privacyValue(state.value);
+    }
   }, [state.value]);
 
   enum privacyOptions {
@@ -68,7 +72,6 @@ function PrivacyModal(props: ModalProp) {
     interest,
     age
   }
-
   const params =
     index == 0
       ? privacyItems[0]
@@ -78,9 +81,17 @@ function PrivacyModal(props: ModalProp) {
       ? privacyItems[2]
       : privacyItems[3];
 
+  const identities = userDetails?.identity.map((item: any) => item.id);
+
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
+        dob: {
+          day: userDetails?.dob?.day,
+          month: userDetails?.dob?.month,
+          year: userDetails?.dob?.year
+        },
+        identity: identities,
         currentLocation: {
           state: userDetails?.currentLocation[0].state,
           country: userDetails?.currentLocation[0].country,
@@ -101,7 +112,10 @@ function PrivacyModal(props: ModalProp) {
   });
 
   const handleChange = async (item: any) => {
-    setState({ ...state, value: item });
+    setState({
+      ...state,
+      value: item
+    });
 
     try {
       const { data } = await updatePassport();

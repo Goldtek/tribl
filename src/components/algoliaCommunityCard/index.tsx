@@ -1,12 +1,14 @@
 import React, { Fragment } from 'react';
 import { connectHighlight } from 'react-instantsearch-native';
-
+import { useQuery } from '@apollo/react-hooks';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 import { NavigationInterface } from '../../screens/types';
 import hexToRGB from '../../utils/hexToRGB';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
+import { MyPassportInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
@@ -15,6 +17,7 @@ import { NameContainer, Container } from './style';
 interface HighlightProp extends NavigationInterface {
   attribute: string;
   hit: {
+    id?: string;
     name: string;
     avatar: string;
     firstName: string;
@@ -56,11 +59,16 @@ const Highlight = (props: HighlightProp) => {
       algoliaDetail: hit
     });
   };
+
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport?.id;
+
   return (
     <Container>
       {highlights.map(({ value }: any, index: number) => {
-        const state = hit?.currentLocation?.state;
-        const country = hit?.currentLocation?.country;
+        const filteredList = hit.id !== userDetails ? hit : null;
+        const state = filteredList?.currentLocation?.state;
+        const country = filteredList?.currentLocation?.country;
         return (
           <Fragment>
             {hit.name ? (
@@ -129,7 +137,7 @@ const Highlight = (props: HighlightProp) => {
                   <FastImage
                     resizeMode={FastImage.resizeMode.contain}
                     source={{
-                      uri: hit.avatar,
+                      uri: filteredList?.avatar,
                       priority: FastImage.priority.high
                     }}
                     style={{
@@ -147,7 +155,7 @@ const Highlight = (props: HighlightProp) => {
                         textTransform: 'capitalize'
                       }}
                     >
-                      {`${hit.firstName} ${hit.lastName}`}
+                      {`${filteredList?.firstName} ${filteredList?.lastName}`}
                     </Title>
                     <Text
                       style={{

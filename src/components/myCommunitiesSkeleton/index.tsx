@@ -21,6 +21,7 @@ export default function MyCommunitySkeleton({
           style={{
             height: RFValue(80),
             width: RFValue(80),
+            flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
             padding: 5,

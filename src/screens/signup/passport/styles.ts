@@ -15,7 +15,6 @@ export const ImageContainer = styled.View`
 export const ImageTextContainer = styled.View`
   flex: 1;
   margin-left: 20px;
-  justify-content: space-between;
   padding-bottom: 10px;
 `;
 

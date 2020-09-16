@@ -80,11 +80,13 @@ function Slide(props: SlideProp) {
           <Title
             style={{
               fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.8)),
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.5)),
               color: colors.WHITE,
               lineHeight: RFValue(30),
               textAlign: 'center',
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+              paddingTop: 0,
+              marginTop: 0
             }}
           >
             {t(`walkThrough.${TEXT_MAPPER[slideIndex]}.title`)}
