@@ -14,11 +14,11 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface PopularUserProp extends PassportInterface {
+interface NearbyUserProp extends PassportInterface {
   closeNearbyModal(): void;
 }
 
-function NearbyModal(props: PopularUserProp) {
+function NearbyModal(props: NearbyUserProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
