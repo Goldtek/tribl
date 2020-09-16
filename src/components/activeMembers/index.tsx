@@ -8,21 +8,21 @@ import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
-import { NavigationInterface } from '../../screens/types';
 import { GET_RECOMMENDED_MEMBERS } from '../../graphql/server/query';
+import { PassportInterface } from '../../graphql/types';
 import ActiveMember from './widget';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ModalProp extends NavigationInterface {
+interface ModalProp {
   isVisible: boolean;
   closeActiveModal(): void;
 }
 
 function ActiveModal(props: ModalProp) {
-  const { isVisible, closeActiveModal, navigation } = props;
+  const { isVisible, closeActiveModal } = props;
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
@@ -77,13 +77,10 @@ function ActiveModal(props: ModalProp) {
             alignItems: 'center'
           }}
         >
-          {recommendedMembers?.map((member: any, index: number) => (
+          {recommendedMembers?.map((member: PassportInterface) => (
             <ActiveMember
               key={member.id}
               {...member}
-              index={index}
-              lastChild={recommendedMembers.length - 1}
-              navigation={navigation}
               closeActiveModal={closeActiveModal}
             />
           ))}
