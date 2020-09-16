@@ -8,8 +8,8 @@ const ENVIRONMENT_VARIABLES = {
     TRIBL_SERVER_BASE_URI || 'https://tribl-core-development.herokuapp.com/',
   GOOGLE_PLACES_API:
     GOOGLE_PLACES_API || 'AIzaSyAJR6mSnhyzyvUAsAOQTpAjoZrNayWe880',
-  CLOUDINARY_NAME: 'codeunite',
-  CLOUDINARY_PRESET: 'htrghwec'
+  CLOUDINARY_NAME: 'tribl-for-community',
+  CLOUDINARY_PRESET: 'nuk7vxt0'
 };
 
 declare global {
