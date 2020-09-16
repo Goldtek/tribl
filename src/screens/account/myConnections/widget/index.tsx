@@ -82,10 +82,10 @@ export default function Connection(props: ConnectionProp) {
           }}
           onPress={() =>
             navigation.navigate('DirectChatScreen', {
-              title: `${firstName} ${lastName}`,
-              avatar: avatar,
+              avatar,
               receiverId: id,
-              chatId: conversation?.id
+              chatId: conversation?.id,
+              title: `${firstName} ${lastName}`
             })
           }
         >
