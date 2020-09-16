@@ -1,47 +1,34 @@
 import React, { Fragment } from 'react';
-import { TouchableRipple } from 'react-native-paper';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../theme';
 
 // DEFINE SCREEN PROP TYPES
 interface MyCommunitySkeletonProp {
   skeletonSize?: number;
 }
 
+import { Container } from './styles';
+
 export default function MyCommunitySkeleton({
   skeletonSize = 1
 }: MyCommunitySkeletonProp) {
-  const { colors } = useThemeContext();
   return (
     <Fragment>
       {[...Array(skeletonSize)].map((_, index) => (
-        <TouchableRipple
-          key={index}
-          style={{
-            height: RFValue(80),
-            width: RFValue(80),
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 5,
-            borderWidth: RFValue(1.2),
-            borderRadius: RFValue(4),
-            borderColor: colors.PRIMARY,
-            marginLeft: RFValue(15),
-            marginTop: RFValue(10)
-          }}
-        >
+        <Container key={index}>
           <SkeletonPlaceholder>
-            <SkeletonPlaceholder.Item alignItems="center" margin={RFValue(10)}>
+            <SkeletonPlaceholder.Item
+              alignItems="center"
+              justifyContent="center"
+            >
               <SkeletonPlaceholder.Item
-                width={RFValue(80)}
-                height={RFValue(80)}
-                borderRadius={RFValue(70)}
+                width={RFValue(64)}
+                height={RFValue(64)}
+                borderRadius={RFValue(64 / 2)}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder>
-        </TouchableRipple>
+        </Container>
       ))}
     </Fragment>
   );
