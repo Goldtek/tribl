@@ -27,6 +27,7 @@ import MyCommunity from '../../../components/myCommunities';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
 import RecommendedCommunitySkeleton from '../../../components/recommendedCommunitySkeleton';
+import ComingSoonCommunities from '../../../components/recommendedCommunity/comingSoon';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -34,7 +35,8 @@ import {
   RecommendedList,
   RecommendedListHeader,
   RecommendedCommunityContainer,
-  RecentActivitiesList
+  RecentActivitiesList,
+  CommunityCover
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -54,8 +56,13 @@ export default function HomeScreen(props: ScreenProp) {
   });
 
   useQuery(GET_USER_PASSPORT);
-  const { data: myCommunityData } = useQuery(GET_MY_COMMUNITIES);
-  const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+  const { loading: myCommunityLoading, data: myCommunityData } = useQuery(
+    GET_MY_COMMUNITIES
+  );
+  const {
+    loading: recommendedCommunityLoading,
+    data: communityData
+  } = useQuery(GET_RECOMMENDED_COMMUNITIES);
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
   const myCommunity = myCommunityData?.myCommunities;
@@ -128,7 +135,11 @@ export default function HomeScreen(props: ScreenProp) {
         contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
       >
         <StatusBar translucent animated style="dark" />
-        {myCommunity?.length ? (
+        {myCommunityLoading ? (
+          <CommunityCover>
+            <MyCommunitySkeleton skeletonSize={2} />
+          </CommunityCover>
+        ) : myCommunity?.length ? (
           <RecommendedList>
             <RecommendedListHeader>
               <Title
@@ -147,7 +158,7 @@ export default function HomeScreen(props: ScreenProp) {
             </RecommendedListHeader>
             <FlatList
               data={myCommunity}
-              ListEmptyComponent={<MyCommunitySkeleton skeletonSize={4} />}
+              ListEmptyComponent={<MyCommunitySkeleton skeletonSize={2} />}
               horizontal={true}
               renderItem={_renderMyCommunityItem}
               showsHorizontalScrollIndicator={false}
@@ -232,13 +243,15 @@ export default function HomeScreen(props: ScreenProp) {
             </Button>
           </RecommendedListHeader>
           <RecommendedCommunityContainer>
-            {community ? (
+            {recommendedCommunityLoading ? (
+              <RecommendedCommunitySkeleton />
+            ) : community.length ? (
               <RecommendedCommunity
                 {...randomCommunity}
                 onPress={handleJoinCommunity}
               />
             ) : (
-              <RecommendedCommunitySkeleton />
+              <ComingSoonCommunities />
             )}
           </RecommendedCommunityContainer>
         </RecommendedList>
