@@ -160,7 +160,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                         fontSize: RFValue(fonts.LARGE_SIZE)
                       }}
                     >
-                      {country.emoji}
+                      {country?.emoji}
                     </Paragraph>
                     <Container
                       style={{
