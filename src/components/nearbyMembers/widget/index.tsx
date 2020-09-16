@@ -6,22 +6,15 @@ import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
+import { PassportInterface } from '../../../graphql/types';
+import { rootNavigator } from '../../../constants';
+import hexToRGB from '../../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface PopularUserProp {
-  avatar: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  connected: string;
-  currentLocation: {
-    country: string;
-    state: string;
-  }[];
-  navigation: any;
+interface PopularUserProp extends PassportInterface {
   closeNearbyModal(): void;
 }
 
@@ -29,24 +22,22 @@ function NearbyModal(props: PopularUserProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
+  const { closeNearbyModal, ...member } = props;
+
   const {
     avatar,
     firstName,
     lastName,
+    connected,
     currentLocation,
-    phoneNumber,
-    navigation,
-    closeNearbyModal,
-    connected
-  } = props;
+    phoneNumber
+  } = member;
 
   const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: {
-      payload: { phoneNumber }
-    }
+    variables: { payload: { phoneNumber } }
   });
 
   const handleRequest = async () => {
@@ -64,7 +55,7 @@ function NearbyModal(props: PopularUserProp) {
 
   const handleMessageNavigation = useCallback(
     () =>
-      navigation.navigate('ChatScreen', {
+      rootNavigator.navigate('ChatScreen', {
         title: `${firstName} ${lastName}`
       }),
     []
@@ -72,7 +63,7 @@ function NearbyModal(props: PopularUserProp) {
 
   const handleNavigation = () => {
     closeNearbyModal();
-    navigation.navigate('MemberDetailScreen', {
+    rootNavigator.navigate('MemberDetailScreen', {
       title: `${firstName} ${lastName}`,
       details: { ...props }
     });
@@ -84,13 +75,13 @@ function NearbyModal(props: PopularUserProp) {
     <Fragment>
       <TouchableRipple
         onPress={handleNavigation}
-        rippleColor={colors.PRIMARY}
+        rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
         style={{
           flex: 1,
           flexDirection: 'row',
           alignItems: 'center',
-          paddingLeft: 15,
-          marginBottom: RFValue(20)
+          paddingHorizontal: 15,
+          paddingVertical: 12
         }}
       >
         <Fragment>
@@ -189,19 +180,15 @@ function NearbyModal(props: PopularUserProp) {
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
                 textTransform: 'capitalize',
-                color: colors.WHITE
+                color: colors.WHITE,
+                marginHorizontal: 12
               }}
               contentStyle={{
                 backgroundColor: colors.PRIMARY,
                 justifyContent: 'center',
                 alignItems: 'center'
               }}
-              style={{
-                borderRadius: 5,
-                width: RFValue(65),
-                height: RFValue(30),
-                marginRight: RFValue(15)
-              }}
+              style={{ borderRadius: 5, width: RFValue(70) }}
               onPress={handleRequest}
             >
               {t(`community.recommended.add`)}+
