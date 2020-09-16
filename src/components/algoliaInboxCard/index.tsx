@@ -89,7 +89,7 @@ const Highlight = (props: HighlightProp) => {
                     fontSize: RFValue(fonts.MEDIUM_SIZE)
                   }}
                 >
-                  '2 mins ago'
+                  2 mins ago
                 </Text>
               </NameContainer>
             </Fragment>
