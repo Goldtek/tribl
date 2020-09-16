@@ -14,6 +14,8 @@ export const RecommendedList = styled.View`
 export const CommunityCover = styled.View`
   background-color: ${({ theme }) => theme.colors.WHITE};
   flex-direction: row;
+  padding-left: ${RFValue(15)};
+  padding-top: ${RFValue(10)};
 `;
 
 export const RecommendedListHeader = styled.View`

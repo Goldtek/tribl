@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../../../theme';
 import LottieView from 'lottie-react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -38,67 +39,72 @@ export default function ScrollInstruction(props: scrollInstructionProp) {
           paddingBottom: RFValue(safeAreaBottom ? safeAreaBottom + 30 : 60)
         }}
       >
-        <BlurContentsContainer>
-          <InstructionButton>
-            <GradientContainer
-              start={{ x: 1, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              colors={[colors.PRIMARY, colors.SECONDARY]}
-              style={{ borderRadius: 4 }}
-            >
-              <Identity style={{ color: colors.WHITE }}>black</Identity>
-            </GradientContainer>
-          </InstructionButton>
-          <InstructionButton>
-            <Identity>afro-latin</Identity>
-          </InstructionButton>
-        </BlurContentsContainer>
-
-        <LottieView
-          source={require('../../../../../../assets/animations/scrollup.json')}
-          autoPlay
-          loop
-          style={{
-            width: RFValue(100),
-            height: RFValue(100),
-            transform: [{ rotate: '90deg' }]
-          }}
-        />
-
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE + 5)),
-            color: colors.PRIMARY_TEXT,
-            textAlign: 'center',
-            marginTop: RFValue(50),
-            lineHeight: RFValue(30)
-          }}
+        <TouchableWithoutFeedback
+          onPress={props.onPress}
+          style={{ flex: 1, alignItems: 'center' }}
         >
-          {t(`signup.identifyUserScreen.scrollUp`)}
-        </Title>
+          <BlurContentsContainer>
+            <InstructionButton>
+              <GradientContainer
+                start={{ x: 1, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                colors={[colors.PRIMARY, colors.SECONDARY]}
+                style={{ borderRadius: 4 }}
+              >
+                <Identity style={{ color: colors.WHITE }}>black</Identity>
+              </GradientContainer>
+            </InstructionButton>
+            <InstructionButton>
+              <Identity>afro-latin</Identity>
+            </InstructionButton>
+          </BlurContentsContainer>
 
-        <CloseButtonContainer>
-          <Button
-            mode="text"
-            color={colors.PRIMARY}
-            labelStyle={{
+          <LottieView
+            source={require('../../../../../../assets/animations/scrollup.json')}
+            autoPlay
+            loop
+            style={{
+              width: RFValue(100),
+              height: RFValue(100),
+              transform: [{ rotate: '90deg' }]
+            }}
+          />
+
+          <Title
+            style={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE + 5)),
+              color: colors.PRIMARY_TEXT,
+              textAlign: 'center',
+              marginTop: RFValue(50),
+              lineHeight: RFValue(30)
             }}
-            contentStyle={{
-              height: RFValue(55),
-              borderColor: colors.PRIMARY,
-              borderWidth: 1,
-              borderRadius: 4
-            }}
-            style={{ width: '100%', height: RFValue(55) }}
-            onPress={props.onPress}
           >
-            {t(`signup.identifyUserScreen.closeScrollUp`)}
-          </Button>
-        </CloseButtonContainer>
+            {t(`signup.identifyUserScreen.scrollUp`)}
+          </Title>
+
+          <CloseButtonContainer>
+            <Button
+              mode="text"
+              color={colors.PRIMARY}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                borderColor: colors.PRIMARY,
+                borderWidth: 1,
+                borderRadius: 4
+              }}
+              style={{ width: '100%', height: RFValue(55) }}
+              onPress={props.onPress}
+            >
+              {t(`signup.identifyUserScreen.closeScrollUp`)}
+            </Button>
+          </CloseButtonContainer>
+        </TouchableWithoutFeedback>
       </BlurContents>
     </Container>
   );
