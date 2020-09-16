@@ -105,6 +105,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           placeholderTextColor={colors.PRIMARY_TEXT}
           style={{
             height: RFValue(40),
+            color: colors.PRIMARY_TEXT,
             alignItems: 'center',
             elevation: 0,
             borderWidth: 1,
