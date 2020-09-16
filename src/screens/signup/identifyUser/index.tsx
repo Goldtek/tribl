@@ -28,6 +28,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
   const [state, setState] = useState({
     selectedIdentities: new Map(),
+    selectedId: new Map(),
     showInstruction: true
   });
 
@@ -36,7 +37,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
-        identity: [...Array.from(state.selectedIdentities.values())]
+        identity: [...Array.from(state.selectedId.values())]
       }
     }
   });
@@ -56,20 +57,23 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     addUserDetails();
   };
 
-  const handleSelect = (selected: string) => {
+  const handleSelect = (selected: string, id: string) => {
     if (!state.selectedIdentities.has(selected)) {
       return setState({
         ...state,
         selectedIdentities: new Map(
           state.selectedIdentities.set(selected, selected)
-        )
+        ),
+        selectedId: new Map(state.selectedId.set(id, id))
       });
     }
 
     state.selectedIdentities.delete(selected);
+    state.selectedId.delete(id);
     setState({
       ...state,
-      selectedIdentities: new Map(state.selectedIdentities)
+      selectedIdentities: new Map(state.selectedIdentities),
+      selectedId: new Map(state.selectedId)
     });
   };
 
@@ -140,7 +144,11 @@ export default function IdentifyUserScreen(props: ScreenProp) {
               <IdentityButton
                 key={identity.id}
                 identity={identity.name}
-                selected={state.selectedIdentities.get(identity.name)}
+                selected={
+                  state.selectedIdentities.get(identity.name) &&
+                  state.selectedId.get(identity.id)
+                }
+                id={identity.id}
                 handleSelect={handleSelect}
               />
             ))}
