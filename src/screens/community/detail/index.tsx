@@ -1,12 +1,11 @@
 import React from 'react';
 import { NavigationInterface } from '../../types';
 import { useTranslation } from 'react-i18next';
-import { TabView, SceneMap, TabBar, ScrollPager } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
-import { Platform } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import highlightSlide from './widgets/highlightSlide';
 import channelSlide from './widgets/channelSlide';
@@ -102,34 +101,17 @@ export default function SearchScreen(props: ScreenProp) {
     }
   };
 
-  const renderPager = (props: any) => <ScrollPager {...props} />;
   return (
     <Container>
       <StatusBar translucent animated style="dark" />
-      {Platform.select({
-        ios: (
-          <TabView
-            navigationState={{ index: tabIndex, routes }}
-            renderScene={renderScene}
-            renderPager={renderPager}
-            renderTabBar={renderTabBar}
-            onIndexChange={handleIndexChange}
-            initialLayout={{ width: DEVICE_FULL_WIDTH }}
-            swipeEnabled={false}
-          />
-        ),
-
-        android: (
-          <TabView
-            navigationState={{ index: tabIndex, routes }}
-            renderScene={renderScene}
-            renderTabBar={renderTabBar}
-            onIndexChange={handleIndexChange}
-            initialLayout={{ width: DEVICE_FULL_WIDTH }}
-            swipeEnabled={false}
-          />
-        )
-      })}
+      <TabView
+        navigationState={{ index: tabIndex, routes }}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={handleIndexChange}
+        initialLayout={{ width: DEVICE_FULL_WIDTH }}
+        swipeEnabled={false}
+      />
     </Container>
   );
 }

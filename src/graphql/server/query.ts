@@ -31,6 +31,22 @@ export const GET_RECOMMENDED_MEMBERS = gql`
       }
       conversation {
         id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
       }
       connected
       avatar
@@ -69,6 +85,22 @@ export const GET_NEARBY_MEMBERS = gql`
       }
       conversation {
         id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
       }
     }
   }
@@ -113,6 +145,22 @@ export const GET_POPULAR_COMMUNITIES = gql`
         phoneNumber
         conversation {
           id
+          messageRequest {
+            id
+            senderId
+            approvedAt {
+              formatted
+              day
+              month
+              year
+            }
+            createdAt {
+              formatted
+              day
+              month
+              year
+            }
+          }
         }
       }
       membersCount
@@ -149,6 +197,22 @@ export const GET_MY_COMMUNITIES = gql`
         }
         conversation {
           id
+          messageRequest {
+            id
+            senderId
+            approvedAt {
+              formatted
+              day
+              month
+              year
+            }
+            createdAt {
+              formatted
+              day
+              month
+              year
+            }
+          }
         }
       }
     }
@@ -166,6 +230,22 @@ export const GET_MY_CONNECTIONS = gql`
       avatar
       conversation {
         id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
       }
     }
   }
@@ -236,6 +316,22 @@ export const GET_SINGLE_PASSPORT = gql`
       }
       conversation {
         id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
       }
     }
   }
@@ -252,7 +348,7 @@ export const GET_COMMUNITY_CHANNELS = gql`
 
 //GET PARTICIPANTS OF A COMMUNITY
 export const GET_COMMUNITY_MEMBERS = gql`
-  query communityMemberscommunityChannels($id: ID!) {
+  query communityMembersCommunityChannels($id: ID!) {
     communityMembers(communityId: $id) {
       id
       avatar
@@ -273,6 +369,22 @@ export const GET_COMMUNITY_MEMBERS = gql`
       connected
       conversation {
         id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
       }
     }
   }
@@ -352,6 +464,22 @@ export const GET_USER_PASSPORT = gql`
       }
       conversation {
         id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
       }
     }
   }
@@ -376,6 +504,22 @@ export const GET_ALL_MEMBERS = gql`
       }
       conversation {
         id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
       }
     }
   }

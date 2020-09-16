@@ -39,9 +39,7 @@ function CommunitySlideScreen(props: ScreenProp) {
   const randomCommunity = communityData?.recommendedCommunities[0];
   const popular = popularData?.popularCommunities;
   const _renderPopularCommunityItem = useMemo(
-    () => ({ item, index }: any) => (
-      <PopularCommunity key={item.id} {...item} index={index} />
-    ),
+    () => ({ item }: any) => <PopularCommunity key={item.id} {...item} />,
     []
   );
 
@@ -55,6 +53,7 @@ function CommunitySlideScreen(props: ScreenProp) {
   return (
     <Fragment>
       <ScrollView
+        bounces={false}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
