@@ -14,17 +14,7 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ActiveUserProp {
-  avatar: string;
-  firstName: string;
-  lastName: string;
-  connected: string;
-  phoneNumber: string;
-  currentLocation: {
-    country: string;
-    state: string;
-  }[];
-  navigation: any;
+interface ActiveUserProp extends PassportInterface {
   closeActiveModal(): void;
 }
 
