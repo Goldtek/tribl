@@ -1,11 +1,14 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
 import { Feather } from '@expo/vector-icons';
+import Firechat from '../../../../firebase';
+import { OnlinePresence } from '../../../inbox/types';
 import { PassportInterface } from '../../../../graphql/types';
+import formatMessageTime from '../../../../utils/timesince';
 
 import { NameContainer } from './styles';
 
@@ -16,6 +19,11 @@ export default function Connection(props: ConnectionProp) {
   const navigation = useNavigation();
 
   const { id, avatar, firstName, lastName, conversation } = props;
+
+  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
+    status: 'offline',
+    lastSeen: new Date().getTime()
+  });
 
   return (
     <TouchableRipple
@@ -65,7 +73,7 @@ export default function Connection(props: ConnectionProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            3 mins ago
+            3 min ago
           </Text>
         </NameContainer>
         <TouchableRipple

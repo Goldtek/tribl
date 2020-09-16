@@ -1,7 +1,7 @@
 import { format, isToday, isYesterday } from 'date-fns';
 
-export default function formatMessageTime(data: Date) {
-  const messageTime = new Date(data);
+export default function formatMessageTime(date: Date | number) {
+  const messageTime = new Date(date);
 
   if (isToday(messageTime)) return format(messageTime, 'p');
 
