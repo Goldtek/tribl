@@ -61,7 +61,7 @@
     "subTitle": "setup 3",
     "paragraph": "Add a pic with personality to give community members a sense of who you are.",
     "addAvatar": "add passport photo",
-    "photoAdded": "add photo",
+    "photoAdded": "photo added",
     "selectAvatar": "Select Avatar",
     "inputError": "Image is required or skip this setup",
     "uploadError": "Failed uploading image, please try again",
