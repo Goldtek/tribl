@@ -36,7 +36,7 @@ export default function Connection(props: ConnectionProp) {
         paddingRight: RFValue(10)
       }}
       onPress={() =>
-        navigation.navigate('MemberDetailScreen', {
+        navigation.navigate('DrawerMemberDetailScreen', {
           title: `${firstName} ${lastName}`,
           details: { ...props }
         })
