@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { Keyboard } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
 import FastImage from 'react-native-fast-image';
 import { Feather, AntDesign } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -61,7 +62,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
         refetch();
       }
     } catch (error) {
-      console.error(error);
+      Sentry.captureException(error);
     }
   };
 
@@ -73,7 +74,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
         refetch();
       }
     } catch (error) {
-      console.error(error);
+      Sentry.captureException(error);
     }
   };
 

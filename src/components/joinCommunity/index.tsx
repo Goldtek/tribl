@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Title, Button, Paragraph } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation } from '@apollo/react-hooks';
 import { useTranslation } from 'react-i18next';
@@ -60,6 +61,7 @@ function JoinCommunity(props: JoinCommunityProp) {
         });
       }
     } catch (error) {
+      Sentry.captureException(error);
       setState({
         ...state,
         loading: false

@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
+import * as Sentry from '@sentry/react-native';
 import { Feather } from '@expo/vector-icons';
 import { useMutation } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
@@ -38,7 +39,7 @@ function Member(props: MemberProp) {
     try {
       const { data } = await requestConnection();
     } catch (error) {
-      console.error(error);
+      Sentry.captureException(error);
     }
   };
 
