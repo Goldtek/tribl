@@ -1,4 +1,5 @@
 import React, { useState, Fragment } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { KeyboardAvoidingView, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -94,6 +95,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
       }
     } catch (error) {
       handleInputError('serverError');
+      Sentry.captureException(error);
     }
   };
 

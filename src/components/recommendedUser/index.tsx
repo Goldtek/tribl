@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
@@ -55,6 +56,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
         setPending(true);
       }
     } catch (error) {
+      Sentry.captureException(error);
       setLoading(false);
     }
   };

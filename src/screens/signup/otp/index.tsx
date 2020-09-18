@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -92,6 +93,7 @@ export default function OTPScreen(props: ScreenProp) {
           });
         }
       } catch (error) {
+        Sentry.captureException(error);
         handleInputError();
       }
     }, 0);

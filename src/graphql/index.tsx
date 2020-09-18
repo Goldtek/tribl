@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { ApolloLink, Observable, Operation } from 'apollo-link';
+import * as Sentry from '@sentry/react-native';
 import { ApolloProvider as Provider } from '@apollo/react-hooks';
 import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
@@ -40,11 +41,13 @@ export const client = new ApolloClient<NormalizedCacheObject>({
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
       if (graphQLErrors) {
         // send error via sentry
+        Sentry.captureException(graphQLErrors);
       }
 
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
       if (networkError) {
         // send error via sentry
+        Sentry.captureException(networkError);
       }
     }),
     requestLink,
