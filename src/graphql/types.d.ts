@@ -45,69 +45,46 @@ export enum Status {
   CONNECTED = 'CONNECTED'
 }
 
+enum SubscriptionEventType {
+  USER_PRESENCE
+}
+
+type _Neo4jDate = {
+  day: number;
+  month: number;
+  year: number;
+  hour: number;
+  minute: number;
+  second: number;
+  nanosecond: number;
+  timeZoneOffsetSeconds: number;
+  timeZoneId: number | null;
+  formatted: string | null;
+  __typename: string;
+};
+
+type UserPresence = {
+  type: SubscriptionEventType;
+  status: UserAvailability;
+  lastSeen: _Neo4jDate;
+  _id: String;
+};
+
 type DirectMessage = {
   id: String;
   conversationId: String;
   senderId: String;
   receiverId: String;
   content: String;
-  createdAt: {
-    day: number;
-    month: number;
-    year: number;
-    hour: number;
-    minute: number;
-    second: number;
-    nanosecond: number;
-    timeZoneOffsetSeconds: number;
-    timeZoneId: number | null;
-    formatted: string | null;
-    __typename: string;
-  };
-  readAt: {
-    day: number;
-    month: number;
-    year: number;
-    hour: number;
-    minute: number;
-    second: number;
-    nanosecond: number;
-    timeZoneOffsetSeconds: number;
-    timeZoneId: number | null;
-    formatted: string | null;
-    __typename: string;
-  };
+  createdAt: _Neo4jDate;
+  readAt: _Neo4jDate;
 };
 
 type MessageRequest = {
   id: String;
   senderId: String;
-  approvedAt?: {
-    day: number;
-    month: number;
-    year: number;
-    hour: number;
-    minute: number;
-    second: number;
-    nanosecond: number;
-    timeZoneOffsetSeconds: number;
-    timeZoneId: number | null;
-    formatted: string | null;
-    __typename: string;
-  };
-  createdAt: {
-    day: number;
-    month: number;
-    year: number;
-    hour: number;
-    minute: number;
-    second: number;
-    nanosecond: number;
-    timeZoneOffsetSeconds: number;
-    timeZoneId: number | null;
-    formatted: string | null;
-    __typename: string;
-  };
+  approvedAt?: _Neo4jDate;
+  createdAt: _Neo4jDate;
 };
 
 type Spam = {
@@ -120,60 +97,31 @@ type Conversation = {
   spam: Spam;
   messageRequest: MessageRequest;
   participants: PassportInterface;
-  createdAt: {
-    day: number;
-    month: number;
-    year: number;
-    hour: number;
-    minute: number;
-    second: number;
-    nanosecond: number;
-    formatted: string | null;
-    timeZoneId: number | null;
-    timeZoneOffsetSeconds: number;
-    __typename: string;
-  };
-  updatedAt: {
-    day: number;
-    month: number;
-    year: number;
-    hour: number;
-    minute: number;
-    second: number;
-    nanosecond: number;
-    timeZoneOffsetSeconds: number;
-    timeZoneId: number | null;
-    formatted: string | null;
-    __typename: string;
-  };
+  createdAt: _Neo4jDate;
+  updatedAt: _Neo4jDate;
 };
 
 export interface PassportInterface {
   id: string;
-  dob: {
-    day: number;
-    month: number;
-    year: number;
-    formatted: string | null;
-    __typename: string;
-  };
   email: string;
   avatar: string;
-  countryCode: string;
-  firstName: string;
+  dob: _Neo4jDate;
   lastName: string;
-  status: UserAvailability | null;
-  phoneNumber: string;
-  citizenShip: string | null;
-  connected: Status | null;
-  conversation: Conversation | null;
   interest: string[];
   identity: string[];
-  connectionCount: number;
-  communityCount: number;
-  currentLocation: Location[];
-  birthPlace: Location[];
+  firstName: string;
   __typename: string;
+  countryCode: string;
+  phoneNumber: string;
+  birthPlace: Location[];
+  presence: UserPresence;
+  communityCount: number;
+  connectionCount: number;
+  connected: Status | null;
+  citizenShip: string | null;
+  currentLocation: Location[];
+  status: UserAvailability | null;
+  conversation: Conversation | null;
 }
 
 export interface StoreInterface {
