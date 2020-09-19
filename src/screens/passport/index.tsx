@@ -20,6 +20,7 @@ import TabViewSlider from './widgets/tabs';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
 import { MyPassportInterface } from '../../graphql/types';
 import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
+
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   HeaderContainer,
@@ -149,7 +150,7 @@ export default function PassportScreen(props: ScreenProp) {
         paddingTop: RFValue(paddingTop)
       }}
     >
-      <StatusBar translucent animated style="dark" />
+      <StatusBar translucent animated style="light" />
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}

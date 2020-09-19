@@ -1,3 +1,5 @@
+import { UserAvailability } from '../../graphql/types';
+
 export interface MessageInterface {
   _id: string;
   text: string;
@@ -28,8 +30,10 @@ interface QuickReplies {
 }
 
 interface OnlinePresence {
-  status: 'online' | 'offline';
+  status: string;
   lastSeen: number;
+  lastOffline?: number;
+  lastOnline?: number;
 }
 
 export interface ConversationInterface {
