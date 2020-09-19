@@ -44,7 +44,7 @@ export default function MyCommunity(props: MyCommunityProp) {
       }}
     >
       <FastImage
-        resizeMode={FastImage.resizeMode.contain}
+        resizeMode={FastImage.resizeMode.cover}
         source={{
           uri: avatar,
           priority: FastImage.priority.high
