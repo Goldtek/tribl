@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -50,7 +51,7 @@ export default function PassportSkeleton(props: ScreenProp) {
 
       // PROFILE SHARED HERE
     } catch (error) {
-      console.error(error.message);
+      Sentry.captureException(error);
     }
   };
   const [state, setState] = useState({ details: {}, loading: false });

@@ -7,6 +7,7 @@ import {
   Keyboard
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Sentry from '@sentry/react-native';
 import { Title, Subheading, Paragraph } from 'react-native-paper';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -70,6 +71,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
       }
     } catch (error) {
       handleInputError();
+      Sentry.captureException(error);
     }
   };
 

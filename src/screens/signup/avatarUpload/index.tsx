@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ImageResizer from 'react-native-image-resizer';
+import * as Sentry from '@sentry/react-native';
 import { ProgressBar, Title, Paragraph, Subheading } from 'react-native-paper';
 import { TouchableHighlight, SafeAreaView } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
@@ -73,6 +74,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
     } catch (error) {
       setAvatar({ ...avatar, loading: false });
       handleInputError('uploadError');
+      Sentry.captureException(error);
     }
   };
 
@@ -109,7 +111,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
       setAvatar({ ...avatar, uri, imageData });
       ImagePicker.clean();
     } catch (error) {
-      console.error(error);
+      Sentry.captureException(error);
     }
   };
 
