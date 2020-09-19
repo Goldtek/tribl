@@ -12,10 +12,7 @@ class Firechat {
   async signIn(firebaseToken: string) {
     fireAuth.signInWithCustomToken(firebaseToken);
     fireAuth.onAuthStateChanged(async (user) => {
-      if (user) {
-        this.userId = user.uid;
-        await this.onlineStatus();
-      }
+      if (user) this.userId = user.uid;
     });
   }
 
@@ -49,6 +46,11 @@ class Firechat {
       .doc(chatId.trim())
       .collection(ROOM_TYPES.CHATS)
       .orderBy('createdAt', 'desc');
+  }
+
+  // GET USER ONLINE PRESENCE
+  getOnlineStatus(userId: string): FirebaseFirestoreTypes.DocumentReference {
+    return firechat.collection(ROOM_TYPES.USERS).doc(userId.trim());
   }
 }
 

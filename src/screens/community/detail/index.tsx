@@ -54,12 +54,10 @@ export default function SearchScreen(props: ScreenProp) {
 
   const renderLabel = ({
     route,
-    focused,
-    member
+    focused
   }: {
     route: { title: string };
     focused: boolean;
-    member: boolean;
   }) => (
     <Title
       style={{

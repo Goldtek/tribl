@@ -16,6 +16,7 @@ import AlgoliaCommunityList from '../../components/algoliaCommunityList ';
 import GradientButton from '../../components/gradientButton';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_COMMUNITY_SEARCH_INDEX } from '../../graphql/cache/query';
+import ENVIRONMENT_VARIABLES from '../../config';
 
 const CommunityStack = createStackNavigator();
 
@@ -132,11 +133,11 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </TouchableHighlight>
           ),
-          // tribl_passport_staging
+
           headerRight: () => {
             const indexName = [
-              'tribl_passport_staging',
-              'tribl_community_staging'
+              ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME,
+              ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_INDEX_NAME
             ];
 
             return (

@@ -19,6 +19,7 @@ import {
 import Skeleton from './widgets/newMessageSkeleton';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { MyPassportInterface } from '../../../graphql/types';
+import ENVIRONMENT_VARIABLES from '../../../config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer } from './styles';
@@ -33,20 +34,20 @@ export default function ChatScreen(props: ScreenProp) {
   const { loading: nearbyLoading, data: nearbyData } = useQuery(
     GET_NEARBY_MEMBERS
   );
-  const nearbyMembers = nearbyData?.nearbyMembers;
 
   const { loading: connectionLoading, data: connectionData } = useQuery(
     GET_MY_CONNECTIONS
   );
-  const myConnection = connectionData?.myConnections;
 
   const { loading: allMembersLoading, data: allMembersData } = useQuery(
     GET_ALL_MEMBERS
   );
 
-  const allMembers = allMembersData?.Passport;
-
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
+  const nearbyMembers = nearbyData?.nearbyMembers;
+  const myConnection = connectionData?.myConnections;
+  const allMembers = allMembersData?.Passport;
   const userDetails = userData?.myPassport?.id;
 
   const filteredMembers = allMembers?.filter((member: any) => {
@@ -127,7 +128,9 @@ export default function ChatScreen(props: ScreenProp) {
       }}
     >
       <Container>
-        <AlgoliaSearch indexName="tribl_passport_staging">
+        <AlgoliaSearch
+          indexName={ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME}
+        >
           <AlgoliaList />
         </AlgoliaSearch>
 
