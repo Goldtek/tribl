@@ -25,7 +25,7 @@ function ConnectionCard(props: ConnectionCardProp) {
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
     status: presence.status.toString(),
     lastSeen: new Date(
-      `${presence?.lastSeen.day}/${presence?.lastSeen.month}/${presence?.lastSeen.year}`
+      `${presence.lastSeen.year}/${presence.lastSeen.month}/${presence.lastSeen.day}`
     ).getTime()
   });
 
