@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
+import * as Sentry from '@sentry/react-native';
 import { TouchableRipple, Text } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -120,7 +121,7 @@ function PrivacyModal(props: any) {
     try {
       const { data } = await updatePassport();
     } catch (error) {
-      console.error(error);
+      Sentry.captureException(error);
     }
   };
 

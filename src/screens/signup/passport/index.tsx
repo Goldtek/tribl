@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import * as Sentry from '@sentry/react-native';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +55,7 @@ export default function PassportScreen(props: ScreenProp) {
 
       // PROFILE SHARED HERE
     } catch (error) {
-      console.error(error.message);
+      Sentry.captureException(error);
     }
   };
 

@@ -29,6 +29,8 @@ export default function SearchScreen(props: ScreenProp) {
   const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
     variables: { id }
   });
+
+  const member = communityData?.Community[0]?.isMember;
   const [tabIndex, setTabIndex] = React.useState(0);
   const [routes] = React.useState([
     {
@@ -52,10 +54,12 @@ export default function SearchScreen(props: ScreenProp) {
 
   const renderLabel = ({
     route,
-    focused
+    focused,
+    member
   }: {
     route: { title: string };
     focused: boolean;
+    member: boolean;
   }) => (
     <Title
       style={{
@@ -63,7 +67,11 @@ export default function SearchScreen(props: ScreenProp) {
           ? fonts.WORK_SANS_SEMI_BOLD
           : fonts.WORK_SANS_REGULAR,
         fontSize: RFValue(fonts.LARGE_SIZE + 1),
-        color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
+        color: focused
+          ? colors.PRIMARY
+          : !member
+          ? colors.INACTIVE
+          : colors.PRIMARY_TEXT,
         textTransform: 'capitalize',
         marginTop: 0,
         marginBottom: 0,
@@ -94,7 +102,7 @@ export default function SearchScreen(props: ScreenProp) {
   };
 
   const handleIndexChange = (index: number) => {
-    if (communityData?.Community?.isMember) {
+    if (member) {
       setTabIndex(index);
     } else {
       setTabIndex(0);

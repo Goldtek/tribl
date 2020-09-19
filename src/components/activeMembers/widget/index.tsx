@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useCallback } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -49,6 +50,7 @@ function ActiveModal(props: ActiveUserProp) {
         setPending(true);
       }
     } catch (error) {
+      Sentry.captureException(error);
       setLoading(false);
     }
   };

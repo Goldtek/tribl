@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { NavigationInterface } from '../../types';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
@@ -147,7 +148,7 @@ export default function ChatScreen(props: ScreenProp) {
             navigation.goBack();
           }
         } catch (error) {
-          console.log({ error });
+          Sentry.captureException(error);
         }
 
         break;

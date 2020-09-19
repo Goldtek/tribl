@@ -6,6 +6,7 @@ import {
   Title,
   Paragraph
 } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import {
@@ -146,7 +147,7 @@ export default function UserLocationScreen(props: ScreenProp) {
         }
       });
     } catch (error) {
-      console.log(error.message);
+      Sentry.captureException(error);
     }
   };
 

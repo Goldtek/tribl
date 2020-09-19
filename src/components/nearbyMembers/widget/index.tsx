@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useCallback } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
@@ -49,6 +50,7 @@ function NearbyModal(props: NearbyUserProp) {
         setPending(true);
       }
     } catch (error) {
+      Sentry.captureException(error);
       setLoading(false);
     }
   };

@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useCallback, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
+import * as Sentry from '@sentry/react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Divider } from 'react-native-paper';
@@ -82,7 +83,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     try {
       const { data } = await updatePassport();
     } catch (error) {
-      console.error(error);
+      Sentry.captureException(error);
     }
   };
 

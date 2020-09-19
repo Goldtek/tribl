@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
+import * as Sentry from '@sentry/react-native';
 import { ScrollView } from 'react-native';
 import { Title, Paragraph, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -83,6 +84,7 @@ export default function contactSlide(props: MemberDetailProps) {
         setState({ ...state, loading: false, pending: true });
       }
     } catch (error) {
+      Sentry.captureException(error);
       setState({ ...state, loading: false });
     }
   };

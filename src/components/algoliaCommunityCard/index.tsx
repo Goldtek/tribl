@@ -67,8 +67,8 @@ const Highlight = (props: HighlightProp) => {
     <Container>
       {highlights.map(({ value }: any, index: number) => {
         const filteredList = hit.id !== userDetails ? hit : null;
-        const state = filteredList?.currentLocation?.state;
-        const country = filteredList?.currentLocation?.country;
+        const state = hit?.currentLocation?.state;
+        const country = hit?.currentLocation?.country;
         return (
           <Fragment>
             {hit.name ? (
@@ -155,7 +155,7 @@ const Highlight = (props: HighlightProp) => {
                         textTransform: 'capitalize'
                       }}
                     >
-                      {`${filteredList?.firstName} ${filteredList?.lastName}`}
+                      {`${hit?.firstName} ${hit?.lastName}`}
                     </Title>
                     <Text
                       style={{

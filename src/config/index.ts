@@ -9,7 +9,9 @@ const ENVIRONMENT_VARIABLES = {
   GOOGLE_PLACES_API:
     GOOGLE_PLACES_API || 'AIzaSyAJR6mSnhyzyvUAsAOQTpAjoZrNayWe880',
   CLOUDINARY_NAME: 'tribl-for-community',
-  CLOUDINARY_PRESET: 'nuk7vxt0'
+  CLOUDINARY_PRESET: 'nuk7vxt0',
+  SENTRY_KEY:
+    'https://6d7c1bb66d134dee968783009c094764@o449418.ingest.sentry.io/5433313'
 };
 
 declare global {
