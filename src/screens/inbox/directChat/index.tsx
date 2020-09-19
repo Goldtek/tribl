@@ -10,10 +10,7 @@ import { fireAuth } from '../../../firebase/config';
 import Firechat from '../../../firebase';
 import { MyPassportInterface } from '../../../graphql/types';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
-import {
-  MARK_MESSAGE_READ,
-  SEND_DIRECT_MESSAGE
-} from '../../../graphql/server/mutations';
+import { SEND_DIRECT_MESSAGE } from '../../../graphql/server/mutations';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -38,8 +35,6 @@ export default function ChatScreen(props: ScreenProp) {
   const userId = fireAuth.currentUser?.uid;
 
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
-
-  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ);
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
@@ -74,12 +69,6 @@ export default function ChatScreen(props: ScreenProp) {
 
     return () => unsubscribe();
   }, []);
-
-  // markConversationAsRead({
-  //   variables: {
-  //     payload: { conversationId: chatId, messageId }
-  //   }
-  // });
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const payloadMessages = messages.map((message) => {
