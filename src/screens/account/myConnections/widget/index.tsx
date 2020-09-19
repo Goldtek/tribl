@@ -18,12 +18,25 @@ export default function Connection(props: ConnectionProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { id, avatar, firstName, lastName, conversation } = props;
+  const { id, avatar, firstName, lastName, conversation, presence } = props;
 
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: 'offline',
-    lastSeen: new Date().getTime()
+    status: presence.status.toString(),
+    lastSeen: new Date(
+      `${presence?.lastSeen.day}/${presence?.lastSeen.month}/${presence?.lastSeen.year}`
+    ).getTime()
   });
+
+  useEffect(() => {
+    Firechat.getOnlineStatus(id).onSnapshot({
+      next: (snapshot) => {
+        if (snapshot.exists) {
+          const { presence } = snapshot.data() as { presence: OnlinePresence };
+          setOnlinePresence({ ...onlinePresence, ...presence });
+        }
+      }
+    });
+  }, []);
 
   return (
     <TouchableRipple
@@ -70,10 +83,13 @@ export default function Connection(props: ConnectionProp) {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE)
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'lowercase'
             }}
           >
-            3 min ago
+            {onlinePresence.status === 'ONLINE'
+              ? onlinePresence.status
+              : formatMessageTime(Number(onlinePresence.lastSeen))}
           </Text>
         </NameContainer>
         <TouchableRipple
