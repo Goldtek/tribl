@@ -15,6 +15,10 @@ export const GET_RECOMMENDED_MEMBERS = gql`
       firstName
       lastName
       phoneNumber
+      connected
+      avatar
+      connectionCount
+      communityCount
       currentLocation {
         id
         country
@@ -48,10 +52,6 @@ export const GET_RECOMMENDED_MEMBERS = gql`
           }
         }
       }
-      connected
-      avatar
-      connectionCount
-      communityCount
     }
   }
 `;
@@ -100,6 +100,15 @@ export const GET_NEARBY_MEMBERS = gql`
             month
             year
           }
+        }
+      }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
         }
       }
     }
@@ -175,6 +184,7 @@ export const GET_MY_COMMUNITIES = gql`
       id
       description
       avatar
+      name
       channels {
         id
         name
@@ -245,6 +255,15 @@ export const GET_MY_CONNECTIONS = gql`
             month
             year
           }
+        }
+      }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
         }
       }
     }
@@ -386,6 +405,15 @@ export const GET_COMMUNITY_MEMBERS = gql`
           }
         }
       }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
     }
   }
 `;
@@ -481,6 +509,15 @@ export const GET_USER_PASSPORT = gql`
           }
         }
       }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
     }
   }
 `;
@@ -488,7 +525,7 @@ export const GET_USER_PASSPORT = gql`
 //GET ALL MEMBERS ON THE APP
 export const GET_ALL_MEMBERS = gql`
   query Passport {
-    Passport {
+    Passport(verified: true) {
       id
       avatar
       phoneNumber
@@ -520,6 +557,27 @@ export const GET_ALL_MEMBERS = gql`
             year
           }
         }
+      }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
+    }
+  }
+`;
+
+// SUBSCRIPTION TO USER ONLINE PRESENCE
+export const USER_ONLINE_SUBSCRIPTION = gql`
+  subscription monitorPresence {
+    monitorPresence {
+      type
+      payload {
+        __typename
       }
     }
   }

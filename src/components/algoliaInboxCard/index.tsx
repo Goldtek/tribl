@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { connectHighlight } from 'react-instantsearch-native';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
@@ -7,6 +7,9 @@ import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
 import { rootNavigator } from '../../constants';
 import { PassportInterface } from '../../graphql/types';
+import { OnlinePresence } from '../../screens/inbox/types';
+import formatMessageTime from '../../utils/timesince';
+import Firechat from '../../firebase';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
@@ -28,6 +31,22 @@ const Highlight = (props: HighlightProp) => {
   });
 
   const { colors, fonts } = useThemeContext();
+
+  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
+    status: 'OFFLINE',
+    lastSeen: new Date().getTime()
+  });
+
+  useEffect(() => {
+    Firechat.getOnlineStatus(hit.id).onSnapshot({
+      next: (snapshot) => {
+        if (snapshot.exists) {
+          const { presence } = snapshot.data() as { presence: OnlinePresence };
+          setOnlinePresence({ ...onlinePresence, ...presence });
+        }
+      }
+    });
+  }, []);
 
   const handleNavigation = () => {
     closeModal();
@@ -86,10 +105,13 @@ const Highlight = (props: HighlightProp) => {
                   style={{
                     color: colors.SECONDARY_TEXT,
                     fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE)
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    textTransform: 'lowercase'
                   }}
                 >
-                  2 mins ago
+                  {onlinePresence.status === 'ONLINE'
+                    ? onlinePresence.status
+                    : formatMessageTime(Number(onlinePresence.lastSeen))}
                 </Text>
               </NameContainer>
             </Fragment>

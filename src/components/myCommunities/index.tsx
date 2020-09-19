@@ -18,7 +18,7 @@ export default function MyCommunity(props: MyCommunityProp) {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar = 'https://picsum.photos/700', index, lastChild } = props;
+  const { avatar, name, index, lastChild } = props;
 
   const handleNavigation = () =>
     navigation.navigate('CommunityDetailScreen', {
@@ -44,7 +44,7 @@ export default function MyCommunity(props: MyCommunityProp) {
       }}
     >
       <FastImage
-        resizeMode={FastImage.resizeMode.contain}
+        resizeMode={FastImage.resizeMode.cover}
         source={{
           uri: avatar,
           priority: FastImage.priority.high

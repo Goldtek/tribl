@@ -10,6 +10,7 @@ import MemberCard from './widget/member';
 import AlgoliaSearch from '../../../../../components/algoliaSearch';
 import AlgoliaList from '../../../../../components/algoliaCommunityMembersList';
 import { GET_COMMUNITY_MEMBERS } from '../../../../../graphql/server/query';
+import ENVIRONMENT_VARIABLES from '../../../../../config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -36,7 +37,7 @@ export default function MemberSlide(props: MemberSlideProp) {
   return (
     <Container>
       <AlgoliaSearch
-        indexName="tribl_community_members_staging"
+        indexName={ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME}
         filters={`"communityId": ${communityDetails.id}`}
       >
         <AlgoliaList />

@@ -6,26 +6,39 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
-import { OnlinePresence } from '../../../types';
 import Firechat from '../../../../../firebase';
 import formatMessageTime from '../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
+import { OnlinePresence } from '../../../types';
 
 // DEFINE SCREEN PROP TYPES
-interface MemberProp extends PassportInterface {}
+interface ConnectionCardProp extends PassportInterface {}
 
-function Member(props: MemberProp) {
+function ConnectionCard(props: ConnectionCardProp) {
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
 
-  const { id, avatar, firstName, lastName, conversation } = props;
+  const { id, avatar, firstName, lastName, conversation, presence } = props;
 
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: 'offline',
-    lastSeen: new Date().getTime()
+    status: presence.status.toString(),
+    lastSeen: new Date(
+      `${presence.lastSeen.year}/${presence.lastSeen.month}/${presence.lastSeen.day}`
+    ).getTime()
   });
+
+  useEffect(() => {
+    Firechat.getOnlineStatus(id).onSnapshot({
+      next: (snapshot) => {
+        if (snapshot.exists) {
+          const { presence } = snapshot.data() as { presence: OnlinePresence };
+          setOnlinePresence({ ...onlinePresence, ...presence });
+        }
+      }
+    });
+  }, []);
 
   const handleNavigation = useCallback(() => {
     if (
@@ -90,10 +103,13 @@ function Member(props: MemberProp) {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE)
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'lowercase'
             }}
           >
-            3 min ago
+            {onlinePresence.status === 'ONLINE'
+              ? onlinePresence.status
+              : formatMessageTime(Number(onlinePresence.lastSeen))}
           </Text>
         </NameContainer>
       </Fragment>
@@ -101,4 +117,4 @@ function Member(props: MemberProp) {
   );
 }
 
-export default React.memo(Member);
+export default React.memo(ConnectionCard);

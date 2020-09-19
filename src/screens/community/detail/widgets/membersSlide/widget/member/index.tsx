@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import * as Sentry from '@sentry/react-native';
@@ -6,10 +6,12 @@ import { Feather } from '@expo/vector-icons';
 import { useMutation } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { NavigationInterface } from '../../../../../../types';
 import { useThemeContext } from '../../../../../../../theme';
 import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
 import { PassportInterface } from '../../../../../../../graphql/types';
+import { OnlinePresence } from '../../../../../../inbox/types';
+import Firechat from '../../../../../../../firebase';
+import formatMessageTime from '../../../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -28,12 +30,31 @@ function Member(props: MemberProp) {
     connected,
     phoneNumber,
     id,
-    conversation
+    conversation,
+    presence
   } = props;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
+
+  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
+    status: presence.status.toString(),
+    lastSeen: new Date(
+      `${presence.lastSeen.year}/${presence.lastSeen.month}/${presence.lastSeen.day}`
+    ).getTime()
+  });
+
+  useEffect(() => {
+    Firechat.getOnlineStatus(id).onSnapshot({
+      next: (snapshot) => {
+        if (snapshot.exists) {
+          const { presence } = snapshot.data() as { presence: OnlinePresence };
+          setOnlinePresence({ ...onlinePresence, ...presence });
+        }
+      }
+    });
+  }, []);
 
   const handleRequest = async () => {
     try {
@@ -100,10 +121,13 @@ function Member(props: MemberProp) {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE)
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'lowercase'
             }}
           >
-            '3 mins ago'
+            {onlinePresence.status === 'ONLINE'
+              ? onlinePresence.status
+              : formatMessageTime(Number(onlinePresence.lastSeen))}
           </Text>
         </NameContainer>
         {connected ? (

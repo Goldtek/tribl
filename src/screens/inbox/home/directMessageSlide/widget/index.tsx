@@ -3,7 +3,7 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ConversationInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
@@ -11,6 +11,7 @@ import formatMessageTime from '../../../../../utils/timesince';
 import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { UserPassportInterface } from '../../../../../graphql/types';
 import { fireAuth } from '../../../../../firebase/config';
+import { MARK_MESSAGE_READ } from '../../../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
@@ -36,6 +37,10 @@ function DirectChatCard(props: DirectChatProp) {
     { variables: { id: sender.id } }
   );
 
+  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
+    variables: { payload: { conversationId: chatId } }
+  });
+
   const receiverPassport = passportData?.singlePassport;
 
   const handleNavigation = useCallback(() => {
@@ -45,6 +50,10 @@ function DirectChatCard(props: DirectChatProp) {
       receiverId: receiverPassport?.id,
       chatId
     });
+
+    if (lastMessage.createdAt >= receiver.readAt) {
+      markConversationAsRead();
+    }
   }, [loading]);
 
   const formatDate = useCallback(() => {
