@@ -19,6 +19,7 @@ import {
 import Skeleton from './widgets/newMessageSkeleton';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { MyPassportInterface } from '../../../graphql/types';
+import ENVIRONMENT_VARIABLES from '../../../config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer } from './styles';
@@ -127,7 +128,9 @@ export default function ChatScreen(props: ScreenProp) {
       }}
     >
       <Container>
-        <AlgoliaSearch indexName="tribl_passport_staging">
+        <AlgoliaSearch
+          indexName={ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME}
+        >
           <AlgoliaList />
         </AlgoliaSearch>
 
