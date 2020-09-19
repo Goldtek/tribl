@@ -11,6 +11,7 @@ import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutation
 import { PassportInterface } from '../../../../../../../graphql/types';
 import { OnlinePresence } from '../../../../../../inbox/types';
 import Firechat from '../../../../../../../firebase';
+import { fireAuth } from '../../../../../../../firebase/config';
 import formatMessageTime from '../../../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -33,6 +34,8 @@ function Member(props: MemberProp) {
     conversation,
     presence
   } = props;
+
+  if (id === fireAuth.currentUser?.uid) return null;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
