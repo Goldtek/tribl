@@ -6,7 +6,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
@@ -21,7 +21,8 @@ import {
   GET_RECOMMENDED_MEMBERS,
   GET_MY_COMMUNITIES,
   GET_FIREBASE_TOKEN,
-  GET_USER_PASSPORT
+  GET_USER_PASSPORT,
+  USER_ONLINE_SUBSCRIPTION
 } from '../../../graphql/server/query';
 import MyCommunity from '../../../components/myCommunities';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
@@ -56,6 +57,8 @@ export default function HomeScreen(props: ScreenProp) {
   });
 
   useQuery(GET_USER_PASSPORT);
+  useSubscription(USER_ONLINE_SUBSCRIPTION);
+
   const { loading: myCommunityLoading, data: myCommunityData } = useQuery(
     GET_MY_COMMUNITIES
   );
@@ -63,6 +66,7 @@ export default function HomeScreen(props: ScreenProp) {
     loading: recommendedCommunityLoading,
     data: communityData
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
   const myCommunity = myCommunityData?.myCommunities;
