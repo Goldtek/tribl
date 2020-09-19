@@ -6,14 +6,14 @@ import firebaseFirestore from '@react-native-firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyDs1Q37-tCo16NzK5MkZn3Jp7WtgK_P8dA',
-  authDomain: 'tribl-2020.firebaseapp.com',
-  databaseURL: 'https://tribl-2020.firebaseio.com',
-  projectId: 'tribl-2020',
-  storageBucket: 'tribl-2020.appspot.com',
-  messagingSenderId: '354137256334',
-  appId: '1:354137256334:web:d1ebf6584c1b42ff94b4df',
-  measurementId: 'G-S6QECWH2QH'
+  apiKey: 'AIzaSyBejHNRT6SCSgNFqWWpqsEyu5FlllXeBT0',
+  authDomain: 'tribl-staging.firebaseapp.com',
+  databaseURL: 'https://tribl-staging.firebaseio.com',
+  projectId: 'tribl-staging',
+  storageBucket: 'tribl-staging.appspot.com',
+  messagingSenderId: '971011241618',
+  appId: '1:971011241618:web:def6dc651e31a54ac4d84b',
+  measurementId: 'G-TEDF6R5XCB'
 };
 
 // Initialize Firebase
