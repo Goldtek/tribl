@@ -184,6 +184,7 @@ export const GET_MY_COMMUNITIES = gql`
       id
       description
       avatar
+      name
       channels {
         id
         name
