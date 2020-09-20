@@ -37,9 +37,9 @@ import {
   DeleteMessageRequestInterface,
   BlockMessageRequestInterface
 } from '../../../graphql/types';
+import hexToRGB from '../../../utils/hexToRGB';
 
 import { Cover, TextContainer } from './styles';
-import hexToRGB from '../../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
