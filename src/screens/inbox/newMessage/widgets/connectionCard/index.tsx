@@ -8,10 +8,10 @@ import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
 import Firechat from '../../../../../firebase';
 import formatMessageTime from '../../../../../utils/timesince';
+import { OnlinePresence } from '../../../types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
-import { OnlinePresence } from '../../../types';
 
 // DEFINE SCREEN PROP TYPES
 interface ConnectionCardProp extends PassportInterface {}

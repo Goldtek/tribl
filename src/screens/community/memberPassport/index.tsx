@@ -27,8 +27,13 @@ import {
   Connection,
   ConnectionCover
 } from './styles';
+import { PassportInterface } from '../../../graphql/types';
 
-interface MemberDetailProps {}
+interface MemberDetailProps {
+  route: {
+    params: { details: PassportInterface; algoliaDetail: PassportInterface };
+  };
+}
 
 export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
@@ -37,9 +42,8 @@ export default function contactSlide(props: MemberDetailProps) {
 
   const [state, setState] = useState({ loading: false, pending: false });
 
-  //@ts-ignore
   const passport = { ...props.route.params.details };
-  //@ts-ignore
+
   const passportDetails = { ...props.route.params.algoliaDetail };
 
   const { firstName: fName, lastName: lName, id: Id } = passportDetails;

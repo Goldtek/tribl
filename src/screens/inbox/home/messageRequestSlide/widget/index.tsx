@@ -108,7 +108,7 @@ function RequestChatCard(props: RequestChatCard) {
                   fontSize: RFValue(fonts.MEDIUM_SIZE)
                 }}
               >
-                3 min ago
+                {formatMessageTime(lastMessage.createdAt)}
               </Text>
             </Fragment>
           ) : (

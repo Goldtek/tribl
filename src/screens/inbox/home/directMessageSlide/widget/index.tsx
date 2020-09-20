@@ -43,6 +43,10 @@ function DirectChatCard(props: DirectChatProp) {
 
   const receiverPassport = passportData?.singlePassport;
 
+  const showNotificationBadge =
+    lastMessage.receiverId === userId &&
+    lastMessage.createdAt >= receiver.readAt;
+
   const handleNavigation = useCallback(() => {
     navigation.navigate('DirectChatScreen', {
       title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
@@ -51,9 +55,7 @@ function DirectChatCard(props: DirectChatProp) {
       chatId
     });
 
-    if (lastMessage.createdAt >= receiver.readAt) {
-      markConversationAsRead();
-    }
+    if (showNotificationBadge) markConversationAsRead();
   }, [loading]);
 
   const formatDate = useCallback(() => {
@@ -151,7 +153,7 @@ function DirectChatCard(props: DirectChatProp) {
               {formatDate()}
             </Text>
 
-            {lastMessage.createdAt >= receiver.readAt ? <BadgeWrapper /> : null}
+            {showNotificationBadge ? <BadgeWrapper /> : null}
           </TimeStamp>
         ) : null}
       </Fragment>

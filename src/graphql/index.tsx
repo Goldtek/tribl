@@ -21,14 +21,7 @@ const httpLink = new HttpLink({
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
   uri: `wss://${ENVIRONMENT_VARIABLES.TRIBL_SERVER_BASE_URI}`,
-  lazy: true,
-  options: {
-    reconnect: true,
-    connectionParams: () => {
-      const credentials = Storage.getUserCredentials();
-      return { authorization: credentials?.id_token };
-    }
-  }
+  options: { reconnect: true }
 });
 
 // using the ability to split links, you can send data to each link
@@ -37,6 +30,7 @@ const link = split(
   // split based on operation type
   ({ query }) => {
     const definition = getMainDefinition(query);
+
     return (
       definition.kind === 'OperationDefinition' &&
       definition.operation === 'subscription'

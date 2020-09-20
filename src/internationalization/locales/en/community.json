@@ -110,10 +110,10 @@
 
   "update": {
     "title": "limited update release",
-    "version": "1.1.1",
+    "version": "1.0.8",
     "update": "this update",
-    "change1": "new communities",
-    "change2": "bug fixes and improvement",
+    "change1": "fix recommended communities",
+    "change2": "fix community search page improvement",
     "yes": "yes",
     "no": "no"
   }

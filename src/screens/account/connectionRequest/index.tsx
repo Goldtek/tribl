@@ -15,6 +15,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/connectionRequestSkeleton';
+import { PassportInterface } from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -34,8 +35,8 @@ export default function ConnectionRequestScreen(
 
   const connectionRequest = data?.connectionRequests;
 
-  const _renderItem = ({ item }: any) => (
-    <ConnectionRequest key={item.id} {...item} {...props} refetch={refetch} />
+  const _renderItem = ({ item }: { item: PassportInterface }) => (
+    <ConnectionRequest key={item.id} item={item} refetch={refetch} />
   );
 
   return (

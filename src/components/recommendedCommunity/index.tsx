@@ -55,7 +55,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         }}
       >
         <FastImage
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode={FastImage.resizeMode.stretch}
           source={{ uri: avatar, priority: FastImage.priority.high }}
           style={{
             width: '100%',
@@ -89,7 +89,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         }}
         left={({ size }) => (
           <FastImage
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.stretch}
             source={{ uri: avatar, priority: FastImage.priority.high }}
             style={{
               width: RFValue(size + 2),

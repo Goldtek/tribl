@@ -49,7 +49,7 @@ function PopularCommunity(props: PopularCommunityProp) {
           source={{ uri: avatar, priority: FastImage.priority.high }}
           style={{
             width: RFValue(90),
-            height: RFValue(80),
+            height: RFValue(90),
             borderRadius: RFValue(5)
           }}
         />
