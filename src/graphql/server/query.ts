@@ -240,22 +240,6 @@ export const GET_MY_CONNECTIONS = gql`
       avatar
       conversation {
         id
-        messageRequest {
-          id
-          senderId
-          approvedAt {
-            formatted
-            day
-            month
-            year
-          }
-          createdAt {
-            formatted
-            day
-            month
-            year
-          }
-        }
       }
       presence {
         status
@@ -274,11 +258,20 @@ export const GET_MY_CONNECTIONS = gql`
 export const GET_CONNECTION_REQUEST = gql`
   query connectionRequests {
     connectionRequests {
+      id
       avatar
       firstName
       lastName
       phoneNumber
       connected
+      connection {
+        createdAt {
+          day
+          month
+          hour
+          second
+        }
+      }
     }
   }
 `;

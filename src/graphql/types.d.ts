@@ -56,7 +56,8 @@ type _Neo4jDate = {
   hour: number;
   minute: number;
   second: number;
-  nanosecond: number;
+  nanosecond: number | null;
+  millisecond: number | null;
   timeZoneOffsetSeconds: number;
   timeZoneId: number | null;
   formatted: string | null;
@@ -101,6 +102,13 @@ type Conversation = {
   updatedAt: _Neo4jDate;
 };
 
+type Connection = {
+  id: String;
+  status: Status;
+  createdAt: _Neo4jDate;
+  updatedAt: _Neo4jDate;
+};
+
 export interface PassportInterface {
   id: string;
   email: string;
@@ -117,6 +125,7 @@ export interface PassportInterface {
   presence: UserPresence;
   communityCount: number;
   connectionCount: number;
+  connection: Connection | null;
   connected: Status | null;
   citizenShip: string | null;
   currentLocation: Location[];
