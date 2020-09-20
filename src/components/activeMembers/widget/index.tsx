@@ -26,12 +26,14 @@ function ActiveModal(props: ActiveUserProp) {
   const { closeActiveModal, ...member } = props;
 
   const {
+    id,
     avatar,
     firstName,
     lastName,
     connected,
     currentLocation,
-    phoneNumber
+    phoneNumber,
+    conversation
   } = member;
 
   const [loading, setLoading] = useState(false);
@@ -63,13 +65,31 @@ function ActiveModal(props: ActiveUserProp) {
     });
   };
 
-  const handleMessageNavigation = useCallback(
-    () =>
-      rootNavigator.navigate('ChatScreen', {
+  const handleMessageNavigation = useCallback(() => {
+    closeActiveModal();
+
+    if (
+      conversation?.messageRequest &&
+      !conversation?.messageRequest.approvedAt
+    ) {
+      return rootNavigator.navigate('MessageRequestScreen', {
+        avatar,
+        senderId: id,
+        chatId: conversation?.id,
         title: `${firstName} ${lastName}`
-      }),
-    []
-  );
+      });
+    }
+
+    rootNavigator.navigate(
+      conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      {
+        avatar,
+        receiverId: id,
+        chatId: conversation?.id,
+        title: `${firstName} ${lastName}`
+      }
+    );
+  }, []);
 
   const { state, country } = currentLocation[0];
 
