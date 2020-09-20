@@ -52,10 +52,6 @@ export default function ChatScreen(props: ScreenProp) {
         const conversations = snapshot.docs.map((document, index) => {
           const message = document.data();
 
-          if (snapshot.docs.length - 1 === index) {
-            console.log(snapshot.docs.length);
-          }
-
           return {
             ...message,
             user: { _id: message.senderId, avatar },
