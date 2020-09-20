@@ -5,35 +5,24 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
-import { NavigationInterface } from '../../screens/types';
 import hexToRGB from '../../utils/hexToRGB';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
 import { MyPassportInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
+import { rootNavigator } from '../../constants';
 
 // DEFINE SCREEN PROP TYPES
-interface HighlightProp extends NavigationInterface {
+interface HighlightProp {
   attribute: string;
-  hit: {
-    id?: string;
-    name: string;
-    avatar: string;
-    firstName: string;
-    lastName: string;
-    membersCount: string;
-    currentLocation: {
-      country: string;
-      state: string;
-    };
-  };
+  hit: any;
   highlight(T: any): any[];
   closeModal(): void;
 }
 
 const Highlight = (props: HighlightProp) => {
-  const { attribute, hit, highlight, navigation, closeModal } = props;
+  const { attribute, hit, highlight, closeModal } = props;
   const highlights = highlight({
     highlightProperty: '_highlightResult',
     attribute,
@@ -44,7 +33,7 @@ const Highlight = (props: HighlightProp) => {
 
   const handleNavigation = () => {
     closeModal();
-    navigation.navigate('CommunityDetailScreen', {
+    rootNavigator.navigate('CommunityDetailScreen', {
       title: `${hit.name}`,
       avatar: `${hit.avatar}`,
       communityHit: hit
@@ -53,7 +42,7 @@ const Highlight = (props: HighlightProp) => {
 
   const handlePassportNavigation = () => {
     closeModal();
-    navigation.navigate('MemberDetailScreen', {
+    rootNavigator.navigate('MemberDetailScreen', {
       title: `${hit.firstName} ${hit.lastName}`,
       avatar: `${hit.avatar}`,
       algoliaDetail: hit
@@ -79,14 +68,15 @@ const Highlight = (props: HighlightProp) => {
                   width: '100%',
                   height: RFValue(80),
                   flexDirection: 'row',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  paddingHorizontal: 10
                 }}
                 rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
                 onPress={handleNavigation}
               >
                 <Fragment>
                   <FastImage
-                    resizeMode={FastImage.resizeMode.contain}
+                    resizeMode={FastImage.resizeMode.stretch}
                     source={{
                       uri: hit.avatar,
                       priority: FastImage.priority.high
@@ -128,7 +118,8 @@ const Highlight = (props: HighlightProp) => {
                   width: '100%',
                   height: RFValue(80),
                   flexDirection: 'row',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  paddingHorizontal: 10
                 }}
                 rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
                 onPress={handlePassportNavigation}

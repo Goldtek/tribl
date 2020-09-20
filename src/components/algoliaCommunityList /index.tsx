@@ -14,7 +14,7 @@ import CommunityHighLight from '../algoliaCommunityCard';
 function CommunityAlgoliaList(props: any) {
   const { colors, fonts } = useThemeContext();
 
-  const { hits, hasMore, refine, navigation, closeModal } = props;
+  const { hits, hasMore, refine, closeModal } = props;
 
   const _separator = useMemo(
     () => () => (
@@ -30,13 +30,7 @@ function CommunityAlgoliaList(props: any) {
 
   const _renderItem = useMemo(
     () => ({ item }: any) => (
-      <CommunityHighLight
-        attribute="id"
-        hit={item}
-        //@ts-ignore
-        navigation={navigation}
-        closeModal={closeModal}
-      />
+      <CommunityHighLight attribute="id" hit={item} closeModal={closeModal} />
     ),
     []
   );
@@ -176,11 +170,10 @@ function CommunityAlgoliaList(props: any) {
         showsVerticalScrollIndicator={false}
         onEndReached={() => hasMore && refine()}
         renderItem={_renderItem}
-        style={{
-          width: '100%',
-          paddingHorizontal: RFValue(20)
+        contentContainerStyle={{
+          paddingTop: RFValue(10),
+          paddingBottom: RFValue(60)
         }}
-        contentContainerStyle={{ paddingBottom: RFValue(60) }}
       />
     </Results>
   );
