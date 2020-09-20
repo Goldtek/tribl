@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Container, TextInput } from './styles';
 import { ViewStyle, TextStyle, StyleProp, TextInputProps } from 'react-native';
+import { useThemeContext } from '../../theme';
+import hexToRGB from '../../utils/hexToRGB';
 
 interface InputProps extends TextInputProps {
   textInputStyle?: StyleProp<TextStyle>;
@@ -11,11 +13,16 @@ interface InputProps extends TextInputProps {
 }
 
 export default function Input(props: InputProps) {
+  const { colors } = useThemeContext();
   const { children, contanierStyle, textInputStyle, ...restProps } = props;
   return (
     <Container style={contanierStyle}>
       {children}
-      <TextInput {...restProps} style={textInputStyle} />
+      <TextInput
+        placeholderTextColor={hexToRGB(colors.PRIMARY_TEXT, 0.5)}
+        {...restProps}
+        style={textInputStyle}
+      />
     </Container>
   );
 }
