@@ -126,27 +126,25 @@ export default function ChatScreen(props: ScreenProp) {
       });
     });
 
-    const test = await Promise.all(payloadMessages);
-    console.tron(test);
+    await Promise.all(payloadMessages);
   }, []);
 
   const handleMessageRequest = (type: string) => async () => {
     switch (type) {
       case 'block':
-        const blockRequest = await blockMessageRequest();
-        console.log({ blockRequest });
-        if (blockRequest.data?.blockMessageRequest.success) {
+        try {
+          await blockMessageRequest();
           navigation.goBack();
+        } catch (error) {
+          Sentry.captureException(error);
         }
+
         break;
 
       case 'delete':
         try {
-          const deleteRequest = await deleteMessageRequest();
-          console.log({ deleteRequest });
-          if (deleteRequest.data?.deleteMessageRequest.success) {
-            navigation.goBack();
-          }
+          await deleteMessageRequest();
+          navigation.goBack();
         } catch (error) {
           Sentry.captureException(error);
         }
