@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { Keyboard } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
@@ -7,8 +6,9 @@ import FastImage from 'react-native-fast-image';
 import { Feather, AntDesign } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
-import { NavigationInterface } from '../../../types';
 import { useThemeContext } from '../../../../theme';
+import { PassportInterface } from '../../../../graphql/types';
+import formatMessageTime from '../../../../utils/timesince';
 import {
   ACCEPT_CONNECTION,
   REJECT_CONNECTION
@@ -16,68 +16,51 @@ import {
 
 import { NameContainer } from './styles';
 
-interface ConnectionRequestProp extends NavigationInterface {
-  avatar: string;
-  lastSeen: string;
-  firstName: string;
-  connected: boolean;
-  lastName: string;
-  phoneNumber: string;
+interface ConnectionRequestProp {
+  item: PassportInterface;
   refetch: VoidFunction;
 }
 
 const ConnectionRequest = (props: ConnectionRequestProp) => {
+  const { refetch, item } = props;
+  const { phoneNumber, firstName, lastName, avatar, connection } = item;
+
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
-  const {
-    avatar,
-    lastSeen = '3 mins ago',
-    firstName,
-    lastName,
-    phoneNumber,
-    refetch
-  } = props;
 
   const [acceptConnection] = useMutation(ACCEPT_CONNECTION, {
-    variables: {
-      payload: {
-        phoneNumber: phoneNumber
-      }
-    }
+    variables: { payload: { phoneNumber: phoneNumber } }
   });
 
   const [declineConnection] = useMutation(REJECT_CONNECTION, {
-    variables: {
-      payload: {
-        phoneNumber: phoneNumber
-      }
-    }
+    variables: { payload: { phoneNumber: phoneNumber } }
   });
 
   const handleAcceptConnection = async () => {
-    Keyboard.dismiss();
     try {
-      const { data } = await acceptConnection();
-      if (data?.acceptConnection) {
-        refetch();
-      }
+      await acceptConnection();
+      refetch();
     } catch (error) {
       Sentry.captureException(error);
     }
   };
 
   const handleDeclineConnection = async () => {
-    Keyboard.dismiss();
     try {
-      const { data } = await declineConnection();
-      if (data?.declineConnection) {
-        refetch();
-      }
+      await declineConnection();
+      refetch();
     } catch (error) {
       Sentry.captureException(error);
     }
   };
 
+  // const createdAt = connection?.createdAt;
+
+  // const connectionDateTime = `${createdAt?.year}/${createdAt?.month}/${createdAt?.day}/${createdAt?.hour}/${createdAt?.minute}/${createdAt?.second}`;
+
+  /* {formatMessageTime(
+              `${presence.lastSeen.year}/${presence.lastSeen.month}/${presence.lastSeen.day}`
+            )} */
   return (
     <TouchableRipple
       style={{
@@ -88,9 +71,9 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
         paddingRight: RFValue(10)
       }}
       onPress={() =>
-        navigation.navigate('MemberDetailScreen', {
+        navigation.navigate('DrawerMemberDetailScreen', {
           title: `${firstName} ${lastName}`,
-          details: { ...props }
+          details: item
         })
       }
     >
@@ -125,7 +108,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            {lastSeen}
+            3 min ago
           </Text>
         </NameContainer>
         <TouchableRipple
