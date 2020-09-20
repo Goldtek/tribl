@@ -15,7 +15,7 @@ import Reactotron from 'reactotron-react-native';
 // FIX THIS TO USE ENVIRONMENT VARIABLES (APP SECRETES)
 const ENVIRONMENT_VARIABLES = {
   TRIBL_SERVER_BASE_URI:
-    TRIBL_SERVER_BASE_URI || 'tribl-staging.herokuapp.com/',
+    TRIBL_SERVER_BASE_URI || 'https://tribl-staging.herokuapp.com/',
   GOOGLE_PLACES_API:
     GOOGLE_PLACES_API || 'AIzaSyAJR6mSnhyzyvUAsAOQTpAjoZrNayWe880',
   CLOUDINARY_NAME: CLOUDINARY_NAME || 'tribl-for-community',
