@@ -19,7 +19,7 @@ export default function UserSkeleton({ skeletonSize = 1 }: MemberSkeletonProp) {
   return (
     <Fragment>
       {[...Array(skeletonSize)].map((_, index) => (
-        <ContactContainer>
+        <ContactContainer key={index}>
           <Header>
             <SkeletonPlaceholder>
               <SkeletonPlaceholder.Item margin={10}>
