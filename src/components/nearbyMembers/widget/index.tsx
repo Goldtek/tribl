@@ -26,12 +26,14 @@ function NearbyModal(props: NearbyUserProp) {
   const { closeNearbyModal, ...member } = props;
 
   const {
+    id,
     avatar,
     firstName,
     lastName,
     connected,
     currentLocation,
-    phoneNumber
+    phoneNumber,
+    conversation
   } = member;
 
   const [loading, setLoading] = useState(false);
@@ -55,19 +57,37 @@ function NearbyModal(props: NearbyUserProp) {
     }
   };
 
-  const handleMessageNavigation = useCallback(
-    () =>
-      rootNavigator.navigate('ChatScreen', {
+  const handleMessageNavigation = useCallback(() => {
+    closeNearbyModal();
+
+    if (
+      conversation?.messageRequest &&
+      !conversation?.messageRequest.approvedAt
+    ) {
+      return rootNavigator.navigate('MessageRequestScreen', {
+        avatar,
+        senderId: id,
+        chatId: conversation?.id,
         title: `${firstName} ${lastName}`
-      }),
-    []
-  );
+      });
+    }
+
+    rootNavigator.navigate(
+      conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      {
+        avatar,
+        receiverId: id,
+        chatId: conversation?.id,
+        title: `${firstName} ${lastName}`
+      }
+    );
+  }, []);
 
   const handleNavigation = () => {
     closeNearbyModal();
     rootNavigator.navigate('MemberDetailScreen', {
       title: `${firstName} ${lastName}`,
-      details: { ...props }
+      details: member
     });
   };
 
