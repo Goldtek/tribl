@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -38,19 +38,19 @@ function RequestChatCard(props: RequestChatCard) {
 
   const receiverPassport = passportData?.singlePassport;
 
-  const handleNavigation = useCallback(() => {
+  const handleNavigation = () => {
     navigation.navigate('MessageRequestScreen', {
       title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
       avatar: receiverPassport?.avatar,
       senderId: sender.id,
       chatId
     });
-  }, [loading]);
+  };
 
-  const formatDate = useCallback(() => {
+  const formatDate = () => {
     if (!lastMessage.createdAt) return;
     return formatMessageTime(lastMessage.createdAt);
-  }, [lastMessage.createdAt]);
+  };
 
   return (
     <TouchableRipple

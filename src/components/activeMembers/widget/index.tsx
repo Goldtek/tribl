@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useCallback } from 'react';
+import React, { Fragment, useState } from 'react';
 import * as Sentry from '@sentry/react-native';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/react-hooks';
@@ -10,6 +10,7 @@ import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import { PassportInterface } from '../../../graphql/types';
 import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
+import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -46,11 +47,9 @@ function ActiveModal(props: ActiveUserProp) {
   const handleRequest = async () => {
     setLoading(true);
     try {
-      const { data } = await requestConnection();
-      if (data?.requestConnection) {
-        setLoading(false);
-        setPending(true);
-      }
+      await requestConnection();
+      setLoading(false);
+      setPending(true);
     } catch (error) {
       Sentry.captureException(error);
       setLoading(false);
@@ -65,7 +64,7 @@ function ActiveModal(props: ActiveUserProp) {
     });
   };
 
-  const handleMessageNavigation = useCallback(() => {
+  const handleMessageNavigation = () => {
     closeActiveModal();
 
     if (
@@ -89,51 +88,51 @@ function ActiveModal(props: ActiveUserProp) {
         title: `${firstName} ${lastName}`
       }
     );
-  }, []);
+  };
 
-  const { state, country } = currentLocation[0];
+  const state = currentLocation[0]?.state;
+  const country = currentLocation[0]?.state;
 
   return (
-    <Fragment>
-      <TouchableRipple
-        onPress={handleNavigation}
-        rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 15,
-          paddingVertical: 12
-        }}
-      >
-        <Fragment>
-          <FastImage
-            resizeMode={FastImage.resizeMode.contain}
-            source={{
-              uri: avatar,
-              priority: FastImage.priority.high
-            }}
+    <TouchableRipple
+      onPress={handleNavigation}
+      rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
+      style={{
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        paddingVertical: 12
+      }}
+    >
+      <Fragment>
+        <FastImage
+          resizeMode={FastImage.resizeMode.contain}
+          source={{
+            uri: avatar,
+            priority: FastImage.priority.high
+          }}
+          style={{
+            width: RFValue(50),
+            height: RFValue(50),
+            borderRadius: RFValue(5)
+          }}
+        />
+        <TextContainer>
+          <Title
             style={{
-              width: RFValue(50),
-              height: RFValue(50),
-              borderRadius: RFValue(10)
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
             }}
-          />
-          <TextContainer>
-            <Title
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: fonts.LARGE_SIZE + 1,
-                lineHeight: RFValue(18),
-                textTransform: 'capitalize'
-              }}
-            >
-              {`${firstName} ${lastName}`}
-            </Title>
+          >
+            {`${firstName} ${lastName}`}
+          </Title>
+          {state && country ? (
             <Paragraph
               style={{
-                fontSize: fonts.LARGE_SIZE,
+                fontSize: RFValue(fonts.LARGE_SIZE - 2),
                 fontFamily: fonts.WORK_SANS_REGULAR,
                 lineHeight: RFValue(15),
                 color: colors.SECONDARY_TEXT,
@@ -142,85 +141,78 @@ function ActiveModal(props: ActiveUserProp) {
             >
               {`${state}, ${country}`}
             </Paragraph>
-          </TextContainer>
-          {connected == 'PENDING' || pending ? (
-            <Button
-              mode="text"
-              disabled={true}
-              uppercase={false}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textTransform: 'capitalize',
-                color: colors.PRIMARY_TEXT
-              }}
-              contentStyle={{
-                backgroundColor: colors.DISABLED,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-              style={{
-                borderRadius: 5,
-                width: RFValue(80),
-                height: RFValue(30),
-                marginRight: RFValue(15)
-              }}
-            >
-              {t(`community.recommended.pending`)}
-            </Button>
-          ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
-            <Button
-              mode="text"
-              uppercase={false}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textTransform: 'capitalize',
-                color: colors.WHITE
-              }}
-              contentStyle={{
-                backgroundColor: colors.PRIMARY,
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingHorizontal: 0
-              }}
-              style={{
-                borderRadius: 5,
-                width: RFValue(90),
-                height: RFValue(30),
-                marginRight: RFValue(15),
-                paddingHorizontal: 0
-              }}
-              onPress={handleMessageNavigation}
-            >
-              {t(`community.recommended.message`)}
-            </Button>
-          ) : (
-            <Button
-              loading={loading}
-              mode="contained"
-              uppercase={false}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textTransform: 'capitalize',
-                color: colors.WHITE,
-                marginHorizontal: 12
-              }}
-              contentStyle={{
-                backgroundColor: colors.PRIMARY,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-              style={{ borderRadius: 5, width: RFValue(70) }}
-              onPress={handleRequest}
-            >
-              {t(`community.recommended.add`)}+
-            </Button>
-          )}
-        </Fragment>
-      </TouchableRipple>
-    </Fragment>
+          ) : null}
+        </TextContainer>
+        {connected == 'PENDING' || pending ? (
+          <Button
+            mode="text"
+            disabled={true}
+            uppercase={false}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(
+                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
+              ),
+              textTransform: 'capitalize',
+              color: colors.PRIMARY_TEXT
+            }}
+            contentStyle={{
+              backgroundColor: colors.DISABLED,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            style={{ borderRadius: 5, width: RFValue(73) }}
+          >
+            {t(`community.recommended.pending`)}
+          </Button>
+        ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
+          <Button
+            mode="text"
+            uppercase={false}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(
+                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
+              ),
+              textTransform: 'capitalize',
+              color: colors.WHITE
+            }}
+            contentStyle={{
+              backgroundColor: colors.PRIMARY,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            style={{ borderRadius: 5 }}
+            onPress={handleMessageNavigation}
+          >
+            {t(`community.recommended.message`)}
+          </Button>
+        ) : (
+          <Button
+            loading={loading}
+            mode="contained"
+            uppercase={false}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(
+                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
+              ),
+              textTransform: 'capitalize',
+              color: colors.WHITE
+            }}
+            contentStyle={{
+              backgroundColor: colors.PRIMARY,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            style={{ borderRadius: 5, width: RFValue(73) }}
+            onPress={handleRequest}
+          >
+            {t(`community.recommended.add`)}+
+          </Button>
+        )}
+      </Fragment>
+    </TouchableRipple>
   );
 }
 

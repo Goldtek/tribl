@@ -9,7 +9,7 @@ import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
 import { GET_RECOMMENDED_MEMBERS } from '../../graphql/server/query';
-import { PassportInterface } from '../../graphql/types';
+import { RecommendedMembersRequestInterface } from '../../graphql/types';
 import ActiveMember from './widget';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -27,19 +27,19 @@ function ActiveModal(props: ModalProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: recommendedData } = useQuery(GET_RECOMMENDED_MEMBERS);
+  const { data: recommendedData } = useQuery<
+    RecommendedMembersRequestInterface
+  >(GET_RECOMMENDED_MEMBERS);
 
   const recommendedMembers = recommendedData?.recommendedMembers;
 
-  const filterMembers = recommendedMembers
-    ?.slice()
-    .sort(function (a: any, b: any) {
-      if (a.firstName < b.firstName) return -1;
+  const filterMembers = recommendedMembers?.slice().sort((a, b) => {
+    if (a.firstName < b.firstName) return -1;
 
-      if (a.firstName > b.firstName) return 1;
+    if (a.firstName > b.firstName) return 1;
 
-      return 0;
-    });
+    return 0;
+  });
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -76,6 +76,10 @@ function ActiveModal(props: ModalProp) {
             {t(`community.tabPanel.active`)}
           </Text>
         }
+        scrollViewProps={{
+          showsVerticalScrollIndicator: false,
+          contentContainerStyle: { paddingBottom: 20 }
+        }}
       >
         <StatusBar translucent animated style="light" />
         <Container
@@ -87,7 +91,7 @@ function ActiveModal(props: ModalProp) {
             alignItems: 'center'
           }}
         >
-          {filterMembers?.map((member: PassportInterface) => (
+          {filterMembers?.map((member) => (
             <ActiveMember
               key={member.id}
               {...member}
