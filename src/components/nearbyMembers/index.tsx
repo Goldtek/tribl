@@ -8,10 +8,9 @@ import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
-import { NavigationInterface } from '../../screens/types';
 import { GET_NEARBY_MEMBERS } from '../../graphql/server/query';
 import NearbyMember from './widget';
-import { PassportInterface } from '../../graphql/types';
+import { NearbyMembersRequestInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -28,11 +27,13 @@ function NearbyModal(props: ModalProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+  const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
+    GET_NEARBY_MEMBERS
+  );
 
   const NearbyMembers = nearbyData?.nearbyMembers;
 
-  const filterMembers = NearbyMembers?.slice().sort(function (a: any, b: any) {
+  const filterMembers = NearbyMembers?.slice().sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
@@ -75,6 +76,10 @@ function NearbyModal(props: ModalProp) {
             {t(`community.tabPanel.nearby`)}
           </Text>
         }
+        scrollViewProps={{
+          showsVerticalScrollIndicator: false,
+          contentContainerStyle: { paddingBottom: 20 }
+        }}
       >
         <StatusBar translucent animated style="light" />
         <Container
@@ -86,7 +91,7 @@ function NearbyModal(props: ModalProp) {
             alignItems: 'center'
           }}
         >
-          {filterMembers?.map((member: PassportInterface) => (
+          {filterMembers?.map((member) => (
             <NearbyMember
               key={member.id}
               {...member}
