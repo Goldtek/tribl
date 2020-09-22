@@ -25,24 +25,24 @@ export interface AppResolvers extends Resolvers {
 
 // STORE (LOCAL STATE) INTERFACE
 type Location = {
-  lat: number | null;
-  long: number | null;
-  country: string;
   state: string;
+  country: string;
+  lat: number | null;
   __typename: string;
+  long: number | null;
 };
 
 enum UserAvailability {
-  OFFLINE = 'OFFLINE',
-  ONLINE = 'ONLINE'
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE'
 }
 
 export enum Status {
   PENDING = 'PENDING',
-  NOT_CONNECTED = 'NOT_CONNECTED',
   BLOCKED = 'BLOCKED',
   ACCEPTED = 'ACCEPTED',
-  CONNECTED = 'CONNECTED'
+  CONNECTED = 'CONNECTED',
+  NOT_CONNECTED = 'NOT_CONNECTED'
 }
 
 enum SubscriptionEventType {
@@ -51,41 +51,41 @@ enum SubscriptionEventType {
 
 type _Neo4jDate = {
   day: number;
-  month: number;
   year: number;
   hour: number;
+  month: number;
   minute: number;
   second: number;
+  __typename: string;
+  formatted: string | null;
+  timeZoneId: number | null;
   nanosecond: number | null;
   millisecond: number | null;
-  timeZoneOffsetSeconds: number;
-  timeZoneId: number | null;
-  formatted: string | null;
-  __typename: string;
+  timeZoneOffsetSeconds: number | null;
 };
 
 type UserPresence = {
-  type: SubscriptionEventType;
-  status: UserAvailability;
-  lastSeen: _Neo4jDate;
   _id: String;
+  lastSeen: _Neo4jDate;
+  status: UserAvailability;
+  type: SubscriptionEventType;
 };
 
 type DirectMessage = {
   id: String;
-  conversationId: String;
+  content: String;
   senderId: String;
   receiverId: String;
-  content: String;
-  createdAt: _Neo4jDate;
   readAt: _Neo4jDate;
+  createdAt: _Neo4jDate;
+  conversationId: String;
 };
 
 type MessageRequest = {
   id: String;
   senderId: String;
-  approvedAt?: _Neo4jDate;
   createdAt: _Neo4jDate;
+  approvedAt?: _Neo4jDate;
 };
 
 type Spam = {
@@ -94,12 +94,13 @@ type Spam = {
 };
 
 type Conversation = {
-  id: string;
   spam: Spam;
-  messageRequest: MessageRequest;
-  participants: PassportInterface;
+  id: string;
+  senderId: String;
   createdAt: _Neo4jDate;
   updatedAt: _Neo4jDate;
+  messageRequest: MessageRequest;
+  participants: PassportInterface;
 };
 
 type Connection = {
@@ -115,9 +116,9 @@ export interface PassportInterface {
   avatar: string;
   dob: _Neo4jDate;
   lastName: string;
-  interest: string[];
-  identity: string[];
   firstName: string;
+  identity: string[];
+  interest: string[];
   __typename: string;
   countryCode: string;
   phoneNumber: string;
@@ -125,17 +126,17 @@ export interface PassportInterface {
   presence: UserPresence;
   communityCount: number;
   connectionCount: number;
-  connection: Connection | null;
   connected: Status | null;
   citizenShip: string | null;
   currentLocation: Location[];
+  connection: Connection | null;
   status: UserAvailability | null;
   conversation: Conversation | null;
 }
 
 export interface StoreInterface {
-  userDetails: PassportInterface;
   communitySearchIndex: number;
+  userDetails: PassportInterface;
 }
 
 /*
@@ -147,16 +148,16 @@ export interface StoreInterface {
 
 // SERVER JWT (RESPONSE) TYPE
 export interface JwtTokenResult {
-  firebase_token: string;
-  refresh_token: string;
-  access_token: string;
+  _id: string;
+  scope: string;
+  exists: boolean;
+  id_token: string;
+  verified: boolean;
   expires_in: number;
   token_type: string;
-  verified: boolean;
-  id_token: string;
-  exists: boolean;
-  scope: string;
-  _id: string;
+  access_token: string;
+  refresh_token: string;
+  firebase_token: string;
 }
 
 // SERVER OTP (RESPONSE) TYPE
@@ -212,4 +213,14 @@ export type DeleteMessageRequestInterface = {
 // BLOCK MESSAGE REQUEST (RESPONSE) TYPE
 export type BlockMessageRequestInterface = {
   blockMessageRequest: { success: boolean; __typename: string };
+};
+
+// RECOMMENDED MEMBERS REQUEST (RESPONSE) TYPE
+export type RecommendedMembersRequestInterface = {
+  recommendedMembers: PassportInterface[];
+};
+
+// NEARBY MEMBERS REQUEST (RESPONSE) TYPE
+export type NearbyMembersRequestInterface = {
+  nearbyMembers: PassportInterface[];
 };
