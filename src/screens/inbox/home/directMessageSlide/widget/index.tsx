@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -32,14 +32,14 @@ function DirectChatCard(props: DirectChatProp) {
     return 0;
   });
 
+  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
+    variables: { payload: { conversationId: chatId } }
+  });
+
   const { data: passportData, loading } = useQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
     { variables: { id: sender.id } }
   );
-
-  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
-    variables: { payload: { conversationId: chatId } }
-  });
 
   const receiverPassport = passportData?.singlePassport;
 
@@ -47,7 +47,7 @@ function DirectChatCard(props: DirectChatProp) {
     lastMessage.receiverId === userId &&
     lastMessage.createdAt >= receiver.readAt;
 
-  const handleNavigation = useCallback(() => {
+  const handleNavigation = () => {
     navigation.navigate('DirectChatScreen', {
       title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
       avatar: receiverPassport?.avatar,
@@ -56,12 +56,12 @@ function DirectChatCard(props: DirectChatProp) {
     });
 
     if (showNotificationBadge) markConversationAsRead();
-  }, [loading]);
+  };
 
-  const formatDate = useCallback(() => {
+  const formatDate = () => {
     if (!lastMessage.createdAt) return;
     return formatMessageTime(lastMessage.createdAt);
-  }, [lastMessage.createdAt]);
+  };
 
   return (
     <TouchableRipple
