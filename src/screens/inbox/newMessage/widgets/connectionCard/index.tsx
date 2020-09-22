@@ -40,7 +40,7 @@ function ConnectionCard(props: ConnectionCardProp) {
     });
   }, []);
 
-  const handleNavigation = useCallback(() => {
+  const handleNavigation = () => {
     if (
       conversation?.messageRequest &&
       !conversation?.messageRequest.approvedAt
@@ -62,7 +62,7 @@ function ConnectionCard(props: ConnectionCardProp) {
         title: `${firstName} ${lastName}`
       }
     );
-  }, []);
+  };
 
   return (
     <TouchableRipple
@@ -72,7 +72,7 @@ function ConnectionCard(props: ConnectionCardProp) {
         alignItems: 'center',
         paddingHorizontal: RFValue(20)
       }}
-      rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
+      rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
       onPress={handleNavigation}
     >
       <Fragment>

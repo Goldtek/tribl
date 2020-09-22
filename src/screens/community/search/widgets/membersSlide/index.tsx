@@ -15,6 +15,10 @@ import {
 import NearbyModal from '../../../../../components/nearbyMembers';
 import ActiveModal from '../../../../../components/activeMembers';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
+import {
+  NearbyMembersRequestInterface,
+  RecommendedMembersRequestInterface
+} from '../../../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
@@ -46,11 +50,22 @@ function MemberSlideScreen(props: ScreenProp) {
     []
   );
 
-  const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
+  const { data: membersData } = useQuery<RecommendedMembersRequestInterface>(
+    GET_RECOMMENDED_MEMBERS
+  );
   const recommendedMembers = membersData?.recommendedMembers;
 
-  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+  const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
+    GET_NEARBY_MEMBERS
+  );
   const nearbyMembers = nearbyData?.nearbyMembers;
+  const nearbyMembersLastChild = nearbyMembers?.length
+    ? nearbyMembers?.length - 1
+    : 0;
+
+  const recommendedMembersLastChild = recommendedMembers?.length
+    ? recommendedMembers?.length - 1
+    : 0;
 
   const _renderNearbyMember = useMemo(
     () => ({ item, index }: any) => (
@@ -58,7 +73,7 @@ function MemberSlideScreen(props: ScreenProp) {
         key={item.id}
         {...item}
         index={index}
-        lastChild={nearbyMembers?.length - 1}
+        lastChild={nearbyMembersLastChild}
       />
     ),
     []
@@ -70,7 +85,7 @@ function MemberSlideScreen(props: ScreenProp) {
         key={item.id}
         index={index}
         {...item}
-        lastChild={recommendedMembers?.length - 1}
+        lastChild={recommendedMembersLastChild}
       />
     ),
     []
@@ -137,7 +152,7 @@ function MemberSlideScreen(props: ScreenProp) {
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(_, index: number) => index.toString()}
+            keyExtractor={(item) => item.id}
             contentContainerStyle={{ marginTop: 20, paddingHorizontal: 15 }}
           />
         </RecommendedList>
@@ -194,7 +209,7 @@ function MemberSlideScreen(props: ScreenProp) {
             renderItem={_renderNearbyMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item: any) => item.id}
+            keyExtractor={(item) => item.id}
             contentContainerStyle={{ marginTop: 20, paddingHorizontal: 15 }}
           />
         </RecommendedList>
