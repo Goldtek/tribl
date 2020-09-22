@@ -23,8 +23,10 @@ export const GLOBAL_HEADER_STYLE = {
   elevation: 0
 };
 
-// GLOBAL ROOT NAVIGATOR
+// USER DEFAULT AVATAR
+export const USER_DEFAULT_AVATAR = `https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp`;
 
+// GLOBAL ROOT NAVIGATOR
 export const navigationRef = React.createRef<NavigationContainerRef>();
 
 export const rootNavigator = {
