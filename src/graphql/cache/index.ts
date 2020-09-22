@@ -1,4 +1,5 @@
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { USER_DEFAULT_AVATAR } from '../../constants';
 import { DEVICE_DEFAULT_COUNTRY } from '../../utils/device';
 import { StoreInterface } from '../types';
 
@@ -20,6 +21,13 @@ cache.writeData<StoreInterface>({
         day: 0,
         month: 0,
         year: 0,
+        hour: 0,
+        minute: 0,
+        second: 0,
+        timeZoneId: null,
+        nanosecond: null,
+        millisecond: null,
+        timeZoneOffsetSeconds: null,
         __typename: 'dateOfBirth'
       },
       email: '',
@@ -53,8 +61,7 @@ cache.writeData<StoreInterface>({
           __typename: 'birthPlace'
         }
       ],
-      avatar:
-        'https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp',
+      avatar: USER_DEFAULT_AVATAR,
       __typename: 'userDetails'
     },
     communitySearchIndex: 0
