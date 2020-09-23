@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { PassportInterface } from '../../../../../graphql/types';
 import Firechat from '../../../../../firebase';
 import formatMessageTime from '../../../../../utils/timesince';
 import { OnlinePresence } from '../../../types';
+import { fireAuth } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -19,6 +20,8 @@ interface ConnectionCardProp extends PassportInterface {}
 function ConnectionCard(props: ConnectionCardProp) {
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
+
+  const userId = fireAuth.currentUser?.uid;
 
   const { id, avatar, firstName, lastName, conversation, presence } = props;
 
@@ -41,10 +44,13 @@ function ConnectionCard(props: ConnectionCardProp) {
   }, []);
 
   const handleNavigation = () => {
-    if (
-      conversation?.messageRequest &&
-      !conversation?.messageRequest.approvedAt
-    ) {
+    const senderId = conversation?.messageRequest.senderId;
+    const messageRequest = conversation?.messageRequest;
+    const isRequestApproved = conversation?.messageRequest.approvedAt;
+    const approveRequest =
+      senderId !== userId && messageRequest && !isRequestApproved;
+
+    if (approveRequest) {
       return navigation.navigate('MessageRequestScreen', {
         avatar,
         senderId: id,

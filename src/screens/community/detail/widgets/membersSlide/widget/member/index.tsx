@@ -35,8 +35,6 @@ function Member(props: MemberProp) {
     presence
   } = props;
 
-  if (id === fireAuth.currentUser?.uid) return null;
-
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
@@ -61,7 +59,7 @@ function Member(props: MemberProp) {
 
   const handleRequest = async () => {
     try {
-      const { data } = await requestConnection();
+      await requestConnection();
     } catch (error) {
       Sentry.captureException(error);
     }
