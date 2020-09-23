@@ -570,7 +570,10 @@ export const USER_ONLINE_SUBSCRIPTION = gql`
     monitorPresence {
       type
       payload {
-        __typename
+        id
+        type
+        status
+        lastSeen
       }
     }
   }
