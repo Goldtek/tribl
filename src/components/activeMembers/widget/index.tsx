@@ -11,6 +11,7 @@ import { PassportInterface } from '../../../graphql/types';
 import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { fireAuth } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -23,6 +24,8 @@ interface ActiveUserProp extends PassportInterface {
 function ActiveModal(props: ActiveUserProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const userId = fireAuth.currentUser?.uid;
 
   const { closeActiveModal, ...member } = props;
 
@@ -67,10 +70,13 @@ function ActiveModal(props: ActiveUserProp) {
   const handleMessageNavigation = () => {
     closeActiveModal();
 
-    if (
-      conversation?.messageRequest &&
-      !conversation?.messageRequest.approvedAt
-    ) {
+    const senderId = conversation?.messageRequest.senderId;
+    const messageRequest = conversation?.messageRequest;
+    const isRequestApproved = conversation?.messageRequest.approvedAt;
+    const approveRequest =
+      senderId !== userId && messageRequest && !isRequestApproved;
+
+    if (approveRequest) {
       return rootNavigator.navigate('MessageRequestScreen', {
         avatar,
         senderId: id,
