@@ -62,6 +62,7 @@ export default function HomeScreen(props: ScreenProp) {
   const { loading: myCommunityLoading, data: myCommunityData } = useQuery(
     GET_MY_COMMUNITIES
   );
+
   const {
     loading: recommendedCommunityLoading,
     data: communityData
