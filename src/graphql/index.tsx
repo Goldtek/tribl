@@ -15,12 +15,12 @@ import Storage from '../storage';
 
 // Create a Http link:
 const httpLink = new HttpLink({
-  uri: `https://${ENVIRONMENT_VARIABLES.TRIBL_SERVER_BASE_URI}`
+  uri: ENVIRONMENT_VARIABLES.TRIBL_HTTP_SERVER_BASE_URI
 });
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `wss://${ENVIRONMENT_VARIABLES.TRIBL_SERVER_BASE_URI}`,
+  uri: ENVIRONMENT_VARIABLES.TRIBL_WSS_SERVER_BASE_URI,
   options: { reconnect: true }
 });
 
@@ -30,7 +30,6 @@ const link = split(
   // split based on operation type
   ({ query }) => {
     const definition = getMainDefinition(query);
-
     return (
       definition.kind === 'OperationDefinition' &&
       definition.operation === 'subscription'
