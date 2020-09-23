@@ -10,6 +10,7 @@ import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import { PassportInterface } from '../../../graphql/types';
 import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
+import { fireAuth } from '../../../firebase/config';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -37,6 +38,8 @@ function NearbyModal(props: NearbyUserProp) {
     conversation
   } = member;
 
+  const userId = fireAuth.currentUser?.uid;
+
   const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
 
@@ -59,10 +62,13 @@ function NearbyModal(props: NearbyUserProp) {
   const handleMessageNavigation = () => {
     closeNearbyModal();
 
-    if (
-      conversation?.messageRequest &&
-      !conversation?.messageRequest.approvedAt
-    ) {
+    const senderId = conversation?.messageRequest.senderId;
+    const messageRequest = conversation?.messageRequest;
+    const isRequestApproved = conversation?.messageRequest.approvedAt;
+    const approveRequest =
+      senderId !== userId && messageRequest && !isRequestApproved;
+
+    if (approveRequest) {
       return rootNavigator.navigate('MessageRequestScreen', {
         avatar,
         senderId: id,
