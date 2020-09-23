@@ -10,6 +10,7 @@ import { PassportInterface } from '../../graphql/types';
 import { OnlinePresence } from '../../screens/inbox/types';
 import formatMessageTime from '../../utils/timesince';
 import Firechat from '../../firebase';
+import { fireAuth } from '../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
@@ -29,6 +30,8 @@ const Highlight = (props: HighlightProp) => {
     attribute,
     hit
   });
+
+  const userId = fireAuth.currentUser?.uid;
 
   const { colors, fonts } = useThemeContext();
 
@@ -50,6 +53,21 @@ const Highlight = (props: HighlightProp) => {
 
   const handleNavigation = () => {
     closeModal();
+
+    const senderId = hit.conversation?.messageRequest.senderId;
+    const messageRequest = hit.conversation?.messageRequest;
+    const isRequestApproved = hit.conversation?.messageRequest.approvedAt;
+    const approveRequest =
+      senderId !== userId && messageRequest && !isRequestApproved;
+
+    if (approveRequest) {
+      return rootNavigator.navigate('MessageRequestScreen', {
+        title: `${hit.firstName} ${hit.lastName}`,
+        avatar: hit.avatar,
+        receiverId: hit.id,
+        chatId: hit.conversation?.id
+      });
+    }
 
     rootNavigator.navigate(
       hit.conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
