@@ -9,8 +9,8 @@ import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
 import { GET_RECOMMENDED_MEMBERS } from '../../graphql/server/query';
-import { RecommendedMembersRequestInterface } from '../../graphql/types';
 import ActiveMember from './widget';
+import Skeleton from './widget/skeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -27,13 +27,11 @@ function ActiveModal(props: ModalProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: recommendedData } = useQuery<
-    RecommendedMembersRequestInterface
-  >(GET_RECOMMENDED_MEMBERS);
+  const { loading, data: recommendedData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
   const recommendedMembers = recommendedData?.recommendedMembers;
 
-  const filterMembers = recommendedMembers?.slice().sort((a, b) => {
+  const filterMembers = recommendedMembers?.slice().sort((a: any, b: any) => {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
@@ -78,23 +76,27 @@ function ActiveModal(props: ModalProp) {
         }}
       >
         <StatusBar translucent animated style="light" />
-        <Container
-          style={{
-            flex: 1,
-            width: '100%',
-            backgroundColor: 'transparent',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          {filterMembers?.map((member) => (
-            <ActiveMember
-              key={member.id}
-              {...member}
-              closeActiveModal={closeActiveModal}
-            />
-          ))}
-        </Container>
+        {loading ? (
+          <Skeleton />
+        ) : (
+          <Container
+            style={{
+              flex: 1,
+              width: '100%',
+              backgroundColor: 'transparent',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {filterMembers?.map((member: any) => (
+              <ActiveMember
+                key={member.id}
+                {...member}
+                closeActiveModal={closeActiveModal}
+              />
+            ))}
+          </Container>
+        )}
       </Modalize>
     </Portal>
   );

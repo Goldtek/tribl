@@ -10,7 +10,8 @@ import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
 import { GET_NEARBY_MEMBERS } from '../../graphql/server/query';
 import NearbyMember from './widget';
-import { NearbyMembersRequestInterface } from '../../graphql/types';
+import { PassportInterface } from '../../graphql/types';
+import Skeleton from './widget/skeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -27,13 +28,11 @@ function NearbyModal(props: ModalProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
-    GET_NEARBY_MEMBERS
-  );
+  const { loading, data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
 
   const NearbyMembers = nearbyData?.nearbyMembers;
 
-  const filterMembers = NearbyMembers?.slice().sort((a, b) => {
+  const filterMembers = NearbyMembers?.slice().sort((a: any, b: any) => {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
@@ -78,23 +77,27 @@ function NearbyModal(props: ModalProp) {
         }}
       >
         <StatusBar translucent animated style="light" />
-        <Container
-          style={{
-            flex: 1,
-            width: '100%',
-            backgroundColor: 'transparent',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          {filterMembers?.map((member) => (
-            <NearbyMember
-              key={member.id}
-              {...member}
-              closeNearbyModal={closeNearbyModal}
-            />
-          ))}
-        </Container>
+        {loading ? (
+          <Skeleton />
+        ) : (
+          <Container
+            style={{
+              flex: 1,
+              width: '100%',
+              backgroundColor: 'transparent',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {filterMembers?.map((member: PassportInterface) => (
+              <NearbyMember
+                key={member.id}
+                {...member}
+                closeNearbyModal={closeNearbyModal}
+              />
+            ))}
+          </Container>
+        )}
       </Modalize>
     </Portal>
   );
