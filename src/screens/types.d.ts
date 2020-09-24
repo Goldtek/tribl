@@ -37,6 +37,7 @@ export type RootStackParamList = {
   TriblScreen: undefined;
   LoginScreen: undefined;
   OTPScreen: undefined;
+  PassportScreen: undefined;
   CommunityDetailScreen: {};
   MemberDetailScreen: {};
 };
