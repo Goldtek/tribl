@@ -91,7 +91,7 @@ export default function SignupNavigator() {
             setUpdate(!update);
             navigation.reset({
               index: 0,
-              routes: [{ name: 'PassportScreen' }]
+              routes: [{ name: 'CommunityScreen' }]
             });
           }
         };
