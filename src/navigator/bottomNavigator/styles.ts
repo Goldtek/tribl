@@ -17,3 +17,13 @@ export const Label = styled.Text`
   text-align: center;
   text-transform: capitalize;
 `;
+
+export const BadgeWrapper = styled.View`
+  width: ${RFValue(7)}px;
+  height: ${RFValue(7)}px;
+  border-radius: ${RFValue(7)}px;
+  background-color: ${({ theme }) => theme.colors.PRIMARY};
+  position: absolute;
+  top: -8px;
+  right: ${RFValue(35)}px;
+`;
