@@ -35,8 +35,7 @@ class Firechat {
     // get user chat history via userId
     return firechat
       .collection(ROOM_TYPES.CONVERSATIONS)
-      .where(firestore.FieldPath.documentId(), 'in', conversationIds)
-      .limit(30);
+      .where(firestore.FieldPath.documentId(), 'in', conversationIds);
   }
 
   // GET ROOM CHAT MESSAGES

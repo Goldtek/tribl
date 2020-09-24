@@ -9,7 +9,10 @@ import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
 import Firechat from '../../../firebase';
 import { NavigationInterface } from '../../types';
-import { SEND_DIRECT_MESSAGE } from '../../../graphql/server/mutations';
+import {
+  MARK_MESSAGE_READ,
+  SEND_DIRECT_MESSAGE
+} from '../../../graphql/server/mutations';
 import {
   MyPassportInterface,
   UserPassportInterface
@@ -40,6 +43,10 @@ export default function ConnectionChatScreen(props: ScreenProp) {
 
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
 
+  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
+    variables: { payload: { conversationId: chatId } }
+  });
+
   const { data: receiverPassport, loading, refetch } = useQuery<
     UserPassportInterface
   >(GET_SINGLE_PASSPORT, { variables: { id: receiverId } });
@@ -64,8 +71,13 @@ export default function ConnectionChatScreen(props: ScreenProp) {
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
-        const conversations = snapshot.docs.map((document) => {
+        const conversations = snapshot.docs.map((document, index) => {
           const message = document.data();
+
+          if (snapshot.docs.length - 1 === index) {
+            setImmediate(markConversationAsRead);
+          }
+
           return {
             ...message,
             user: { _id: message.senderId, avatar },
