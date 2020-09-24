@@ -70,6 +70,7 @@ function contactSlide(props: any) {
     showDatePicker: boolean;
     selectedIdentity: string[];
     selectedId: string[];
+    click: boolean;
   }>({
     date: '',
     firstName: '',
@@ -78,7 +79,8 @@ function contactSlide(props: any) {
     disableFirstName: true,
     showDatePicker: false,
     selectedIdentity: [],
-    selectedId: []
+    selectedId: [],
+    click: false
   });
 
   useEffect(() => {
@@ -93,7 +95,7 @@ function contactSlide(props: any) {
 
   const onChange = (selectedDate: Date) => {
     const date = formatMessageTime(selectedDate);
-    return setState({ ...state, date, showDatePicker: false });
+    return setState({ ...state, date, showDatePicker: false, click: true });
   };
 
   const handleDatePicker = () => {
@@ -103,6 +105,7 @@ function contactSlide(props: any) {
   const showIdentityModal = useCallback(
     (isVisible: boolean) => () => {
       setIsVisible(isVisible);
+
       return true;
     },
     []
@@ -112,7 +115,8 @@ function contactSlide(props: any) {
     setState({
       ...state,
       selectedIdentity: childData,
-      selectedId: idData
+      selectedId: idData,
+      click: true
     });
   };
 
@@ -165,7 +169,8 @@ function contactSlide(props: any) {
                 setState({
                   ...state,
                   firstName,
-                  disableFirstName: false
+                  disableFirstName: false,
+                  click: true
                 })
               }
               disabled={disableFirstName}
@@ -213,7 +218,8 @@ function contactSlide(props: any) {
                 setState({
                   ...state,
                   lastName,
-                  disableLastName: false
+                  disableLastName: false,
+                  click: true
                 })
               }
               disabled={disableLastName}
@@ -335,7 +341,7 @@ function contactSlide(props: any) {
                     marginBottom: 10
                   }}
                 >
-                  {`${birthPlace?.state} ${birthPlace?.country}`}
+                  {`${birthPlace?.state}, ${birthPlace?.country}`}
                 </Paragraph>
               </Location>
 
@@ -361,7 +367,7 @@ function contactSlide(props: any) {
                     marginBottom: 10
                   }}
                 >
-                  {`${currentLocation.state} ${currentLocation.country}`}
+                  {`${currentLocation.state}, ${currentLocation.country}`}
                 </Paragraph>
               </Location>
             </LocationContainer>

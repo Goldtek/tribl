@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
 import FastImage from 'react-native-fast-image';
@@ -40,13 +40,23 @@ interface ScreenProp extends NavigationInterface {}
 export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { loading, data: userData, refetch } = useQuery<MyPassportInterface>(
-    GET_USER_PASSPORT
-  );
+  const { loading: dataLoading, data: userData, refetch } = useQuery<
+    MyPassportInterface
+  >(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
 
-  const [state, setState] = useState({ details: {}, loading: false });
+  const [state, setState] = useState({
+    details: {},
+    loading: false
+  });
+
+  const [update, setUpdate] = useState(false);
+
+  useEffect(() => {
+    //@ts-ignore
+    setUpdate(state.details.click);
+  }, [state.details]);
 
   const [imageLoad, setImageLoad] = useState(true);
   const { top: paddingTop } = useSafeAreaInsets();
@@ -69,7 +79,7 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  const getUserDetails = (childData: any) => {
+  const getUserDetails = (childData: any, clickData: boolean) => {
     setState({
       ...state,
       details: childData
@@ -90,7 +100,10 @@ export default function PassportScreen(props: ScreenProp) {
   const SelectedIdentities = Array.from(identity?.values());
   //@ts-ignore
   const identityID = state?.details?.selectedId || [];
-  const SelectedIdentitiesID = Array.from(identityID?.values());
+  const id = userDetails?.identity.map((item: any) => item.id);
+  const SelectedIdentitiesID = identityID.length
+    ? Array.from(identityID?.values())
+    : id;
 
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -132,6 +145,7 @@ export default function PassportScreen(props: ScreenProp) {
           ...state,
           loading: false
         });
+        setUpdate(false);
       }
     } catch (error) {
       Sentry.captureException(error);
@@ -139,6 +153,7 @@ export default function PassportScreen(props: ScreenProp) {
         ...state,
         loading: false
       });
+      setUpdate(false);
     }
   };
 
@@ -160,7 +175,7 @@ export default function PassportScreen(props: ScreenProp) {
           paddingBottom: RFValue(20)
         }}
       >
-        {loading ? (
+        {dataLoading ? (
           <PassportSkeleton />
         ) : (
           <Fragment>
@@ -177,13 +192,20 @@ export default function PassportScreen(props: ScreenProp) {
                 >
                   {t(`signup.passportScreen.title`)}
                 </Title>
-                <Button
-                  labelStyle={{ color: colors.WHITE }}
-                  onPress={handleRequest}
-                  loading={state.loading}
-                >
-                  Done
-                </Button>
+                {update ? (
+                  <Button
+                    labelStyle={{
+                      color: colors.WHITE,
+                      fontSize: RFValue(14),
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      textTransform: 'capitalize'
+                    }}
+                    onPress={handleRequest}
+                    loading={state.loading}
+                  >
+                    {t(`signup.passportScreen.update`)}
+                  </Button>
+                ) : null}
               </Cover>
               <ImageContainer>
                 <FastImage
@@ -232,7 +254,7 @@ export default function PassportScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                   >
-                    {`${userDetails?.currentLocation[0].state} ${userDetails?.currentLocation[0].country}`}
+                    {`${userDetails?.currentLocation[0].state}, ${userDetails?.currentLocation[0].country}`}
                   </Paragraph>
                   <ConnectionCover>
                     <Connection>
