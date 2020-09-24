@@ -3,7 +3,7 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ConversationInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
@@ -11,7 +11,6 @@ import formatMessageTime from '../../../../../utils/timesince';
 import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { UserPassportInterface } from '../../../../../graphql/types';
 import { fireAuth } from '../../../../../firebase/config';
-import { MARK_MESSAGE_READ } from '../../../../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
@@ -32,16 +31,13 @@ function DirectChatCard(props: DirectChatProp) {
     return 0;
   });
 
-  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
-    variables: { payload: { conversationId: chatId } }
-  });
-
   const { data: passportData, loading } = useQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
     { variables: { id: sender.id } }
   );
 
   const receiverPassport = passportData?.singlePassport;
+  const title = `${receiverPassport?.firstName} ${receiverPassport?.lastName}`;
 
   const showNotificationBadge =
     lastMessage.receiverId === userId &&
@@ -49,13 +45,11 @@ function DirectChatCard(props: DirectChatProp) {
 
   const handleNavigation = () => {
     navigation.navigate('DirectChatScreen', {
-      title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
-      avatar: receiverPassport?.avatar,
+      title,
+      chatId,
       receiverId: receiverPassport?.id,
-      chatId
+      avatar: receiverPassport?.avatar
     });
-
-    if (showNotificationBadge) markConversationAsRead();
   };
 
   const formatDate = () => {
@@ -110,7 +104,7 @@ function DirectChatCard(props: DirectChatProp) {
                   textTransform: 'capitalize'
                 }}
               >
-                {`${receiverPassport?.firstName} ${receiverPassport?.lastName}`}
+                {title.length >= 30 ? `${title.substr(0, 30)}...` : title}
               </Title>
               <Text
                 numberOfLines={1}
