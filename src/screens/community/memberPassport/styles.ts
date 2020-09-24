@@ -59,3 +59,9 @@ export const ConnectionCover = styled.View`
 export const Connection = styled.View`
   align-items: center;
 `;
+
+export const ButtonCover = styled.View`
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+`;
