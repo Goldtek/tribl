@@ -25,7 +25,7 @@ export default function BottomNavigator() {
       activeColor={colors.PRIMARY}
       inactiveColor={colors.SECONDARY_TEXT}
       barStyle={{ backgroundColor: colors.WHITE }}
-      initialRouteName="CommunityScreen"
+      initialRouteName="PassportScreen"
       labeled={false}
     >
       <BottomTab.Screen
