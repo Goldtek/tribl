@@ -18,7 +18,10 @@ interface ScreenProp extends NavigationInterface {}
 export default function DirectDMScreen(props: ScreenProp) {
   const { fonts } = useThemeContext();
 
-  const [chatHistory, setChatHistory] = useState(true);
+  const [history, setHistory] = useState({
+    chatHistory: true,
+    firstRender: true
+  });
 
   const [directMessages, setDirectMessages] = useState<ConversationInterface[]>(
     []
@@ -34,9 +37,11 @@ export default function DirectDMScreen(props: ScreenProp) {
 
       unsubscribe = userConservations?.onSnapshot({
         next: async (snapshot) => {
-          if (!snapshot.docs.length) return setChatHistory(false);
+          if (!snapshot.docs.length) {
+            return setHistory({ ...history, chatHistory: false });
+          }
 
-          setChatHistory(true);
+          setHistory({ ...history, chatHistory: true });
           const conversationIds = snapshot.docs.map((document) => document.id);
 
           const userDirectMessages = await Firechat.getConversationMessages(
@@ -45,12 +50,20 @@ export default function DirectDMScreen(props: ScreenProp) {
 
           userDirectMessages?.onSnapshot({
             next: (snapshot) => {
-              const directMessages = snapshot.docs.map((document) => {
-                const message = document.data() as ConversationInterface;
-                return { ...message, id: document.id };
-              });
+              const directMessages = snapshot.docs
+                .map((document) => {
+                  const message = document.data() as ConversationInterface;
+                  return { ...message, id: document.id };
+                })
+                .sort(
+                  //@ts-ignore
+                  (a, b) => b.lastMessage.createdAt - a.lastMessage.createdAt
+                );
 
-              setDirectMessages(directMessages);
+              if (history.firstRender) {
+                setDirectMessages(directMessages);
+                setHistory({ ...history, firstRender: false });
+              }
             }
           });
         }
@@ -73,7 +86,7 @@ export default function DirectDMScreen(props: ScreenProp) {
     []
   );
 
-  return chatHistory ? (
+  return history.chatHistory ? (
     <FlatList
       bounces={false}
       data={directMessages}

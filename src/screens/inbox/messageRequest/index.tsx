@@ -28,6 +28,7 @@ import {
   ACCEPT_MESSAGE_REQUEST,
   BLOCK_MESSAGE_REQUEST,
   DELETE_MESSAGE_REQUEST,
+  MARK_MESSAGE_READ,
   SEND_DIRECT_MESSAGE
 } from '../../../graphql/server/mutations';
 import {
@@ -58,6 +59,10 @@ export default function ChatScreen(props: ScreenProp) {
   const userId = fireAuth.currentUser?.uid as string;
 
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
+
+  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
+    variables: { payload: { conversationId: chatId } }
+  });
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
@@ -100,8 +105,13 @@ export default function ChatScreen(props: ScreenProp) {
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
-        const conversations = snapshot.docs.map((document) => {
+        const conversations = snapshot.docs.map((document, index) => {
           const message = document.data();
+
+          if (snapshot.docs.length - 1 === index) {
+            setImmediate(markConversationAsRead);
+          }
+
           return {
             ...message,
             user: { _id: message.senderId, avatar },
