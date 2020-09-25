@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { NavigationInterface } from '../../types';
+import { ChatScreenProps, NavigationInterface } from '../../types';
 import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
 import { Platform, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
 import { fireAuth } from '../../../firebase/config';
@@ -14,26 +16,25 @@ import {
   MARK_MESSAGE_READ,
   SEND_DIRECT_MESSAGE
 } from '../../../graphql/server/mutations';
-import { useQuery, useMutation } from '@apollo/react-hooks';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
-  route: {
-    params: {
-      title: string;
-      avatar: string;
-      chatId: string;
-      receiverId: string;
-    };
-  };
+  route: { params: ChatScreenProps };
 }
 
 export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
+  const navigation = useNavigation();
 
-  const { chatId, receiverId, avatar } = props.route.params;
+  const {
+    chatId,
+    receiverId,
+    avatar,
+    firstName,
+    lastName
+  } = props.route.params;
 
   const userId = fireAuth.currentUser?.uid;
 
@@ -85,6 +86,13 @@ export default function ChatScreen(props: ScreenProp) {
     );
   }, []);
 
+  const handleNavigation = useCallback(() => {
+    navigation.navigate('ChatMemberDetailScreen', {
+      title: `${firstName} ${lastName}`,
+      details: props.route.params
+    });
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <GiftedChat
@@ -96,6 +104,7 @@ export default function ChatScreen(props: ScreenProp) {
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
         alwaysShowSend={true}
+        onPressAvatar={handleNavigation}
         onSend={onSend}
         renderSend={(props) => (
           <Send
