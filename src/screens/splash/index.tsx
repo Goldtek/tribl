@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RefreshTokenInterface } from '../../graphql/types';
 import { REFRESH_TOKEN } from '../../graphql/server/mutations';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
 import { NavigationInterface } from '../types';
 import Storage from '../../storage';
 
@@ -20,6 +21,8 @@ export default function SplashScreen(props: ScreenProp) {
   useEffect(() => {
     handleAuthentication();
   }, []);
+
+  useQuery(GET_USER_PASSPORT);
 
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN, {
     variables: { payload: { refreshToken: credentials?.refresh_token } }
