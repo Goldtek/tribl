@@ -332,17 +332,31 @@ function contactSlide(props: any) {
                     backgroundColor: colors.ACTION
                   }}
                 />
-                <Paragraph
-                  style={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize',
-                    marginBottom: 10
-                  }}
-                >
-                  {`${birthPlace?.state}, ${birthPlace?.country}`}
-                </Paragraph>
+                {userDetails?.birthPlace[0].city ? (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${birthPlace?.city}, ${birthPlace?.state}`}
+                  </Paragraph>
+                ) : (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${birthPlace?.state}, ${birthPlace?.country}`}
+                  </Paragraph>
+                )}
               </Location>
 
               <Location>
@@ -358,17 +372,31 @@ function contactSlide(props: any) {
                     backgroundColor: colors.ACTION
                   }}
                 />
-                <Paragraph
-                  style={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize',
-                    marginBottom: 10
-                  }}
-                >
-                  {`${currentLocation.state}, ${currentLocation.country}`}
-                </Paragraph>
+                {userDetails?.currentLocation[0].city ? (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${currentLocation.city}, ${currentLocation.state}`}
+                  </Paragraph>
+                ) : (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${currentLocation.state}, ${currentLocation.country}`}
+                  </Paragraph>
+                )}
               </Location>
             </LocationContainer>
           ) : null}
