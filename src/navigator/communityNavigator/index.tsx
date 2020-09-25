@@ -301,6 +301,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
+
       <CommunityStack.Screen
         name="NewMessageScreen"
         component={Screens.NewMessageScreen}

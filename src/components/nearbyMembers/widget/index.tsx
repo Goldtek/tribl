@@ -70,20 +70,20 @@ function NearbyModal(props: NearbyUserProp) {
 
     if (approveRequest) {
       return rootNavigator.navigate('MessageRequestScreen', {
-        avatar,
-        senderId: id,
+        title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
-        title: `${firstName} ${lastName}`
+        senderId: id,
+        ...member
       });
     }
 
     rootNavigator.navigate(
       conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
       {
-        avatar,
-        receiverId: id,
+        title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
-        title: `${firstName} ${lastName}`
+        receiverId: id,
+        ...member
       }
     );
   };

@@ -4,11 +4,12 @@ import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
 import Firechat from '../../../firebase';
-import { NavigationInterface } from '../../types';
+import { ChatScreenProps, NavigationInterface } from '../../types';
 import {
   MARK_MESSAGE_READ,
   SEND_DIRECT_MESSAGE
@@ -27,16 +28,14 @@ import hexToRGB from '../../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
-  route: {
-    params: { title: string; avatar: string; receiverId: string };
-  };
+  route: { params: ChatScreenProps };
 }
 
 export default function ConnectionChatScreen(props: ScreenProp) {
-  const { receiverId, avatar } = props.route.params;
+  const { receiverId, avatar, firstName, lastName } = props.route.params;
 
   const [chatId, setChatId] = useState<string | null>(null);
-
+  const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
 
   const userId = fireAuth.currentUser?.uid;
@@ -101,6 +100,13 @@ export default function ConnectionChatScreen(props: ScreenProp) {
     if (!receiverDetails?.conversation) refetch();
   }, []);
 
+  const handleNavigation = useCallback(() => {
+    navigation.navigate('ChatMemberDetailScreen', {
+      title: `${firstName} ${lastName}`,
+      details: props.route.params
+    });
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <GiftedChat
@@ -113,6 +119,7 @@ export default function ConnectionChatScreen(props: ScreenProp) {
         }}
         alwaysShowSend={true}
         isLoadingEarlier={true}
+        onPressAvatar={handleNavigation}
         onSend={onSend}
         renderSend={(props) => (
           <Send

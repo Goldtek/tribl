@@ -170,8 +170,8 @@ function AlgoliaList(props: any) {
   return (
     <Results>
       <FlatList
-        data={hits}
-        keyExtractor={(item: PassportInterface) => item.id}
+        data={hits as PassportInterface[]}
+        keyExtractor={(item) => item.id}
         ItemSeparatorComponent={_separator}
         onEndReached={() => hasMore && refine()}
         renderItem={_renderItem}
