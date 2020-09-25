@@ -23,6 +23,7 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         id
         country
         state
+        city
       }
       identity {
         name
@@ -73,6 +74,7 @@ export const GET_NEARBY_MEMBERS = gql`
         id
         country
         state
+        city
       }
       identity {
         name
@@ -82,6 +84,9 @@ export const GET_NEARBY_MEMBERS = gql`
       }
       birthPlace {
         id
+        city
+        state
+        country
       }
       conversation {
         id
@@ -204,6 +209,7 @@ export const GET_MY_COMMUNITIES = gql`
           id
           country
           state
+          city
         }
         conversation {
           id
@@ -312,6 +318,7 @@ export const GET_SINGLE_PASSPORT = gql`
         id
         country
         state
+        city
       }
       identity {
         id
@@ -325,6 +332,7 @@ export const GET_SINGLE_PASSPORT = gql`
         id
         state
         country
+        city
       }
       conversation {
         id
@@ -371,6 +379,7 @@ export const GET_COMMUNITY_MEMBERS = gql`
         id
         state
         country
+        city
       }
       interest {
         name
@@ -462,6 +471,7 @@ export const GET_USER_PASSPORT = gql`
       birthPlace {
         lat
         long
+        city
         country
         state
       }
@@ -470,6 +480,7 @@ export const GET_USER_PASSPORT = gql`
         long
         country
         state
+        city
       }
       privacy {
         blocked {
@@ -530,6 +541,7 @@ export const GET_ALL_MEMBERS = gql`
       currentLocation {
         state
         country
+        city
         id
       }
       conversation {
