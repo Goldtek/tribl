@@ -25,7 +25,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
 
   const {
@@ -43,21 +42,16 @@ export default function RecommendedUser(props: RecommendedUserProp) {
 
   if (!currentLocation.length) return null;
 
-  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+  const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
 
   const handleRequest = async () => {
-    setLoading(true);
     try {
-      const { data } = await requestConnection();
-      if (data?.requestConnection) {
-        setLoading(false);
-        setPending(true);
-      }
+      await requestConnection();
+      setPending(true);
     } catch (error) {
       Sentry.captureException(error);
-      setLoading(false);
     }
   };
 
@@ -67,9 +61,9 @@ export default function RecommendedUser(props: RecommendedUserProp) {
         conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
         {
           title: `${firstName} ${lastName}`,
-          avatar,
+          chatId: conversation?.id,
           receiverId: id,
-          chatId: conversation?.id
+          ...props
         }
       ),
     []
