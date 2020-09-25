@@ -72,26 +72,26 @@ function ActiveModal(props: ActiveUserProp) {
 
     const senderId = conversation?.messageRequest.senderId;
     const messageRequest = conversation?.messageRequest;
-    const isRequestApproved = conversation?.messageRequest.approvedAt;
+    const isRequestApproved = conversation?.messageRequest?.approvedAt;
     const approveRequest =
       senderId !== userId && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
       return rootNavigator.navigate('MessageRequestScreen', {
-        avatar,
-        senderId: id,
+        title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
-        title: `${firstName} ${lastName}`
+        senderId: id,
+        ...member
       });
     }
 
     rootNavigator.navigate(
       conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
       {
-        avatar,
-        receiverId: id,
+        title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
-        title: `${firstName} ${lastName}`
+        receiverId: id,
+        ...member
       }
     );
   };
