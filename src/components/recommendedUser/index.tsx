@@ -130,20 +130,37 @@ export default function RecommendedUser(props: RecommendedUserProp) {
           >
             {`${firstName} ${lastName}`}
           </Title>
-          <Paragraph
-            numberOfLines={1}
-            style={{
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              marginTop: 0,
-              marginBottom: 0,
-              paddingHorizontal: 10
-            }}
-          >
-            {`${currentLocation[0]?.state}, ${currentLocation[0]?.country}`}
-          </Paragraph>
+          {currentLocation[0]?.city ? (
+            <Paragraph
+              numberOfLines={1}
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginTop: 0,
+                marginBottom: 0,
+                paddingHorizontal: 10
+              }}
+            >
+              {`${currentLocation[0]?.city}, ${currentLocation[0]?.state}`}
+            </Paragraph>
+          ) : (
+            <Paragraph
+              numberOfLines={1}
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginTop: 0,
+                marginBottom: 0,
+                paddingHorizontal: 10
+              }}
+            >
+              {`${currentLocation[0]?.state}, ${currentLocation[0]?.country}`}
+            </Paragraph>
+          )}
         </TextContainer>
         {connected == 'PENDING' || pending ? (
           <Button
