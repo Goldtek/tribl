@@ -1,6 +1,7 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
+import * as Location from 'expo-location';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -48,15 +49,161 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [state, setState] = useState({
     details: {},
-    loading: false
+    loading: false,
+    identity: userDetails?.identity.map((item: any) => item.id)
+  });
+
+  const [location, setLocation] = useState({
+    city: '',
+    state: '',
+    country: '',
+    lat: 0,
+    long: 0
+  });
+
+  const [birthPlace, setBirthPlace] = useState<{
+    city?: string;
+    state?: string | null | undefined;
+    country?: string;
+    lat?: number | null;
+    long?: number | null;
+  }>({
+    city: '',
+    state: '',
+    country: '',
+    lat: 0,
+    long: 0
   });
 
   const [update, setUpdate] = useState(false);
+
+  //@ts-ignore
+  const firstName = state?.details?.firstName;
+  //@ts-ignore
+  const lastName = state?.details?.lastName;
+  //@ts-ignore
+  const dob = state?.details?.date?.split('/');
+  const day = dob?.length ? parseInt(dob[0]) : null;
+  const month = dob?.length ? parseInt(dob[1]) : null;
+  const year = dob?.length ? parseInt(dob[2]) : null;
+
+  //@ts-ignore
+  const identityID = state?.details?.selectedId || [];
+  const SelectedIdentitiesID = Array.from(identityID?.values());
+
+  const handleLocation = async () => {
+    try {
+      const { coords } = await Location.getCurrentPositionAsync({
+        enableHighAccuracy: true,
+        accuracy: Location.Accuracy.Highest
+      });
+
+      const [currentLocation] = await Location.reverseGeocodeAsync({
+        latitude: coords.latitude,
+        longitude: coords.longitude
+      });
+      const { city, region, country } = currentLocation;
+      if (currentLocation) {
+        setLocation({
+          ...location,
+          city: city,
+          state: region,
+          country: country,
+          lat: coords.latitude,
+          long: coords.longitude
+        });
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  const [updateCurrentLocation] = useMutation(UPDATE_PASSPORT, {
+    variables: {
+      payload: {
+        firstName: firstName,
+        lastName: lastName,
+        dob: {
+          day: day,
+          month: month,
+          year: year
+        },
+        identity: state.identity,
+        currentLocation: {
+          city: location.city,
+          state: location.state,
+          country: location.country,
+          long: location.long,
+          lat: location.lat
+        },
+        birthPlace: {
+          city: birthPlace.city,
+          state: birthPlace.state,
+          country: birthPlace.country,
+          long: birthPlace.long,
+          lat: birthPlace.lat
+        }
+      }
+    }
+  });
+
+  const updateLocation = async () => {
+    try {
+      const { data } = await updateCurrentLocation();
+      if (data?.updatePassport) {
+        refetch();
+      }
+    } catch (error) {
+      if (error) {
+      }
+      Sentry.captureException(error);
+    }
+  };
+
+  useEffect(() => {
+    setBirthPlace({
+      ...birthPlace,
+      city: userDetails?.birthPlace[0]?.city,
+      state: userDetails?.birthPlace[0]?.state,
+      country: userDetails?.birthPlace[0]?.country,
+      long: userDetails?.birthPlace[0]?.long,
+      lat: userDetails?.birthPlace[0]?.lat
+    });
+  }, [userDetails?.id]);
+
+  useEffect(() => {
+    handleLocation();
+  }, []);
+
+  useEffect(() => {
+    if (
+      location.city.length &&
+      birthPlace.state?.length &&
+      state.identity?.length
+    ) {
+      updateLocation();
+    }
+  }, [location.city]);
 
   useEffect(() => {
     //@ts-ignore
     setUpdate(state.details.click);
   }, [state.details]);
+
+  useEffect(() => {
+    //@ts-ignore
+    setState({
+      ...state,
+      identity: userDetails?.identity.map((item: any) => item.id)
+    });
+  }, [userDetails?.id]);
+
+  useEffect(() => {
+    setState({
+      ...state,
+      identity: SelectedIdentitiesID
+    });
+  }, [SelectedIdentitiesID.length]);
 
   const [imageLoad, setImageLoad] = useState(true);
   const { top: paddingTop } = useSafeAreaInsets();
@@ -85,25 +232,6 @@ export default function PassportScreen(props: ScreenProp) {
       details: childData
     });
   };
-  //@ts-ignore
-  const firstName = state?.details?.firstName;
-  //@ts-ignore
-  const lastName = state?.details?.lastName;
-  //@ts-ignore
-  const dob = state?.details?.date?.split('/');
-  const day = dob?.length ? parseInt(dob[0]) : null;
-  const month = dob?.length ? parseInt(dob[1]) : null;
-  const year = dob?.length ? parseInt(dob[2]) : null;
-
-  //@ts-ignore
-  const identity = state?.details?.selectedIdentity || [];
-  const SelectedIdentities = Array.from(identity?.values());
-  //@ts-ignore
-  const identityID = state?.details?.selectedId || [];
-  const id = userDetails?.identity.map((item: any) => item.id);
-  const SelectedIdentitiesID = identityID.length
-    ? Array.from(identityID?.values())
-    : id;
 
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -115,18 +243,20 @@ export default function PassportScreen(props: ScreenProp) {
           month: month,
           year: year
         },
-        identity: SelectedIdentitiesID,
+        identity: state.identity,
         currentLocation: {
+          city: userDetails?.currentLocation[0]?.city,
           state: userDetails?.currentLocation[0]?.state,
           country: userDetails?.currentLocation[0]?.country,
           long: userDetails?.currentLocation[0]?.long,
           lat: userDetails?.currentLocation[0]?.lat
         },
         birthPlace: {
-          state: userDetails?.currentLocation[0]?.state,
-          country: userDetails?.currentLocation[0]?.country,
-          long: userDetails?.currentLocation[0]?.long,
-          lat: userDetails?.currentLocation[0]?.lat
+          city: userDetails?.birthPlace[0]?.city,
+          state: userDetails?.birthPlace[0]?.state,
+          country: userDetails?.birthPlace[0]?.country,
+          long: userDetails?.birthPlace[0]?.long,
+          lat: userDetails?.birthPlace[0]?.lat
         }
       }
     }
@@ -244,18 +374,33 @@ export default function PassportScreen(props: ScreenProp) {
                   >
                     {`${userDetails?.firstName} ${userDetails?.lastName}`}
                   </Paragraph>
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      paddingRight: 20,
-                      lineHeight: 16,
-                      color: colors.WHITE,
-                      textTransform: 'capitalize'
-                    }}
-                  >
-                    {`${userDetails?.currentLocation[0].state}, ${userDetails?.currentLocation[0].country}`}
-                  </Paragraph>
+                  {userDetails?.currentLocation[0].city ? (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        paddingRight: 20,
+                        lineHeight: 16,
+                        color: colors.WHITE,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {`${userDetails?.currentLocation[0].city}, ${userDetails?.currentLocation[0].state}`}
+                    </Paragraph>
+                  ) : (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        paddingRight: 20,
+                        lineHeight: 16,
+                        color: colors.WHITE,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {`${userDetails?.currentLocation[0].state}, ${userDetails?.currentLocation[0].country}`}
+                    </Paragraph>
+                  )}
                   <ConnectionCover>
                     <Connection>
                       <Paragraph
