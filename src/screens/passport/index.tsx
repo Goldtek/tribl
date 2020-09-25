@@ -2,6 +2,7 @@ import React, { useState, Fragment, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
 import * as Location from 'expo-location';
+import * as Updates from 'expo-updates';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -18,9 +19,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationInterface } from '../types';
 import { useThemeContext } from '../../theme';
 import TabViewSlider from './widgets/tabs';
-import { GET_USER_PASSPORT } from '../../graphql/server/query';
-import { MyPassportInterface } from '../../graphql/types';
+import {
+  GET_FIREBASE_TOKEN,
+  GET_USER_PASSPORT
+} from '../../graphql/server/query';
+import {
+  GenerateFirebaseTokenIT,
+  MyPassportInterface,
+  PassportInterface
+} from '../../graphql/types';
 import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
+import PassportSkeleton from './widgets/passportSkeleton';
+import Storage from '../../storage';
+import Firechat from '../../firebase';
+import CheckAppUpdates from '../../libs/updates';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -33,25 +45,40 @@ import {
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
-import PassportSkeleton from './widgets/passportSkeleton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
+interface StateProps extends PassportInterface {
+  date: string;
+  click?: boolean;
+  selectedId: string[];
+}
+
 export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
   const { loading: dataLoading, data: userData, refetch } = useQuery<
     MyPassportInterface
   >(GET_USER_PASSPORT);
 
+  const { data: firebase, loading: firebaseLoading } = useQuery<
+    GenerateFirebaseTokenIT
+  >(GET_FIREBASE_TOKEN);
+
   const userDetails = userData?.myPassport;
 
-  const [state, setState] = useState({
+  const [state, setState] = useState<{
+    details: StateProps;
+    identity: string[] | undefined;
+  }>({
+    //@ts-ignore
     details: {},
-    loading: false,
     identity: userDetails?.identity.map((item: any) => item.id)
   });
+
+  const [OTAUpdate, setOTAUpdate] = useState(false);
 
   const [location, setLocation] = useState({
     city: '',
@@ -75,19 +102,33 @@ export default function PassportScreen(props: ScreenProp) {
     long: 0
   });
 
+  useEffect(() => {
+    const getFirebaseToken = async () => {
+      if (firebase?.generateFirebaseToken) {
+        Storage.setUserCredentials(firebase?.generateFirebaseToken);
+        Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
+      }
+    };
+    getFirebaseToken();
+    checkUpdate();
+  }, [firebaseLoading]);
+
+  const checkUpdate = async () => {
+    const update = await Updates.checkForUpdateAsync();
+    setOTAUpdate(update.isAvailable);
+  };
+
+  const cancelUpdate = () => setOTAUpdate(false);
+
   const [update, setUpdate] = useState(false);
 
-  //@ts-ignore
   const firstName = state?.details?.firstName;
-  //@ts-ignore
   const lastName = state?.details?.lastName;
-  //@ts-ignore
+
   const dob = state?.details?.date?.split('/');
   const day = dob?.length ? parseInt(dob[0]) : null;
   const month = dob?.length ? parseInt(dob[1]) : null;
   const year = dob?.length ? parseInt(dob[2]) : null;
-
-  //@ts-ignore
   const identityID = state?.details?.selectedId || [];
   const SelectedIdentitiesID = Array.from(identityID?.values());
 
@@ -102,7 +143,9 @@ export default function PassportScreen(props: ScreenProp) {
         latitude: coords.latitude,
         longitude: coords.longitude
       });
+
       const { city, region, country } = currentLocation;
+
       if (currentLocation) {
         setLocation({
           ...location,
@@ -118,7 +161,11 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  const [updateCurrentLocation] = useMutation(UPDATE_PASSPORT, {
+  useEffect(() => {
+    handleLocation();
+  }, []);
+
+  const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
         firstName: firstName,
@@ -147,19 +194,6 @@ export default function PassportScreen(props: ScreenProp) {
     }
   });
 
-  const updateLocation = async () => {
-    try {
-      const { data } = await updateCurrentLocation();
-      if (data?.updatePassport) {
-        refetch();
-      }
-    } catch (error) {
-      if (error) {
-      }
-      Sentry.captureException(error);
-    }
-  };
-
   useEffect(() => {
     setBirthPlace({
       ...birthPlace,
@@ -172,17 +206,21 @@ export default function PassportScreen(props: ScreenProp) {
   }, [userDetails?.id]);
 
   useEffect(() => {
-    handleLocation();
-  }, []);
+    const updateLocation = async () => {
+      try {
+        await updatePassport();
+        refetch();
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    };
 
-  useEffect(() => {
     if (
       location.city.length &&
       birthPlace.state?.length &&
       state.identity?.length
-    ) {
+    )
       updateLocation();
-    }
   }, [location.city]);
 
   useEffect(() => {
@@ -226,63 +264,20 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  const getUserDetails = (childData: any, clickData: boolean) => {
+  const getUserDetails = (childData: any) => {
     setState({
       ...state,
       details: childData
     });
   };
 
-  const [updatePassport] = useMutation(UPDATE_PASSPORT, {
-    variables: {
-      payload: {
-        firstName: firstName,
-        lastName: lastName,
-        dob: {
-          day: day,
-          month: month,
-          year: year
-        },
-        identity: state.identity,
-        currentLocation: {
-          city: userDetails?.currentLocation[0]?.city,
-          state: userDetails?.currentLocation[0]?.state,
-          country: userDetails?.currentLocation[0]?.country,
-          long: userDetails?.currentLocation[0]?.long,
-          lat: userDetails?.currentLocation[0]?.lat
-        },
-        birthPlace: {
-          city: userDetails?.birthPlace[0]?.city,
-          state: userDetails?.birthPlace[0]?.state,
-          country: userDetails?.birthPlace[0]?.country,
-          long: userDetails?.birthPlace[0]?.long,
-          lat: userDetails?.birthPlace[0]?.lat
-        }
-      }
-    }
-  });
-
   const handleRequest = async () => {
-    setState({
-      ...state,
-      loading: true
-    });
     try {
-      const { data } = await updatePassport();
-      if (data?.updatePassport) {
-        refetch();
-        setState({
-          ...state,
-          loading: false
-        });
-        setUpdate(false);
-      }
+      await updatePassport();
+      refetch();
+      setUpdate(false);
     } catch (error) {
       Sentry.captureException(error);
-      setState({
-        ...state,
-        loading: false
-      });
       setUpdate(false);
     }
   };
@@ -331,7 +326,7 @@ export default function PassportScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                     onPress={handleRequest}
-                    loading={state.loading}
+                    loading={loading}
                   >
                     {t(`signup.passportScreen.update`)}
                   </Button>
@@ -508,6 +503,8 @@ export default function PassportScreen(props: ScreenProp) {
           </Fragment>
         )}
       </ScrollView>
+
+      {OTAUpdate ? <CheckAppUpdates cancelUpdate={cancelUpdate} /> : null}
     </SafeAreaView>
   );
 }
