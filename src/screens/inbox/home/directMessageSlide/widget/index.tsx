@@ -48,7 +48,7 @@ function DirectChatCard(props: DirectChatProp) {
       title,
       chatId,
       receiverId: receiverPassport?.id,
-      avatar: receiverPassport?.avatar
+      ...receiverPassport
     });
   };
 
