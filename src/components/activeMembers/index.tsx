@@ -48,11 +48,7 @@ function ActiveModal(props: ModalProp) {
   const closeModal = () => modalizeRef.current?.close();
 
   useEffect(() => {
-    if (isVisible) {
-      openModal();
-    } else {
-      closeModal();
-    }
+    isVisible ? openModal() : closeModal();
   }, [isVisible]);
 
   return (
