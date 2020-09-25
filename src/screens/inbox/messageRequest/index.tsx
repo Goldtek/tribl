@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import * as Sentry from '@sentry/react-native';
-import { NavigationInterface } from '../../types';
+import { MessageRequestScreenProps, NavigationInterface } from '../../types';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
 import { Ionicons } from '@expo/vector-icons';
@@ -44,9 +44,7 @@ import { Cover, TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
-  route: {
-    params: { title: string; avatar: string; chatId: string; senderId: string };
-  };
+  route: { params: MessageRequestScreenProps };
 }
 
 export default function ChatScreen(props: ScreenProp) {

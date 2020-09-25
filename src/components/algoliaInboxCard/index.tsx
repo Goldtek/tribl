@@ -63,9 +63,9 @@ const Highlight = (props: HighlightProp) => {
     if (approveRequest) {
       return rootNavigator.navigate('MessageRequestScreen', {
         title: `${hit.firstName} ${hit.lastName}`,
-        avatar: hit.avatar,
-        receiverId: hit.id,
-        chatId: hit.conversation?.id
+        chatId: hit.conversation?.id,
+        senderId: hit.id,
+        ...hit
       });
     }
 
@@ -73,9 +73,9 @@ const Highlight = (props: HighlightProp) => {
       hit.conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
       {
         title: `${hit.firstName} ${hit.lastName}`,
-        avatar: hit.avatar,
+        chatId: hit.conversation?.id,
         receiverId: hit.id,
-        chatId: hit.conversation?.id
+        ...hit
       }
     );
   };
