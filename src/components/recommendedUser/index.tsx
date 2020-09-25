@@ -40,8 +40,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     conversation
   } = props;
 
-  if (!currentLocation.length) return null;
-
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
@@ -173,12 +171,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               textTransform: 'capitalize',
               color: colors.PRIMARY_TEXT
             }}
-            contentStyle={{
-              width: '100%',
-              paddingLeft: 10,
-              paddingRight: 10,
-              backgroundColor: colors.DISABLED
-            }}
+            contentStyle={{ width: '100%', backgroundColor: colors.DISABLED }}
             style={{ borderRadius: 5 }}
           >
             {t(`community.recommended.pending`)}
@@ -195,8 +188,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             }}
             contentStyle={{
               width: '100%',
-              paddingLeft: 5,
-              paddingRight: 5,
               backgroundColor: colors.WHITE,
               borderColor: colors.PRIMARY_TEXT
             }}
@@ -218,8 +209,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             }}
             contentStyle={{
               width: '100%',
-              paddingLeft: 10,
-              paddingRight: 10,
               backgroundColor: colors.PRIMARY
             }}
             style={{ borderRadius: 5 }}

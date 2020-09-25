@@ -14,6 +14,7 @@ import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
 import PassportSkeleton from './widget';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { PassportInterface } from '../../../graphql/types';
 
 import {
   ContactContainer,
@@ -29,7 +30,6 @@ import {
   ConnectionCover,
   ButtonCover
 } from './styles';
-import { PassportInterface } from '../../../graphql/types';
 
 interface MemberDetailProps {
   route: {
@@ -65,10 +65,10 @@ export default function contactSlide(props: MemberDetailProps) {
   const SinglePassport = passportData?.singlePassport;
 
   const handleMessageNavigation = useCallback(() => {
-    const senderId = SinglePassport?.conversation.messageRequest.senderId;
-    const messageRequest = SinglePassport?.conversation.messageRequest;
+    const messageRequest = SinglePassport?.conversation?.messageRequest;
+    const senderId = SinglePassport?.conversation?.messageRequest?.senderId;
     const isRequestApproved =
-      SinglePassport?.conversation.messageRequest.approvedAt;
+      SinglePassport?.conversation?.messageRequest?.approvedAt;
     const approveRequest =
       senderId !== SinglePassport?.id && messageRequest && !isRequestApproved;
 

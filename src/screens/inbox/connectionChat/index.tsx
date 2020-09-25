@@ -93,6 +93,11 @@ export default function ConnectionChatScreen(props: ScreenProp) {
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
+
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, messages)
+    );
+
     sendMessage({
       variables: { payload: { receiverId, content: message.text } }
     });
