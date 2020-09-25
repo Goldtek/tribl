@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useCallback,
-  Fragment,
-  useEffect
-} from 'react';
+import React, { useState, useCallback, Fragment, useEffect } from 'react';
 import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
 import {
   Button,
@@ -561,5 +555,4 @@ function contactSlide(props: any) {
   );
 }
 
-// export default React.memo(contactSlide, () => false);
 export default React.memo(contactSlide);
