@@ -115,9 +115,7 @@ export default function ChatScreen(props: ScreenProp) {
       []
     );
 
-  const _renderItem = ({ item }: any) => (
-    <MemberCard key={item.id} {...item} {...props} />
-  );
+  const _renderItem = ({ item }: any) => <MemberCard key={item.id} {...item} />;
 
   return (
     <SafeAreaView
