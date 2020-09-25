@@ -97,7 +97,8 @@ function ActiveModal(props: ActiveUserProp) {
   };
 
   const state = currentLocation[0]?.state;
-  const country = currentLocation[0]?.state;
+  const country = currentLocation[0]?.country;
+  const city = currentLocation[0]?.city;
 
   return (
     <TouchableRipple
@@ -135,7 +136,19 @@ function ActiveModal(props: ActiveUserProp) {
           >
             {`${firstName} ${lastName}`}
           </Title>
-          {state && country ? (
+          {city && state ? (
+            <Paragraph
+              style={{
+                fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                lineHeight: RFValue(15),
+                color: colors.SECONDARY_TEXT,
+                textTransform: 'capitalize'
+              }}
+            >
+              {`${city}, ${state}`}
+            </Paragraph>
+          ) : (
             <Paragraph
               style={{
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
@@ -147,7 +160,7 @@ function ActiveModal(props: ActiveUserProp) {
             >
               {`${state}, ${country}`}
             </Paragraph>
-          ) : null}
+          )}
         </TextContainer>
         {connected == 'PENDING' || pending ? (
           <Button

@@ -13,6 +13,8 @@ import GradientButton from '../../../components/gradientButton';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
 import PassportSkeleton from './widget';
+import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { PassportInterface } from '../../../graphql/types';
 
 import {
   ContactContainer,
@@ -25,9 +27,9 @@ import {
   CitizenshipContainer,
   Header,
   Connection,
-  ConnectionCover
+  ConnectionCover,
+  ButtonCover
 } from './styles';
-import { PassportInterface } from '../../../graphql/types';
 
 interface MemberDetailProps {
   route: {
@@ -62,21 +64,35 @@ export default function contactSlide(props: MemberDetailProps) {
 
   const SinglePassport = passportData?.singlePassport;
 
-  const handleMessageNavigation = useCallback(
-    () =>
-      navigation.navigate(
-        SinglePassport?.conversation.id
-          ? 'DirectChatScreen'
-          : 'ConnectionChatScreen',
-        {
-          receiverId: id,
-          avatar: SinglePassport?.avatar,
-          chatId: SinglePassport?.conversation.id,
-          title: `${firstName} ${lastName}` || `${fName} ${lName}`
-        }
-      ),
-    []
-  );
+  const handleMessageNavigation = useCallback(() => {
+    const messageRequest = SinglePassport?.conversation?.messageRequest;
+    const senderId = SinglePassport?.conversation?.messageRequest?.senderId;
+    const isRequestApproved =
+      SinglePassport?.conversation?.messageRequest?.approvedAt;
+    const approveRequest =
+      senderId !== SinglePassport?.id && messageRequest && !isRequestApproved;
+
+    if (approveRequest) {
+      return navigation.navigate('MessageRequestScreen', {
+        receiverId: id,
+        avatar: SinglePassport?.avatar,
+        chatId: SinglePassport?.conversation.id,
+        title: `${firstName} ${lastName}` || `${fName} ${lName}`
+      });
+    }
+
+    navigation.navigate(
+      SinglePassport?.conversation.id
+        ? 'DirectChatScreen'
+        : 'ConnectionChatScreen',
+      {
+        receiverId: id,
+        avatar: SinglePassport?.avatar,
+        chatId: SinglePassport?.conversation.id,
+        title: `${firstName} ${lastName}` || `${fName} ${lName}`
+      }
+    );
+  }, []);
 
   const handleRequest = async () => {
     setState({ ...state, loading: true });
@@ -174,47 +190,105 @@ export default function contactSlide(props: MemberDetailProps) {
             <Button
               onPress={handleMessageNavigation}
               mode="outlined"
-              color={colors.SECONDARY_TEXT}
+              color={colors.PRIMARY}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.LARGE_SIZE),
                 textTransform: 'capitalize'
               }}
-              contentStyle={{ height: RFValue(55) }}
-              style={{
-                width: '100%',
+              contentStyle={{
                 height: RFValue(55),
-                borderRadius: 4,
-                marginTop: RFValue(20)
+                borderColor: colors.PRIMARY_TEXT
               }}
-            >
-              {t(`community.memberPassport.message`)}
-            </Button>
-          ) : pending || SinglePassport?.connected === 'PENDING' ? (
-            <Button
-              disabled={true}
-              mode="contained"
-              color={colors.PRIMARY_TEXT}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{ height: RFValue(55) }}
               style={{
                 width: '100%',
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
-                backgroundColor: colors.DISABLED
+                borderColor: colors.PRIMARY_TEXT
               }}
             >
-              {t(`community.memberPassport.requested`)}
+              {t(`community.memberPassport.message`)}
             </Button>
+          ) : pending || SinglePassport?.connected === 'PENDING' ? (
+            <ButtonCover>
+              <Button
+                disabled={true}
+                mode="contained"
+                color={colors.PRIMARY_TEXT}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{ height: RFValue(55) }}
+                style={{
+                  width: DEVICE_FULL_WIDTH / 2 - 30,
+                  height: RFValue(55),
+                  borderRadius: 4,
+                  marginTop: RFValue(20),
+                  backgroundColor: colors.DISABLED
+                }}
+              >
+                {t(`community.memberPassport.requested`)}
+              </Button>
+              <Button
+                onPress={handleMessageNavigation}
+                mode="outlined"
+                color={colors.PRIMARY}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{
+                  height: RFValue(55),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+                style={{
+                  width: DEVICE_FULL_WIDTH / 2 - 30,
+                  height: RFValue(55),
+                  borderRadius: 4,
+                  marginTop: RFValue(20),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+              >
+                {t(`community.memberPassport.message`)}
+              </Button>
+            </ButtonCover>
           ) : (
-            <GradientButton onPress={handleRequest} loading={loading}>
-              {t(`community.memberPassport.connect`)}
-            </GradientButton>
+            <ButtonCover>
+              <GradientButton
+                onPress={handleRequest}
+                loading={loading}
+                style={{ width: DEVICE_FULL_WIDTH / 2 - 30 }}
+              >
+                {t(`community.memberPassport.connect`)}
+              </GradientButton>
+              <Button
+                onPress={handleMessageNavigation}
+                mode="outlined"
+                color={colors.PRIMARY}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{
+                  height: RFValue(55),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+                style={{
+                  width: DEVICE_FULL_WIDTH / 2 - 30,
+                  height: RFValue(55),
+                  borderRadius: 4,
+                  marginTop: RFValue(20),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+              >
+                {t(`community.memberPassport.message`)}
+              </Button>
+            </ButtonCover>
           )}
 
           {SinglePassport?.currentLocation || SinglePassport?.birthLocation ? (
@@ -254,7 +328,7 @@ export default function contactSlide(props: MemberDetailProps) {
                       marginBottom: 10
                     }}
                   >
-                    {`${SinglePassport?.birthPlace[0].state} ${SinglePassport?.birthPlace[0].country}`}
+                    {`${SinglePassport?.birthPlace[0].state}, ${SinglePassport?.birthPlace[0].country}`}
                   </Paragraph>
                 </Location>
               ) : null}
@@ -281,7 +355,7 @@ export default function contactSlide(props: MemberDetailProps) {
                       marginBottom: 10
                     }}
                   >
-                    {`${SinglePassport?.currentLocation[0].state} ${SinglePassport?.currentLocation[0].country}`}
+                    {`${SinglePassport?.currentLocation[0].state}, ${SinglePassport?.currentLocation[0].country}`}
                   </Paragraph>
                 </Location>
               ) : null}

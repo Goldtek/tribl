@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, TouchableHighlight } from 'react-native';
 import { FlatList } from 'react-native';
 import { Divider, Button, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -25,9 +25,13 @@ import ENVIRONMENT_VARIABLES from '../../../config';
 import { Container, FilterContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  selectedName: string;
+  selected: boolean;
+}
 
 export default function ChatScreen(props: ScreenProp) {
+  const { selected, selectedName } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -55,6 +59,13 @@ export default function ChatScreen(props: ScreenProp) {
   });
 
   const [filter, setFilter] = useState(t(`community.chat.all`) as string);
+  const [state, setState] = useState({
+    all: true,
+    connections: false,
+    nearby: false
+  });
+
+  const { all, connections, nearby } = state;
 
   const filterAll = filteredMembers?.slice().sort(function (a: any, b: any) {
     if (a.firstName < b.firstName) return -1;
@@ -82,23 +93,37 @@ export default function ChatScreen(props: ScreenProp) {
     return 0;
   });
 
-  const data =
-    filter == t(`community.chat.all`)
-      ? filterAll
-      : filter == t(`community.chat.connection`)
-      ? filterConncetion
-      : filterNearby;
+  const data = all
+    ? filterAll
+    : connections && nearby
+    ? filterConncetion && filterNearby
+    : connections
+    ? filterConncetion
+    : filterNearby;
 
   const handleConnectionClick = () => {
-    setFilter(t(`community.chat.connection`));
+    setState({
+      ...state,
+      connections: !connections,
+      all: false
+    });
   };
 
   const handleNearbyClick = () => {
-    setFilter(t(`community.chat.nearby`));
+    setState({
+      ...state,
+      nearby: !nearby,
+      all: false
+    });
   };
 
   const handleAllMembersClick = () => {
-    setFilter(t(`community.chat.all`));
+    setState({
+      ...state,
+      all: !all,
+      nearby: false,
+      connections: false
+    });
   };
 
   const _separator = () =>
@@ -131,26 +156,19 @@ export default function ChatScreen(props: ScreenProp) {
         >
           <AlgoliaList />
         </AlgoliaSearch>
-
         <FilterContainer>
           <Button
             mode="contained"
             onPress={handleAllMembersClick}
             labelStyle={{
-              color:
-                filter === t(`community.chat.all`)
-                  ? colors.WHITE
-                  : colors.PRIMARY_TEXT,
+              color: all ? colors.WHITE : colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               textTransform: 'capitalize'
             }}
             contentStyle={{
               paddingVertical: 7,
               paddingHorizontal: 5,
-              backgroundColor:
-                filter === t(`community.chat.all`)
-                  ? colors.PRIMARY
-                  : colors.WHITE
+              backgroundColor: all ? colors.PRIMARY : colors.WHITE
             }}
             style={{ borderRadius: 4 }}
           >
@@ -161,20 +179,14 @@ export default function ChatScreen(props: ScreenProp) {
             mode="contained"
             onPress={handleConnectionClick}
             labelStyle={{
-              color:
-                filter === t(`community.chat.connection`)
-                  ? colors.WHITE
-                  : colors.PRIMARY_TEXT,
+              color: connections ? colors.WHITE : colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               textTransform: 'capitalize'
             }}
             contentStyle={{
               paddingVertical: 7,
               paddingHorizontal: 5,
-              backgroundColor:
-                filter === t(`community.chat.connection`)
-                  ? colors.PRIMARY
-                  : colors.WHITE
+              backgroundColor: connections ? colors.PRIMARY : colors.WHITE
             }}
             style={{ borderRadius: 4, marginLeft: 15 }}
           >
@@ -184,20 +196,14 @@ export default function ChatScreen(props: ScreenProp) {
             mode="contained"
             onPress={handleNearbyClick}
             labelStyle={{
-              color:
-                filter === t(`community.chat.nearby`)
-                  ? colors.WHITE
-                  : colors.PRIMARY_TEXT,
+              color: nearby ? colors.WHITE : colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               textTransform: 'capitalize'
             }}
             contentStyle={{
               paddingVertical: 7,
               paddingHorizontal: 5,
-              backgroundColor:
-                filter === t(`community.chat.nearby`)
-                  ? colors.PRIMARY
-                  : colors.WHITE
+              backgroundColor: nearby ? colors.PRIMARY : colors.WHITE
             }}
             style={{
               marginHorizontal: 15,
@@ -259,7 +265,7 @@ export default function ChatScreen(props: ScreenProp) {
               textAlign: 'center'
             }}
           >
-            There are no members nearby at this time
+            There are no members at this time
           </Text>
         )}
       </Container>

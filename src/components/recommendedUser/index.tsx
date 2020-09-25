@@ -40,8 +40,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     conversation
   } = props;
 
-  if (!currentLocation.length) return null;
-
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
@@ -130,19 +128,37 @@ export default function RecommendedUser(props: RecommendedUserProp) {
           >
             {`${firstName} ${lastName}`}
           </Title>
-          <Paragraph
-            numberOfLines={1}
-            style={{
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              marginTop: 0,
-              marginBottom: 0
-            }}
-          >
-            {`${currentLocation[0]?.state}, ${currentLocation[0]?.country}`}
-          </Paragraph>
+          {currentLocation[0]?.city ? (
+            <Paragraph
+              numberOfLines={1}
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginTop: 0,
+                marginBottom: 0,
+                paddingHorizontal: 10
+              }}
+            >
+              {`${currentLocation[0]?.city}, ${currentLocation[0]?.state}`}
+            </Paragraph>
+          ) : (
+            <Paragraph
+              numberOfLines={1}
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginTop: 0,
+                marginBottom: 0,
+                paddingHorizontal: 10
+              }}
+            >
+              {`${currentLocation[0]?.state}, ${currentLocation[0]?.country}`}
+            </Paragraph>
+          )}
         </TextContainer>
         {connected == 'PENDING' || pending ? (
           <Button
@@ -155,33 +171,27 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               textTransform: 'capitalize',
               color: colors.PRIMARY_TEXT
             }}
-            contentStyle={{
-              width: '100%',
-              paddingLeft: 10,
-              paddingRight: 10,
-              backgroundColor: colors.DISABLED
-            }}
+            contentStyle={{ width: '100%', backgroundColor: colors.DISABLED }}
             style={{ borderRadius: 5 }}
           >
             {t(`community.recommended.pending`)}
           </Button>
         ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
           <Button
-            mode="contained"
+            mode="outlined"
             uppercase={false}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.MEDIUM_SIZE),
               textTransform: 'capitalize',
-              color: colors.WHITE
+              color: colors.PRIMARY
             }}
             contentStyle={{
               width: '100%',
-              paddingLeft: 10,
-              paddingRight: 10,
-              backgroundColor: colors.PRIMARY
+              backgroundColor: colors.WHITE,
+              borderColor: colors.PRIMARY_TEXT
             }}
-            style={{ borderRadius: 5 }}
+            style={{ borderRadius: 5, borderColor: colors.PRIMARY_TEXT }}
             onPress={handleMessageNavigation}
           >
             {t(`community.recommended.message`)}
@@ -199,8 +209,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             }}
             contentStyle={{
               width: '100%',
-              paddingLeft: 10,
-              paddingRight: 10,
               backgroundColor: colors.PRIMARY
             }}
             style={{ borderRadius: 5 }}

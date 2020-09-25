@@ -116,6 +116,7 @@
     "instagramSubTitle": "Connect your Instagram to share your most \nrecent photos with the community",
     "spotifyTitle": "connect your spotify",
     "spotifySubTitle": "Connect your Spotify account to add your top artists \nto your profile. Your top artists will be selected \nbased on your streams on Spotify.",
-    "loading": "submitting..."
+    "loading": "submitting...",
+    "update": "update"
   }
 }

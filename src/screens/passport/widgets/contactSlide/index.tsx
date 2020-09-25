@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useCallback,
-  Fragment,
-  useEffect
-} from 'react';
+import React, { useState, useCallback, Fragment, useEffect } from 'react';
 import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
 import {
   Button,
@@ -70,6 +64,7 @@ function contactSlide(props: any) {
     showDatePicker: boolean;
     selectedIdentity: string[];
     selectedId: string[];
+    click: boolean;
   }>({
     date: '',
     firstName: '',
@@ -78,7 +73,8 @@ function contactSlide(props: any) {
     disableFirstName: true,
     showDatePicker: false,
     selectedIdentity: [],
-    selectedId: []
+    selectedId: [],
+    click: false
   });
 
   useEffect(() => {
@@ -93,7 +89,7 @@ function contactSlide(props: any) {
 
   const onChange = (selectedDate: Date) => {
     const date = formatMessageTime(selectedDate);
-    return setState({ ...state, date, showDatePicker: false });
+    return setState({ ...state, date, showDatePicker: false, click: true });
   };
 
   const handleDatePicker = () => {
@@ -103,6 +99,7 @@ function contactSlide(props: any) {
   const showIdentityModal = useCallback(
     (isVisible: boolean) => () => {
       setIsVisible(isVisible);
+
       return true;
     },
     []
@@ -112,7 +109,8 @@ function contactSlide(props: any) {
     setState({
       ...state,
       selectedIdentity: childData,
-      selectedId: idData
+      selectedId: idData,
+      click: true
     });
   };
 
@@ -165,7 +163,8 @@ function contactSlide(props: any) {
                 setState({
                   ...state,
                   firstName,
-                  disableFirstName: false
+                  disableFirstName: false,
+                  click: true
                 })
               }
               disabled={disableFirstName}
@@ -213,7 +212,8 @@ function contactSlide(props: any) {
                 setState({
                   ...state,
                   lastName,
-                  disableLastName: false
+                  disableLastName: false,
+                  click: true
                 })
               }
               disabled={disableLastName}
@@ -326,17 +326,31 @@ function contactSlide(props: any) {
                     backgroundColor: colors.ACTION
                   }}
                 />
-                <Paragraph
-                  style={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize',
-                    marginBottom: 10
-                  }}
-                >
-                  {`${birthPlace?.state} ${birthPlace?.country}`}
-                </Paragraph>
+                {userDetails?.birthPlace[0].city ? (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${birthPlace?.city}, ${birthPlace?.state}`}
+                  </Paragraph>
+                ) : (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${birthPlace?.state}, ${birthPlace?.country}`}
+                  </Paragraph>
+                )}
               </Location>
 
               <Location>
@@ -352,17 +366,31 @@ function contactSlide(props: any) {
                     backgroundColor: colors.ACTION
                   }}
                 />
-                <Paragraph
-                  style={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize',
-                    marginBottom: 10
-                  }}
-                >
-                  {`${currentLocation.state} ${currentLocation.country}`}
-                </Paragraph>
+                {userDetails?.currentLocation[0].city ? (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${currentLocation.city}, ${currentLocation.state}`}
+                  </Paragraph>
+                ) : (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${currentLocation.state}, ${currentLocation.country}`}
+                  </Paragraph>
+                )}
               </Location>
             </LocationContainer>
           ) : null}
@@ -527,5 +555,4 @@ function contactSlide(props: any) {
   );
 }
 
-// export default React.memo(contactSlide, () => false);
 export default React.memo(contactSlide);

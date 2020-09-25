@@ -27,6 +27,7 @@ export interface AppResolvers extends Resolvers {
 type Location = {
   state: string;
   country: string;
+  city: string;
   lat: number | null;
   __typename: string;
   long: number | null;
