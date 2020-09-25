@@ -40,10 +40,10 @@ function RequestChatCard(props: RequestChatCard) {
 
   const handleNavigation = () => {
     navigation.navigate('MessageRequestScreen', {
-      title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
-      avatar: receiverPassport?.avatar,
+      chatId,
       senderId: sender.id,
-      chatId
+      title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
+      ...receiverPassport
     });
   };
 
