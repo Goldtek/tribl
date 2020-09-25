@@ -1,26 +1,20 @@
-import React, { Fragment, useState, useMemo, useEffect } from 'react';
+import React, { Fragment, useState, useMemo } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
-import * as Updates from 'expo-updates';
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
 import JoinCommunity from '../../../components/joinCommunity';
-import { GenerateFirebaseTokenIT } from '../../../graphql/types';
-import CheckAppUpdates from '../../../libs/updates';
-import Firechat from '../../../firebase';
-import Storage from '../../../storage';
 import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   GET_MY_COMMUNITIES,
-  GET_FIREBASE_TOKEN,
   GET_USER_PASSPORT,
   USER_ONLINE_SUBSCRIPTION
 } from '../../../graphql/server/query';
@@ -76,28 +70,6 @@ export default function HomeScreen(props: ScreenProp) {
   const randomCommunity = communityData?.recommendedCommunities.filter(
     (community: any) => community.name.includes('Sequoia')
   )[0];
-
-  const { data: firebase, loading } = useQuery<GenerateFirebaseTokenIT>(
-    GET_FIREBASE_TOKEN
-  );
-
-  useEffect(() => {
-    const getFirebaseToken = async () => {
-      if (firebase?.generateFirebaseToken) {
-        Storage.setUserCredentials(firebase?.generateFirebaseToken);
-        Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
-      }
-    };
-    getFirebaseToken();
-    checkUpdate();
-  }, [loading]);
-
-  const checkUpdate = async () => {
-    const update = await Updates.checkForUpdateAsync();
-    setState({ ...state, update: update.isAvailable });
-  };
-
-  const cancelUpdate = () => setState({ ...state, update: false });
 
   const navigateToSearch = (index: number) => () => {
     navigation.navigate('CommunitySearchScreen', { index: index });
@@ -292,8 +264,6 @@ export default function HomeScreen(props: ScreenProp) {
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
       ) : null}
-
-      {state.update ? <CheckAppUpdates cancelUpdate={cancelUpdate} /> : null}
     </Fragment>
   );
 }

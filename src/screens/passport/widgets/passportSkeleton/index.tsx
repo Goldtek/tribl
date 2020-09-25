@@ -4,15 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { useTranslation } from 'react-i18next';
-import {
-  Title,
-  Paragraph,
-  Button,
-  ActivityIndicator
-} from 'react-native-paper';
+import { Title, Paragraph, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery, useMutation } from '@apollo/react-hooks';
-// import { FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../../../theme';
 import TabViewSlider from '../tabs';
@@ -93,16 +86,15 @@ export default function PassportSkeleton(props: ScreenProp) {
             >
               {t(`signup.passportScreen.title`)}
             </Title>
-            <Button labelStyle={{ color: colors.WHITE }}>Done</Button>
           </Cover>
           <ImageContainer>
             <SkeletonPlaceholder>
               <SkeletonPlaceholder.Item margin={10}>
                 <SkeletonPlaceholder.Item
-                  width={120}
-                  height={120}
+                  width={RFValue(120)}
+                  height={RFValue(120)}
                   justifyContent="center"
-                  borderRadius={4}
+                  borderRadius={RFValue(4)}
                 />
               </SkeletonPlaceholder.Item>
             </SkeletonPlaceholder>
@@ -112,7 +104,7 @@ export default function PassportSkeleton(props: ScreenProp) {
                 style={{
                   fontFamily: fonts.WORK_SANS_REGULAR,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  paddingRight: 20,
+                  paddingRight: RFValue(20),
                   marginTop: RFValue(30),
                   lineHeight: 16,
                   color: colors.WHITE,
@@ -122,8 +114,8 @@ export default function PassportSkeleton(props: ScreenProp) {
                 <SkeletonPlaceholder>
                   <SkeletonPlaceholder.Item>
                     <SkeletonPlaceholder.Item
-                      width={200}
-                      height={10}
+                      width={RFValue(180)}
+                      height={RFValue(10)}
                       borderRadius={2}
                     />
                   </SkeletonPlaceholder.Item>
@@ -134,15 +126,15 @@ export default function PassportSkeleton(props: ScreenProp) {
                   <SkeletonPlaceholder>
                     <SkeletonPlaceholder.Item alignItems="center">
                       <SkeletonPlaceholder.Item
-                        width={40}
-                        height={10}
-                        borderRadius={4}
+                        width={RFValue(40)}
+                        height={RFValue(10)}
+                        borderRadius={RFValue(4)}
                       />
                       <SkeletonPlaceholder.Item
-                        marginTop={6}
-                        width={90}
-                        height={10}
-                        borderRadius={4}
+                        marginTop={RFValue(6)}
+                        width={RFValue(80)}
+                        height={RFValue(10)}
+                        borderRadius={RFValue(4)}
                       />
                     </SkeletonPlaceholder.Item>
                   </SkeletonPlaceholder>
@@ -151,15 +143,15 @@ export default function PassportSkeleton(props: ScreenProp) {
                   <SkeletonPlaceholder>
                     <SkeletonPlaceholder.Item alignItems="center">
                       <SkeletonPlaceholder.Item
-                        width={40}
-                        height={10}
-                        borderRadius={4}
+                        width={RFValue(40)}
+                        height={RFValue(10)}
+                        borderRadius={RFValue(4)}
                       />
                       <SkeletonPlaceholder.Item
-                        marginTop={6}
-                        width={90}
-                        height={10}
-                        borderRadius={4}
+                        marginTop={RFValue(6)}
+                        width={RFValue(80)}
+                        height={RFValue(10)}
+                        borderRadius={RFValue(4)}
                       />
                     </SkeletonPlaceholder.Item>
                   </SkeletonPlaceholder>

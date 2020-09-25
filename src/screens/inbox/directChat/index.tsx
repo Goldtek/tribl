@@ -79,11 +79,15 @@ export default function ChatScreen(props: ScreenProp) {
   }, []);
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
-    messages.map((message) =>
-      sendMessage({
-        variables: { payload: { receiverId, content: message.text } }
-      })
+    const [message] = messages;
+
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, messages)
     );
+
+    sendMessage({
+      variables: { payload: { receiverId, content: message.text } }
+    });
   }, []);
 
   const handleNavigation = useCallback(() => {
