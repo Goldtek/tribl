@@ -38,6 +38,15 @@ export default function Connection(props: ConnectionProp) {
     });
   }, []);
 
+  const handleMessageNavigation = () => {
+    navigation.navigate('DirectChatScreen', {
+      title: `${firstName} ${lastName}`,
+      chatId: conversation?.id,
+      receiverId: id,
+      ...props
+    });
+  };
+
   return (
     <TouchableRipple
       style={{
@@ -104,14 +113,7 @@ export default function Connection(props: ConnectionProp) {
             justifyContent: 'center',
             alignItems: 'center'
           }}
-          onPress={() =>
-            navigation.navigate('DirectChatScreen', {
-              avatar,
-              receiverId: id,
-              chatId: conversation?.id,
-              title: `${firstName} ${lastName}`
-            })
-          }
+          onPress={handleMessageNavigation}
         >
           <Feather
             name="message-square"
