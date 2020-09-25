@@ -44,28 +44,28 @@ function ConnectionCard(props: ConnectionCardProp) {
   }, []);
 
   const handleNavigation = () => {
-    const senderId = conversation?.messageRequest.senderId;
     const messageRequest = conversation?.messageRequest;
-    const isRequestApproved = conversation?.messageRequest.approvedAt;
+    const senderId = conversation?.messageRequest?.senderId;
+    const isRequestApproved = conversation?.messageRequest?.approvedAt;
     const approveRequest =
       senderId !== userId && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
       return navigation.navigate('MessageRequestScreen', {
-        avatar,
-        senderId: id,
+        title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
-        title: `${firstName} ${lastName}`
+        senderId: id,
+        ...props
       });
     }
 
     navigation.navigate(
       conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
       {
-        avatar,
-        receiverId: id,
+        title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
-        title: `${firstName} ${lastName}`
+        receiverId: id,
+        ...props
       }
     );
   };
