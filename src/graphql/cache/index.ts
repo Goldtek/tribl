@@ -48,6 +48,7 @@ cache.writeData<StoreInterface>({
           lat: null,
           long: null,
           country: '',
+          city: '',
           state: '',
           __typename: 'currentLocation'
         }
@@ -57,6 +58,7 @@ cache.writeData<StoreInterface>({
           lat: null,
           long: null,
           country: '',
+          city: '',
           state: '',
           __typename: 'birthPlace'
         }
@@ -64,7 +66,8 @@ cache.writeData<StoreInterface>({
       avatar: USER_DEFAULT_AVATAR,
       __typename: 'userDetails'
     },
-    communitySearchIndex: 0
+    communitySearchIndex: 0,
+    showNotificationBadge: false
   }
 });
 
