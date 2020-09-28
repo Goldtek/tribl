@@ -1,11 +1,11 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import SignupNavigator from './navigator/signupNavigator';
 import DrawerStackNavigator from './navigator/sideNavigator';
+import SignupNavigator from './navigator/signupNavigator';
+import { navigationRef } from './constants';
 import { useThemeContext } from './theme';
 import Screens from './screens';
-import { navigationRef } from './constants';
 
 const RootStack = createStackNavigator();
 
