@@ -16,6 +16,7 @@ import {
 } from '../../../graphql/server/mutations';
 import {
   MyPassportInterface,
+  ShowNotificationBadgeRequestInterface,
   UserPassportInterface
 } from '../../../graphql/types';
 import {
@@ -25,6 +26,8 @@ import {
 import { fireAuth } from '../../../firebase/config';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
+import { GET_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
+import { CHANGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -41,6 +44,12 @@ export default function ConnectionChatScreen(props: ScreenProp) {
   const userId = fireAuth.currentUser?.uid;
 
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
+
+  const [changeMutation] = useMutation(CHANGE_NOTIFICATION_BADGE);
+
+  const { data: notificationData } = useQuery<
+    ShowNotificationBadgeRequestInterface
+  >(GET_NOTIFICATION_BADGE);
 
   const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
     variables: { payload: { conversationId: chatId } }
@@ -74,6 +83,13 @@ export default function ConnectionChatScreen(props: ScreenProp) {
           const message = document.data();
 
           if (snapshot.docs.length - 1 === index) {
+            if (notificationData?.showNotificationBadge) {
+              changeMutation({
+                variables: {
+                  showNotificationBadge: !notificationData?.showNotificationBadge
+                }
+              });
+            }
             setImmediate(markConversationAsRead);
           }
 
