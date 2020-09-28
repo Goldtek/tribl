@@ -112,8 +112,8 @@
     "title": "limited update release",
     "version": "1.0.8",
     "update": "this update",
-    "change1": "fix recommended communities",
-    "change2": "fix community search page improvement",
+    "change1": "fix notification on inbox view",
+    "change2": "fix notification icon on inbox tab",
     "yes": "yes",
     "no": "no"
   }
