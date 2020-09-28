@@ -1,4 +1,8 @@
-import { GET_USER_DETAILS, GET_COMMUNITY_SEARCH_INDEX } from './query';
+import {
+  GET_USER_DETAILS,
+  GET_COMMUNITY_SEARCH_INDEX,
+  GET_NOTIFICATION_BADGE
+} from './query';
 import { StoreInterface, AppResolvers } from '../types';
 
 const cacheResolvers: AppResolvers = {
@@ -35,6 +39,21 @@ const cacheResolvers: AppResolvers = {
 
       const data = { ...queryResult, communitySearchIndex } as StoreInterface;
       cache.writeQuery({ query: GET_COMMUNITY_SEARCH_INDEX, data });
+      return null;
+    },
+
+    // SHOW NOTIFICATION BADGE
+    changeNotificationBadge: (
+      _,
+      { showNotificationBadge }: { showNotificationBadge: Boolean },
+      { cache }
+    ) => {
+      const queryResult = cache.readQuery<StoreInterface>({
+        query: GET_NOTIFICATION_BADGE
+      });
+
+      const data = { ...queryResult, showNotificationBadge } as StoreInterface;
+      cache.writeQuery({ query: GET_NOTIFICATION_BADGE, data });
       return null;
     }
   }
