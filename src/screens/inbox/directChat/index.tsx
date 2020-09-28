@@ -10,7 +10,10 @@ import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
 import { fireAuth } from '../../../firebase/config';
 import Firechat from '../../../firebase';
-import { MyPassportInterface } from '../../../graphql/types';
+import {
+  MyPassportInterface,
+  ShowNotificationBadgeRequestInterface
+} from '../../../graphql/types';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import {
   MARK_MESSAGE_READ,
@@ -18,6 +21,8 @@ import {
 } from '../../../graphql/server/mutations';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
+import { CHANGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
+import { GET_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -44,6 +49,12 @@ export default function ChatScreen(props: ScreenProp) {
     variables: { payload: { conversationId: chatId } }
   });
 
+  const { data: notificationData } = useQuery<
+    ShowNotificationBadgeRequestInterface
+  >(GET_NOTIFICATION_BADGE);
+
+  const [changeMutation] = useMutation(CHANGE_NOTIFICATION_BADGE);
+
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
@@ -61,6 +72,13 @@ export default function ChatScreen(props: ScreenProp) {
           const message = document.data();
 
           if (snapshot.docs.length - 1 === index) {
+            if (notificationData?.showNotificationBadge) {
+              changeMutation({
+                variables: {
+                  showNotificationBadge: !notificationData?.showNotificationBadge
+                }
+              });
+            }
             setImmediate(markConversationAsRead);
           }
 
