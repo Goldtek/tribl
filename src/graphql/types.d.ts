@@ -137,6 +137,7 @@ export interface PassportInterface {
 
 export interface StoreInterface {
   communitySearchIndex: number;
+  showNotificationBadge: boolean;
   userDetails: PassportInterface;
 }
 
@@ -224,4 +225,9 @@ export type RecommendedMembersRequestInterface = {
 // NEARBY MEMBERS REQUEST (RESPONSE) TYPE
 export type NearbyMembersRequestInterface = {
   nearbyMembers: PassportInterface[];
+};
+
+// SHOW NOTIFICATION REQUEST (RESPONSE) TYPE
+export type ShowNotificationBadgeRequestInterface = {
+  showNotificationBadge: boolean;
 };
