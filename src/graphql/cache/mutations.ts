@@ -19,3 +19,11 @@ export const ADD_COMMUNITY_SEARCH_INDEX = gql`
     addCommunitySearchIndex(communitySearchIndex: $communitySearchIndex) @client
   }
 `;
+
+// SHOW NOTIFICATION BADGE
+export const CHANGE_NOTIFICATION_BADGE = gql`
+  mutation ChangeNotificationBadge($showNotificationBadge: Boolean!) {
+    changeNotificationBadge(showNotificationBadge: $showNotificationBadge)
+      @client
+  }
+`;

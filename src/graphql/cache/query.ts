@@ -47,3 +47,10 @@ export const GET_COMMUNITY_SEARCH_INDEX = gql`
     communitySearchIndex @client
   }
 `;
+
+// SHOW NOTIFICATION BADGE
+export const GET_NOTIFICATION_BADGE = gql`
+  query GetNotificationBadge {
+    showNotificationBadge @client
+  }
+`;
