@@ -7,6 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { StatusBar } from 'expo-status-bar';
 import RecommendedMembers from '../../../../../components/recommendedUser';
 import {
   GET_NEARBY_MEMBERS,
@@ -17,6 +18,7 @@ import ActiveModal from '../../../../../components/activeMembers';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import {
   NearbyMembersRequestInterface,
+  PassportInterface,
   RecommendedMembersRequestInterface
 } from '../../../../../graphql/types';
 
@@ -26,7 +28,7 @@ import { Container, RecommendedList, RecommendedListHeader } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-function MemberSlideScreen(props: ScreenProp) {
+function MemberSTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -58,35 +60,19 @@ function MemberSlideScreen(props: ScreenProp) {
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
     GET_NEARBY_MEMBERS
   );
-  const nearbyMembers = nearbyData?.nearbyMembers;
-  const nearbyMembersLastChild = nearbyMembers?.length
-    ? nearbyMembers?.length - 1
-    : 0;
 
-  const recommendedMembersLastChild = recommendedMembers?.length
-    ? recommendedMembers?.length - 1
-    : 0;
+  const nearbyMembers = nearbyData?.nearbyMembers;
 
   const _renderNearbyMember = useMemo(
-    () => ({ item, index }: any) => (
-      <RecommendedMembers
-        key={item.id}
-        {...item}
-        index={index}
-        lastChild={nearbyMembersLastChild}
-      />
+    () => ({ item }: { item: PassportInterface }) => (
+      <RecommendedMembers key={item.id} {...item} />
     ),
     []
   );
 
   const _renderRecommendedMember = useMemo(
-    () => ({ item, index }: any) => (
-      <RecommendedMembers
-        key={item.id}
-        index={index}
-        {...item}
-        lastChild={recommendedMembersLastChild}
-      />
+    () => ({ item }: { item: PassportInterface }) => (
+      <RecommendedMembers key={item.id} {...item} />
     ),
     []
   );
@@ -98,6 +84,8 @@ function MemberSlideScreen(props: ScreenProp) {
       nestedScrollEnabled
       style={{ flexGrow: 1 }}
     >
+      <StatusBar translucent animated style="dark" />
+
       <Container>
         <RecommendedList>
           <RecommendedListHeader>
@@ -152,8 +140,8 @@ function MemberSlideScreen(props: ScreenProp) {
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ marginTop: 20, paddingHorizontal: 15 }}
+            keyExtractor={({ id }) => id}
+            contentContainerStyle={{ marginTop: 20, paddingLeft: 15 }}
           />
         </RecommendedList>
         <RecommendedList>
@@ -209,8 +197,8 @@ function MemberSlideScreen(props: ScreenProp) {
             renderItem={_renderNearbyMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ marginTop: 20, paddingHorizontal: 15 }}
+            keyExtractor={({ id }) => id}
+            contentContainerStyle={{ marginTop: 20, paddingLeft: 15 }}
           />
         </RecommendedList>
       </Container>
@@ -226,4 +214,4 @@ function MemberSlideScreen(props: ScreenProp) {
   );
 }
 
-export default React.memo(MemberSlideScreen);
+export default React.memo(MemberSTabScreen);
