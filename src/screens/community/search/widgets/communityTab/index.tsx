@@ -34,9 +34,7 @@ function CommunityTabScreen(props: ScreenProp) {
     data: communityData
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
-  const { loading: popularCommunityLoading, data: popularData } = useQuery(
-    GET_POPULAR_COMMUNITIES
-  );
+  const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES);
 
   const community = communityData?.recommendedCommunities;
   const randomCommunity = communityData?.recommendedCommunities.filter(
@@ -64,7 +62,6 @@ function CommunityTabScreen(props: ScreenProp) {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <StatusBar translucent animated style="dark" />
-
         <Container>
           <Title
             style={{
@@ -90,38 +87,31 @@ function CommunityTabScreen(props: ScreenProp) {
           )}
 
           <PopularContainer>
-            {popularCommunityLoading ? (
-              <PopularCommunitySkeleton skeletonSize={3} />
-            ) : (
-              <Fragment>
-                {popular.length ? (
-                  <Fragment>
-                    <CommunityWrapper>
-                      <Title
-                        style={{
-                          fontFamily: fonts.WORK_SANS_BOLD,
-                          fontSize: RFValue(fonts.LARGE_SIZE),
-                          color: colors.PRIMARY_TEXT,
-                          textTransform: 'capitalize',
-                          lineHeight: 20,
-                          marginTop: 0,
-                          marginBottom: 0
-                        }}
-                      >
-                        {t(`community.tabPanel.popular`)}
-                      </Title>
-                    </CommunityWrapper>
+            {popularData?.popularCommunities.length ? (
+              <CommunityWrapper>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.LARGE_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    lineHeight: 20,
+                    marginTop: 0,
+                    marginBottom: 0
+                  }}
+                >
+                  {t(`community.tabPanel.popular`)}
+                </Title>
+              </CommunityWrapper>
+            ) : null}
 
-                    <FlatList
-                      data={popular}
-                      renderItem={_renderPopularCommunityItem}
-                      showsVerticalScrollIndicator={false}
-                      keyExtractor={(item: any) => item.id}
-                    />
-                  </Fragment>
-                ) : null}
-              </Fragment>
-            )}
+            <FlatList
+              data={popular}
+              renderItem={_renderPopularCommunityItem}
+              ListEmptyComponent={<PopularCommunitySkeleton skeletonSize={3} />}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item: any) => item.id}
+            />
           </PopularContainer>
         </Container>
       </ScrollView>

@@ -7,7 +7,6 @@ import { Feather } from '@expo/vector-icons';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { StatusBar } from 'expo-status-bar';
 import RecommendedMembers from '../../../../../components/recommendedUser';
 import {
   GET_NEARBY_MEMBERS,
@@ -84,8 +83,6 @@ function MemberSTabScreen(props: ScreenProp) {
       nestedScrollEnabled
       style={{ flexGrow: 1 }}
     >
-      <StatusBar translucent animated style="dark" />
-
       <Container>
         <RecommendedList>
           <RecommendedListHeader>
