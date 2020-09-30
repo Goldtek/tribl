@@ -6,10 +6,10 @@ import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import communitySlide from './widgets/communitySlide';
+import communityTab from './widgets/communityTab';
 import { StatusBar } from 'expo-status-bar';
 import { useMutation } from '@apollo/react-hooks';
-import memberSlide from './widgets/membersSlide';
+import membersTab from './widgets/membersTab';
 import { ADD_COMMUNITY_SEARCH_INDEX } from '../../../graphql/cache/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -32,11 +32,11 @@ export default function SearchScreen(props: ScreenProp) {
   const [tabIndex, setTabIndex] = React.useState(index);
 
   const [routes] = React.useState([
-    { key: 'memberSlide', title: `${t(`community.tabPanel.member`)}` },
-    { key: 'communitySlide', title: `${t(`community.tabPanel.community`)}` }
+    { key: 'membersTab', title: `${t(`community.tabPanel.member`)}` },
+    { key: 'communityTab', title: `${t(`community.tabPanel.community`)}` }
   ]);
 
-  const renderScene = SceneMap({ memberSlide, communitySlide });
+  const renderScene = SceneMap({ membersTab, communityTab });
 
   const handleIndexChange = (index: number) => {
     setTabIndex(index);
@@ -71,10 +71,7 @@ export default function SearchScreen(props: ScreenProp) {
     return (
       <TabBar
         {...props}
-        indicatorStyle={{
-          backgroundColor: colors.PRIMARY,
-          height: RFValue(4)
-        }}
+        indicatorStyle={{ backgroundColor: colors.PRIMARY, height: RFValue(4) }}
         renderLabel={renderLabel}
         style={{
           backgroundColor: colors.GREY,
@@ -96,7 +93,6 @@ export default function SearchScreen(props: ScreenProp) {
         onIndexChange={handleIndexChange}
         navigationState={{ index: tabIndex, routes }}
         initialLayout={{ width: DEVICE_FULL_WIDTH }}
-        swipeEnabled={false}
       />
     </Container>
   );
