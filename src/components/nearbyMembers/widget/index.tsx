@@ -168,9 +168,7 @@ function NearbyModal(props: NearbyUserProp) {
             uppercase={false}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(
-                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
-              ),
+              fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
               color: colors.PRIMARY_TEXT
             }}
@@ -179,7 +177,7 @@ function NearbyModal(props: NearbyUserProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{ width: RFValue(73), borderRadius: 5 }}
+            style={{ borderRadius: 5 }}
           >
             {t(`community.recommended.pending`)}
           </Button>
@@ -189,9 +187,7 @@ function NearbyModal(props: NearbyUserProp) {
             uppercase={false}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(
-                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
-              ),
+              fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
               color: colors.WHITE
             }}
@@ -212,9 +208,7 @@ function NearbyModal(props: NearbyUserProp) {
             uppercase={false}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(
-                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
-              ),
+              fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
               color: colors.WHITE
             }}
@@ -223,7 +217,10 @@ function NearbyModal(props: NearbyUserProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{ width: RFValue(73), borderRadius: 5 }}
+            style={{
+              width: RFValue(DEVICE_FULL_WIDTH <= 375 ? 73 : 65),
+              borderRadius: 5
+            }}
             onPress={handleRequest}
           >
             {t(`community.recommended.add`)}+
