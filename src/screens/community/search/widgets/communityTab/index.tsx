@@ -5,6 +5,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { ScrollView, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
+import { StatusBar } from 'expo-status-bar';
 import { useThemeContext } from '../../../../../theme';
 import PopularCommunity from '../../../../../components/popularCommunity';
 import RecommendedCommunity from '../../../../../components/recommendedCommunity';
@@ -23,7 +24,7 @@ import { Container, CommunityWrapper, PopularContainer } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-function CommunitySlideScreen(props: ScreenProp) {
+function CommunityTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
@@ -62,6 +63,8 @@ function CommunitySlideScreen(props: ScreenProp) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
+        <StatusBar translucent animated style="dark" />
+
         <Container>
           <Title
             style={{
@@ -129,4 +132,4 @@ function CommunitySlideScreen(props: ScreenProp) {
   );
 }
 
-export default React.memo(CommunitySlideScreen);
+export default React.memo(CommunityTabScreen);
