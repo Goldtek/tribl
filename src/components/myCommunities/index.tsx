@@ -10,15 +10,13 @@ interface MyCommunityProp {
   avatar: string;
   name: string;
   members: string;
-  lastChild: number;
-  index: number;
 }
 
 export default function MyCommunity(props: MyCommunityProp) {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, name, index, lastChild } = props;
+  const { avatar, name } = props;
 
   const handleNavigation = () =>
     navigation.navigate('CommunityDetailScreen', {
@@ -40,7 +38,7 @@ export default function MyCommunity(props: MyCommunityProp) {
         borderRadius: RFValue(4),
         borderColor: colors.PRIMARY,
         marginLeft: RFValue(15),
-        marginRight: index === lastChild ? 15 : 0
+        marginRight: 15
       }}
     >
       <FastImage
