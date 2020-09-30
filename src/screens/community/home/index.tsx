@@ -15,7 +15,6 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   GET_MY_COMMUNITIES,
-  GET_USER_PASSPORT,
   USER_ONLINE_SUBSCRIPTION
 } from '../../../graphql/server/query';
 import MyCommunity from '../../../components/myCommunities';
@@ -33,6 +32,7 @@ import {
   RecentActivitiesList,
   CommunityCover
 } from './styles';
+import { PassportInterface } from '../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -50,7 +50,6 @@ export default function HomeScreen(props: ScreenProp) {
     update: false
   });
 
-  useQuery(GET_USER_PASSPORT);
   useSubscription(USER_ONLINE_SUBSCRIPTION);
 
   const { loading: myCommunityLoading, data: myCommunityData } = useQuery(
@@ -83,25 +82,13 @@ export default function HomeScreen(props: ScreenProp) {
   };
 
   const _renderMyCommunityItem = useMemo(
-    () => ({ item, index }: any) => (
-      <MyCommunity
-        key={item.id}
-        {...item}
-        index={index}
-        lastChild={myCommunity?.length - 1}
-      />
-    ),
+    () => ({ item }: any) => <MyCommunity key={item.id} {...item} />,
     []
   );
 
   const _renderRecommendedMember = useMemo(
-    () => ({ item, index }: any) => (
-      <RecommendedUser
-        key={item.id}
-        index={index}
-        {...item}
-        lastChild={recommendedMembers?.length - 1}
-      />
+    () => ({ item }: { item: PassportInterface }) => (
+      <RecommendedUser key={item.id} {...item} />
     ),
     []
   );
@@ -144,6 +131,7 @@ export default function HomeScreen(props: ScreenProp) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
                 marginTop: 10,
+                paddingLeft: 15,
                 backgroundColor: colors.WHITE
               }}
             />
@@ -187,7 +175,7 @@ export default function HomeScreen(props: ScreenProp) {
             keyExtractor={(_, index: number) => index.toString()}
             contentContainerStyle={{
               marginTop: 20,
-              paddingHorizontal: 15,
+              paddingLeft: 15,
               backgroundColor: colors.WHITE
             }}
           />
