@@ -1,75 +1,54 @@
-import React, { useState } from 'react';
+import React, { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useThemeContext } from '../../../theme';
-// import groupChatSlide from './widgets/groupChatSlide';
-import directMessageSlide from './directMessageSlide';
-import requestSlide from './messageRequestSlide';
+import DirectMessageTab from './directMessageTab';
+import MessageRequestTab from './messageRequestTab';
 import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
-// IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
+const Tab = createMaterialTopTabNavigator();
 
 export default function InboxScreen() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [tabIndex, setTabIndex] = useState(0);
-
-  const [routes] = useState([
-    {
-      key: 'directMessageSlide',
-      title: t('community.chat.message')
-    },
-    // { key: 'groupChatSlide', title: t('community.chat.group') },
-    { key: 'requestSlide', title: t('community.chat.request') }
-  ]);
-
-  const renderScene = SceneMap({
-    directMessageSlide,
-    // groupChatSlide,
-    requestSlide
-  });
-
-  const renderTabBar = (props: any) => {
-    return (
-      <TabBar
-        {...props}
-        indicatorStyle={{ backgroundColor: colors.PRIMARY, height: RFValue(4) }}
-        style={{
-          ...GLOBAL_HEADER_STYLE,
-          backgroundColor: colors.WHITE,
-          marginTop: RFValue(10),
-          marginHorizontal: RFValue(15)
-        }}
-        labelStyle={{
-          fontFamily: fonts.WORK_SANS_BOLD,
-          fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
-          color: colors.PRIMARY_TEXT,
-          textTransform: 'capitalize'
-        }}
-        // tabStyle={{ width: 'auto', paddingHorizontal: RFValue(20) }}
-      />
-    );
-  };
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+    <Fragment>
       <StatusBar translucent animated style="dark" />
-      <Container>
-        <TabView
-          lazy
-          navigationState={{ index: tabIndex, routes }}
-          renderScene={renderScene}
-          renderTabBar={renderTabBar}
-          onIndexChange={setTabIndex}
-          initialLayout={{ width: DEVICE_FULL_WIDTH }}
+      <Tab.Navigator
+        tabBarOptions={{
+          labelStyle: {
+            fontFamily: fonts.WORK_SANS_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+            color: colors.PRIMARY_TEXT,
+            textTransform: 'capitalize'
+          },
+          indicatorStyle: {
+            backgroundColor: colors.PRIMARY,
+            height: RFValue(4)
+          },
+          style: {
+            ...GLOBAL_HEADER_STYLE,
+            paddingTop: RFValue(10),
+            marginHorizontal: RFValue(15)
+          }
+        }}
+        sceneContainerStyle={{ flex: 1, backgroundColor: colors.WHITE }}
+        style={{ flex: 1, backgroundColor: colors.WHITE }}
+      >
+        <Tab.Screen
+          name="DirectMessageTab"
+          component={DirectMessageTab}
+          options={{ tabBarLabel: t('community.chat.message') }}
         />
-      </Container>
-    </SafeAreaView>
+        <Tab.Screen
+          name="RequestTab"
+          component={MessageRequestTab}
+          options={{ tabBarLabel: t('community.chat.request') }}
+        />
+      </Tab.Navigator>
+    </Fragment>
   );
 }

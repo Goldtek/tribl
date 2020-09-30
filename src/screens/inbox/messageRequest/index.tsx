@@ -55,7 +55,14 @@ export default function ChatScreen(props: ScreenProp) {
   const navigation = useNavigation();
   const modalizeRef = useRef<Modalize>(null);
 
-  const { chatId, title, senderId, avatar } = props.route.params;
+  const {
+    chatId,
+    title,
+    senderId,
+    avatar,
+    firstName,
+    lastName
+  } = props.route.params;
 
   const userId = fireAuth.currentUser?.uid as string;
 
@@ -182,6 +189,13 @@ export default function ChatScreen(props: ScreenProp) {
     }
   };
 
+  const handleNavigation = useCallback(() => {
+    navigation.navigate('ChatMemberDetailScreen', {
+      title: `${firstName} ${lastName}`,
+      details: props.route.params
+    });
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <GiftedChat
@@ -193,6 +207,8 @@ export default function ChatScreen(props: ScreenProp) {
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
         alwaysShowSend
+        isLoadingEarlier={true}
+        onPressAvatar={handleNavigation}
         onSend={onSend}
         renderSend={(props) => (
           <Send

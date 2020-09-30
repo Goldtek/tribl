@@ -100,11 +100,7 @@ export default function SearchScreen(props: ScreenProp) {
   };
 
   const handleIndexChange = (index: number) => {
-    if (member) {
-      setTabIndex(index);
-    } else {
-      setTabIndex(0);
-    }
+    member ? setTabIndex(index) : setTabIndex(0);
   };
 
   return (
@@ -116,7 +112,7 @@ export default function SearchScreen(props: ScreenProp) {
         renderTabBar={renderTabBar}
         onIndexChange={handleIndexChange}
         initialLayout={{ width: DEVICE_FULL_WIDTH }}
-        swipeEnabled={false}
+        swipeEnabled={member}
       />
     </Container>
   );

@@ -1,22 +1,17 @@
-import React from 'react';
-import { NavigationInterface } from '../../types';
-import { useTranslation } from 'react-i18next';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import React, { useState } from 'react';
 import { Title } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../theme';
-import communitySlide from './widgets/communitySlide';
-import { StatusBar } from 'expo-status-bar';
+import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/react-hooks';
-import memberSlide from './widgets/membersSlide';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { ADD_COMMUNITY_SEARCH_INDEX } from '../../../graphql/cache/mutations';
-
-// IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
+import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import communityTab from './widgets/communityTab';
+import { useThemeContext } from '../../../theme';
+import membersTab from './widgets/membersTab';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {
+interface ScreenProp {
   route: { params: { index: number } };
 }
 
@@ -29,14 +24,14 @@ export default function SearchScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const [changeCommunitySearchIndex] = useMutation(ADD_COMMUNITY_SEARCH_INDEX);
 
-  const [tabIndex, setTabIndex] = React.useState(index);
+  const [tabIndex, setTabIndex] = useState(index);
 
-  const [routes] = React.useState([
-    { key: 'memberSlide', title: `${t(`community.tabPanel.member`)}` },
-    { key: 'communitySlide', title: `${t(`community.tabPanel.community`)}` }
+  const [routes] = useState([
+    { key: 'membersTab', title: `${t(`community.tabPanel.member`)}` },
+    { key: 'communityTab', title: `${t(`community.tabPanel.community`)}` }
   ]);
 
-  const renderScene = SceneMap({ memberSlide, communitySlide });
+  const renderScene = SceneMap({ membersTab, communityTab });
 
   const handleIndexChange = (index: number) => {
     setTabIndex(index);
@@ -71,10 +66,7 @@ export default function SearchScreen(props: ScreenProp) {
     return (
       <TabBar
         {...props}
-        indicatorStyle={{
-          backgroundColor: colors.PRIMARY,
-          height: RFValue(4)
-        }}
+        indicatorStyle={{ backgroundColor: colors.PRIMARY, height: RFValue(4) }}
         renderLabel={renderLabel}
         style={{
           backgroundColor: colors.GREY,
@@ -87,17 +79,21 @@ export default function SearchScreen(props: ScreenProp) {
   };
 
   return (
-    <Container>
-      <StatusBar translucent animated style="dark" />
-      <TabView
-        lazy
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={handleIndexChange}
-        navigationState={{ index: tabIndex, routes }}
-        initialLayout={{ width: DEVICE_FULL_WIDTH }}
-        swipeEnabled={false}
-      />
-    </Container>
+    <TabView
+      lazy
+      renderScene={renderScene}
+      renderTabBar={renderTabBar}
+      onIndexChange={handleIndexChange}
+      navigationState={{ index: tabIndex, routes }}
+      initialLayout={{ width: DEVICE_FULL_WIDTH }}
+      sceneContainerStyle={{
+        paddingTop: RFValue(20),
+        backgroundColor: colors.GREY
+      }}
+      style={{
+        paddingTop: RFValue(20),
+        backgroundColor: colors.GREY
+      }}
+    />
   );
 }
