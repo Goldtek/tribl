@@ -16,10 +16,7 @@ import { TextContainer, AvatarContainer } from './styles';
 import { PassportInterface } from '../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
-interface RecommendedUserProp extends PassportInterface {
-  index: number;
-  lastChild: number;
-}
+interface RecommendedUserProp extends PassportInterface {}
 
 export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
@@ -33,8 +30,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     firstName,
     lastName,
     currentLocation,
-    lastChild,
-    index,
     phoneNumber,
     connected,
     conversation
@@ -83,7 +78,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
         alignItems: 'center',
         borderRadius: 5,
         marginBottom: 20,
-        marginRight: index === lastChild ? 0 : 15,
+        marginRight: 15,
         borderWidth: 0.5,
         borderColor: hexToRGB(colors.DISABLED, 0.3)
       }}
