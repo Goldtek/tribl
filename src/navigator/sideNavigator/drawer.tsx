@@ -11,12 +11,10 @@ import {
   MaterialCommunityIcons,
   Entypo,
   SimpleLineIcons,
-  Feather,
   FontAwesome
 } from '@expo/vector-icons';
 import BottomNavigator from '../bottomNavigator';
 import CustomDrawerContent from './customDrawerComponent';
-import ChatNavigator from '../chatNavigator';
 
 const Drawer = createDrawerNavigator();
 
