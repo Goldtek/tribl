@@ -30,7 +30,7 @@ export default function RecommendedUserSkeleton({
             alignItems: 'center',
             borderRadius: 5,
             marginBottom: 20,
-            marginLeft: 15,
+            marginRight: 15,
             borderWidth: 0.5,
             borderColor: hexToRGB(colors.DISABLED, 0.3)
           }}

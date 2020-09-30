@@ -12,8 +12,10 @@ import { GET_RECOMMENDED_MEMBERS } from '../../graphql/server/query';
 import ActiveMember from './widget';
 import Skeleton from './widget/skeleton';
 
-// IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
+import {
+  PassportInterface,
+  RecommendedMembersRequestInterface
+} from '../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ModalProp {
@@ -27,11 +29,13 @@ function ActiveModal(props: ModalProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { loading, data: recommendedData } = useQuery(GET_RECOMMENDED_MEMBERS);
+  const { data: recommendedData } = useQuery<
+    RecommendedMembersRequestInterface
+  >(GET_RECOMMENDED_MEMBERS);
 
   const recommendedMembers = recommendedData?.recommendedMembers;
 
-  const filterMembers = recommendedMembers?.slice().sort((a: any, b: any) => {
+  const filterMembers = recommendedMembers?.slice().sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
@@ -49,12 +53,22 @@ function ActiveModal(props: ModalProp) {
     isVisible ? openModal() : closeModal();
   }, [isVisible]);
 
+  const _renderItem = ({ item }: { item: PassportInterface }) => (
+    <ActiveMember key={item.id} {...item} closeActiveModal={closeActiveModal} />
+  );
+
   return (
     <Portal>
+      <StatusBar translucent animated style="light" />
+
       <Modalize
         ref={modalizeRef}
         onClose={closeActiveModal}
-        modalStyle={{ height: DEVICE_FULL_HEIGHT / 2, paddingTop: RFValue(30) }}
+        modalStyle={{
+          height: DEVICE_FULL_HEIGHT / 2,
+          paddingTop: RFValue(30),
+          paddingBottom: RFValue(20)
+        }}
         HeaderComponent={
           <Text
             style={{
@@ -70,34 +84,15 @@ function ActiveModal(props: ModalProp) {
             {t(`community.tabPanel.active`)}
           </Text>
         }
-        scrollViewProps={{
+        flatListProps={{
+          data: filterMembers || [],
+          renderItem: _renderItem,
+          ListEmptyComponent: <Skeleton />,
           showsVerticalScrollIndicator: false,
+          keyExtractor: ({ id }: PassportInterface) => id,
           contentContainerStyle: { paddingBottom: 20 }
         }}
-      >
-        <StatusBar translucent animated style="light" />
-        {loading ? (
-          <Skeleton />
-        ) : (
-          <Container
-            style={{
-              flex: 1,
-              width: '100%',
-              backgroundColor: 'transparent',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            {filterMembers?.map((member: any) => (
-              <ActiveMember
-                key={member.id}
-                {...member}
-                closeActiveModal={closeActiveModal}
-              />
-            ))}
-          </Container>
-        )}
-      </Modalize>
+      />
     </Portal>
   );
 }

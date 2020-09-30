@@ -22,23 +22,23 @@ export default function PopularCommunitySkeleton({
             <SkeletonPlaceholder.Item
               width={RFValue(90)}
               height={RFValue(90)}
-              borderRadius={RFValue(15)}
+              borderRadius={RFValue(5)}
             />
             <SkeletonPlaceholder.Item
               justifyContent="center"
-              marginLeft={RFValue(20)}
+              marginLeft={RFValue(10)}
             >
               <SkeletonPlaceholder.Item
                 width={RFValue(80)}
-                height={RFValue(20)}
+                height={RFValue(15)}
                 borderRadius={RFValue(4)}
-                marginTop={RFValue(20)}
+                marginTop={RFValue(30)}
               />
               <SkeletonPlaceholder.Item
                 width={RFValue(80)}
-                height={RFValue(20)}
+                height={RFValue(15)}
                 borderRadius={RFValue(4)}
-                marginTop={RFValue(20)}
+                marginTop={RFValue(10)}
               />
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder.Item>
