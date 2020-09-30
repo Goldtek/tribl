@@ -18,7 +18,7 @@ export const HeaderBackTitle = styled.Text`
   right: -10px;
 `;
 export const HeaderLeft = styled.View`
-  width: ${RFValue(70)}px;
+  width: ${RFValue(50)}px;
   height: 100%;
   flex-direction: row;
   justify-content: center;
