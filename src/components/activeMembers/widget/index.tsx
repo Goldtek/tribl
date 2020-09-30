@@ -40,22 +40,18 @@ function ActiveModal(props: ActiveUserProp) {
     conversation
   } = member;
 
-  const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
 
-  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+  const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber } }
   });
 
   const handleRequest = async () => {
-    setLoading(true);
     try {
       await requestConnection();
-      setLoading(false);
       setPending(true);
     } catch (error) {
       Sentry.captureException(error);
-      setLoading(false);
     }
   };
 
@@ -169,18 +165,17 @@ function ActiveModal(props: ActiveUserProp) {
             uppercase={false}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(
-                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
-              ),
+              fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
-              color: colors.PRIMARY_TEXT
+              color: colors.PRIMARY_TEXT,
+              marginHorizontal: 0
             }}
             contentStyle={{
               backgroundColor: colors.DISABLED,
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{ borderRadius: 5, width: RFValue(73) }}
+            style={{ borderRadius: 5, width: RFValue(60) }}
           >
             {t(`community.recommended.pending`)}
           </Button>
@@ -190,18 +185,17 @@ function ActiveModal(props: ActiveUserProp) {
             uppercase={false}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(
-                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
-              ),
+              fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
-              color: colors.WHITE
+              color: colors.WHITE,
+              marginHorizontal: 0
             }}
             contentStyle={{
               backgroundColor: colors.PRIMARY,
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{ borderRadius: 5 }}
+            style={{ borderRadius: 5, width: RFValue(60) }}
             onPress={handleMessageNavigation}
           >
             {t(`community.recommended.message`)}
@@ -213,9 +207,7 @@ function ActiveModal(props: ActiveUserProp) {
             uppercase={false}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(
-                DEVICE_FULL_WIDTH <= 375 ? fonts.SMALL_SIZE : fonts.MEDIUM_SIZE
-              ),
+              fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
               color: colors.WHITE
             }}
@@ -224,7 +216,7 @@ function ActiveModal(props: ActiveUserProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{ borderRadius: 5, width: RFValue(73) }}
+            style={{ borderRadius: 5, width: RFValue(60) }}
             onPress={handleRequest}
           >
             {t(`community.recommended.add`)}+
