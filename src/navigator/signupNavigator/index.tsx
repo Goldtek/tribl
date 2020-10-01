@@ -59,7 +59,7 @@ export default function SignupNavigator() {
             long: birthPlace?.long,
             country: birthPlace?.country,
             state: birthPlace?.state,
-            city: currentLocation?.city
+            city: birthPlace?.city
           }
         }
       }
