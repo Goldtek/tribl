@@ -1,13 +1,13 @@
 {
   "bottomLabels": {
-    "community": "tribl",
+    "community": "community",
     "inbox": "inbox",
     "passport": "passport"
   },
 
   "recommended": {
     "members": "recommended members",
-    "community": "recommended community",
+    "community": "recommended tribes",
     "view": "view all",
     "join": "join",
     "pending": "pending",
