@@ -59,10 +59,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
         options={{
           headerTitle: () => (
             <Image
-              source={require('../../../assets/images/logo.png')}
+              source={require('../../../assets/images/logo2.png')}
               style={{
-                width: RFValue(50),
-                height: RFValue(50),
+                width: RFValue(60),
+                height: RFValue(60),
                 resizeMode: 'contain'
               }}
             />
