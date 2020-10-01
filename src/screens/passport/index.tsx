@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
 import * as Location from 'expo-location';
 import * as Updates from 'expo-updates';
+import { check, PERMISSIONS, request } from 'react-native-permissions';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -80,8 +81,14 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [OTAUpdate, setOTAUpdate] = useState(false);
 
-  const [location, setLocation] = useState({
-    city: '',
+  const [location, setLocation] = useState<{
+    city?: string;
+    state?: string | null | undefined;
+    country?: string;
+    lat?: number | null;
+    long?: number | null;
+  }>({
+    city: userDetails?.currentLocation[0]?.city,
     state: '',
     country: '',
     lat: 0,
@@ -162,7 +169,7 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   useEffect(() => {
-    handleLocation();
+    handleLocationPermission();
   }, []);
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
@@ -206,6 +213,41 @@ export default function PassportScreen(props: ScreenProp) {
   }, [userDetails?.id]);
 
   useEffect(() => {
+    if (!location.city?.length) {
+      setLocation({
+        city: userDetails?.currentLocation[0]?.city,
+        state: userDetails?.currentLocation[0]?.state,
+        country: userDetails?.currentLocation[0]?.country,
+        lat: userDetails?.currentLocation[0]?.lat,
+        long: userDetails?.currentLocation[0]?.long
+      });
+    }
+  }, [userDetails?.id]);
+
+  const handleLocationPermission = async () => {
+    const iosData = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    const andriodData = await check(
+      PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION
+    );
+    if (iosData === 'granted' || andriodData === 'granted') {
+      handleLocation();
+    } else if (
+      iosData === 'denied' ||
+      andriodData === 'denied' ||
+      iosData === 'blocked' ||
+      andriodData === 'blocked'
+    ) {
+      const iosData2 = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      const andriodData2 = await request(
+        PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION
+      );
+      iosData2 === 'granted' || andriodData2 === 'granted'
+        ? handleLocation()
+        : null;
+    }
+  };
+
+  useEffect(() => {
     const updateLocation = async () => {
       try {
         await updatePassport();
@@ -216,12 +258,12 @@ export default function PassportScreen(props: ScreenProp) {
     };
 
     if (
-      location.city.length &&
+      location.city?.length &&
       birthPlace.state?.length &&
       state.identity?.length
     )
       updateLocation();
-  }, [location.city]);
+  }, [birthPlace.state]);
 
   useEffect(() => {
     //@ts-ignore
