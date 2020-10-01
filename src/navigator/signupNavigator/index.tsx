@@ -51,13 +51,15 @@ export default function SignupNavigator() {
             lat: currentLocation?.lat,
             long: currentLocation?.long,
             country: currentLocation?.country,
-            state: currentLocation?.state
+            state: currentLocation?.state,
+            city: currentLocation?.city
           },
           birthPlace: {
             lat: birthPlace?.lat,
             long: birthPlace?.long,
             country: birthPlace?.country,
-            state: birthPlace?.state
+            state: birthPlace?.state,
+            city: currentLocation?.city
           }
         }
       }
@@ -86,7 +88,6 @@ export default function SignupNavigator() {
 
           setUpdate(!update);
           const { data } = await updatePassport();
-
           if (data?.updatePassport.success) {
             setUpdate(!update);
             navigation.reset({
