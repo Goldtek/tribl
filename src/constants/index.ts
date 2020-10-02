@@ -9,7 +9,7 @@ import { NavigationContainerRef } from '@react-navigation/native';
 
 // ALL ASYNC STORAGE CONSTANTS
 export const USER_FIRST_LAUNCH = '@FIRST_TIME_LAUNCH';
-export const USER_AUTH_KEYS: string = '@USER_AUTH_KEYS';
+export const USER_REG_INFO: string = '@USER_REG_INFO';
 
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 15;
