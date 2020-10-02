@@ -1,60 +1,51 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import * as SecureStore from 'expo-secure-store';
+import MMKVStorage from 'react-native-mmkv-storage';
 import * as APP_CONSTANTS from '../constants';
 import { DEVICE_ID } from '../utils/device';
-import { VerifyOTPIT } from '../graphql/types';
+import { VerifyOTPIT, RegistrationInfo } from '../graphql/types';
 
 class Storage {
-  protected credentialInstance: VerifyOTPIT | null = null;
-  protected initialLaunch: boolean = false;
+  public MMKV: MMKVStorage.API | null = null;
 
-  async checkInitialLaunch() {
-    const firstTimeLaunch = await AsyncStorage.getItem(
-      APP_CONSTANTS.USER_FIRST_LAUNCH
-    );
-
-    this.initialLaunch = Boolean(Number(firstTimeLaunch));
+  constructor() {
+    this.MMKV = new MMKVStorage.Loader().withEncryption().initialize();
   }
 
-  getInitialLaunch() {
-    return this.initialLaunch;
+  async checkInitialLaunch() {
+    return this.MMKV?.getBoolAsync(APP_CONSTANTS.USER_FIRST_LAUNCH);
+  }
+
+  async clearStorage() {
+    return this.MMKV?.clearStore();
   }
 
   async setInitialLaunch() {
-    return AsyncStorage.setItem(APP_CONSTANTS.USER_FIRST_LAUNCH, '1');
+    return this.MMKV?.setBoolAsync(APP_CONSTANTS.USER_FIRST_LAUNCH, true);
   }
 
-  async checkUserCredentials() {
-    if (this.credentialInstance) {
-      return this.credentialInstance;
+  async getUserCredentials() {
+    return this.MMKV?.getMapAsync(DEVICE_ID) as Promise<VerifyOTPIT>;
+  }
+
+  async setUserRegistration(regInfo: RegistrationInfo) {
+    return this.MMKV?.setMapAsync(APP_CONSTANTS.USER_REG_INFO, regInfo);
+  }
+
+  async getUserRegistration() {
+    return this.MMKV?.getMapAsync(APP_CONSTANTS.USER_REG_INFO) as Promise<
+      RegistrationInfo
+    >;
+  }
+
+  async setUserCredentials(credentials?: VerifyOTPIT) {
+    try {
+      const userCredentials = await this.getUserCredentials();
+      await this.MMKV?.setMapAsync(DEVICE_ID, {
+        ...userCredentials,
+        ...credentials
+      });
+    } catch (error) {
+      await this.MMKV?.setMapAsync(DEVICE_ID, { ...credentials });
     }
-
-    const credentials = await SecureStore.getItemAsync(DEVICE_ID);
-
-    if (!credentials) return null;
-
-    const authCredentials = JSON.parse(credentials) as VerifyOTPIT;
-    this.credentialInstance = authCredentials;
-    return authCredentials;
-  }
-
-  getUserCredentials() {
-    return this.credentialInstance;
-  }
-
-  setUserCredentials(credentials: VerifyOTPIT) {
-    this.credentialInstance = { ...this.credentialInstance, ...credentials };
-    this.setUserSecuredCredentials();
-  }
-
-  async setUserSecuredCredentials() {
-    return Promise.all([
-      SecureStore.deleteItemAsync(DEVICE_ID),
-      SecureStore.setItemAsync(
-        DEVICE_ID,
-        JSON.stringify(this.credentialInstance)
-      )
-    ]);
   }
 }
 
