@@ -421,6 +421,9 @@ PODS:
   - lottie-react-native (3.5.0):
     - lottie-ios (~> 3.1.8)
     - React
+  - MMKV (1.2.2):
+    - MMKVCore (~> 1.2.2)
+  - MMKVCore (1.2.2)
   - nanopb (1.30905.0):
     - nanopb/decode (= 1.30905.0)
     - nanopb/encode (= 1.30905.0)
@@ -615,6 +618,9 @@ PODS:
   - react-native-blur (0.8.0):
     - React
   - react-native-image-resizer (1.2.6):
+    - React
+  - react-native-mmkv-storage (0.3.7):
+    - MMKV (= 1.2.2)
     - React
   - react-native-netinfo (5.9.6):
     - React
@@ -831,6 +837,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
+  - react-native-mmkv-storage (from `../node_modules/react-native-mmkv-storage`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -905,6 +912,8 @@ SPEC REPOS:
     - GTMSessionFetcher
     - leveldb-library
     - libwebp
+    - MMKV
+    - MMKVCore
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
@@ -997,6 +1006,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/blur"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
+  react-native-mmkv-storage:
+    :path: "../node_modules/react-native-mmkv-storage"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-restart:
@@ -1137,6 +1148,8 @@ SPEC CHECKSUMS:
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 1fb4ce21d6ad37dab8343eaff8719df76035bd93
+  MMKV: b14909757d8b70e2aa89ff1c6d56a7b239e10a29
+  MMKVCore: 6225324fe5006026bc86ef8641d567e00c6582f3
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   Permission-Calendars: 17bb6a871acc7580754be7b56cfb25537e1b57de
@@ -1160,6 +1173,7 @@ SPEC CHECKSUMS:
   React-jsinspector: fc661eff8edbfb7e22119382c13f33bcadde0f3c
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-image-resizer: cbfc171bad1c33a5b146281873f9e88c54439d79
+  react-native-mmkv-storage: 023a9c501f7430319138a94889fc53691b93d73d
   react-native-netinfo: 38a1e0b3e89b48e4b5833ed475d8df5f049f6f90
   react-native-restart: d19a0f8d053d065fe64cd2baebb6487111c77149
   react-native-safe-area-context: 955ecfce672683b495d9294d2f154a9ad1d9796b
