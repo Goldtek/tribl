@@ -15,6 +15,7 @@ import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { GET_USER_DETAILS } from '../../graphql/cache/query';
 import { StoreInterface, UpdatePassportInterface } from '../../graphql/types';
 import { UPDATE_USER_PASSPORT } from '../../graphql/server/mutations';
+import Storage from '../../storage';
 
 const SignupStack = createStackNavigator();
 let routeNames = [] as string[];
@@ -31,7 +32,6 @@ export default function SignupNavigator() {
 
   const currentLocation = userDetails?.currentLocation[0];
   const birthPlace = userDetails?.birthPlace[0];
-
   const [updatePassport] = useMutation<UpdatePassportInterface>(
     UPDATE_USER_PASSPORT,
     {
@@ -87,9 +87,17 @@ export default function SignupNavigator() {
           }
 
           setUpdate(!update);
+
           const { data } = await updatePassport();
+
           if (data?.updatePassport.success) {
             setUpdate(!update);
+
+            await Storage.setUserRegistration({
+              route: 'CommunityScreen',
+              completed: true
+            });
+
             navigation.reset({
               index: 0,
               routes: [{ name: 'CommunityScreen' }]
