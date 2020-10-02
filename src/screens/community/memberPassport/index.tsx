@@ -319,7 +319,7 @@ export default function contactSlide(props: MemberDetailProps) {
                       backgroundColor: colors.ACTION
                     }}
                   />
-                  {SinglePassport?.birthPlace[0].city ? (
+                  {SinglePassport?.birthPlace[0]?.city ? (
                     <Paragraph
                       style={{
                         fontFamily: fonts.WORK_SANS_REGULAR,
@@ -329,7 +329,7 @@ export default function contactSlide(props: MemberDetailProps) {
                         marginBottom: 10
                       }}
                     >
-                      {`${SinglePassport?.birthPlace[0].city}, ${SinglePassport?.birthPlace[0].state}`}
+                      {`${SinglePassport?.birthPlace[0]?.city}, ${SinglePassport?.birthPlace[0]?.state}`}
                     </Paragraph>
                   ) : (
                     <Paragraph
@@ -341,7 +341,7 @@ export default function contactSlide(props: MemberDetailProps) {
                         marginBottom: 10
                       }}
                     >
-                      {`${SinglePassport?.birthPlace[0].state}, ${SinglePassport?.birthPlace[0].country}`}
+                      {`${SinglePassport?.birthPlace[0]?.state}, ${SinglePassport?.birthPlace[0]?.country}`}
                     </Paragraph>
                   )}
                 </Location>
@@ -360,7 +360,7 @@ export default function contactSlide(props: MemberDetailProps) {
                       backgroundColor: colors.ACTION
                     }}
                   />
-                  {SinglePassport?.currentLocation[0].city ? (
+                  {SinglePassport?.currentLocation[0]?.city ? (
                     <Paragraph
                       style={{
                         fontFamily: fonts.WORK_SANS_REGULAR,
@@ -370,7 +370,7 @@ export default function contactSlide(props: MemberDetailProps) {
                         marginBottom: 10
                       }}
                     >
-                      {`${SinglePassport?.currentLocation[0].city}, ${SinglePassport?.currentLocation[0].state}`}
+                      {`${SinglePassport?.currentLocation[0]?.city}, ${SinglePassport?.currentLocation[0]?.state}`}
                     </Paragraph>
                   ) : (
                     <Paragraph
@@ -382,7 +382,7 @@ export default function contactSlide(props: MemberDetailProps) {
                         marginBottom: 10
                       }}
                     >
-                      {`${SinglePassport?.currentLocation[0].state}, ${SinglePassport?.currentLocation[0].country}`}
+                      {`${SinglePassport?.currentLocation[0]?.state}, ${SinglePassport?.currentLocation[0]?.country}`}
                     </Paragraph>
                   )}
                 </Location>
