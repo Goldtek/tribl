@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { enableScreens } from 'react-native-screens';
-import Storage from './src/storage';
 import loadResources from './src/libs/loadResources';
 import AppRouter from './src';
 import './src/internationalization';
@@ -16,7 +15,6 @@ export default function App() {
 
   const loadApp = async () => {
     await loadResources();
-    await Storage.checkUserCredentials();
     setIsAppReady(true);
   };
 
