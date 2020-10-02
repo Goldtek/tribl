@@ -73,30 +73,33 @@ export default function OTPScreen(props: ScreenProp) {
     if (!otpValue || loading) return handleInputError();
     setOtp(otpValue);
 
-    setTimeout(async () => {
+    setImmediate(async () => {
       try {
         const { data } = await verifyOtp();
 
-        if (data?.validateOtp) {
-          Storage.setUserCredentials(data?.validateOtp);
+        await Storage.setUserCredentials(data?.validateOtp);
 
-          if (!data.validateOtp.verified) {
-            return navigation.reset({
-              index: 0,
-              routes: [{ name: 'CreateAccountScreen' }]
-            });
-          }
+        if (!data?.validateOtp.verified) {
+          await Storage.setUserRegistration({
+            route: 'CreateAccountScreen',
+            completed: false
+          });
 
-          navigation.reset({
+          return navigation.reset({
             index: 0,
-            routes: [{ name: 'CommunityScreen' }]
+            routes: [{ name: 'CreateAccountScreen' }]
           });
         }
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'CommunityScreen' }]
+        });
       } catch (error) {
         Sentry.captureException(error);
         handleInputError();
       }
-    }, 0);
+    });
   };
 
   return (

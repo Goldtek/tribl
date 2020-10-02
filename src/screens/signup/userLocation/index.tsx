@@ -136,6 +136,7 @@ export default function UserLocationScreen(props: ScreenProp) {
       });
 
       const { region, country, city } = currentLocation;
+
       setState({
         ...state,
         isVisible: false,
