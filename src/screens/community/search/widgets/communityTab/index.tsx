@@ -37,9 +37,7 @@ function CommunityTabScreen(props: ScreenProp) {
   const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES);
 
   const community = communityData?.recommendedCommunities;
-  const randomCommunity = communityData?.recommendedCommunities.filter(
-    (community: any) => community.name.includes('Sequoia')
-  )[0];
+  const randomCommunity = communityData?.recommendedCommunities[0];
 
   const popular = popularData?.popularCommunities;
   const _renderPopularCommunityItem = useMemo(
