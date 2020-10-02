@@ -7715,6 +7715,11 @@ react-native-localize@^1.4.0:
   resolved "https://registry.yarnpkg.com/react-native-localize/-/react-native-localize-1.4.1.tgz#031bd2089f09cc16ee7daee03019684dda60c275"
   integrity sha512-g1L1au6GtCd0Ci6lQ8JVPYgl7uvEtKY2jeVghJcV6qQEN9+qACyqjOIR8pskUyI+qcSj1z4/nZh3IFxDVu1drw==
 
+react-native-mmkv-storage@^0.3.7:
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/react-native-mmkv-storage/-/react-native-mmkv-storage-0.3.7.tgz#6c517f195ee74535ed38542b22d135aa3300cd4b"
+  integrity sha512-XD26iejqNhwScrV/cm4eqTKz51k9fHmR95e7xrTPVGRMzoffscu4LIitLcx1h4ed1uEr3IXs6rPd/p2ikJI7MA==
+
 react-native-modal-datetime-picker@^8.7.1:
   version "8.9.3"
   resolved "https://registry.yarnpkg.com/react-native-modal-datetime-picker/-/react-native-modal-datetime-picker-8.9.3.tgz#4ab01386c525bf8df9e8e71a93cdd61aa0916212"
