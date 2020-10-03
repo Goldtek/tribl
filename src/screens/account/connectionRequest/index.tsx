@@ -1,24 +1,26 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import PTRView from 'react-native-pull-to-refresh';
+import { Feather } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { FlatList, TouchableHighlight } from 'react-native';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
-import { Feather } from '@expo/vector-icons';
 import ConnectionRequest from './widget';
 import { StatusBar } from 'expo-status-bar';
 import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/connectionRequestSkeleton';
 import { PassportInterface } from '../../../graphql/types';
+import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
+import { Container, MenuBadgeWrapper } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ConnectionRequestScreenProp extends NavigationInterface {}
@@ -32,11 +34,26 @@ export default function ConnectionRequestScreen(
   const { t } = useTranslation();
 
   const { data, refetch } = useQuery(GET_CONNECTION_REQUEST);
+  const [changeConnectionNotification] = useMutation(
+    CHANGE_CONNECTION_NOTIFICATION_BADGE
+  );
 
   const connectionRequest = data?.connectionRequests;
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <ConnectionRequest key={item.id} item={item} refetch={refetch} />
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      data?.connectionRequests.length
+        ? changeConnectionNotification({
+            variables: { showConnectionNotificationBadge: true }
+          })
+        : changeConnectionNotification({
+            variables: { showConnectionNotificationBadge: false }
+          }).then(refetch);
+    }, [data?.connectionRequests.length])
   );
 
   return (
@@ -68,11 +85,14 @@ export default function ConnectionRequestScreen(
               alignItems: 'center'
             }}
           >
-            <Feather
-              name="menu"
-              size={RFValue(25)}
-              color={colors.PRIMARY_TEXT}
-            />
+            <Fragment>
+              <Feather
+                name="menu"
+                size={RFValue(25)}
+                color={colors.PRIMARY_TEXT}
+              />
+              {data?.connectionRequests.length ? <MenuBadgeWrapper /> : null}
+            </Fragment>
           </TouchableHighlight>
         )}
         style={{ paddingTop: top }}
