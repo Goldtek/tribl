@@ -10,6 +10,7 @@ import { NavigationContainerRef } from '@react-navigation/native';
 // ALL ASYNC STORAGE CONSTANTS
 export const USER_FIRST_LAUNCH = '@FIRST_TIME_LAUNCH';
 export const USER_REG_INFO: string = '@USER_REG_INFO';
+export const USER_FCM_TOKEN: string = '@USER_FCM_TOKEN';
 
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 15;
