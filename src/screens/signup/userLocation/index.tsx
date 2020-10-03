@@ -55,13 +55,15 @@ export default function UserLocationScreen(props: ScreenProp) {
       lat: 0,
       long: 0,
       country: '',
-      state: ''
+      state: '',
+      city: ''
     },
     birthPlace: {
       lat: 0,
       long: 0,
       country: '',
-      state: ''
+      state: '',
+      city: ''
     },
     loading: false,
     isModalVisible: false,
@@ -133,17 +135,18 @@ export default function UserLocationScreen(props: ScreenProp) {
         longitude: coords.longitude
       });
 
-      const { region, country } = currentLocation;
+      const { region, country, city } = currentLocation;
 
       setState({
         ...state,
         isVisible: false,
-        locationInput: `${region}, ${country}`,
+        locationInput: `${city}, ${region}, ${country}`,
         currentLocation: {
           lat: coords.latitude,
           long: coords.longitude,
           state: region,
-          country
+          country,
+          city
         }
       });
     } catch (error) {
@@ -168,19 +171,23 @@ export default function UserLocationScreen(props: ScreenProp) {
 
             // this is the selected location country
             if (type === 'country') acc.country = long_name;
+
+            //this is the selected location city
+            if (type === 'locality') acc.city = long_name;
           });
         }
 
         return acc;
       },
-      { country: '', state: '' }
+      { country: '', state: '', city: '' }
     );
 
     const birthPlace = {
       lat: details?.geometry.location.lat as number,
       long: details?.geometry.location.lng as number,
       country: address?.country as string,
-      state: address?.state as string
+      state: address?.state as string,
+      city: address?.city as string
     };
 
     const { description } = data;

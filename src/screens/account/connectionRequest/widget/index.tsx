@@ -124,7 +124,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             3 min ago
           </Text>
         </NameContainer>
-        {acceptLoading ? (
+        {rejectLoading ? (
           <ActivityIndicator
             size="small"
             color={colors.RED}
@@ -152,7 +152,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             <Feather name="x" size={17} color={colors.WHITE} />
           </TouchableRipple>
         )}
-        {rejectLoading ? (
+        {acceptLoading ? (
           <ActivityIndicator size="small" color={colors.PRIMARY} />
         ) : (
           <TouchableRipple

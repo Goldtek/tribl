@@ -319,17 +319,31 @@ export default function contactSlide(props: MemberDetailProps) {
                       backgroundColor: colors.ACTION
                     }}
                   />
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${SinglePassport?.birthPlace[0].state}, ${SinglePassport?.birthPlace[0].country}`}
-                  </Paragraph>
+                  {SinglePassport?.birthPlace[0]?.city ? (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize',
+                        marginBottom: 10
+                      }}
+                    >
+                      {`${SinglePassport?.birthPlace[0]?.city}, ${SinglePassport?.birthPlace[0]?.state}`}
+                    </Paragraph>
+                  ) : (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize',
+                        marginBottom: 10
+                      }}
+                    >
+                      {`${SinglePassport?.birthPlace[0]?.state}, ${SinglePassport?.birthPlace[0]?.country}`}
+                    </Paragraph>
+                  )}
                 </Location>
               ) : null}
               {SinglePassport?.currentLocation ? (
@@ -346,17 +360,31 @@ export default function contactSlide(props: MemberDetailProps) {
                       backgroundColor: colors.ACTION
                     }}
                   />
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${SinglePassport?.currentLocation[0].state}, ${SinglePassport?.currentLocation[0].country}`}
-                  </Paragraph>
+                  {SinglePassport?.currentLocation[0]?.city ? (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize',
+                        marginBottom: 10
+                      }}
+                    >
+                      {`${SinglePassport?.currentLocation[0]?.city}, ${SinglePassport?.currentLocation[0]?.state}`}
+                    </Paragraph>
+                  ) : (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize',
+                        marginBottom: 10
+                      }}
+                    >
+                      {`${SinglePassport?.currentLocation[0]?.state}, ${SinglePassport?.currentLocation[0]?.country}`}
+                    </Paragraph>
+                  )}
                 </Location>
               ) : null}
             </LocationContainer>

@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
@@ -89,6 +90,15 @@ public class MainApplication extends Application implements ReactApplication {
     }
 
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+  }
+
+  @Override
+  protected List<ReactPackage> getPackages() {
+    @SuppressWarnings("UnnecessaryLocalVariable")
+    List<ReactPackage> packages = new PackageList(this).getPackages();
+    // … 
+    packages.add(new RNPermissionsPackage());
+    return packages;
   }
 
   /**
