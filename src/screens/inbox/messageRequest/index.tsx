@@ -37,11 +37,11 @@ import {
   AcceptMessageRequestInterface,
   DeleteMessageRequestInterface,
   BlockMessageRequestInterface,
-  ShowNotificationBadgeRequestInterface
+  ShowMessageNotificationBadge
 } from '../../../graphql/types';
 import hexToRGB from '../../../utils/hexToRGB';
-import { GET_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
-import { CHANGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
+import { GET_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
+import { CHANGE_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
 
 import { Cover, TextContainer } from './styles';
 
@@ -81,11 +81,11 @@ export default function ChatScreen(props: ScreenProp) {
 
   const senderPassport = senderPassportData?.singlePassport;
 
-  const [changeMutation] = useMutation(CHANGE_NOTIFICATION_BADGE);
+  const [changeMutation] = useMutation(CHANGE_MESSAGE_NOTIFICATION_BADGE);
 
-  const { data: notificationData } = useQuery<
-    ShowNotificationBadgeRequestInterface
-  >(GET_NOTIFICATION_BADGE);
+  const { data: notificationData } = useQuery<ShowMessageNotificationBadge>(
+    GET_MESSAGE_NOTIFICATION_BADGE
+  );
 
   const [
     acceptMessageRequest,
@@ -123,10 +123,10 @@ export default function ChatScreen(props: ScreenProp) {
           const message = document.data();
 
           if (snapshot.docs.length - 1 === index) {
-            if (notificationData?.showNotificationBadge) {
+            if (notificationData?.showMessageNotificationBadge) {
               changeMutation({
                 variables: {
-                  showNotificationBadge: !notificationData?.showNotificationBadge
+                  showMessageNotificationBadge: !notificationData?.showMessageNotificationBadge
                 }
               });
             }
@@ -186,6 +186,14 @@ export default function ChatScreen(props: ScreenProp) {
 
       default:
         break;
+    }
+
+    if (notificationData?.showMessageNotificationBadge) {
+      changeMutation({
+        variables: {
+          showMessageNotificationBadge: !notificationData?.showMessageNotificationBadge
+        }
+      });
     }
   };
 

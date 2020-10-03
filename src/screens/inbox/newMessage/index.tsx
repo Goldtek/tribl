@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { SafeAreaView, TouchableHighlight } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { FlatList } from 'react-native';
 import { Divider, Button, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
-import { NavigationInterface } from '../../types';
 import MemberCard from './widgets/connectionCard';
 import AlgoliaSearch from '../../../components/algoliaSearch';
 import AlgoliaList from '../../../components/algoliaInboxList';
@@ -17,9 +16,14 @@ import {
   GET_ALL_MEMBERS
 } from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
-import { GET_USER_PASSPORT } from '../../../graphql/server/query';
-import { MyPassportInterface } from '../../../graphql/types';
 import ENVIRONMENT_VARIABLES from '../../../config';
+import { fireAuth } from '../../../firebase/config';
+import {
+  NearbyMembersRequestInterface,
+  MyConnectionsInterface,
+  AllMembersRequestInterface,
+  PassportInterface
+} from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer } from './styles';
@@ -31,30 +35,27 @@ export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { loading: nearbyLoading, data: nearbyData } = useQuery(
-    GET_NEARBY_MEMBERS
-  );
+  const { loading: nearbyLoading, data: nearbyData } = useQuery<
+    NearbyMembersRequestInterface
+  >(GET_NEARBY_MEMBERS);
 
-  const { loading: connectionLoading, data: connectionData } = useQuery(
-    GET_MY_CONNECTIONS
-  );
+  const { loading: connectionLoading, data: connectionData } = useQuery<
+    MyConnectionsInterface
+  >(GET_MY_CONNECTIONS);
 
-  const { loading: allMembersLoading, data: allMembersData } = useQuery(
-    GET_ALL_MEMBERS
-  );
-
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const { loading: allMembersLoading, data: allMembersData } = useQuery<
+    AllMembersRequestInterface
+  >(GET_ALL_MEMBERS);
 
   const nearbyMembers = nearbyData?.nearbyMembers;
   const myConnection = connectionData?.myConnections;
   const allMembers = allMembersData?.Passport;
-  const userDetails = userData?.myPassport?.id;
+  const userId = fireAuth.currentUser?.uid;
 
-  const filteredMembers = allMembers?.filter((member: any) => {
-    return member.id !== userDetails && member.verified == true;
+  const filteredMembers = allMembers?.filter((member) => {
+    return member.id !== userId && member.verified == true;
   });
 
-  const [filter, setFilter] = useState(t(`community.chat.all`) as string);
   const [state, setState] = useState({
     all: true,
     connections: false,
@@ -63,38 +64,22 @@ export default function ChatScreen(props: ScreenProp) {
 
   const { all, connections, nearby } = state;
 
-  const filterAll = filteredMembers?.slice().sort(function (a: any, b: any) {
+  const sortName = (a: PassportInterface, b: PassportInterface) => {
     if (a.firstName < b.firstName) return -1;
-
     if (a.firstName > b.firstName) return 1;
-
     return 0;
-  });
+  };
 
-  const filterConncetion = myConnection
-    ?.slice()
-    .sort(function (a: any, b: any) {
-      if (a.firstName < b.firstName) return -1;
-
-      if (a.firstName > b.firstName) return 1;
-
-      return 0;
-    });
-
-  const filterNearby = nearbyMembers?.slice().sort(function (a: any, b: any) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
-  });
+  const filterAll = filteredMembers?.slice().sort(sortName);
+  const filterConnection = myConnection?.slice().sort(sortName);
+  const filterNearby = nearbyMembers?.slice().sort(sortName);
 
   const data = all
     ? filterAll
     : connections && nearby
-    ? filterConncetion && filterNearby
+    ? filterConnection && filterNearby
     : connections
-    ? filterConncetion
+    ? filterConnection
     : filterNearby;
 
   const handleConnectionClick = () => {
@@ -122,21 +107,9 @@ export default function ChatScreen(props: ScreenProp) {
     });
   };
 
-  const _separator = () =>
-    useMemo(
-      () => (
-        <Divider
-          style={{
-            height: 1.5,
-            backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
-            marginHorizontal: RFValue(20)
-          }}
-        />
-      ),
-      []
-    );
-
-  const _renderItem = ({ item }: any) => <MemberCard key={item.id} {...item} />;
+  const _renderItem = ({ item }: { item: PassportInterface }) => (
+    <MemberCard key={item.id} {...item} />
+  );
 
   return (
     <SafeAreaView
@@ -247,7 +220,15 @@ export default function ChatScreen(props: ScreenProp) {
             bounces={false}
             renderItem={_renderItem}
             keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={_separator}
+            ItemSeparatorComponent={() => (
+              <Divider
+                style={{
+                  height: 1.5,
+                  backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
+                  marginHorizontal: RFValue(20)
+                }}
+              />
+            )}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
             style={{ backgroundColor: colors.WHITE, paddingTop: 10 }}
