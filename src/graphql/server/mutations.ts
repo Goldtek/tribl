@@ -156,3 +156,12 @@ export const MARK_MESSAGE_READ = gql`
     }
   }
 `;
+
+// UPDATE NOTIFICATION HANDLER
+export const UPDATE_NOTIFICATION = gql`
+  mutation updatePassportFCM($payload: UpdatePassportFCMInput!) {
+    updatePassportFCM(input: $payload) {
+      success
+    }
+  }
+`;
