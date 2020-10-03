@@ -28,52 +28,39 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
 
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
-  const [acceptLoading, SetAcceptLoading] = useState(false);
-  const [rejectLoading, SetRejectLoading] = useState(false);
 
-  const [acceptConnection] = useMutation(ACCEPT_CONNECTION, {
-    variables: { payload: { phoneNumber: phoneNumber } }
-  });
+  const [acceptConnection, { loading: acceptLoading }] = useMutation(
+    ACCEPT_CONNECTION,
+    {
+      variables: { payload: { phoneNumber: phoneNumber } }
+    }
+  );
 
-  const [declineConnection] = useMutation(REJECT_CONNECTION, {
-    variables: { payload: { phoneNumber: phoneNumber } }
-  });
+  const [declineConnection, { loading: rejectLoading }] = useMutation(
+    REJECT_CONNECTION,
+    {
+      variables: { payload: { phoneNumber: phoneNumber } }
+    }
+  );
 
   const handleAcceptConnection = async () => {
-    SetAcceptLoading(true);
     try {
-      const { data } = await acceptConnection();
-      if (data?.acceptConnection) {
-        SetAcceptLoading(false);
-        refetch();
-      }
+      await acceptConnection();
+      refetch();
     } catch (error) {
       Sentry.captureException(error);
-      SetAcceptLoading(false);
     }
   };
 
   const handleDeclineConnection = async () => {
-    SetRejectLoading(true);
     try {
-      const { data } = await declineConnection();
-      if (data?.declineConnection) {
-        SetRejectLoading(false);
-        refetch();
-      }
+      await declineConnection();
+      refetch();
     } catch (error) {
-      SetRejectLoading(false);
       Sentry.captureException(error);
     }
   };
 
-  // const createdAt = connection?.createdAt;
-
-  // const connectionDateTime = `${createdAt?.year}/${createdAt?.month}/${createdAt?.day}/${createdAt?.hour}/${createdAt?.minute}/${createdAt?.second}`;
-
-  /* {formatMessageTime(
-              `${presence.lastSeen.year}/${presence.lastSeen.month}/${presence.lastSeen.day}`
-            )} */
   return (
     <TouchableRipple
       style={{
@@ -121,7 +108,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            3 min ago
+            {/* 3 min ago */}
           </Text>
         </NameContainer>
         {rejectLoading ? (
