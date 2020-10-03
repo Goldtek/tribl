@@ -32,7 +32,7 @@ export type RootStackParamList = {
   NewChatSearch: undefined;
   PrivacyScreen: undefined;
   ProfileScreen: undefined;
-  SignupScreen: undefined;
+  SignupScreen?: {};
   InboxScreen: undefined;
   TriblScreen: undefined;
   LoginScreen: undefined;

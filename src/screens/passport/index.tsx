@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
 import * as Location from 'expo-location';
 import * as Updates from 'expo-updates';
+import { check, PERMISSIONS, request } from 'react-native-permissions';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -58,6 +59,7 @@ interface StateProps extends PassportInterface {
 export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const { top: paddingTop } = useSafeAreaInsets();
 
   const { loading: dataLoading, data: userData, refetch } = useQuery<
     MyPassportInterface
@@ -68,24 +70,45 @@ export default function PassportScreen(props: ScreenProp) {
   >(GET_FIREBASE_TOKEN);
 
   const userDetails = userData?.myPassport;
-
+  const identity = userDetails?.identity.map((item: any) => item.id);
+  const dateOfBirth = userDetails?.dob;
+  const [imageLoad, setImageLoad] = useState(true);
+  const [update, setUpdate] = useState(false);
   const [state, setState] = useState<{
     details: StateProps;
     identity: string[] | undefined;
+    firstName: string | undefined;
+    lastName: string | undefined;
+    dob: {
+      day: number | null | undefined;
+      month: number | null | undefined;
+      year: number | null | undefined;
+    };
   }>({
     //@ts-ignore
     details: {},
-    identity: userDetails?.identity.map((item: any) => item.id)
+    firstName: userDetails?.firstName,
+    lastName: userDetails?.lastName,
+    identity: identity,
+    dob: {
+      day: null,
+      month: null,
+      year: null
+    }
   });
-
   const [OTAUpdate, setOTAUpdate] = useState(false);
-
-  const [location, setLocation] = useState({
-    city: '',
-    state: '',
-    country: '',
-    lat: 0,
-    long: 0
+  const [location, setLocation] = useState<{
+    city?: string;
+    state?: string | null | undefined;
+    country?: string;
+    lat?: number | null;
+    long?: number | null;
+  }>({
+    city: userDetails?.currentLocation[0]?.city,
+    state: userDetails?.currentLocation[0]?.state,
+    country: userDetails?.currentLocation[0]?.country,
+    lat: userDetails?.currentLocation[0]?.lat,
+    long: userDetails?.currentLocation[0]?.long
   });
 
   const [birthPlace, setBirthPlace] = useState<{
@@ -101,6 +124,89 @@ export default function PassportScreen(props: ScreenProp) {
     lat: 0,
     long: 0
   });
+
+  const firstName = state?.details?.firstName;
+  const lastName = state?.details?.lastName;
+  const dob = state?.details?.date?.split('/');
+  const day = dob?.length ? parseInt(dob[0]) : dateOfBirth?.day;
+  const month = dob?.length ? parseInt(dob[1]) : dateOfBirth?.month;
+  const year = dob?.length ? parseInt(dob[2]) : dateOfBirth?.year;
+  const identityID = state?.details?.selectedId || [];
+  const SelectedIdentitiesID = Array.from(identityID?.values());
+
+  useEffect(() => {
+    //@ts-ignore
+    setUpdate(state.details.click);
+  }, [state.details]);
+
+  useEffect(() => {
+    if (SelectedIdentitiesID?.length > 0) {
+      setState({
+        ...state,
+        identity: SelectedIdentitiesID
+      });
+    }
+  }, [SelectedIdentitiesID?.length]);
+
+  useEffect(() => {
+    if (firstName?.length || lastName?.length) {
+      setState({
+        ...state,
+        firstName: firstName,
+        lastName: lastName
+      });
+    }
+  }, [firstName?.length, lastName?.length]);
+
+  useEffect(() => {
+    setBirthPlace({
+      ...birthPlace,
+      city: userDetails?.birthPlace[0]?.city,
+      state: userDetails?.birthPlace[0]?.state,
+      country: userDetails?.birthPlace[0]?.country,
+      long: userDetails?.birthPlace[0]?.long,
+      lat: userDetails?.birthPlace[0]?.lat
+    });
+
+    if (!location.city?.length) {
+      setLocation({
+        city: userDetails?.currentLocation[0]?.city,
+        state: userDetails?.currentLocation[0]?.state,
+        country: userDetails?.currentLocation[0]?.country,
+        lat: userDetails?.currentLocation[0]?.lat,
+        long: userDetails?.currentLocation[0]?.long
+      });
+    }
+  }, [userDetails?.id]);
+
+  useEffect(() => {
+    setState({
+      ...state,
+      identity: identity
+    });
+  }, [identity?.length]);
+
+  useEffect(() => {
+    handleLocationPermission();
+  }, []);
+
+  useEffect(() => {
+    const updateLocation = async () => {
+      try {
+        await updatePassport();
+        refetch();
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    };
+    if (
+      location.city?.length &&
+      birthPlace.state?.length &&
+      state.identity?.length &&
+      day
+    )
+      updateLocation();
+  }, [state.identity]);
 
   useEffect(() => {
     const getFirebaseToken = async () => {
@@ -119,18 +225,6 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   const cancelUpdate = () => setOTAUpdate(false);
-
-  const [update, setUpdate] = useState(false);
-
-  const firstName = state?.details?.firstName;
-  const lastName = state?.details?.lastName;
-
-  const dob = state?.details?.date?.split('/');
-  const day = dob?.length ? parseInt(dob[0]) : null;
-  const month = dob?.length ? parseInt(dob[1]) : null;
-  const year = dob?.length ? parseInt(dob[2]) : null;
-  const identityID = state?.details?.selectedId || [];
-  const SelectedIdentitiesID = Array.from(identityID?.values());
 
   const handleLocation = async () => {
     try {
@@ -161,15 +255,11 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  useEffect(() => {
-    handleLocation();
-  }, []);
-
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
-        firstName: firstName,
-        lastName: lastName,
+        firstName: state.firstName,
+        lastName: state.lastName,
         dob: {
           day: day,
           month: month,
@@ -194,57 +284,28 @@ export default function PassportScreen(props: ScreenProp) {
     }
   });
 
-  useEffect(() => {
-    setBirthPlace({
-      ...birthPlace,
-      city: userDetails?.birthPlace[0]?.city,
-      state: userDetails?.birthPlace[0]?.state,
-      country: userDetails?.birthPlace[0]?.country,
-      long: userDetails?.birthPlace[0]?.long,
-      lat: userDetails?.birthPlace[0]?.lat
-    });
-  }, [userDetails?.id]);
-
-  useEffect(() => {
-    const updateLocation = async () => {
-      try {
-        await updatePassport();
-        refetch();
-      } catch (error) {
-        Sentry.captureException(error);
-      }
-    };
-
-    if (
-      location.city.length &&
-      birthPlace.state?.length &&
-      state.identity?.length
-    )
-      updateLocation();
-  }, [location.city]);
-
-  useEffect(() => {
-    //@ts-ignore
-    setUpdate(state.details.click);
-  }, [state.details]);
-
-  useEffect(() => {
-    //@ts-ignore
-    setState({
-      ...state,
-      identity: userDetails?.identity.map((item: any) => item.id)
-    });
-  }, [userDetails?.id]);
-
-  useEffect(() => {
-    setState({
-      ...state,
-      identity: SelectedIdentitiesID
-    });
-  }, [SelectedIdentitiesID.length]);
-
-  const [imageLoad, setImageLoad] = useState(true);
-  const { top: paddingTop } = useSafeAreaInsets();
+  const handleLocationPermission = async () => {
+    const iosData = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    const andriodData = await check(
+      PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION
+    );
+    if (iosData === 'granted' || andriodData === 'granted') {
+      handleLocation();
+    } else if (
+      iosData === 'denied' ||
+      andriodData === 'denied' ||
+      iosData === 'blocked' ||
+      andriodData === 'blocked'
+    ) {
+      const iosData2 = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      const andriodData2 = await request(
+        PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION
+      );
+      iosData2 === 'granted' || andriodData2 === 'granted'
+        ? handleLocation()
+        : null;
+    }
+  };
 
   const onShare = async () => {
     try {

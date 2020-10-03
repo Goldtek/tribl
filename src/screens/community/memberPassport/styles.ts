@@ -61,7 +61,6 @@ export const Connection = styled.View`
 `;
 
 export const ButtonCover = styled.View`
-  flex: 1;
   flex-direction: row;
   justify-content: space-between;
 `;

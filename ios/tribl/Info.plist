@@ -61,6 +61,22 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Allow Tribl to access the calendars on your device</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow Tribl to access the camera on your device</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Allow Tribl to access contacts on your device</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow Tribl to access your location always and while using the app</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow Tribl to always use your location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow Tribl to access your location while using the app</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow Tribl to access the microphone on your device</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow Tribl to access the photos and media on your device</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

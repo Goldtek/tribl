@@ -18,6 +18,7 @@ import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
 } from '../../../utils/cloudinaryUpload';
+import Storage from '../../../storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, GradientContainer } from './styles';
@@ -67,10 +68,15 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
       setAvatar({ ...avatar, secure_url });
 
-      setTimeout(() => {
+      await Storage.setUserRegistration({
+        route: 'IdentifyUserScreen',
+        completed: false
+      });
+
+      setImmediate(() => {
         navigation.navigate('IdentifyUserScreen');
         addUserImage();
-      }, 0);
+      });
     } catch (error) {
       setAvatar({ ...avatar, loading: false });
       handleInputError('uploadError');
