@@ -40,10 +40,7 @@ export default function DrawerStackNavigator() {
   }, []);
 
   return (
-    <DrawerStack.Navigator
-      initialRouteName="CommunityScreen"
-      screenOptions={{ headerShown: false }}
-    >
+    <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
       <DrawerStack.Screen name="CommunityScreen" component={DrawerNavigator} />
 
       <DrawerStack.Screen

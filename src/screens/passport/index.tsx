@@ -22,6 +22,7 @@ import { useThemeContext } from '../../theme';
 import TabViewSlider from './widgets/tabs';
 import {
   GET_ALL_MEMBERS,
+  GET_CONNECTION_REQUEST,
   GET_FIREBASE_TOKEN,
   GET_MY_COMMUNITIES,
   GET_MY_CONNECTIONS,
@@ -42,6 +43,7 @@ import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
 import CheckAppUpdates from '../../libs/updates';
 import Notification from '../../libs/notification';
+import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -66,8 +68,8 @@ interface StateProps extends PassportInterface {
 
 export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
   const { top: paddingTop } = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const { loading: dataLoading, data: userData, refetch } = useQuery<
     MyPassportInterface
@@ -77,6 +79,10 @@ export default function PassportScreen(props: ScreenProp) {
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 
+  const [changeConnectionNotification] = useMutation(
+    CHANGE_CONNECTION_NOTIFICATION_BADGE
+  );
+
   const [getMyCommunities] = useLazyQuery(GET_MY_COMMUNITIES);
 
   const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
@@ -84,6 +90,10 @@ export default function PassportScreen(props: ScreenProp) {
   const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS);
 
   const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
+
+  const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
+    GET_CONNECTION_REQUEST
+  );
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
 
@@ -162,6 +172,14 @@ export default function PassportScreen(props: ScreenProp) {
   }, [state.details]);
 
   useEffect(() => {
+    if (connectionRequestData?.connectionRequests.length) {
+      changeConnectionNotification({
+        variables: { showConnectionNotificationBadge: true }
+      });
+    }
+  }, [connectionRequestData?.connectionRequests.length]);
+
+  useEffect(() => {
     if (SelectedIdentitiesID?.length > 0) {
       setState({
         ...state,
@@ -213,6 +231,7 @@ export default function PassportScreen(props: ScreenProp) {
     getRecommendedCommunities();
     getRecommendedMembers();
     getPopularCommunities();
+    getConnectionRequest();
     getMyCommunities();
     getNearbyMembers();
     getMyConnections();
