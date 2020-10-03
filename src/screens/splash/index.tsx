@@ -15,7 +15,6 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
-
   const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN);
 

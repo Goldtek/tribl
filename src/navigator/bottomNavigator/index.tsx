@@ -29,10 +29,10 @@ export default function BottomNavigator() {
 
   return (
     <BottomTab.Navigator
+      initialRouteName="PassportScreen"
       activeColor={colors.PRIMARY}
       inactiveColor={colors.SECONDARY_TEXT}
       barStyle={{ backgroundColor: colors.WHITE }}
-      initialRouteName="PassportScreen"
       labeled={false}
     >
       <BottomTab.Screen
