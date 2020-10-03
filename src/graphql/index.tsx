@@ -11,7 +11,7 @@ import { onError } from 'apollo-link-error';
 import cache from './cache';
 import resolvers from './cache/resolvers';
 import ENVIRONMENT_VARIABLES from '../config';
-import Storage from '../storage';
+import Storage from '../libs/storage';
 
 // Create a Http link:
 const httpLink = new HttpLink({
