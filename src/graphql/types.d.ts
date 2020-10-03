@@ -111,12 +111,29 @@ type Connection = {
   updatedAt: _Neo4jDate;
 };
 
+export enum IFCMMessageTypes {
+  CONNECTION_REQUEST_RECEIVED = 'CONNECTION_REQUEST_RECEIVED',
+  CONNECTION_REQUEST_ACCEPTED = 'CONNECTION_REQUEST_ACCEPTED',
+  MESSAGE_RECEIVED = 'MESSAGE_RECEIVED'
+}
+
+type NotificationMessage = {
+  receiverAvatar: string;
+  receiverId: string;
+  receiverName: string;
+  senderAvatar: string;
+  senderId: string;
+  senderName: string;
+  type: IFCMMessageTypes;
+};
+
 export interface PassportInterface {
   id: string;
   email: string;
   avatar: string;
   dob: _Neo4jDate;
   lastName: string;
+  verified: boolean;
   firstName: string;
   identity: string[];
   interest: string[];
@@ -137,7 +154,8 @@ export interface PassportInterface {
 
 export interface StoreInterface {
   communitySearchIndex: number;
-  showNotificationBadge: boolean;
+  showMessageNotificationBadge: boolean;
+  showConnectionNotificationBadge: boolean;
   userDetails: PassportInterface;
 }
 
@@ -240,7 +258,17 @@ export type NearbyMembersRequestInterface = {
   nearbyMembers: PassportInterface[];
 };
 
+// ALL MEMBERS REQUEST (RESPONSE) TYPE
+export type AllMembersRequestInterface = {
+  Passport: PassportInterface[];
+};
+
+// SHOW MESSAGE NOTIFICATION REQUEST (RESPONSE) TYPE
+export type ShowMessageNotificationBadge = {
+  showMessageNotificationBadge: boolean;
+};
+
 // SHOW NOTIFICATION REQUEST (RESPONSE) TYPE
-export type ShowNotificationBadgeRequestInterface = {
-  showNotificationBadge: boolean;
+export type ShowConnectionNotificationBadge = {
+  showConnectionNotificationBadge: boolean;
 };
