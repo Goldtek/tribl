@@ -1,7 +1,8 @@
 import {
   GET_USER_DETAILS,
   GET_COMMUNITY_SEARCH_INDEX,
-  GET_NOTIFICATION_BADGE
+  GET_MESSAGE_NOTIFICATION_BADGE,
+  GET_CONNECTION_NOTIFICATION_BADGE
 } from './query';
 import { StoreInterface, AppResolvers } from '../types';
 
@@ -42,18 +43,44 @@ const cacheResolvers: AppResolvers = {
       return null;
     },
 
-    // SHOW NOTIFICATION BADGE
-    changeNotificationBadge: (
+    // SHOW MESSAGE NOTIFICATION BADGE
+    changeMessageNotificationBadge: (
       _,
-      { showNotificationBadge }: { showNotificationBadge: Boolean },
+      {
+        showMessageNotificationBadge
+      }: { showMessageNotificationBadge: Boolean },
       { cache }
     ) => {
       const queryResult = cache.readQuery<StoreInterface>({
-        query: GET_NOTIFICATION_BADGE
+        query: GET_MESSAGE_NOTIFICATION_BADGE
       });
 
-      const data = { ...queryResult, showNotificationBadge } as StoreInterface;
-      cache.writeQuery({ query: GET_NOTIFICATION_BADGE, data });
+      const data = {
+        ...queryResult,
+        showMessageNotificationBadge
+      } as StoreInterface;
+      cache.writeQuery({ query: GET_MESSAGE_NOTIFICATION_BADGE, data });
+      return null;
+    },
+
+    // SHOW CONNECTION NOTIFICATION BADGE
+    changeConnectionNotificationBadge: (
+      _,
+      {
+        showConnectionNotificationBadge
+      }: { showConnectionNotificationBadge: Boolean },
+      { cache }
+    ) => {
+      const queryResult = cache.readQuery<StoreInterface>({
+        query: GET_CONNECTION_NOTIFICATION_BADGE
+      });
+
+      const data = {
+        ...queryResult,
+        showConnectionNotificationBadge
+      } as StoreInterface;
+
+      cache.writeQuery({ query: GET_CONNECTION_NOTIFICATION_BADGE, data });
       return null;
     }
   }
