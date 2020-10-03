@@ -50,9 +50,16 @@ export const GET_COMMUNITY_SEARCH_INDEX = gql`
   }
 `;
 
-// SHOW NOTIFICATION BADGE
-export const GET_NOTIFICATION_BADGE = gql`
-  query GetNotificationBadge {
-    showNotificationBadge @client
+// SHOW MESSAGE NOTIFICATION BADGE
+export const GET_MESSAGE_NOTIFICATION_BADGE = gql`
+  query GetMessageNotificationBadge {
+    showMessageNotificationBadge @client
+  }
+`;
+
+// SHOW CONNECTION NOTIFICATION BADGE
+export const GET_CONNECTION_NOTIFICATION_BADGE = gql`
+  query GetConnectionNotificationBadge {
+    showConnectionNotificationBadge @client
   }
 `;
