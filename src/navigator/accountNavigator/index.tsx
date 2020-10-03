@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, Fragment } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,10 @@ import { Feather } from '@expo/vector-icons';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
+import { MenuBadgeWrapper } from '../bottomNavigator/styles';
+import { useQuery } from '@apollo/react-hooks';
+import { ShowConnectionNotificationBadge } from '../../graphql/types';
+import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 
 const accountStack = createStackNavigator();
 
@@ -21,6 +25,10 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
 
+  const { data } = useQuery<ShowConnectionNotificationBadge>(
+    GET_CONNECTION_NOTIFICATION_BADGE
+  );
+
   return (
     <accountStack.Navigator
       initialRouteName="AccountSettingScreen"
@@ -30,7 +38,7 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
       <accountStack.Screen
         name="AccountSettingScreen"
         component={Screens.AccountSettingScreen}
-        options={({ route }) => ({
+        options={{
           //@ts-ignore
           headerTitle: t(`community.sideNav.settings`),
           headerLeft: (props) => (
@@ -46,11 +54,16 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
                 alignItems: 'center'
               }}
             >
-              <Feather
-                name="menu"
-                size={RFValue(25)}
-                color={colors.PRIMARY_TEXT}
-              />
+              <Fragment>
+                <Feather
+                  name="menu"
+                  size={RFValue(25)}
+                  color={colors.PRIMARY_TEXT}
+                />
+                {data?.showConnectionNotificationBadge ? (
+                  <MenuBadgeWrapper />
+                ) : null}
+              </Fragment>
             </TouchableHighlight>
           ),
           headerTitleStyle: {
@@ -64,12 +77,12 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
           headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
-        })}
+        }}
       />
       <accountStack.Screen
         name="PrivacyScreen"
         component={Screens.PrivacyScreen}
-        options={({ route }) => ({
+        options={{
           //@ts-ignore
           headerTitle: t(`community.accountSettings.privacy`),
           headerTitleStyle: {
@@ -83,7 +96,7 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
           headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
-        })}
+        }}
       />
     </accountStack.Navigator>
   );
