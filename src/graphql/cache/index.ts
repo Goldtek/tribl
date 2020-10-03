@@ -67,7 +67,8 @@ cache.writeData<StoreInterface>({
       __typename: 'userDetails'
     },
     communitySearchIndex: 0,
-    showNotificationBadge: false
+    showMessageNotificationBadge: false,
+    showConnectionNotificationBadge: false
   }
 });
 
