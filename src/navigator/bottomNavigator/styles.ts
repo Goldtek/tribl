@@ -27,3 +27,28 @@ export const BadgeWrapper = styled.View`
   top: -8px;
   right: ${RFValue(35)}px;
 `;
+
+export const MenuBadgeWrapper = styled.View`
+  width: ${RFValue(13)}px;
+  height: ${RFValue(13)}px;
+  border-radius: ${RFValue(13)}px;
+  background-color: ${({ theme }) => theme.colors.RED};
+  position: absolute;
+  top: ${RFValue(10)}px;
+  right: ${RFValue(5)}px;
+  border-width: 3px;
+  border-color: ${({ theme }) => theme.colors.WHITE};
+`;
+
+export const ConnectionBadgeWrapper = styled.View`
+  width: ${RFValue(13)}px;
+  height: ${RFValue(13)}px;
+  border-radius: ${RFValue(13)}px;
+  background-color: ${({ theme }) => theme.colors.RED};
+  position: absolute;
+  position: absolute;
+  left: ${RFValue(20)}px;
+  top: ${RFValue(20)}px;
+  border-width: 3px;
+  border-color: ${({ theme }) => theme.colors.WHITE};
+`;
