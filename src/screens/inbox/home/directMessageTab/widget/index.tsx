@@ -1,20 +1,15 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ConversationInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
 import formatMessageTime from '../../../../../utils/timesince';
 import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
-import {
-  ShowNotificationBadgeRequestInterface,
-  UserPassportInterface
-} from '../../../../../graphql/types';
-import { CHANGE_NOTIFICATION_BADGE } from '../../../../../graphql/cache/mutations';
-import { GET_NOTIFICATION_BADGE } from '../../../../../graphql/cache/query';
+import { UserPassportInterface } from '../../../../../graphql/types';
 import { fireAuth } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -41,12 +36,6 @@ function DirectChatCard(props: DirectChatProp) {
     { variables: { id: sender.id } }
   );
 
-  const { data: notificationData } = useQuery<
-    ShowNotificationBadgeRequestInterface
-  >(GET_NOTIFICATION_BADGE);
-
-  const [changeMutation] = useMutation(CHANGE_NOTIFICATION_BADGE);
-
   const receiverPassport = passportData?.singlePassport;
   const title = `${receiverPassport?.firstName} ${receiverPassport?.lastName}`;
 
@@ -67,12 +56,6 @@ function DirectChatCard(props: DirectChatProp) {
     if (!lastMessage.createdAt) return;
     return formatMessageTime(lastMessage.createdAt);
   };
-
-  useEffect(() => {
-    if (!notificationData?.showNotificationBadge && showNotificationBadge) {
-      changeMutation({ variables: { showNotificationBadge } });
-    }
-  }, [showNotificationBadge]);
 
   return (
     <TouchableRipple

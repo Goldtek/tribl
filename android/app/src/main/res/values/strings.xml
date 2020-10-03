@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Tribl</string>
+    <string name="app_name">TRiBL</string>
+    <string name="default_notification_channel_id">TRiBL_default_channel</string>
 </resources>

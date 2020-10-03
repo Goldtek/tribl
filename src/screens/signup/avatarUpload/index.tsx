@@ -18,7 +18,7 @@ import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
 } from '../../../utils/cloudinaryUpload';
-import Storage from '../../../storage';
+import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, GradientContainer } from './styles';
@@ -70,7 +70,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
       await Storage.setUserRegistration({
         route: 'IdentifyUserScreen',
-        completed: false
+        user: { avatar: secure_url }
       });
 
       setImmediate(() => {

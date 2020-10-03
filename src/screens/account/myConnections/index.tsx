@@ -17,11 +17,13 @@ import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/myConnectionSkeleton';
 import {
   MyConnectionsInterface,
-  PassportInterface
+  PassportInterface,
+  ShowConnectionNotificationBadge
 } from '../../../graphql/types';
+import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
+import { Container, MenuBadgeWrapper } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionScreenProp extends NavigationInterface {}
@@ -33,6 +35,10 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
   const { data, refetch } = useQuery<MyConnectionsInterface>(
     GET_MY_CONNECTIONS
+  );
+
+  const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
+    GET_CONNECTION_NOTIFICATION_BADGE
   );
 
   const myConnection = data?.myConnections;
@@ -88,11 +94,16 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
               alignItems: 'center'
             }}
           >
-            <Feather
-              name="menu"
-              size={RFValue(25)}
-              color={colors.PRIMARY_TEXT}
-            />
+            <Fragment>
+              <Feather
+                name="menu"
+                size={RFValue(25)}
+                color={colors.PRIMARY_TEXT}
+              />
+              {notificationData?.showConnectionNotificationBadge ? (
+                <MenuBadgeWrapper />
+              ) : null}
+            </Fragment>
           </TouchableHighlight>
         )}
         style={{ paddingTop: top }}

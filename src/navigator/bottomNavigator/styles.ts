@@ -22,8 +22,33 @@ export const BadgeWrapper = styled.View`
   width: ${RFValue(7)}px;
   height: ${RFValue(7)}px;
   border-radius: ${RFValue(7)}px;
-  background-color: ${({ theme }) => theme.colors.PRIMARY};
+  background-color: ${({ theme }) => theme.colors.RED};
   position: absolute;
   top: -8px;
   right: ${RFValue(35)}px;
+`;
+
+export const MenuBadgeWrapper = styled.View`
+  width: ${RFValue(13)}px;
+  height: ${RFValue(13)}px;
+  border-radius: ${RFValue(13)}px;
+  background-color: ${({ theme }) => theme.colors.RED};
+  position: absolute;
+  top: ${RFValue(10)}px;
+  right: ${RFValue(5)}px;
+  border-width: 3px;
+  border-color: ${({ theme }) => theme.colors.WHITE};
+`;
+
+export const ConnectionBadgeWrapper = styled.View`
+  width: ${RFValue(13)}px;
+  height: ${RFValue(13)}px;
+  border-radius: ${RFValue(13)}px;
+  background-color: ${({ theme }) => theme.colors.RED};
+  position: absolute;
+  position: absolute;
+  left: ${RFValue(20)}px;
+  top: ${RFValue(20)}px;
+  border-width: 3px;
+  border-color: ${({ theme }) => theme.colors.WHITE};
 `;

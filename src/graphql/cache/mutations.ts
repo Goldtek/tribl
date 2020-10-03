@@ -20,10 +20,24 @@ export const ADD_COMMUNITY_SEARCH_INDEX = gql`
   }
 `;
 
-// SHOW NOTIFICATION BADGE
-export const CHANGE_NOTIFICATION_BADGE = gql`
-  mutation ChangeNotificationBadge($showNotificationBadge: Boolean!) {
-    changeNotificationBadge(showNotificationBadge: $showNotificationBadge)
-      @client
+// SHOW MESSAGE NOTIFICATION BADGE
+export const CHANGE_MESSAGE_NOTIFICATION_BADGE = gql`
+  mutation changeMessageNotificationBadge(
+    $showMessageNotificationBadge: Boolean!
+  ) {
+    changeMessageNotificationBadge(
+      showMessageNotificationBadge: $showMessageNotificationBadge
+    ) @client
+  }
+`;
+
+// SHOW CONNECTION NOTIFICATION BADGE
+export const CHANGE_CONNECTION_NOTIFICATION_BADGE = gql`
+  mutation changeConnectionNotificationBadge(
+    $showConnectionNotificationBadge: Boolean!
+  ) {
+    changeConnectionNotificationBadge(
+      showConnectionNotificationBadge: $showConnectionNotificationBadge
+    ) @client
   }
 `;

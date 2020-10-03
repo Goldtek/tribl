@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
 import { Divider, Menu, TouchableRipple } from 'react-native-paper';
@@ -13,6 +13,10 @@ import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import GradientButton from '../../components/gradientButton';
 import CommunityScreens from '../../screens/community';
+import { MenuBadgeWrapper } from '../bottomNavigator/styles';
+import { useQuery } from '@apollo/react-hooks';
+import { ShowConnectionNotificationBadge } from '../../graphql/types';
+import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 
 const ChatStack = createStackNavigator();
 
@@ -26,6 +30,10 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
   const { top: safeAreaTop } = useSafeAreaInsets();
+
+  const { data } = useQuery<ShowConnectionNotificationBadge>(
+    GET_CONNECTION_NOTIFICATION_BADGE
+  );
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -67,11 +75,16 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
                 alignItems: 'center'
               }}
             >
-              <Feather
-                name="menu"
-                size={RFValue(25)}
-                color={colors.PRIMARY_TEXT}
-              />
+              <Fragment>
+                <Feather
+                  name="menu"
+                  size={RFValue(25)}
+                  color={colors.PRIMARY_TEXT}
+                />
+                {data?.showConnectionNotificationBadge ? (
+                  <MenuBadgeWrapper />
+                ) : null}
+              </Fragment>
             </TouchableHighlight>
           ),
           headerRight: () => (

@@ -1,5 +1,5 @@
 //@ts-ignore
-import countryList from 'countries-db/lib';
+import countryList from 'countries-db';
 
 let instance: null | Country = null;
 

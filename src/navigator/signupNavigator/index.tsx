@@ -4,7 +4,7 @@ import {
   TransitionPresets
 } from '@react-navigation/stack';
 import { Button } from 'react-native-paper';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import Screens from '../../screens/signup';
 import GetStartedNavigator from './getStartedNavigator';
 import { useThemeContext } from '../../theme';
@@ -15,7 +15,8 @@ import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { GET_USER_DETAILS } from '../../graphql/cache/query';
 import { StoreInterface, UpdatePassportInterface } from '../../graphql/types';
 import { UPDATE_USER_PASSPORT } from '../../graphql/server/mutations';
-import Storage from '../../storage';
+import Storage from '../../libs/storage';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
 
 const SignupStack = createStackNavigator();
 let routeNames = [] as string[];
@@ -26,44 +27,17 @@ export default function SignupNavigator() {
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
 
+  const [getUserProfile] = useLazyQuery(GET_USER_PASSPORT);
+
   const [update, setUpdate] = useState(false);
 
   const userDetails = data?.userDetails;
 
   const currentLocation = userDetails?.currentLocation[0];
   const birthPlace = userDetails?.birthPlace[0];
+
   const [updatePassport] = useMutation<UpdatePassportInterface>(
-    UPDATE_USER_PASSPORT,
-    {
-      variables: {
-        payload: {
-          dob: {
-            day: userDetails?.dob.day,
-            month: userDetails?.dob.month,
-            year: userDetails?.dob.year
-          },
-          avatar: userDetails?.avatar,
-          lastName: userDetails?.lastName,
-          firstName: userDetails?.firstName,
-          interest: userDetails?.interest,
-          identity: userDetails?.identity,
-          currentLocation: {
-            lat: currentLocation?.lat,
-            long: currentLocation?.long,
-            country: currentLocation?.country,
-            state: currentLocation?.state,
-            city: currentLocation?.city
-          },
-          birthPlace: {
-            lat: birthPlace?.lat,
-            long: birthPlace?.long,
-            country: birthPlace?.country,
-            state: birthPlace?.state,
-            city: birthPlace?.city
-          }
-        }
-      }
-    }
+    UPDATE_USER_PASSPORT
   );
 
   return (
@@ -88,7 +62,41 @@ export default function SignupNavigator() {
 
           setUpdate(!update);
 
-          const { data } = await updatePassport();
+          const userRegInfo = await Storage.getUserRegistration();
+
+          console.tron({ userRegInfo });
+
+          const { data } = await updatePassport({
+            variables: {
+              payload: {
+                dob: {
+                  day: userDetails?.dob.day,
+                  month: userDetails?.dob.month,
+                  year: userDetails?.dob.year
+                },
+                avatar: userRegInfo.user?.avatar || userDetails?.avatar,
+                lastName: userRegInfo.user?.lastName || userDetails?.lastName,
+                firstName:
+                  userRegInfo.user?.firstName || userDetails?.firstName,
+                identity: userRegInfo.user?.identity || userDetails?.identity,
+                interest: userDetails?.interest,
+                currentLocation: {
+                  lat: currentLocation?.lat,
+                  long: currentLocation?.long,
+                  country: currentLocation?.country,
+                  state: currentLocation?.state,
+                  city: currentLocation?.city
+                },
+                birthPlace: {
+                  lat: birthPlace?.lat,
+                  long: birthPlace?.long,
+                  country: birthPlace?.country,
+                  state: birthPlace?.state,
+                  city: birthPlace?.city
+                }
+              }
+            }
+          });
 
           if (data?.updatePassport.success) {
             setUpdate(!update);
@@ -96,7 +104,7 @@ export default function SignupNavigator() {
             await Storage.setUserRegistration({
               route: 'CommunityScreen',
               completed: true
-            });
+            }).then(() => getUserProfile());
 
             navigation.reset({
               index: 0,

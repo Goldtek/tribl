@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
@@ -15,6 +15,11 @@ import {
 } from '@expo/vector-icons';
 import BottomNavigator from '../bottomNavigator';
 import CustomDrawerContent from './customDrawerComponent';
+import { ConnectionBadgeWrapper } from '../bottomNavigator/styles';
+import { DEVICE_FULL_WIDTH } from '../../utils/device';
+import { useQuery } from '@apollo/react-hooks';
+import { ShowConnectionNotificationBadge } from '../../graphql/types';
+import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 
 const Drawer = createDrawerNavigator();
 
@@ -22,11 +27,18 @@ export default function SideDrawerNavigator() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
+  const { data } = useQuery<ShowConnectionNotificationBadge>(
+    GET_CONNECTION_NOTIFICATION_BADGE
+  );
+
   return (
     <Drawer.Navigator
       drawerType="slide"
       openByDefault={false}
-      drawerStyle={{ backgroundColor: colors.GREY }}
+      drawerStyle={{
+        backgroundColor: colors.GREY,
+        width: DEVICE_FULL_WIDTH - 120
+      }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       drawerContentOptions={{ itemStyle: { marginVertical: 5 } }}
     >
@@ -60,11 +72,16 @@ export default function SideDrawerNavigator() {
         component={Screen.ConnectionRequestScreen}
         options={{
           drawerIcon: () => (
-            <SimpleLineIcons
-              name="user-follow"
-              size={24}
-              color={colors.PRIMARY_TEXT}
-            />
+            <Fragment>
+              <SimpleLineIcons
+                name="user-follow"
+                size={24}
+                color={colors.PRIMARY_TEXT}
+              />
+              {data?.showConnectionNotificationBadge ? (
+                <ConnectionBadgeWrapper />
+              ) : null}
+            </Fragment>
           ),
           drawerLabel: () => (
             <Text
