@@ -7,7 +7,7 @@ import fcmMessaging, {
 import PushNotification from 'react-native-push-notification';
 import { UPDATE_NOTIFICATION } from '../../graphql/server/mutations';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import { USER_FCM_TOKEN } from '../../constants';
 type GlobalNotificationProps = {
   children: JSX.Element;
 };
@@ -47,11 +47,11 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
 
   const getToken = async () => {
     try {
-      let token = await AsyncStorage.getItem('token');
+      let token = await AsyncStorage.getItem(USER_FCM_TOKEN);
 
       if (!token) {
         token = await messaging.getToken();
-        await AsyncStorage.setItem('token', token);
+        await AsyncStorage.setItem(USER_FCM_TOKEN, token);
       }
 
       updatePassportFCM({ variables: { payload: { token } } });
@@ -72,6 +72,12 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
       Sentry.captureException(error);
     }
   };
+
+  PushNotification.configure({
+    permissions: { alert: true, badge: false, sound: true },
+    popInitialNotification: true,
+    requestPermissions: true
+  });
 
   return props.children;
 }
