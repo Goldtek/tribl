@@ -1,7 +1,7 @@
 import MMKVStorage from 'react-native-mmkv-storage';
-import * as APP_CONSTANTS from '../constants';
-import { DEVICE_ID } from '../utils/device';
-import { VerifyOTPIT, RegistrationInfo } from '../graphql/types';
+import { USER_FIRST_LAUNCH, USER_REG_INFO } from '../../constants';
+import { DEVICE_ID } from '../../utils/device';
+import { VerifyOTPIT, RegistrationInfo } from '../../graphql/types';
 
 class Storage {
   public MMKV: MMKVStorage.API | null = null;
@@ -11,7 +11,7 @@ class Storage {
   }
 
   async checkInitialLaunch() {
-    return this.MMKV?.getBoolAsync(APP_CONSTANTS.USER_FIRST_LAUNCH);
+    return this.MMKV?.getBoolAsync(USER_FIRST_LAUNCH);
   }
 
   async clearStorage() {
@@ -19,7 +19,7 @@ class Storage {
   }
 
   async setInitialLaunch() {
-    return this.MMKV?.setBoolAsync(APP_CONSTANTS.USER_FIRST_LAUNCH, true);
+    return this.MMKV?.setBoolAsync(USER_FIRST_LAUNCH, true);
   }
 
   async getUserCredentials() {
@@ -27,13 +27,19 @@ class Storage {
   }
 
   async setUserRegistration(regInfo: RegistrationInfo) {
-    return this.MMKV?.setMapAsync(APP_CONSTANTS.USER_REG_INFO, regInfo);
+    try {
+      const userRegInfo = await this.getUserRegistration();
+      await this.MMKV?.setMapAsync(USER_REG_INFO, {
+        ...userRegInfo,
+        ...regInfo
+      });
+    } catch (error) {
+      return this.MMKV?.setMapAsync(USER_REG_INFO, regInfo);
+    }
   }
 
   async getUserRegistration() {
-    return this.MMKV?.getMapAsync(APP_CONSTANTS.USER_REG_INFO) as Promise<
-      RegistrationInfo
-    >;
+    return this.MMKV?.getMapAsync(USER_REG_INFO) as Promise<RegistrationInfo>;
   }
 
   async setUserCredentials(credentials?: VerifyOTPIT) {
