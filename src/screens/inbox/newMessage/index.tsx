@@ -25,13 +25,9 @@ import ENVIRONMENT_VARIABLES from '../../../config';
 import { Container, FilterContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {
-  selectedName: string;
-  selected: boolean;
-}
+interface ScreenProp {}
 
 export default function ChatScreen(props: ScreenProp) {
-  const { selected, selectedName } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
