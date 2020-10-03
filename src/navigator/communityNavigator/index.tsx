@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, Fragment } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Image, Platform, TouchableHighlight } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +15,13 @@ import AlgoliaSearch from '../../components/algoliaSearch';
 import AlgoliaCommunityList from '../../components/algoliaCommunityList ';
 import GradientButton from '../../components/gradientButton';
 import { useQuery } from '@apollo/react-hooks';
-import { GET_COMMUNITY_SEARCH_INDEX } from '../../graphql/cache/query';
+import {
+  GET_COMMUNITY_SEARCH_INDEX,
+  GET_CONNECTION_NOTIFICATION_BADGE
+} from '../../graphql/cache/query';
 import ENVIRONMENT_VARIABLES from '../../config';
+import { MenuBadgeWrapper } from '../bottomNavigator/styles';
+import { ShowConnectionNotificationBadge } from '../../graphql/types';
 
 const CommunityStack = createStackNavigator();
 
@@ -30,6 +35,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const showMenu = () => setMenu(!menu);
   const { data } = useQuery(GET_COMMUNITY_SEARCH_INDEX);
   const { top: safeAreaTop } = useSafeAreaInsets();
+
+  const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
+    GET_CONNECTION_NOTIFICATION_BADGE
+  );
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -80,11 +89,16 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                 alignItems: 'center'
               }}
             >
-              <Feather
-                name="menu"
-                size={RFValue(25)}
-                color={colors.PRIMARY_TEXT}
-              />
+              <Fragment>
+                <Feather
+                  name="menu"
+                  size={RFValue(25)}
+                  color={colors.PRIMARY_TEXT}
+                />
+                {notificationData?.showConnectionNotificationBadge ? (
+                  <MenuBadgeWrapper />
+                ) : null}
+              </Fragment>
             </TouchableHighlight>
           ),
           headerRight: () => (
@@ -109,7 +123,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
       <CommunityStack.Screen
         name="CommunitySearchScreen"
         component={Screens.SearchScreen}
-        options={({ route }) => ({
+        options={{
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
@@ -126,11 +140,16 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                 alignItems: 'center'
               }}
             >
-              <Feather
-                name="menu"
-                size={RFValue(25)}
-                color={colors.PRIMARY_TEXT}
-              />
+              <Fragment>
+                <Feather
+                  name="menu"
+                  size={RFValue(25)}
+                  color={colors.PRIMARY_TEXT}
+                />
+                {notificationData?.showConnectionNotificationBadge ? (
+                  <MenuBadgeWrapper />
+                ) : null}
+              </Fragment>
             </TouchableHighlight>
           ),
 
@@ -147,7 +166,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             );
           },
           headerRightContainerStyle: { width: '85%' }
-        })}
+        }}
       />
 
       <CommunityStack.Screen
