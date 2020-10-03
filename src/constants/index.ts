@@ -23,6 +23,9 @@ export const GLOBAL_HEADER_STYLE = {
   elevation: 0
 };
 
+// DEFAULT ANDROID PUSH NOTIFICATION CHANNEL_ID
+export const DEFAULT_NOTIFICATION_CHANNEL_ID = 'TRiBL_default_channel';
+
 // USER DEFAULT AVATAR
 export const USER_DEFAULT_AVATAR = `https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp`;
 
