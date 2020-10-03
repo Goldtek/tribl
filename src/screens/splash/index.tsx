@@ -5,7 +5,7 @@ import { RefreshTokenInterface } from '../../graphql/types';
 import { REFRESH_TOKEN } from '../../graphql/server/mutations';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
 import { NavigationInterface } from '../types';
-import Storage from '../../storage';
+import Storage from '../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';

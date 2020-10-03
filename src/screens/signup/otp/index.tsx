@@ -19,7 +19,7 @@ import { DEVICE_ID } from '../../../utils/device';
 import { useThemeContext } from '../../../theme';
 import useCountDown from '../../../utils/useCountDown';
 import { Toast } from '../../../components/rootToaster';
-import Storage from '../../../storage';
+import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
