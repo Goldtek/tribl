@@ -14,14 +14,21 @@ import {
   ActivityIndicator
 } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 // import { FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationInterface } from '../types';
 import { useThemeContext } from '../../theme';
 import TabViewSlider from './widgets/tabs';
 import {
+  GET_ALL_MEMBERS,
   GET_FIREBASE_TOKEN,
+  GET_MY_COMMUNITIES,
+  GET_MY_CONNECTIONS,
+  GET_NEARBY_MEMBERS,
+  GET_POPULAR_COMMUNITIES,
+  GET_RECOMMENDED_COMMUNITIES,
+  GET_RECOMMENDED_MEMBERS,
   GET_USER_PASSPORT
 } from '../../graphql/server/query';
 import {
@@ -69,6 +76,20 @@ export default function PassportScreen(props: ScreenProp) {
   const { data: firebase, loading: firebaseLoading } = useQuery<
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
+
+  const [getMyCommunities] = useLazyQuery(GET_MY_COMMUNITIES);
+
+  const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
+
+  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS);
+
+  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
+
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
+
+  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS);
+
+  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS);
 
   const userDetails = userData?.myPassport;
   const identity = userDetails?.identity.map((item: any) => item.id);
@@ -189,6 +210,13 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     handleLocationPermission();
+    getRecommendedCommunities();
+    getRecommendedMembers();
+    getPopularCommunities();
+    getMyCommunities();
+    getNearbyMembers();
+    getMyConnections();
+    getAllMembers();
   }, []);
 
   useEffect(() => {
