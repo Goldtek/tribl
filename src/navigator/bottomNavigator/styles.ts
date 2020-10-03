@@ -22,7 +22,7 @@ export const BadgeWrapper = styled.View`
   width: ${RFValue(7)}px;
   height: ${RFValue(7)}px;
   border-radius: ${RFValue(7)}px;
-  background-color: ${({ theme }) => theme.colors.PRIMARY};
+  background-color: ${({ theme }) => theme.colors.RED};
   position: absolute;
   top: -8px;
   right: ${RFValue(35)}px;
