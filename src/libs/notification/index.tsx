@@ -4,10 +4,15 @@ import * as Sentry from '@sentry/react-native';
 import fcmMessaging, {
   FirebaseMessagingTypes
 } from '@react-native-firebase/messaging';
-import PushNotification from 'react-native-push-notification';
 import { UPDATE_NOTIFICATION } from '../../graphql/server/mutations';
 import AsyncStorage from '@react-native-community/async-storage';
 import { USER_FCM_TOKEN } from '../../constants';
+import {
+  CHANGE_MESSAGE_NOTIFICATION_BADGE,
+  CHANGE_CONNECTION_NOTIFICATION_BADGE
+} from '../../graphql/cache/mutations';
+import { NotificationMessage } from '../../graphql/types';
+
 type GlobalNotificationProps = {
   children: JSX.Element;
 };
@@ -16,6 +21,13 @@ const messaging = fcmMessaging();
 
 export default function GlobalNotification(props: GlobalNotificationProps) {
   const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
+  const [changeMessageNotification] = useMutation(
+    CHANGE_MESSAGE_NOTIFICATION_BADGE
+  );
+
+  const [changeConnectionNotification] = useMutation(
+    CHANGE_CONNECTION_NOTIFICATION_BADGE
+  );
 
   useEffect(() => {
     checkPermission();
@@ -26,18 +38,31 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
     // Register background handler
     messaging.setBackgroundMessageHandler(presentNotification);
 
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+    messaging.onNotificationOpenedApp(presentNotification);
+
+    // Check whether an initial notification is available
+    messaging.getInitialNotification().then(presentNotification);
+
     return unsubscribe;
   }, []);
 
   const presentNotification = async (
-    remoteMessage: FirebaseMessagingTypes.RemoteMessage
+    remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
   ) => {
-    console.log(remoteMessage);
+    const data = (remoteMessage?.data as unknown) as NotificationMessage;
 
-    PushNotification.presentLocalNotification({
-      title: 'Local Notification',
-      message: 'This is a local notification example'
-    });
+    if (data.type === 'MESSAGE_RECEIVED') {
+      changeMessageNotification({
+        variables: { showMessageNotificationBadge: true }
+      });
+    }
+
+    if (data.type === 'CONNECTION_REQUEST_RECEIVED') {
+      changeConnectionNotification({
+        variables: { showConnectionNotificationBadge: true }
+      });
+    }
   };
 
   const checkPermission = async () => {
@@ -72,12 +97,6 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
       Sentry.captureException(error);
     }
   };
-
-  PushNotification.configure({
-    permissions: { alert: true, badge: false, sound: true },
-    popInitialNotification: true,
-    requestPermissions: true
-  });
 
   return props.children;
 }
