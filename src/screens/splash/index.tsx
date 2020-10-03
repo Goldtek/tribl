@@ -16,42 +16,42 @@ interface ScreenProp extends NavigationInterface {}
 export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
 
-  const credentials = Storage.getUserCredentials();
-
   useEffect(() => {
     handleAuthentication();
   }, []);
 
   useQuery(GET_USER_PASSPORT);
 
-  const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN, {
-    variables: { payload: { refreshToken: credentials?.refresh_token } }
-  });
-
-  const refreshUserToken = async () => {
-    const { data } = await refreshToken();
-
-    if (data?.refreshToken) {
-      Storage.setUserCredentials(data?.refreshToken);
-    }
-  };
+  const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN);
 
   const handleAuthentication = async () => {
-    await Storage.checkInitialLaunch();
-
-    const initialLaunch = Storage.getInitialLaunch();
-
-    if (!initialLaunch) {
+    try {
+      await Storage.checkInitialLaunch();
+    } catch (error) {
       return navigation.replace('WalkThroughScreen');
     }
 
-    if (!credentials) {
+    try {
+      const credentials = await Storage.getUserCredentials();
+      const userRegistration = await Storage.getUserRegistration();
+
+
+      const { data } = await refreshToken({
+        variables: { payload: { refreshToken: credentials.refresh_token } }
+      });
+
+      await Storage.setUserCredentials(data?.refreshToken);
+
+      if (!userRegistration.completed) {
+        return navigation.replace('SignupScreen', {
+          screen: userRegistration.route
+        });
+      }
+
+      navigation.replace('CommunityScreen');
+    } catch (error) {
       return navigation.replace('SignupScreen');
     }
-
-    await refreshUserToken();
-
-    navigation.replace('CommunityScreen');
   };
 
   return (

@@ -172,6 +172,13 @@ interface VerifyOTPIT extends JwtTokenResult {
   __typename: string;
 }
 
+// LOCAL REGISTRATION OBJECT TYPE
+interface RegistrationInfo {
+  route: string;
+  completed: boolean;
+  user?: PassportInterface;
+}
+
 export type VerifyOTPInterface = { validateOtp: VerifyOTPIT };
 
 export type RefreshTokenInterface = { refreshToken: VerifyOTPIT };

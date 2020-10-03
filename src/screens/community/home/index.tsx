@@ -66,9 +66,7 @@ export default function HomeScreen(props: ScreenProp) {
   const myCommunity = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers;
   const community = communityData?.recommendedCommunities;
-  const randomCommunity = communityData?.recommendedCommunities.filter(
-    (community: any) => community.name.includes('Sequoia')
-  )[0];
+  const randomCommunity = communityData?.recommendedCommunities[1];
 
   const navigateToSearch = (index: number) => () => {
     navigation.navigate('CommunitySearchScreen', { index: index });

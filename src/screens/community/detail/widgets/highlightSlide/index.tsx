@@ -44,6 +44,14 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const nearbyMembers = nearbyData?.nearbyMembers;
   const SingleCommunity = communityData?.Community[0];
 
+  const resizeAvatar = SingleCommunity?.avatar.split('upload/');
+
+  const banner = resizeAvatar?.length
+    ? resizeAvatar[0] +
+      'upload/c_fill,g_auto,h_350,w_970/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/' +
+      resizeAvatar[1]
+    : SingleCommunity?.avatar;
+
   const handleJoinCommunity = () => {
     setState({
       ...state,
@@ -71,17 +79,17 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
             <Skeleton />
           ) : (
             <Fragment>
-              <Card style={{ marginTop: RFValue(5) }}>
+              <Card style={{ marginTop: RFValue(5), height: RFValue(230) }}>
                 <Card.Content>
                   <FastImage
-                    resizeMode={FastImage.resizeMode.contain}
+                    resizeMode={FastImage.resizeMode.cover}
                     source={{
-                      uri: SingleCommunity?.avatar,
+                      uri: banner,
                       priority: FastImage.priority.high
                     }}
                     style={{
                       width: '100%',
-                      height: RFValue(100)
+                      height: '100%'
                     }}
                   />
                 </Card.Content>
@@ -94,7 +102,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                       uri: SingleCommunity?.avatar,
                       priority: FastImage.priority.high
                     }}
-                    style={{ width: '25%', height: '50%' }}
+                    style={{ width: RFValue(50), height: '100%' }}
                   />
                   <TextContainer>
                     <Title
