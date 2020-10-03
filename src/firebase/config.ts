@@ -1,7 +1,6 @@
 // import * as firebase from 'firebase';
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
-import firebaseDatabase from '@react-native-firebase/database';
 import firebaseFirestore from '@react-native-firebase/firestore';
 import ENVIRONMENT_VARIABLES from '../config';
 
@@ -23,5 +22,4 @@ if (!firebase.apps.length) {
 }
 
 export const fireAuth = auth();
-export const database = firebaseDatabase();
 export const firechat = firebaseFirestore();
