@@ -45,6 +45,10 @@
 	<string>Allow Tribl to access photos and media on your device</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow Tribl to access photos and media on your device</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
