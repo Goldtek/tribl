@@ -39,9 +39,13 @@ const link = split(
   httpLink
 );
 
-const request = (operation: Operation) => {
-  const credentials = Storage.getUserCredentials();
-  operation.setContext({ headers: { authorization: credentials?.id_token } });
+const request = async (operation: Operation) => {
+  try {
+    const credentials = await Storage.getUserCredentials();
+    operation.setContext({ headers: { authorization: credentials?.id_token } });
+  } catch (error) {
+    operation.setContext({ headers: { authorization: undefined } });
+  }
 };
 
 const requestLink = new ApolloLink(

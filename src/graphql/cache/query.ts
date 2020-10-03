@@ -27,12 +27,14 @@ export const GET_USER_DETAILS = gql`
         long
         country
         state
+        city
       }
       birthPlace {
         lat
         long
         country
         state
+        city
       }
       identity
       interest

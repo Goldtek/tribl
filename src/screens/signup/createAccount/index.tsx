@@ -15,6 +15,7 @@ import { CreateAccountInterface } from '../../../graphql/types';
 import { Toast } from '../../../components/rootToaster';
 import { CREATE_USER_PASSPORT } from '../../../graphql/server/mutations';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import Storage from '../../../storage';
 import LoadingModal from '../../../components/loadingModal';
 import { validateEmailInput } from '../../../utils/validateEmailInput';
 
@@ -83,6 +84,11 @@ export default function CreateAccountScreen(props: ScreenProp) {
 
       if (data?.createPassport.success) {
         setState({ ...state, isModalVisible: true });
+
+        await Storage.setUserRegistration({
+          route: 'AvatarUploadScreen',
+          completed: false
+        });
 
         setTimeout(() => {
           navigation.reset({
