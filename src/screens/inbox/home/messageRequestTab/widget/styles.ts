@@ -14,7 +14,7 @@ export const BadgeWrapper = styled.View`
   width: ${RFValue(10)}px;
   height: ${RFValue(10)}px;
   border-radius: ${RFValue(10)}px;
-  background-color: ${({ theme }) => theme.colors.PRIMARY};
+  background-color: ${({ theme }) => theme.colors.RED};
   align-items: center;
   justify-content: center;
   margin-left: auto;

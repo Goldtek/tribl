@@ -11,7 +11,7 @@ import { NavigationInterface } from '../types';
 import { RFValue } from 'react-native-responsive-fontsize';
 import hexToRGB from '../../utils/hexToRGB';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
-import Storage from '../../storage';
+import Storage from '../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { GradientContainer, Container } from './styles';

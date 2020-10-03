@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
 import FastImage from 'react-native-fast-image';
@@ -14,10 +14,11 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
-import { StoreInterface } from '../../../graphql/types';
+import { RegistrationInfo, StoreInterface } from '../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
 // import { FontAwesome } from '@expo/vector-icons';
 import TabViewSlider from './widgets/tabs';
+import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -36,6 +37,18 @@ export default function PassportScreen(props: ScreenProp) {
   const { t } = useTranslation();
 
   const [imageLoad, setImageLoad] = useState(true);
+  const [userRegInfo, setUserRegInfo] = useState<RegistrationInfo | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const regInfo = await Storage.getUserRegistration();
+        setUserRegInfo({ ...userRegInfo, ...regInfo });
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    })();
+  }, []);
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
 
@@ -95,7 +108,7 @@ export default function PassportScreen(props: ScreenProp) {
           <ImageContainer>
             <FastImage
               source={{
-                uri: userDetails?.avatar,
+                uri: userRegInfo?.user?.avatar || userDetails?.avatar,
                 priority: FastImage.priority.high
               }}
               resizeMode={FastImage.resizeMode.cover}
@@ -126,7 +139,9 @@ export default function PassportScreen(props: ScreenProp) {
                   color: colors.WHITE
                 }}
               >
-                {`${userDetails?.firstName} ${userDetails?.lastName}`}
+                {`${userRegInfo?.user?.firstName || userDetails?.firstName} ${
+                  userRegInfo?.user?.lastName || userDetails?.lastName
+                }`}
               </Paragraph>
               <Paragraph
                 style={{

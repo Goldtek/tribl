@@ -10,6 +10,7 @@ import { NavigationContainerRef } from '@react-navigation/native';
 // ALL ASYNC STORAGE CONSTANTS
 export const USER_FIRST_LAUNCH = '@FIRST_TIME_LAUNCH';
 export const USER_REG_INFO: string = '@USER_REG_INFO';
+export const USER_FCM_TOKEN: string = '@USER_FCM_TOKEN';
 
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 15;
@@ -22,6 +23,9 @@ export const GLOBAL_HEADER_STYLE = {
   shadowRadius: 0,
   elevation: 0
 };
+
+// DEFAULT ANDROID PUSH NOTIFICATION CHANNEL_ID
+export const DEFAULT_NOTIFICATION_CHANNEL_ID = 'TRiBL_default_channel';
 
 // USER DEFAULT AVATAR
 export const USER_DEFAULT_AVATAR = `https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp`;

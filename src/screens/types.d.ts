@@ -18,28 +18,28 @@ interface MessageRequestScreenProps extends PassportInterface {
 // App Navigation prop types
 export type RootStackParamList = {
   CommunitySearchScreen: { index: number };
-  ConnectionChatScreen: ChatScreenProps;
+  ConnectionChatScreen?: ChatScreenProps;
   DirectChatScreen: ChatScreenProps;
-  SelectCountryScreen: undefined;
-  CreateAccountScreen: undefined;
-  AvatarUploadScreen: undefined;
-  IdentifyUserScreen: undefined;
-  UserLocationScreen: undefined;
-  WalkThroughScreen: undefined;
-  NewMessageScreen: undefined;
-  NewMessageScreen: undefined;
-  CommunityScreen: undefined;
-  NewChatSearch: undefined;
-  PrivacyScreen: undefined;
-  ProfileScreen: undefined;
-  SignupScreen?: {};
-  InboxScreen: undefined;
-  TriblScreen: undefined;
-  LoginScreen: undefined;
-  OTPScreen: undefined;
-  PassportScreen: undefined;
-  CommunityDetailScreen: {};
-  MemberDetailScreen: {};
+  SelectCountryScreen?: Object;
+  CreateAccountScreen?: Object;
+  AvatarUploadScreen?: Object;
+  IdentifyUserScreen?: Object;
+  UserLocationScreen?: Object;
+  WalkThroughScreen?: Object;
+  NewMessageScreen?: Object;
+  NewMessageScreen?: Object;
+  CommunityScreen?: Object;
+  NewChatSearch?: Object;
+  PrivacyScreen?: Object;
+  ProfileScreen?: Object;
+  SignupScreen?: Object;
+  InboxScreen?: Object;
+  TriblScreen?: Object;
+  LoginScreen?: Object;
+  OTPScreen?: Object;
+  PassportScreen?: Object;
+  CommunityDetailScreen?: Object;
+  MemberDetailScreen?: Object;
 };
 
 interface StackNavigationInterface extends StackActionHelpers {
