@@ -13,7 +13,7 @@ import IdentityButton from './widgets/identityButton';
 import ScrollInstruction from './widgets/scrollInstruction';
 import { GET_ALL_IDENTITIES } from '../../../graphql/server/query';
 import { IdentitiesInterface } from '../../../graphql/types';
-import Storage from '../../../storage';
+import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -56,7 +56,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
     await Storage.setUserRegistration({
       route: 'UserLocationScreen',
-      completed: false
+      user: { identity: [...Array.from(state.selectedId.values())] }
     });
 
     navigation.navigate('UserLocationScreen');
