@@ -4,13 +4,13 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import CommunityNavigator from '../communityNavigator';
-import { GET_NOTIFICATION_BADGE } from '../../graphql/cache/query';
+import { GET_MESSAGE_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 import CommunityIcon from '../../../assets/icons/communityIcon';
 import PassportIcon from '../../../assets/icons/passportIcon';
 import InboxIcon from '../../../assets/icons/inboxIcon';
 import ChatNavigator from '../chatNavigator';
 import Screens from '../../screens';
-import { ShowNotificationBadgeRequestInterface } from '../../graphql/types';
+import { ShowMessageNotificationBadge } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { IconContainer, Label, BadgeWrapper } from './styles';
@@ -23,8 +23,8 @@ export default function BottomNavigator() {
   const { colors } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data } = useQuery<ShowNotificationBadgeRequestInterface>(
-    GET_NOTIFICATION_BADGE
+  const { data } = useQuery<ShowMessageNotificationBadge>(
+    GET_MESSAGE_NOTIFICATION_BADGE
   );
 
   return (
@@ -57,7 +57,7 @@ export default function BottomNavigator() {
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>
               <InboxIcon fillColor={color} />
-              {data?.showNotificationBadge ? <BadgeWrapper /> : null}
+              {data?.showMessageNotificationBadge ? <BadgeWrapper /> : null}
               <Label style={{ color }}>
                 {t(`community.bottomLabels.inbox`)}
               </Label>
