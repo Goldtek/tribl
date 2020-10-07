@@ -124,6 +124,59 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+
+/**
+ * Handle code sermver control for successful production build.
+ *
+ * This get's the code version and increment the build number on deployment
+ */
+//def getVersionCode() {
+//    versionFile = file('gradle.properties')
+//
+//    if (versionFile.canRead()) {
+//        versionProps = new Properties()
+//        versionProps.load(new FileInputStream(versionFile))
+//        VERSION_CODE = VERSION_CODE.toInteger() + 1
+//        versionProps.store(versionFile.newWriter(), null)
+//        return VERSION_CODE
+//    }
+//};
+
+/**
+ * Handle code sermver control for successful production build.
+ *
+ * This get's the code version name and increment the version number on deployment
+ */
+// def getVersionName() {
+//     versionFile = file('gradle.properties')
+
+//     if (versionFile.canRead()) {
+//         versionProps = new Properties()
+//         versionProps.load(new FileInputStream(versionFile))
+
+//         SEMVER_MAJOR = SEMVER_MAJOR.toInteger()
+//         SEMVER_MINOR = SEMVER_MINOR.toInteger()
+//         SEMVER_PATCH = SEMVER_PATCH.toInteger() + 1
+
+//         if (SEMVER_PATCH == 9) {
+//             SEMVER_PATCH = 0
+//             SEMVER_MINOR = SEMVER_MINOR.toInteger() + 1
+//         }
+
+//         if (SEMVER_MINOR == 9) {
+//             SEMVER_MINOR = 0
+//             SEMVER_MAJOR = SEMVER_MAJOR.toInteger() + 1
+//         }
+
+//         SEMVER_MAJOR = SEMVER_MAJOR.toString()
+//         SEMVER_MINOR = SEMVER_MINOR.toString()
+//         SEMVER_PATCH = SEMVER_PATCH.toString()
+//         versionProps.store(versionFile.newWriter(), null)
+
+//         return "${SEMVER_MAJOR}.${SEMVER_MINOR}.${SEMVER_PATCH}"
+//     }
+// };
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -145,7 +198,7 @@ android {
         versionName "1.1.0"
         multiDexEnabled true
     }
-    
+
     splits {
         abi {
             reset()
@@ -154,6 +207,7 @@ android {
             include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
+
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -171,6 +225,7 @@ android {
             }
         }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -202,7 +257,6 @@ android {
                 output.versionCodeOverride =
                         versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
             }
-
         }
     }
 }
@@ -218,7 +272,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.3.0'
     implementation project(':react-native-push-notification')
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-      exclude group:'com.facebook.fbjni'
+        exclude group:'com.facebook.fbjni'
     }
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
