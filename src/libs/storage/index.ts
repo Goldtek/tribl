@@ -1,6 +1,6 @@
 import MMKVStorage from 'react-native-mmkv-storage';
-import { USER_FIRST_LAUNCH, USER_REG_INFO } from '../../constants';
 import { DEVICE_ID } from '../../utils/device';
+import { USER_FIRST_LAUNCH, USER_REG_INFO } from '../../constants';
 import { VerifyOTPIT, RegistrationInfo } from '../../graphql/types';
 
 class Storage {
