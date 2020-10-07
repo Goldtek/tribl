@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import * as Sentry from '@sentry/react-native';
+import { useTranslation } from 'react-i18next';
 import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useMutation, useQuery } from '@apollo/react-hooks';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useTranslation } from 'react-i18next';
 import {
   VALIDATE_USER_OTP,
   SEND_USER_OTP
@@ -14,11 +14,11 @@ import {
 import { StoreInterface, VerifyOTPInterface } from '../../../graphql/types';
 import GradientButton from '../../../components/gradientButton';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
+import { Toast } from '../../../components/rootToaster';
+import useCountDown from '../../../utils/useCountDown';
 import { NavigationInterface } from '../../types';
 import { DEVICE_ID } from '../../../utils/device';
 import { useThemeContext } from '../../../theme';
-import useCountDown from '../../../utils/useCountDown';
-import { Toast } from '../../../components/rootToaster';
 import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -90,6 +90,11 @@ export default function OTPScreen(props: ScreenProp) {
             routes: [{ name: 'CreateAccountScreen' }]
           });
         }
+
+        await Storage.setUserRegistration({
+          route: 'CommunityScreen',
+          completed: true
+        });
 
         navigation.reset({
           index: 0,
