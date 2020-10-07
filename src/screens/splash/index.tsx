@@ -38,15 +38,15 @@ export default function SplashScreen(props: ScreenProp) {
         variables: { payload: { refreshToken: credentials.refresh_token } }
       });
 
-      await Storage.setUserCredentials(data?.refreshToken);
-
       if (!userRegistration.completed) {
         return navigation.replace('SignupScreen', {
           screen: userRegistration.route
         });
       }
 
-      navigation.replace('CommunityScreen');
+      await Storage.setUserCredentials(data?.refreshToken);
+
+      navigation.replace(userRegistration.route);
     } catch (error) {
       return navigation.replace('SignupScreen');
     }

@@ -1,5 +1,6 @@
 import { Resolvers } from 'apollo-client';
 import { ApolloCache } from 'apollo-cache';
+import { RootStackParamScreensList } from '../screens/types';
 
 /*
  *************************************************************
@@ -192,7 +193,7 @@ interface VerifyOTPIT extends JwtTokenResult {
 
 // LOCAL REGISTRATION OBJECT TYPE
 interface RegistrationInfo {
-  route: string;
+  route: RootStackParamScreensList;
   completed?: boolean;
   user?: {
     firstName?: string;

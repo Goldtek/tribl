@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import FastImage from 'react-native-fast-image';
+import { Image } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ConversationInterface } from '../../../types';
@@ -31,7 +31,7 @@ function DirectChatCard(props: DirectChatProp) {
     return 0;
   });
 
-  const { data: passportData, loading } = useQuery<UserPassportInterface>(
+  const { data: passportData } = useQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
     { variables: { id: sender.id } }
   );
@@ -70,32 +70,20 @@ function DirectChatCard(props: DirectChatProp) {
       onPress={handleNavigation}
     >
       <Fragment>
-        {loading ? (
-          <SkeletonPlaceholder>
-            <SkeletonPlaceholder.Item
-              width={RFValue(50)}
-              height={RFValue(50)}
-              borderRadius={RFValue(4)}
-            />
-          </SkeletonPlaceholder>
-        ) : (
-          <FastImage
-            resizeMode={FastImage.resizeMode.cover}
-            source={{
-              uri: receiverPassport?.avatar,
-              priority: FastImage.priority.high
-            }}
-            style={{
-              width: RFValue(50),
-              height: RFValue(50),
-              borderRadius: RFValue(4)
-            }}
-          />
-        )}
+        <Image
+          source={{ uri: receiverPassport?.avatar, cache: 'force-cache' }}
+          defaultSource={require('../../../../../../assets/images/profile.png')}
+          style={{
+            width: RFValue(50),
+            height: RFValue(50),
+            resizeMode: 'cover',
+            borderRadius: RFValue(4)
+          }}
+        />
 
         <NameContainer>
-          {!loading ? (
-            <Fragment>
+          <Fragment>
+            {receiverPassport?.firstName ? (
               <Title
                 style={{
                   color: colors.PRIMARY_TEXT,
@@ -106,50 +94,43 @@ function DirectChatCard(props: DirectChatProp) {
               >
                 {title.length >= 30 ? `${title.substr(0, 30)}...` : title}
               </Title>
-              <Text
-                numberOfLines={1}
-                style={{
-                  color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE)
-                }}
-              >
-                {lastMessage.text.length >= 30
-                  ? `${lastMessage.text.substr(0, 30)}...`
-                  : lastMessage.text}
-              </Text>
-            </Fragment>
-          ) : (
-            <SkeletonPlaceholder>
-              <SkeletonPlaceholder.Item
-                width={RFValue(110)}
-                height={RFValue(15)}
-              />
-              <SkeletonPlaceholder.Item
-                marginTop={RFValue(5)}
-                width={RFValue(150)}
-                height={RFValue(7)}
-              />
-            </SkeletonPlaceholder>
-          )}
-        </NameContainer>
-
-        {!loading ? (
-          <TimeStamp>
+            ) : (
+              <SkeletonPlaceholder>
+                <SkeletonPlaceholder.Item
+                  width={RFValue(130)}
+                  height={RFValue(15)}
+                />
+              </SkeletonPlaceholder>
+            )}
             <Text
+              numberOfLines={1}
               style={{
                 color: colors.SECONDARY_TEXT,
                 fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                marginVertical: 5
+                fontSize: RFValue(fonts.MEDIUM_SIZE)
               }}
             >
-              {formatDate()}
+              {lastMessage.text.length >= 30
+                ? `${lastMessage.text.substr(0, 30)}...`
+                : lastMessage.text}
             </Text>
+          </Fragment>
+        </NameContainer>
 
-            {showNotificationBadge ? <BadgeWrapper /> : null}
-          </TimeStamp>
-        ) : null}
+        <TimeStamp>
+          <Text
+            style={{
+              color: colors.SECONDARY_TEXT,
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              marginVertical: 5
+            }}
+          >
+            {formatDate()}
+          </Text>
+
+          {showNotificationBadge ? <BadgeWrapper /> : null}
+        </TimeStamp>
       </Fragment>
     </TouchableRipple>
   );
