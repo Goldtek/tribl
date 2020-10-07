@@ -1,9 +1,7 @@
 import firestore, {
   FirebaseFirestoreTypes
 } from '@react-native-firebase/firestore';
-
 import { firechat, fireAuth } from './config';
-
 import { ROOM_TYPES } from './types';
 
 class Firechat {
@@ -11,7 +9,7 @@ class Firechat {
 
   async signIn(firebaseToken: string) {
     fireAuth.signInWithCustomToken(firebaseToken);
-    fireAuth.onAuthStateChanged(async (user) => {
+    fireAuth.onAuthStateChanged((user) => {
       if (user) this.userId = user.uid;
     });
   }

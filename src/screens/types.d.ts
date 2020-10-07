@@ -20,8 +20,10 @@ export type RootStackParamList = {
   CommunitySearchScreen: { index: number };
   ConnectionChatScreen?: ChatScreenProps;
   DirectChatScreen: ChatScreenProps;
+  CommunityDetailScreen?: Object;
   SelectCountryScreen?: Object;
   CreateAccountScreen?: Object;
+  MemberDetailScreen?: Object;
   AvatarUploadScreen?: Object;
   IdentifyUserScreen?: Object;
   UserLocationScreen?: Object;
@@ -29,6 +31,7 @@ export type RootStackParamList = {
   NewMessageScreen?: Object;
   NewMessageScreen?: Object;
   CommunityScreen?: Object;
+  PassportScreen?: Object;
   NewChatSearch?: Object;
   PrivacyScreen?: Object;
   ProfileScreen?: Object;
@@ -37,10 +40,32 @@ export type RootStackParamList = {
   TriblScreen?: Object;
   LoginScreen?: Object;
   OTPScreen?: Object;
-  PassportScreen?: Object;
-  CommunityDetailScreen?: Object;
-  MemberDetailScreen?: Object;
 };
+
+export type RootStackParamScreensList =
+  | 'CommunitySearchScreen'
+  | 'CommunityDetailScreen'
+  | 'ConnectionChatScreen'
+  | 'SelectCountryScreen'
+  | 'CreateAccountScreen'
+  | 'MemberDetailScreen'
+  | 'AvatarUploadScreen'
+  | 'IdentifyUserScreen'
+  | 'UserLocationScreen'
+  | 'WalkThroughScreen'
+  | 'DirectChatScreen'
+  | 'NewMessageScreen'
+  | 'NewMessageScreen'
+  | 'CommunityScreen'
+  | 'PassportScreen'
+  | 'NewChatSearch'
+  | 'PrivacyScreen'
+  | 'ProfileScreen'
+  | 'SignupScreen'
+  | 'InboxScreen'
+  | 'TriblScreen'
+  | 'LoginScreen'
+  | 'OTPScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

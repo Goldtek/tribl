@@ -257,13 +257,10 @@ export default function PassportScreen(props: ScreenProp) {
   }, [state.identity]);
 
   useEffect(() => {
-    const getFirebaseToken = async () => {
-      if (firebase?.generateFirebaseToken) {
-        Storage.setUserCredentials(firebase?.generateFirebaseToken);
-        Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
-      }
-    };
-    getFirebaseToken();
+    if (firebase?.generateFirebaseToken) {
+      Storage.setUserCredentials(firebase?.generateFirebaseToken);
+      Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
+    }
     checkUpdate();
   }, [firebaseLoading]);
 
