@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import * as Sentry from '@sentry/react-native';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import PushNotification from 'react-native-push-notification';
 import fcmMessaging, {
   FirebaseMessagingTypes
 } from '@react-native-firebase/messaging';
@@ -97,6 +99,26 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
       Sentry.captureException(error);
     }
   };
+
+  // Must be outside of any component LifeCycle (such as `componentDidMount`).
+  PushNotification.configure({
+    // (optional) Called when Token is generated (iOS and Android)
+    onRegister: () => {},
+
+    // (required) Called when a remote is received or opened, or local notification is opened
+    onNotification: (notification) => {
+      // (required) Called when a remote is received or opened, or local notification is opened
+      notification.finish(PushNotificationIOS.FetchResult.NoData);
+    },
+
+    // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
+    onRegistrationError: (error) => {},
+
+    // IOS ONLY (optional): default: all - Permissions to register.
+    permissions: { alert: true, badge: false, sound: true },
+
+    requestPermissions: true
+  });
 
   return props.children;
 }
