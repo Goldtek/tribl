@@ -12,6 +12,7 @@ import {
 import FastImage from 'react-native-fast-image';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { MyPassportInterface } from '../../../graphql/types';
+import { APP_VERSION } from '../../../utils/device';
 
 import { DrawerFooter, ProfileContainer } from './styles';
 
@@ -62,7 +63,7 @@ export default function CustomDrawerComponent(props: any) {
               lineHeight: RFValue(15)
             }}
           >
-            {t(`community.sideNav.version`)}
+            {APP_VERSION}
           </Text>
           <Text
             style={{
