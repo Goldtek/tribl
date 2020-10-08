@@ -34,6 +34,8 @@ target 'tribl' do
   pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
   pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary.podspec"
 
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
   post_install do |installer|
     flipper_post_install(installer)
   end
