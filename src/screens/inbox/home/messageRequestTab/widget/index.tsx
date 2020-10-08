@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import FastImage from 'react-native-fast-image';
+import { Image } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ConversationInterface } from '../../../types';
@@ -65,82 +65,61 @@ function RequestChatCard(props: RequestChatCard) {
       onPress={handleNavigation}
     >
       <Fragment>
-        {loading ? (
-          <SkeletonPlaceholder>
-            <SkeletonPlaceholder.Item
-              width={RFValue(50)}
-              height={RFValue(50)}
-              borderRadius={RFValue(4)}
-            />
-          </SkeletonPlaceholder>
-        ) : (
-          <FastImage
-            resizeMode={FastImage.resizeMode.cover}
-            source={{
-              uri: receiverPassport?.avatar,
-              priority: FastImage.priority.high
-            }}
-            style={{
-              width: RFValue(50),
-              height: RFValue(50),
-              borderRadius: RFValue(4)
-            }}
-          />
-        )}
+        <Image
+          source={{ uri: receiverPassport?.avatar, cache: 'force-cache' }}
+          defaultSource={require('../../../../../../assets/images/profile.png')}
+          style={{
+            width: RFValue(50),
+            height: RFValue(50),
+            resizeMode: 'cover',
+            borderRadius: RFValue(4)
+          }}
+        />
 
         <NameContainer>
-          {!loading ? (
-            <Fragment>
-              <Title
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'capitalize'
-                }}
-              >
-                {`${receiverPassport?.firstName} ${receiverPassport?.lastName}`}
-              </Title>
-              <Text
-                style={{
-                  color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE)
-                }}
-              >
-                {formatMessageTime(lastMessage.createdAt)}
-              </Text>
-            </Fragment>
+          {receiverPassport?.firstName ? (
+            <Title
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+            >
+              {`${receiverPassport?.firstName} ${receiverPassport?.lastName}`}
+            </Title>
           ) : (
             <SkeletonPlaceholder>
               <SkeletonPlaceholder.Item
-                width={RFValue(110)}
+                width={RFValue(130)}
                 height={RFValue(15)}
-              />
-              <SkeletonPlaceholder.Item
-                marginTop={RFValue(5)}
-                width={RFValue(150)}
-                height={RFValue(7)}
               />
             </SkeletonPlaceholder>
           )}
+          <Text
+            style={{
+              color: colors.SECONDARY_TEXT,
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE)
+            }}
+          >
+            {formatMessageTime(lastMessage.createdAt)}
+          </Text>
         </NameContainer>
 
-        {!loading ? (
-          <TimeStamp>
-            <Text
-              style={{
-                color: colors.SECONDARY_TEXT,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                marginVertical: 5
-              }}
-            >
-              {formatDate()}
-            </Text>
-            {lastMessage.createdAt >= receiver.readAt ? <BadgeWrapper /> : null}
-          </TimeStamp>
-        ) : null}
+        <TimeStamp>
+          <Text
+            style={{
+              color: colors.SECONDARY_TEXT,
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              marginVertical: 5
+            }}
+          >
+            {formatDate()}
+          </Text>
+          {lastMessage.createdAt >= receiver.readAt ? <BadgeWrapper /> : null}
+        </TimeStamp>
       </Fragment>
     </TouchableRipple>
   );
