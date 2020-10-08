@@ -15,7 +15,7 @@ import Storage from '../libs/storage';
 
 // Create a Http link:
 const httpLink = new HttpLink({
-  uri: ENVIRONMENT_VARIABLES.TRIBL_HTTP_SERVER_BASE_URI
+  uri: ENVIRONMENT_VARIABLES.TRIBL_SERVER_BASE_URI
 });
 
 // Create a WebSocket link:
