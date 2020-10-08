@@ -126,57 +126,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 
-/**
- * Handle code sermver control for successful production build.
- *
- * This get's the code version and increment the build number on deployment
- */
-//def getVersionCode() {
-//    versionFile = file('gradle.properties')
-//
-//    if (versionFile.canRead()) {
-//        versionProps = new Properties()
-//        versionProps.load(new FileInputStream(versionFile))
-//        VERSION_CODE = VERSION_CODE.toInteger() + 1
-//        versionProps.store(versionFile.newWriter(), null)
-//        return VERSION_CODE
-//    }
-//};
 
-/**
- * Handle code sermver control for successful production build.
- *
- * This get's the code version name and increment the version number on deployment
- */
-// def getVersionName() {
-//     versionFile = file('gradle.properties')
-
-//     if (versionFile.canRead()) {
-//         versionProps = new Properties()
-//         versionProps.load(new FileInputStream(versionFile))
-
-//         SEMVER_MAJOR = SEMVER_MAJOR.toInteger()
-//         SEMVER_MINOR = SEMVER_MINOR.toInteger()
-//         SEMVER_PATCH = SEMVER_PATCH.toInteger() + 1
-
-//         if (SEMVER_PATCH == 9) {
-//             SEMVER_PATCH = 0
-//             SEMVER_MINOR = SEMVER_MINOR.toInteger() + 1
-//         }
-
-//         if (SEMVER_MINOR == 9) {
-//             SEMVER_MINOR = 0
-//             SEMVER_MAJOR = SEMVER_MAJOR.toInteger() + 1
-//         }
-
-//         SEMVER_MAJOR = SEMVER_MAJOR.toString()
-//         SEMVER_MINOR = SEMVER_MINOR.toString()
-//         SEMVER_PATCH = SEMVER_PATCH.toString()
-//         versionProps.store(versionFile.newWriter(), null)
-
-//         return "${SEMVER_MAJOR}.${SEMVER_MINOR}.${SEMVER_PATCH}"
-//     }
-// };
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -195,7 +145,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 101014
+        versionCode 101016
         versionName "1.1.1"
         multiDexEnabled true
     }
