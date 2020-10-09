@@ -26,3 +26,6 @@
   **[] $VALUES;
   public *;
 }
+
+#RN-CONFIG
+-keep class com.tribl.BuildConfig { *; }
