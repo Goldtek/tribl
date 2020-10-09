@@ -73,6 +73,8 @@ function DirectChatCard(props: DirectChatProp) {
         <Image
           source={{ uri: receiverPassport?.avatar, cache: 'force-cache' }}
           defaultSource={require('../../../../../../assets/images/profile.png')}
+          width={RFValue(50)}
+          height={RFValue(50)}
           style={{
             width: RFValue(50),
             height: RFValue(50),
