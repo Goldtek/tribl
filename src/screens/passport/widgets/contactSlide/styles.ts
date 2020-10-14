@@ -35,6 +35,11 @@ export const LastNameContainer = styled.View`
   align-items: center;
 `;
 
+export const BioContainer = styled.View`
+  /* flex-direction: row; */
+  /* justify-content: space-between; */
+`;
+
 export const DOBContainer = styled.View``;
 
 export const IdentityContainer = styled.View`
