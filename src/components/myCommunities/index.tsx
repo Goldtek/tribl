@@ -7,8 +7,13 @@ import { useNavigation } from '@react-navigation/native';
 
 // DEFINE SCREEN PROP TYPES
 interface MyCommunityProp {
-  avatar: string;
   name: string;
+  membersCount: string;
+  id: string;
+  avatar: string;
+  isMember: boolean;
+  interests: [];
+  description: string;
   members: string;
 }
 
@@ -16,7 +21,15 @@ export default function MyCommunity(props: MyCommunityProp) {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, name } = props;
+  const {
+    avatar,
+    name,
+    membersCount,
+    isMember,
+    interests,
+    description,
+    id
+  } = props;
 
   const handleNavigation = () =>
     navigation.navigate('CommunityDetailScreen', {
