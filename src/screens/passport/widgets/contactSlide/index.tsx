@@ -34,7 +34,8 @@ import {
   Location,
   CitizenshipContainer,
   EditTextInput,
-  AddIdentity
+  AddIdentity,
+  BioContainer
   // LinkAccountsContainer,
   // InstagramButton,
   // SpotifyButton,
@@ -44,6 +45,7 @@ import {
 function contactSlide(props: any) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const click = props.click;
 
   const { data: userData, loading } = useQuery<MyPassportInterface>(
     GET_USER_PASSPORT
@@ -59,22 +61,25 @@ function contactSlide(props: any) {
     date?: string;
     firstName?: string;
     lastName?: string;
+    bio?: string;
+    disableBio: boolean;
     disableLastName: boolean;
     disableFirstName: boolean;
     showDatePicker: boolean;
     selectedIdentity: string[];
     selectedId: string[];
-    click: boolean;
   }>({
     date: '',
     firstName: '',
     lastName: '',
+    bio:
+      'Podcaster and content creator: Africa tech & Diaspora Affairs #DiasporaTalks',
+    disableBio: true,
     disableLastName: true,
     disableFirstName: true,
     showDatePicker: false,
     selectedIdentity: [],
-    selectedId: [],
-    click: false
+    selectedId: []
   });
 
   useEffect(() => {
@@ -89,7 +94,7 @@ function contactSlide(props: any) {
 
   const onChange = (selectedDate: Date) => {
     const date = formatMessageTime(selectedDate);
-    return setState({ ...state, date, showDatePicker: false, click: true });
+    return setState({ ...state, date, showDatePicker: false });
   };
 
   const handleDatePicker = () => {
@@ -109,8 +114,7 @@ function contactSlide(props: any) {
     setState({
       ...state,
       selectedIdentity: childData,
-      selectedId: idData,
-      click: true
+      selectedId: idData
     });
   };
 
@@ -121,7 +125,9 @@ function contactSlide(props: any) {
     lastName,
     disableFirstName,
     disableLastName,
-    date
+    date,
+    bio,
+    disableBio
   } = state;
 
   useEffect(() => {
@@ -146,30 +152,16 @@ function contactSlide(props: any) {
               >
                 {t(`signup.passportScreen.firstName`)}
               </Title>
-              <EditTextInput
-                underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
-                onPress={() => setState({ ...state, disableFirstName: false })}
-              >
-                <Feather
-                  name="edit"
-                  size={RFValue(20)}
-                  color={colors.INACTIVE}
-                />
-              </EditTextInput>
             </FirstNameContainer>
             <TextInput
               value={firstName}
               onChangeText={(firstName: string) =>
                 setState({
                   ...state,
-                  firstName,
-                  disableFirstName: false,
-                  click: true
+                  firstName
                 })
               }
-              disabled={disableFirstName}
-              onFocus={() => setState({ ...state, disableFirstName: false })}
-              onBlur={() => setState({ ...state, disableFirstName: true })}
+              disabled={click}
               style={{
                 height: 30,
                 fontFamily: fonts.WORK_SANS_REGULAR,
@@ -195,32 +187,54 @@ function contactSlide(props: any) {
               >
                 {t(`signup.passportScreen.lastName`)}
               </Title>
-              <EditTextInput
-                underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
-                onPress={() => setState({ ...state, disableLastName: false })}
-              >
-                <Feather
-                  name="edit"
-                  size={RFValue(20)}
-                  color={colors.INACTIVE}
-                />
-              </EditTextInput>
             </LastNameContainer>
             <TextInput
               value={lastName}
               onChangeText={(lastName: string) =>
                 setState({
                   ...state,
-                  lastName,
-                  disableLastName: false,
-                  click: true
+                  lastName
                 })
               }
-              disabled={disableLastName}
-              onFocus={() => setState({ ...state, disableLastName: false })}
-              onBlur={() => setState({ ...state, disableLastName: true })}
+              disabled={click}
               style={{
                 height: 30,
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                backgroundColor: colors.WHITE,
+                borderBottomWidth: disableLastName ? 0 : 2,
+                borderColor: colors.PRIMARY,
+                textTransform: 'capitalize'
+              }}
+            />
+          </Container>
+
+          <Container>
+            <BioContainer>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {t(`community.memberPassport.bio`)}
+              </Title>
+            </BioContainer>
+            <TextInput
+              value={bio}
+              multiline={true}
+              dense={true}
+              onChangeText={(bio: string) =>
+                setState({
+                  ...state,
+                  bio
+                })
+              }
+              disabled={click}
+              style={{
                 fontFamily: fonts.WORK_SANS_REGULAR,
                 fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                 color: colors.PRIMARY_TEXT,
@@ -242,7 +256,7 @@ function contactSlide(props: any) {
                 marginBottom: 0
               }}
             >
-              {t(`signup.passportScreen.dob`)}
+              {t(`community.memberPassport.dob`)}
             </Title>
 
             <Button
@@ -326,7 +340,7 @@ function contactSlide(props: any) {
                     backgroundColor: colors.ACTION
                   }}
                 />
-                {userDetails?.birthPlace[0].city ? (
+                {userDetails?.birthPlace[0]?.city ? (
                   <Paragraph
                     style={{
                       fontFamily: fonts.WORK_SANS_REGULAR,
@@ -366,7 +380,7 @@ function contactSlide(props: any) {
                     backgroundColor: colors.ACTION
                   }}
                 />
-                {userDetails?.currentLocation[0].city ? (
+                {userDetails?.currentLocation[0]?.city ? (
                   <Paragraph
                     style={{
                       fontFamily: fonts.WORK_SANS_REGULAR,
@@ -376,7 +390,7 @@ function contactSlide(props: any) {
                       marginBottom: 10
                     }}
                   >
-                    {`${currentLocation.city}, ${currentLocation.state}`}
+                    {`${currentLocation?.city}, ${currentLocation.state}`}
                   </Paragraph>
                 ) : (
                   <Paragraph
