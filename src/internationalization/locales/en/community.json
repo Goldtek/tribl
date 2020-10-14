@@ -30,10 +30,12 @@
   "memberPassport": {
     "connection": "connections",
     "community": "communities",
+    "tribe": "tribes",
     "connect": "connect",
     "disconnect": "disconnect",
     "message": "message",
     "bio": "bio",
+    "dob": "birthdate",
     "locality": "locality",
     "identity": "identity",
     "interest": "interest",
