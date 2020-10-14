@@ -1,19 +1,24 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { Button, Card } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
+import { JOIN_COMMUNITY } from '../../graphql/server/mutations';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedCommunityProp {
   name: string;
   membersCount: string;
+  id: string;
   avatar: string;
-  onPress(): void;
   isMember: boolean;
+  interests: [];
+  description: string;
 }
 
 function RecommendedCommunity(props: RecommendedCommunityProp) {
@@ -30,7 +35,28 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
     ? resizeAvatar[0] + 'upload/c_thumb,w_200,g_face/' + resizeAvatar[1]
     : props.avatar;
 
-  const { avatar, name, membersCount, onPress, isMember } = props;
+  const { avatar, name, membersCount, isMember, id } = props;
+
+  const [member, setMember] = useState(false);
+
+  const [joinCommunity, { loading }] = useMutation(JOIN_COMMUNITY, {
+    variables: {
+      payload: {
+        communityId: id
+      }
+    }
+  });
+
+  const handleJoin = async () => {
+    try {
+      const { data } = await joinCommunity();
+      if (data) {
+        setMember(true);
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
 
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
@@ -109,10 +135,11 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         )}
         right={() => (
           <Fragment>
-            {isMember ? (
+            {isMember || member ? (
               <Button
                 mode="text"
                 onPress={() => {}}
+                disabled={true}
                 labelStyle={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -124,7 +151,8 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
             ) : (
               <Button
                 mode="text"
-                onPress={onPress}
+                loading={loading}
+                onPress={handleJoin}
                 labelStyle={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),

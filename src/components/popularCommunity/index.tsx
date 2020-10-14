@@ -1,11 +1,14 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
+import { JOIN_COMMUNITY } from '../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -14,8 +17,11 @@ import { TextContainer } from './styles';
 interface PopularCommunityProp {
   avatar: string;
   name: string;
+  id: string;
   membersCount: string;
   isMember: boolean;
+  interests: [];
+  description: string;
 }
 
 function PopularCommunity(props: PopularCommunityProp) {
@@ -23,7 +29,7 @@ function PopularCommunity(props: PopularCommunityProp) {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
-  const { avatar, name, membersCount, isMember } = props;
+  const { avatar, name, membersCount, isMember, id } = props;
 
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
@@ -31,6 +37,27 @@ function PopularCommunity(props: PopularCommunityProp) {
       details: props
     });
   }, []);
+
+  const [member, setMember] = useState(false);
+
+  const [joinCommunity, { loading }] = useMutation(JOIN_COMMUNITY, {
+    variables: {
+      payload: {
+        communityId: id
+      }
+    }
+  });
+
+  const handleJoin = async () => {
+    try {
+      const { data } = await joinCommunity();
+      if (data) {
+        setMember(true);
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
 
   return (
     <TouchableRipple
@@ -75,7 +102,7 @@ function PopularCommunity(props: PopularCommunityProp) {
           >
             {membersCount} {t(`community.tabPanel.member`)}
           </Paragraph>
-          {isMember ? (
+          {isMember || member ? (
             <Paragraph
               style={{
                 fontSize: fonts.MEDIUM_SIZE,
