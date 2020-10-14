@@ -58,11 +58,12 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  click?: boolean;
+}
 
 interface StateProps extends PassportInterface {
   date: string;
-  click?: boolean;
   selectedId: string[];
 }
 
@@ -105,7 +106,7 @@ export default function PassportScreen(props: ScreenProp) {
   const identity = userDetails?.identity.map((item: any) => item.id);
   const dateOfBirth = userDetails?.dob;
   const [imageLoad, setImageLoad] = useState(true);
-  const [update, setUpdate] = useState(false);
+  const [update, setUpdate] = useState(true);
   const [state, setState] = useState<{
     details: StateProps;
     identity: string[] | undefined;
@@ -129,6 +130,7 @@ export default function PassportScreen(props: ScreenProp) {
     }
   });
   const [OTAUpdate, setOTAUpdate] = useState(false);
+
   const [location, setLocation] = useState<{
     city?: string;
     state?: string | null | undefined;
@@ -166,10 +168,10 @@ export default function PassportScreen(props: ScreenProp) {
   const identityID = state?.details?.selectedId || [];
   const SelectedIdentitiesID = Array.from(identityID?.values());
 
-  useEffect(() => {
-    //@ts-ignore
-    setUpdate(state.details.click);
-  }, [state.details]);
+  // useEffect(() => {
+  //   //@ts-ignore
+  //   setUpdate(state.details.click);
+  // }, [state.details]);
 
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
@@ -377,14 +379,16 @@ export default function PassportScreen(props: ScreenProp) {
     });
   };
 
+  const click = update;
+
   const handleRequest = async () => {
     try {
       await updatePassport();
       refetch();
-      setUpdate(false);
+      setUpdate(true);
     } catch (error) {
       Sentry.captureException(error);
-      setUpdate(false);
+      setUpdate(true);
     }
   };
 
@@ -432,12 +436,25 @@ export default function PassportScreen(props: ScreenProp) {
                         fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                         textTransform: 'capitalize'
                       }}
+                      onPress={() => setUpdate(false)}
+                      loading={loading}
+                    >
+                      {t(`signup.passportScreen.edit`)}
+                    </Button>
+                  ) : (
+                    <Button
+                      labelStyle={{
+                        color: colors.WHITE,
+                        fontSize: RFValue(14),
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        textTransform: 'capitalize'
+                      }}
                       onPress={handleRequest}
                       loading={loading}
                     >
                       {t(`signup.passportScreen.update`)}
                     </Button>
-                  ) : null}
+                  )}
                 </Cover>
                 <ImageContainer>
                   <FastImage
@@ -476,7 +493,7 @@ export default function PassportScreen(props: ScreenProp) {
                     >
                       {`${userDetails?.firstName} ${userDetails?.lastName}`}
                     </Paragraph>
-                    {userDetails?.currentLocation[0].city ? (
+                    {userDetails?.currentLocation[0]?.city ? (
                       <Paragraph
                         style={{
                           fontFamily: fonts.WORK_SANS_REGULAR,
@@ -487,7 +504,7 @@ export default function PassportScreen(props: ScreenProp) {
                           textTransform: 'capitalize'
                         }}
                       >
-                        {`${userDetails?.currentLocation[0].city}, ${userDetails?.currentLocation[0].state}`}
+                        {`${userDetails?.currentLocation[0]?.city}, ${userDetails?.currentLocation[0]?.state}`}
                       </Paragraph>
                     ) : (
                       <Paragraph
@@ -500,7 +517,7 @@ export default function PassportScreen(props: ScreenProp) {
                           textTransform: 'capitalize'
                         }}
                       >
-                        {`${userDetails?.currentLocation[0].state}, ${userDetails?.currentLocation[0].country}`}
+                        {`${userDetails?.currentLocation[0]?.state}, ${userDetails?.currentLocation[0]?.country}`}
                       </Paragraph>
                     )}
                     <ConnectionCover>
@@ -607,7 +624,7 @@ export default function PassportScreen(props: ScreenProp) {
                   {t(`signup.passportScreen.sharePassport`)}
                 </Button>
               </HeaderContainer>
-              <TabViewSlider getUserDetails={getUserDetails} />
+              <TabViewSlider getUserDetails={getUserDetails} click={click} />
             </Fragment>
           )}
         </ScrollView>
