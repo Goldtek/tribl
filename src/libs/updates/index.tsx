@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import GradientButton from '../../components/gradientButton';
 import { TouchableWithoutFeedback, Image } from 'react-native';
+import { APP_VERSION } from '../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -79,7 +80,7 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
                   lineHeight: RFValue(14)
                 }}
               >
-                {t(`community.update.version`)}
+                {APP_VERSION}
               </Paragraph>
               <Paragraph
                 style={{
