@@ -106,21 +106,13 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
 
   const [joinCommunity, { loading: joinLoading }] = useMutation(
     JOIN_COMMUNITY,
-    {
-      variables: {
-        payload: {
-          communityId: SingleCommunity?.id
-        }
-      }
-    }
+    { variables: { payload: { communityId: SingleCommunity?.id } } }
   );
 
   const handleJoin = async () => {
     try {
-      const { data } = await joinCommunity();
-      if (data) {
-        setMember(true);
-      }
+      await joinCommunity();
+      setMember(true);
     } catch (error) {
       Sentry.captureException(error);
     }
