@@ -68,10 +68,10 @@ function Member(props: MemberProp) {
     navigation.navigate(
       conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
       {
-        title: `${firstName} ${lastName}`,
-        avatar: avatar,
         receiverId: id,
-        chatId: conversation?.id
+        chatId: conversation?.id,
+        title: `${firstName} ${lastName}`,
+        ...props
       }
     );
   };
