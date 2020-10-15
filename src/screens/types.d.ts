@@ -20,6 +20,7 @@ export type RootStackParamList = {
   CommunitySearchScreen: { index: number };
   ConnectionChatScreen: ChatScreenProps;
   MessageRequestScreen: ChatScreenProps;
+  ChannelChatScreen: ChatScreenProps;
   DirectChatScreen: ChatScreenProps;
   CommunityDetailScreen?: Object;
   SelectCountryScreen?: Object;
