@@ -12,6 +12,7 @@ import {
   JOIN_COMMUNITY,
   LEAVE_COMMUNITY
 } from '../../graphql/server/mutations';
+import { CLOUDINARY_BANNER, CLOUDINARY_THUMBNAIL } from '../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedCommunityProp {
@@ -28,26 +29,25 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const resizeAvatar = props?.avatar?.split('upload/');
-  const banner = resizeAvatar?.length
-    ? resizeAvatar[0] +
-      'upload/c_fill,g_auto,h_350,w_970/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/' +
-      resizeAvatar[1]
-    : props.avatar;
-  const thumbnail = resizeAvatar?.length
-    ? resizeAvatar[0] + 'upload/c_thumb,w_200,g_face/' + resizeAvatar[1]
-    : props.avatar;
-
-  const { avatar, name, membersCount, isMember, id } = props;
 
   const [member, setMember] = useState(false);
 
+  const { ...restProps } = props;
+
+  const { avatar, name, membersCount, isMember, id } = restProps;
+
+  const resizeAvatar = avatar?.split('upload/');
+
+  const banner = resizeAvatar?.length
+    ? `${resizeAvatar[0]}${CLOUDINARY_BANNER}${resizeAvatar[1]}`
+    : avatar;
+
+  const thumbnail = resizeAvatar?.length
+    ? `${resizeAvatar[0]}${CLOUDINARY_THUMBNAIL}${resizeAvatar[1]}`
+    : avatar;
+
   const [joinCommunity, { loading }] = useMutation(JOIN_COMMUNITY, {
-    variables: {
-      payload: {
-        communityId: id
-      }
-    }
+    variables: { payload: { communityId: id } }
   });
 
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
@@ -63,10 +63,8 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
 
   const handleJoin = async () => {
     try {
-      const { data } = await joinCommunity();
-      if (data) {
-        setMember(true);
-      }
+      await joinCommunity();
+      setMember(true);
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -86,7 +84,7 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
       title: name,
-      details: props
+      details: restProps
     });
   }, []);
 
