@@ -23,6 +23,14 @@ import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
 import RecommendedCommunitySkeleton from '../../../components/recommendedCommunitySkeleton';
 import ComingSoonCommunities from '../../../components/recommendedCommunity/comingSoon';
+import {
+  PassportInterface,
+  MyCommunitiesRequestInterface,
+  RecommendedCommunitiesRequestInterface,
+  CommunityInterface
+} from '../../../graphql/types';
+import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import hexToRGB from '../../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -33,9 +41,6 @@ import {
   RecentActivitiesList,
   CommunityCover
 } from './styles';
-import { PassportInterface } from '../../../graphql/types';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import hexToRGB from '../../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -55,14 +60,16 @@ export default function HomeScreen(props: ScreenProp) {
 
   useSubscription(USER_ONLINE_SUBSCRIPTION);
 
-  const { loading: myCommunityLoading, data: myCommunityData } = useQuery(
-    GET_MY_COMMUNITIES
-  );
+  const { loading: myCommunityLoading, data: myCommunityData } = useQuery<
+    MyCommunitiesRequestInterface
+  >(GET_MY_COMMUNITIES);
 
   const {
     loading: recommendedCommunityLoading,
     data: communityData
-  } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+  } = useQuery<RecommendedCommunitiesRequestInterface>(
+    GET_RECOMMENDED_COMMUNITIES
+  );
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
@@ -82,7 +89,9 @@ export default function HomeScreen(props: ScreenProp) {
   };
 
   const _renderMyCommunityItem = useMemo(
-    () => ({ item }: any) => <MyCommunity key={item.id} {...item} />,
+    () => ({ item }: { item: CommunityInterface }) => (
+      <MyCommunity key={item.id} {...item} />
+    ),
     []
   );
 
@@ -225,12 +234,8 @@ export default function HomeScreen(props: ScreenProp) {
                 activeDotColor={colors.WHITE}
                 dotColor={hexToRGB(colors.WHITE, 0.6)}
               >
-                {communities.map((community: any) => (
-                  <RecommendedCommunity
-                    key={community.id}
-                    {...community}
-                    onPress={handleJoinCommunity}
-                  />
+                {communities.map((community) => (
+                  <RecommendedCommunity key={community.id} {...community} />
                 ))}
               </Swiper>
             ) : (
