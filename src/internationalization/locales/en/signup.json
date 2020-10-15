@@ -117,6 +117,7 @@
     "spotifyTitle": "connect your spotify",
     "spotifySubTitle": "Connect your Spotify account to add your top artists \nto your profile. Your top artists will be selected \nbased on your streams on Spotify.",
     "loading": "submitting...",
-    "update": "update"
+    "update": "update",
+    "edit": "edit"
   }
 }
