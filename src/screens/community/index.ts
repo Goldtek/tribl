@@ -7,7 +7,7 @@ import NewMessageScreen from '../inbox/newMessage';
 export default {
   HomeScreen,
   SearchScreen,
-  CommunityDetailScreen,
+  NewMessageScreen,
   MemberDetailScreen,
-  NewMessageScreen
+  CommunityDetailScreen,
 };
