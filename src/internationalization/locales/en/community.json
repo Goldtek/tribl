@@ -49,7 +49,7 @@
   },
 
   "tabPanel": {
-    "member": "members",
+    "member": "member",
     "community": "communities",
     "highlight": "highlights",
     "channel": "channels",
