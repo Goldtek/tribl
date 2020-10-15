@@ -13,19 +13,9 @@ import {
   LEAVE_COMMUNITY
 } from '../../graphql/server/mutations';
 import { CLOUDINARY_BANNER, CLOUDINARY_THUMBNAIL } from '../../constants';
+import { CommunityInterface } from '../../graphql/types';
 
-// DEFINE SCREEN PROP TYPES
-interface RecommendedCommunityProp {
-  name: string;
-  membersCount: string;
-  id: string;
-  avatar: string;
-  isMember: boolean;
-  interests: [];
-  description: string;
-}
-
-function RecommendedCommunity(props: RecommendedCommunityProp) {
+function RecommendedCommunity(props: CommunityInterface) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
