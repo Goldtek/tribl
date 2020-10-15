@@ -39,6 +39,11 @@ enum UserAvailability {
   OFFLINE = 'OFFLINE'
 }
 
+enum PrivacyStatus {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE'
+}
+
 export enum Status {
   PENDING = 'PENDING',
   BLOCKED = 'BLOCKED',
@@ -160,6 +165,40 @@ export interface StoreInterface {
   userDetails: PassportInterface;
 }
 
+type Channel = {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  isPrivate: boolean;
+  participants: PassportInterface[];
+};
+
+type Interest = {
+  id: string;
+  name: string;
+  createdAt: _Neo4jDate;
+  updatedAt: _Neo4jDate;
+};
+
+type CommunityPrivacy = {
+  id: string;
+  visibility: PrivacyStatus;
+};
+
+export interface Community {
+  id: string;
+  name: string;
+  avatar: string;
+  isMember: boolean;
+  description: string;
+  membersCount: number;
+  channels: Channel[];
+  interests: Interest[];
+  privacy: CommunityPrivacy;
+  moderators: PassportInterface[];
+  participants: PassportInterface[];
+}
+
 /*
  *************************************************************
  ******************    APOLLO SERVER    **********************
@@ -262,6 +301,11 @@ export type NearbyMembersRequestInterface = {
 // ALL MEMBERS REQUEST (RESPONSE) TYPE
 export type AllMembersRequestInterface = {
   Passport: PassportInterface[];
+};
+
+// ALL MEMBERS REQUEST (RESPONSE) TYPE
+export type SinglePassportRequestInterface = {
+  singlePassport: PassportInterface;
 };
 
 // SHOW MESSAGE NOTIFICATION REQUEST (RESPONSE) TYPE
