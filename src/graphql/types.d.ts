@@ -132,6 +132,7 @@ export interface PassportInterface {
   id: string;
   email: string;
   avatar: string;
+  bio: string;
   dob: _Neo4jDate;
   lastName: string;
   verified: boolean;
