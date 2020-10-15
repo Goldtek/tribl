@@ -66,7 +66,7 @@ export default function HomeScreen(props: ScreenProp) {
   const myCommunity = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers;
   const community = communityData?.recommendedCommunities;
-  const randomCommunity = communityData?.recommendedCommunities[1];
+  const randomCommunity = communityData?.recommendedCommunities[0];
 
   const navigateToSearch = (index: number) => () => {
     navigation.navigate('CommunitySearchScreen', { index: index });
@@ -212,10 +212,7 @@ export default function HomeScreen(props: ScreenProp) {
             {recommendedCommunityLoading ? (
               <RecommendedCommunitySkeleton />
             ) : community.length ? (
-              <RecommendedCommunity
-                {...randomCommunity}
-                onPress={handleJoinCommunity}
-              />
+              <RecommendedCommunity {...randomCommunity} />
             ) : (
               <ComingSoonCommunities />
             )}

@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo, Fragment } from 'react';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import * as Sentry from '@sentry/react-native';
-import { ScrollView } from 'react-native';
-import { Title, Paragraph, Button } from 'react-native-paper';
+import { ScrollView, FlatList } from 'react-native';
+import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
@@ -11,10 +11,16 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
-import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_RECOMMENDED_MEMBERS,
+  GET_RECOMMENDED_COMMUNITIES
+} from '../../../graphql/server/query';
 import PassportSkeleton from './widget';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { PassportInterface } from '../../../graphql/types';
+import MyCommunity from './widget/tribes';
+import MyConnections from './widget/connections';
 
 import {
   ContactContainer,
@@ -41,6 +47,14 @@ export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
+
+  const { data: connectionData } = useQuery(GET_RECOMMENDED_MEMBERS);
+
+  const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+
+  const community = communityData?.recommendedCommunities;
+
+  const connections = connectionData?.recommendedMembers;
 
   const [state, setState] = useState({ loading: false, pending: false });
 
@@ -111,6 +125,15 @@ export default function contactSlide(props: MemberDetailProps) {
 
   const { loading, pending } = state;
 
+  const _renderMyCommunityItem = useMemo(
+    () => ({ item }: any) => <MyCommunity key={item.id} {...item} />,
+    []
+  );
+
+  const _renderMyConnectionItem = useMemo(
+    () => ({ item }: any) => <MyConnections key={item.id} {...item} />,
+    []
+  );
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -290,7 +313,29 @@ export default function contactSlide(props: MemberDetailProps) {
               </Button>
             </ButtonCover>
           )}
-
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase',
+              marginBottom: 5,
+              marginTop: 40
+            }}
+          >
+            {t(`community.memberPassport.bio`)}
+          </Title>
+          <Text
+            style={{
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'capitalize'
+            }}
+          >
+            Hello, I’m Katherine and I am a married women living in Chicago. I
+            enjoy tech and tinkering with electronics.
+          </Text>
           {SinglePassport?.currentLocation || SinglePassport?.birthLocation ? (
             <LocationContainer>
               <Title
@@ -299,8 +344,8 @@ export default function contactSlide(props: MemberDetailProps) {
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
                   color: colors.PRIMARY_TEXT,
                   textTransform: 'uppercase',
-                  marginBottom: 10,
-                  marginTop: 40
+                  marginBottom: 5,
+                  marginTop: 30
                 }}
               >
                 {t(`signup.passportScreen.locality`)}
@@ -430,6 +475,58 @@ export default function contactSlide(props: MemberDetailProps) {
                 ))}
               </Identities>
             </InterestContainer>
+          ) : null}
+          {community?.length ? (
+            <Fragment>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase',
+                  marginBottom: 10
+                }}
+              >
+                {t(`community.memberPassport.tribe`)}
+              </Title>
+              <FlatList
+                data={community}
+                horizontal={true}
+                renderItem={_renderMyCommunityItem}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  marginTop: 5,
+                  backgroundColor: colors.WHITE
+                }}
+              />
+            </Fragment>
+          ) : null}
+          {connections?.length ? (
+            <Fragment>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase',
+                  marginBottom: 10,
+                  marginTop: RFValue(40)
+                }}
+              >
+                {t(`community.memberPassport.connection`)}
+              </Title>
+              <FlatList
+                data={connections}
+                horizontal={true}
+                keyExtractor={(_, index: number) => index.toString()}
+                renderItem={_renderMyConnectionItem}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  marginTop: 5,
+                  backgroundColor: colors.WHITE
+                }}
+              />
+            </Fragment>
           ) : null}
         </ContactContainer>
       )}
