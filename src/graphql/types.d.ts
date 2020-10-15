@@ -188,7 +188,7 @@ type CommunityPrivacy = {
   visibility: PrivacyStatus;
 };
 
-export interface Community {
+export interface CommunityInterface {
   id: string;
   name: string;
   avatar: string;
@@ -296,9 +296,24 @@ export type RecommendedMembersRequestInterface = {
   recommendedMembers: PassportInterface[];
 };
 
+// RECOMMENDED COMMUNITIES REQUEST (RESPONSE) TYPE
+export type RecommendedCommunitiesRequestInterface = {
+  recommendedCommunities: CommunityInterface[];
+};
+
+// MY COMMUNITIES REQUEST (RESPONSE) TYPE
+export type MyCommunitiesRequestInterface = {
+  myCommunities: CommunityInterface[];
+};
+
 // NEARBY MEMBERS REQUEST (RESPONSE) TYPE
 export type NearbyMembersRequestInterface = {
   nearbyMembers: PassportInterface[];
+};
+
+// COMMUNITY MEMBERS REQUEST (RESPONSE) TYPE
+export type CommunityMembersRequestInterface = {
+  communityMembers: PassportInterface[];
 };
 
 // ALL MEMBERS REQUEST (RESPONSE) TYPE
