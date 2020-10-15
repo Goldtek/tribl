@@ -30,6 +30,12 @@ export const DEFAULT_NOTIFICATION_CHANNEL_ID = 'TRiBL_default_channel';
 // USER DEFAULT AVATAR
 export const USER_DEFAULT_AVATAR = `https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp`;
 
+// CLOUDINARY BANNER FIX
+export const CLOUDINARY_BANNER= `upload/c_fill,g_auto,h_350,w_970/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/`;
+
+// CLOUDINARY THUMBNAIL FIX
+export const CLOUDINARY_THUMBNAIL = 'upload/c_thumb,w_200,g_face/';
+
 // GLOBAL ROOT NAVIGATOR
 export const navigationRef = React.createRef<NavigationContainerRef>();
 
