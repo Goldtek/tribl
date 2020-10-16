@@ -50,7 +50,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
 
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
 
-  const { loading, data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
+  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
     variables: { id }
   });
 
@@ -148,30 +148,36 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
       <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
         <Container>
           <Fragment>
-            <Card style={{ marginTop: RFValue(5), height: RFValue(230) }}>
-              <Card.Content>
+            <Card style={{ height: RFValue(230) }}>
+              <Card.Content
+                style={{
+                  paddingHorizontal: RFValue(5),
+                  paddingVertical: RFValue(5)
+                }}
+              >
                 <FastImage
                   resizeMode={FastImage.resizeMode.cover}
                   source={{
                     uri: banner,
                     priority: FastImage.priority.high
                   }}
-                  style={{
-                    width: '100%',
-                    height: '100%'
-                  }}
+                  style={{ width: '100%', height: '100%', borderRadius: 4 }}
                 />
               </Card.Content>
             </Card>
             <Card style={{ marginTop: RFValue(5) }}>
               <CardContainer>
                 <FastImage
-                  resizeMode={FastImage.resizeMode.contain}
+                  resizeMode={FastImage.resizeMode.cover}
                   source={{
                     uri: data.avatar,
                     priority: FastImage.priority.high
                   }}
-                  style={{ width: RFValue(50), height: '100%' }}
+                  style={{
+                    width: RFValue(50),
+                    height: '100%',
+                    borderRadius: 4
+                  }}
                 />
                 <TextContainer>
                   <Title
@@ -179,7 +185,6 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                       color: colors.PRIMARY_TEXT,
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                       fontSize: fonts.LARGE_SIZE,
-                      textTransform: 'capitalize',
                       lineHeight: RFValue(19)
                     }}
                   >
@@ -193,7 +198,11 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                       color: colors.SECONDARY_TEXT
                     }}
                   >
-                    {data.membersCount} {t(`community.tabPanel.member`)}
+                    {data.membersCount <= 1
+                      ? `${data.membersCount} ${t(`community.tabPanel.member`)}`
+                      : `${data.membersCount} ${t(
+                          `community.tabPanel.member`
+                        )}s`}
                   </Paragraph>
                   {data.description ? (
                     <Paragraph
