@@ -1,5 +1,5 @@
 import React, { useState, useCallback, Fragment, useEffect } from 'react';
-import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
+import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import {
   Button,
   IconButton,
@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../theme';
-import hexToRGB from '../../../../utils/hexToRGB';
 import { MyPassportInterface } from '../../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../utils/timesince';
@@ -41,11 +40,20 @@ import {
   // SpotifyButton,
   // ButtonDot,
 } from './styles';
+import { NavigationInterface } from '../../../types';
+import { useNavigation } from '@react-navigation/native';
 
-function contactSlide(props: any) {
+interface ScreenProp extends NavigationInterface {
+  click: boolean;
+  getUserDetails: any;
+}
+
+function contactSlide(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const click = props.click;
+
+  const navigation = useNavigation();
 
   const { data: userData, loading } = useQuery<MyPassportInterface>(
     GET_USER_PASSPORT
@@ -53,7 +61,6 @@ function contactSlide(props: any) {
   const userDetails = userData?.myPassport;
 
   const currentLocation = userDetails?.currentLocation[0];
-  const birthPlace = userDetails?.birthPlace[0];
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -68,18 +75,33 @@ function contactSlide(props: any) {
     showDatePicker: boolean;
     selectedIdentity: string[];
     selectedId: string[];
+    birthPlace: {
+      lat: number | null | undefined;
+      long: number | null | undefined;
+      country: string | null | undefined;
+      state: string | null | undefined;
+      city: string | null | undefined;
+    };
+    birthPlaceInput: string;
   }>({
     date: '',
     firstName: '',
     lastName: '',
-    bio:
-      'Podcaster and content creator: Africa tech & Diaspora Affairs #DiasporaTalks',
+    bio: '',
     disableBio: true,
     disableLastName: true,
     disableFirstName: true,
     showDatePicker: false,
     selectedIdentity: [],
-    selectedId: []
+    selectedId: [],
+    birthPlace: {
+      lat: 0,
+      long: 0,
+      country: '',
+      state: '',
+      city: ''
+    },
+    birthPlaceInput: ''
   });
 
   useEffect(() => {
@@ -88,9 +110,41 @@ function contactSlide(props: any) {
       ...state,
       date: `${userDetails?.dob?.day}/${userDetails?.dob?.month}/${userDetails?.dob?.year}`,
       firstName: userDetails?.firstName,
-      lastName: userDetails?.lastName
+      lastName: userDetails?.lastName,
+      bio: userDetails?.bio,
+      birthPlace: {
+        lat: userDetails?.birthPlace[0]?.lat,
+        long: userDetails?.birthPlace[0]?.long,
+        country: userDetails?.birthPlace[0]?.country,
+        state: userDetails?.birthPlace[0]?.state,
+        city: userDetails?.birthPlace[0]?.city
+      }
     });
   }, [userData?.myPassport.id]);
+
+  const getBirthplaceDetails = (childData: any) => {
+    setState({
+      ...state,
+      date: `${userDetails?.dob?.day}/${userDetails?.dob?.month}/${userDetails?.dob?.year}`,
+      firstName: userDetails?.firstName,
+      lastName: userDetails?.lastName,
+      bio: userDetails?.bio,
+      birthPlace: {
+        lat: childData?.lat,
+        long: childData?.long,
+        country: childData?.country,
+        state: childData?.state,
+        city: childData?.city
+      }
+    });
+  };
+
+  const handleNavigation = useCallback(() => {
+    navigation.navigate('BirthPlaceScreen', {
+      details: state,
+      getBirthplaceDetails: getBirthplaceDetails
+    });
+  }, []);
 
   const onChange = (selectedDate: Date) => {
     const date = formatMessageTime(selectedDate);
@@ -120,15 +174,9 @@ function contactSlide(props: any) {
 
   const SelectedIdentities = Array.from(state.selectedIdentity.values());
 
-  const {
-    firstName,
-    lastName,
-    disableFirstName,
-    disableLastName,
-    date,
-    bio,
-    disableBio
-  } = state;
+  const { firstName, lastName, bio, birthPlace } = state;
+
+  const placeholder = birthPlace.state + ', ' + birthPlace.country;
 
   useEffect(() => {
     props.getUserDetails(state);
@@ -168,7 +216,7 @@ function contactSlide(props: any) {
                 fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                 color: colors.PRIMARY_TEXT,
                 backgroundColor: colors.WHITE,
-                borderBottomWidth: disableFirstName ? 0 : 2,
+                borderBottomWidth: click ? 0 : 2,
                 borderColor: colors.PRIMARY,
                 textTransform: 'capitalize'
               }}
@@ -203,7 +251,7 @@ function contactSlide(props: any) {
                 fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                 color: colors.PRIMARY_TEXT,
                 backgroundColor: colors.WHITE,
-                borderBottomWidth: disableLastName ? 0 : 2,
+                borderBottomWidth: click ? 0 : 2,
                 borderColor: colors.PRIMARY,
                 textTransform: 'capitalize'
               }}
@@ -223,27 +271,51 @@ function contactSlide(props: any) {
                 {t(`community.memberPassport.bio`)}
               </Title>
             </BioContainer>
-            <TextInput
-              value={bio}
-              multiline={true}
-              dense={true}
-              onChangeText={(bio: string) =>
-                setState({
-                  ...state,
-                  bio
-                })
-              }
-              disabled={click}
-              style={{
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                color: colors.PRIMARY_TEXT,
-                backgroundColor: colors.WHITE,
-                borderBottomWidth: disableLastName ? 0 : 2,
-                borderColor: colors.PRIMARY,
-                textTransform: 'capitalize'
-              }}
-            />
+            {bio ? (
+              <TextInput
+                value={bio}
+                multiline={true}
+                dense={true}
+                onChangeText={(bio: string) =>
+                  setState({
+                    ...state,
+                    bio: bio
+                  })
+                }
+                disabled={click}
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                  color: colors.PRIMARY_TEXT,
+                  backgroundColor: colors.WHITE,
+                  borderBottomWidth: click ? 0 : 2,
+                  borderColor: colors.PRIMARY,
+                  textTransform: 'capitalize'
+                }}
+              />
+            ) : (
+              <TextInput
+                value={t(`community.memberPassport.bioInfo`)}
+                multiline={true}
+                dense={true}
+                onChangeText={(bio: string) =>
+                  setState({
+                    ...state,
+                    bio: bio
+                  })
+                }
+                disabled={click}
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                  color: colors.PRIMARY_TEXT,
+                  backgroundColor: colors.WHITE,
+                  borderBottomWidth: click ? 0 : 2,
+                  borderColor: colors.PRIMARY,
+                  textTransform: 'capitalize'
+                }}
+              />
+            )}
           </Container>
 
           <DOBContainer>
@@ -287,7 +359,7 @@ function contactSlide(props: any) {
             />
           </DOBContainer>
 
-          {birthPlace ? (
+          {birthPlace?.country ? (
             <CitizenshipContainer>
               <Title
                 style={{
@@ -340,30 +412,57 @@ function contactSlide(props: any) {
                     backgroundColor: colors.ACTION
                   }}
                 />
-                {userDetails?.birthPlace[0]?.city ? (
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${birthPlace?.city}, ${birthPlace?.state}`}
-                  </Paragraph>
+                {!click ? (
+                  <Fragment>
+                    <TouchableRipple
+                      style={{
+                        flex: 1,
+                        borderBottomWidth: 2,
+                        borderColor: colors.PRIMARY
+                      }}
+                      onPress={handleNavigation}
+                    >
+                      <Paragraph
+                        style={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                          color: colors.PRIMARY_TEXT,
+                          backgroundColor: colors.WHITE,
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {placeholder}
+                      </Paragraph>
+                    </TouchableRipple>
+                  </Fragment>
                 ) : (
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${birthPlace?.state}, ${birthPlace?.country}`}
-                  </Paragraph>
+                  <Fragment>
+                    {userDetails?.birthPlace[0]?.city ? (
+                      <Paragraph
+                        style={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                          color: colors.PRIMARY_TEXT,
+                          textTransform: 'capitalize',
+                          marginBottom: 10
+                        }}
+                      >
+                        {`${birthPlace?.city}, ${birthPlace?.state}`}
+                      </Paragraph>
+                    ) : (
+                      <Paragraph
+                        style={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                          color: colors.PRIMARY_TEXT,
+                          textTransform: 'capitalize',
+                          marginBottom: 10
+                        }}
+                      >
+                        {`${birthPlace?.state}, ${birthPlace?.country}`}
+                      </Paragraph>
+                    )}
+                  </Fragment>
                 )}
               </Location>
 
@@ -558,6 +657,7 @@ function contactSlide(props: any) {
         </Paragraph>
       </LinkAccountsContainer>
      */}
+
           <IdentityModal
             isVisible={isVisible}
             closeIdentityModal={showIdentityModal(false)}
