@@ -312,6 +312,12 @@ export const GET_SINGLE_PASSPORT = gql`
       phoneNumber
       connected
       avatar
+      bio
+      participantOf {
+        id
+        name
+        avatar
+      }
       communityCount
       connectionCount
       currentLocation {
@@ -450,6 +456,7 @@ export const GET_USER_PASSPORT = gql`
         month
         year
       }
+      bio
       email
       avatar
       verified
@@ -538,6 +545,12 @@ export const GET_ALL_MEMBERS = gql`
       lastName
       email
       connected
+      bio
+      participantOf {
+        id
+        name
+        avatar
+      }
       currentLocation {
         state
         country

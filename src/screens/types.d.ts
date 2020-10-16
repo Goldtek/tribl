@@ -40,6 +40,7 @@ export type RootStackParamList = {
   TriblScreen?: Object;
   LoginScreen?: Object;
   OTPScreen?: Object;
+  BirthPlaceScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -65,7 +66,8 @@ export type RootStackParamScreensList =
   | 'InboxScreen'
   | 'TriblScreen'
   | 'LoginScreen'
-  | 'OTPScreen';
+  | 'OTPScreen'
+  | 'BirthPlaceScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

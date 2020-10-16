@@ -87,6 +87,7 @@
     "setLocation": "set current location",
     "currentLocation": "current location",
     "birthPlace": "birth place",
+    "update": "update birthplace",
     "birthPlacePlaceholder": "City, State, Country",
     "placePlaceholderInstruction": "Choose selection that provides \n(city, state, country) listing format",
     "submit": "submit",
