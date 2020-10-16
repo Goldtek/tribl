@@ -149,6 +149,7 @@ export interface PassportInterface {
   phoneNumber: string;
   birthPlace: Location[];
   presence: UserPresence;
+  participantOf: Community[]
   communityCount: number;
   connectionCount: number;
   connected: Status | null;
