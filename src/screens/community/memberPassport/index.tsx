@@ -49,12 +49,6 @@ export default function contactSlide(props: MemberDetailProps) {
 
   const { data: connectionData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
-  const { data: communityData } = useQuery(GET_RECOMMENDED_COMMUNITIES);
-
-  const community = communityData?.recommendedCommunities;
-
-  const connections = connectionData?.recommendedMembers;
-
   const [state, setState] = useState({ loading: false, pending: false });
 
   const passport = { ...props.route.params.details };
@@ -62,7 +56,7 @@ export default function contactSlide(props: MemberDetailProps) {
   const { phoneNumber, firstName, lastName, id } = passport;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber } }
+    variables: { payload: { phoneNumber: phoneNumber } }
   });
 
   const { loading: passportLoading, data: passportData } = useQuery<
@@ -101,9 +95,11 @@ export default function contactSlide(props: MemberDetailProps) {
     );
   }, []);
 
+  const community = SinglePassport?.participantOf;
+  const connections = connectionData?.recommendedMembers;
+
   const handleRequest = async () => {
     setState({ ...state, loading: true });
-
     try {
       await requestConnection();
       setState({ ...state, loading: false, pending: true });
@@ -303,29 +299,34 @@ export default function contactSlide(props: MemberDetailProps) {
               </Button>
             </ButtonCover>
           )}
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase',
-              marginBottom: 5,
-              marginTop: 40
-            }}
-          >
-            {t(`community.memberPassport.bio`)}
-          </Title>
-          <Text
-            style={{
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize'
-            }}
-          >
-            Hello, I’m Katherine and I am a married women living in Chicago. I
-            enjoy tech and tinkering with electronics.
-          </Text>
+
+          {singlePassport?.bio ? (
+            <Fragment>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase',
+                  marginBottom: 5,
+                  marginTop: 40
+                }}
+              >
+                {t(`community.memberPassport.bio`)}
+              </Title>
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {singlePassport?.bio}
+              </Text>
+            </Fragment>
+          ) : null}
+
           {singlePassport?.currentLocation || singlePassport?.birthPlace ? (
             <LocationContainer>
               <Title
@@ -466,7 +467,7 @@ export default function contactSlide(props: MemberDetailProps) {
               </Identities>
             </InterestContainer>
           ) : null}
-          {community?.length ? (
+          {singlePassport?.participantOf?.length ? (
             <Fragment>
               <Title
                 style={{

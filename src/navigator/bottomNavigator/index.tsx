@@ -4,6 +4,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import CommunityNavigator from '../communityNavigator';
+import PassportNavigator from '../passportNavigator';
 import { GET_MESSAGE_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 import CommunityIcon from '../../../assets/icons/communityIcon';
 import PassportIcon from '../../../assets/icons/passportIcon';
@@ -68,7 +69,7 @@ export default function BottomNavigator() {
 
       <BottomTab.Screen
         name="PassportScreen"
-        component={Screens.PassportScreen}
+        component={PassportNavigator}
         options={{
           tabBarIcon: ({ color }: TabBarIconTypes) => (
             <IconContainer>

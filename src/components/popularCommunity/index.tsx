@@ -8,7 +8,10 @@ import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
-import { JOIN_COMMUNITY } from '../../graphql/server/mutations';
+import {
+  JOIN_COMMUNITY,
+  LEAVE_COMMUNITY
+} from '../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -48,11 +51,33 @@ function PopularCommunity(props: PopularCommunityProp) {
     }
   });
 
+  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
+    LEAVE_COMMUNITY,
+    {
+      variables: {
+        payload: {
+          communityId: id
+        }
+      }
+    }
+  );
+
   const handleJoin = async () => {
     try {
       const { data } = await joinCommunity();
       if (data) {
         setMember(true);
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  const handleLeave = async () => {
+    try {
+      const { data } = await leaveCommunity();
+      if (data) {
+        setMember(false);
       }
     } catch (error) {
       Sentry.captureException(error);

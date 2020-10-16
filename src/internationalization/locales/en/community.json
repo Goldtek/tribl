@@ -36,6 +36,7 @@
     "message": "message",
     "bio": "bio",
     "dob": "birthdate",
+    "bioInfo": "We will like to know you better",
     "locality": "locality",
     "identity": "identity",
     "interest": "interest",
