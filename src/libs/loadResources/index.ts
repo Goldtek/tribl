@@ -18,11 +18,12 @@ export default async function AppLoading() {
   };
 
   const imageAssets = cacheImages([
-    require('../../../assets/images/splash.png'),
     require('../../../assets/images/icon.png'),
-    require('../../../assets/images/sliderOneImage.png'),
     require('../../../assets/images/logo.png'),
-    require('../../../assets/images/update.png')
+    require('../../../assets/images/splash.png'),
+    require('../../../assets/images/update.png'),
+    require('../../../assets/images/profile.png'),
+    require('../../../assets/images/sliderOneImage.png')
   ]);
 
   const fontAssets = cacheFonts([

@@ -114,11 +114,14 @@ function RecommendedCommunity(props: CommunityInterface) {
       </Card.Content>
       <Card.Title
         title={name}
-        subtitle={`${membersCount} ${t(`community.tabPanel.member`)}`}
+        subtitle={
+          membersCount <= 1
+            ? `${membersCount} ${t(`community.tabPanel.member`)}`
+            : `${membersCount} ${t(`community.tabPanel.member`)}s`
+        }
         titleStyle={{
           fontFamily: fonts.WORK_SANS_SEMI_BOLD,
           fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-          textTransform: 'capitalize',
           color: colors.PRIMARY_TEXT,
           paddingTop: 0,
           paddingBottom: 0,
