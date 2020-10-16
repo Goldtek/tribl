@@ -13,8 +13,7 @@ import GradientButton from '../../../components/gradientButton';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import {
   GET_SINGLE_PASSPORT,
-  GET_RECOMMENDED_MEMBERS,
-  GET_RECOMMENDED_COMMUNITIES
+  GET_RECOMMENDED_MEMBERS
 } from '../../../graphql/server/query';
 import PassportSkeleton from './widget';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
@@ -47,8 +46,6 @@ export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
-
-  const { data: connectionData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
   const [state, setState] = useState({ loading: false, pending: false });
 
@@ -109,7 +106,7 @@ export default function contactSlide(props: MemberDetailProps) {
   }, []);
 
   const community = SinglePassport?.participantOf;
-  const connections = connectionData?.recommendedMembers;
+  const connections = SinglePassport?.myConnections;
 
   const handleRequest = async () => {
     setState({ ...state, loading: true });
@@ -507,7 +504,7 @@ export default function contactSlide(props: MemberDetailProps) {
               />
             </Fragment>
           ) : null}
-          {connections?.length ? (
+          {SinglePassport?.myConnections?.length ? (
             <Fragment>
               <Title
                 style={{

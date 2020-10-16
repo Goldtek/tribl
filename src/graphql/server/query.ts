@@ -318,6 +318,12 @@ export const GET_SINGLE_PASSPORT = gql`
         name
         avatar
       }
+      myConnections {
+        id
+        firstName
+        lastName
+        avatar
+      }
       communityCount
       connectionCount
       currentLocation {
