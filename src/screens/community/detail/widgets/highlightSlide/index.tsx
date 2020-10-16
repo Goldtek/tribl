@@ -16,7 +16,10 @@ import {
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
 import Skeleton from './widget';
-import { JOIN_COMMUNITY } from '../../../../../graphql/server/mutations';
+import {
+  JOIN_COMMUNITY,
+  LEAVE_COMMUNITY
+} from '../../../../../graphql/server/mutations';
 
 import {
   Container,
@@ -115,11 +118,33 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
     }
   );
 
+  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
+    LEAVE_COMMUNITY,
+    {
+      variables: {
+        payload: {
+          communityId: id
+        }
+      }
+    }
+  );
+
   const handleJoin = async () => {
     try {
       const { data } = await joinCommunity();
       if (data) {
         setMember(true);
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  const handleLeave = async () => {
+    try {
+      const { data } = await leaveCommunity();
+      if (data) {
+        setMember(false);
       }
     } catch (error) {
       Sentry.captureException(error);
@@ -194,6 +219,8 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                 {data.isMember || member ? (
                   <Button
                     mode="contained"
+                    loading={leaveLoading}
+                    onPress={handleLeave}
                     style={{
                       width: '22%',
                       height: RFValue(40),

@@ -8,7 +8,10 @@ import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
-import { JOIN_COMMUNITY } from '../../graphql/server/mutations';
+import {
+  JOIN_COMMUNITY,
+  LEAVE_COMMUNITY
+} from '../../graphql/server/mutations';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedCommunityProp {
@@ -47,11 +50,33 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
     }
   });
 
+  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
+    LEAVE_COMMUNITY,
+    {
+      variables: {
+        payload: {
+          communityId: id
+        }
+      }
+    }
+  );
+
   const handleJoin = async () => {
     try {
       const { data } = await joinCommunity();
       if (data) {
         setMember(true);
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  const handleLeave = async () => {
+    try {
+      const { data } = await leaveCommunity();
+      if (data) {
+        setMember(false);
       }
     } catch (error) {
       Sentry.captureException(error);
@@ -138,8 +163,8 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
             {isMember || member ? (
               <Button
                 mode="text"
-                onPress={() => {}}
-                disabled={true}
+                loading={leaveLoading}
+                onPress={handleLeave}
                 labelStyle={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
