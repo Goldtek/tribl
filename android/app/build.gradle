@@ -126,8 +126,6 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 
-
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -145,8 +143,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 101016
-        versionName "1.1.1"
+        versionCode project.env.get("APP_VERSION_CODE").toInteger()
+        versionName project.env.get("APP_VERSION_NAME")
         multiDexEnabled true
     }
 

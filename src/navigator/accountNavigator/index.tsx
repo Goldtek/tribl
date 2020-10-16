@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/account';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
@@ -91,9 +91,16 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
           },
+          headerBackImage: ({ tintColor }) => (
+            <Ionicons
+              name="md-arrow-back"
+              size={RFValue(24)}
+              color={tintColor}
+            />
+          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerLeftContainerStyle: { paddingLeft: 15 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         }}

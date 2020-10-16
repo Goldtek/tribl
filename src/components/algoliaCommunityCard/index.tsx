@@ -6,12 +6,11 @@ import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
-import { GET_USER_PASSPORT } from '../../graphql/server/query';
-import { MyPassportInterface } from '../../graphql/types';
+import { rootNavigator } from '../../constants';
+import { fireAuth } from '../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
-import { rootNavigator } from '../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface HighlightProp {
@@ -45,17 +44,14 @@ const Highlight = (props: HighlightProp) => {
     rootNavigator.navigate('MemberDetailScreen', {
       title: `${hit.firstName} ${hit.lastName}`,
       avatar: `${hit.avatar}`,
-      algoliaDetail: hit
+      details: hit
     });
   };
-
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-  const userDetails = userData?.myPassport?.id;
 
   return (
     <Container>
       {highlights.map(({ value }: any, index: number) => {
-        const filteredList = hit.id !== userDetails ? hit : null;
+        const filteredList = hit.id !== fireAuth.currentUser?.uid ? hit : null;
         const state = hit?.currentLocation?.state;
         const country = hit?.currentLocation?.country;
         return (

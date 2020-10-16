@@ -5,20 +5,22 @@ import { PassportInterface } from '../graphql/types';
 
 interface ChatScreenProps extends PassportInterface {
   title: string;
-  receiverId: string;
   chatId: string;
+  receiverId: string;
 }
 
 interface MessageRequestScreenProps extends PassportInterface {
   title: string;
-  senderId: string;
   chatId: string;
+  receiverId: string;
 }
 
 // App Navigation prop types
 export type RootStackParamList = {
   CommunitySearchScreen: { index: number };
-  ConnectionChatScreen?: ChatScreenProps;
+  ConnectionChatScreen: ChatScreenProps;
+  MessageRequestScreen: ChatScreenProps;
+  ChannelChatScreen: ChatScreenProps;
   DirectChatScreen: ChatScreenProps;
   CommunityDetailScreen?: Object;
   SelectCountryScreen?: Object;

@@ -11,7 +11,6 @@ import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutation
 import { PassportInterface } from '../../../../../../../graphql/types';
 import { OnlinePresence } from '../../../../../../inbox/types';
 import Firechat from '../../../../../../../firebase';
-import { fireAuth } from '../../../../../../../firebase/config';
 import formatMessageTime from '../../../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -69,10 +68,10 @@ function Member(props: MemberProp) {
     navigation.navigate(
       conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
       {
-        title: `${firstName} ${lastName}`,
-        avatar: avatar,
         receiverId: id,
-        chatId: conversation?.id
+        chatId: conversation?.id,
+        title: `${firstName} ${lastName}`,
+        ...props
       }
     );
   };
@@ -96,11 +95,8 @@ function Member(props: MemberProp) {
     >
       <Fragment>
         <FastImage
-          resizeMode={FastImage.resizeMode.contain}
-          source={{
-            uri: avatar,
-            priority: FastImage.priority.high
-          }}
+          source={{ uri: avatar, priority: FastImage.priority.high }}
+          resizeMode={FastImage.resizeMode.cover}
           style={{
             width: RFValue(50),
             height: RFValue(50),

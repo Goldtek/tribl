@@ -4,32 +4,13 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
+import { CommunityInterface } from '../../graphql/types';
 
-// DEFINE SCREEN PROP TYPES
-interface MyCommunityProp {
-  name: string;
-  membersCount: string;
-  id: string;
-  avatar: string;
-  isMember: boolean;
-  interests: [];
-  description: string;
-  members: string;
-}
-
-export default function MyCommunity(props: MyCommunityProp) {
+export default function MyCommunity(props: CommunityInterface) {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
 
-  const {
-    avatar,
-    name,
-    membersCount,
-    isMember,
-    interests,
-    description,
-    id
-  } = props;
+  const { avatar, name } = props;
 
   const handleNavigation = () =>
     navigation.navigate('CommunityDetailScreen', {
@@ -50,8 +31,7 @@ export default function MyCommunity(props: MyCommunityProp) {
         borderWidth: RFValue(1.2),
         borderRadius: RFValue(4),
         borderColor: colors.PRIMARY,
-        marginLeft: RFValue(15),
-        marginRight: 15
+        marginRight: RFValue(10)
       }}
     >
       <FastImage

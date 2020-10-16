@@ -1,9 +1,10 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { Image } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { useQuery } from '@apollo/react-hooks';
+import { Image } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ConversationInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
@@ -70,16 +71,26 @@ function DirectChatCard(props: DirectChatProp) {
       onPress={handleNavigation}
     >
       <Fragment>
-        <Image
-          source={{ uri: receiverPassport?.avatar, cache: 'force-cache' }}
-          defaultSource={require('../../../../../../assets/images/profile.png')}
-          style={{
-            width: RFValue(50),
-            height: RFValue(50),
-            resizeMode: 'cover',
-            borderRadius: RFValue(4)
-          }}
-        />
+        {receiverPassport?.avatar ? (
+          <FastImage
+            resizeMode={FastImage.resizeMode.cover}
+            source={{
+              uri: receiverPassport?.avatar,
+              priority: FastImage.priority.high
+            }}
+            style={{ width: RFValue(50), height: RFValue(50), borderRadius: 4 }}
+          />
+        ) : (
+          <Image
+            source={require('../../../../../../assets/images/profile.png')}
+            resizeMode="cover"
+            style={{
+              width: RFValue(50),
+              height: RFValue(50),
+              borderRadius: RFValue(4)
+            }}
+          />
+        )}
 
         <NameContainer>
           <Fragment>
