@@ -31,8 +31,7 @@ export default function MyCommunity(props: CommunityInterface) {
         borderWidth: RFValue(1.2),
         borderRadius: RFValue(4),
         borderColor: colors.PRIMARY,
-        marginLeft: RFValue(15),
-        marginRight: 15
+        marginRight: RFValue(10)
       }}
     >
       <FastImage
