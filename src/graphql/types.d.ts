@@ -39,6 +39,11 @@ enum UserAvailability {
   OFFLINE = 'OFFLINE'
 }
 
+enum PrivacyStatus {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE'
+}
+
 export enum Status {
   PENDING = 'PENDING',
   BLOCKED = 'BLOCKED',
@@ -132,6 +137,7 @@ export interface PassportInterface {
   id: string;
   email: string;
   avatar: string;
+  bio: string;
   dob: _Neo4jDate;
   lastName: string;
   verified: boolean;
@@ -146,11 +152,13 @@ export interface PassportInterface {
   communityCount: number;
   connectionCount: number;
   connected: Status | null;
+  participantOf: Community[]
   citizenShip: string | null;
   currentLocation: Location[];
   connection: Connection | null;
   status: UserAvailability | null;
   conversation: Conversation | null;
+  myConnections: PassportInterface[]
 }
 
 export interface StoreInterface {
@@ -158,6 +166,40 @@ export interface StoreInterface {
   showMessageNotificationBadge: boolean;
   showConnectionNotificationBadge: boolean;
   userDetails: PassportInterface;
+}
+
+type Channel = {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  isPrivate: boolean;
+  participants: PassportInterface[];
+};
+
+type Interest = {
+  id: string;
+  name: string;
+  createdAt: _Neo4jDate;
+  updatedAt: _Neo4jDate;
+};
+
+type CommunityPrivacy = {
+  id: string;
+  visibility: PrivacyStatus;
+};
+
+export interface CommunityInterface {
+  id: string;
+  name: string;
+  avatar: string;
+  isMember: boolean;
+  description: string;
+  membersCount: number;
+  channels: Channel[];
+  interests: Interest[];
+  privacy: CommunityPrivacy;
+  moderators: PassportInterface[];
+  participants: PassportInterface[];
 }
 
 /*
@@ -254,14 +296,34 @@ export type RecommendedMembersRequestInterface = {
   recommendedMembers: PassportInterface[];
 };
 
+// RECOMMENDED COMMUNITIES REQUEST (RESPONSE) TYPE
+export type RecommendedCommunitiesRequestInterface = {
+  recommendedCommunities: CommunityInterface[];
+};
+
+// MY COMMUNITIES REQUEST (RESPONSE) TYPE
+export type MyCommunitiesRequestInterface = {
+  myCommunities: CommunityInterface[];
+};
+
 // NEARBY MEMBERS REQUEST (RESPONSE) TYPE
 export type NearbyMembersRequestInterface = {
   nearbyMembers: PassportInterface[];
 };
 
+// COMMUNITY MEMBERS REQUEST (RESPONSE) TYPE
+export type CommunityMembersRequestInterface = {
+  communityMembers: PassportInterface[];
+};
+
 // ALL MEMBERS REQUEST (RESPONSE) TYPE
 export type AllMembersRequestInterface = {
   Passport: PassportInterface[];
+};
+
+// ALL MEMBERS REQUEST (RESPONSE) TYPE
+export type SinglePassportRequestInterface = {
+  singlePassport: PassportInterface;
 };
 
 // SHOW MESSAGE NOTIFICATION REQUEST (RESPONSE) TYPE

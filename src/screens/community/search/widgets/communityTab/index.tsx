@@ -76,10 +76,7 @@ function CommunityTabScreen(props: ScreenProp) {
           {recommendedCommunityLoading ? (
             <RecommendedCommunitySkeleton />
           ) : community.length ? (
-            <RecommendedCommunity
-              {...randomCommunity}
-              onPress={handleJoinCommunity}
-            />
+            <RecommendedCommunity {...randomCommunity} />
           ) : (
             <ComingSoonCommunities />
           )}

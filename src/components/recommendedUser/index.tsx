@@ -1,19 +1,20 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
 import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
+import { PassportInterface, UserPassportInterface } from '../../graphql/types';
+import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
-import { PassportInterface } from '../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp extends PassportInterface {}
@@ -23,6 +24,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const [pending, setPending] = useState(false);
+  const [member, setMember] = useState(props);
 
   const {
     id,
@@ -33,11 +35,26 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     phoneNumber,
     connected,
     conversation
-  } = props;
+  } = member;
+
+  const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
+    GET_SINGLE_PASSPORT,
+    { variables: { id }, pollInterval: 3000 }
+  );
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
+
+  useEffect(() => {
+    if (connected == 'NOT_CONNECTED' || connected == 'PENDING') {
+      getUserPassport();
+    }
+
+    if (data?.singlePassport) {
+      setMember({ ...member, ...data?.singlePassport });
+    }
+  }, []);
 
   const handleRequest = async () => {
     try {
@@ -56,7 +73,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
           title: `${firstName} ${lastName}`,
           chatId: conversation?.id,
           receiverId: id,
-          ...props
+          ...member
         }
       ),
     []
@@ -65,7 +82,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const handleNavigation = useCallback(() => {
     navigation.navigate('MemberDetailScreen', {
       title: `${firstName} ${lastName}`,
-      details: { ...props }
+      details: { ...member }
     });
   }, []);
 

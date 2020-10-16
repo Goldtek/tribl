@@ -4,6 +4,7 @@ import hexToRGB from '../../../../utils/hexToRGB';
 import { DEVICE_OS } from '../../../../utils/device';
 
 export const ContactContainer = styled.View`
+  flex: 1;
   padding: 20px;
 `;
 
@@ -33,6 +34,11 @@ export const LastNameContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+`;
+
+export const BioContainer = styled.View`
+  /* flex-direction: row; */
+  /* justify-content: space-between; */
 `;
 
 export const DOBContainer = styled.View``;

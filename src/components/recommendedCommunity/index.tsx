@@ -1,41 +1,80 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { Button, Card } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
+import {
+  JOIN_COMMUNITY,
+  LEAVE_COMMUNITY
+} from '../../graphql/server/mutations';
+import { CLOUDINARY_BANNER, CLOUDINARY_THUMBNAIL } from '../../constants';
+import { CommunityInterface } from '../../graphql/types';
 
-// DEFINE SCREEN PROP TYPES
-interface RecommendedCommunityProp {
-  name: string;
-  membersCount: string;
-  avatar: string;
-  onPress(): void;
-  isMember: boolean;
-}
-
-function RecommendedCommunity(props: RecommendedCommunityProp) {
+function RecommendedCommunity(props: CommunityInterface) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const resizeAvatar = props?.avatar?.split('upload/');
-  const banner = resizeAvatar?.length
-    ? resizeAvatar[0] +
-      'upload/c_fill,g_auto,h_350,w_970/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/' +
-      resizeAvatar[1]
-    : props.avatar;
-  const thumbnail = resizeAvatar?.length
-    ? resizeAvatar[0] + 'upload/c_thumb,w_200,g_face/' + resizeAvatar[1]
-    : props.avatar;
 
-  const { avatar, name, membersCount, onPress, isMember } = props;
+  const [member, setMember] = useState(false);
+
+  const { ...restProps } = props;
+
+  const { avatar, name, membersCount, isMember, id } = restProps;
+
+  const resizeAvatar = avatar?.split('upload/');
+
+  const banner = resizeAvatar?.length
+    ? `${resizeAvatar[0]}${CLOUDINARY_BANNER}${resizeAvatar[1]}`
+    : avatar;
+
+  const thumbnail = resizeAvatar?.length
+    ? `${resizeAvatar[0]}${CLOUDINARY_THUMBNAIL}${resizeAvatar[1]}`
+    : avatar;
+
+  const [joinCommunity, { loading }] = useMutation(JOIN_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
+
+  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
+    LEAVE_COMMUNITY,
+    {
+      variables: {
+        payload: {
+          communityId: id
+        }
+      }
+    }
+  );
+
+  const handleJoin = async () => {
+    try {
+      await joinCommunity();
+      setMember(true);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  const handleLeave = async () => {
+    try {
+      const { data } = await leaveCommunity();
+      if (data) {
+        setMember(false);
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
 
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
       title: name,
-      details: props
+      details: restProps
     });
   }, []);
 
@@ -75,11 +114,14 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
       </Card.Content>
       <Card.Title
         title={name}
-        subtitle={`${membersCount} ${t(`community.tabPanel.member`)}`}
+        subtitle={
+          membersCount <= 1
+            ? `${membersCount} ${t(`community.tabPanel.member`)}`
+            : `${membersCount} ${t(`community.tabPanel.member`)}s`
+        }
         titleStyle={{
           fontFamily: fonts.WORK_SANS_SEMI_BOLD,
           fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-          textTransform: 'capitalize',
           color: colors.PRIMARY_TEXT,
           paddingTop: 0,
           paddingBottom: 0,
@@ -109,10 +151,11 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
         )}
         right={() => (
           <Fragment>
-            {isMember ? (
+            {isMember || member ? (
               <Button
                 mode="text"
-                onPress={() => {}}
+                loading={leaveLoading}
+                onPress={handleLeave}
                 labelStyle={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -124,7 +167,8 @@ function RecommendedCommunity(props: RecommendedCommunityProp) {
             ) : (
               <Button
                 mode="text"
-                onPress={onPress}
+                loading={loading}
+                onPress={handleJoin}
                 labelStyle={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),

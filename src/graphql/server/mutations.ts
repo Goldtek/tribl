@@ -66,6 +66,15 @@ export const JOIN_COMMUNITY = gql`
   }
 `;
 
+//LEAVE COMMUNITY
+export const LEAVE_COMMUNITY = gql`
+  mutation leaveCommunity($payload: CommunityInput!) {
+    leaveCommunity(input: $payload) {
+      success
+    }
+  }
+`;
+
 // REQUEST CONNECTION
 export const REQUEST_CONNECTION = gql`
   mutation requestConnection($payload: ConnectionInput!) {

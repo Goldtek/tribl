@@ -3,11 +3,13 @@ import SearchScreen from './search';
 import CommunityDetailScreen from './detail';
 import MemberDetailScreen from './memberPassport';
 import NewMessageScreen from '../inbox/newMessage';
+import BirthPlaceScreen from '../passport/widgets/birthplaceScreen';
 
 export default {
   HomeScreen,
   SearchScreen,
-  CommunityDetailScreen,
+  NewMessageScreen,
   MemberDetailScreen,
-  NewMessageScreen
+  CommunityDetailScreen,
+  BirthPlaceScreen
 };

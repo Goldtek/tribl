@@ -30,10 +30,13 @@
   "memberPassport": {
     "connection": "connections",
     "community": "communities",
+    "tribe": "tribes",
     "connect": "connect",
     "disconnect": "disconnect",
     "message": "message",
     "bio": "bio",
+    "dob": "birthdate",
+    "bioInfo": "We will like to know you better",
     "locality": "locality",
     "identity": "identity",
     "interest": "interest",
@@ -47,7 +50,7 @@
   },
 
   "tabPanel": {
-    "member": "members",
+    "member": "member",
     "community": "communities",
     "highlight": "highlights",
     "channel": "channels",
@@ -110,7 +113,6 @@
 
   "update": {
     "title": "limited update release",
-    "version": "1.0.8",
     "update": "this update",
     "change1": "fix notification on inbox view",
     "change2": "fix notification icon on inbox tab",

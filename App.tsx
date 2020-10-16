@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { enableScreens } from 'react-native-screens';
 import loadResources from './src/libs/loadResources';
+import './src/internationalization';
 import AppRouter from './src';
 import './src/config';
-import './src/internationalization';
 
 enableScreens();
 

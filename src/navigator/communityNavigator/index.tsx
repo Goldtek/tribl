@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
-import { Feather, Entypo } from '@expo/vector-icons';
+import { Feather, Entypo, Ionicons } from '@expo/vector-icons';
 import { Menu, Divider, TouchableRipple } from 'react-native-paper';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
@@ -178,12 +178,18 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
+            fontFamily: fonts.WORK_SANS_BOLD
           },
+          headerBackImage: ({ tintColor }) => (
+            <Ionicons
+              name="md-arrow-back"
+              size={RFValue(24)}
+              color={tintColor}
+            />
+          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerLeftContainerStyle: { paddingLeft: 15 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
@@ -313,9 +319,16 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </Menu>
           ),
+          headerBackImage: ({ tintColor }) => (
+            <Ionicons
+              name="md-arrow-back"
+              size={RFValue(24)}
+              color={tintColor}
+            />
+          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerLeftContainerStyle: { paddingLeft: 15 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
@@ -332,9 +345,16 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
           },
+          headerBackImage: ({ tintColor }) => (
+            <Ionicons
+              name="md-arrow-back"
+              size={RFValue(24)}
+              color={tintColor}
+            />
+          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerLeftContainerStyle: { paddingLeft: 15 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         }}

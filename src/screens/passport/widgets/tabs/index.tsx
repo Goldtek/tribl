@@ -62,5 +62,7 @@ export default function TabViewSlider(props: any) {
   //     />
   //   )
   // }) as JSX.Element | null;
-  return <ContactSlide getUserDetails={props.getUserDetails} />;
+  return (
+    <ContactSlide getUserDetails={props.getUserDetails} click={props.click} />
+  );
 }
