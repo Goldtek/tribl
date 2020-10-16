@@ -69,7 +69,7 @@ export default function ChannelScreen(props: ScreenProp) {
       renderItem={_renderItem}
       data={channels}
       ItemSeparatorComponent={_seperator}
-      keyExtractor={(_item, index) => index.toString()}
+      keyExtractor={(item) => item.id}
     />
   );
 }
