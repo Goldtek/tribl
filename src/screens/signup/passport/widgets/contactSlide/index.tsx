@@ -349,7 +349,7 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              {`${birthPlace.city}, ${birthPlace.state}`}
+              {`${birthPlace?.city}, ${birthPlace?.state}`}
             </Paragraph>
           </Location>
 
@@ -375,7 +375,7 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              {`${currentLocation.city}, ${currentLocation.state}`}
+              {`${currentLocation?.city}, ${currentLocation?.state}`}
             </Paragraph>
           </Location>
         </LocationContainer>

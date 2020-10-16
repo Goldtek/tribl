@@ -5,20 +5,22 @@ import { PassportInterface } from '../graphql/types';
 
 interface ChatScreenProps extends PassportInterface {
   title: string;
-  receiverId: string;
   chatId: string;
+  receiverId: string;
 }
 
 interface MessageRequestScreenProps extends PassportInterface {
   title: string;
-  senderId: string;
   chatId: string;
+  receiverId: string;
 }
 
 // App Navigation prop types
 export type RootStackParamList = {
   CommunitySearchScreen: { index: number };
-  ConnectionChatScreen?: ChatScreenProps;
+  ConnectionChatScreen: ChatScreenProps;
+  MessageRequestScreen: ChatScreenProps;
+  ChannelChatScreen: ChatScreenProps;
   DirectChatScreen: ChatScreenProps;
   CommunityDetailScreen?: Object;
   SelectCountryScreen?: Object;
@@ -40,6 +42,7 @@ export type RootStackParamList = {
   TriblScreen?: Object;
   LoginScreen?: Object;
   OTPScreen?: Object;
+  BirthPlaceScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -65,7 +68,8 @@ export type RootStackParamScreensList =
   | 'InboxScreen'
   | 'TriblScreen'
   | 'LoginScreen'
-  | 'OTPScreen';
+  | 'OTPScreen'
+  | 'BirthPlaceScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

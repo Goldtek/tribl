@@ -1,11 +1,12 @@
-import React, { useState, Fragment, useMemo } from 'react';
+import React, { useState, Fragment, useMemo, useEffect } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { NavigationInterface } from '../../../../types';
 import { Card, Title, Paragraph, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, FlatList } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import MembersCard from '../../../../../components/recommendedUser';
 import {
@@ -15,6 +16,10 @@ import {
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
 import Skeleton from './widget';
+import {
+  JOIN_COMMUNITY,
+  LEAVE_COMMUNITY
+} from '../../../../../graphql/server/mutations';
 
 import {
   Container,
@@ -30,21 +35,50 @@ interface SingleCommunityScreenProp extends NavigationInterface {}
 export default function SingleCommunity(props: SingleCommunityScreenProp) {
   const detail = props.route;
   const { communityDetails } = detail;
-  const { id } = communityDetails;
+  const {
+    id,
+    avatar,
+    name,
+    isMember,
+    interests,
+    description,
+    membersCount
+  } = communityDetails;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
 
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
 
-  const { loading, data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
+  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
     variables: { id }
   });
 
   const nearbyMembers = nearbyData?.nearbyMembers;
   const SingleCommunity = communityData?.Community[0];
 
-  const resizeAvatar = SingleCommunity?.avatar.split('upload/');
+  const [data, setData] = useState({
+    name: name,
+    avatar: avatar,
+    isMember: isMember,
+    interests: interests,
+    description: description,
+    membersCount: membersCount
+  });
+
+  useEffect(() => {
+    setData({
+      ...data,
+      name: SingleCommunity?.name,
+      avatar: SingleCommunity?.avatar,
+      isMember: SingleCommunity?.isMember,
+      interests: SingleCommunity?.interests,
+      description: SingleCommunity?.description,
+      membersCount: SingleCommunity?.membersCount
+    });
+  }, [SingleCommunity?.id]);
+
+  const resizeAvatar = data.avatar?.split('upload/');
 
   const banner = resizeAvatar?.length
     ? resizeAvatar[0] +
@@ -71,141 +105,185 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
     []
   );
 
+  const [member, setMember] = useState(false);
+
+  const [joinCommunity, { loading: joinLoading }] = useMutation(
+    JOIN_COMMUNITY,
+    { variables: { payload: { communityId: SingleCommunity?.id } } }
+  );
+
+  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
+    LEAVE_COMMUNITY,
+    {
+      variables: {
+        payload: {
+          communityId: id
+        }
+      }
+    }
+  );
+
+  const handleJoin = async () => {
+    try {
+      await joinCommunity();
+      setMember(true);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  const handleLeave = async () => {
+    try {
+      const { data } = await leaveCommunity();
+      if (data) {
+        setMember(false);
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
   return (
     <Fragment>
       <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
         <Container>
-          {loading ? (
-            <Skeleton />
-          ) : (
-            <Fragment>
-              <Card style={{ marginTop: RFValue(5), height: RFValue(230) }}>
-                <Card.Content>
-                  <FastImage
-                    resizeMode={FastImage.resizeMode.cover}
-                    source={{
-                      uri: banner,
-                      priority: FastImage.priority.high
-                    }}
+          <Fragment>
+            <Card style={{ height: RFValue(230) }}>
+              <Card.Content
+                style={{
+                  paddingHorizontal: RFValue(5),
+                  paddingVertical: RFValue(5)
+                }}
+              >
+                <FastImage
+                  resizeMode={FastImage.resizeMode.cover}
+                  source={{
+                    uri: banner,
+                    priority: FastImage.priority.high
+                  }}
+                  style={{ width: '100%', height: '100%', borderRadius: 4 }}
+                />
+              </Card.Content>
+            </Card>
+            <Card style={{ marginTop: RFValue(5) }}>
+              <CardContainer>
+                <FastImage
+                  resizeMode={FastImage.resizeMode.cover}
+                  source={{
+                    uri: data.avatar,
+                    priority: FastImage.priority.high
+                  }}
+                  style={{
+                    width: RFValue(50),
+                    height: '100%',
+                    borderRadius: 4
+                  }}
+                />
+                <TextContainer>
+                  <Title
                     style={{
-                      width: '100%',
-                      height: '100%'
+                      color: colors.PRIMARY_TEXT,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: fonts.LARGE_SIZE,
+                      lineHeight: RFValue(19)
                     }}
-                  />
-                </Card.Content>
-              </Card>
-              <Card style={{ marginTop: RFValue(5) }}>
-                <CardContainer>
-                  <FastImage
-                    resizeMode={FastImage.resizeMode.contain}
-                    source={{
-                      uri: SingleCommunity?.avatar,
-                      priority: FastImage.priority.high
+                  >
+                    {data.name}
+                  </Title>
+                  <Paragraph
+                    style={{
+                      fontSize: fonts.MEDIUM_SIZE - 1,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(10),
+                      color: colors.SECONDARY_TEXT
                     }}
-                    style={{ width: RFValue(50), height: '100%' }}
-                  />
-                  <TextContainer>
-                    <Title
-                      style={{
-                        color: colors.PRIMARY_TEXT,
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        fontSize: fonts.LARGE_SIZE,
-                        textTransform: 'capitalize',
-                        lineHeight: RFValue(19)
-                      }}
-                    >
-                      {SingleCommunity?.name}
-                    </Title>
+                  >
+                    {data.membersCount <= 1
+                      ? `${data.membersCount} ${t(`community.tabPanel.member`)}`
+                      : `${data.membersCount} ${t(
+                          `community.tabPanel.member`
+                        )}s`}
+                  </Paragraph>
+                  {data.description ? (
                     <Paragraph
                       style={{
                         fontSize: fonts.MEDIUM_SIZE - 1,
                         fontFamily: fonts.WORK_SANS_REGULAR,
-                        lineHeight: RFValue(10),
-                        color: colors.SECONDARY_TEXT
+                        lineHeight: RFValue(13),
+                        color: colors.PRIMARY_TEXT
                       }}
                     >
-                      {SingleCommunity?.membersCount}{' '}
-                      {t(`community.tabPanel.member`)}
+                      {data?.description}
                     </Paragraph>
-                    {SingleCommunity?.description ? (
-                      <Paragraph
-                        style={{
-                          fontSize: fonts.MEDIUM_SIZE - 1,
-                          fontFamily: fonts.WORK_SANS_REGULAR,
-                          lineHeight: RFValue(13),
-                          color: colors.PRIMARY_TEXT
-                        }}
-                      >
-                        {SingleCommunity?.description}
-                      </Paragraph>
-                    ) : null}
-                  </TextContainer>
-                  {SingleCommunity?.isMember ? (
-                    <Button
-                      mode="contained"
-                      style={{
-                        width: '22%',
-                        height: RFValue(40),
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 4
-                      }}
-                      labelStyle={{
-                        fontSize: fonts.LARGE_SIZE,
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        color: colors.WHITE,
-                        textTransform: 'capitalize'
-                      }}
-                      onPress={() => {}}
-                    >
-                      {t(`community.tabPanel.leave`)}
-                    </Button>
-                  ) : (
-                    <Button
-                      mode="contained"
-                      style={{
-                        width: '20%',
-                        height: RFValue(40),
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 4
-                      }}
-                      labelStyle={{
-                        fontSize: fonts.LARGE_SIZE,
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        color: colors.WHITE,
-                        textTransform: 'capitalize'
-                      }}
-                      onPress={handleJoinCommunity}
-                    >
-                      {t(`community.tabPanel.join`)}
-                    </Button>
-                  )}
-                </CardContainer>
+                  ) : null}
+                </TextContainer>
+                {data.isMember || member ? (
+                  <Button
+                    mode="contained"
+                    loading={leaveLoading}
+                    onPress={handleLeave}
+                    style={{
+                      width: '22%',
+                      height: RFValue(40),
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 4
+                    }}
+                    labelStyle={{
+                      fontSize: fonts.LARGE_SIZE,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      color: colors.WHITE,
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {t(`community.tabPanel.leave`)}
+                  </Button>
+                ) : (
+                  <Button
+                    mode="contained"
+                    loading={joinLoading}
+                    style={{
+                      width: '20%',
+                      height: RFValue(40),
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 4
+                    }}
+                    labelStyle={{
+                      fontSize: fonts.LARGE_SIZE,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      color: colors.WHITE,
+                      textTransform: 'capitalize'
+                    }}
+                    onPress={handleJoin}
+                  >
+                    {t(`community.tabPanel.join`)}
+                  </Button>
+                )}
+              </CardContainer>
 
-                {SingleCommunity?.interests?.length ? (
-                  <TagContainer>
-                    <Title
-                      style={{
-                        fontFamily: fonts.WORK_SANS_BOLD,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'uppercase'
-                      }}
-                    >
-                      {t(`community.tabPanel.tag`)}
-                    </Title>
+              {data.interests?.length ? (
+                <TagContainer>
+                  <Title
+                    style={{
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    {t(`community.tabPanel.tag`)}
+                  </Title>
 
-                    <Tags>
-                      {SingleCommunity?.interests.map((identity: any) => (
-                        <TagText key={identity.id}>{identity.name}</TagText>
-                      ))}
-                    </Tags>
-                  </TagContainer>
-                ) : null}
-              </Card>
-            </Fragment>
-          )}
+                  <Tags>
+                    {data?.interests.map((identity: any) => (
+                      <TagText key={identity.id}>{identity.name}</TagText>
+                    ))}
+                  </Tags>
+                </TagContainer>
+              ) : null}
+            </Card>
+          </Fragment>
           <Card style={{ marginTop: RFValue(5) }}>
             <Card.Content style={{ paddingLeft: 0 }}>
               <Title

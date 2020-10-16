@@ -312,6 +312,18 @@ export const GET_SINGLE_PASSPORT = gql`
       phoneNumber
       connected
       avatar
+      bio
+      participantOf {
+        id
+        name
+        avatar
+      }
+      myConnections {
+        id
+        firstName
+        lastName
+        avatar
+      }
       communityCount
       connectionCount
       currentLocation {
@@ -361,6 +373,7 @@ export const GET_SINGLE_PASSPORT = gql`
 export const GET_COMMUNITY_CHANNELS = gql`
   query communityChannels($id: ID!) {
     communityChannels(communityId: $id) {
+      id
       name
     }
   }
@@ -450,6 +463,7 @@ export const GET_USER_PASSPORT = gql`
         month
         year
       }
+      bio
       email
       avatar
       verified
@@ -538,6 +552,12 @@ export const GET_ALL_MEMBERS = gql`
       lastName
       email
       connected
+      bio
+      participantOf {
+        id
+        name
+        avatar
+      }
       currentLocation {
         state
         country

@@ -64,8 +64,6 @@ export default function SignupNavigator() {
 
           const userRegInfo = await Storage.getUserRegistration();
 
-          console.tron({ userRegInfo });
-
           const { data } = await updatePassport({
             variables: {
               payload: {
