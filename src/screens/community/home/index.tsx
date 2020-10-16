@@ -5,6 +5,7 @@ import { Title, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
+import Swiper from 'react-native-swiper';
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
@@ -22,6 +23,14 @@ import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
 import RecommendedCommunitySkeleton from '../../../components/recommendedCommunitySkeleton';
 import ComingSoonCommunities from '../../../components/recommendedCommunity/comingSoon';
+import {
+  PassportInterface,
+  MyCommunitiesRequestInterface,
+  RecommendedCommunitiesRequestInterface,
+  CommunityInterface
+} from '../../../graphql/types';
+import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import hexToRGB from '../../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -32,7 +41,6 @@ import {
   RecentActivitiesList,
   CommunityCover
 } from './styles';
-import { PassportInterface } from '../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -52,21 +60,23 @@ export default function HomeScreen(props: ScreenProp) {
 
   useSubscription(USER_ONLINE_SUBSCRIPTION);
 
-  const { loading: myCommunityLoading, data: myCommunityData } = useQuery(
-    GET_MY_COMMUNITIES
-  );
+  const { loading: myCommunityLoading, data: myCommunityData } = useQuery<
+    MyCommunitiesRequestInterface
+  >(GET_MY_COMMUNITIES, { pollInterval: 3000 });
 
   const {
     loading: recommendedCommunityLoading,
     data: communityData
-  } = useQuery(GET_RECOMMENDED_COMMUNITIES);
+  } = useQuery<RecommendedCommunitiesRequestInterface>(
+    GET_RECOMMENDED_COMMUNITIES,
+    { pollInterval: 3000 }
+  );
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
   const myCommunity = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers;
-  const community = communityData?.recommendedCommunities;
-  const randomCommunity = communityData?.recommendedCommunities[0];
+  const communities = communityData?.recommendedCommunities;
 
   const navigateToSearch = (index: number) => () => {
     navigation.navigate('CommunitySearchScreen', { index: index });
@@ -80,7 +90,9 @@ export default function HomeScreen(props: ScreenProp) {
   };
 
   const _renderMyCommunityItem = useMemo(
-    () => ({ item }: any) => <MyCommunity key={item.id} {...item} />,
+    () => ({ item }: { item: CommunityInterface }) => (
+      <MyCommunity key={item.id} {...item} />
+    ),
     []
   );
 
@@ -170,7 +182,7 @@ export default function HomeScreen(props: ScreenProp) {
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(_, index: number) => index.toString()}
+            keyExtractor={(member) => member.id}
             contentContainerStyle={{
               marginTop: 20,
               paddingLeft: 15,
@@ -211,8 +223,22 @@ export default function HomeScreen(props: ScreenProp) {
           <RecommendedCommunityContainer>
             {recommendedCommunityLoading ? (
               <RecommendedCommunitySkeleton />
-            ) : community.length ? (
-              <RecommendedCommunity {...randomCommunity} />
+            ) : communities?.length ? (
+              <Swiper
+                loop={false}
+                scrollEnabled={true}
+                containerStyle={{ height: RFValue(300) }}
+                paginationStyle={{
+                  right: RFValue(-DEVICE_FULL_WIDTH / 1.5),
+                  bottom: RFValue(80)
+                }}
+                activeDotColor={colors.WHITE}
+                dotColor={hexToRGB(colors.WHITE, 0.6)}
+              >
+                {communities.map((community) => (
+                  <RecommendedCommunity key={community.id} {...community} />
+                ))}
+              </Swiper>
             ) : (
               <ComingSoonCommunities />
             )}

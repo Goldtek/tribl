@@ -373,6 +373,7 @@ export const GET_SINGLE_PASSPORT = gql`
 export const GET_COMMUNITY_CHANNELS = gql`
   query communityChannels($id: ID!) {
     communityChannels(communityId: $id) {
+      id
       name
     }
   }

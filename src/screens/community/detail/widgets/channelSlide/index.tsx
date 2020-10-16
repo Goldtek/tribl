@@ -8,6 +8,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
 import { GET_COMMUNITY_CHANNELS } from '../../../../../graphql/server/query';
+import { CommunityInterface } from '../../../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -24,11 +25,12 @@ export default function ChannelScreen(props: ScreenProp) {
   const channels = data?.communityChannels;
 
   const _renderItem = useMemo(
-    () => ({ item }: { item: { name: string } }) => (
+    () => ({ item }: { item: CommunityInterface }) => (
       <TouchableRipple
         onPress={() =>
-          navigation.navigate('ChatScreen', {
-            title: `${item.name}`
+          navigation.navigate('ChannelChatScreen', {
+            title: `${item.name}`,
+            chatId: item.id
           })
         }
         style={{
@@ -67,7 +69,7 @@ export default function ChannelScreen(props: ScreenProp) {
       renderItem={_renderItem}
       data={channels}
       ItemSeparatorComponent={_seperator}
-      keyExtractor={(_item, index) => index.toString()}
+      keyExtractor={(item) => item.id}
     />
   );
 }

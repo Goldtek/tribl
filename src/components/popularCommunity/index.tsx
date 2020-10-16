@@ -21,7 +21,7 @@ interface PopularCommunityProp {
   avatar: string;
   name: string;
   id: string;
-  membersCount: string;
+  membersCount: number;
   isMember: boolean;
   interests: [];
   description: string;
@@ -125,7 +125,9 @@ function PopularCommunity(props: PopularCommunityProp) {
               color: colors.SECONDARY_TEXT
             }}
           >
-            {membersCount} {t(`community.tabPanel.member`)}
+            {membersCount <= 1
+              ? `${membersCount} ${t(`community.tabPanel.member`)}`
+              : `${membersCount} ${t(`community.tabPanel.member`)}s`}
           </Paragraph>
           {isMember || member ? (
             <Paragraph
