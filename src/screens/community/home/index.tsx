@@ -62,13 +62,14 @@ export default function HomeScreen(props: ScreenProp) {
 
   const { loading: myCommunityLoading, data: myCommunityData } = useQuery<
     MyCommunitiesRequestInterface
-  >(GET_MY_COMMUNITIES);
+  >(GET_MY_COMMUNITIES, { pollInterval: 3000 });
 
   const {
     loading: recommendedCommunityLoading,
     data: communityData
   } = useQuery<RecommendedCommunitiesRequestInterface>(
-    GET_RECOMMENDED_COMMUNITIES
+    GET_RECOMMENDED_COMMUNITIES,
+    { pollInterval: 3000 }
   );
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
@@ -181,7 +182,7 @@ export default function HomeScreen(props: ScreenProp) {
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(_, index: number) => index.toString()}
+            keyExtractor={(member) => member.id}
             contentContainerStyle={{
               marginTop: 20,
               paddingLeft: 15,
