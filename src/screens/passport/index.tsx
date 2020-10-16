@@ -270,6 +270,7 @@ export default function PassportScreen(props: ScreenProp) {
       location.city?.length &&
       birthPlace.state?.length &&
       state.identity?.length &&
+      state.bio &&
       day
     )
       updateLocation();
