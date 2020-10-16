@@ -149,15 +149,16 @@ export interface PassportInterface {
   phoneNumber: string;
   birthPlace: Location[];
   presence: UserPresence;
-  participantOf: Community[]
   communityCount: number;
   connectionCount: number;
   connected: Status | null;
+  participantOf: Community[]
   citizenShip: string | null;
   currentLocation: Location[];
   connection: Connection | null;
   status: UserAvailability | null;
   conversation: Conversation | null;
+  myConnections: PassportInterface[]
 }
 
 export interface StoreInterface {

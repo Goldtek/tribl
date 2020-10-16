@@ -10,11 +10,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
-import {
-  GET_SINGLE_PASSPORT,
-  GET_RECOMMENDED_MEMBERS,
-  GET_RECOMMENDED_COMMUNITIES
-} from '../../../graphql/server/query';
+import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
 import PassportSkeleton from './widget';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { PassportInterface } from '../../../graphql/types';
@@ -31,7 +27,6 @@ import {
   IdentityText,
   LocationContainer,
   Location,
-  CitizenshipContainer,
   Header,
   Connection,
   ConnectionCover,
@@ -46,8 +41,6 @@ export default function contactSlide(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
-
-  const { data: connectionData } = useQuery(GET_RECOMMENDED_MEMBERS);
 
   const [state, setState] = useState({ loading: false, pending: false });
 
@@ -95,8 +88,8 @@ export default function contactSlide(props: MemberDetailProps) {
     );
   }, []);
 
-  const community = SinglePassport?.participantOf;
-  const connections = connectionData?.recommendedMembers;
+  const community = singlePassport?.participantOf;
+  const connections = singlePassport?.myConnections;
 
   const handleRequest = async () => {
     setState({ ...state, loading: true });
@@ -492,7 +485,7 @@ export default function contactSlide(props: MemberDetailProps) {
               />
             </Fragment>
           ) : null}
-          {connections?.length ? (
+          {singlePassport?.myConnections?.length ? (
             <Fragment>
               <Title
                 style={{
