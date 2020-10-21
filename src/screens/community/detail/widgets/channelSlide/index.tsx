@@ -29,16 +29,16 @@ export default function ChannelScreen(props: ScreenProp) {
       <TouchableRipple
         onPress={() =>
           navigation.navigate('ChannelChatScreen', {
-            title: `${item.name}`,
+            title: `#${item.name}`,
             chatId: item.id
           })
         }
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
+          padding: RFValue(20),
           paddingTop: RFValue(25),
           paddingBottom: RFValue(25),
-          padding: RFValue(20),
           backgroundColor: colors.WHITE
         }}
       >
