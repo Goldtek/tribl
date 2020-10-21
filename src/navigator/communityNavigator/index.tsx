@@ -185,6 +185,14 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               name="md-arrow-back"
               size={RFValue(24)}
               color={tintColor}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2),
+                marginRight: 10
+              }}
             />
           ),
           headerBackTitleVisible: false,
@@ -319,12 +327,24 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </Menu>
           ),
-          headerBackImage: ({ tintColor }) => (
-            <Ionicons
-              name="md-arrow-back"
-              size={RFValue(24)}
-              color={tintColor}
-            />
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2),
+                marginRight: 10
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY}
+              />
+            </TouchableRipple>
           ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
@@ -332,32 +352,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
-      />
-
-      <CommunityStack.Screen
-        name="NewMessageScreen"
-        component={Screens.NewMessageScreen}
-        options={{
-          headerTitle: t(`community.chat.chatTitle`),
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerBackImage: ({ tintColor }) => (
-            <Ionicons
-              name="md-arrow-back"
-              size={RFValue(24)}
-              color={tintColor}
-            />
-          ),
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 15 },
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        }}
       />
     </CommunityStack.Navigator>
   );
