@@ -86,7 +86,7 @@ export default function contactSlide(props: MemberDetailProps) {
         ...passport
       }
     );
-  }, []);
+  }, [singlePassport]);
 
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
