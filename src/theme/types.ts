@@ -18,6 +18,7 @@ enum COLORS {
   TRANSPARENT = 'transparent',
   OFFWHITE = '#FBFCFF',
   INPUT = '#E5E5E5',
+  SYSTEM_COLOR = '#F5F5F5',
   SHADOW = 'F5F5F5',
   BLACK = '#000000',
   RED = '#FB4E4E'
@@ -46,6 +47,7 @@ declare module 'styled-components' {
       PRIMARY_LIGHT: string;
       SECONDARY: string;
       PRIMARY_TEXT: string;
+      SYSTEM_COLOR: string;
       SECONDARY_TEXT: string;
       INACTIVE: string;
       DISABLED: string;
