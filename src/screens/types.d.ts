@@ -31,7 +31,6 @@ export type RootStackParamList = {
   UserLocationScreen?: Object;
   WalkThroughScreen?: Object;
   NewMessageScreen?: Object;
-  NewMessageScreen?: Object;
   CommunityScreen?: Object;
   PassportScreen?: Object;
   NewChatSearch?: Object;
@@ -57,7 +56,6 @@ export type RootStackParamScreensList =
   | 'UserLocationScreen'
   | 'WalkThroughScreen'
   | 'DirectChatScreen'
-  | 'NewMessageScreen'
   | 'NewMessageScreen'
   | 'CommunityScreen'
   | 'PassportScreen'
