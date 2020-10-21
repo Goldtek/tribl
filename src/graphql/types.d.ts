@@ -135,9 +135,9 @@ type NotificationMessage = {
 
 export interface PassportInterface {
   id: string;
+  bio: string;
   email: string;
   avatar: string;
-  bio: string;
   dob: _Neo4jDate;
   lastName: string;
   verified: boolean;
@@ -152,20 +152,20 @@ export interface PassportInterface {
   communityCount: number;
   connectionCount: number;
   connected: Status | null;
-  participantOf: Community[]
   citizenShip: string | null;
   currentLocation: Location[];
   connection: Connection | null;
   status: UserAvailability | null;
   conversation: Conversation | null;
-  myConnections: PassportInterface[]
+  myConnections: PassportInterface[];
+  participantOf: CommunityInterface[]
 }
 
 export interface StoreInterface {
   communitySearchIndex: number;
+  userDetails: PassportInterface;
   showMessageNotificationBadge: boolean;
   showConnectionNotificationBadge: boolean;
-  userDetails: PassportInterface;
 }
 
 type Channel = {
