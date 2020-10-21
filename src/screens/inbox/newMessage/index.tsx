@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView, ScrollView } from 'react-native';
 import { FlatList } from 'react-native';
 import { Divider, Button, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -125,62 +125,77 @@ export default function ChatScreen(props: ScreenProp) {
         >
           <AlgoliaList />
         </AlgoliaSearch>
-        <FilterContainer>
-          <Button
-            mode="contained"
-            onPress={handleAllMembersClick}
-            labelStyle={{
-              color: all ? colors.WHITE : colors.PRIMARY_TEXT,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{
-              paddingVertical: 7,
-              paddingHorizontal: 5,
-              backgroundColor: all ? colors.PRIMARY : colors.WHITE
-            }}
-            style={{ borderRadius: 4 }}
-          >
-            {t(`community.chat.all`)}
-          </Button>
 
-          <Button
-            mode="contained"
-            onPress={handleConnectionClick}
-            labelStyle={{
-              color: connections ? colors.WHITE : colors.PRIMARY_TEXT,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{
-              paddingVertical: 7,
-              paddingHorizontal: 5,
-              backgroundColor: connections ? colors.PRIMARY : colors.WHITE
-            }}
-            style={{ borderRadius: 4, marginLeft: 15 }}
+        <FilterContainer>
+          <ScrollView
+            horizontal
+            contentContainerStyle={{ paddingHorizontal: 10 }}
+            showsHorizontalScrollIndicator={false}
           >
-            {t(`community.chat.connection`)}
-          </Button>
-          <Button
-            mode="contained"
-            onPress={handleNearbyClick}
-            labelStyle={{
-              color: nearby ? colors.WHITE : colors.PRIMARY_TEXT,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{
-              paddingVertical: 7,
-              paddingHorizontal: 5,
-              backgroundColor: nearby ? colors.PRIMARY : colors.WHITE
-            }}
-            style={{
-              marginHorizontal: 15,
-              borderRadius: 4
-            }}
-          >
-            {t(`community.chat.nearby`)}
-          </Button>
+            <Button
+              mode="contained"
+              onPress={handleAllMembersClick}
+              labelStyle={{
+                color: all ? colors.WHITE : colors.PRIMARY_TEXT,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                paddingVertical: 7,
+                paddingHorizontal: 5,
+                backgroundColor: all ? colors.PRIMARY : colors.WHITE
+              }}
+              style={{
+                borderRadius: 4,
+                backgroundColor: colors.TRANSPARENT
+              }}
+            >
+              {t(`community.chat.all`)}
+            </Button>
+
+            <Button
+              mode="contained"
+              onPress={handleConnectionClick}
+              labelStyle={{
+                color: connections ? colors.WHITE : colors.PRIMARY_TEXT,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                paddingVertical: 7,
+                paddingHorizontal: 5,
+                backgroundColor: connections ? colors.PRIMARY : colors.WHITE
+              }}
+              style={{
+                borderRadius: 4,
+                marginLeft: 15,
+                backgroundColor: colors.TRANSPARENT
+              }}
+            >
+              {t(`community.chat.connection`)}
+            </Button>
+            <Button
+              mode="contained"
+              onPress={handleNearbyClick}
+              labelStyle={{
+                color: nearby ? colors.WHITE : colors.PRIMARY_TEXT,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                paddingVertical: 7,
+                paddingHorizontal: 5,
+                backgroundColor: nearby ? colors.PRIMARY : colors.WHITE
+              }}
+              style={{
+                marginHorizontal: 15,
+                borderRadius: 4,
+                backgroundColor: colors.TRANSPARENT
+              }}
+            >
+              {t(`community.chat.nearby`)}
+            </Button>
+          </ScrollView>
         </FilterContainer>
 
         {/* <TouchableRipple
