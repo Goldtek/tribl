@@ -1,6 +1,6 @@
 import React, { useMemo, Fragment } from 'react';
 import { FlatList } from 'react-native';
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { Paragraph, Divider, TouchableRipple } from 'react-native-paper';
@@ -8,31 +8,49 @@ import { AntDesign } from '@expo/vector-icons';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
 import { GET_COMMUNITY_CHANNELS } from '../../../../../graphql/server/query';
-import { CommunityInterface } from '../../../../../graphql/types';
+import { JOIN_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
+import {
+  ChannelInterface,
+  CommunityChannelRequestInterface
+} from '../../../../../graphql/types';
+import { fireAuth } from '../../../../../firebase/config';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function ChannelScreen(props: ScreenProp) {
   const navigation = useNavigation();
+  const userId = fireAuth.currentUser?.uid;
   const detail = props.route;
   const { communityDetails } = detail;
   const { id } = communityDetails;
   const { colors, fonts } = useThemeContext();
 
-  const { data } = useQuery(GET_COMMUNITY_CHANNELS, { variables: { id } });
+  const { data } = useQuery<CommunityChannelRequestInterface>(
+    GET_COMMUNITY_CHANNELS,
+    { variables: { id, userId }, pollInterval: 2000 }
+  );
 
-  const channels = data?.communityChannels;
+  const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL, {
+    variables: { payload: { channelId: id } }
+  });
+
+  const handleNavigation = (item: ChannelInterface) => {
+    const [isMember] = item.participants.map(({ id }) => id === userId);
+
+    if (!isMember) joinChannel();
+
+    navigation.navigate('ChannelChatScreen', {
+      title: `#${item.name}`,
+      chatId: item.id,
+      isMember
+    });
+  };
 
   const _renderItem = useMemo(
-    () => ({ item }: { item: CommunityInterface }) => (
+    () => ({ item }: { item: ChannelInterface }) => (
       <TouchableRipple
-        onPress={() =>
-          navigation.navigate('ChannelChatScreen', {
-            title: `#${item.name}`,
-            chatId: item.id
-          })
-        }
+        onPress={() => handleNavigation(item)}
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -67,7 +85,7 @@ export default function ChannelScreen(props: ScreenProp) {
   return (
     <FlatList
       renderItem={_renderItem}
-      data={channels}
+      data={data?.Channel}
       ItemSeparatorComponent={_seperator}
       keyExtractor={(item) => item.id}
     />
