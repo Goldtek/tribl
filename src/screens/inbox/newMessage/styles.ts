@@ -7,9 +7,9 @@ export const Container = styled.View`
 `;
 
 export const FilterContainer = styled.View`
-  flex-direction: row;
+  height: ${RFValue(50)}px;
   align-items: center;
-  margin: 20px 15px 10px 15px;
+  margin: 25px 0px 15px 0px;
 `;
 
 export const GroupContainer = styled.View`

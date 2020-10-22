@@ -369,12 +369,15 @@ export const GET_SINGLE_PASSPORT = gql`
   }
 `;
 
-//GET CHENNELS OF A COMMUNITY
+//GET CHANNELS OF A COMMUNITY
 export const GET_COMMUNITY_CHANNELS = gql`
-  query communityChannels($id: ID!) {
-    communityChannels(communityId: $id) {
+  query Channel($id: ID!, $userId: ID!) {
+    Channel(filter: { community: { id: $id } }) {
       id
       name
+      participants(filter: { id: $userId }) {
+        id
+      }
     }
   }
 `;

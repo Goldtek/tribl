@@ -6,6 +6,7 @@ import { PassportInterface } from '../graphql/types';
 interface ChatScreenProps extends PassportInterface {
   title: string;
   chatId: string;
+  isMember: boolean;
   receiverId: string;
 }
 
@@ -30,7 +31,6 @@ export type RootStackParamList = {
   IdentifyUserScreen?: Object;
   UserLocationScreen?: Object;
   WalkThroughScreen?: Object;
-  NewMessageScreen?: Object;
   NewMessageScreen?: Object;
   CommunityScreen?: Object;
   PassportScreen?: Object;
@@ -57,7 +57,6 @@ export type RootStackParamScreensList =
   | 'UserLocationScreen'
   | 'WalkThroughScreen'
   | 'DirectChatScreen'
-  | 'NewMessageScreen'
   | 'NewMessageScreen'
   | 'CommunityScreen'
   | 'PassportScreen'

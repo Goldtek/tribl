@@ -12,12 +12,7 @@ export default function SingleCommunitySkeleton() {
         <Card style={{ marginTop: RFValue(5) }}>
           <Card.Content>
             <SkeletonPlaceholder>
-              <SkeletonPlaceholder.Item
-                alignItems="center"
-                // margin={RFValue(10)}
-                // marginTop={RFValue(20)}
-                // marginBottom={RFValue(20)}
-              >
+              <SkeletonPlaceholder.Item alignItems="center">
                 <SkeletonPlaceholder.Item
                   width={RFValue(200)}
                   height={RFValue(100)}

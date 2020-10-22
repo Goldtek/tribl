@@ -108,7 +108,9 @@
     "new": "new group",
     "messageTitle": "messages",
     "online": "online",
-    "all": "all"
+    "all": "all",
+    "join": "has joined the channel!",
+    "leave": "has left the channel!"
   },
 
   "update": {

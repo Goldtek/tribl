@@ -13,6 +13,7 @@ import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { useQuery } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
+import { TouchableRipple } from 'react-native-paper';
 
 const accountStack = createStackNavigator();
 
@@ -91,12 +92,24 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
           },
-          headerBackImage: ({ tintColor }) => (
-            <Ionicons
-              name="md-arrow-back"
-              size={RFValue(24)}
-              color={tintColor}
-            />
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2),
+                marginRight: 10
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY}
+              />
+            </TouchableRipple>
           ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
