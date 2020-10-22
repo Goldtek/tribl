@@ -158,7 +158,7 @@ export interface PassportInterface {
   status: UserAvailability | null;
   conversation: Conversation | null;
   myConnections: PassportInterface[];
-  participantOf: CommunityInterface[]
+  participantOf: CommunityInterface[];
 }
 
 export interface StoreInterface {
@@ -168,7 +168,7 @@ export interface StoreInterface {
   showConnectionNotificationBadge: boolean;
 }
 
-type Channel = {
+export type ChannelInterface = {
   id: string;
   name: string;
   isDefault: boolean;
@@ -195,7 +195,7 @@ export interface CommunityInterface {
   isMember: boolean;
   description: string;
   membersCount: number;
-  channels: Channel[];
+  channels: ChannelInterface[];
   interests: Interest[];
   privacy: CommunityPrivacy;
   moderators: PassportInterface[];
@@ -324,6 +324,11 @@ export type AllMembersRequestInterface = {
 // ALL MEMBERS REQUEST (RESPONSE) TYPE
 export type SinglePassportRequestInterface = {
   singlePassport: PassportInterface;
+};
+
+// COMMUNITY CHANNEL REQUEST (RESPONSE) TYPE
+export type CommunityChannelRequestInterface = {
+  Channel: ChannelInterface[];
 };
 
 // SHOW MESSAGE NOTIFICATION REQUEST (RESPONSE) TYPE

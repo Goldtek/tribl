@@ -174,3 +174,12 @@ export const UPDATE_NOTIFICATION = gql`
     }
   }
 `;
+
+// JOIN COMMUNITY CHANNEL
+export const JOIN_COMMUNITY_CHANNEL = gql`
+  mutation joinCommunityChannel($payload: ChannelActionInput!) {
+    joinCommunityChannel(input: $payload) {
+      success
+    }
+  }
+`;
