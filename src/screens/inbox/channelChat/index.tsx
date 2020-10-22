@@ -7,6 +7,8 @@ import {
   Bubble,
   User
 } from 'react-native-gifted-chat';
+import { Button, Paragraph } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { Platform, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -30,6 +32,8 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { CHANGE_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
 import { GET_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
 
+import { Container } from './styles';
+
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
   route: { params: ChatScreenProps };
@@ -38,8 +42,9 @@ interface ScreenProp extends NavigationInterface {
 export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
-  const { chatId, receiverId, avatar } = props.route.params;
+  const { chatId } = props.route.params;
 
   const userId = fireAuth.currentUser?.uid;
 
@@ -85,9 +90,75 @@ export default function ChatScreen(props: ScreenProp) {
           return { ...message, _id: document.id } as MessageInterface;
         });
 
-        setMessages(conversations);
+        setMessages((previousMessages) => {
+          return GiftedChat.append(previousMessages, [
+            ...conversations,
+            {
+              _id: '1',
+              text: 'This is a system message',
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              user: { _id: '23', avatar: 'ok', name: 'kamilah wells' },
+              system: true
+            }
+          ]);
+        });
       }
     });
+
+    setTimeout(() => {
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, [
+          {
+            _id: '10',
+            text: 'This is a message after system message',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            user: {
+              _id: '3',
+              avatar: `${userDetails?.avatar}`,
+              name: `${userDetails?.firstName} ${userDetails?.lastName}`
+            }
+          }
+        ])
+      );
+    }, 3000);
+
+    setTimeout(() => {
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, [
+          {
+            _id: '11',
+            text: 'This is a another message from the same user\n happy abi?',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            user: {
+              _id: '3',
+              avatar: `${userDetails?.avatar}`,
+              name: `${userDetails?.firstName} ${userDetails?.lastName}`
+            }
+          }
+        ])
+      );
+    }, 5000);
+
+    setTimeout(() => {
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, [
+          {
+            _id: '12',
+            text: 'This is a another message from the same user\n happy abi?',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            user: {
+              _id: `${userId}`,
+              avatar: `${userDetails?.avatar}`,
+              name: `${userDetails?.firstName} ${userDetails?.lastName}`
+            }
+          }
+        ])
+      );
+    }, 7000);
 
     return () => unsubscribe();
   }, []);
@@ -120,6 +191,8 @@ export default function ChatScreen(props: ScreenProp) {
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
         alwaysShowSend={true}
+        showUserAvatar={true}
+        renderAvatarOnTop={true}
         onPressAvatar={handleNavigation}
         onSend={onSend}
         renderSend={(props) => (
@@ -169,6 +242,22 @@ export default function ChatScreen(props: ScreenProp) {
             }}
           />
         )}
+        renderSystemMessage={(props) => {
+          return (
+            <Container>
+              <Button
+                onPress={() => {}}
+                labelStyle={{
+                  marginHorizontal: 5,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {props.currentMessage?.user.name}
+              </Button>
+              <Paragraph>{t(`community.chat.join`)}</Paragraph>
+            </Container>
+          );
+        }}
         renderBubble={(props) => (
           <Bubble
             {...props}

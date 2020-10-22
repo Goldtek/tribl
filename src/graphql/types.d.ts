@@ -135,9 +135,9 @@ type NotificationMessage = {
 
 export interface PassportInterface {
   id: string;
+  bio: string;
   email: string;
   avatar: string;
-  bio: string;
   dob: _Neo4jDate;
   lastName: string;
   verified: boolean;
@@ -152,23 +152,23 @@ export interface PassportInterface {
   communityCount: number;
   connectionCount: number;
   connected: Status | null;
-  participantOf: Community[]
   citizenShip: string | null;
   currentLocation: Location[];
   connection: Connection | null;
   status: UserAvailability | null;
   conversation: Conversation | null;
-  myConnections: PassportInterface[]
+  myConnections: PassportInterface[];
+  participantOf: CommunityInterface[];
 }
 
 export interface StoreInterface {
   communitySearchIndex: number;
+  userDetails: PassportInterface;
   showMessageNotificationBadge: boolean;
   showConnectionNotificationBadge: boolean;
-  userDetails: PassportInterface;
 }
 
-type Channel = {
+export type ChannelInterface = {
   id: string;
   name: string;
   isDefault: boolean;
@@ -195,7 +195,7 @@ export interface CommunityInterface {
   isMember: boolean;
   description: string;
   membersCount: number;
-  channels: Channel[];
+  channels: ChannelInterface[];
   interests: Interest[];
   privacy: CommunityPrivacy;
   moderators: PassportInterface[];
@@ -324,6 +324,11 @@ export type AllMembersRequestInterface = {
 // ALL MEMBERS REQUEST (RESPONSE) TYPE
 export type SinglePassportRequestInterface = {
   singlePassport: PassportInterface;
+};
+
+// COMMUNITY CHANNEL REQUEST (RESPONSE) TYPE
+export type CommunityChannelRequestInterface = {
+  Channel: ChannelInterface[];
 };
 
 // SHOW MESSAGE NOTIFICATION REQUEST (RESPONSE) TYPE

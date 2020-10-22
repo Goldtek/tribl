@@ -15,11 +15,11 @@ import {
 } from '../../../../../graphql/server/query';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
-import Skeleton from './widget';
 import {
   JOIN_COMMUNITY,
   LEAVE_COMMUNITY
 } from '../../../../../graphql/server/mutations';
+import { PassportInterface } from '../../../../../graphql/types';
 
 import {
   Container,
@@ -30,23 +30,18 @@ import {
   TagText
 } from './styles';
 
-interface SingleCommunityScreenProp extends NavigationInterface {}
+interface singleCommunityScreenProp extends NavigationInterface {}
 
-export default function SingleCommunity(props: SingleCommunityScreenProp) {
+export default function singleCommunity(props: singleCommunityScreenProp) {
   const detail = props.route;
   const { communityDetails } = detail;
-  const {
-    id,
-    avatar,
-    name,
-    isMember,
-    interests,
-    description,
-    membersCount
-  } = communityDetails;
+  const { id } = communityDetails;
+
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
+  const [data, setData] = useState(communityDetails);
+  const [member, setMember] = useState(false);
 
   const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
 
@@ -55,28 +50,19 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
   });
 
   const nearbyMembers = nearbyData?.nearbyMembers;
-  const SingleCommunity = communityData?.Community[0];
-
-  const [data, setData] = useState({
-    name: name,
-    avatar: avatar,
-    isMember: isMember,
-    interests: interests,
-    description: description,
-    membersCount: membersCount
-  });
+  const singleCommunity = communityData?.Community[0];
 
   useEffect(() => {
     setData({
       ...data,
-      name: SingleCommunity?.name,
-      avatar: SingleCommunity?.avatar,
-      isMember: SingleCommunity?.isMember,
-      interests: SingleCommunity?.interests,
-      description: SingleCommunity?.description,
-      membersCount: SingleCommunity?.membersCount
+      name: singleCommunity?.name,
+      avatar: singleCommunity?.avatar,
+      isMember: singleCommunity?.isMember,
+      interests: singleCommunity?.interests,
+      description: singleCommunity?.description,
+      membersCount: singleCommunity?.membersCount
     });
-  }, [SingleCommunity?.id]);
+  }, [singleCommunity?.id]);
 
   const resizeAvatar = data.avatar?.split('upload/');
 
@@ -84,7 +70,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
     ? resizeAvatar[0] +
       'upload/c_fill,g_auto,h_350,w_970/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/' +
       resizeAvatar[1]
-    : SingleCommunity?.avatar;
+    : singleCommunity?.avatar;
 
   const handleJoinCommunity = () => {
     setState({
@@ -94,32 +80,21 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
   };
 
   const _renderRecommendedMember = useMemo(
-    () => ({ item, index }: any) => (
-      <MembersCard
-        key={item.id}
-        {...item}
-        index={index}
-        lastChild={nearbyMembers?.length - 1}
-      />
+    () => ({ item }: { item: PassportInterface }) => (
+      <MembersCard key={item.id} {...item} />
     ),
     []
   );
 
-  const [member, setMember] = useState(false);
-
   const [joinCommunity, { loading: joinLoading }] = useMutation(
     JOIN_COMMUNITY,
-    { variables: { payload: { communityId: SingleCommunity?.id } } }
+    { variables: { payload: { communityId: singleCommunity?.id } } }
   );
 
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
     LEAVE_COMMUNITY,
     {
-      variables: {
-        payload: {
-          communityId: id
-        }
-      }
+      variables: { payload: { communityId: id } }
     }
   );
 
@@ -134,10 +109,8 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
 
   const handleLeave = async () => {
     try {
-      const { data } = await leaveCommunity();
-      if (data) {
-        setMember(false);
-      }
+      await leaveCommunity();
+      setMember(false);
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -184,7 +157,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     style={{
                       color: colors.PRIMARY_TEXT,
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: fonts.LARGE_SIZE,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
                       lineHeight: RFValue(19)
                     }}
                   >
@@ -192,7 +165,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                   </Title>
                   <Paragraph
                     style={{
-                      fontSize: fonts.MEDIUM_SIZE - 1,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
                       fontFamily: fonts.WORK_SANS_REGULAR,
                       lineHeight: RFValue(10),
                       color: colors.SECONDARY_TEXT
@@ -207,7 +180,7 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                   {data.description ? (
                     <Paragraph
                       style={{
-                        fontSize: fonts.MEDIUM_SIZE - 1,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
                         fontFamily: fonts.WORK_SANS_REGULAR,
                         lineHeight: RFValue(13),
                         color: colors.PRIMARY_TEXT
@@ -217,49 +190,22 @@ export default function SingleCommunity(props: SingleCommunityScreenProp) {
                     </Paragraph>
                   ) : null}
                 </TextContainer>
-                {data.isMember || member ? (
-                  <Button
-                    mode="contained"
-                    loading={leaveLoading}
-                    onPress={handleLeave}
-                    style={{
-                      width: '22%',
-                      height: RFValue(40),
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: 4
-                    }}
-                    labelStyle={{
-                      fontSize: fonts.LARGE_SIZE,
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      color: colors.WHITE,
-                      textTransform: 'capitalize'
-                    }}
-                  >
-                    {t(`community.tabPanel.leave`)}
-                  </Button>
-                ) : (
-                  <Button
-                    mode="contained"
-                    loading={joinLoading}
-                    style={{
-                      width: '20%',
-                      height: RFValue(40),
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: 4
-                    }}
-                    labelStyle={{
-                      fontSize: fonts.LARGE_SIZE,
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      color: colors.WHITE,
-                      textTransform: 'capitalize'
-                    }}
-                    onPress={handleJoin}
-                  >
-                    {t(`community.tabPanel.join`)}
-                  </Button>
-                )}
+                <Button
+                  mode="contained"
+                  loading={data.isMember || member ? leaveLoading : joinLoading}
+                  onPress={handleLeave}
+                  style={{ borderRadius: 4 }}
+                  labelStyle={{
+                    fontSize: fonts.LARGE_SIZE,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    color: colors.WHITE,
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {data.isMember || member
+                    ? t(`community.tabPanel.leave`)
+                    : t(`community.tabPanel.join`)}
+                </Button>
               </CardContainer>
 
               {data.interests?.length ? (
