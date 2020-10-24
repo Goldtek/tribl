@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, Fragment, useRef } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  Fragment,
+  useEffect
+} from 'react';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import * as Sentry from '@sentry/react-native';
 import { ScrollView, FlatList } from 'react-native';
@@ -57,6 +63,43 @@ export default function contactSlide(props: MemberDetailProps) {
   >(GET_SINGLE_PASSPORT, { variables: { id } });
 
   const singlePassport = passportData?.singlePassport;
+
+  const [data, setData] = useState({
+    firstName: passport.firstName,
+    lastName: passport.lastName,
+    avatar: passport.avatar,
+    connected: passport.connected,
+    communityCount: passport.communityCount,
+    connectionCount: passport.connectionCount,
+    phoneNumber: passport.phoneNumber,
+    bio: passport.bio,
+    currentLocation: passport.currentLocation,
+    birthPlace: passport.birthPlace,
+    interest: passport.interest,
+    identity: passport.identity,
+    participantOf: passport.participantOf,
+    myConnections: passport.myConnections
+  });
+
+  useEffect(() => {
+    if (singlePassport?.id) {
+      setData({
+        ...data,
+        firstName: singlePassport?.avatar,
+        connected: singlePassport?.connected,
+        communityCount: singlePassport?.communityCount,
+        connectionCount: singlePassport?.connectionCount,
+        phoneNumber: singlePassport?.phoneNumber,
+        bio: singlePassport?.bio,
+        currentLocation: singlePassport?.currentLocation,
+        birthPlace: singlePassport?.birthPlace,
+        interest: singlePassport?.interest,
+        identity: singlePassport?.identity,
+        participantOf: singlePassport?.participantOf,
+        myConnections: singlePassport?.myConnections
+      });
+    }
+  }, [singlePassport?.id]);
 
   const handleMessageNavigation = useCallback(() => {
     const messageRequest = singlePassport?.conversation?.messageRequest;
@@ -124,71 +167,112 @@ export default function contactSlide(props: MemberDetailProps) {
       }}
       style={{ backgroundColor: colors.WHITE }}
     >
-      {passportLoading ? (
-        <PassportSkeleton />
-      ) : (
-        <ContactContainer>
-          <Header>
-            <FastImage
-              resizeMode={FastImage.resizeMode.cover}
-              source={{
-                uri: singlePassport?.avatar,
-                priority: FastImage.priority.high
-              }}
-              style={{
-                width: RFValue(100),
-                height: RFValue(80),
-                borderRadius: 4
-              }}
-            />
-            <ConnectionCover>
-              <Connection>
-                <Paragraph
-                  style={{
-                    color: colors.PRIMARY_TEXT,
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: fonts.LARGE_SIZE
-                  }}
-                >
-                  {singlePassport?.connectionCount}
-                </Paragraph>
-                <Paragraph
-                  style={{
-                    fontSize: fonts.MEDIUM_SIZE,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {t(`community.memberPassport.connection`)}
-                </Paragraph>
-              </Connection>
-              <Connection>
-                <Paragraph
-                  style={{
-                    color: colors.PRIMARY_TEXT,
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: fonts.LARGE_SIZE
-                  }}
-                >
-                  {singlePassport?.communityCount}
-                </Paragraph>
-                <Paragraph
-                  style={{
-                    fontSize: fonts.MEDIUM_SIZE,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {t(`community.memberPassport.community`)}
-                </Paragraph>
-              </Connection>
-            </ConnectionCover>
-          </Header>
+      <ContactContainer>
+        <Header>
+          <FastImage
+            resizeMode={FastImage.resizeMode.cover}
+            source={{
+              uri: data.avatar,
+              priority: FastImage.priority.high
+            }}
+            style={{
+              width: RFValue(100),
+              height: RFValue(80),
+              borderRadius: 4
+            }}
+          />
+          <ConnectionCover>
+            <Connection>
+              <Paragraph
+                style={{
+                  color: colors.PRIMARY_TEXT,
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: fonts.LARGE_SIZE
+                }}
+              >
+                {data?.connectionCount}
+              </Paragraph>
+              <Paragraph
+                style={{
+                  fontSize: fonts.MEDIUM_SIZE,
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {t(`community.memberPassport.connection`)}
+              </Paragraph>
+            </Connection>
+            <Connection>
+              <Paragraph
+                style={{
+                  color: colors.PRIMARY_TEXT,
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: fonts.LARGE_SIZE
+                }}
+              >
+                {data?.communityCount}
+              </Paragraph>
+              <Paragraph
+                style={{
+                  fontSize: fonts.MEDIUM_SIZE,
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {t(`community.memberPassport.community`)}
+              </Paragraph>
+            </Connection>
+          </ConnectionCover>
+        </Header>
 
-          {singlePassport?.connected == 'CONNECTED' ||
-          singlePassport?.connected == 'ACCEPTED' ? (
+        {data?.connected == 'CONNECTED' || data?.connected == 'ACCEPTED' ? (
+          <Button
+            onPress={handleMessageNavigation}
+            mode="outlined"
+            color={colors.PRIMARY}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
+            }}
+            contentStyle={{
+              height: RFValue(55),
+              borderColor: colors.PRIMARY_TEXT
+            }}
+            style={{
+              width: '100%',
+              height: RFValue(55),
+              borderRadius: 4,
+              marginTop: RFValue(20),
+              borderColor: colors.PRIMARY_TEXT
+            }}
+          >
+            {t(`community.memberPassport.message`)}
+          </Button>
+        ) : pending || data?.connected === 'PENDING' ? (
+          <ButtonCover>
+            <Button
+              disabled={true}
+              mode="contained"
+              color={colors.PRIMARY_TEXT}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{ height: RFValue(55) }}
+              style={{
+                width: DEVICE_FULL_WIDTH / 2 - 30,
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                backgroundColor: colors.DISABLED
+              }}
+            >
+              {t(`community.memberPassport.requested`)}
+            </Button>
             <Button
               onPress={handleMessageNavigation}
               mode="outlined"
@@ -203,7 +287,7 @@ export default function contactSlide(props: MemberDetailProps) {
                 borderColor: colors.PRIMARY_TEXT
               }}
               style={{
-                width: '100%',
+                width: DEVICE_FULL_WIDTH / 2 - 30,
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
@@ -212,308 +296,262 @@ export default function contactSlide(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
-          ) : pending || singlePassport?.connected === 'PENDING' ? (
-            <ButtonCover>
-              <Button
-                disabled={true}
-                mode="contained"
-                color={colors.PRIMARY_TEXT}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'capitalize'
-                }}
-                contentStyle={{ height: RFValue(55) }}
-                style={{
-                  width: DEVICE_FULL_WIDTH / 2 - 30,
-                  height: RFValue(55),
-                  borderRadius: 4,
-                  marginTop: RFValue(20),
-                  backgroundColor: colors.DISABLED
-                }}
-              >
-                {t(`community.memberPassport.requested`)}
-              </Button>
-              <Button
-                onPress={handleMessageNavigation}
-                mode="outlined"
-                color={colors.PRIMARY}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'capitalize'
-                }}
-                contentStyle={{
-                  height: RFValue(55),
-                  borderColor: colors.PRIMARY_TEXT
-                }}
-                style={{
-                  width: DEVICE_FULL_WIDTH / 2 - 30,
-                  height: RFValue(55),
-                  borderRadius: 4,
-                  marginTop: RFValue(20),
-                  borderColor: colors.PRIMARY_TEXT
-                }}
-              >
-                {t(`community.memberPassport.message`)}
-              </Button>
-            </ButtonCover>
-          ) : (
-            <ButtonCover>
-              <GradientButton
-                onPress={handleRequest}
-                loading={loading}
-                style={{ width: DEVICE_FULL_WIDTH / 2 - 30 }}
-              >
-                {t(`community.memberPassport.connect`)}
-              </GradientButton>
-              <Button
-                onPress={handleMessageNavigation}
-                mode="outlined"
-                color={colors.PRIMARY}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'capitalize'
-                }}
-                contentStyle={{
-                  height: RFValue(55),
-                  borderColor: colors.PRIMARY_TEXT
-                }}
-                style={{
-                  width: DEVICE_FULL_WIDTH / 2 - 30,
-                  height: RFValue(55),
-                  borderRadius: 4,
-                  marginTop: RFValue(20),
-                  borderColor: colors.PRIMARY_TEXT
-                }}
-              >
-                {t(`community.memberPassport.message`)}
-              </Button>
-            </ButtonCover>
-          )}
+          </ButtonCover>
+        ) : (
+          <ButtonCover>
+            <GradientButton
+              onPress={handleRequest}
+              loading={loading}
+              style={{ width: DEVICE_FULL_WIDTH / 2 - 30 }}
+            >
+              {t(`community.memberPassport.connect`)}
+            </GradientButton>
+            <Button
+              onPress={handleMessageNavigation}
+              mode="outlined"
+              color={colors.PRIMARY}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                borderColor: colors.PRIMARY_TEXT
+              }}
+              style={{
+                width: DEVICE_FULL_WIDTH / 2 - 30,
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.PRIMARY_TEXT
+              }}
+            >
+              {t(`community.memberPassport.message`)}
+            </Button>
+          </ButtonCover>
+        )}
 
-          {singlePassport?.bio ? (
-            <Fragment>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase',
-                  marginBottom: 5,
-                  marginTop: 40
-                }}
-              >
-                {t(`community.memberPassport.bio`)}
-              </Title>
-              <Text
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize'
-                }}
-              >
-                {singlePassport?.bio}
-              </Text>
-            </Fragment>
-          ) : null}
+        {data?.bio ? (
+          <Fragment>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginBottom: 5,
+                marginTop: 40
+              }}
+            >
+              {t(`community.memberPassport.bio`)}
+            </Title>
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize'
+              }}
+            >
+              {data?.bio}
+            </Text>
+          </Fragment>
+        ) : null}
 
-          {singlePassport?.currentLocation || singlePassport?.birthPlace ? (
-            <LocationContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase',
-                  marginBottom: 5,
-                  marginTop: 30
-                }}
-              >
-                {t(`signup.passportScreen.locality`)}
-              </Title>
-              {singlePassport?.birthPlace ? (
-                <Location>
-                  <AntDesign
-                    name="home"
-                    color="#CACEE5"
-                    size={20}
+        {data?.currentLocation || data?.birthPlace ? (
+          <LocationContainer>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginBottom: 5,
+                marginTop: 30
+              }}
+            >
+              {t(`signup.passportScreen.locality`)}
+            </Title>
+            {data?.birthPlace ? (
+              <Location>
+                <AntDesign
+                  name="home"
+                  color="#CACEE5"
+                  size={20}
+                  style={{
+                    padding: RFValue(12),
+                    borderRadius: 4,
+                    margin: 0,
+                    marginRight: 10,
+                    backgroundColor: colors.ACTION
+                  }}
+                />
+                {data?.birthPlace[0]?.city ? (
+                  <Paragraph
                     style={{
-                      padding: RFValue(12),
-                      borderRadius: 4,
-                      margin: 0,
-                      marginRight: 10,
-                      backgroundColor: colors.ACTION
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
                     }}
-                  />
-                  {singlePassport?.birthPlace[0]?.city ? (
-                    <Paragraph
-                      style={{
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'capitalize',
-                        marginBottom: 10
-                      }}
-                    >
-                      {`${singlePassport?.birthPlace[0]?.city}, ${singlePassport?.birthPlace[0]?.state}`}
-                    </Paragraph>
-                  ) : (
-                    <Paragraph
-                      style={{
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'capitalize',
-                        marginBottom: 10
-                      }}
-                    >
-                      {`${singlePassport?.birthPlace[0]?.state}, ${singlePassport?.birthPlace[0]?.country}`}
-                    </Paragraph>
-                  )}
-                </Location>
-              ) : null}
-              {singlePassport?.currentLocation ? (
-                <Location>
-                  <SimpleLineIcons
-                    name="location-pin"
-                    color="#CACEE5"
-                    size={20}
+                  >
+                    {`${data?.birthPlace[0]?.city}, ${data?.birthPlace[0]?.state}`}
+                  </Paragraph>
+                ) : (
+                  <Paragraph
                     style={{
-                      padding: RFValue(12),
-                      borderRadius: 4,
-                      margin: 0,
-                      marginRight: 10,
-                      backgroundColor: colors.ACTION
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
                     }}
-                  />
-                  {singlePassport?.currentLocation[0]?.city ? (
-                    <Paragraph
-                      style={{
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'capitalize',
-                        marginBottom: 10
-                      }}
-                    >
-                      {`${singlePassport?.currentLocation[0]?.city}, ${singlePassport?.currentLocation[0]?.state}`}
-                    </Paragraph>
-                  ) : (
-                    <Paragraph
-                      style={{
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'capitalize',
-                        marginBottom: 10
-                      }}
-                    >
-                      {`${singlePassport?.currentLocation[0]?.state}, ${singlePassport?.currentLocation[0]?.country}`}
-                    </Paragraph>
-                  )}
-                </Location>
-              ) : null}
-            </LocationContainer>
-          ) : null}
+                  >
+                    {`${data?.birthPlace[0]?.state}, ${data?.birthPlace[0]?.country}`}
+                  </Paragraph>
+                )}
+              </Location>
+            ) : null}
+            {data?.currentLocation ? (
+              <Location>
+                <SimpleLineIcons
+                  name="location-pin"
+                  color="#CACEE5"
+                  size={20}
+                  style={{
+                    padding: RFValue(12),
+                    borderRadius: 4,
+                    margin: 0,
+                    marginRight: 10,
+                    backgroundColor: colors.ACTION
+                  }}
+                />
+                {data?.currentLocation[0]?.city ? (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${data?.currentLocation[0]?.city}, ${data?.currentLocation[0]?.state}`}
+                  </Paragraph>
+                ) : (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${data?.currentLocation[0]?.state}, ${data?.currentLocation[0]?.country}`}
+                  </Paragraph>
+                )}
+              </Location>
+            ) : null}
+          </LocationContainer>
+        ) : null}
 
-          {singlePassport?.identity?.length ? (
-            <IdentityContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase',
-                  marginBottom: 10
-                }}
-              >
-                {t(`signup.passportScreen.identity`)}
-              </Title>
+        {data?.identity?.length ? (
+          <IdentityContainer>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginBottom: 10
+              }}
+            >
+              {t(`signup.passportScreen.identity`)}
+            </Title>
 
-              <Identities>
-                {singlePassport?.identity?.map((identity: any) => (
-                  <IdentityText key={identity.id}>{identity.name}</IdentityText>
-                ))}
-              </Identities>
-            </IdentityContainer>
-          ) : null}
+            <Identities>
+              {data?.identity?.map((identity: any) => (
+                <IdentityText key={identity.id}>{identity.name}</IdentityText>
+              ))}
+            </Identities>
+          </IdentityContainer>
+        ) : null}
 
-          {singlePassport?.interest?.length ? (
-            <InterestContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`signup.passportScreen.interest`)}
-              </Title>
-              <Identities>
-                {singlePassport?.interest?.map((interest: any) => (
-                  <IdentityText key={interest.id}>{interest.name}</IdentityText>
-                ))}
-              </Identities>
-            </InterestContainer>
-          ) : null}
-          {singlePassport?.participantOf?.length ? (
-            <Fragment>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase',
-                  marginBottom: 10
-                }}
-              >
-                {t(`community.memberPassport.tribe`)}
-              </Title>
-              <FlatList
-                data={community}
-                horizontal={true}
-                renderItem={_renderMyCommunityItem}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 5,
-                  backgroundColor: colors.WHITE
-                }}
-              />
-            </Fragment>
-          ) : null}
-          {singlePassport?.myConnections?.length ? (
-            <Fragment>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase',
-                  marginBottom: 10,
-                  marginTop: RFValue(40)
-                }}
-              >
-                {t(`community.memberPassport.connection`)}
-              </Title>
-              <FlatList
-                data={connections}
-                horizontal={true}
-                keyExtractor={(_, index: number) => index.toString()}
-                renderItem={_renderMyConnectionItem}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 5,
-                  backgroundColor: colors.WHITE
-                }}
-              />
-            </Fragment>
-          ) : null}
-        </ContactContainer>
-      )}
+        {data?.interest?.length ? (
+          <InterestContainer>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`signup.passportScreen.interest`)}
+            </Title>
+            <Identities>
+              {data?.interest?.map((interest: any) => (
+                <IdentityText key={interest.id}>{interest.name}</IdentityText>
+              ))}
+            </Identities>
+          </InterestContainer>
+        ) : null}
+        {data?.participantOf?.length ? (
+          <Fragment>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginBottom: 10
+              }}
+            >
+              {t(`community.memberPassport.tribe`)}
+            </Title>
+            <FlatList
+              data={community}
+              horizontal={true}
+              renderItem={_renderMyCommunityItem}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                marginTop: 5,
+                backgroundColor: colors.WHITE
+              }}
+            />
+          </Fragment>
+        ) : null}
+        {data?.myConnections?.length ? (
+          <Fragment>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginBottom: 10,
+                marginTop: RFValue(40)
+              }}
+            >
+              {t(`community.memberPassport.connection`)}
+            </Title>
+            <FlatList
+              data={connections}
+              horizontal={true}
+              keyExtractor={(_, index: number) => index.toString()}
+              renderItem={_renderMyConnectionItem}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                marginTop: 5,
+                backgroundColor: colors.WHITE
+              }}
+            />
+          </Fragment>
+        ) : null}
+      </ContactContainer>
     </ScrollView>
   );
 }
