@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/react-hooks';
@@ -9,7 +9,11 @@ import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import communityTab from './widgets/communityTab';
 import { useThemeContext } from '../../../theme';
 import membersTab from './widgets/membersTab';
+import AlgoliaSearch from '../../../components/algoliaSearch';
+import AlgoliaCommunityList from '../../../components/algoliaCommunityList ';
+import ENVIRONMENT_VARIABLES from '../../../config';
 
+import { Container } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp {
   route: { params: { index: number } };
@@ -37,6 +41,11 @@ export default function SearchScreen(props: ScreenProp) {
     setTabIndex(index);
     changeCommunitySearchIndex({ variables: { communitySearchIndex: index } });
   };
+
+  const indexName = [
+    ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME,
+    ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_INDEX_NAME
+  ];
 
   const renderLabel = ({
     route,
@@ -79,21 +88,28 @@ export default function SearchScreen(props: ScreenProp) {
   };
 
   return (
-    <TabView
-      lazy
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      onIndexChange={handleIndexChange}
-      navigationState={{ index: tabIndex, routes }}
-      initialLayout={{ width: DEVICE_FULL_WIDTH }}
-      sceneContainerStyle={{
-        paddingTop: RFValue(20),
-        backgroundColor: colors.GREY
-      }}
-      style={{
-        paddingTop: RFValue(20),
-        backgroundColor: colors.GREY
-      }}
-    />
+    <Fragment>
+      <Container>
+        <AlgoliaSearch indexName={indexName[tabIndex]}>
+          <AlgoliaCommunityList />
+        </AlgoliaSearch>
+      </Container>
+      <TabView
+        lazy
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={handleIndexChange}
+        navigationState={{ index: tabIndex, routes }}
+        initialLayout={{ width: DEVICE_FULL_WIDTH }}
+        sceneContainerStyle={{
+          paddingTop: RFValue(10),
+          backgroundColor: colors.GREY
+        }}
+        style={{
+          paddingTop: RFValue(10),
+          backgroundColor: colors.GREY
+        }}
+      />
+    </Fragment>
   );
 }
