@@ -3,11 +3,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 
 export const Container = styled.View`
   flex: 1;
-  padding-top: ${RFValue(10)}px;
 `;
 
 export const RecommendedList = styled.View`
-  padding-top: ${RFValue(20)}px;
+  padding-top: ${RFValue(15)}px;
 `;
 
 export const RecommendedListHeader = styled.View`
