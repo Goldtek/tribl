@@ -1,5 +1,5 @@
-import React from 'react';
-import { TouchableRipple } from 'react-native-paper';
+import React, { Fragment } from 'react';
+import { TouchableRipple, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../../../theme';
@@ -29,22 +29,25 @@ export default function MyCommunity(props: MyConnectionProp) {
       onPress={handleNavigation}
       rippleColor={hexToRGB(colors.PRIMARY, 0.5)}
       style={{
-        height: RFValue(70),
-        width: RFValue(70),
+        height: RFValue(80),
+        width: RFValue(80),
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: RFValue(10),
-        borderRadius: RFValue(70)
+        borderRadius: RFValue(80)
       }}
     >
-      <FastImage
-        resizeMode={FastImage.resizeMode.cover}
-        source={{
-          uri: avatar,
-          priority: FastImage.priority.high
-        }}
-        style={{ width: '90%', height: '90%', borderRadius: RFValue(70) }}
-      />
+      <Fragment>
+        <FastImage
+          resizeMode={FastImage.resizeMode.cover}
+          source={{
+            uri: avatar,
+            priority: FastImage.priority.high
+          }}
+          style={{ width: '80%', height: '80%', borderRadius: RFValue(70) }}
+        />
+        <Paragraph>{firstName}</Paragraph>
+      </Fragment>
     </TouchableRipple>
   );
 }
