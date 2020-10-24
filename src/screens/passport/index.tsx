@@ -6,6 +6,10 @@ import * as Updates from 'expo-updates';
 import { check, PERMISSIONS, request } from 'react-native-permissions';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
+import ImageResizer from 'react-native-image-resizer';
+
+import ImagePicker, { Image } from 'react-native-image-crop-picker';
+
 import { useTranslation } from 'react-i18next';
 import {
   Title,
@@ -44,6 +48,9 @@ import Firechat from '../../firebase';
 import CheckAppUpdates from '../../libs/updates';
 import Notification from '../../libs/notification';
 import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/mutations';
+import cloudinaryUpload, {
+  CloudinaryUploadType
+} from '../../utils/cloudinaryUpload';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -56,6 +63,11 @@ import {
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
+import { Feather } from '@expo/vector-icons';
+import {
+  TouchableOpacity,
+  TouchableHighlight
+} from 'react-native-gesture-handler';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -66,6 +78,14 @@ interface StateProps extends PassportInterface {
   date: string;
   selectedId: string[];
 }
+
+type StateType = {
+  uri: string | undefined;
+  secure_url: string;
+  formData: FormData | null;
+  loading: boolean;
+  imageData: CloudinaryUploadType;
+};
 
 export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
@@ -105,8 +125,11 @@ export default function PassportScreen(props: ScreenProp) {
   const userDetails = userData?.myPassport;
   const identity = userDetails?.identity.map((item: any) => item.id);
   const dateOfBirth = userDetails?.dob;
+
   const [imageLoad, setImageLoad] = useState(true);
+
   const [update, setUpdate] = useState(true);
+
   const [state, setState] = useState<{
     details: StateProps;
     identity: string[] | undefined;
@@ -131,6 +154,15 @@ export default function PassportScreen(props: ScreenProp) {
     },
     bio: ''
   });
+
+  const [avatar, setAvatar] = useState<StateType>({
+    uri: userDetails?.avatar,
+    secure_url: '',
+    formData: null,
+    imageData: { uri: '', mime: '', filename: '', cropRect: null },
+    loading: false
+  });
+
   const [OTAUpdate, setOTAUpdate] = useState(false);
 
   const [location, setLocation] = useState<{
@@ -165,8 +197,8 @@ export default function PassportScreen(props: ScreenProp) {
   const lastName = state?.details?.lastName;
   const bio = state?.details?.bio;
   const dob = state?.details?.date?.split('/');
-  const day = dob?.length ? parseInt(dob[0]) : dateOfBirth?.day;
-  const month = dob?.length ? parseInt(dob[1]) : dateOfBirth?.month;
+  const day = dob?.length ? parseInt(dob[1]) : dateOfBirth?.day;
+  const month = dob?.length ? parseInt(dob[0]) : dateOfBirth?.month;
   const year = dob?.length ? parseInt(dob[2]) : dateOfBirth?.year;
   const identityID = state?.details?.selectedId || [];
   const SelectedIdentitiesID = Array.from(identityID?.values());
@@ -200,6 +232,10 @@ export default function PassportScreen(props: ScreenProp) {
   }, [firstName?.length, lastName?.length]);
 
   useEffect(() => {
+    setAvatar({
+      ...avatar,
+      uri: userDetails?.avatar
+    });
     setBirthPlace({
       ...birthPlace,
       city: userDetails?.birthPlace[0]?.city,
@@ -270,11 +306,26 @@ export default function PassportScreen(props: ScreenProp) {
       location.city?.length &&
       birthPlace.state?.length &&
       state.identity?.length &&
-      state.bio &&
       day
-    )
+    ) {
       updateLocation();
+    }
   }, [state.identity]);
+
+  useEffect(() => {
+    const updateLocation = async () => {
+      try {
+        await updatePassport();
+        refetch();
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    };
+    if (location.city?.length == 0) {
+      handleLocation();
+      updateLocation();
+    }
+  }, [location.country]);
 
   useEffect(() => {
     if (firebase?.generateFirebaseToken) {
@@ -323,6 +374,7 @@ export default function PassportScreen(props: ScreenProp) {
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
+        avatar: avatar.uri,
         firstName: state.firstName,
         lastName: state.lastName,
         bio: state.bio,
@@ -411,6 +463,43 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
+  const handleAvatar = async () => {
+    try {
+      let divider = 1;
+
+      const { size, height, width, path } = (await ImagePicker.openPicker({
+        cropping: false,
+        mediaType: 'photo'
+      })) as Image;
+
+      if (size > 300000) divider = size / 900000;
+
+      const { uri: resizedImage } = await ImageResizer.createResizedImage(
+        path,
+        width / divider,
+        height / divider,
+        'JPEG',
+        100,
+        0,
+        undefined
+      );
+
+      const { mime, data, filename, cropRect } = await ImagePicker.openCropper({
+        path: resizedImage,
+        width: RFValue(200),
+        height: RFValue(200),
+        includeBase64: true
+      });
+
+      const uri = `data:${mime};base64,${data}`;
+      const imageData = { mime, filename, cropRect, uri };
+      setAvatar({ ...avatar, uri, imageData });
+      ImagePicker.clean();
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
   return (
     <Notification>
       <SafeAreaView
@@ -476,28 +565,58 @@ export default function PassportScreen(props: ScreenProp) {
                   )}
                 </Cover>
                 <ImageContainer>
-                  <FastImage
-                    source={{
-                      uri: userDetails?.avatar,
-                      priority: FastImage.priority.high
-                    }}
-                    resizeMode={FastImage.resizeMode.cover}
-                    onLoadEnd={() => setImageLoad(false)}
-                    style={{
-                      width: RFValue(120),
-                      height: RFValue(120),
-                      justifyContent: 'center',
-                      borderRadius: 4
-                    }}
-                  >
-                    {imageLoad && (
-                      <ActivityIndicator
-                        animating={true}
-                        size={RFValue(50)}
-                        color={colors.WHITE}
-                      />
-                    )}
-                  </FastImage>
+                  {update ? (
+                    <FastImage
+                      source={{
+                        uri: avatar.uri,
+                        priority: FastImage.priority.high
+                      }}
+                      resizeMode={FastImage.resizeMode.cover}
+                      onLoadEnd={() => setImageLoad(false)}
+                      style={{
+                        width: RFValue(120),
+                        height: RFValue(120),
+                        justifyContent: 'center',
+                        borderRadius: 4
+                      }}
+                    >
+                      {imageLoad && (
+                        <ActivityIndicator
+                          animating={true}
+                          size={RFValue(50)}
+                          color={colors.WHITE}
+                        />
+                      )}
+                    </FastImage>
+                  ) : (
+                    <TouchableHighlight onPress={handleAvatar}>
+                      <FastImage
+                        source={{
+                          uri: avatar.uri,
+                          priority: FastImage.priority.high
+                        }}
+                        resizeMode={FastImage.resizeMode.cover}
+                        onLoadEnd={() => setImageLoad(false)}
+                        style={{
+                          width: RFValue(120),
+                          height: RFValue(120),
+                          justifyContent: 'center',
+                          borderRadius: 4
+                        }}
+                      >
+                        <Feather
+                          name="camera"
+                          size={RFValue(30)}
+                          color={colors.WHITE}
+                          style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            textAlign: 'center'
+                          }}
+                        />
+                      </FastImage>
+                    </TouchableHighlight>
+                  )}
 
                   <ImageTextContainer>
                     <Paragraph
