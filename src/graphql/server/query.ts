@@ -14,11 +14,91 @@ export const GET_RECOMMENDED_MEMBERS = gql`
       email
       firstName
       lastName
+      avatar
       phoneNumber
       connected
-      avatar
       connectionCount
       communityCount
+      participantOf {
+        id
+        name
+        membersCount
+        description
+        avatar
+        isMember
+        interests {
+          id
+          name
+        }
+        channels {
+          id
+          name
+        }
+        participants {
+          id
+          connected
+          firstName
+          lastName
+          phoneNumber
+          conversation {
+            id
+            messageRequest {
+              id
+              senderId
+              approvedAt {
+                formatted
+                day
+                month
+                year
+              }
+              createdAt {
+                formatted
+                day
+                month
+                year
+              }
+            }
+          }
+        }
+        membersCount
+      }
+      myConnections {
+        id
+        email
+        firstName
+        lastName
+        avatar
+        phoneNumber
+        connected
+        connectionCount
+        communityCount
+        bio
+        birthPlace {
+          id
+          country
+          state
+          city
+        }
+        currentLocation {
+          id
+          country
+          state
+          city
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
+      }
+      bio
+      birthPlace {
+        id
+        country
+        state
+        city
+      }
       currentLocation {
         id
         country
@@ -30,9 +110,6 @@ export const GET_RECOMMENDED_MEMBERS = gql`
       }
       interest {
         name
-      }
-      birthPlace {
-        id
       }
       conversation {
         id
@@ -70,6 +147,86 @@ export const GET_NEARBY_MEMBERS = gql`
       avatar
       communityCount
       connectionCount
+      participantOf {
+        id
+        name
+        membersCount
+        description
+        avatar
+        isMember
+        interests {
+          id
+          name
+        }
+        channels {
+          id
+          name
+        }
+        participants {
+          id
+          connected
+          firstName
+          lastName
+          phoneNumber
+          conversation {
+            id
+            messageRequest {
+              id
+              senderId
+              approvedAt {
+                formatted
+                day
+                month
+                year
+              }
+              createdAt {
+                formatted
+                day
+                month
+                year
+              }
+            }
+          }
+        }
+        membersCount
+      }
+      myConnections {
+        id
+        email
+        firstName
+        lastName
+        avatar
+        phoneNumber
+        connected
+        connectionCount
+        communityCount
+        bio
+        birthPlace {
+          id
+          country
+          state
+          city
+        }
+        currentLocation {
+          id
+          country
+          state
+          city
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
+      }
+      bio
+      birthPlace {
+        id
+        country
+        state
+        city
+      }
       currentLocation {
         id
         country
@@ -82,11 +239,142 @@ export const GET_NEARBY_MEMBERS = gql`
       interest {
         name
       }
+      conversation {
+        id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
+      }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
+    }
+  }
+`;
+
+// GET NEARBY MEMBERS OF A COMMUNITY
+export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
+  query nearbyMembers($filter: _PassportFilter!) {
+    nearbyMembers(filter: $filter) {
+      id
+      email
+      firstName
+      lastName
+      phoneNumber
+      connected
+      avatar
+      communityCount
+      connectionCount
+      participantOf {
+        id
+        name
+        membersCount
+        description
+        avatar
+        isMember
+        interests {
+          id
+          name
+        }
+        channels {
+          id
+          name
+        }
+        participants {
+          id
+          connected
+          firstName
+          lastName
+          phoneNumber
+          conversation {
+            id
+            messageRequest {
+              id
+              senderId
+              approvedAt {
+                formatted
+                day
+                month
+                year
+              }
+              createdAt {
+                formatted
+                day
+                month
+                year
+              }
+            }
+          }
+        }
+        membersCount
+      }
+      myConnections {
+        id
+        email
+        firstName
+        lastName
+        avatar
+        phoneNumber
+        connected
+        connectionCount
+        communityCount
+        bio
+        birthPlace {
+          id
+          country
+          state
+          city
+        }
+        currentLocation {
+          id
+          country
+          state
+          city
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
+      }
+      bio
       birthPlace {
         id
-        city
-        state
         country
+        state
+        city
+      }
+      currentLocation {
+        id
+        country
+        state
+        city
+      }
+      identity {
+        name
+      }
+      interest {
+        name
       }
       conversation {
         id
@@ -240,12 +528,105 @@ export const GET_MY_CONNECTIONS = gql`
   query myConnections {
     myConnections {
       id
+      email
       firstName
       lastName
-      phoneNumber
       avatar
-      conversation {
+      phoneNumber
+      connected
+      connectionCount
+      communityCount
+      participantOf {
         id
+        name
+        membersCount
+        description
+        avatar
+        isMember
+        interests {
+          id
+          name
+        }
+        channels {
+          id
+          name
+        }
+        participants {
+          id
+          connected
+          firstName
+          lastName
+          phoneNumber
+          conversation {
+            id
+            messageRequest {
+              id
+              senderId
+              approvedAt {
+                formatted
+                day
+                month
+                year
+              }
+              createdAt {
+                formatted
+                day
+                month
+                year
+              }
+            }
+          }
+        }
+        membersCount
+      }
+      myConnections {
+        id
+        email
+        firstName
+        lastName
+        avatar
+        phoneNumber
+        connected
+        connectionCount
+        communityCount
+        bio
+        birthPlace {
+          id
+          country
+          state
+          city
+        }
+        currentLocation {
+          id
+          country
+          state
+          city
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
+      }
+      bio
+      birthPlace {
+        id
+        country
+        state
+        city
+      }
+      currentLocation {
+        id
+        country
+        state
+        city
+      }
+      identity {
+        name
+      }
+      interest {
+        name
       }
       presence {
         status
@@ -254,6 +635,25 @@ export const GET_MY_CONNECTIONS = gql`
           day
           month
           year
+        }
+      }
+      conversation {
+        id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
         }
       }
     }
@@ -265,11 +665,125 @@ export const GET_CONNECTION_REQUEST = gql`
   query connectionRequests {
     connectionRequests {
       id
-      avatar
+      email
       firstName
       lastName
+      avatar
       phoneNumber
       connected
+      connectionCount
+      communityCount
+      participantOf {
+        id
+        name
+        membersCount
+        description
+        avatar
+        isMember
+        interests {
+          id
+          name
+        }
+        channels {
+          id
+          name
+        }
+        participants {
+          id
+          connected
+          firstName
+          lastName
+          phoneNumber
+          conversation {
+            id
+            messageRequest {
+              id
+              senderId
+              approvedAt {
+                formatted
+                day
+                month
+                year
+              }
+              createdAt {
+                formatted
+                day
+                month
+                year
+              }
+            }
+          }
+        }
+        membersCount
+      }
+      myConnections {
+        id
+        email
+        firstName
+        lastName
+        avatar
+        phoneNumber
+        connected
+        connectionCount
+        communityCount
+        bio
+        birthPlace {
+          id
+          country
+          state
+          city
+        }
+        currentLocation {
+          id
+          country
+          state
+          city
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
+      }
+      bio
+      birthPlace {
+        id
+        country
+        state
+        city
+      }
+      currentLocation {
+        id
+        country
+        state
+        city
+      }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+      conversation {
+        id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
+      }
       connection {
         createdAt {
           day
@@ -316,13 +830,75 @@ export const GET_SINGLE_PASSPORT = gql`
       participantOf {
         id
         name
+        membersCount
+        description
         avatar
+        isMember
+        interests {
+          id
+          name
+        }
+        channels {
+          id
+          name
+        }
+        participants {
+          id
+          connected
+          firstName
+          lastName
+          phoneNumber
+          conversation {
+            id
+            messageRequest {
+              id
+              senderId
+              approvedAt {
+                formatted
+                day
+                month
+                year
+              }
+              createdAt {
+                formatted
+                day
+                month
+                year
+              }
+            }
+          }
+        }
+        membersCount
       }
       myConnections {
         id
+        email
         firstName
         lastName
         avatar
+        phoneNumber
+        connected
+        connectionCount
+        communityCount
+        bio
+        birthPlace {
+          id
+          country
+          state
+          city
+        }
+        currentLocation {
+          id
+          country
+          state
+          city
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
       }
       communityCount
       connectionCount
@@ -387,23 +963,106 @@ export const GET_COMMUNITY_MEMBERS = gql`
   query communityMembersCommunityChannels($id: ID!) {
     communityMembers(communityId: $id) {
       id
-      avatar
+      email
       firstName
       lastName
+      avatar
       phoneNumber
-      currentLocation {
+      connected
+      connectionCount
+      communityCount
+      participantOf {
         id
-        state
+        name
+        membersCount
+        description
+        avatar
+        isMember
+        interests {
+          id
+          name
+        }
+        channels {
+          id
+          name
+        }
+        participants {
+          id
+          connected
+          firstName
+          lastName
+          phoneNumber
+          conversation {
+            id
+            messageRequest {
+              id
+              senderId
+              approvedAt {
+                formatted
+                day
+                month
+                year
+              }
+              createdAt {
+                formatted
+                day
+                month
+                year
+              }
+            }
+          }
+        }
+        membersCount
+      }
+      myConnections {
+        id
+        email
+        firstName
+        lastName
+        avatar
+        phoneNumber
+        connected
+        connectionCount
+        communityCount
+        bio
+        birthPlace {
+          id
+          country
+          state
+          city
+        }
+        currentLocation {
+          id
+          country
+          state
+          city
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
+      }
+      bio
+      birthPlace {
+        id
         country
+        state
         city
       }
-      interest {
-        name
+      currentLocation {
+        id
+        country
+        state
+        city
       }
       identity {
         name
       }
-      connected
+      interest {
+        name
+      }
       conversation {
         id
         messageRequest {
@@ -559,9 +1218,83 @@ export const GET_ALL_MEMBERS = gql`
       participantOf {
         id
         name
+        membersCount
+        description
         avatar
+        isMember
+        interests {
+          id
+          name
+        }
+        channels {
+          id
+          name
+        }
+        participants {
+          id
+          connected
+          firstName
+          lastName
+          phoneNumber
+          conversation {
+            id
+            messageRequest {
+              id
+              senderId
+              approvedAt {
+                formatted
+                day
+                month
+                year
+              }
+              createdAt {
+                formatted
+                day
+                month
+                year
+              }
+            }
+          }
+        }
+        membersCount
+      }
+      myConnections {
+        id
+        email
+        firstName
+        lastName
+        avatar
+        phoneNumber
+        connected
+        connectionCount
+        communityCount
+        bio
+        birthPlace {
+          id
+          country
+          state
+          city
+        }
+        currentLocation {
+          id
+          country
+          state
+          city
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
       }
       currentLocation {
+        state
+        country
+        city
+        id
+      }
+      birthPlace {
         state
         country
         city
