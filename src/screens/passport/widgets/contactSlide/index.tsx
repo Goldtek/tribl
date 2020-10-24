@@ -300,7 +300,7 @@ function contactSlide(props: ScreenProp) {
               />
             ) : (
               <TextInput
-                value={t(`community.memberPassport.bioInfo`)}
+                placeholder={t(`community.memberPassport.bioInfo`)}
                 multiline={true}
                 dense={true}
                 onChangeText={(bio: string) =>
