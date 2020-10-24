@@ -124,7 +124,16 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
         name="CommunitySearchScreen"
         component={Screens.SearchScreen}
         options={{
-          headerTitle: () => null,
+          headerTitle: () => (
+            <Image
+              source={require('../../../assets/images/logo.png')}
+              style={{
+                width: RFValue(50),
+                height: RFValue(50),
+                resizeMode: 'contain'
+              }}
+            />
+          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeft: (props) => (
@@ -153,19 +162,22 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             </TouchableHighlight>
           ),
 
-          headerRight: () => {
-            const indexName = [
-              ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME,
-              ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_INDEX_NAME
-            ];
-
-            return (
-              <AlgoliaSearch indexName={indexName[data.communitySearchIndex]}>
-                <AlgoliaCommunityList />
-              </AlgoliaSearch>
-            );
-          },
-          headerRightContainerStyle: { width: '85%' }
+          headerRight: () => (
+            <GradientButton
+              gradientContainerstyle={{
+                width: RFValue(30),
+                height: RFValue(30),
+                marginBottom: RFValue(20)
+              }}
+              onPress={() => navigation.navigate('NewMessageScreen')}
+              labelStyle={{ paddingLeft: 3 }}
+            >
+              <Feather name="message-square" color={colors.WHITE} size={20} />
+            </GradientButton>
+          ),
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: { marginRight: 10 }
         }}
       />
 
