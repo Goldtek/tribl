@@ -45,6 +45,23 @@ class Firechat {
       .orderBy('createdAt', 'desc');
   }
 
+  // GET ALL CHANNEL PARTICIPANTS
+  getChannelParticipants(chatId: string): FirebaseFirestoreTypes.Query {
+    return firechat
+      .collection(ROOM_TYPES.CHANNELS)
+      .doc(chatId.trim())
+      .collection(ROOM_TYPES.PARTICIPANTS);
+  }
+
+  // GET ROOM CHAT MESSAGES
+  getChannelMessages(chatId: string): FirebaseFirestoreTypes.Query {
+    return firechat
+      .collection(ROOM_TYPES.CHANNELS)
+      .doc(chatId.trim())
+      .collection(ROOM_TYPES.CHATS)
+      .orderBy('createdAt', 'desc');
+  }
+
   // GET USER ONLINE PRESENCE
   getOnlineStatus(userId: string): FirebaseFirestoreTypes.DocumentReference {
     return firechat.collection(ROOM_TYPES.USERS).doc(userId.trim());
