@@ -43,7 +43,7 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
-  const userId = userDetails.id;
+  const userId = userDetails?.id;
 
   const participants = data?.communityMembers;
 
