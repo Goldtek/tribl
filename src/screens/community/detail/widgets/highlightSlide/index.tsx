@@ -64,14 +64,14 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
 
   const { data: communityMembers } = useQuery<CommunityMembersRequestInterface>(
     GET_COMMUNITY_MEMBERS,
-    { variables: { id: communityDetails.id } }
+    { variables: { id: communityDetails?.id } }
   );
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
-  const userId = userDetails.id;
+  const userId = userDetails?.id;
 
-  const [singleCommunity] = communityData?.Community;
+  const singleCommunity = communityData?.Community[0];
   const participants = communityMembers?.communityMembers;
   const communityNearbyMembers = communityMembersData?.nearbyMembers;
   const filteredParticipants = participants?.filter(
