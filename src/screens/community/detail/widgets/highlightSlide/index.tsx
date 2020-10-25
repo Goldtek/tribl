@@ -46,19 +46,16 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const [data, setData] = useState(communityDetails);
   const [member, setMember] = useState(false);
 
-  const {
-    data: communityData,
-    refetch: communityRefetch
-  } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id } });
+  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
+    variables: { id },
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 500
+  });
 
   const { data: communityMembersData } = useQuery(
     GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
     {
-      variables: {
-        filter: {
-          participantOf: { id }
-        }
-      }
+      variables: { filter: { participantOf: { id } } }
     }
   );
 
@@ -134,7 +131,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     try {
       await joinCommunity();
       setMember(true);
-      communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
     }
