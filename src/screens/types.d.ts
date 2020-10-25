@@ -18,6 +18,7 @@ interface MessageRequestScreenProps extends PassportInterface {
 
 // App Navigation prop types
 export type RootStackParamList = {
+  ChatMemberDetailScreen: { title: string; details: ChatScreenProps };
   CommunitySearchScreen: { index: number };
   ConnectionChatScreen: ChatScreenProps;
   MessageRequestScreen: ChatScreenProps;
@@ -31,6 +32,7 @@ export type RootStackParamList = {
   IdentifyUserScreen?: Object;
   UserLocationScreen?: Object;
   WalkThroughScreen?: Object;
+  BirthPlaceScreen?: Object;
   NewMessageScreen?: Object;
   CommunityScreen?: Object;
   PassportScreen?: Object;
@@ -42,11 +44,11 @@ export type RootStackParamList = {
   TriblScreen?: Object;
   LoginScreen?: Object;
   OTPScreen?: Object;
-  BirthPlaceScreen?: Object;
 };
 
 export type RootStackParamScreensList =
   | 'CommunitySearchScreen'
+  | 'ChatMemberDetailScreen'
   | 'CommunityDetailScreen'
   | 'ConnectionChatScreen'
   | 'SelectCountryScreen'
@@ -56,6 +58,7 @@ export type RootStackParamScreensList =
   | 'IdentifyUserScreen'
   | 'UserLocationScreen'
   | 'WalkThroughScreen'
+  | 'BirthPlaceScreen'
   | 'DirectChatScreen'
   | 'NewMessageScreen'
   | 'CommunityScreen'
@@ -67,8 +70,7 @@ export type RootStackParamScreensList =
   | 'InboxScreen'
   | 'TriblScreen'
   | 'LoginScreen'
-  | 'OTPScreen'
-  | 'BirthPlaceScreen';
+  | 'OTPScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
