@@ -108,7 +108,7 @@ function contactSlide(props: ScreenProp) {
     if (loading) return;
     setState({
       ...state,
-      date: `${userDetails?.dob?.day}/${userDetails?.dob?.month}/${userDetails?.dob?.year}`,
+      date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`,
       firstName: userDetails?.firstName,
       lastName: userDetails?.lastName,
       bio: userDetails?.bio,
@@ -125,7 +125,7 @@ function contactSlide(props: ScreenProp) {
   const getBirthplaceDetails = (childData: any) => {
     setState({
       ...state,
-      date: `${userDetails?.dob?.day}/${userDetails?.dob?.month}/${userDetails?.dob?.year}`,
+      date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`,
       firstName: userDetails?.firstName,
       lastName: userDetails?.lastName,
       bio: userDetails?.bio,
@@ -147,7 +147,12 @@ function contactSlide(props: ScreenProp) {
   }, []);
 
   const onChange = (selectedDate: Date) => {
-    const date = formatMessageTime(selectedDate);
+    const newDate = formatMessageTime(selectedDate);
+    const dob = newDate?.split('/');
+    const day = parseInt(dob[0]);
+    const month = parseInt(dob[1]);
+    const year = parseInt(dob[2]);
+    const date = month + '/' + day + '/' + year;
     return setState({ ...state, date, showDatePicker: false });
   };
 
@@ -295,7 +300,7 @@ function contactSlide(props: ScreenProp) {
               />
             ) : (
               <TextInput
-                value={t(`community.memberPassport.bioInfo`)}
+                placeholder={t(`community.memberPassport.bioInfo`)}
                 multiline={true}
                 dense={true}
                 onChangeText={(bio: string) =>
@@ -414,26 +419,49 @@ function contactSlide(props: ScreenProp) {
                 />
                 {!click ? (
                   <Fragment>
-                    <TouchableRipple
-                      style={{
-                        flex: 1,
-                        borderBottomWidth: 2,
-                        borderColor: colors.PRIMARY
-                      }}
-                      onPress={handleNavigation}
-                    >
-                      <Paragraph
+                    {userDetails?.birthPlace[0]?.city ? (
+                      <TouchableRipple
                         style={{
-                          fontFamily: fonts.WORK_SANS_REGULAR,
-                          fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                          color: colors.PRIMARY_TEXT,
-                          backgroundColor: colors.WHITE,
-                          textTransform: 'capitalize'
+                          flex: 1,
+                          borderBottomWidth: 2,
+                          borderColor: colors.PRIMARY
                         }}
+                        onPress={handleNavigation}
                       >
-                        {placeholder}
-                      </Paragraph>
-                    </TouchableRipple>
+                        <Paragraph
+                          style={{
+                            fontFamily: fonts.WORK_SANS_REGULAR,
+                            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                            color: colors.PRIMARY_TEXT,
+                            backgroundColor: colors.WHITE,
+                            textTransform: 'capitalize'
+                          }}
+                        >
+                          {`${birthPlace?.city}, ${birthPlace?.state}`}
+                        </Paragraph>
+                      </TouchableRipple>
+                    ) : (
+                      <TouchableRipple
+                        style={{
+                          flex: 1,
+                          borderBottomWidth: 2,
+                          borderColor: colors.PRIMARY
+                        }}
+                        onPress={handleNavigation}
+                      >
+                        <Paragraph
+                          style={{
+                            fontFamily: fonts.WORK_SANS_REGULAR,
+                            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                            color: colors.PRIMARY_TEXT,
+                            backgroundColor: colors.WHITE,
+                            textTransform: 'capitalize'
+                          }}
+                        >
+                          {placeholder}
+                        </Paragraph>
+                      </TouchableRipple>
+                    )}
                   </Fragment>
                 ) : (
                   <Fragment>

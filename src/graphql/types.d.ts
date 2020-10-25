@@ -158,7 +158,7 @@ export interface PassportInterface {
   status: UserAvailability | null;
   conversation: Conversation | null;
   myConnections: PassportInterface[];
-  participantOf: CommunityInterface[];
+  participantOf?: CommunityInterface[];
 }
 
 export interface StoreInterface {

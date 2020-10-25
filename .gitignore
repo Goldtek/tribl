@@ -9,6 +9,7 @@ coverage/
 
 # Environment Variables
 .env
+.env.production
 
 # OSX
 #
