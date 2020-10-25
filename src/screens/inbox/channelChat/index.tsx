@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
@@ -22,10 +22,13 @@ import {
   MyPassportInterface,
   ShowMessageNotificationBadge
 } from '../../../graphql/types';
-import { GET_USER_PASSPORT } from '../../../graphql/server/query';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
 import {
   MARK_MESSAGE_READ,
-  SEND_DIRECT_MESSAGE
+  SEND_CHANNEL_MESSAGE
 } from '../../../graphql/server/mutations';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -40,15 +43,16 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function ChatScreen(props: ScreenProp) {
-  const { colors, fonts } = useThemeContext();
-  const navigation = useNavigation();
+  const { navigation } = props;
   const { t } = useTranslation();
+  const { colors, fonts } = useThemeContext();
 
   const { chatId } = props.route.params;
+  const userId = fireAuth.currentUser?.uid as string;
 
-  const userId = fireAuth.currentUser?.uid;
+  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
 
-  const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
+  const [userPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
     variables: { payload: { conversationId: chatId } }
@@ -69,7 +73,7 @@ export default function ChatScreen(props: ScreenProp) {
   useEffect(() => {
     if (!chatId) return;
 
-    const chatMessages = Firechat.getChatMessages(chatId);
+    const chatMessages = Firechat.getChannelMessages(chatId);
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
@@ -87,90 +91,32 @@ export default function ChatScreen(props: ScreenProp) {
             setImmediate(markConversationAsRead);
           }
 
-          return { ...message, _id: document.id } as MessageInterface;
+          if (message.senderId !== userId) {
+            userPassport({ variables: { id: message.senderId } });
+          }
+
+          return {
+            ...message,
+            _id: document.id,
+            user: { _id: message.senderId, avatar: '' }
+          } as MessageInterface;
         });
 
-        setMessages((previousMessages) => {
-          return GiftedChat.append(previousMessages, [
-            ...conversations,
-            {
-              _id: '1',
-              text: 'This is a system message',
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              user: { _id: '23', avatar: 'ok', name: 'kamilah wells' },
-              system: true
-            }
-          ]);
-        });
+        setMessages(conversations);
       }
     });
-
-    setTimeout(() => {
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [
-          {
-            _id: '10',
-            text: 'This is a message after system message',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            user: {
-              _id: '3',
-              avatar: `${userDetails?.avatar}`,
-              name: `${userDetails?.firstName} ${userDetails?.lastName}`
-            }
-          }
-        ])
-      );
-    }, 3000);
-
-    setTimeout(() => {
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [
-          {
-            _id: '11',
-            text: 'This is a another message from the same user\n happy abi?',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            user: {
-              _id: '3',
-              avatar: `${userDetails?.avatar}`,
-              name: `${userDetails?.firstName} ${userDetails?.lastName}`
-            }
-          }
-        ])
-      );
-    }, 5000);
-
-    setTimeout(() => {
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [
-          {
-            _id: '12',
-            text: 'This is a another message from the same user\n happy abi?',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            user: {
-              _id: `${userId}`,
-              avatar: `${userDetails?.avatar}`,
-              name: `${userDetails?.firstName} ${userDetails?.lastName}`
-            }
-          }
-        ])
-      );
-    }, 7000);
 
     return () => unsubscribe();
   }, []);
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, messages)
-    );
+    setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
 
     const [message] = messages;
 
-    sendMessage({ variables: { payload: { content: message.text } } });
+    sendMessage({
+      variables: { payload: { content: message.text, channelId: chatId } }
+    });
   }, []);
 
   const handleNavigation = useCallback((user: User) => {
@@ -186,7 +132,7 @@ export default function ChatScreen(props: ScreenProp) {
         placeholder="Start typing ..."
         messages={messages}
         user={{
-          _id: userId as string,
+          _id: userId,
           avatar: userDetails?.avatar,
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
@@ -238,7 +184,7 @@ export default function ChatScreen(props: ScreenProp) {
             {...props}
             imageStyle={{
               left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
-              right: {}
+              right: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) }
             }}
           />
         )}
@@ -254,7 +200,7 @@ export default function ChatScreen(props: ScreenProp) {
               >
                 {props.currentMessage?.user.name}
               </Button>
-              <Paragraph>{t(`community.chat.join`)}</Paragraph>
+              <Paragraph>{props.currentMessage?.text}</Paragraph>
             </Container>
           );
         }}
