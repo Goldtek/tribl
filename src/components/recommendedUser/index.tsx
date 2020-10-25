@@ -39,7 +39,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
-    { variables: { id }, pollInterval: 3000 }
+    { variables: { id } }
   );
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
