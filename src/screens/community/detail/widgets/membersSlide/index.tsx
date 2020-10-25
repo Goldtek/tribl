@@ -9,7 +9,10 @@ import MemberCard from './widget/member';
 import { NavigationInterface } from '../../../../types';
 import AlgoliaSearch from '../../../../../components/algoliaSearch';
 import AlgoliaList from '../../../../../components/algoliaCommunityMembersList';
-import { GET_COMMUNITY_MEMBERS } from '../../../../../graphql/server/query';
+import {
+  GET_COMMUNITY_MEMBERS,
+  GET_USER_PASSPORT
+} from '../../../../../graphql/server/query';
 import {
   CommunityInterface,
   PassportInterface
@@ -33,10 +36,20 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   const { data } = useQuery<CommunityMembersRequestInterface>(
     GET_COMMUNITY_MEMBERS,
-    { variables: { id: communityDetails.id } }
+    {
+      variables: { id: communityDetails.id }
+    }
   );
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userId = userDetails?.id;
+
   const participants = data?.communityMembers;
+
+  const filteredParticipants = participants?.filter((member) => {
+    return member.id !== userId;
+  });
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <MemberCard key={item.id} {...item} />
@@ -64,7 +77,7 @@ export default function MemberSlide(props: MemberSlideProp) {
       </Title>
 
       <FlatList
-        data={participants}
+        data={filteredParticipants}
         contentContainerStyle={{
           flexGrow: 1,
           marginTop: RFValue(10),

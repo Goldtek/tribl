@@ -10,8 +10,10 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import MembersCard from '../../../../../components/recommendedUser';
 import {
-  GET_NEARBY_MEMBERS,
-  GET_SINGLE_COMMUNITY
+  GET_SINGLE_COMMUNITY,
+  GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
+  GET_COMMUNITY_MEMBERS,
+  GET_USER_PASSPORT
 } from '../../../../../graphql/server/query';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
@@ -20,6 +22,7 @@ import {
   LEAVE_COMMUNITY
 } from '../../../../../graphql/server/mutations';
 import { PassportInterface } from '../../../../../graphql/types';
+import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
 
 import {
   Container,
@@ -43,16 +46,45 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const [data, setData] = useState(communityDetails);
   const [member, setMember] = useState(false);
 
-  const { data: nearbyData } = useQuery(GET_NEARBY_MEMBERS);
+  const {
+    data: communityData,
+    refetch: communityRefetch
+  } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id } });
 
-  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
-    variables: { id }
-  });
+  const { data: communityMembersData } = useQuery(
+    GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
+    {
+      variables: {
+        filter: {
+          participantOf: { id }
+        }
+      }
+    }
+  );
 
-  const nearbyMembers = nearbyData?.nearbyMembers;
+  const { data: communityMembers } = useQuery<CommunityMembersRequestInterface>(
+    GET_COMMUNITY_MEMBERS,
+    { variables: { id: communityDetails?.id } }
+  );
+
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userId = userDetails?.id;
+
   const singleCommunity = communityData?.Community[0];
+  const participants = communityMembers?.communityMembers;
+  const communityNearbyMembers = communityMembersData?.nearbyMembers;
+  const filteredParticipants = participants?.filter(
+    (member) => member.id !== userId
+  );
+
+  const nearbyMembers = communityNearbyMembers?.length
+    ? communityNearbyMembers
+    : filteredParticipants;
 
   useEffect(() => {
+    if (!singleCommunity?.id) return;
+
     setData({
       ...data,
       name: singleCommunity?.name,
@@ -102,6 +134,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     try {
       await joinCommunity();
       setMember(true);
+      communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -193,7 +226,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 <Button
                   mode="contained"
                   loading={data.isMember || member ? leaveLoading : joinLoading}
-                  onPress={handleLeave}
+                  onPress={data.isMember || member ? handleLeave : handleJoin}
                   style={{ borderRadius: 4 }}
                   labelStyle={{
                     fontSize: fonts.LARGE_SIZE,

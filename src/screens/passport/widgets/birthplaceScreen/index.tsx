@@ -73,7 +73,11 @@ function BirthplaceModal(props: any) {
     };
 
     const { description } = data;
-    setState({ ...state, birthPlaceInput: description, birthPlace });
+    setState({
+      ...state,
+      birthPlaceInput: description,
+      birthPlace
+    });
   };
 
   useEffect(() => {
