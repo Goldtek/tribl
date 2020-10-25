@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
-import { Feather, Entypo, Ionicons } from '@expo/vector-icons';
+import { Feather, Entypo } from '@expo/vector-icons';
 import { Menu, Divider, TouchableRipple } from 'react-native-paper';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
@@ -192,24 +192,9 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_BOLD
           },
-          headerBackImage: ({ tintColor }) => (
-            <Ionicons
-              name="md-arrow-back"
-              size={RFValue(24)}
-              color={tintColor}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2),
-                marginRight: 10
-              }}
-            />
-          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 15 },
+          headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
@@ -339,28 +324,9 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </Menu>
           ),
-          headerLeft: () => (
-            <TouchableRipple
-              onPress={navigation.goBack}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2),
-                marginRight: 10
-              }}
-            >
-              <Ionicons
-                name="md-arrow-back"
-                size={RFValue(24)}
-                color={colors.PRIMARY}
-              />
-            </TouchableRipple>
-          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 15 },
+          headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}

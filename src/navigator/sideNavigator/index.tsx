@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, Fragment } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
   TouchableRipple,
@@ -15,28 +15,31 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DrawerNavigator from './drawer';
-import { useQuery } from '@apollo/react-hooks';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { useThemeContext } from '../../theme';
 import Screens from '../../screens/inbox';
+import Firechat from '../../firebase';
 import MemberDetailScreen from '../../screens/community/memberPassport';
 
 const DrawerStack = createStackNavigator();
 
 import { Container, CountBadge } from './styles';
-import { MyPassportInterface } from '../../graphql/types';
-import { GET_USER_PASSPORT } from '../../graphql/server/query';
+
+type ParticipantType = {
+  avatar: string;
+  createdAt: Date;
+};
 
 export default function DrawerStackNavigator() {
+  const { top: safeAreaTop } = useSafeAreaInsets();
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
-
   const { t } = useTranslation();
 
+  const [participants, setParticipants] = useState<ParticipantType[]>([]);
+  const [chatId, setChatId] = useState<string | null>(null);
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
-
-  const { top: safeAreaTop } = useSafeAreaInsets();
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -54,9 +57,20 @@ export default function DrawerStackNavigator() {
     }
   }, []);
 
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  useEffect(() => {
+    if (!chatId) return;
 
-  const userDetails = userData?.myPassport;
+    const channelParticipants = Firechat.getChannelParticipants(chatId);
+
+    const unsubscribe = channelParticipants.onSnapshot({
+      next: (snapshot) => {
+        const participants = snapshot.docs.map((doc) => doc.data());
+        setParticipants(participants as ParticipantType[]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [chatId]);
 
   return (
     <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
@@ -94,24 +108,7 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           ),
-          headerLeft: () => (
-            <TouchableRipple
-              onPress={navigation.goBack}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2)
-              }}
-            >
-              <Ionicons
-                name="md-arrow-back"
-                size={RFValue(24)}
-                color={colors.PRIMARY}
-              />
-            </TouchableRipple>
-          ),
+          headerLeftContainerStyle: { paddingLeft: 10 },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
         })}
@@ -120,130 +117,174 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="ChannelChatScreen"
         component={Screens.ChannelChatScreen}
-        options={({ route }) => ({
-          headerStyle: { height: RFValue(90) },
-          headerShown: true,
-          height: RFValue(90),
-          headerTitle: () => null,
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerRight: () => (
-            <TouchableRipple
-              onPress={() => {}}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2)
-              }}
-            >
-              <Entypo
-                name="dots-three-vertical"
-                color={colors.PRIMARY_TEXT}
-                size={RFValue(17)}
-              />
-            </TouchableRipple>
-          ),
-          headerLeft: () => (
-            <Container>
+        options={({ route }) => {
+          // @ts-ignore
+          setChatId(route.params?.chatId);
+          return {
+            headerStyle: { height: RFValue(90) },
+            headerShown: true,
+            height: RFValue(90),
+            headerTitle: () => null,
+            headerTitleStyle: {
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              textTransform: 'capitalize'
+            },
+            headerRight: () => (
               <TouchableRipple
-                onPress={navigation.goBack}
+                onPress={() => {}}
                 style={{
                   height: RFValue(40),
                   width: RFValue(40),
                   alignItems: 'center',
                   justifyContent: 'center',
-                  borderRadius: RFValue(40 / 2),
-                  marginRight: 10
+                  borderRadius: RFValue(40 / 2)
                 }}
               >
-                <Ionicons
-                  name="md-arrow-back"
-                  size={RFValue(24)}
-                  color={colors.PRIMARY}
+                <Entypo
+                  name="dots-three-vertical"
+                  color={colors.PRIMARY_TEXT}
+                  size={RFValue(17)}
                 />
               </TouchableRipple>
-
-              <Surface
-                style={{
-                  width: RFValue(40),
-                  height: RFValue(40),
-                  elevation: 4,
-                  borderRadius: 4
-                }}
-              >
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri: userDetails?.avatar,
-                    priority: FastImage.priority.high
-                  }}
+            ),
+            headerLeft: () => (
+              <Container>
+                <TouchableRipple
+                  onPress={navigation.goBack}
                   style={{
-                    width: RFValue(40),
                     height: RFValue(40),
-                    borderRadius: 4
+                    width: RFValue(40),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: RFValue(40 / 2),
+                    marginRight: 10
                   }}
-                />
-              </Surface>
+                >
+                  <Ionicons
+                    name="md-arrow-back"
+                    size={RFValue(24)}
+                    color={colors.PRIMARY}
+                  />
+                </TouchableRipple>
 
-              <Surface
-                style={{
-                  width: RFValue(40),
-                  height: RFValue(40),
-                  justifyContent: 'center',
-                  top: 1,
-                  right: 10,
-                  elevation: 4,
-                  borderRadius: 4
-                }}
-              >
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri: userDetails?.avatar,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(40),
-                    height: RFValue(40),
-                    borderRadius: 4
-                  }}
-                />
-                <CountBadge style={{ elevation: 4 }}>
-                  <Paragraph
+                {participants.length <= 1 ? (
+                  <Surface
                     style={{
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontWeight: 'bold',
-                      color: colors.WHITE
+                      width: RFValue(40),
+                      height: RFValue(40),
+                      justifyContent: 'center',
+                      top: 1,
+                      right: 10,
+                      elevation: 4,
+                      borderRadius: 4
                     }}
                   >
-                    5+
-                  </Paragraph>
-                </CountBadge>
-              </Surface>
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri: participants[0]?.avatar,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        width: RFValue(40),
+                        height: RFValue(40),
+                        borderRadius: 4
+                      }}
+                    />
+                    <CountBadge style={{ elevation: 4 }}>
+                      <Paragraph
+                        style={{
+                          fontSize: RFValue(fonts.MEDIUM_SIZE),
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          fontWeight: 'bold',
+                          color: colors.WHITE
+                        }}
+                      >
+                        {participants.length}
+                      </Paragraph>
+                    </CountBadge>
+                  </Surface>
+                ) : (
+                  <Fragment>
+                    <Surface
+                      style={{
+                        width: RFValue(40),
+                        height: RFValue(40),
+                        elevation: 4,
+                        borderRadius: 4
+                      }}
+                    >
+                      <FastImage
+                        resizeMode={FastImage.resizeMode.cover}
+                        source={{
+                          uri: participants[participants.length - 2]?.avatar,
+                          priority: FastImage.priority.high
+                        }}
+                        style={{
+                          width: RFValue(40),
+                          height: RFValue(40),
+                          borderRadius: 4
+                        }}
+                      />
+                    </Surface>
 
-              <Paragraph
-                style={{
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontWeight: 'bold',
-                  marginLeft: 10
-                }}
-              >
-                {route.params?.title}
-              </Paragraph>
-            </Container>
-          ),
+                    <Surface
+                      style={{
+                        width: RFValue(40),
+                        height: RFValue(40),
+                        justifyContent: 'center',
+                        top: 1,
+                        right: 10,
+                        elevation: 4,
+                        borderRadius: 4
+                      }}
+                    >
+                      <FastImage
+                        resizeMode={FastImage.resizeMode.cover}
+                        source={{
+                          uri: participants[participants.length - 1]?.avatar,
+                          priority: FastImage.priority.high
+                        }}
+                        style={{
+                          width: RFValue(40),
+                          height: RFValue(40),
+                          borderRadius: 4
+                        }}
+                      />
+                      <CountBadge style={{ elevation: 4 }}>
+                        <Paragraph
+                          style={{
+                            fontSize: RFValue(fonts.MEDIUM_SIZE),
+                            fontFamily: fonts.WORK_SANS_REGULAR,
+                            fontWeight: 'bold',
+                            color: colors.WHITE
+                          }}
+                        >
+                          {`${participants.length}+`}
+                        </Paragraph>
+                      </CountBadge>
+                    </Surface>
+                  </Fragment>
+                )}
 
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY
-        })}
+                <Paragraph
+                  style={{
+                    fontSize: RFValue(fonts.LARGE_SIZE),
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontWeight: 'bold',
+                    marginLeft: 10
+                  }}
+                >
+                  {route.params?.title}
+                </Paragraph>
+              </Container>
+            ),
+            headerBackTitleVisible: false,
+            headerTintColor: colors.PRIMARY
+          };
+        }}
       />
       <DrawerStack.Screen
         name="ConnectionChatScreen"
@@ -277,24 +318,7 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           ),
-          headerLeft: () => (
-            <TouchableRipple
-              onPress={navigation.goBack}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2)
-              }}
-            >
-              <Ionicons
-                name="md-arrow-back"
-                size={RFValue(24)}
-                color={colors.PRIMARY}
-              />
-            </TouchableRipple>
-          ),
+          headerLeftContainerStyle: { paddingLeft: 10 },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
         })}
@@ -332,24 +356,7 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           ),
-          headerLeft: () => (
-            <TouchableRipple
-              onPress={navigation.goBack}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2)
-              }}
-            >
-              <Ionicons
-                name="md-arrow-back"
-                size={RFValue(24)}
-                color={colors.PRIMARY}
-              />
-            </TouchableRipple>
-          ),
+          headerLeftContainerStyle: { paddingLeft: 10 },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
         })}
@@ -479,27 +486,10 @@ export default function DrawerStackNavigator() {
               />
             </Menu>
           ),
-          headerLeft: () => (
-            <TouchableRipple
-              onPress={navigation.goBack}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2)
-              }}
-            >
-              <Ionicons
-                name="md-arrow-back"
-                size={RFValue(24)}
-                color={colors.PRIMARY}
-              />
-            </TouchableRipple>
-          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerRightContainerStyle: { marginRight: 10 },
+          headerLeftContainerStyle: { paddingLeft: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
