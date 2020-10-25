@@ -435,36 +435,6 @@ export const GET_POPULAR_COMMUNITIES = gql`
         id
         name
       }
-      channels {
-        id
-        name
-      }
-      participants {
-        id
-        connected
-        firstName
-        lastName
-        phoneNumber
-        conversation {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt {
-              formatted
-              day
-              month
-              year
-            }
-            createdAt {
-              formatted
-              day
-              month
-              year
-            }
-          }
-        }
-      }
       membersCount
     }
   }
@@ -478,46 +448,10 @@ export const GET_MY_COMMUNITIES = gql`
       description
       avatar
       name
-      channels {
-        id
-        name
-      }
       membersCount
       interests {
         id
         name
-      }
-      participants {
-        id
-        firstName
-        lastName
-        phoneNumber
-        avatar
-        currentLocation {
-          id
-          country
-          state
-          city
-        }
-        conversation {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt {
-              formatted
-              day
-              month
-              year
-            }
-            createdAt {
-              formatted
-              day
-              month
-              year
-            }
-          }
-        }
       }
     }
   }
@@ -947,8 +881,8 @@ export const GET_SINGLE_PASSPORT = gql`
 
 //GET CHANNELS OF A COMMUNITY
 export const GET_COMMUNITY_CHANNELS = gql`
-  query Channel($id: ID!, $userId: ID!) {
-    Channel(filter: { community: { id: $id } }) {
+  query Channel($communityId: ID!, $userId: ID!) {
+    Channel(filter: { community: { id: $communityId } }) {
       id
       name
       participants(filter: { id: $userId }) {
