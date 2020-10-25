@@ -37,7 +37,9 @@ export default function MemberSlide(props: MemberSlideProp) {
   const { data } = useQuery<CommunityMembersRequestInterface>(
     GET_COMMUNITY_MEMBERS,
     {
-      variables: { id: communityDetails.id }
+      variables: { id: communityDetails.id },
+      fetchPolicy: 'cache-and-network',
+      pollInterval: 500
     }
   );
 
