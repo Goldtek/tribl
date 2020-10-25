@@ -12,7 +12,8 @@ import MembersCard from '../../../../../components/recommendedUser';
 import {
   GET_SINGLE_COMMUNITY,
   GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
-  GET_COMMUNITY_MEMBERS
+  GET_COMMUNITY_MEMBERS,
+  GET_USER_PASSPORT
 } from '../../../../../graphql/server/query';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
@@ -22,7 +23,6 @@ import {
 } from '../../../../../graphql/server/mutations';
 import { PassportInterface } from '../../../../../graphql/types';
 import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
-import { fireAuth } from '../../../../../firebase/config';
 
 import {
   Container,
@@ -67,7 +67,9 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     { variables: { id: communityDetails.id } }
   );
 
-  const userId = fireAuth.currentUser?.uid;
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userId = userDetails.id;
 
   const [singleCommunity] = communityData?.Community;
   const participants = communityMembers?.communityMembers;
