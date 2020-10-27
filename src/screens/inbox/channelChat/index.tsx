@@ -5,35 +5,31 @@ import {
   Send,
   Avatar,
   Bubble,
-  User
+  User,
+  utils
 } from 'react-native-gifted-chat';
-import { Button, Paragraph } from 'react-native-paper';
-import { useTranslation } from 'react-i18next';
-import { Platform, SafeAreaView, KeyboardAvoidingView } from 'react-native';
+import { Button, Paragraph, Text } from 'react-native-paper';
+import {
+  Platform,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  View
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
 import { fireAuth } from '../../../firebase/config';
 import Firechat from '../../../firebase';
-import {
-  MyPassportInterface,
-  ShowMessageNotificationBadge
-} from '../../../graphql/types';
+import { MyPassportInterface } from '../../../graphql/types';
 import {
   GET_SINGLE_PASSPORT,
   GET_USER_PASSPORT
 } from '../../../graphql/server/query';
-import {
-  MARK_MESSAGE_READ,
-  SEND_CHANNEL_MESSAGE
-} from '../../../graphql/server/mutations';
+import { SEND_CHANNEL_MESSAGE } from '../../../graphql/server/mutations';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
-import { CHANGE_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
-import { GET_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
 
 import { Container } from './styles';
 
@@ -44,29 +40,18 @@ interface ScreenProp extends NavigationInterface {
 
 export default function ChatScreen(props: ScreenProp) {
   const { navigation } = props;
-  const { t } = useTranslation();
-  const { colors, fonts } = useThemeContext();
-
   const { chatId } = props.route.params;
   const userId = fireAuth.currentUser?.uid as string;
+
+  const { colors, fonts } = useThemeContext();
 
   const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
 
   const [userPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
-  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
-    variables: { payload: { conversationId: chatId } }
-  });
-
-  const { data: notificationData } = useQuery<ShowMessageNotificationBadge>(
-    GET_MESSAGE_NOTIFICATION_BADGE
-  );
-
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
-
-  const [changeMutation] = useMutation(CHANGE_MESSAGE_NOTIFICATION_BADGE);
 
   const [messages, setMessages] = useState<MessageInterface[]>([]);
 
@@ -80,25 +65,18 @@ export default function ChatScreen(props: ScreenProp) {
         const conversations = snapshot.docs.map((document, index) => {
           const message = document.data();
 
-          if (snapshot.docs.length - 1 === index) {
-            if (notificationData?.showMessageNotificationBadge) {
-              changeMutation({
-                variables: {
-                  showMessageNotificationBadge: !notificationData?.showMessageNotificationBadge
-                }
-              });
-            }
-            setImmediate(markConversationAsRead);
-          }
-
           if (message.senderId !== userId) {
-            userPassport({ variables: { id: message.senderId } });
+            userPassport({ variables: { id: message?.senderId } });
           }
 
           return {
             ...message,
             _id: document.id,
-            user: { _id: message.senderId, avatar: '' }
+            user: {
+              ...message.sender,
+              _id: message?.senderId,
+              name: `${message.sender?.firstName} ${message.sender?.lastName}`
+            }
           } as MessageInterface;
         });
 
@@ -119,10 +97,10 @@ export default function ChatScreen(props: ScreenProp) {
     });
   }, []);
 
-  const handleNavigation = useCallback((user: User) => {
-    navigation.navigate('ChatMemberDetailScreen', {
-      title: `${user.name}`,
-      details: props.route.params
+  const handleNavigation = useCallback((user?: User) => {
+    navigation.navigate('DrawerMemberDetailScreen', {
+      title: `${user?.name}`,
+      details: { ...user, id: `${user?._id}` }
     });
   }, []);
 
@@ -184,7 +162,7 @@ export default function ChatScreen(props: ScreenProp) {
             {...props}
             imageStyle={{
               left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
-              right: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) }
+              right: { marginLeft: RFValue(-7), borderRadius: RFValue(40 / 2) }
             }}
           />
         )}
@@ -192,7 +170,7 @@ export default function ChatScreen(props: ScreenProp) {
           return (
             <Container>
               <Button
-                onPress={() => {}}
+                onPress={() => handleNavigation(props.currentMessage?.user)}
                 labelStyle={{
                   marginHorizontal: 5,
                   textTransform: 'capitalize'
@@ -204,21 +182,73 @@ export default function ChatScreen(props: ScreenProp) {
             </Container>
           );
         }}
-        renderBubble={(props) => (
-          <Bubble
-            {...props}
-            wrapperStyle={{
-              right: {
-                backgroundColor: colors.PRIMARY,
-                borderRadius: 7
-              },
-              left: {
-                backgroundColor: hexToRGB(colors.DISABLED, 0.7),
-                borderRadius: 7
-              }
-            }}
-          />
-        )}
+        renderBubble={(props) => {
+          if (!props.currentMessage) return;
+
+          if (
+            utils.isSameUser(props.currentMessage, props.previousMessage) &&
+            utils.isSameDay(props.currentMessage, props.previousMessage)
+          ) {
+            return (
+              <Bubble
+                {...props}
+                wrapperStyle={{
+                  right: {
+                    backgroundColor: colors.PRIMARY,
+                    borderRadius: 7
+                  },
+                  left: {
+                    backgroundColor: hexToRGB(colors.DISABLED, 0.7),
+                    borderRadius: 7
+                  }
+                }}
+              />
+            );
+          }
+
+          return userId === props.currentMessage.user._id ? (
+            <Bubble
+              {...props}
+              wrapperStyle={{
+                right: {
+                  backgroundColor: colors.PRIMARY,
+                  borderRadius: 7
+                },
+                left: {
+                  backgroundColor: hexToRGB(colors.DISABLED, 0.7),
+                  borderRadius: 7
+                }
+              }}
+            />
+          ) : (
+            <View>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  paddingHorizontal: 10,
+                  paddingVertical: 5
+                }}
+              >
+                {props.currentMessage.user.name}
+              </Text>
+
+              <Bubble
+                {...props}
+                wrapperStyle={{
+                  right: {
+                    backgroundColor: colors.PRIMARY,
+                    borderRadius: 7,
+                    borderWidth: 1
+                  },
+                  left: {
+                    backgroundColor: hexToRGB(colors.DISABLED, 0.7),
+                    borderRadius: 7
+                  }
+                }}
+              />
+            </View>
+          );
+        }}
         isKeyboardInternallyHandled={true}
       />
       {DEVICE_OS === 'ios' && (
