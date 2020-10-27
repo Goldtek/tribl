@@ -364,7 +364,7 @@ export default function DrawerStackNavigator() {
         })}
       />
       <DrawerStack.Screen
-        name="DrawerMemberDetailScreen"
+        name="MemberDetailScreen"
         component={MemberDetailScreen}
         options={({ route }) => ({
           headerShown: true,
