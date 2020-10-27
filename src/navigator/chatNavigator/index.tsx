@@ -1,18 +1,15 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
-import { Divider, Menu, TouchableRipple } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Platform, TouchableHighlight } from 'react-native';
-import { Entypo, Feather } from '@expo/vector-icons';
+import { TouchableHighlight } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/inbox';
 import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
-import { GLOBAL_HEADER_STYLE } from '../../constants';
 import GradientButton from '../../components/gradientButton';
-import CommunityScreens from '../../screens/community';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { useQuery } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
@@ -111,138 +108,6 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
             fontFamily: fonts.WORK_SANS_SEMI_BOLD
           }
         }}
-      />
-
-      <ChatStack.Screen
-        name="ChatMemberDetailScreen"
-        component={CommunityScreens.MemberDetailScreen}
-        options={({ route }) => ({
-          //@ts-ignore
-          headerTitle: route.params?.title,
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerRight: () => (
-            <Menu
-              visible={menu}
-              onDismiss={showMenu}
-              anchor={
-                <TouchableRipple
-                  rippleColor={colors.PRIMARY}
-                  onPress={() => {}}
-                  style={{
-                    padding: RFValue(3),
-                    paddingTop: RFValue(6),
-                    paddingBottom: RFValue(6),
-                    backgroundColor: menu ? colors.PRIMARY : 'transparent',
-                    borderRadius: 4,
-                    borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
-                    borderWidth: 1
-                  }}
-                >
-                  <Entypo
-                    name="dots-three-vertical"
-                    color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
-                    size={20}
-                  />
-                </TouchableRipple>
-              }
-              contentStyle={{
-                right: 10,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                paddingTop: 0,
-                paddingBottom: 0,
-                overflow: Platform.select({ android: 'hidden' })
-              }}
-              style={{ top: RFValue(getMenuHeight()) }}
-            >
-              <Menu.Item
-                onPress={() => {}}
-                title={t(`community.memberPassport.block`)}
-                style={{
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.RED,
-                  textAlign: 'center',
-                  textTransform: 'capitalize'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title={t(`community.memberPassport.report`)}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.RED,
-                  textAlign: 'center',
-                  textTransform: 'capitalize'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title={t(`community.memberPassport.removeConnection`)}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title={t(`community.memberPassport.copy`)}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </Menu>
-          ),
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        })}
       />
     </ChatStack.Navigator>
   );

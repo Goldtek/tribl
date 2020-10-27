@@ -541,7 +541,7 @@ export default function contactSlide(props: MemberDetailProps) {
             <FlatList
               data={connections}
               horizontal={true}
-              keyExtractor={(_, index: number) => index.toString()}
+              keyExtractor={(passport) => passport.id}
               renderItem={_renderMyConnectionItem}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{

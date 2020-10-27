@@ -6,6 +6,7 @@ import { useThemeContext } from '../../../../theme';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../graphql/types';
+import { USER_DEFAULT_AVATAR } from '../../../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionProp extends PassportInterface {}
@@ -41,7 +42,7 @@ export default function MyCommunity(props: MyConnectionProp) {
         <FastImage
           resizeMode={FastImage.resizeMode.cover}
           source={{
-            uri: avatar,
+            uri: avatar ? avatar : USER_DEFAULT_AVATAR,
             priority: FastImage.priority.high
           }}
           style={{ width: '80%', height: '80%', borderRadius: RFValue(70) }}

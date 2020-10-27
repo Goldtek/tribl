@@ -8,8 +8,11 @@ export const Container = styled.View`
 
 export const FilterContainer = styled.View`
   height: ${RFValue(50)}px;
-  align-items: center;
   margin: 25px 0px 15px 0px;
+`;
+
+export const HeaderContainer = styled.View`
+  flex-direction: row;
 `;
 
 export const GroupContainer = styled.View`

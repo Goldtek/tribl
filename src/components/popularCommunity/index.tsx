@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,12 @@ import {
   JOIN_COMMUNITY,
   LEAVE_COMMUNITY
 } from '../../graphql/server/mutations';
+import {
+  GET_COMMUNITY_CHANNELS,
+  GET_COMMUNITY_MEMBERS,
+  GET_USER_PASSPORT
+} from '../../graphql/server/query';
+import { MyPassportInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -43,31 +49,29 @@ function PopularCommunity(props: PopularCommunityProp) {
 
   const [member, setMember] = useState(false);
 
+  useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
+
   const [joinCommunity, { loading }] = useMutation(JOIN_COMMUNITY, {
-    variables: {
-      payload: {
-        communityId: id
-      }
-    }
+    variables: { payload: { communityId: id } }
+  });
+
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
+  useQuery(GET_COMMUNITY_CHANNELS, {
+    variables: { communityId: id, userId: userData?.myPassport.id }
   });
 
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
     LEAVE_COMMUNITY,
     {
-      variables: {
-        payload: {
-          communityId: id
-        }
-      }
+      variables: { payload: { communityId: id } }
     }
   );
 
   const handleJoin = async () => {
     try {
-      const { data } = await joinCommunity();
-      if (data) {
-        setMember(true);
-      }
+      await joinCommunity();
+      setMember(true);
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -75,10 +79,8 @@ function PopularCommunity(props: PopularCommunityProp) {
 
   const handleLeave = async () => {
     try {
-      const { data } = await leaveCommunity();
-      if (data) {
-        setMember(false);
-      }
+      await leaveCommunity();
+      setMember(false);
     } catch (error) {
       Sentry.captureException(error);
     }

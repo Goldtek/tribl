@@ -109,7 +109,7 @@ export default function ChatScreen(props: ScreenProp) {
   }, []);
 
   const handleNavigation = useCallback(() => {
-    navigation.navigate('ChatMemberDetailScreen', {
+    navigation.navigate('MemberDetailScreen', {
       title: `${firstName} ${lastName}`,
       details: props.route.params
     });
