@@ -169,7 +169,7 @@ export default function DrawerStackNavigator() {
                   />
                 </TouchableRipple>
 
-                {participants.length <= 1 ? (
+                {participants.length === 1 ? (
                   <Surface
                     style={{
                       width: RFValue(40),
@@ -206,7 +206,9 @@ export default function DrawerStackNavigator() {
                       </Paragraph>
                     </CountBadge>
                   </Surface>
-                ) : (
+                ) : null}
+
+                {participants.length >= 2 ? (
                   <Fragment>
                     <Surface
                       style={{
@@ -267,7 +269,7 @@ export default function DrawerStackNavigator() {
                       </CountBadge>
                     </Surface>
                   </Fragment>
-                )}
+                ) : null}
 
                 <Paragraph
                   style={{
