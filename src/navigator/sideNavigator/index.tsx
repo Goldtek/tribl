@@ -20,6 +20,7 @@ import { useThemeContext } from '../../theme';
 import Screens from '../../screens/inbox';
 import Firechat from '../../firebase';
 import MemberDetailScreen from '../../screens/community/memberPassport';
+import { DEVICE_OS } from '../../utils/device';
 
 const DrawerStack = createStackNavigator();
 
@@ -89,6 +90,10 @@ export default function DrawerStackNavigator() {
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
           },
           headerRight: () => (
             <TouchableRipple
@@ -302,6 +307,10 @@ export default function DrawerStackNavigator() {
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
           },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+          },
           headerRight: () => (
             <TouchableRipple
               onPress={() => {}}
@@ -340,6 +349,10 @@ export default function DrawerStackNavigator() {
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
           },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+          },
           headerRight: () => (
             <TouchableRipple
               onPress={() => {}}
@@ -375,6 +388,10 @@ export default function DrawerStackNavigator() {
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
           },
           headerRight: () => (
             <Menu
