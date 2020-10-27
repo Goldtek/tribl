@@ -1,4 +1,5 @@
 import MMKVStorage from 'react-native-mmkv-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DEVICE_ID } from '../../utils/device';
 import { USER_FIRST_LAUNCH, USER_REG_INFO } from '../../constants';
 import { VerifyOTPIT, RegistrationInfo } from '../../graphql/types';
@@ -11,7 +12,7 @@ class Storage {
   }
 
   async checkInitialLaunch() {
-    return this.MMKV?.getBoolAsync(USER_FIRST_LAUNCH);
+    return AsyncStorage.getItem(USER_FIRST_LAUNCH);
   }
 
   async clearStorage() {
@@ -19,7 +20,7 @@ class Storage {
   }
 
   async setInitialLaunch() {
-    return this.MMKV?.setBoolAsync(USER_FIRST_LAUNCH, true);
+    return AsyncStorage.setItem(USER_FIRST_LAUNCH, '1');
   }
 
   async getUserCredentials() {

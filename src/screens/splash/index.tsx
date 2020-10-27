@@ -25,12 +25,12 @@ export default function SplashScreen(props: ScreenProp) {
 
   const handleAuthentication = async () => {
     try {
-      await Storage.checkInitialLaunch();
-    } catch (error) {
-      return navigation.replace('WalkThroughScreen');
-    }
+      const value = await Storage.checkInitialLaunch();
 
-    try {
+      if (!value) {
+        return navigation.replace('WalkThroughScreen');
+      }
+
       const credentials = await Storage.getUserCredentials();
       const userRegistration = await Storage.getUserRegistration();
 
