@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Button, Card } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +12,7 @@ import {
   JOIN_COMMUNITY,
   LEAVE_COMMUNITY
 } from '../../graphql/server/mutations';
+import { GET_COMMUNITY_MEMBERS } from '../../graphql/server/query';
 import { CLOUDINARY_BANNER, CLOUDINARY_THUMBNAIL } from '../../constants';
 import { CommunityInterface } from '../../graphql/types';
 
@@ -36,6 +37,8 @@ function RecommendedCommunity(props: CommunityInterface) {
     ? `${resizeAvatar[0]}${CLOUDINARY_THUMBNAIL}${resizeAvatar[1]}`
     : avatar;
 
+  useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
+
   const [joinCommunity, { loading }] = useMutation(JOIN_COMMUNITY, {
     variables: { payload: { communityId: id } }
   });
@@ -43,11 +46,7 @@ function RecommendedCommunity(props: CommunityInterface) {
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
     LEAVE_COMMUNITY,
     {
-      variables: {
-        payload: {
-          communityId: id
-        }
-      }
+      variables: { payload: { communityId: id } }
     }
   );
 
@@ -62,10 +61,8 @@ function RecommendedCommunity(props: CommunityInterface) {
 
   const handleLeave = async () => {
     try {
-      const { data } = await leaveCommunity();
-      if (data) {
-        setMember(false);
-      }
+      await leaveCommunity();
+      setMember(false);
     } catch (error) {
       Sentry.captureException(error);
     }
