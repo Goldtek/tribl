@@ -13,6 +13,7 @@ interface ChatScreenProps extends PassportInterface {
 interface MessageRequestScreenProps extends PassportInterface {
   title: string;
   chatId: string;
+  senderId: string;
   receiverId: string;
 }
 
