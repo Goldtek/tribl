@@ -6,7 +6,6 @@ import { PassportInterface } from '../graphql/types';
 interface ChatScreenProps extends PassportInterface {
   title: string;
   chatId: string;
-  isMember: boolean;
   receiverId: string;
 }
 
