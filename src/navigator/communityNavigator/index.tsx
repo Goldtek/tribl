@@ -6,22 +6,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
-import { Feather, Entypo, Ionicons } from '@expo/vector-icons';
+import { Feather, Entypo } from '@expo/vector-icons';
 import { Menu, Divider, TouchableRipple } from 'react-native-paper';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
-import AlgoliaSearch from '../../components/algoliaSearch';
-import AlgoliaCommunityList from '../../components/algoliaCommunityList ';
 import GradientButton from '../../components/gradientButton';
 import { useQuery } from '@apollo/react-hooks';
 import {
   GET_COMMUNITY_SEARCH_INDEX,
   GET_CONNECTION_NOTIFICATION_BADGE
 } from '../../graphql/cache/query';
-import ENVIRONMENT_VARIABLES from '../../config';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
+import { DEVICE_OS } from '../../utils/device';
 
 const CommunityStack = createStackNavigator();
 
@@ -192,24 +190,13 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_BOLD
           },
-          headerBackImage: ({ tintColor }) => (
-            <Ionicons
-              name="md-arrow-back"
-              size={RFValue(24)}
-              color={tintColor}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2),
-                marginRight: 10
-              }}
-            />
-          ),
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+          },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 15 },
+          headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
@@ -226,6 +213,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
           },
           headerRight: () => (
             <Menu
@@ -339,28 +330,9 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               />
             </Menu>
           ),
-          headerLeft: () => (
-            <TouchableRipple
-              onPress={navigation.goBack}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2),
-                marginRight: 10
-              }}
-            >
-              <Ionicons
-                name="md-arrow-back"
-                size={RFValue(24)}
-                color={colors.PRIMARY}
-              />
-            </TouchableRipple>
-          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 15 },
+          headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}

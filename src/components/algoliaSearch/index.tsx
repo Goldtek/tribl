@@ -1,15 +1,16 @@
 import React, { useState, useCallback, ReactNode } from 'react';
 import { Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { Octicons } from '@expo/vector-icons';
 import SearchModal from '../searchModal';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 
-import { Container } from './style';
+import { Container, SearchInput } from './style';
 
 interface SearchInterface {
+  style?: ViewStyle;
   indexName: string;
   filters?: any;
   children: React.ReactElement<ReactNode>;
@@ -30,21 +31,8 @@ function AlgoliaSearch(props: SearchInterface) {
   );
 
   return (
-    <Container>
-      <View
-        style={{
-          paddingHorizontal: 10,
-          elevation: 0,
-          borderColor: colors.INACTIVE,
-          borderRadius: 4,
-          borderWidth: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          height: RFValue(40),
-          width: '100%'
-        }}
-        onStartShouldSetResponder={showSearchModal(true)}
-      >
+    <Container style={props.style}>
+      <SearchInput onStartShouldSetResponder={showSearchModal(true)}>
         <Octicons name="search" color={colors.PRIMARY_TEXT} size={20} />
         <Text
           style={{
@@ -56,7 +44,7 @@ function AlgoliaSearch(props: SearchInterface) {
         >
           {t(`community.chat.search`)}
         </Text>
-      </View>
+      </SearchInput>
       <SearchModal
         isVisible={isVisible}
         indexName={props.indexName}

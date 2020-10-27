@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView } from 'react-native';
-import { FlatList } from 'react-native';
-import { Divider, Button, Text } from 'react-native-paper';
+import { FlatList, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Divider, Button, Text, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
@@ -10,6 +10,7 @@ import MemberCard from './widgets/connectionCard';
 import AlgoliaSearch from '../../../components/algoliaSearch';
 import AlgoliaList from '../../../components/algoliaInboxList';
 import hexToRGB from '../../../utils/hexToRGB';
+import { Ionicons } from '@expo/vector-icons';
 import {
   GET_NEARBY_MEMBERS,
   GET_MY_CONNECTIONS,
@@ -24,14 +25,16 @@ import {
   AllMembersRequestInterface,
   PassportInterface
 } from '../../../graphql/types';
+import { NavigationInterface } from '../../types';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, FilterContainer } from './styles';
+import { Container, FilterContainer, HeaderContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp {}
+interface ScreenProp extends NavigationInterface {}
 
 export default function ChatScreen(props: ScreenProp) {
+  const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -112,25 +115,41 @@ export default function ChatScreen(props: ScreenProp) {
   );
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        marginTop: RFValue(5),
-        backgroundColor: colors.WHITE
-      }}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <Container>
-        <AlgoliaSearch
-          indexName={ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME}
-        >
-          <AlgoliaList />
-        </AlgoliaSearch>
-
+        <HeaderContainer>
+          <TouchableRipple
+            onPress={navigation.goBack}
+            style={{
+              height: RFValue(40),
+              width: RFValue(40),
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: RFValue(40 / 2)
+            }}
+          >
+            <Ionicons
+              name="md-arrow-back"
+              size={RFValue(24)}
+              color={colors.PRIMARY}
+            />
+          </TouchableRipple>
+          <AlgoliaSearch
+            style={{ width: 0, flexGrow: 1 }}
+            indexName={ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME}
+          >
+            <AlgoliaList />
+          </AlgoliaSearch>
+        </HeaderContainer>
         <FilterContainer>
           <ScrollView
             horizontal
-            contentContainerStyle={{ paddingHorizontal: 10 }}
+            contentContainerStyle={{
+              height: RFValue(50),
+              paddingHorizontal: RFValue(15)
+            }}
             showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
           >
             <Button
               mode="contained"
@@ -141,14 +160,10 @@ export default function ChatScreen(props: ScreenProp) {
                 textTransform: 'capitalize'
               }}
               contentStyle={{
-                paddingVertical: 7,
-                paddingHorizontal: 5,
+                height: RFValue(45),
                 backgroundColor: all ? colors.PRIMARY : colors.WHITE
               }}
-              style={{
-                borderRadius: 4,
-                backgroundColor: colors.TRANSPARENT
-              }}
+              style={{ borderRadius: 4, height: RFValue(45), marginRight: 15 }}
             >
               {t(`community.chat.all`)}
             </Button>
@@ -162,15 +177,10 @@ export default function ChatScreen(props: ScreenProp) {
                 textTransform: 'capitalize'
               }}
               contentStyle={{
-                paddingVertical: 7,
-                paddingHorizontal: 5,
+                height: RFValue(45),
                 backgroundColor: connections ? colors.PRIMARY : colors.WHITE
               }}
-              style={{
-                borderRadius: 4,
-                marginLeft: 15,
-                backgroundColor: colors.TRANSPARENT
-              }}
+              style={{ borderRadius: 4, height: RFValue(45), marginRight: 15 }}
             >
               {t(`community.chat.connection`)}
             </Button>
@@ -183,15 +193,10 @@ export default function ChatScreen(props: ScreenProp) {
                 textTransform: 'capitalize'
               }}
               contentStyle={{
-                paddingVertical: 7,
-                paddingHorizontal: 5,
+                height: RFValue(45),
                 backgroundColor: nearby ? colors.PRIMARY : colors.WHITE
               }}
-              style={{
-                marginHorizontal: 15,
-                borderRadius: 4,
-                backgroundColor: colors.TRANSPARENT
-              }}
+              style={{ borderRadius: 4, height: RFValue(45) }}
             >
               {t(`community.chat.nearby`)}
             </Button>

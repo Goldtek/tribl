@@ -7,38 +7,68 @@ import { Paragraph, Divider, TouchableRipple } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
-import { GET_COMMUNITY_CHANNELS } from '../../../../../graphql/server/query';
-import { JOIN_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
+import {
+  GET_COMMUNITY_CHANNELS,
+  GET_USER_PASSPORT
+} from '../../../../../graphql/server/query';
+import {
+  JOIN_COMMUNITY_CHANNEL,
+  LEAVE_COMMUNITY_CHANNEL,
+  SEND_CHANNEL_MESSAGE
+} from '../../../../../graphql/server/mutations';
 import {
   ChannelInterface,
-  CommunityChannelRequestInterface
+  CommunityChannelRequestInterface,
+  MyPassportInterface
 } from '../../../../../graphql/types';
-import { fireAuth } from '../../../../../firebase/config';
+import { useTranslation } from 'react-i18next';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function ChannelScreen(props: ScreenProp) {
+  const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
-  const userId = fireAuth.currentUser?.uid;
+  const { t } = useTranslation();
+
   const detail = props.route;
   const { communityDetails } = detail;
-  const { id } = communityDetails;
-  const { colors, fonts } = useThemeContext();
+
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
+  const userDetails = userData?.myPassport;
+
+  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
+  const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
+  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
 
   const { data } = useQuery<CommunityChannelRequestInterface>(
     GET_COMMUNITY_CHANNELS,
-    { variables: { id, userId }, pollInterval: 2000 }
+    {
+      variables: { communityId: communityDetails?.id, userId: userDetails?.id },
+      fetchPolicy: 'cache-and-network',
+      pollInterval: 500
+    }
   );
 
-  const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL, {
-    variables: { payload: { channelId: id } }
-  });
+  const handleNavigation = async (item: ChannelInterface) => {
+    const isMember = item.participants[0]?.id;
 
-  const handleNavigation = (item: ChannelInterface) => {
-    const [isMember] = item.participants.map(({ id }) => id === userId);
-
-    if (!isMember) joinChannel();
+    if (!isMember) {
+      joinChannel({ variables: { payload: { channelId: item.id } } }).then(
+        () => {
+          sendMessage({
+            variables: {
+              payload: {
+                system: true,
+                channelId: item.id,
+                content: t(`community.chat.join`)
+              }
+            }
+          });
+        }
+      );
+    }
 
     navigation.navigate('ChannelChatScreen', {
       title: `#${item.name}`,

@@ -130,6 +130,15 @@ export const SEND_DIRECT_MESSAGE = gql`
   }
 `;
 
+// SEND DIRECT MESSAGE
+export const SEND_CHANNEL_MESSAGE = gql`
+  mutation createChannelConversation($payload: CreateChannelConversation!) {
+    createChannelConversation(input: $payload) {
+      success
+    }
+  }
+`;
+
 // DELETE MESSAGE REQUEST
 export const DELETE_MESSAGE_REQUEST = gql`
   mutation deleteMessageRequest($payload: DeleteMessageRequestInput!) {
@@ -179,6 +188,15 @@ export const UPDATE_NOTIFICATION = gql`
 export const JOIN_COMMUNITY_CHANNEL = gql`
   mutation joinCommunityChannel($payload: ChannelActionInput!) {
     joinCommunityChannel(input: $payload) {
+      success
+    }
+  }
+`;
+
+// LEAVE COMMUNITY CHANNEL
+export const LEAVE_COMMUNITY_CHANNEL = gql`
+  mutation leaveCommunityChannel($payload: ChannelActionInput!) {
+    leaveCommunityChannel(input: $payload) {
       success
     }
   }

@@ -28,7 +28,8 @@ export default function SearchScreen(props: ScreenProp) {
 
   const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
     variables: { id },
-    pollInterval: 2500
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 500
   });
 
   const member = communityData?.Community[0]?.isMember;

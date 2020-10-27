@@ -71,7 +71,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
         paddingRight: RFValue(10)
       }}
       onPress={() =>
-        navigation.navigate('DrawerMemberDetailScreen', {
+        navigation.navigate('MemberDetailScreen', {
           title: `${firstName} ${lastName}`,
           details: item
         })
