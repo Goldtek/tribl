@@ -98,7 +98,7 @@ export default function ChatScreen(props: ScreenProp) {
   }, []);
 
   const handleNavigation = useCallback((user?: User) => {
-    navigation.navigate('DrawerMemberDetailScreen', {
+    navigation.navigate('MemberDetailScreen', {
       title: `${user?.name}`,
       details: { ...user, id: `${user?._id}` }
     });

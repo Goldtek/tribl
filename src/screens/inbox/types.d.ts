@@ -7,6 +7,7 @@ export interface MessageInterface {
   updatedAt: Date;
   replayCount?: number;
   user: { _id: string; avatar: string; name: string };
+  sender: { avatar: string; firstName: string; lastName: string };
   image?: string;
   video?: string;
   audio?: string;

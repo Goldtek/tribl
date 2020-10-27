@@ -18,7 +18,7 @@ interface MessageRequestScreenProps extends PassportInterface {
 
 // App Navigation prop types
 export type RootStackParamList = {
-  ChatMemberDetailScreen: { title: string; details: ChatScreenProps };
+  MemberDetailScreen: { title: string; details: Object };
   CommunitySearchScreen: { index: number };
   ConnectionChatScreen: ChatScreenProps;
   MessageRequestScreen: ChatScreenProps;
@@ -48,7 +48,7 @@ export type RootStackParamList = {
 
 export type RootStackParamScreensList =
   | 'CommunitySearchScreen'
-  | 'ChatMemberDetailScreen'
+  | 'MemberDetailScreen'
   | 'CommunityDetailScreen'
   | 'ConnectionChatScreen'
   | 'SelectCountryScreen'
