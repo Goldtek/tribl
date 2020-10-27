@@ -120,12 +120,12 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     { variables: { payload: { communityId: singleCommunity?.id } } }
   );
 
-  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
-    LEAVE_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
+  const [
+    leaveCommunity,
+    { loading: leaveLoading }
+  ] = useMutation(LEAVE_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
   const handleJoin = async () => {
     try {
