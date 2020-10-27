@@ -38,9 +38,9 @@ export default function ChannelScreen(props: ScreenProp) {
 
   const userDetails = userData?.myPassport;
 
+  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
-  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
 
   const { data } = useQuery<CommunityChannelRequestInterface>(
     GET_COMMUNITY_CHANNELS,
@@ -51,20 +51,23 @@ export default function ChannelScreen(props: ScreenProp) {
     }
   );
 
-  const handleNavigation = (item: ChannelInterface) => {
+  const handleNavigation = async (item: ChannelInterface) => {
     const isMember = item.participants[0]?.id;
 
     if (!isMember) {
-      joinChannel({ variables: { payload: { channelId: item.id } } });
-      sendMessage({
-        variables: {
-          payload: {
-            system: true,
-            channelId: item.id,
-            content: t(`community.chat.join`)
-          }
+      joinChannel({ variables: { payload: { channelId: item.id } } }).then(
+        () => {
+          sendMessage({
+            variables: {
+              payload: {
+                system: true,
+                channelId: item.id,
+                content: t(`community.chat.join`)
+              }
+            }
+          });
         }
-      });
+      );
     }
 
     navigation.navigate('ChannelChatScreen', {
