@@ -11,17 +11,15 @@ import { Menu, Divider, TouchableRipple } from 'react-native-paper';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
-import AlgoliaSearch from '../../components/algoliaSearch';
-import AlgoliaCommunityList from '../../components/algoliaCommunityList ';
 import GradientButton from '../../components/gradientButton';
 import { useQuery } from '@apollo/react-hooks';
 import {
   GET_COMMUNITY_SEARCH_INDEX,
   GET_CONNECTION_NOTIFICATION_BADGE
 } from '../../graphql/cache/query';
-import ENVIRONMENT_VARIABLES from '../../config';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
+import { DEVICE_OS } from '../../utils/device';
 
 const CommunityStack = createStackNavigator();
 
@@ -192,6 +190,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_BOLD
           },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+          },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
@@ -211,6 +213,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
           },
           headerRight: () => (
             <Menu
