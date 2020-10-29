@@ -57,29 +57,37 @@ export default function contactSlide() {
   const [isVisible, setIsVisible] = useState(false);
 
   const [state, setState] = useState<{
-    date: Date | null;
+    date: string;
     editLastName: boolean;
     editFirstName: boolean;
+    editBio: boolean;
+    focusedBio: boolean;
     focusedFirstName: boolean;
     focusedLastName: boolean;
     showDatePicker: boolean;
     disableLastName: boolean;
     disableFirstName: boolean;
+    disableBio: boolean;
     firstName: string | undefined;
     lastName: string | undefined;
+    bio: string;
     selectedIdentity: [];
     selectedId: [];
   }>({
-    date: null,
+    date: '',
+    bio: '',
     firstName: userDetails?.firstName,
     lastName: userDetails?.lastName,
     editLastName: false,
     editFirstName: false,
+    editBio: false,
     focusedFirstName: false,
     focusedLastName: false,
+    focusedBio: false,
     showDatePicker: false,
     disableFirstName: true,
     disableLastName: true,
+    disableBio: true,
     selectedIdentity: [],
     selectedId: []
   });
@@ -104,10 +112,10 @@ export default function contactSlide() {
 
   const SelectedIdentitiesID = Array.from(state.selectedId.values());
 
-  const newDate = state.date ? formatMessageTime(state.date) : null;
+  const newDate = state.date ? state.date : null;
   const dob = newDate?.split('/');
-  const day = dob?.length ? parseInt(dob[0]) : null;
-  const month = dob?.length ? parseInt(dob[1]) : null;
+  const month = dob?.length ? parseInt(dob[0]) : null;
+  const day = dob?.length ? parseInt(dob[1]) : null;
   const year = dob?.length ? parseInt(dob[2]) : null;
 
   const userIdentities = IdentityData?.Identity.map(
@@ -121,6 +129,7 @@ export default function contactSlide() {
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
+        bio: state.bio,
         firstName: state.firstName,
         lastName: state.lastName,
         dob: {
@@ -137,7 +146,13 @@ export default function contactSlide() {
   const currentLocation = userDetails?.currentLocation[0];
   const birthPlace = userDetails?.birthPlace[0];
 
-  const onChange = (date: Date) => {
+  const onChange = (selectedDate: Date) => {
+    const newDate = formatMessageTime(selectedDate);
+    const dob = newDate?.split('/');
+    const day = parseInt(dob[0]);
+    const month = parseInt(dob[1]);
+    const year = parseInt(dob[2]);
+    const date = month + '/' + day + '/' + year;
     setState({ ...state, date, showDatePicker: false });
     setTimeout(() => addUserDetails(), 0);
   };
@@ -151,7 +166,8 @@ export default function contactSlide() {
     lastName,
     disableFirstName,
     disableLastName,
-    date
+    bio,
+    disableBio
   } = state;
 
   return (
@@ -244,6 +260,51 @@ export default function contactSlide() {
         />
       </Container>
 
+      <Container>
+        <LastNameContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
+            }}
+          >
+            {t(`signup.passportScreen.bio`)}
+          </Title>
+          <EditTextInput
+            underlayColor={hexToRGB(colors.PRIMARY_TEXT, 0.7)}
+            onPress={() => setState({ ...state, disableBio: false })}
+          >
+            <Feather name="edit" size={RFValue(20)} color={colors.INACTIVE} />
+          </EditTextInput>
+        </LastNameContainer>
+        <TextInput
+          value={bio}
+          onSubmitEditing={() => setTimeout(() => addUserDetails(), 0)}
+          onChangeText={(bio: string) =>
+            setState({
+              ...state,
+              bio,
+              disableBio: false
+            })
+          }
+          placeholder={t(`signup.passportScreen.updateBio`)}
+          disabled={disableBio}
+          onFocus={() => setState({ ...state, disableBio: false })}
+          onBlur={() => setState({ ...state, disableBio: true })}
+          style={{
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+            color: colors.PRIMARY_TEXT,
+            backgroundColor: colors.WHITE,
+            borderBottomWidth: disableBio ? 0 : 2,
+            borderColor: colors.PRIMARY,
+            height: 30
+          }}
+        />
+      </Container>
+
       <DOBContainer>
         <Title
           style={{
@@ -273,9 +334,7 @@ export default function contactSlide() {
           contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
           onPress={handleDatePicker}
         >
-          {state.date
-            ? formatMessageTime(state.date)
-            : t(`signup.passportScreen.dob`)}
+          {state.date ? state.date : t(`signup.passportScreen.dob`)}
         </Button>
 
         <DateTimePicker
