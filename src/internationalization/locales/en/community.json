@@ -1,6 +1,6 @@
 {
   "bottomLabels": {
-    "community": "community",
+    "community": "tribl",
     "inbox": "inbox",
     "passport": "passport"
   },
@@ -51,24 +51,24 @@
 
   "tabPanel": {
     "member": "member",
-    "community": "communities",
+    "community": "tribes",
     "highlight": "highlights",
     "channel": "channels",
     "active": "most active members",
     "nearby": "members nearby",
-    "featured": "featured community",
-    "popular": "popular communities",
+    "featured": "featured tribe",
+    "popular": "popular tribes",
     "join": "join",
     "tag": "tags",
     "view": "view all",
     "placeholder": "Search by name or tag",
     "search": "Search",
-    "memberTitle": "community members",
+    "memberTitle": "tribe members",
     "leave": "leave"
   },
 
   "sideNav": {
-    "community": "community",
+    "community": "tribl",
     "chat": "chat",
     "request": "connection requests",
     "connection": "my connections",
