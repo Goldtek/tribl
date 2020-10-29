@@ -4,6 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../../../theme';
 import { useNavigation } from '@react-navigation/native';
+import { color } from 'react-native-reanimated';
 
 // DEFINE SCREEN PROP TYPES
 interface MyCommunityProp {
@@ -37,7 +38,10 @@ export default function MyCommunity(props: MyCommunityProp) {
         width: RFValue(50),
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: RFValue(10)
+        marginRight: RFValue(10),
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: colors.PRIMARY
       }}
     >
       <FastImage

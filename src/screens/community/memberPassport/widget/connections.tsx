@@ -45,7 +45,13 @@ export default function MyCommunity(props: MyConnectionProp) {
             uri: avatar ? avatar : USER_DEFAULT_AVATAR,
             priority: FastImage.priority.high
           }}
-          style={{ width: '80%', height: '80%', borderRadius: RFValue(70) }}
+          style={{
+            width: '80%',
+            height: '80%',
+            borderRadius: RFValue(70),
+            borderWidth: 2,
+            borderColor: colors.PRIMARY
+          }}
         />
         <Paragraph>{firstName}</Paragraph>
       </Fragment>
