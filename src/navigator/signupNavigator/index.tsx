@@ -67,6 +67,7 @@ export default function SignupNavigator() {
           const { data } = await updatePassport({
             variables: {
               payload: {
+                bio: userDetails?.bio,
                 dob: {
                   day: userDetails?.dob.day,
                   month: userDetails?.dob.month,
