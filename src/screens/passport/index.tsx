@@ -42,14 +42,14 @@ import {
   PassportInterface
 } from '../../graphql/types';
 import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
-import PassportSkeleton from './widgets/passportSkeleton';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
 import CheckAppUpdates from '../../libs/updates';
 import Notification from '../../libs/notification';
 import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/mutations';
 import cloudinaryUpload, {
-  CloudinaryUploadType
+  CloudinaryUploadType,
+  CloudinaryResponseType
 } from '../../utils/cloudinaryUpload';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -64,10 +64,7 @@ import {
   // SocialMediaButton
 } from './styles';
 import { Feather } from '@expo/vector-icons';
-import {
-  TouchableOpacity,
-  TouchableHighlight
-} from 'react-native-gesture-handler';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -92,9 +89,9 @@ export default function PassportScreen(props: ScreenProp) {
   const { top: paddingTop } = useSafeAreaInsets();
   const { t } = useTranslation();
 
-  const { loading: dataLoading, data: userData, refetch } = useQuery<
-    MyPassportInterface
-  >(GET_USER_PASSPORT);
+  const { data: userData, refetch } = useQuery<MyPassportInterface>(
+    GET_USER_PASSPORT
+  );
 
   const { data: firebase, loading: firebaseLoading } = useQuery<
     GenerateFirebaseTokenIT
@@ -130,6 +127,34 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [update, setUpdate] = useState(true);
 
+  const [cache, setCache] = useState<PassportInterface | null>(null);
+
+  const setCacheData = async () => {
+    if (userDetails?.id?.length) {
+      await Storage.setUserPassport({ ...userDetails });
+    }
+  };
+
+  const getCacheData = async () => {
+    try {
+      const passportInfo = await Storage.getUserPassport();
+      setCache({
+        ...cache,
+        ...passportInfo
+      });
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  useEffect(() => {
+    setCacheData();
+  }, [userData]);
+
+  useEffect(() => {
+    getCacheData();
+  }, []);
+
   const [state, setState] = useState<{
     details: StateProps;
     identity: string[] | undefined;
@@ -144,22 +169,27 @@ export default function PassportScreen(props: ScreenProp) {
   }>({
     //@ts-ignore
     details: {},
-    firstName: userDetails?.firstName,
-    lastName: userDetails?.lastName,
+    firstName: cache?.firstName,
+    lastName: cache?.lastName,
     identity: identity,
     dob: {
       day: null,
       month: null,
       year: null
     },
-    bio: ''
+    bio: cache?.bio
   });
 
   const [avatar, setAvatar] = useState<StateType>({
-    uri: userDetails?.avatar,
+    uri: cache?.avatar,
     secure_url: '',
     formData: null,
-    imageData: { uri: '', mime: '', filename: '', cropRect: null },
+    imageData: {
+      uri: '',
+      mime: '',
+      filename: '',
+      cropRect: null
+    },
     loading: false
   });
 
@@ -206,7 +236,9 @@ export default function PassportScreen(props: ScreenProp) {
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
       changeConnectionNotification({
-        variables: { showConnectionNotificationBadge: true }
+        variables: {
+          showConnectionNotificationBadge: true
+        }
       });
     }
   }, [connectionRequestData?.connectionRequests.length]);
@@ -229,9 +261,15 @@ export default function PassportScreen(props: ScreenProp) {
         bio: bio
       });
     }
-  }, [firstName?.length, lastName?.length]);
+  }, [firstName?.length, lastName?.length, bio?.length]);
 
   useEffect(() => {
+    setState({
+      ...state,
+      firstName: userDetails?.firstName,
+      lastName: userDetails?.lastName,
+      bio: userDetails?.bio
+    });
     setAvatar({
       ...avatar,
       uri: userDetails?.avatar
@@ -370,7 +408,6 @@ export default function PassportScreen(props: ScreenProp) {
       Sentry.captureException(error);
     }
   };
-
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
@@ -432,7 +469,9 @@ export default function PassportScreen(props: ScreenProp) {
           title: t(`signup.passportScreen.title`),
           message: t(`signup.passportScreen.sharePassportMessage`)
         },
-        { dialogTitle: t(`signup.passportScreen.title`) }
+        {
+          dialogTitle: t(`signup.passportScreen.title`)
+        }
       );
 
       if (action === Share.dismissedAction) return;
@@ -453,10 +492,18 @@ export default function PassportScreen(props: ScreenProp) {
   const click = update;
 
   const handleRequest = async () => {
+    const formData = await cloudinaryUpload(avatar.imageData);
+
+    const { secure_url } = (await formData.json()) as CloudinaryResponseType;
+
+    setAvatar({ ...avatar, uri: secure_url, secure_url });
     try {
-      await updatePassport();
-      refetch();
-      setUpdate(true);
+      const { data } = await updatePassport();
+      if (data) {
+        refetch();
+        setCacheData();
+        setUpdate(true);
+      }
     } catch (error) {
       Sentry.captureException(error);
       setUpdate(true);
@@ -519,56 +566,77 @@ export default function PassportScreen(props: ScreenProp) {
             paddingBottom: RFValue(20)
           }}
         >
-          {dataLoading ? (
-            <PassportSkeleton />
-          ) : (
-            <Fragment>
-              <HeaderContainer>
-                <Cover>
-                  <Title
-                    style={{
-                      fontFamily: fonts.WORK_SANS_BOLD,
-                      fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+          <Fragment>
+            <HeaderContainer>
+              <Cover>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+                    color: colors.WHITE,
+                    textTransform: 'capitalize',
+                    lineHeight: RFValue(30)
+                  }}
+                >
+                  {t(`signup.passportScreen.title`)}
+                </Title>
+                {update ? (
+                  <Button
+                    labelStyle={{
                       color: colors.WHITE,
-                      textTransform: 'capitalize',
-                      lineHeight: RFValue(30)
+                      fontSize: RFValue(14),
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      textTransform: 'capitalize'
+                    }}
+                    onPress={() => setUpdate(false)}
+                    loading={loading}
+                  >
+                    {t(`signup.passportScreen.edit`)}
+                  </Button>
+                ) : (
+                  <Button
+                    labelStyle={{
+                      color: colors.WHITE,
+                      fontSize: RFValue(14),
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      textTransform: 'capitalize'
+                    }}
+                    onPress={handleRequest}
+                    loading={loading}
+                  >
+                    {t(`signup.passportScreen.update`)}
+                  </Button>
+                )}
+              </Cover>
+              <ImageContainer>
+                {update ? (
+                  <FastImage
+                    source={{
+                      uri: avatar.uri || cache?.avatar,
+                      priority: FastImage.priority.high
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                    onLoadEnd={() => setImageLoad(false)}
+                    style={{
+                      width: RFValue(120),
+                      height: RFValue(120),
+                      justifyContent: 'center',
+                      borderRadius: 4
                     }}
                   >
-                    {t(`signup.passportScreen.title`)}
-                  </Title>
-                  {update ? (
-                    <Button
-                      labelStyle={{
-                        color: colors.WHITE,
-                        fontSize: RFValue(14),
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        textTransform: 'capitalize'
-                      }}
-                      onPress={() => setUpdate(false)}
-                      loading={loading}
-                    >
-                      {t(`signup.passportScreen.edit`)}
-                    </Button>
-                  ) : (
-                    <Button
-                      labelStyle={{
-                        color: colors.WHITE,
-                        fontSize: RFValue(14),
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        textTransform: 'capitalize'
-                      }}
-                      onPress={handleRequest}
-                      loading={loading}
-                    >
-                      {t(`signup.passportScreen.update`)}
-                    </Button>
-                  )}
-                </Cover>
-                <ImageContainer>
-                  {update ? (
+                    {imageLoad && (
+                      <ActivityIndicator
+                        animating={true}
+                        size={RFValue(50)}
+                        color={colors.WHITE}
+                      />
+                    )}
+                  </FastImage>
+                ) : (
+                  <TouchableHighlight onPress={handleAvatar}>
                     <FastImage
                       source={{
-                        uri: avatar.uri,
+                        uri: avatar.uri || cache?.avatar,
                         priority: FastImage.priority.high
                       }}
                       resizeMode={FastImage.resizeMode.cover}
@@ -580,134 +648,127 @@ export default function PassportScreen(props: ScreenProp) {
                         borderRadius: 4
                       }}
                     >
-                      {imageLoad && (
-                        <ActivityIndicator
-                          animating={true}
-                          size={RFValue(50)}
-                          color={colors.WHITE}
-                        />
-                      )}
-                    </FastImage>
-                  ) : (
-                    <TouchableHighlight onPress={handleAvatar}>
-                      <FastImage
-                        source={{
-                          uri: avatar.uri,
-                          priority: FastImage.priority.high
-                        }}
-                        resizeMode={FastImage.resizeMode.cover}
-                        onLoadEnd={() => setImageLoad(false)}
+                      <Feather
+                        name="camera"
+                        size={RFValue(30)}
+                        color={colors.WHITE}
                         style={{
-                          width: RFValue(120),
-                          height: RFValue(120),
                           justifyContent: 'center',
-                          borderRadius: 4
+                          alignItems: 'center',
+                          textAlign: 'center'
                         }}
-                      >
-                        <Feather
-                          name="camera"
-                          size={RFValue(30)}
-                          color={colors.WHITE}
-                          style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            textAlign: 'center'
-                          }}
-                        />
-                      </FastImage>
-                    </TouchableHighlight>
-                  )}
+                      />
+                    </FastImage>
+                  </TouchableHighlight>
+                )}
 
-                  <ImageTextContainer>
+                <ImageTextContainer>
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                      paddingRight: 20,
+                      lineHeight: 21,
+                      color: colors.WHITE,
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {`${state?.firstName} ${state?.lastName}`}
+                  </Paragraph>
+                  {userDetails?.currentLocation[0]?.city ||
+                  cache?.currentLocation[0].city ? (
                     <Paragraph
                       style={{
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
                         paddingRight: 20,
-                        lineHeight: 21,
+                        lineHeight: 16,
                         color: colors.WHITE,
                         textTransform: 'capitalize'
                       }}
                     >
-                      {`${userDetails?.firstName} ${userDetails?.lastName}`}
+                      {userDetails?.currentLocation[0].city ? (
+                        <Fragment>
+                          {`${userDetails?.currentLocation[0]?.city}, ${userDetails?.currentLocation[0]?.state}`}
+                        </Fragment>
+                      ) : (
+                        <Fragment>
+                          {`${cache?.currentLocation[0]?.city}, ${cache?.currentLocation[0]?.state}`}
+                        </Fragment>
+                      )}
                     </Paragraph>
-                    {userDetails?.currentLocation[0]?.city ? (
+                  ) : (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        paddingRight: 20,
+                        lineHeight: 16,
+                        color: colors.WHITE,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {userDetails?.currentLocation[0].state ? (
+                        <Fragment>
+                          {`${userDetails?.currentLocation[0]?.state}, ${userDetails?.currentLocation[0]?.country}`}
+                        </Fragment>
+                      ) : (
+                        <Fragment>
+                          {`${cache?.currentLocation[0]?.state}, ${cache?.currentLocation[0]?.country}`}
+                        </Fragment>
+                      )}
+                    </Paragraph>
+                  )}
+                  <ConnectionCover>
+                    <Connection>
                       <Paragraph
                         style={{
-                          fontFamily: fonts.WORK_SANS_REGULAR,
-                          fontSize: RFValue(fonts.MEDIUM_SIZE),
-                          paddingRight: 20,
-                          lineHeight: 16,
                           color: colors.WHITE,
-                          textTransform: 'capitalize'
+                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                          fontSize: fonts.LARGE_SIZE + 1,
+                          lineHeight: 20
                         }}
                       >
-                        {`${userDetails?.currentLocation[0]?.city}, ${userDetails?.currentLocation[0]?.state}`}
+                        {userDetails?.connectionCount || cache?.connectionCount}
                       </Paragraph>
-                    ) : (
                       <Paragraph
                         style={{
+                          fontSize: fonts.MEDIUM_SIZE - 1,
                           fontFamily: fonts.WORK_SANS_REGULAR,
-                          fontSize: RFValue(fonts.MEDIUM_SIZE),
-                          paddingRight: 20,
-                          lineHeight: 16,
                           color: colors.WHITE,
-                          textTransform: 'capitalize'
+                          textTransform: 'uppercase',
+                          lineHeight: 13
                         }}
                       >
-                        {`${userDetails?.currentLocation[0]?.state}, ${userDetails?.currentLocation[0]?.country}`}
+                        {t(`community.memberPassport.connection`)}
                       </Paragraph>
-                    )}
-                    <ConnectionCover>
-                      <Connection>
-                        <Paragraph
-                          style={{
-                            color: colors.WHITE,
-                            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                            fontSize: fonts.LARGE_SIZE + 1,
-                            lineHeight: 20
-                          }}
-                        >
-                          {userDetails?.connectionCount}
-                        </Paragraph>
-                        <Paragraph
-                          style={{
-                            fontSize: fonts.MEDIUM_SIZE - 1,
-                            fontFamily: fonts.WORK_SANS_REGULAR,
-                            color: colors.WHITE,
-                            textTransform: 'uppercase',
-                            lineHeight: 13
-                          }}
-                        >
-                          {t(`community.memberPassport.connection`)}
-                        </Paragraph>
-                      </Connection>
-                      <Connection>
-                        <Paragraph
-                          style={{
-                            color: colors.WHITE,
-                            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                            fontSize: fonts.LARGE_SIZE + 1,
-                            lineHeight: 20
-                          }}
-                        >
-                          {userDetails?.communityCount}
-                        </Paragraph>
-                        <Paragraph
-                          style={{
-                            fontSize: fonts.MEDIUM_SIZE - 1,
-                            fontFamily: fonts.WORK_SANS_REGULAR,
-                            color: colors.WHITE,
-                            textTransform: 'uppercase',
-                            lineHeight: 13
-                          }}
-                        >
-                          {t(`community.memberPassport.community`)}
-                        </Paragraph>
-                      </Connection>
-                    </ConnectionCover>
+                    </Connection>
+                    <Connection>
+                      <Paragraph
+                        style={{
+                          color: colors.WHITE,
+                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                          fontSize: fonts.LARGE_SIZE + 1,
+                          lineHeight: 20
+                        }}
+                      >
+                        {userDetails?.communityCount || cache?.communityCount}
+                      </Paragraph>
+                      <Paragraph
+                        style={{
+                          fontSize: fonts.MEDIUM_SIZE - 1,
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.WHITE,
+                          textTransform: 'uppercase',
+                          lineHeight: 13
+                        }}
+                      >
+                        {t(`community.memberPassport.community`)}
+                      </Paragraph>
+                    </Connection>
+                  </ConnectionCover>
 
-                    {/* <ImageIconContainer>
+                  {/* <ImageIconContainer>
                 <SocialMediaButton
                   onPress={() => console.log('Pressed')}
                   underlayColor={colors.DISABLED}
@@ -731,40 +792,38 @@ export default function PassportScreen(props: ScreenProp) {
               </ImageIconContainer>
             
              */}
-                  </ImageTextContainer>
-                </ImageContainer>
+                </ImageTextContainer>
+              </ImageContainer>
 
-                <Button
-                  icon={{
-                    uri:
-                      'https://img.icons8.com/ios-filled/96/000000/share-3.png'
-                  }}
-                  mode="text"
-                  color={colors.WHITE}
-                  uppercase={false}
-                  loading={false}
-                  labelStyle={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    textTransform: 'capitalize'
-                  }}
-                  contentStyle={{
-                    height: RFValue(55),
-                    backgroundColor: colors.PRIMARY_LIGHT
-                  }}
-                  style={{
-                    width: '100%',
-                    height: RFValue(55),
-                    marginTop: RFValue(10)
-                  }}
-                  onPress={onShare}
-                >
-                  {t(`signup.passportScreen.sharePassport`)}
-                </Button>
-              </HeaderContainer>
-              <TabViewSlider getUserDetails={getUserDetails} click={click} />
-            </Fragment>
-          )}
+              <Button
+                icon={{
+                  uri: 'https://img.icons8.com/ios-filled/96/000000/share-3.png'
+                }}
+                mode="text"
+                color={colors.WHITE}
+                uppercase={false}
+                loading={false}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{
+                  height: RFValue(55),
+                  backgroundColor: colors.PRIMARY_LIGHT
+                }}
+                style={{
+                  width: '100%',
+                  height: RFValue(55),
+                  marginTop: RFValue(10)
+                }}
+                onPress={onShare}
+              >
+                {t(`signup.passportScreen.sharePassport`)}
+              </Button>
+            </HeaderContainer>
+            <TabViewSlider getUserDetails={getUserDetails} click={click} />
+          </Fragment>
         </ScrollView>
 
         {OTAUpdate ? <CheckAppUpdates cancelUpdate={cancelUpdate} /> : null}
