@@ -11,6 +11,7 @@ import { NavigationContainerRef } from '@react-navigation/native';
 export const USER_FIRST_LAUNCH = '@FIRST_TIME_LAUNCH';
 export const USER_REG_INFO: string = '@USER_REG_INFO';
 export const USER_FCM_TOKEN: string = '@USER_FCM_TOKEN';
+export const USER_PASSPORT_INFO: string = '@USER_PASSPORT_INFO';
 
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 15;
@@ -31,7 +32,7 @@ export const DEFAULT_NOTIFICATION_CHANNEL_ID = 'TRiBL_default_channel';
 export const USER_DEFAULT_AVATAR = `https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp`;
 
 // CLOUDINARY BANNER FIX
-export const CLOUDINARY_BANNER= `upload/c_fill,g_auto,h_350,w_970/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/`;
+export const CLOUDINARY_BANNER = `upload/c_fill,g_auto,h_350,w_970/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/`;
 
 // CLOUDINARY THUMBNAIL FIX
 export const CLOUDINARY_THUMBNAIL = 'upload/c_thumb,w_200,g_face/';
