@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useMemo } from 'react';
+import React, { Fragment, useState, useMemo, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
@@ -6,7 +6,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
-import { useQuery, useSubscription } from '@apollo/react-hooks';
+import { useQuery, useSubscription, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
@@ -16,7 +16,12 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   GET_MY_COMMUNITIES,
-  USER_ONLINE_SUBSCRIPTION
+  USER_ONLINE_SUBSCRIPTION,
+  GET_ALL_MEMBERS,
+  GET_CONNECTION_REQUEST,
+  GET_MY_CONNECTIONS,
+  GET_NEARBY_MEMBERS,
+  GET_POPULAR_COMMUNITIES
 } from '../../../graphql/server/query';
 import MyCommunity from '../../../components/myCommunities';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
@@ -63,6 +68,26 @@ export default function HomeScreen(props: ScreenProp) {
   const { loading: myCommunityLoading, data: myCommunityData } = useQuery<
     MyCommunitiesRequestInterface
   >(GET_MY_COMMUNITIES, { pollInterval: 500 });
+
+  const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
+    GET_CONNECTION_REQUEST
+  );
+
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
+
+  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS);
+
+  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS);
+
+  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
+
+  useEffect(() => {
+    getPopularCommunities();
+    getConnectionRequest();
+    getNearbyMembers();
+    getMyConnections();
+    getAllMembers();
+  }, []);
 
   const {
     loading: recommendedCommunityLoading,
