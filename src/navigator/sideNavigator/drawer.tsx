@@ -123,7 +123,7 @@ export default function SideDrawerNavigator() {
         }}
       />
 
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="settings"
         component={AccountNavigator}
         options={{
@@ -143,7 +143,7 @@ export default function SideDrawerNavigator() {
             </Text>
           )
         }}
-      />
+      /> */}
 
       <Drawer.Screen
         name="policy"
