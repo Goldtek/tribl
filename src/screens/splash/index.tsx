@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { addHours, isSameMinute, subMinutes } from 'date-fns';
 import { Image, StyleSheet } from 'react-native';
 import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { RefreshTokenInterface } from '../../graphql/types';
@@ -34,17 +35,27 @@ export default function SplashScreen(props: ScreenProp) {
       const credentials = await Storage.getUserCredentials();
       const userRegistration = await Storage.getUserRegistration();
 
-      const { data } = await refreshToken({
-        variables: { payload: { refreshToken: credentials.refresh_token } }
-      });
-
       if (!userRegistration.completed) {
         return navigation.replace('SignupScreen', {
           screen: userRegistration.route
         });
       }
 
-      await Storage.setUserCredentials(data?.refreshToken);
+      const tokenExpiresIn = addHours(
+        new Date(),
+        credentials.expires_in / 3600
+      );
+
+      const tokenExpiryMinute = subMinutes(new Date(), 10);
+      const expiredToken = isSameMinute(tokenExpiresIn, tokenExpiryMinute);
+
+      if (expiredToken) {
+        const { data } = await refreshToken({
+          variables: { payload: { refreshToken: credentials.refresh_token } }
+        });
+
+        await Storage.setUserCredentials(data?.refreshToken);
+      }
 
       navigation.replace(userRegistration.route);
     } catch (error) {
