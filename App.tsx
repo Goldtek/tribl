@@ -6,11 +6,12 @@ import './src/internationalization';
 import RNUxcam from 'react-native-ux-cam';
 import AppRouter from './src';
 import './src/config';
+import ENVIRONMENT_VARIABLES from './src/config';
 
 enableScreens();
 
 RNUxcam.optIntoSchematicRecordings(); // Add this line to enable iOS screen recordings
-RNUxcam.startWithKey('2yh4dpwexde1d1y');
+RNUxcam.startWithKey(ENVIRONMENT_VARIABLES.UX_CAM);
 
 export default function App() {
   const [isAppReady, setIsAppReady] = useState(false);
