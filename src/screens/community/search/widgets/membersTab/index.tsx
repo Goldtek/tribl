@@ -1,4 +1,10 @@
-import React, { Fragment, useState, useCallback, useMemo } from 'react';
+import React, {
+  Fragment,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect
+} from 'react';
 import { ScrollView, FlatList } from 'react-native';
 import { NavigationInterface } from '../../../../types';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
@@ -20,6 +26,7 @@ import {
   PassportInterface,
   RecommendedMembersRequestInterface
 } from '../../../../../graphql/types';
+import { tagScreenName } from '../../../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
@@ -30,6 +37,10 @@ interface ScreenProp extends NavigationInterface {}
 function MemberSTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    tagScreenName('ViewAllMembers');
+  }, []);
 
   const [isVisible, setIsVisible] = useState(false);
 

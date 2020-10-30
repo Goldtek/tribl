@@ -10,7 +10,6 @@ import CommunityIcon from '../../../assets/icons/communityIcon';
 import PassportIcon from '../../../assets/icons/passportIcon';
 import InboxIcon from '../../../assets/icons/inboxIcon';
 import ChatNavigator from '../chatNavigator';
-import Screens from '../../screens';
 import { ShowMessageNotificationBadge } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES

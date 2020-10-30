@@ -13,6 +13,7 @@ import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { useQuery } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
+import { logEvent } from '../../utils/uxcamHelper';
 
 const accountStack = createStackNavigator();
 
@@ -44,7 +45,10 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
           headerLeft: (props) => (
             <TouchableHighlight
               {...props}
-              onPress={navigation.toggleDrawer}
+              onPress={() => {
+                navigation.toggleDrawer();
+                logEvent('open drawer', { from: 'community' });
+              }}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
               style={{
                 height: RFValue(40),

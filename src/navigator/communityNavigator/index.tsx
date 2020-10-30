@@ -20,6 +20,7 @@ import {
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { DEVICE_OS } from '../../utils/device';
+import { logEvent } from '../../utils/uxcamHelper';
 
 const CommunityStack = createStackNavigator();
 
@@ -77,7 +78,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerLeft: (props) => (
             <TouchableHighlight
               {...props}
-              onPress={navigation.toggleDrawer}
+              onPress={() => {
+                navigation.toggleDrawer();
+                logEvent('open drawer', { from: 'community' });
+              }}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
               style={{
                 height: RFValue(40),
@@ -106,7 +110,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                 height: RFValue(30),
                 marginBottom: RFValue(20)
               }}
-              onPress={() => navigation.navigate('NewMessageScreen')}
+              onPress={() => {
+                navigation.navigate('NewMessageScreen');
+                logEvent('tap chat icon', { from: 'chat' });
+              }}
               labelStyle={{ paddingLeft: 3 }}
             >
               <Feather name="message-square" color={colors.WHITE} size={20} />
@@ -137,7 +144,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerLeft: (props) => (
             <TouchableHighlight
               {...props}
-              onPress={navigation.toggleDrawer}
+              onPress={() => {
+                navigation.toggleDrawer();
+                logEvent('open drawer', { from: 'community' });
+              }}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
               style={{
                 height: RFValue(40),
@@ -167,7 +177,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                 height: RFValue(30),
                 marginBottom: RFValue(20)
               }}
-              onPress={() => navigation.navigate('NewMessageScreen')}
+              onPress={() => {
+                navigation.navigate('NewMessageScreen');
+                logEvent('tap chat icon', { from: 'chat' });
+              }}
               labelStyle={{ paddingLeft: 3 }}
             >
               <Feather name="message-square" color={colors.WHITE} size={20} />

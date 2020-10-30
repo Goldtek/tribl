@@ -9,6 +9,10 @@ import { useThemeContext } from '../../../../theme';
 import { ConversationInterface } from '../../types';
 import ChatCardSkeleton from '../../../../components/chatCardSkeleton';
 import { ROOM_TYPES } from '../../../../firebase/types';
+import {
+  hideSensitiveView,
+  tagScreenName
+} from '../../../../utils/uxcamHelper';
 
 import { Container } from './styles';
 
@@ -17,7 +21,6 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function DirectDMScreen(props: ScreenProp) {
   const { fonts } = useThemeContext();
-
   const [history, setHistory] = useState({
     chatHistory: true,
     firstRender: true
@@ -26,6 +29,10 @@ export default function DirectDMScreen(props: ScreenProp) {
   const [directMessages, setDirectMessages] = useState<ConversationInterface[]>(
     []
   );
+
+  useEffect(() => {
+    tagScreenName('DirectMessageTab');
+  }, []);
 
   useEffect(() => {
     let unsubscribe: any = null;
@@ -95,6 +102,7 @@ export default function DirectDMScreen(props: ScreenProp) {
         marginTop: RFValue(20),
         paddingBottom: RFValue(20)
       }}
+      ref={hideSensitiveView}
       ListEmptyComponent={renderEmptyList}
       showsVerticalScrollIndicator={false}
       renderItem={_renderItem}

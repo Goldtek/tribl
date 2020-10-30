@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import hexToRGB from '../../utils/hexToRGB';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
 import Storage from '../../libs/storage';
+import { tagScreenName } from '../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { GradientContainer, Container } from './styles';
@@ -23,6 +24,10 @@ export default function WalkThroughScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   changeNavigationBarColor(colors.SECONDARY, false, true);
+
+  useEffect(() => {
+    tagScreenName('WalkThroughScreen');
+  }, []);
 
   const { t } = useTranslation();
 

@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useRef } from 'react';
+import React, { useState, Fragment, useRef, useEffect } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -32,6 +32,7 @@ import { useThemeContext } from '../../../theme';
 import Input from '../../../components/input';
 import LoadingModal from '../../../components/loadingModal';
 import ENVIRONMENT_VARIABLES from '../../../config';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -45,6 +46,11 @@ export default function UserLocationScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
+
+  useEffect(() => {
+    tagScreenName('LocationScreen');
+    logEvent('get user location', { from: 'signup' });
+  }, []);
 
   const birthPlaceRef = useRef<GooglePlacesAutocomplete | null>(null);
 

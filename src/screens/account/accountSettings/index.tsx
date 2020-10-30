@@ -1,10 +1,11 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { Text, TouchableRipple, Divider } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { AntDesign } from '@expo/vector-icons';
 import { useThemeContext } from '../../../theme';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -16,6 +17,10 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    tagScreenName('AccountSettingScreen');
+  }, []);
 
   return (
     <Container>
