@@ -58,7 +58,7 @@ export default function SideDrawerNavigator() {
               style={{
                 color: colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
                 textTransform: 'capitalize'
               }}
             >
@@ -88,7 +88,7 @@ export default function SideDrawerNavigator() {
               style={{
                 color: colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
                 textTransform: 'capitalize'
               }}
             >
@@ -113,7 +113,7 @@ export default function SideDrawerNavigator() {
               style={{
                 color: colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
                 textTransform: 'capitalize'
               }}
             >
@@ -135,7 +135,7 @@ export default function SideDrawerNavigator() {
               style={{
                 color: colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
                 textTransform: 'capitalize'
               }}
             >
@@ -161,7 +161,7 @@ export default function SideDrawerNavigator() {
               style={{
                 color: colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(13),
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
                 textTransform: 'capitalize'
               }}
             >

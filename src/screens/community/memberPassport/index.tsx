@@ -43,7 +43,7 @@ interface MemberDetailProps extends NavigationInterface {
   route: { params: { details: PassportInterface } };
 }
 
-export default function contactSlide(props: MemberDetailProps) {
+export default function PassportDetail(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
