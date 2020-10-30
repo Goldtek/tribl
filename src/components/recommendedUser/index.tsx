@@ -15,6 +15,7 @@ import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
+import { logEvent } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp extends PassportInterface {}
@@ -57,6 +58,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   }, []);
 
   const handleRequest = async () => {
+    logEvent('request connection', { from: 'passport' });
     try {
       await requestConnection();
       setPending(true);

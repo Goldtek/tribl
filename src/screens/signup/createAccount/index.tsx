@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import * as Sentry from '@sentry/react-native';
 import { ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { KeyboardAvoidingView, Keyboard } from 'react-native';
@@ -21,6 +21,7 @@ import { validateEmailInput } from '../../../utils/validateEmailInput';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -61,6 +62,11 @@ export default function CreateAccountScreen(props: ScreenProp) {
       }
     }
   );
+
+  useEffect(() => {
+    tagScreenName('CreateAccountScreen');
+    logEvent('create account', { from: 'signup' });
+  }, []);
 
   const handleInputError = (error: string) => {
     Toast.show(t(`signup.createAccountScreen.${error}`));

@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native';
 import { useTranslation } from 'react-i18next';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlatList, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Divider, Button, Text, TouchableRipple } from 'react-native-paper';
@@ -14,7 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import {
   GET_NEARBY_MEMBERS,
   GET_MY_CONNECTIONS,
-  GET_ALL_MEMBERS
+  GET_ALL_MEMBERS,
+  GET_USER_PASSPORT
 } from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
 import ENVIRONMENT_VARIABLES from '../../../config';
@@ -29,6 +30,7 @@ import { NavigationInterface } from '../../types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer, HeaderContainer } from './styles';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -50,10 +52,17 @@ export default function ChatScreen(props: ScreenProp) {
     AllMembersRequestInterface
   >(GET_ALL_MEMBERS);
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+
   const nearbyMembers = nearbyData?.nearbyMembers;
   const myConnection = connectionData?.myConnections;
   const allMembers = allMembersData?.Passport;
-  const userId = fireAuth.currentUser?.uid;
+  const userId = userDetails?.id;
+
+  useEffect(() => {
+    tagScreenName('NewMessageScreen');
+  }, []);
 
   const filteredMembers = allMembers?.filter((member) => {
     return member.id !== userId && member.verified == true;

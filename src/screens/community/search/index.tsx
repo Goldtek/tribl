@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/react-hooks';
@@ -14,6 +14,7 @@ import AlgoliaCommunityList from '../../../components/algoliaCommunityList ';
 import ENVIRONMENT_VARIABLES from '../../../config';
 
 import { Container } from './styles';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp {
   route: { params: { index: number } };
@@ -29,6 +30,10 @@ export default function SearchScreen(props: ScreenProp) {
   const [changeCommunitySearchIndex] = useMutation(ADD_COMMUNITY_SEARCH_INDEX);
 
   const [tabIndex, setTabIndex] = useState(index);
+
+  useEffect(() => {
+    tagScreenName('ViewAllScreen');
+  }, []);
 
   const [routes] = useState([
     { key: 'membersTab', title: `${t(`community.tabPanel.member`)}` },

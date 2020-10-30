@@ -1,8 +1,16 @@
 import MMKVStorage from 'react-native-mmkv-storage';
 import AsyncStorage from '@react-native-community/async-storage';
 import { DEVICE_ID } from '../../utils/device';
-import { USER_FIRST_LAUNCH, USER_REG_INFO } from '../../constants';
-import { VerifyOTPIT, RegistrationInfo } from '../../graphql/types';
+import {
+  USER_FIRST_LAUNCH,
+  USER_REG_INFO,
+  USER_PASSPORT_INFO
+} from '../../constants';
+import {
+  VerifyOTPIT,
+  RegistrationInfo,
+  PassportInterface
+} from '../../graphql/types';
 
 class Storage {
   public MMKV: MMKVStorage.API | null = null;
@@ -53,6 +61,24 @@ class Storage {
     } catch (error) {
       await this.MMKV?.setMapAsync(DEVICE_ID, { ...credentials });
     }
+  }
+
+  async setUserPassport(passport?: PassportInterface) {
+    try {
+      const userPassport = await this.getUserPassport();
+      await this.MMKV?.setMapAsync(USER_PASSPORT_INFO, {
+        ...userPassport,
+        ...passport
+      });
+    } catch (error) {
+      await this.MMKV?.setMapAsync(USER_PASSPORT_INFO, { ...passport });
+    }
+  }
+
+  async getUserPassport() {
+    return this.MMKV?.getMapAsync(USER_PASSPORT_INFO) as Promise<
+      PassportInterface
+    >;
   }
 }
 

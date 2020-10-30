@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import {
   Image,
   TouchableOpacity,
@@ -27,6 +27,7 @@ import GradientButton from '../../../components/gradientButton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -38,6 +39,11 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   changeNavigationBarColor(colors.WHITE, true, true);
+
+  useEffect(() => {
+    tagScreenName('GetStartedScreen');
+    logEvent('get started', { from: 'signup' });
+  }, []);
 
   const userDetails = data?.userDetails;
 

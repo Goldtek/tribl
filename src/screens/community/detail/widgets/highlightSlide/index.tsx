@@ -32,6 +32,7 @@ import {
   Tags,
   TagText
 } from './styles';
+import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 
 interface singleCommunityScreenProp extends NavigationInterface {}
 
@@ -40,17 +41,24 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const { communityDetails } = detail;
   const { id } = communityDetails;
 
+  useEffect(() => {
+    tagScreenName('TribeHighlightScreen');
+  }, []);
+
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
   const [data, setData] = useState(communityDetails);
   const [member, setMember] = useState(false);
 
-  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
-    variables: { id },
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 500
-  });
+  const { data: communityData, refetch: communityRefetch } = useQuery(
+    GET_SINGLE_COMMUNITY,
+    {
+      variables: { id },
+      fetchPolicy: 'cache-and-network',
+      pollInterval: 500
+    }
+  );
 
   const { data: communityMembersData } = useQuery(
     GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
@@ -120,26 +128,30 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     { variables: { payload: { communityId: singleCommunity?.id } } }
   );
 
-  const [
-    leaveCommunity,
-    { loading: leaveLoading }
-  ] = useMutation(LEAVE_COMMUNITY, {
-    variables: { payload: { communityId: id } }
-  });
+  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
+    LEAVE_COMMUNITY,
+    {
+      variables: { payload: { communityId: id } }
+    }
+  );
 
   const handleJoin = async () => {
+    logEvent('join community', { from: 'community' });
     try {
       await joinCommunity();
       setMember(true);
+      communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
     }
   };
 
   const handleLeave = async () => {
+    logEvent('leave community', { from: 'community' });
     try {
       await leaveCommunity();
       setMember(false);
+      communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
     }

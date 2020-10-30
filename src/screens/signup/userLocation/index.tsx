@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useRef } from 'react';
+import React, { useState, Fragment, useRef, useEffect } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -35,6 +35,7 @@ import ENVIRONMENT_VARIABLES from '../../../config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -45,6 +46,11 @@ export default function UserLocationScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
+
+  useEffect(() => {
+    tagScreenName('LocationSCreen');
+    logEvent('get user location', { from: 'signup' });
+  }, []);
 
   const birthPlaceRef = useRef<GooglePlacesAutocomplete | null>(null);
 

@@ -16,6 +16,7 @@ cache.writeData<StoreInterface>({
   data: {
     //@ts-ignore
     userDetails: {
+      bio: '',
       dob: {
         formatted: null,
         day: 0,

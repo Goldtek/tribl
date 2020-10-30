@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useMemo } from 'react';
+import React, { Fragment, useState, useMemo, useEffect } from 'react';
 import { NavigationInterface } from '../../../../types';
 import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -20,6 +20,7 @@ import ComingSoonCommunities from '../../../../../components/recommendedCommunit
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, CommunityWrapper, PopularContainer } from './styles';
+import { tagScreenName } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -28,6 +29,10 @@ function CommunityTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ showJoinCommunityModal: false });
+
+  useEffect(() => {
+    tagScreenName('ViewAllTribes');
+  }, []);
 
   const {
     loading: recommendedCommunityLoading,

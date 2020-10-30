@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +21,7 @@ import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/mut
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, MenuBadgeWrapper } from './styles';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ConnectionRequestScreenProp extends NavigationInterface {}
@@ -43,6 +44,10 @@ export default function ConnectionRequestScreen(
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <ConnectionRequest key={item.id} item={item} refetch={refetch} />
   );
+
+  useEffect(() => {
+    tagScreenName('ConnectionRequestScreen');
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -75,7 +80,10 @@ export default function ConnectionRequestScreen(
         headerLeft={() => (
           <TouchableHighlight
             {...props}
-            onPress={navigation.toggleDrawer}
+            onPress={() => {
+              navigation.toggleDrawer();
+              logEvent('open drawer', { from: 'community' });
+            }}
             underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
             style={{
               height: RFValue(40),
