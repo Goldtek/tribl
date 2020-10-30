@@ -108,7 +108,7 @@ export default function DrawerStackNavigator() {
             >
               <Entypo
                 name="dots-three-vertical"
-                color={colors.PRIMARY_TEXT}
+                color={colors.DISABLED}
                 size={RFValue(17)}
               />
             </TouchableRipple>
@@ -149,7 +149,7 @@ export default function DrawerStackNavigator() {
               >
                 <Entypo
                   name="dots-three-vertical"
-                  color={colors.PRIMARY_TEXT}
+                  color={colors.DISABLED}
                   size={RFValue(17)}
                 />
               </TouchableRipple>
@@ -324,7 +324,7 @@ export default function DrawerStackNavigator() {
             >
               <Entypo
                 name="dots-three-vertical"
-                color={colors.PRIMARY_TEXT}
+                color={colors.DISABLED}
                 size={RFValue(17)}
               />
             </TouchableRipple>
@@ -366,7 +366,7 @@ export default function DrawerStackNavigator() {
             >
               <Entypo
                 name="dots-three-vertical"
-                color={colors.PRIMARY_TEXT}
+                color={colors.DISABLED}
                 size={RFValue(17)}
               />
             </TouchableRipple>

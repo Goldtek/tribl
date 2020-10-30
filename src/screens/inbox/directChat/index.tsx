@@ -23,6 +23,11 @@ import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
 import { CHANGE_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
 import { GET_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
+import {
+  hideSensitiveView,
+  tagScreenName,
+  logEvent
+} from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -42,6 +47,10 @@ export default function ChatScreen(props: ScreenProp) {
   } = props.route.params;
 
   const userId = fireAuth.currentUser?.uid;
+
+  useEffect(() => {
+    tagScreenName('DirectChatScreen');
+  }, []);
 
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
 
@@ -98,6 +107,7 @@ export default function ChatScreen(props: ScreenProp) {
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
+    logEvent('send direct message', { from: 'chat' });
 
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages)
@@ -120,6 +130,7 @@ export default function ChatScreen(props: ScreenProp) {
       <GiftedChat
         placeholder="Start typing ..."
         messages={messages}
+        ref={hideSensitiveView}
         user={{
           _id: userId as string,
           avatar: userDetails?.avatar,
@@ -131,6 +142,7 @@ export default function ChatScreen(props: ScreenProp) {
         renderSend={(props) => (
           <Send
             {...props}
+            ref={hideSensitiveView}
             containerStyle={{
               width: RFValue(40),
               height: RFValue(40),
@@ -169,6 +181,7 @@ export default function ChatScreen(props: ScreenProp) {
         renderAvatar={(props) => (
           <Avatar
             {...props}
+            ref={hideSensitiveView}
             imageStyle={{
               left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
               right: {}

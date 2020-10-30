@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useMemo } from 'react';
+import React, { Fragment, useState, useMemo, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button } from 'react-native-paper';
@@ -6,7 +6,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
-import { useQuery, useSubscription } from '@apollo/react-hooks';
+import { useQuery, useSubscription, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
@@ -16,7 +16,12 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   GET_MY_COMMUNITIES,
-  USER_ONLINE_SUBSCRIPTION
+  USER_ONLINE_SUBSCRIPTION,
+  GET_ALL_MEMBERS,
+  GET_CONNECTION_REQUEST,
+  GET_MY_CONNECTIONS,
+  GET_NEARBY_MEMBERS,
+  GET_POPULAR_COMMUNITIES
 } from '../../../graphql/server/query';
 import MyCommunity from '../../../components/myCommunities';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
@@ -31,6 +36,7 @@ import {
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -64,6 +70,27 @@ export default function HomeScreen(props: ScreenProp) {
     MyCommunitiesRequestInterface
   >(GET_MY_COMMUNITIES, { pollInterval: 500 });
 
+  const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
+    GET_CONNECTION_REQUEST
+  );
+
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
+
+  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS);
+
+  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS);
+
+  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
+
+  useEffect(() => {
+    tagScreenName('TriblScreen');
+    getPopularCommunities();
+    getConnectionRequest();
+    getNearbyMembers();
+    getMyConnections();
+    getAllMembers();
+  }, []);
+
   const {
     loading: recommendedCommunityLoading,
     data: communityData
@@ -78,7 +105,7 @@ export default function HomeScreen(props: ScreenProp) {
   const recommendedMembers = membersData?.recommendedMembers;
   const communities = communityData?.recommendedCommunities;
 
-  const navigateToSearch = (index: number) => () => {
+  const navigateToSearch = (index: number, event: any) => () => {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
 
@@ -165,7 +192,10 @@ export default function HomeScreen(props: ScreenProp) {
 
             <Button
               mode="text"
-              onPress={navigateToSearch(0)}
+              onPress={navigateToSearch(
+                0,
+                logEvent('view more members', { from: 'community' })
+              )}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -209,7 +239,10 @@ export default function HomeScreen(props: ScreenProp) {
 
             <Button
               mode="text"
-              onPress={navigateToSearch(1)}
+              onPress={navigateToSearch(
+                1,
+                logEvent('view more tribes', { from: 'community' })
+              )}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),

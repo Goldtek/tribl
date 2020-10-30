@@ -16,6 +16,7 @@ import {
 } from '../../../../graphql/server/mutations';
 
 import { NameContainer } from './styles';
+import { logEvent } from '../../../../utils/uxcamHelper';
 
 interface ConnectionRequestProp {
   item: PassportInterface;
@@ -44,6 +45,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
   );
 
   const handleAcceptConnection = async () => {
+    logEvent('accept connection request', { from: 'passport' });
     try {
       await acceptConnection();
       refetch();
@@ -53,6 +55,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
   };
 
   const handleDeclineConnection = async () => {
+    logEvent('rejects connection request', { from: 'passport' });
     try {
       await declineConnection();
       refetch();

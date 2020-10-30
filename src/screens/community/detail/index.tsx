@@ -26,7 +26,7 @@ export default function SearchScreen(props: ScreenProp) {
   const details = props.route.params;
   const id = details?.details?.id || details?.communityHit?.id;
 
-  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
+  const { data: communityData, refetch } = useQuery(GET_SINGLE_COMMUNITY, {
     variables: { id },
     fetchPolicy: 'cache-and-network',
     pollInterval: 500

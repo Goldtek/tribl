@@ -15,6 +15,7 @@ import { fireAuth } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
+import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface DirectChatProp extends ConversationInterface {}
@@ -92,7 +93,7 @@ function DirectChatCard(props: DirectChatProp) {
           />
         )}
 
-        <NameContainer>
+        <NameContainer ref={hideSensitiveView}>
           <Fragment>
             {receiverPassport?.firstName ? (
               <Title

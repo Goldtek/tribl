@@ -15,6 +15,7 @@ import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
+import { logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface NearbyUserProp extends PassportInterface {
@@ -48,6 +49,7 @@ function NearbyModal(props: NearbyUserProp) {
   });
 
   const handleRequest = async () => {
+    logEvent('request connection', { from: 'passport' });
     setLoading(true);
     try {
       await requestConnection();

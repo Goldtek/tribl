@@ -21,6 +21,7 @@ import { MyPassportInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
+import { logEvent } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface PopularCommunityProp {
@@ -69,6 +70,7 @@ function PopularCommunity(props: PopularCommunityProp) {
   );
 
   const handleJoin = async () => {
+    logEvent('join community', { from: 'community' });
     try {
       await joinCommunity();
       setMember(true);
@@ -78,6 +80,7 @@ function PopularCommunity(props: PopularCommunityProp) {
   };
 
   const handleLeave = async () => {
+    logEvent('leave community', { from: 'community' });
     try {
       await leaveCommunity();
       setMember(false);
