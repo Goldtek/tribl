@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import DrawerStackNavigator from './navigator/sideNavigator';
@@ -6,16 +6,11 @@ import SignupNavigator from './navigator/signupNavigator';
 import { navigationRef } from './constants';
 import { useThemeContext } from './theme';
 import Screens from './screens';
-import { tagScreenName } from './utils/uxcamHelper';
 
 const RootStack = createStackNavigator();
 
 export default function AppNavigator() {
   const { fonts, colors } = useThemeContext();
-
-  useEffect(() => {
-    tagScreenName('SplashScreen');
-  }, []);
 
   return (
     <NavigationContainer ref={navigationRef}>

@@ -20,11 +20,11 @@ import {
   PassportInterface,
   ShowConnectionNotificationBadge
 } from '../../../graphql/types';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, MenuBadgeWrapper } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionScreenProp extends NavigationInterface {}

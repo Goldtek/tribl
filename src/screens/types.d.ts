@@ -24,8 +24,15 @@ export type RootStackParamList = {
   MessageRequestScreen: ChatScreenProps;
   ChannelChatScreen: ChatScreenProps;
   DirectChatScreen: ChatScreenProps;
+  DirectMessageTab?: Object;
+  MessageRequestTab?: Object;
   CommunityDetailScreen?: Object;
+  ConnectionRequestScreen?: Object;
+  GetStartedScreen?: Object;
+  AccountSettingScreen?: Object;
   SelectCountryScreen?: Object;
+  ChannelChatScreen?: Object;
+  CommunityScreen?: Object;
   CreateAccountScreen?: Object;
   MemberDetailScreen?: Object;
   AvatarUploadScreen?: Object;
@@ -33,27 +40,46 @@ export type RootStackParamList = {
   UserLocationScreen?: Object;
   WalkThroughScreen?: Object;
   BirthPlaceScreen?: Object;
+  MyConnectionScreen?: Object;
+  MemberPassportScreen?: Object;
   NewMessageScreen?: Object;
-  CommunityScreen?: Object;
-  PassportScreen?: Object;
+  MessageRequestScreen?: Object;
   NewChatSearch?: Object;
+  PassportScreen?: Object;
   PrivacyScreen?: Object;
   ProfileScreen?: Object;
   SignupScreen?: Object;
+  SplashScreen?: Object;
+  SignupPassportScreen?: Object;
+  SelectCountry?: Object;
   InboxScreen?: Object;
   TriblScreen?: Object;
+  TribeChannelScreen?: Object;
+  TribeHighlightScreen?: Object;
+  TribeMembersScreen?: Object;
   LoginScreen?: Object;
+  LocationScreen?: Object;
   OTPScreen?: Object;
+  ViewAllScreen?: Object;
+  ViewAllTribes?: Object;
+  ViewAllMembers?: Object;
 };
 
 export type RootStackParamScreensList =
   | 'CommunitySearchScreen'
   | 'MemberDetailScreen'
+  | 'DirectMessageTab'
   | 'CommunityDetailScreen'
   | 'ConnectionChatScreen'
+  | 'ConnectionRequestScreen'
+  | 'ChannelChatScreen'
+  | 'MessageRequestTab'
+  | 'AccountSettingScreen'
+  | 'SelectCountry'
   | 'SelectCountryScreen'
   | 'CreateAccountScreen'
   | 'MemberDetailScreen'
+  | 'MessageRequestScreen'
   | 'AvatarUploadScreen'
   | 'IdentifyUserScreen'
   | 'UserLocationScreen'
@@ -63,14 +89,26 @@ export type RootStackParamScreensList =
   | 'NewMessageScreen'
   | 'CommunityScreen'
   | 'PassportScreen'
+  | 'MyConnectionScreen'
+  | 'MemberPassportScreen'
+  | 'GetStartedScreen'
   | 'NewChatSearch'
   | 'PrivacyScreen'
   | 'ProfileScreen'
   | 'SignupScreen'
+  | 'SplashScreen'
+  | 'SignupPassportScreen'
   | 'InboxScreen'
   | 'TriblScreen'
+  | 'TribeChannelScreen'
+  | 'TribeHighlightScreen'
+  | 'TribeMembersScreen'
   | 'LoginScreen'
-  | 'OTPScreen';
+  | 'LocationScreen'
+  | 'OTPScreen'
+  | 'ViewAllScreen'
+  | 'ViewAllMembers'
+  | 'ViewAllTribes';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

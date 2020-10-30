@@ -5,14 +5,12 @@ import './src/internationalization';
 //@ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 import AppRouter from './src';
-import './src/config';
 import ENVIRONMENT_VARIABLES from './src/config';
-import { tagScreenName } from './src/utils/uxcamHelper';
 
 enableScreens();
 
 RNUxcam.optIntoSchematicRecordings();
-RNUxcam.startWithKey(ENVIRONMENT_VARIABLES.UX_CAM);
+RNUxcam.startWithKey(ENVIRONMENT_VARIABLES.TRIBL_UX_CAM);
 RNUxcam.setAutomaticScreenNameTagging(false);
 
 export default function App() {
@@ -20,7 +18,6 @@ export default function App() {
 
   useEffect(() => {
     loadApp();
-    tagScreenName('SplashScreen');
   }, []);
 
   const loadApp = async () => {

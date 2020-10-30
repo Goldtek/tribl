@@ -1,5 +1,6 @@
 //@ts-ignore
 import RNUxcam from 'react-native-ux-cam';
+import { RootStackParamScreensList } from '../screens/types';
 
 //hides referenced view if reference exist
 export const hideSensitiveView = (ref: any) => {
@@ -26,8 +27,8 @@ export const logEventWithouProps = (key: string, name: string) => {
 };
 
 //tag current screen
-export const tagScreenName = (name: string) => {
-  RNUxcam.tagScreenName(name);
+export const tagScreenName = (screen: RootStackParamScreensList) => {
+  RNUxcam.tagScreenName(screen);
 };
 
 //hide sensitive screen

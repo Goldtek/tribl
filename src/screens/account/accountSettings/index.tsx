@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { AntDesign } from '@expo/vector-icons';
 import { useThemeContext } from '../../../theme';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionScreenProp extends NavigationInterface {}
