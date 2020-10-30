@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import {
   GiftedChat,
@@ -13,7 +13,8 @@ import {
   Platform,
   SafeAreaView,
   KeyboardAvoidingView,
-  View
+  View,
+  NativeScrollEvent
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -30,6 +31,7 @@ import {
 import { SEND_CHANNEL_MESSAGE } from '../../../graphql/server/mutations';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
+// import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
 import { Container } from './styles';
 
@@ -51,7 +53,12 @@ export default function ChatScreen(props: ScreenProp) {
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
+  const LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET = 100;
   const userDetails = userData?.myPassport;
+
+  // let lastVisible = useRef<FirebaseFirestoreTypes.QueryDocumentSnapshot<
+  //   FirebaseFirestoreTypes.DocumentData
+  // > | null>(null);
 
   const [messages, setMessages] = useState<MessageInterface[]>([]);
 
@@ -62,7 +69,9 @@ export default function ChatScreen(props: ScreenProp) {
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
-        const conversations = snapshot.docs.map((document, index) => {
+        console.tron({ snapshot, snapshotLength: snapshot.size });
+
+        const conversations = snapshot.docs.map((document) => {
           const message = document.data();
 
           if (message.senderId !== userId) {
@@ -80,12 +89,63 @@ export default function ChatScreen(props: ScreenProp) {
           } as MessageInterface;
         });
 
+        // lastVisible.current = snapshot.docs[snapshot.docs.length - 1];
+
         setMessages(conversations);
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  const isCloseToTop = (props: NativeScrollEvent) => {
+    const { layoutMeasurement, contentOffset, contentSize } = props;
+
+    const contentTopOffset =
+      contentSize.height - layoutMeasurement.height - contentOffset.y;
+    // if the screen is not full of messages, offset would be too big
+    return contentSize.height < layoutMeasurement.height
+      ? contentOffset.y > LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET // so we only check bottom offset
+      : contentTopOffset + LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET < 0;
+  };
+
+  // const loadMoreMessage = async () => {
+  //   const chatMessages = Firechat.getChannelMessages(
+  //     chatId,
+  //     lastVisible.current
+  //   );
+
+  //   const prevChatMessages = await chatMessages.get();
+
+  //   if (prevChatMessages.empty) {
+  //     return console.log('EMPTYEMPTYEMPTYEMPTYEMPTYEMPTYEMPTYEMPTYEMPTY');
+  //   }
+
+  //   const conversations = prevChatMessages.docs.map((document) => {
+  //     const message = document.data();
+
+  //     if (message.senderId !== userId) {
+  //       userPassport({ variables: { id: message?.senderId } });
+  //     }
+
+  //     return {
+  //       ...message,
+  //       _id: document.id,
+  //       user: {
+  //         ...message.sender,
+  //         _id: message?.senderId,
+  //         name: `${message.sender?.firstName} ${message.sender?.lastName}`
+  //       }
+  //     } as MessageInterface;
+  //   });
+
+  //   lastVisible.current =
+  //     prevChatMessages.docs[prevChatMessages.docs.length - 1];
+
+  //   console.tron({ conversations, conversationsLength: prevChatMessages.size });
+
+  //   setMessages([...messages, ...conversations]);
+  // };
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
@@ -138,6 +198,14 @@ export default function ChatScreen(props: ScreenProp) {
         )}
         listViewProps={{
           showsVerticalScrollIndicator: false,
+          scrollEventThrottle: 400,
+          // onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+          //   const { nativeEvent } = event;
+          //   if (!isCloseToTop(nativeEvent)) return;
+          //   loadMoreMessage();
+          // },
+          // onEndReached: loadMoreMessage,
+          // onEndReachedThreshold: 0.01,
           style: { marginBottom: RFValue(15) }
         }}
         textInputProps={{
