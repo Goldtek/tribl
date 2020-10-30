@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -15,6 +15,7 @@ import countriesDB, { CountryInterface } from '../../../libs/countries';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -29,6 +30,10 @@ export default function SelectCountryScreen(props: ScreenProp) {
     ),
     layoutProvider: getCountryLayout()
   });
+
+  useEffect(() => {
+    tagScreenName('SelectCountry');
+  }, []);
 
   const rowRenderer = (_type: React.ReactText, data: CountryInterface) => {
     if (data?.isEmpty) {

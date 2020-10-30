@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlatList, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Divider, Button, Text, TouchableRipple } from 'react-native-paper';
@@ -30,6 +30,7 @@ import { NavigationInterface } from '../../types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer, HeaderContainer } from './styles';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -58,6 +59,10 @@ export default function ChatScreen(props: ScreenProp) {
   const myConnection = connectionData?.myConnections;
   const allMembers = allMembersData?.Passport;
   const userId = userDetails?.id;
+
+  useEffect(() => {
+    tagScreenName('NewMessageScreen');
+  }, []);
 
   const filteredMembers = allMembers?.filter((member) => {
     return member.id !== userId && member.verified == true;

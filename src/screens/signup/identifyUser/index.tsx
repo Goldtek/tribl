@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, SafeAreaView } from 'react-native';
 import { ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -17,6 +17,7 @@ import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -42,6 +43,10 @@ export default function IdentifyUserScreen(props: ScreenProp) {
       }
     }
   });
+
+  useEffect(() => {
+    tagScreenName('IdentityScreen');
+  }, []);
 
   const handleInputError = () => {
     Toast.show(t(`signup.identifyUserScreen.inputError`));

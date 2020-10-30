@@ -65,6 +65,7 @@ import {
 } from './styles';
 import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import { tagScreenName } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -118,6 +119,10 @@ export default function PassportScreen(props: ScreenProp) {
   const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS);
 
   const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS);
+
+  useEffect(() => {
+    tagScreenName('PassportScreen');
+  }, []);
 
   const userDetails = userData?.myPassport;
   const identity = userDetails?.identity.map((item: any) => item.id);

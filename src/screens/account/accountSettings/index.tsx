@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { Text, TouchableRipple, Divider } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { useThemeContext } from '../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionScreenProp extends NavigationInterface {}
@@ -16,6 +17,10 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    tagScreenName('AccountSettingScreen');
+  }, []);
 
   return (
     <Container>

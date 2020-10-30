@@ -30,6 +30,11 @@ import {
 import { SEND_CHANNEL_MESSAGE } from '../../../graphql/server/mutations';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
+import {
+  hideSensitiveView,
+  tagScreenName,
+  logEvent
+} from '../../../utils/uxcamHelper';
 
 import { Container } from './styles';
 
@@ -42,6 +47,10 @@ export default function ChatScreen(props: ScreenProp) {
   const { navigation } = props;
   const { chatId } = props.route.params;
   const userId = fireAuth.currentUser?.uid as string;
+
+  useEffect(() => {
+    tagScreenName('ChannelChatScreen');
+  }, []);
 
   const { colors, fonts } = useThemeContext();
 
@@ -88,6 +97,7 @@ export default function ChatScreen(props: ScreenProp) {
   }, []);
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
+    logEvent('send channel message', { from: 'chat' });
     setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
 
     const [message] = messages;
@@ -109,6 +119,7 @@ export default function ChatScreen(props: ScreenProp) {
       <GiftedChat
         placeholder="Start typing ..."
         messages={messages}
+        ref={hideSensitiveView}
         user={{
           _id: userId,
           avatar: userDetails?.avatar,
@@ -121,6 +132,7 @@ export default function ChatScreen(props: ScreenProp) {
         onSend={onSend}
         renderSend={(props) => (
           <Send
+            ref={hideSensitiveView}
             {...props}
             containerStyle={{
               width: RFValue(40),
@@ -168,8 +180,9 @@ export default function ChatScreen(props: ScreenProp) {
         )}
         renderSystemMessage={(props) => {
           return (
-            <Container>
+            <Container ref={hideSensitiveView}>
               <Button
+                ref={hideSensitiveView}
                 onPress={() => handleNavigation(props.currentMessage?.user)}
                 labelStyle={{
                   marginHorizontal: 5,
@@ -221,7 +234,7 @@ export default function ChatScreen(props: ScreenProp) {
               }}
             />
           ) : (
-            <View>
+            <View ref={hideSensitiveView}>
               <Text
                 style={{
                   fontWeight: 'bold',

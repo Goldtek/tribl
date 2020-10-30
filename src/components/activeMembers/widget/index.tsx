@@ -15,6 +15,7 @@ import { fireAuth } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
+import { logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ActiveUserProp extends PassportInterface {
@@ -47,6 +48,7 @@ function ActiveModal(props: ActiveUserProp) {
   });
 
   const handleRequest = async () => {
+    logEvent('request connection', { from: 'passport' });
     try {
       await requestConnection();
       setPending(true);

@@ -15,6 +15,7 @@ import {
 import { GET_COMMUNITY_MEMBERS } from '../../graphql/server/query';
 import { CLOUDINARY_BANNER, CLOUDINARY_THUMBNAIL } from '../../constants';
 import { CommunityInterface } from '../../graphql/types';
+import { logEvent } from '../../utils/uxcamHelper';
 
 function RecommendedCommunity(props: CommunityInterface) {
   const { colors, fonts } = useThemeContext();
@@ -51,6 +52,7 @@ function RecommendedCommunity(props: CommunityInterface) {
   );
 
   const handleJoin = async () => {
+    logEvent('join community', { from: 'community' });
     try {
       await joinCommunity();
       setMember(true);
@@ -60,6 +62,7 @@ function RecommendedCommunity(props: CommunityInterface) {
   };
 
   const handleLeave = async () => {
+    logEvent('leave community', { from: 'community' });
     try {
       await leaveCommunity();
       setMember(false);

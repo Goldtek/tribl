@@ -15,6 +15,7 @@ import { ShowMessageNotificationBadge } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { IconContainer, Label, BadgeWrapper } from './styles';
+import { tagScreenName } from '../../utils/uxcamHelper';
 
 export type TabBarIconTypes = { color: string };
 
