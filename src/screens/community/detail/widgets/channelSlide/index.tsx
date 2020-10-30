@@ -60,7 +60,7 @@ export default function ChannelScreen(props: ScreenProp) {
     const isMember = item.participants[0]?.id;
 
     if (!isMember) {
-      logEvent('join', { from: 'channel' });
+      logEvent('join channel', { from: 'channel' });
       joinChannel({ variables: { payload: { channelId: item.id } } }).then(
         () => {
           sendMessage({

@@ -21,7 +21,7 @@ import { validateEmailInput } from '../../../utils/validateEmailInput';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -65,6 +65,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('CreateAccountScreen');
+    logEvent('create account', { from: 'signup' });
   }, []);
 
   const handleInputError = (error: string) => {

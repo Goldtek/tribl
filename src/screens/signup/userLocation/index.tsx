@@ -35,7 +35,7 @@ import ENVIRONMENT_VARIABLES from '../../../config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -49,6 +49,7 @@ export default function UserLocationScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('LocationSCreen');
+    logEvent('get user location', { from: 'signup' });
   }, []);
 
   const birthPlaceRef = useRef<GooglePlacesAutocomplete | null>(null);

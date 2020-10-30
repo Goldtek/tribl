@@ -17,7 +17,7 @@ import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -46,6 +46,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('IdentityScreen');
+    logEvent('select identity', { from: 'signup' });
   }, []);
 
   const handleInputError = () => {

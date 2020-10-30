@@ -15,7 +15,7 @@ import countriesDB, { CountryInterface } from '../../../libs/countries';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -33,6 +33,7 @@ export default function SelectCountryScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('SelectCountry');
+    logEvent('select country', { from: 'signup' });
   }, []);
 
   const rowRenderer = (_type: React.ReactText, data: CountryInterface) => {
