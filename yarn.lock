@@ -8521,6 +8521,11 @@ react-native-unimodules@~0.10.0:
     unimodules-sensors-interface "~5.2.1"
     unimodules-task-manager-interface "~5.2.1"
 
+react-native-ux-cam@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-ux-cam/-/react-native-ux-cam-5.2.0.tgz#81c9b9d233dd019f372bf665c398342fe5f4a36d"
+  integrity sha512-18iHV52ZfhIHm7JXNUVZxEGfapEyU1YYDsE6rceImKf0Y9dodmWihmV7BVxIM0sgkKFJqqcv1iASkBbGaQvKzQ==
+
 react-native-windows@^0.62.0-0:
   version "0.62.12"
   resolved "https://registry.yarnpkg.com/react-native-windows/-/react-native-windows-0.62.12.tgz#84baa0619532546ef63f2276c2f74ee02819c4ca"

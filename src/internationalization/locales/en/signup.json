@@ -108,6 +108,8 @@
     "firstName": "first name",
     "lastName": "last name",
     "dob": "add birthdate",
+    "bio": "bio",
+    "updateBio": "We will like to know you better",
     "citizenship": "citizenship",
     "locality": "locality",
     "identity": "identity",

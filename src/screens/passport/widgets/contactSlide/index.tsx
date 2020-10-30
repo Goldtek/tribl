@@ -8,16 +8,21 @@ import {
   TextInput,
   TouchableRipple
 } from 'react-native-paper';
+import * as Sentry from '@sentry/react-native';
 import { useTranslation } from 'react-i18next';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../theme';
-import { MyPassportInterface } from '../../../../graphql/types';
+import {
+  MyPassportInterface,
+  PassportInterface
+} from '../../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../utils/timesince';
 import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
 import IdentityModal from '../identityModal';
 import ContactSlideSkeleton from './skeleton';
+import Storage from '../../../../libs/storage';
 
 import {
   ContactContainer,
@@ -60,9 +65,9 @@ function contactSlide(props: ScreenProp) {
   );
   const userDetails = userData?.myPassport;
 
-  const currentLocation = userDetails?.currentLocation[0];
-
   const [isVisible, setIsVisible] = useState(false);
+
+  const [cache, setCache] = useState<PassportInterface | null>(null);
 
   const [state, setState] = useState<{
     date?: string;
@@ -103,6 +108,51 @@ function contactSlide(props: ScreenProp) {
     },
     birthPlaceInput: ''
   });
+
+  const currentLocation = userDetails?.currentLocation[0].country
+    ? userDetails?.currentLocation[0]
+    : cache?.currentLocation[0];
+
+  useEffect(() => {
+    (async () => {
+      if (userDetails?.id.length) {
+        await Storage.setUserPassport({ ...userDetails });
+      }
+    })();
+  }, [userData]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const passportInfo = await Storage.getUserPassport();
+        setCache({
+          ...cache,
+          ...passportInfo
+        });
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (cache) {
+      setState({
+        ...state,
+        date: `${cache?.dob?.month}/${cache?.dob?.day}/${cache?.dob?.year}`,
+        firstName: cache?.firstName,
+        lastName: cache?.lastName,
+        bio: cache?.bio,
+        birthPlace: {
+          lat: cache?.birthPlace[0]?.lat,
+          long: cache?.birthPlace[0]?.long,
+          country: cache?.birthPlace[0]?.country,
+          state: cache?.birthPlace[0]?.state,
+          city: cache?.birthPlace[0]?.city
+        }
+      });
+    }
+  }, [cache]);
 
   useEffect(() => {
     if (loading) return;
@@ -181,427 +231,421 @@ function contactSlide(props: ScreenProp) {
 
   const { firstName, lastName, bio, birthPlace } = state;
 
-  const placeholder = birthPlace.state + ', ' + birthPlace.country;
-
   useEffect(() => {
     props.getUserDetails(state);
   }, [state]);
 
   return (
-    <Fragment>
-      {loading ? (
-        <ContactSlideSkeleton />
-      ) : (
-        <ContactContainer>
-          <Container>
-            <FirstNameContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`signup.passportScreen.firstName`)}
-              </Title>
-            </FirstNameContainer>
-            <TextInput
-              value={firstName}
-              onChangeText={(firstName: string) =>
-                setState({
-                  ...state,
-                  firstName
-                })
-              }
-              disabled={click}
+    <ContactContainer>
+      <Container>
+        <FirstNameContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
+            }}
+          >
+            {t(`signup.passportScreen.firstName`)}
+          </Title>
+        </FirstNameContainer>
+        <TextInput
+          value={firstName}
+          onChangeText={(firstName: string) =>
+            setState({
+              ...state,
+              firstName
+            })
+          }
+          disabled={click}
+          style={{
+            height: 30,
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+            color: colors.PRIMARY_TEXT,
+            backgroundColor: colors.WHITE,
+            borderBottomWidth: click ? 0 : 2,
+            borderColor: colors.PRIMARY,
+            textTransform: 'capitalize'
+          }}
+        />
+      </Container>
+
+      <Container>
+        <LastNameContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
+            }}
+          >
+            {t(`signup.passportScreen.lastName`)}
+          </Title>
+        </LastNameContainer>
+        <TextInput
+          value={lastName}
+          onChangeText={(lastName: string) =>
+            setState({
+              ...state,
+              lastName
+            })
+          }
+          disabled={click}
+          style={{
+            height: 30,
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+            color: colors.PRIMARY_TEXT,
+            backgroundColor: colors.WHITE,
+            borderBottomWidth: click ? 0 : 2,
+            borderColor: colors.PRIMARY,
+            textTransform: 'capitalize'
+          }}
+        />
+      </Container>
+
+      <Container>
+        <BioContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
+            }}
+          >
+            {t(`community.memberPassport.bio`)}
+          </Title>
+        </BioContainer>
+        {bio ? (
+          <TextInput
+            value={bio}
+            multiline={true}
+            dense={true}
+            onChangeText={(bio: string) =>
+              setState({
+                ...state,
+                bio: bio
+              })
+            }
+            disabled={click}
+            style={{
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+              color: colors.PRIMARY_TEXT,
+              backgroundColor: colors.WHITE,
+              borderBottomWidth: click ? 0 : 2,
+              borderColor: colors.PRIMARY,
+              textTransform: 'capitalize'
+            }}
+          />
+        ) : (
+          <TextInput
+            placeholder={t(`community.memberPassport.bioInfo`)}
+            multiline={true}
+            dense={true}
+            onChangeText={(bio: string) =>
+              setState({
+                ...state,
+                bio: bio
+              })
+            }
+            disabled={click}
+            style={{
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+              color: colors.PRIMARY_TEXT,
+              backgroundColor: colors.WHITE,
+              borderBottomWidth: click ? 0 : 2,
+              borderColor: colors.PRIMARY,
+              textTransform: 'capitalize'
+            }}
+          />
+        )}
+      </Container>
+
+      <DOBContainer>
+        <Title
+          style={{
+            fontFamily: fonts.WORK_SANS_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.PRIMARY_TEXT,
+            textTransform: 'uppercase',
+            marginBottom: 0
+          }}
+        >
+          {t(`community.memberPassport.dob`)}
+        </Title>
+
+        <Button
+          mode="text"
+          uppercase={false}
+          labelStyle={{
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+            color: colors.PRIMARY_TEXT,
+            textTransform: 'capitalize',
+            paddingTop: 5,
+            paddingBottom: 5,
+            marginTop: 0,
+            marginLeft: 0
+          }}
+          contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
+          onPress={handleDatePicker}
+        >
+          {state.date ? state.date : t(`signup.passportScreen.dob`)}
+        </Button>
+
+        <DateTimePicker
+          isVisible={state.showDatePicker}
+          mode="date"
+          onConfirm={onChange}
+          onCancel={handleDatePicker}
+          maximumDate={new Date()}
+        />
+      </DOBContainer>
+
+      {birthPlace?.country ? (
+        <CitizenshipContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
+            }}
+          >
+            {t(`signup.passportScreen.citizenship`)}
+          </Title>
+
+          <Paragraph
+            style={{
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'capitalize'
+            }}
+          >
+            {birthPlace?.country}
+          </Paragraph>
+        </CitizenshipContainer>
+      ) : null}
+
+      {currentLocation ? (
+        <LocationContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase',
+              marginBottom: 10
+            }}
+          >
+            {t(`signup.passportScreen.locality`)}
+          </Title>
+
+          <Location>
+            <AntDesign
+              name="home"
+              color="#CACEE5"
+              size={20}
               style={{
-                height: 30,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                color: colors.PRIMARY_TEXT,
-                backgroundColor: colors.WHITE,
-                borderBottomWidth: click ? 0 : 2,
-                borderColor: colors.PRIMARY,
-                textTransform: 'capitalize'
+                padding: RFValue(12),
+                borderRadius: 4,
+                margin: 0,
+                marginRight: 10,
+                backgroundColor: colors.ACTION
               }}
             />
-          </Container>
-
-          <Container>
-            <LastNameContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`signup.passportScreen.lastName`)}
-              </Title>
-            </LastNameContainer>
-            <TextInput
-              value={lastName}
-              onChangeText={(lastName: string) =>
-                setState({
-                  ...state,
-                  lastName
-                })
-              }
-              disabled={click}
-              style={{
-                height: 30,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                color: colors.PRIMARY_TEXT,
-                backgroundColor: colors.WHITE,
-                borderBottomWidth: click ? 0 : 2,
-                borderColor: colors.PRIMARY,
-                textTransform: 'capitalize'
-              }}
-            />
-          </Container>
-
-          <Container>
-            <BioContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`community.memberPassport.bio`)}
-              </Title>
-            </BioContainer>
-            {bio ? (
-              <TextInput
-                value={bio}
-                multiline={true}
-                dense={true}
-                onChangeText={(bio: string) =>
-                  setState({
-                    ...state,
-                    bio: bio
-                  })
-                }
-                disabled={click}
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderBottomWidth: click ? 0 : 2,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
+            {!click ? (
+              <Fragment>
+                {userDetails?.birthPlace[0]?.city ||
+                cache?.birthPlace[0]?.city ? (
+                  <TouchableRipple
+                    style={{
+                      flex: 1,
+                      borderBottomWidth: 2,
+                      borderColor: colors.PRIMARY
+                    }}
+                    onPress={handleNavigation}
+                  >
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        backgroundColor: colors.WHITE,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {`${birthPlace?.city}, ${birthPlace?.state}`}
+                    </Paragraph>
+                  </TouchableRipple>
+                ) : (
+                  <TouchableRipple
+                    style={{
+                      flex: 1,
+                      borderBottomWidth: 2,
+                      borderColor: colors.PRIMARY
+                    }}
+                    onPress={handleNavigation}
+                  >
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        backgroundColor: colors.WHITE,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {`${birthPlace?.state}, ${birthPlace?.country}`}
+                    </Paragraph>
+                  </TouchableRipple>
+                )}
+              </Fragment>
             ) : (
-              <TextInput
-                placeholder={t(`community.memberPassport.bioInfo`)}
-                multiline={true}
-                dense={true}
-                onChangeText={(bio: string) =>
-                  setState({
-                    ...state,
-                    bio: bio
-                  })
-                }
-                disabled={click}
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderBottomWidth: click ? 0 : 2,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
+              <Fragment>
+                {userDetails?.birthPlace[0]?.city ? (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${birthPlace?.city}, ${birthPlace?.state}`}
+                  </Paragraph>
+                ) : (
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginBottom: 10
+                    }}
+                  >
+                    {`${birthPlace?.state}, ${birthPlace?.country}`}
+                  </Paragraph>
+                )}
+              </Fragment>
             )}
-          </Container>
+          </Location>
 
-          <DOBContainer>
-            <Title
+          <Location>
+            <SimpleLineIcons
+              name="location-pin"
+              color="#CACEE5"
+              size={20}
               style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginBottom: 0
+                padding: RFValue(12),
+                borderRadius: 4,
+                margin: 0,
+                marginRight: 10,
+                backgroundColor: colors.ACTION
               }}
-            >
-              {t(`community.memberPassport.dob`)}
-            </Title>
-
-            <Button
-              mode="text"
-              uppercase={false}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize',
-                paddingTop: 5,
-                paddingBottom: 5,
-                marginTop: 0,
-                marginLeft: 0
-              }}
-              contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
-              onPress={handleDatePicker}
-            >
-              {state.date ? state.date : t(`signup.passportScreen.dob`)}
-            </Button>
-
-            <DateTimePicker
-              isVisible={state.showDatePicker}
-              mode="date"
-              onConfirm={onChange}
-              onCancel={handleDatePicker}
-              maximumDate={new Date()}
             />
-          </DOBContainer>
-
-          {birthPlace?.country ? (
-            <CitizenshipContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`signup.passportScreen.citizenship`)}
-              </Title>
-
+            {userDetails?.currentLocation[0]?.city ||
+            cache?.currentLocation[0]?.city ? (
               <Paragraph
                 style={{
                   fontFamily: fonts.WORK_SANS_REGULAR,
                   fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                   color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize'
-                }}
-              >
-                {birthPlace?.country}
-              </Paragraph>
-            </CitizenshipContainer>
-          ) : null}
-
-          {currentLocation ? (
-            <LocationContainer>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase',
+                  textTransform: 'capitalize',
                   marginBottom: 10
                 }}
               >
-                {t(`signup.passportScreen.locality`)}
-              </Title>
-
-              <Location>
-                <AntDesign
-                  name="home"
-                  color="#CACEE5"
-                  size={20}
-                  style={{
-                    padding: RFValue(12),
-                    borderRadius: 4,
-                    margin: 0,
-                    marginRight: 10,
-                    backgroundColor: colors.ACTION
-                  }}
-                />
-                {!click ? (
-                  <Fragment>
-                    {userDetails?.birthPlace[0]?.city ? (
-                      <TouchableRipple
-                        style={{
-                          flex: 1,
-                          borderBottomWidth: 2,
-                          borderColor: colors.PRIMARY
-                        }}
-                        onPress={handleNavigation}
-                      >
-                        <Paragraph
-                          style={{
-                            fontFamily: fonts.WORK_SANS_REGULAR,
-                            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                            color: colors.PRIMARY_TEXT,
-                            backgroundColor: colors.WHITE,
-                            textTransform: 'capitalize'
-                          }}
-                        >
-                          {`${birthPlace?.city}, ${birthPlace?.state}`}
-                        </Paragraph>
-                      </TouchableRipple>
-                    ) : (
-                      <TouchableRipple
-                        style={{
-                          flex: 1,
-                          borderBottomWidth: 2,
-                          borderColor: colors.PRIMARY
-                        }}
-                        onPress={handleNavigation}
-                      >
-                        <Paragraph
-                          style={{
-                            fontFamily: fonts.WORK_SANS_REGULAR,
-                            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                            color: colors.PRIMARY_TEXT,
-                            backgroundColor: colors.WHITE,
-                            textTransform: 'capitalize'
-                          }}
-                        >
-                          {placeholder}
-                        </Paragraph>
-                      </TouchableRipple>
-                    )}
-                  </Fragment>
-                ) : (
-                  <Fragment>
-                    {userDetails?.birthPlace[0]?.city ? (
-                      <Paragraph
-                        style={{
-                          fontFamily: fonts.WORK_SANS_REGULAR,
-                          fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                          color: colors.PRIMARY_TEXT,
-                          textTransform: 'capitalize',
-                          marginBottom: 10
-                        }}
-                      >
-                        {`${birthPlace?.city}, ${birthPlace?.state}`}
-                      </Paragraph>
-                    ) : (
-                      <Paragraph
-                        style={{
-                          fontFamily: fonts.WORK_SANS_REGULAR,
-                          fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                          color: colors.PRIMARY_TEXT,
-                          textTransform: 'capitalize',
-                          marginBottom: 10
-                        }}
-                      >
-                        {`${birthPlace?.state}, ${birthPlace?.country}`}
-                      </Paragraph>
-                    )}
-                  </Fragment>
-                )}
-              </Location>
-
-              <Location>
-                <SimpleLineIcons
-                  name="location-pin"
-                  color="#CACEE5"
-                  size={20}
-                  style={{
-                    padding: RFValue(12),
-                    borderRadius: 4,
-                    margin: 0,
-                    marginRight: 10,
-                    backgroundColor: colors.ACTION
-                  }}
-                />
-                {userDetails?.currentLocation[0]?.city ? (
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${currentLocation?.city}, ${currentLocation.state}`}
-                  </Paragraph>
-                ) : (
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${currentLocation.state}, ${currentLocation.country}`}
-                  </Paragraph>
-                )}
-              </Location>
-            </LocationContainer>
-          ) : null}
-
-          <IdentityContainer>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginBottom: 10
-              }}
-            >
-              {t(`signup.passportScreen.identity`)}
-            </Title>
-
-            <Identities>
-              {SelectedIdentities?.length ? (
-                <Fragment>
-                  {SelectedIdentities.map((identity) => (
-                    <IdentityText key={identity}>{identity}</IdentityText>
-                  ))}
-                </Fragment>
-              ) : (
-                <Fragment>
-                  {userDetails?.identity.map((identity: any) => (
-                    <IdentityText key={identity.id}>
-                      {identity.name}
-                    </IdentityText>
-                  ))}
-                </Fragment>
-              )}
-              <TouchableRipple onPress={showIdentityModal(true)}>
-                <AddIdentity>+</AddIdentity>
-              </TouchableRipple>
-            </Identities>
-          </IdentityContainer>
-
-          {userDetails?.interest.length ? (
-            <InterestContainer>
-              <Title
+                {`${currentLocation?.city}, ${currentLocation.state}`}
+              </Paragraph>
+            ) : (
+              <Paragraph
                 style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                   color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
+                  textTransform: 'capitalize',
+                  marginBottom: 10
                 }}
               >
-                {t(`signup.passportScreen.interest`)}
-              </Title>
-              <IconButton
-                onPress={() => console.log('Pressed')}
-                icon="plus"
-                color={colors.PRIMARY_TEXT}
-                size={20}
-                style={{
-                  width: RFValue(50),
-                  height: RFValue(40),
-                  borderRadius: 4,
-                  margin: 0,
-                  marginTop: 10,
-                  borderColor: colors.INACTIVE,
-                  borderWidth: RFValue(1.2)
-                }}
-              />
-            </InterestContainer>
-          ) : null}
+                {`${currentLocation.state}, ${currentLocation.country}`}
+              </Paragraph>
+            )}
+          </Location>
+        </LocationContainer>
+      ) : null}
 
-          {/* 
+      <IdentityContainer>
+        <Title
+          style={{
+            fontFamily: fonts.WORK_SANS_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.PRIMARY_TEXT,
+            textTransform: 'uppercase',
+            marginBottom: 10
+          }}
+        >
+          {t(`signup.passportScreen.identity`)}
+        </Title>
+
+        <Identities>
+          {SelectedIdentities?.length ? (
+            <Fragment>
+              {SelectedIdentities.map((identity) => (
+                <IdentityText key={identity}>{identity}</IdentityText>
+              ))}
+            </Fragment>
+          ) : (
+            <Fragment>
+              {userDetails?.identity.map((identity: any) => (
+                <IdentityText key={identity.id}>{identity.name}</IdentityText>
+              ))}
+            </Fragment>
+          )}
+          <TouchableRipple onPress={showIdentityModal(true)}>
+            <AddIdentity>+</AddIdentity>
+          </TouchableRipple>
+        </Identities>
+      </IdentityContainer>
+
+      {userDetails?.interest.length ? (
+        <InterestContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
+            }}
+          >
+            {t(`signup.passportScreen.interest`)}
+          </Title>
+          <IconButton
+            onPress={() => console.log('Pressed')}
+            icon="plus"
+            color={colors.PRIMARY_TEXT}
+            size={20}
+            style={{
+              width: RFValue(50),
+              height: RFValue(40),
+              borderRadius: 4,
+              margin: 0,
+              marginTop: 10,
+              borderColor: colors.INACTIVE,
+              borderWidth: RFValue(1.2)
+            }}
+          />
+        </InterestContainer>
+      ) : null}
+
+      {/* 
       <LinkAccountsContainer>
         <Title
           style={{
@@ -686,14 +730,12 @@ function contactSlide(props: ScreenProp) {
       </LinkAccountsContainer>
      */}
 
-          <IdentityModal
-            isVisible={isVisible}
-            closeIdentityModal={showIdentityModal(false)}
-            identity={getIdentity}
-          />
-        </ContactContainer>
-      )}
-    </Fragment>
+      <IdentityModal
+        isVisible={isVisible}
+        closeIdentityModal={showIdentityModal(false)}
+        identity={getIdentity}
+      />
+    </ContactContainer>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Sentry from '@sentry/react-native';
 import { useTranslation } from 'react-i18next';
 import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
@@ -23,6 +23,7 @@ import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -35,6 +36,11 @@ export default function OTPScreen(props: ScreenProp) {
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    tagScreenName('OTPScreen');
+    logEvent('enter otp', { from: 'signup' });
+  }, []);
 
   const [otp, setOtp] = useState('');
 

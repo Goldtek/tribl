@@ -38,15 +38,21 @@ import {
   ConnectionCover,
   ButtonCover
 } from './styles';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 interface MemberDetailProps extends NavigationInterface {
   route: { params: { details: PassportInterface } };
 }
 
-export default function contactSlide(props: MemberDetailProps) {
+export default function PassportDetail(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
+
+  useEffect(() => {
+    tagScreenName('MemberPassportScreen');
+    logEvent('view member passport', { from: 'passport' });
+  }, []);
 
   const [state, setState] = useState({ loading: false, pending: false });
 
@@ -135,6 +141,7 @@ export default function contactSlide(props: MemberDetailProps) {
   const connections = singlePassport?.myConnections;
 
   const handleRequest = async () => {
+    logEvent('request connection', { from: 'passport' });
     setState({ ...state, loading: true });
     try {
       await requestConnection();

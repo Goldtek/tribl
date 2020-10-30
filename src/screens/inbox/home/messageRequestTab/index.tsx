@@ -9,6 +9,10 @@ import ChatCardSkeleton from '../../../../components/chatCardSkeleton';
 import { ConversationInterface } from '../../types';
 import { ROOM_TYPES } from '../../../../firebase/types';
 import { useThemeContext } from '../../../../theme';
+import {
+  hideSensitiveView,
+  tagScreenName
+} from '../../../../utils/uxcamHelper';
 
 import { Container } from './styles';
 
@@ -17,12 +21,15 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function ChannelScreen(props: ScreenProp) {
   const { fonts } = useThemeContext();
-
   const [requestHistory, setRequestHistory] = useState(true);
 
   const [messageRequests, setMessageRequests] = useState<
     ConversationInterface[]
   >([]);
+
+  useEffect(() => {
+    tagScreenName('MessageRequestTab');
+  }, []);
 
   useEffect(() => {
     let unsubscribe: any = null;
@@ -77,6 +84,7 @@ export default function ChannelScreen(props: ScreenProp) {
     <FlatList
       bounces={false}
       data={messageRequests}
+      ref={hideSensitiveView}
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),

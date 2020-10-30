@@ -13,8 +13,12 @@
     "androidNavigationBar": {
       "visible": "sticky-immersive"
     },
+    "ios": {
+      "bundleIdentifier": "com.thetriblnetwork.tribl"
+    },
     "android": {
-      "enableDangerousExperimentalLeanBuilds": true
+      "enableDangerousExperimentalLeanBuilds": true,
+      "useNextNotificationsApi": true
     }
   }
 }
