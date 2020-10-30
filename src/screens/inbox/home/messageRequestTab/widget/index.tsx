@@ -15,6 +15,7 @@ import { fireAuth } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
+import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface RequestChatCard extends ConversationInterface {}
@@ -91,7 +92,7 @@ function RequestChatCard(props: RequestChatCard) {
           />
         )}
 
-        <NameContainer>
+        <NameContainer ref={hideSensitiveView}>
           {receiverPassport?.firstName ? (
             <Title
               style={{

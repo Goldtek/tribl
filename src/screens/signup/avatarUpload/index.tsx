@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ImageResizer from 'react-native-image-resizer';
 import * as Sentry from '@sentry/react-native';
 import { ProgressBar, Title, Paragraph, Subheading } from 'react-native-paper';
@@ -22,6 +22,7 @@ import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, GradientContainer } from './styles';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -120,6 +121,10 @@ export default function AvatarUploadScreen(props: ScreenProp) {
       Sentry.captureException(error);
     }
   };
+
+  useEffect(() => {
+    tagScreenName('AvatarUploadScreen');
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>

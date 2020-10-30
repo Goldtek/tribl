@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/query'
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, MenuBadgeWrapper } from './styles';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionScreenProp extends NavigationInterface {}
@@ -32,6 +33,10 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeAreaInsets();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    tagScreenName('MyConnectionScreen');
+  }, []);
 
   const { data, refetch } = useQuery<MyConnectionsInterface>(
     GET_MY_CONNECTIONS
@@ -84,7 +89,10 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         headerLeft={() => (
           <TouchableHighlight
             {...props}
-            onPress={props.navigation.toggleDrawer}
+            onPress={() => {
+              props.navigation.toggleDrawer();
+              logEvent('open drawer', { from: 'community' });
+            }}
             underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
             style={{
               height: RFValue(40),

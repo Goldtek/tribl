@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface MemberSlideProp extends NavigationInterface {
@@ -33,6 +34,10 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    tagScreenName('TribeMembersScreen');
+  }, []);
 
   const { data } = useQuery<CommunityMembersRequestInterface>(
     GET_COMMUNITY_MEMBERS,

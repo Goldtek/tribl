@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   createStackNavigator,
   TransitionPresets
@@ -17,6 +17,7 @@ import { StoreInterface, UpdatePassportInterface } from '../../graphql/types';
 import { UPDATE_USER_PASSPORT } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
+import { tagScreenName } from '../../utils/uxcamHelper';
 
 const SignupStack = createStackNavigator();
 let routeNames = [] as string[];
@@ -24,6 +25,10 @@ let routeNames = [] as string[];
 export default function SignupNavigator() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    tagScreenName('SignupScreen');
+  }, []);
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
 

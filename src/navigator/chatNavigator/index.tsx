@@ -14,6 +14,7 @@ import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { useQuery } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
+import { tagScreenName, logEvent } from '../../utils/uxcamHelper';
 
 const ChatStack = createStackNavigator();
 
@@ -62,7 +63,10 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
           headerLeft: (props) => (
             <TouchableHighlight
               {...props}
-              onPress={navigation.toggleDrawer}
+              onPress={() => {
+                navigation.toggleDrawer();
+                logEvent('open drawer', { from: 'community' });
+              }}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
               style={{
                 height: RFValue(40),
@@ -91,7 +95,10 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
                 height: RFValue(30),
                 marginBottom: RFValue(20)
               }}
-              onPress={() => navigation.navigate('NewMessageScreen')}
+              onPress={() => {
+                navigation.navigate('NewMessageScreen');
+                logEvent('tap chat icon', { from: 'chat' });
+              }}
               labelStyle={{ paddingLeft: 3 }}
             >
               <Feather name="message-square" color={colors.WHITE} size={20} />

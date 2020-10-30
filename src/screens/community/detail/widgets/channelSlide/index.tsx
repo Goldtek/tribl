@@ -1,4 +1,4 @@
-import React, { useMemo, Fragment } from 'react';
+import React, { useMemo, Fragment, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -22,6 +22,7 @@ import {
   MyPassportInterface
 } from '../../../../../graphql/types';
 import { useTranslation } from 'react-i18next';
+import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -30,6 +31,10 @@ export default function ChannelScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    tagScreenName('TribeChannelScreen');
+  }, []);
 
   const detail = props.route;
   const { communityDetails } = detail;
@@ -55,6 +60,7 @@ export default function ChannelScreen(props: ScreenProp) {
     const isMember = item.participants[0]?.id;
 
     if (!isMember) {
+      logEvent('join', { from: 'channel' });
       joinChannel({ variables: { payload: { channelId: item.id } } }).then(
         () => {
           sendMessage({

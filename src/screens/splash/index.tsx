@@ -9,6 +9,7 @@ import Storage from '../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { tagScreenName } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -17,6 +18,10 @@ export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
   const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN);
+
+  useEffect(() => {
+    tagScreenName('SplashScreen');
+  }, []);
 
   useEffect(() => {
     handleAuthentication();

@@ -36,6 +36,7 @@ import {
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -82,6 +83,7 @@ export default function HomeScreen(props: ScreenProp) {
   const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
 
   useEffect(() => {
+    tagScreenName('TriblScreen');
     getPopularCommunities();
     getConnectionRequest();
     getNearbyMembers();
@@ -103,7 +105,7 @@ export default function HomeScreen(props: ScreenProp) {
   const recommendedMembers = membersData?.recommendedMembers;
   const communities = communityData?.recommendedCommunities;
 
-  const navigateToSearch = (index: number) => () => {
+  const navigateToSearch = (index: number, event: any) => () => {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
 
@@ -190,7 +192,10 @@ export default function HomeScreen(props: ScreenProp) {
 
             <Button
               mode="text"
-              onPress={navigateToSearch(0)}
+              onPress={navigateToSearch(
+                0,
+                logEvent('view more members', { from: 'community' })
+              )}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -234,7 +239,10 @@ export default function HomeScreen(props: ScreenProp) {
 
             <Button
               mode="text"
-              onPress={navigateToSearch(1)}
+              onPress={navigateToSearch(
+                1,
+                logEvent('view more tribes', { from: 'community' })
+              )}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),

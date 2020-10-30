@@ -42,6 +42,11 @@ import {
 import hexToRGB from '../../../utils/hexToRGB';
 import { GET_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
 import { CHANGE_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
+import {
+  hideSensitiveView,
+  tagScreenName,
+  logEvent
+} from '../../../utils/uxcamHelper';
 
 import { Cover, TextContainer } from './styles';
 
@@ -54,6 +59,10 @@ export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const modalizeRef = useRef<Modalize>(null);
+
+  useEffect(() => {
+    tagScreenName('MessageRequestScreen');
+  }, []);
 
   const {
     chatId,
@@ -152,6 +161,7 @@ export default function ChatScreen(props: ScreenProp) {
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
+    logEvent('message request', { from: 'chat' });
 
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages)
@@ -167,6 +177,7 @@ export default function ChatScreen(props: ScreenProp) {
       case 'block':
         try {
           await blockMessageRequest();
+          logEvent('block message request', { from: 'chat' });
           navigation.goBack();
         } catch (error) {
           Sentry.captureException(error);
@@ -177,6 +188,7 @@ export default function ChatScreen(props: ScreenProp) {
       case 'delete':
         try {
           await deleteMessageRequest();
+          logEvent('delete message request', { from: 'chat' });
           navigation.goBack();
         } catch (error) {
           Sentry.captureException(error);
@@ -207,6 +219,7 @@ export default function ChatScreen(props: ScreenProp) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <GiftedChat
+        ref={hideSensitiveView}
         placeholder="Start typing ..."
         messages={messages}
         user={{
@@ -371,7 +384,10 @@ export default function ChatScreen(props: ScreenProp) {
               delete
             </Button>
             <Button
-              onPress={acceptMessageRequest}
+              onPress={() => {
+                acceptMessageRequest();
+                logEvent('accept message request', { from: 'chat' });
+              }}
               loading={acceptRequestLoading}
               mode="text"
               labelStyle={{
