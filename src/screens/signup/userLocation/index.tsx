@@ -32,10 +32,10 @@ import { useThemeContext } from '../../../theme';
 import Input from '../../../components/input';
 import LoadingModal from '../../../components/loadingModal';
 import ENVIRONMENT_VARIABLES from '../../../config';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -48,7 +48,7 @@ export default function UserLocationScreen(props: ScreenProp) {
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
   useEffect(() => {
-    tagScreenName('LocationSCreen');
+    tagScreenName('LocationScreen');
     logEvent('get user location', { from: 'signup' });
   }, []);
 

@@ -18,10 +18,10 @@ import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/connectionRequestSkeleton';
 import { PassportInterface } from '../../../graphql/types';
 import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, MenuBadgeWrapper } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ConnectionRequestScreenProp extends NavigationInterface {}

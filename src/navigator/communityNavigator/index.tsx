@@ -20,7 +20,7 @@ import {
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { DEVICE_OS } from '../../utils/device';
-import { tagScreenName, logEvent } from '../../utils/uxcamHelper';
+import { logEvent } from '../../utils/uxcamHelper';
 
 const CommunityStack = createStackNavigator();
 

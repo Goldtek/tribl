@@ -10,12 +10,10 @@ import CommunityIcon from '../../../assets/icons/communityIcon';
 import PassportIcon from '../../../assets/icons/passportIcon';
 import InboxIcon from '../../../assets/icons/inboxIcon';
 import ChatNavigator from '../chatNavigator';
-import Screens from '../../screens';
 import { ShowMessageNotificationBadge } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { IconContainer, Label, BadgeWrapper } from './styles';
-import { tagScreenName } from '../../utils/uxcamHelper';
 
 export type TabBarIconTypes = { color: string };
 

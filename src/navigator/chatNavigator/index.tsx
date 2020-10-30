@@ -14,7 +14,7 @@ import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { useQuery } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
-import { tagScreenName, logEvent } from '../../utils/uxcamHelper';
+import { logEvent } from '../../utils/uxcamHelper';
 
 const ChatStack = createStackNavigator();
 
