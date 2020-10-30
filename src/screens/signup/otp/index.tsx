@@ -23,7 +23,7 @@ import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -39,6 +39,7 @@ export default function OTPScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('OTPScreen');
+    logEvent('enter otp', { from: 'signup' });
   }, []);
 
   const [otp, setOtp] = useState('');

@@ -28,7 +28,7 @@ import {
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -53,6 +53,7 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('SignupPassportScreen');
+    logEvent('review passport', { from: 'signup' });
   }, []);
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);

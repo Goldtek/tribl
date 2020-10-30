@@ -27,7 +27,7 @@ import GradientButton from '../../../components/gradientButton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -42,6 +42,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('GetStartedScreen');
+    logEvent('get started', { from: 'signup' });
   }, []);
 
   const userDetails = data?.userDetails;
