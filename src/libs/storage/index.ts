@@ -40,7 +40,8 @@ class Storage {
       const userRegInfo = await this.getUserRegistration();
       await this.MMKV?.setMapAsync(USER_REG_INFO, {
         ...userRegInfo,
-        ...regInfo
+        ...regInfo,
+        user: { ...userRegInfo.user, ...regInfo?.user }
       });
     } catch (error) {
       return this.MMKV?.setMapAsync(USER_REG_INFO, regInfo);
