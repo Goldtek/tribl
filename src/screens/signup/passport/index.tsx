@@ -158,7 +158,13 @@ export default function PassportScreen(props: ScreenProp) {
                   color: colors.WHITE
                 }}
               >
-                {`${userDetails?.currentLocation[0]?.city}, ${userDetails?.currentLocation[0]?.state}`}
+                {`${
+                  userDetails?.currentLocation[0]?.city ||
+                  userRegInfo?.user?.currentLocation?.city
+                }, ${
+                  userDetails?.currentLocation[0]?.state ||
+                  userRegInfo?.user?.currentLocation?.state
+                }`}
               </Paragraph>
               {/* 
               <ImageIconContainer>
