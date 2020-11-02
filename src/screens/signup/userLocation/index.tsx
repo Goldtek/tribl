@@ -33,6 +33,7 @@ import Input from '../../../components/input';
 import LoadingModal from '../../../components/loadingModal';
 import ENVIRONMENT_VARIABLES from '../../../config';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -91,7 +92,7 @@ export default function UserLocationScreen(props: ScreenProp) {
     Toast.show(t(`signup.userLocationScreen.${error}`));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const { locationInput, birthPlaceInput } = state;
 
     if (!locationInput || !birthPlaceInput) {
@@ -100,12 +101,26 @@ export default function UserLocationScreen(props: ScreenProp) {
 
     setState({ ...state, loading: true });
 
+    await Storage.setUserRegistration({
+      route: 'SignupPassportScreen',
+      user: {
+        currentLocation: {
+          ...state.currentLocation,
+          __typename: 'currentLocation'
+        },
+        birthPlace: { ...state.birthPlace, __typename: 'birthPlace' }
+      }
+    });
+
     setTimeout(() => {
       setState({ ...state, loading: false, isModalVisible: true });
     }, 300);
 
     setTimeout(() => {
-      navigation.reset({ index: 0, routes: [{ name: 'PassportScreen' }] });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'SignupPassportScreen' }]
+      });
       setState({ ...state, loading: false, isModalVisible: false });
       addUserDetails();
     }, 3500);
