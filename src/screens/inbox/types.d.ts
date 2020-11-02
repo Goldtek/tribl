@@ -39,6 +39,7 @@ interface OnlinePresence {
 
 interface ConversationUser {
   id: string;
+  readAt: Date;
   avatar: string;
   lastName: string;
   firstName: string;
@@ -56,10 +57,5 @@ export interface ConversationInterface {
     createdAt: Date;
     receiverId: string;
   };
-  members: {
-    id: string;
-    readAt: Date;
-    receiver?: ConversationUser;
-    sender?: ConversationUser;
-  }[];
+  members: ConversationUser[];
 }
