@@ -45,7 +45,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   });
 
   useEffect(() => {
-    tagScreenName('IdentityScreen');
+    tagScreenName('IdentifyUserScreen');
     logEvent('select identity', { from: 'signup' });
   }, []);
 
@@ -62,7 +62,10 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
     await Storage.setUserRegistration({
       route: 'UserLocationScreen',
-      user: { identity: [...Array.from(state.selectedId.values())] }
+      user: {
+        identity: [...Array.from(state.selectedId.values())],
+        identityName: [...Array.from(state.selectedIdentities.values())]
+      }
     });
 
     navigation.navigate('UserLocationScreen');
