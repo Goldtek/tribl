@@ -28,29 +28,29 @@ function DirectChatCard(props: DirectChatProp) {
 
   const userId = fireAuth.currentUser?.uid;
 
-  const [sender, receiver] = members.sort((a) => {
+  const [senderPassport, receiverPassport] = members.sort((a) => {
     if (a.id !== userId) return -1;
     return 0;
   });
 
   const { data: passportData } = useQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
-    { variables: { id: sender.id } }
+    { variables: { id: senderPassport.id } }
   );
 
-  const receiverPassport = passportData?.singlePassport;
-  const title = `${receiverPassport?.firstName} ${receiverPassport?.lastName}`;
+  const receiverPassportData = passportData?.singlePassport;
+  const title = `${receiverPassport.receiver?.firstName} ${receiverPassport.receiver?.lastName}`;
 
   const showNotificationBadge =
     lastMessage.receiverId === userId &&
-    lastMessage.createdAt >= receiver.readAt;
+    lastMessage.createdAt >= receiverPassport.readAt;
 
   const handleNavigation = () => {
     navigation.navigate('DirectChatScreen', {
       title,
       chatId,
       receiverId: receiverPassport?.id,
-      ...receiverPassport
+      ...receiverPassportData
     });
   };
 
@@ -72,11 +72,11 @@ function DirectChatCard(props: DirectChatProp) {
       onPress={handleNavigation}
     >
       <Fragment>
-        {receiverPassport?.avatar ? (
+        {receiverPassport.receiver?.avatar ? (
           <FastImage
             resizeMode={FastImage.resizeMode.cover}
             source={{
-              uri: receiverPassport?.avatar,
+              uri: receiverPassport.receiver?.avatar,
               priority: FastImage.priority.high
             }}
             style={{ width: RFValue(50), height: RFValue(50), borderRadius: 4 }}
@@ -95,7 +95,7 @@ function DirectChatCard(props: DirectChatProp) {
 
         <NameContainer ref={hideSensitiveView}>
           <Fragment>
-            {receiverPassport?.firstName ? (
+            {title ? (
               <Title
                 style={{
                   color: colors.PRIMARY_TEXT,
