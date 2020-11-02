@@ -28,29 +28,29 @@ function DirectChatCard(props: DirectChatProp) {
 
   const userId = fireAuth.currentUser?.uid;
 
-  const [senderPassport, receiverPassport] = members.sort((a) => {
+  const [sender, receiver] = members.sort((a) => {
     if (a.id !== userId) return -1;
     return 0;
   });
 
   const { data: passportData } = useQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
-    { variables: { id: senderPassport.id } }
+    { variables: { id: sender.id } }
   );
 
-  const receiverPassportData = passportData?.singlePassport;
-  const title = `${receiverPassport.receiver?.firstName} ${receiverPassport.receiver?.lastName}`;
+  const receiverPassport = passportData?.singlePassport;
+  const title = `${sender.firstName} ${sender.lastName}`;
 
   const showNotificationBadge =
     lastMessage.receiverId === userId &&
-    lastMessage.createdAt >= receiverPassport.readAt;
+    lastMessage.createdAt >= receiver.readAt;
 
   const handleNavigation = () => {
     navigation.navigate('DirectChatScreen', {
       title,
       chatId,
-      receiverId: receiverPassport?.id,
-      ...receiverPassportData
+      receiverId: receiver.id,
+      ...receiverPassport
     });
   };
 
@@ -72,11 +72,11 @@ function DirectChatCard(props: DirectChatProp) {
       onPress={handleNavigation}
     >
       <Fragment>
-        {receiverPassport.receiver?.avatar ? (
+        {sender.avatar ? (
           <FastImage
             resizeMode={FastImage.resizeMode.cover}
             source={{
-              uri: receiverPassport.receiver?.avatar,
+              uri: sender.avatar,
               priority: FastImage.priority.high
             }}
             style={{ width: RFValue(50), height: RFValue(50), borderRadius: 4 }}
