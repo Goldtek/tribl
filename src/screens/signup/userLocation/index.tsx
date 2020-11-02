@@ -47,11 +47,7 @@ export default function UserLocationScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
-
-  useEffect(() => {
-    tagScreenName('LocationScreen');
-    logEvent('get user location', { from: 'signup' });
-  }, []);
+  const [timeoutError, setTimeoutError] = useState(0);
 
   const birthPlaceRef = useRef<GooglePlacesAutocomplete | null>(null);
 
@@ -77,6 +73,29 @@ export default function UserLocationScreen(props: ScreenProp) {
     isVisible: false
   });
 
+  const handleInputError = (error: string) => {
+    Toast.show(t(`signup.userLocationScreen.${error}`));
+  };
+
+  useEffect(() => {
+    tagScreenName('LocationScreen');
+    logEvent('get user location', { from: 'signup' });
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!state.isVisible) return;
+      setTimeoutError(timeoutError + 1);
+
+      if (timeoutError === 5 && !state.birthPlaceInput) {
+        setState({ ...state, loading: false });
+        handleInputError('currentPosition');
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeoutError, state.isVisible, state.birthPlaceInput]);
+
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
@@ -87,10 +106,6 @@ export default function UserLocationScreen(props: ScreenProp) {
       }
     }
   });
-
-  const handleInputError = (error: string) => {
-    Toast.show(t(`signup.userLocationScreen.${error}`));
-  };
 
   const handleSubmit = async () => {
     const { locationInput, birthPlaceInput } = state;
@@ -142,14 +157,10 @@ export default function UserLocationScreen(props: ScreenProp) {
 
       setState({ ...state, isVisible: true });
 
-      const { coords, timestamp } = await Location.getCurrentPositionAsync({
+      const { coords } = await Location.getCurrentPositionAsync({
         enableHighAccuracy: true,
         accuracy: Location.Accuracy.Highest
       });
-
-      if (!timestamp) {
-        return handleInputError('currentPosition');
-      }
 
       const [currentLocation] = await Location.reverseGeocodeAsync({
         latitude: coords.latitude,
@@ -171,6 +182,7 @@ export default function UserLocationScreen(props: ScreenProp) {
         }
       });
     } catch (error) {
+      handleInputError('currentPosition');
       Sentry.captureException(error);
     }
   };
