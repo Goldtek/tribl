@@ -1,6 +1,6 @@
 {
   "bottomLabels": {
-    "community": "tribl",
+    "community": "community",
     "inbox": "inbox",
     "passport": "passport"
   },
@@ -68,7 +68,7 @@
   },
 
   "sideNav": {
-    "community": "tribl",
+    "community": "community",
     "chat": "chat",
     "request": "connection requests",
     "connection": "my connections",

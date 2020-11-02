@@ -13,11 +13,14 @@ import { DEVICE_OS } from '../../utils/device';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { GET_USER_DETAILS } from '../../graphql/cache/query';
-import { StoreInterface, UpdatePassportInterface } from '../../graphql/types';
+import {
+  StoreInterface,
+  UpdatePassportInterface,
+  PassportInterface
+} from '../../graphql/types';
 import { UPDATE_USER_PASSPORT } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
-import { tagScreenName } from '../../utils/uxcamHelper';
 
 const SignupStack = createStackNavigator();
 let routeNames = [] as string[];
@@ -26,17 +29,21 @@ export default function SignupNavigator() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    tagScreenName('SignupScreen');
-  }, []);
-
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
 
   const [getUserProfile] = useLazyQuery(GET_USER_PASSPORT);
 
   const [update, setUpdate] = useState(false);
 
+  const [userDetail, setUserDetail] = useState<
+    PassportInterface | null | undefined
+  >(undefined);
+
   const userDetails = data?.userDetails;
+
+  useEffect(() => {
+    setUserDetail(data?.userDetails);
+  }, [data?.userDetails]);
 
   const currentLocation = userDetails?.currentLocation[0];
   const birthPlace = userDetails?.birthPlace[0];
@@ -85,18 +92,31 @@ export default function SignupNavigator() {
                 identity: userRegInfo.user?.identity || userDetails?.identity,
                 interest: userDetails?.interest,
                 currentLocation: {
-                  lat: currentLocation?.lat,
-                  long: currentLocation?.long,
-                  country: currentLocation?.country,
-                  state: currentLocation?.state,
-                  city: currentLocation?.city
+                  lat:
+                    currentLocation?.lat ||
+                    userRegInfo?.user?.currentLocation?.lat,
+                  long:
+                    currentLocation?.long ||
+                    userRegInfo?.user?.currentLocation?.long,
+                  country:
+                    currentLocation?.country ||
+                    userRegInfo?.user?.currentLocation?.country,
+                  state:
+                    currentLocation?.state ||
+                    userRegInfo?.user?.currentLocation?.state,
+                  city:
+                    currentLocation?.city ||
+                    userRegInfo?.user?.currentLocation?.city
                 },
                 birthPlace: {
-                  lat: birthPlace?.lat,
-                  long: birthPlace?.long,
-                  country: birthPlace?.country,
-                  state: birthPlace?.state,
-                  city: birthPlace?.city
+                  lat: birthPlace?.lat || userRegInfo?.user?.birthPlace?.lat,
+                  long: birthPlace?.long || userRegInfo?.user?.birthPlace?.long,
+                  country:
+                    birthPlace?.country ||
+                    userRegInfo?.user?.birthPlace?.country,
+                  state:
+                    birthPlace?.state || userRegInfo?.user?.birthPlace?.state,
+                  city: birthPlace?.city || userRegInfo?.user?.birthPlace?.city
                 }
               }
             }
@@ -104,7 +124,6 @@ export default function SignupNavigator() {
 
           if (data?.updatePassport.success) {
             setUpdate(!update);
-
             await Storage.setUserRegistration({
               route: 'CommunityScreen',
               completed: true
@@ -192,7 +211,7 @@ export default function SignupNavigator() {
       />
 
       <SignupStack.Screen
-        name="PassportScreen"
+        name="SignupPassportScreen"
         component={Screens.PassportScreen}
         options={{
           headerTitle: () => null,
