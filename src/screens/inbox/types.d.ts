@@ -37,6 +37,13 @@ interface OnlinePresence {
   lastOnline?: number;
 }
 
+interface ConversationUser {
+  id: string;
+  avatar: string;
+  lastName: string;
+  firstName: string;
+}
+
 export interface ConversationInterface {
   id: string;
   avatar: string;
@@ -49,5 +56,10 @@ export interface ConversationInterface {
     createdAt: Date;
     receiverId: string;
   };
-  members: { id: string; readAt: Date }[];
+  members: {
+    id: string;
+    readAt: Date;
+    receiver?: ConversationUser;
+    sender?: ConversationUser;
+  }[];
 }
