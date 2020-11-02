@@ -243,6 +243,9 @@ interface RegistrationInfo {
     email?: string;
     avatar?: string;
     identity?: string[];
+    identityName?: string[];
+    birthPlace?: Location;
+    currentLocation?: Location;
   };
 }
 
