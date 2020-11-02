@@ -19,9 +19,9 @@ cache.writeData<StoreInterface>({
       bio: '',
       dob: {
         formatted: null,
-        day: 0,
-        month: 0,
-        year: 0,
+        day: null,
+        month: null,
+        year: null,
         hour: 0,
         minute: 0,
         second: 0,
