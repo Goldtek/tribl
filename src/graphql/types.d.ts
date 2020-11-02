@@ -57,12 +57,12 @@ enum SubscriptionEventType {
 }
 
 type _Neo4jDate = {
-  day: number;
-  year: number;
-  hour: number;
-  month: number;
-  minute: number;
-  second: number;
+  day: number | null;
+  year: number | null;
+  hour: number | null;
+  month: number | null;
+  minute: number | null;
+  second: number | null;
   __typename: string;
   formatted: string | null;
   timeZoneId: number | null;
@@ -243,6 +243,9 @@ interface RegistrationInfo {
     email?: string;
     avatar?: string;
     identity?: string[];
+    identityName?: string[];
+    birthPlace?: Location;
+    currentLocation?: Location;
   };
 }
 

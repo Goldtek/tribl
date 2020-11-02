@@ -77,8 +77,6 @@ export default function ChatScreen(props: ScreenProp) {
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
-        console.tron({ snapshot, snapshotLength: snapshot.size });
-
         const conversations = snapshot.docs.map((document) => {
           const message = document.data();
 

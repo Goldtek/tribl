@@ -9,7 +9,7 @@
     "AvatarUploadScreen": "3 of 5 steps",
     "IdentifyUserScreen": "4 of 5 steps",
     "UserLocationScreen": "5 of 5 steps",
-    "PassportScreen": ""
+    "SignupPassportScreen": ""
   },
 
   "getStartedScreen": {
