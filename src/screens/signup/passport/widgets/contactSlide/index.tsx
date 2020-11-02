@@ -1,4 +1,5 @@
-import React, { Fragment, useState, useCallback } from 'react';
+import React, { Fragment, useState, useCallback, useEffect } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
 import {
   Button,
@@ -14,7 +15,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { GET_USER_DETAILS } from '../../../../../graphql/cache/query';
-import { StoreInterface } from '../../../../../graphql/types';
+import { StoreInterface, RegistrationInfo } from '../../../../../graphql/types';
+import Storage from '../../../../../libs/storage';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../../utils/timesince';
 import { ADD_USER_DETAILS } from '../../../../../graphql/cache/mutations';
@@ -52,6 +54,9 @@ export default function contactSlide() {
   );
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
+
+  const [userRegInfo, setUserRegInfo] = useState<RegistrationInfo | null>(null);
+
   const userDetails = data?.userDetails;
 
   const [isVisible, setIsVisible] = useState(false);
@@ -90,6 +95,38 @@ export default function contactSlide() {
     disableBio: true,
     selectedIdentity: [],
     selectedId: []
+  });
+
+  const [location, setLocation] = useState<{
+    currentLocation: {
+      state: string | null | undefined;
+      country: string | null | undefined;
+      city: string | null | undefined;
+      lat: number | null | undefined;
+      long: number | null | undefined;
+    };
+    birthPlace: {
+      state: string | null | undefined;
+      country: string | null | undefined;
+      city: string | null | undefined;
+      lat: number | null | undefined;
+      long: number | null | undefined;
+    };
+  }>({
+    currentLocation: {
+      state: '',
+      country: '',
+      city: '',
+      lat: 0,
+      long: 0
+    },
+    birthPlace: {
+      state: '',
+      country: '',
+      city: '',
+      lat: 0,
+      long: 0
+    }
   });
 
   const showIdentityModal = useCallback(
@@ -143,8 +180,46 @@ export default function contactSlide() {
     }
   });
 
-  const currentLocation = userDetails?.currentLocation[0];
-  const birthPlace = userDetails?.birthPlace[0];
+  useEffect(() => {
+    (async () => {
+      try {
+        const regInfo = await Storage.getUserRegistration();
+        setUserRegInfo({ ...userRegInfo, ...regInfo });
+      } catch (error) {
+        Sentry.captureException(error);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    setState({
+      ...state,
+      firstName: userRegInfo?.user?.firstName,
+      lastName: userRegInfo?.user?.lastName
+    });
+    setLocation({
+      ...location,
+      currentLocation: {
+        state: userRegInfo?.user?.currentLocation?.state,
+        country: userRegInfo?.user?.currentLocation?.country,
+        city: userRegInfo?.user?.currentLocation?.city,
+        lat: userRegInfo?.user?.currentLocation?.lat,
+        long: userRegInfo?.user?.currentLocation?.long
+      },
+      birthPlace: {
+        state: userRegInfo?.user?.birthPlace?.state,
+        country: userRegInfo?.user?.birthPlace?.country,
+        city: userRegInfo?.user?.birthPlace?.city,
+        lat: userRegInfo?.user?.birthPlace?.lat,
+        long: userRegInfo?.user?.birthPlace?.long
+      }
+    });
+  }, [userRegInfo]);
+
+  // const currentLocation =
+  //   userDetails?.currentLocation[0] || location.currentLocation;
+  // const birthPlace =
+  //   userDetails?.birthPlace[0] || userRegInfo?.user?.birthPlace;
 
   const onChange = (selectedDate: Date) => {
     const newDate = formatMessageTime(selectedDate);
@@ -346,7 +421,7 @@ export default function contactSlide() {
         />
       </DOBContainer>
 
-      {birthPlace ? (
+      {userDetails?.birthPlace[0] || location.birthPlace.city ? (
         <CitizenshipContainer>
           <Title
             style={{
@@ -367,12 +442,15 @@ export default function contactSlide() {
               textTransform: 'capitalize'
             }}
           >
-            {birthPlace?.country}
+            {location?.currentLocation.country ||
+              userDetails?.currentLocation[0].country}
           </Paragraph>
         </CitizenshipContainer>
       ) : null}
 
-      {currentLocation && birthPlace ? (
+      {userDetails?.birthPlace[0] ||
+      (location.birthPlace.state && userDetails?.currentLocation[0]) ||
+      location.currentLocation.state ? (
         <LocationContainer>
           <Title
             style={{
@@ -408,7 +486,11 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              {`${birthPlace?.city}, ${birthPlace?.state}`}
+              {`${
+                userDetails?.birthPlace[0].city || location.birthPlace.city
+              }, ${
+                userDetails?.birthPlace[0].state || location.birthPlace.state
+              }`}
             </Paragraph>
           </Location>
 
@@ -434,7 +516,13 @@ export default function contactSlide() {
                 marginBottom: 10
               }}
             >
-              {`${currentLocation?.city}, ${currentLocation?.state}`}
+              {`${
+                userDetails?.currentLocation[0].city ||
+                location.currentLocation.city
+              }, ${
+                userDetails?.currentLocation[0].state ||
+                location.currentLocation.state
+              }`}
             </Paragraph>
           </Location>
         </LocationContainer>
@@ -457,6 +545,12 @@ export default function contactSlide() {
           {userDetails?.identity.length ? (
             <Fragment>
               {userIdentities?.map((identity, index) => (
+                <IdentityText key={index}>{identity}</IdentityText>
+              ))}
+            </Fragment>
+          ) : userRegInfo?.user?.identityName?.length ? (
+            <Fragment>
+              {userRegInfo?.user?.identityName?.map((identity, index) => (
                 <IdentityText key={index}>{identity}</IdentityText>
               ))}
             </Fragment>
