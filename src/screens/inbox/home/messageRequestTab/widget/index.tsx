@@ -11,11 +11,11 @@ import { useThemeContext } from '../../../../../theme';
 import formatMessageTime from '../../../../../utils/timesince';
 import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { UserPassportInterface } from '../../../../../graphql/types';
+import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 import { fireAuth } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
-import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface RequestChatCard extends ConversationInterface {}
@@ -39,12 +39,13 @@ function RequestChatCard(props: RequestChatCard) {
   );
 
   const receiverPassport = passportData?.singlePassport;
+  const title = `${sender.firstName} ${sender.lastName}`;
 
   const handleNavigation = () => {
     navigation.navigate('MessageRequestScreen', {
+      title,
       chatId,
       senderId: sender.id,
-      title: `${receiverPassport?.firstName} ${receiverPassport?.lastName}`,
       ...receiverPassport
     });
   };
@@ -67,11 +68,11 @@ function RequestChatCard(props: RequestChatCard) {
       onPress={handleNavigation}
     >
       <Fragment>
-        {receiverPassport?.avatar ? (
+        {sender?.avatar ? (
           <FastImage
             resizeMode={FastImage.resizeMode.cover}
             source={{
-              uri: receiverPassport?.avatar,
+              uri: sender?.avatar,
               priority: FastImage.priority.high
             }}
             style={{
@@ -93,7 +94,7 @@ function RequestChatCard(props: RequestChatCard) {
         )}
 
         <NameContainer ref={hideSensitiveView}>
-          {receiverPassport?.firstName ? (
+          {title ? (
             <Title
               style={{
                 color: colors.PRIMARY_TEXT,
@@ -102,7 +103,7 @@ function RequestChatCard(props: RequestChatCard) {
                 textTransform: 'capitalize'
               }}
             >
-              {`${receiverPassport?.firstName} ${receiverPassport?.lastName}`}
+              {title}
             </Title>
           ) : (
             <SkeletonPlaceholder>

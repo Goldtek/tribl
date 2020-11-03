@@ -11,11 +11,11 @@ import { useThemeContext } from '../../../../../theme';
 import formatMessageTime from '../../../../../utils/timesince';
 import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { UserPassportInterface } from '../../../../../graphql/types';
+import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 import { fireAuth } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
-import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface DirectChatProp extends ConversationInterface {}
@@ -49,7 +49,7 @@ function DirectChatCard(props: DirectChatProp) {
     navigation.navigate('DirectChatScreen', {
       title,
       chatId,
-      receiverId: receiver.id,
+      receiverId: sender.id,
       ...receiverPassport
     });
   };
