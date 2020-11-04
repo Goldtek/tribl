@@ -416,7 +416,12 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
       avatar
       name
       membersCount
+      description
       isMember
+      interests {
+        id
+        name
+      }
     }
   }
 `;
@@ -427,7 +432,6 @@ export const GET_POPULAR_COMMUNITIES = gql`
     popularCommunities {
       id
       name
-      membersCount
       description
       avatar
       isMember
