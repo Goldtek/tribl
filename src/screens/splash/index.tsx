@@ -51,7 +51,7 @@ export default function SplashScreen(props: ScreenProp) {
         credentials.expires_in / 3600
       );
 
-      const tokenExpiryMinute = subMinutes(new Date(), 10);
+      const tokenExpiryMinute = subMinutes(new Date(), 60 * 3);
       const expiredToken = isSameMinute(tokenExpiresIn, tokenExpiryMinute);
 
       if (expiredToken) {
