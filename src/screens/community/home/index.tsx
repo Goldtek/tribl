@@ -103,7 +103,12 @@ export default function HomeScreen(props: ScreenProp) {
 
   const myCommunity = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers;
-  const communities = communityData?.recommendedCommunities;
+  const communities = communityData?.recommendedCommunities
+    .slice()
+    .sort((a) => {
+      if (a.name.includes('REFitness Group')) return -1;
+      return 0;
+    });
 
   const navigateToSearch = (index: number, event: any) => () => {
     navigation.navigate('CommunitySearchScreen', { index: index });
