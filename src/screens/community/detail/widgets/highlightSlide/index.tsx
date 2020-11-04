@@ -23,6 +23,7 @@ import {
 } from '../../../../../graphql/server/mutations';
 import { PassportInterface } from '../../../../../graphql/types';
 import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
+import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 
 import {
   Container,
@@ -32,7 +33,7 @@ import {
   Tags,
   TagText
 } from './styles';
-import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
+import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
 
 interface singleCommunityScreenProp extends NavigationInterface {}
 
@@ -105,8 +106,11 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
 
   const banner = resizeAvatar?.length
     ? resizeAvatar[0] +
-      'upload/c_fill,g_auto,h_350,w_970/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/' +
-      resizeAvatar[1]
+      `upload/c_fill,g_auto,h_${RFValue(230 * 2)},w_${RFValue(
+        DEVICE_FULL_WIDTH * 2
+      )}/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/${
+        resizeAvatar[1]
+      }`
     : singleCommunity?.avatar;
 
   const handleJoinCommunity = () => {
@@ -188,8 +192,8 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                     priority: FastImage.priority.high
                   }}
                   style={{
-                    width: RFValue(50),
-                    height: '100%',
+                    width: RFValue(80),
+                    height: RFValue(50),
                     borderRadius: 4
                   }}
                 />
@@ -223,6 +227,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                       style={{
                         fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
                         fontFamily: fonts.WORK_SANS_REGULAR,
+                        textAlign: 'left',
                         lineHeight: RFValue(13),
                         color: colors.PRIMARY_TEXT
                       }}
@@ -235,7 +240,10 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                   mode="contained"
                   loading={data.isMember || member ? leaveLoading : joinLoading}
                   onPress={data.isMember || member ? handleLeave : handleJoin}
-                  style={{ borderRadius: 4 }}
+                  style={{
+                    borderRadius: 4,
+                    alignSelf: 'flex-start'
+                  }}
                   labelStyle={{
                     fontSize: fonts.LARGE_SIZE,
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
