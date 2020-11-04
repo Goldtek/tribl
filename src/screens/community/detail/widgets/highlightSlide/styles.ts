@@ -9,12 +9,11 @@ export const Container = styled.View`
 export const CardContainer = styled.View`
   flex-direction: row;
   padding: 20px 10px;
-  align-items: center;
 `;
 
 export const TextContainer = styled.View`
   flex: 1;
-  padding: 0px 5px;
+  padding: 0px 15px;
 `;
 
 export const TagContainer = styled.View`
