@@ -163,6 +163,17 @@ export default function PassportDetail(props: MemberDetailProps) {
     return <MyConnections key={item.id} {...item} />;
   };
 
+  const resizeAvatar = data.avatar?.split('upload/');
+
+  const banner = resizeAvatar?.length
+    ? resizeAvatar[0] +
+      `upload/c_fill,g_auto,h_${RFValue(300 * 2)},w_${RFValue(
+        DEVICE_FULL_WIDTH * 2
+      )}/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/${
+        resizeAvatar[1]
+      }`
+    : data.avatar;
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -177,9 +188,9 @@ export default function PassportDetail(props: MemberDetailProps) {
       <ContactContainer>
         <Header>
           <FastImage
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.contain}
             source={{
-              uri: data.avatar,
+              uri: banner,
               priority: FastImage.priority.high
             }}
             style={{

@@ -31,7 +31,12 @@ function RecommendedCommunity(props: CommunityInterface) {
   const resizeAvatar = avatar?.split('upload/');
 
   const banner = resizeAvatar?.length
-    ? `${resizeAvatar[0]}${CLOUDINARY_BANNER}${resizeAvatar[1]}`
+    ? resizeAvatar[0] +
+      `upload/c_fill,g_auto,h_${RFValue(230 * 2)},w_${RFValue(
+        DEVICE_FULL_WIDTH * 2
+      )}/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/${
+        resizeAvatar[1]
+      }`
     : avatar;
 
   const thumbnail = resizeAvatar?.length
