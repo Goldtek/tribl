@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { addHours, isSameMinute, subMinutes } from 'date-fns';
+import { fromUnixTime, differenceInHours, addHours } from 'date-fns';
 import { Image, StyleSheet } from 'react-native';
+import jsonwebtoken from 'jwt-decode';
 import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { RefreshTokenInterface } from '../../graphql/types';
 import { REFRESH_TOKEN } from '../../graphql/server/mutations';
@@ -46,15 +47,15 @@ export default function SplashScreen(props: ScreenProp) {
         });
       }
 
-      const tokenExpiresIn = addHours(
-        new Date(),
-        credentials.expires_in / 3600
+      const payload: null | { [key: string]: any } | any = jsonwebtoken(
+        credentials.id_token
       );
 
-      const tokenExpiryMinute = subMinutes(new Date(), 60 * 3);
-      const expiredToken = isSameMinute(tokenExpiresIn, tokenExpiryMinute);
+      const tokenExpiryTime = fromUnixTime(payload?.exp);
+      const tokenExpiryHour = addHours(new Date(), 3);
+      const expiryHour = differenceInHours(tokenExpiryTime, tokenExpiryHour);
 
-      if (expiredToken) {
+      if (expiryHour <= 3) {
         const { data } = await refreshToken({
           variables: { payload: { refreshToken: credentials.refresh_token } }
         });
