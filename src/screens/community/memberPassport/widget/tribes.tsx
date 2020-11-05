@@ -39,7 +39,7 @@ export default function MyCommunity(props: MyCommunityProp) {
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: RFValue(10),
-        borderWidth: 1,
+        borderWidth: 1.3,
         borderRadius: 5,
         borderColor: colors.PRIMARY
       }}
@@ -50,7 +50,7 @@ export default function MyCommunity(props: MyCommunityProp) {
           uri: avatar,
           priority: FastImage.priority.high
         }}
-        style={{ width: '100%', height: '100%', borderRadius: RFValue(4) }}
+        style={{ width: '100%', height: '100%', borderRadius: 4 }}
       />
     </TouchableRipple>
   );
