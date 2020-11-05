@@ -12,10 +12,10 @@ import { useThemeContext } from '../../../theme';
 import Input from '../../../components/input';
 import CountryCard from './widgets/country';
 import countriesDB, { CountryInterface } from '../../../libs/countries';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
