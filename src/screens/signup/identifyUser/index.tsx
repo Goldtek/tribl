@@ -3,6 +3,7 @@ import { ScrollView, SafeAreaView } from 'react-native';
 import { ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../components/gradientButton';
+import { Mixpanel } from '../../../config';
 import { useTranslation } from 'react-i18next';
 import { Toast } from '../../../components/rootToaster';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -47,6 +48,10 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   useEffect(() => {
     tagScreenName('IdentifyUserScreen');
     logEvent('select identity', { from: 'signup' });
+    Mixpanel.track('Avatar Upload', {
+      info: 'User on identity selection screen',
+      'Activity Screen': 'User Identity Selection Screen'
+    });
   }, []);
 
   const handleInputError = () => {
@@ -59,12 +64,17 @@ export default function IdentifyUserScreen(props: ScreenProp) {
 
   const handleSubmit = async () => {
     if (!state.selectedIdentities.size) return handleInputError();
+    const selectedIdentities = [
+      ...Array.from(state.selectedIdentities.values())
+    ];
+
+    Mixpanel.people_union({ 'User Selected Identities': selectedIdentities });
 
     await Storage.setUserRegistration({
       route: 'UserLocationScreen',
       user: {
         identity: [...Array.from(state.selectedId.values())],
-        identityName: [...Array.from(state.selectedIdentities.values())]
+        identityName: selectedIdentities
       }
     });
 
