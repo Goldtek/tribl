@@ -3,6 +3,7 @@ import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation } from '@apollo/react-hooks';
+import { Mixpanel } from '../../../config';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
@@ -12,10 +13,10 @@ import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
 import { fireAuth } from '../../../firebase/config';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
-import { logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface NearbyUserProp extends PassportInterface {
@@ -50,6 +51,10 @@ function NearbyModal(props: NearbyUserProp) {
 
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
+    Mixpanel.track('User Adds Connection', {
+      info: `User adds ${firstName} ${lastName} as a connection`,
+      'Activity Screen': 'Nearby member passport card'
+    });
     setLoading(true);
     try {
       await requestConnection();
