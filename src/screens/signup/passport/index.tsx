@@ -19,6 +19,7 @@ import { useQuery } from '@apollo/react-hooks';
 // import { FontAwesome } from '@expo/vector-icons';
 import TabViewSlider from './widgets/tabs';
 import Storage from '../../../libs/storage';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -28,7 +29,6 @@ import {
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
