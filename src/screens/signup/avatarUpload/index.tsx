@@ -5,6 +5,7 @@ import { ProgressBar, Title, Paragraph, Subheading } from 'react-native-paper';
 import { TouchableHighlight, SafeAreaView } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
+import { Mixpanel } from '../../../config';
 import { Toast } from '../../../components/rootToaster';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -19,10 +20,10 @@ import cloudinaryUpload, {
   CloudinaryResponseType
 } from '../../../utils/cloudinaryUpload';
 import Storage from '../../../libs/storage';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, GradientContainer } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -69,6 +70,11 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
       setAvatar({ ...avatar, secure_url });
 
+      Mixpanel.people_set_once({
+        avatar: secure_url,
+        updatedAt: new Date().toISOString()
+      });
+
       await Storage.setUserRegistration({
         route: 'IdentifyUserScreen',
         user: { avatar: secure_url }
@@ -108,9 +114,14 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
       const { mime, data, filename, cropRect } = await ImagePicker.openCropper({
         path: resizedImage,
+        mediaType: 'photo',
+        includeBase64: true,
         width: RFValue(200),
         height: RFValue(200),
-        includeBase64: true
+        cropperCircleOverlay: true,
+        compressImageMaxWidth: RFValue(200),
+        compressImageMaxHeight: RFValue(200),
+        cropperStatusBarColor: colors.STATUS_BAR_COLOR
       });
 
       const uri = `data:${mime};base64,${data}`;
@@ -125,6 +136,10 @@ export default function AvatarUploadScreen(props: ScreenProp) {
   useEffect(() => {
     tagScreenName('AvatarUploadScreen');
     logEvent('avatar upload', { from: 'signup' });
+    Mixpanel.track('Avatar Upload', {
+      info: 'User on upload avatar screen',
+      'Activity Screen': 'Avatar Upload Screen'
+    });
   }, []);
 
   return (
