@@ -63,7 +63,10 @@ function MemberSTabScreen(props: ScreenProp) {
   );
 
   const { data: membersData } = useQuery<RecommendedMembersRequestInterface>(
-    GET_RECOMMENDED_MEMBERS
+    GET_RECOMMENDED_MEMBERS,
+    {
+      variables: { filter: { verified: true } }
+    }
   );
   const recommendedMembers = membersData?.recommendedMembers;
 

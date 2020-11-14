@@ -7,6 +7,7 @@ interface ChatScreenProps extends PassportInterface {
   title: string;
   chatId: string;
   receiverId: string;
+  channel?: { community: string; name: string };
 }
 
 interface MessageRequestScreenProps extends PassportInterface {

@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useCallback,
-  useMemo,
-  Fragment,
-  useEffect
-} from 'react';
+import React, { useState, useMemo, Fragment, useEffect } from 'react';
+import { Mixpanel } from '../../../config';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import * as Sentry from '@sentry/react-native';
 import { ScrollView, FlatList } from 'react-native';
@@ -24,6 +19,7 @@ import MyCommunity from './widget/tribes';
 import MyConnections from './widget/connections';
 import { NavigationInterface } from '../../types';
 import { SinglePassportRequestInterface } from '../../../graphql/types';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import {
   ContactContainer,
@@ -38,7 +34,6 @@ import {
   ConnectionCover,
   ButtonCover
 } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 interface MemberDetailProps extends NavigationInterface {
   route: { params: { details: PassportInterface } };
@@ -48,11 +43,6 @@ export default function PassportDetail(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
-
-  useEffect(() => {
-    tagScreenName('MemberPassportScreen');
-    logEvent('view member passport', { from: 'passport' });
-  }, []);
 
   const [state, setState] = useState({ loading: false, pending: false });
 
@@ -66,7 +56,11 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const { loading: passportLoading, data: passportData } = useQuery<
     SinglePassportRequestInterface
-  >(GET_SINGLE_PASSPORT, { variables: { id } });
+  >(GET_SINGLE_PASSPORT, {
+    variables: { id },
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 1000
+  });
 
   const singlePassport = passportData?.singlePassport;
 
@@ -89,6 +83,11 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   useEffect(() => {
     if (singlePassport?.id) {
+      Mixpanel.track('User Views Member Passport', {
+        info: `User Views ${singlePassport?.firstName} ${singlePassport?.lastName} Passport`,
+        'Activity Screen': 'Member Passport Screen'
+      });
+
       setData({
         ...data,
         firstName: singlePassport?.avatar,
@@ -107,7 +106,12 @@ export default function PassportDetail(props: MemberDetailProps) {
     }
   }, [singlePassport?.id]);
 
-  const handleMessageNavigation = useCallback(() => {
+  useEffect(() => {
+    tagScreenName('MemberPassportScreen');
+    logEvent('view member passport', { from: 'passport' });
+  }, []);
+
+  const handleMessageNavigation = () => {
     const messageRequest = singlePassport?.conversation?.messageRequest;
     const senderId = singlePassport?.conversation?.messageRequest?.senderId;
     const isRequestApproved =
@@ -135,15 +139,19 @@ export default function PassportDetail(props: MemberDetailProps) {
         ...passport
       }
     );
-  }, [singlePassport]);
+  };
 
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
 
   const handleRequest = async () => {
-    logEvent('request connection', { from: 'passport' });
     setState({ ...state, loading: true });
+    logEvent('request connection', { from: 'passport' });
     try {
+      Mixpanel.track('User Adds Connection', {
+        info: `User adds ${firstName} ${lastName} as a connection`,
+        'Activity Screen': 'Member Passport Screen'
+      });
       await requestConnection();
       setState({ ...state, loading: false, pending: true });
     } catch (error) {

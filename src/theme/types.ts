@@ -19,6 +19,7 @@ enum COLORS {
   OFFWHITE = '#FBFCFF',
   INPUT = '#E5E5E5',
   SYSTEM_COLOR = '#F5F5F5',
+  STATUS_BAR_COLOR = '#424242',
   SHADOW = 'F5F5F5',
   BLACK = '#000000',
   RED = '#FB4E4E'
@@ -53,6 +54,7 @@ declare module 'styled-components' {
       DISABLED: string;
       ACTION: string;
       TRANSPARENT: string;
+      STATUS_BAR_COLOR: string;
       OFFWHITE: string;
       INPUT: string;
       SHADOW: string;
