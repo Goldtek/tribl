@@ -1,22 +1,22 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import { ActivityIndicator } from 'react-native';
 import * as Sentry from '@sentry/react-native';
+import { Mixpanel } from '../../../../config';
 import FastImage from 'react-native-fast-image';
 import { Feather, AntDesign } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
 import { PassportInterface } from '../../../../graphql/types';
-import formatMessageTime from '../../../../utils/timesince';
+import { logEvent } from '../../../../utils/uxcamHelper';
 import {
   ACCEPT_CONNECTION,
   REJECT_CONNECTION
 } from '../../../../graphql/server/mutations';
 
 import { NameContainer } from './styles';
-import { logEvent } from '../../../../utils/uxcamHelper';
 
 interface ConnectionRequestProp {
   item: PassportInterface;
@@ -47,6 +47,10 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
   const handleAcceptConnection = async () => {
     logEvent('accept connection request', { from: 'passport' });
     try {
+      Mixpanel.track('User Accepts Connection Request', {
+        info: `User accepts connection request from ${firstName} ${lastName}`,
+        'Activity Screen': 'Connection Request Screen'
+      });
       await acceptConnection();
       refetch();
     } catch (error) {
