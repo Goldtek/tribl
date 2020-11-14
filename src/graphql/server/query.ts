@@ -8,13 +8,14 @@ import gql from 'graphql-tag';
 
 // GET  RECOMMENDED MEMBERS
 export const GET_RECOMMENDED_MEMBERS = gql`
-  query RecommendedMembers {
-    recommendedMembers {
+  query RecommendedMembers($filter: _PassportFilter!) {
+    recommendedMembers(filter: $filter) {
       id
       email
       firstName
       lastName
       avatar
+      verified
       phoneNumber
       connected
       connectionCount
