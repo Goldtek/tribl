@@ -6,6 +6,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
+import { Mixpanel } from '../../config';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
 import {
@@ -59,6 +60,10 @@ function RecommendedCommunity(props: CommunityInterface) {
   const handleJoin = async () => {
     logEvent('join community', { from: 'community' });
     try {
+      Mixpanel.track('User Joins Tribe', {
+        info: `User Joins ${name} Tribe`,
+        'Activity Screen': 'Recommended Community Card'
+      });
       await joinCommunity();
       setMember(true);
     } catch (error) {
@@ -69,6 +74,10 @@ function RecommendedCommunity(props: CommunityInterface) {
   const handleLeave = async () => {
     logEvent('leave community', { from: 'community' });
     try {
+      Mixpanel.track('User Leaves Tribe', {
+        info: `User Leaves ${name} Tribe`,
+        'Activity Screen': 'Recommended Community Card'
+      });
       await leaveCommunity();
       setMember(false);
     } catch (error) {
@@ -155,35 +164,20 @@ function RecommendedCommunity(props: CommunityInterface) {
           />
         )}
         right={() => (
-          <Fragment>
-            {isMember || member ? (
-              <Button
-                mode="text"
-                loading={leaveLoading}
-                onPress={handleLeave}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  left: 15
-                }}
-              >
-                {t(`community.recommended.leave`)}
-              </Button>
-            ) : (
-              <Button
-                mode="text"
-                loading={loading}
-                onPress={handleJoin}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  left: 15
-                }}
-              >
-                {t(`community.recommended.join`)}
-              </Button>
-            )}
-          </Fragment>
+          <Button
+            mode="text"
+            loading={isMember || member ? leaveLoading : loading}
+            onPress={isMember || member ? handleLeave : handleJoin}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              left: 15
+            }}
+          >
+            {isMember || member
+              ? t(`community.recommended.leave`)
+              : t(`community.recommended.join`)}
+          </Button>
         )}
         style={{ flex: 1, paddingLeft: 0 }}
       />
