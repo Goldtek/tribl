@@ -29,7 +29,7 @@
 
   "memberPassport": {
     "connection": "connections",
-    "community": "communities",
+    "community": "tribes",
     "tribe": "tribes",
     "connect": "connect",
     "disconnect": "disconnect",
