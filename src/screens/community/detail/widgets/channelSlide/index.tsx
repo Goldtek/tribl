@@ -7,6 +7,7 @@ import { Paragraph, Divider, TouchableRipple } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
+import { Mixpanel } from '../../../../../config';
 import {
   GET_COMMUNITY_CHANNELS,
   GET_USER_PASSPORT
@@ -61,6 +62,11 @@ export default function ChannelScreen(props: ScreenProp) {
 
     if (!isMember) {
       logEvent('join channel', { from: 'channel' });
+      Mixpanel.track('User Joins Channel', {
+        info: `User Joins ${item.name} Channel on ${communityDetails.name} community`,
+        'Activity Screen': 'Community Channel Slide Screen'
+      });
+
       joinChannel({ variables: { payload: { channelId: item.id } } }).then(
         () => {
           sendMessage({
@@ -77,9 +83,10 @@ export default function ChannelScreen(props: ScreenProp) {
     }
 
     navigation.navigate('ChannelChatScreen', {
-      title: `#${item.name}`,
+      isMember,
       chatId: item.id,
-      isMember
+      title: `#${item.name}`,
+      channel: { community: communityDetails?.name, name: item.name }
     });
   };
 
