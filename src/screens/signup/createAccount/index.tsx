@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import { Mixpanel } from '../../../config';
 import GradientButton from '../../../components/gradientButton';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
@@ -90,6 +91,21 @@ export default function CreateAccountScreen(props: ScreenProp) {
 
       if (data?.createPassport.success) {
         setState({ ...state, isModalVisible: true });
+
+        Mixpanel.track('Create Account', {
+          info: 'User Created A New Account',
+          'Activity Screen': 'Created Account Screen'
+        });
+
+        const currentTimestamp = new Date().toISOString();
+
+        Mixpanel.people_set({
+          lastName,
+          firstName,
+          $email: email,
+          createdAt: currentTimestamp,
+          updatedAt: currentTimestamp
+        });
 
         await Storage.setUserRegistration({
           route: 'AvatarUploadScreen',
