@@ -26,6 +26,9 @@ export const VALIDATE_USER_OTP = gql`
       token_type
       id_token
       verified
+      passport {
+        id
+      }
     }
   }
 `;
