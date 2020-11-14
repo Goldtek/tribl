@@ -8,6 +8,7 @@ import {
   User,
   utils
 } from 'react-native-gifted-chat';
+import { Mixpanel } from '../../../config';
 import { Button, Paragraph, Text } from 'react-native-paper';
 import {
   Platform,
@@ -46,7 +47,7 @@ interface ScreenProp extends NavigationInterface {
 
 export default function ChatScreen(props: ScreenProp) {
   const { navigation } = props;
-  const { chatId } = props.route.params;
+  const { chatId, channel } = props.route.params;
   const userId = fireAuth.currentUser?.uid as string;
 
   useEffect(() => {
@@ -154,10 +155,14 @@ export default function ChatScreen(props: ScreenProp) {
   // };
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
+    const [message] = messages;
     logEvent('send channel message', { from: 'chat' });
     setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
 
-    const [message] = messages;
+    Mixpanel.track('User Sends Channel Message', {
+      info: `User sends message on ${channel?.name} channel in ${channel?.community} community`,
+      'Activity Screen': 'Channel Message Screen'
+    });
 
     sendMessage({
       variables: { payload: { content: message.text, channelId: chatId } }
