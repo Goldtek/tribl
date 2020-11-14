@@ -15,6 +15,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 import { logEvent } from '../../utils/uxcamHelper';
+import { Mixpanel } from '../../config';
 
 const ChatStack = createStackNavigator();
 
@@ -65,6 +66,10 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
               {...props}
               onPress={() => {
                 navigation.toggleDrawer();
+                Mixpanel.track('User Taps Side Drawer', {
+                  info: `User taps side drawer on inbox screen`,
+                  'Activity Screen': 'Inbox Screen'
+                });
                 logEvent('open drawer', { from: 'community' });
               }}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
@@ -97,6 +102,10 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
               }}
               onPress={() => {
                 navigation.navigate('NewMessageScreen');
+                Mixpanel.track('User Taps Chat Icon', {
+                  info: `User taps chat icon on inbox screen`,
+                  'Activity Screen': 'Inbox Screen'
+                });
                 logEvent('tap chat icon', { from: 'chat' });
               }}
               labelStyle={{ paddingLeft: 3 }}
