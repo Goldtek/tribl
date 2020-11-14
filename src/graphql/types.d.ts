@@ -221,6 +221,7 @@ export interface JwtTokenResult {
   access_token: string;
   refresh_token: string;
   firebase_token: string;
+  passport: PassportInterface;
 }
 
 // SERVER OTP (RESPONSE) TYPE
