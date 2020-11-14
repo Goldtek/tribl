@@ -1,6 +1,7 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
+import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
 import * as Updates from 'expo-updates';
 import { check, PERMISSIONS, request } from 'react-native-permissions';
@@ -51,6 +52,9 @@ import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
 } from '../../utils/cloudinaryUpload';
+import { Feather } from '@expo/vector-icons';
+import { TouchableHighlight } from 'react-native-gesture-handler';
+import { tagScreenName } from '../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -63,9 +67,6 @@ import {
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
-import { Feather } from '@expo/vector-icons';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-import { tagScreenName } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -106,7 +107,9 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
 
-  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS);
+  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
+    variables: { filter: { verified: true } }
+  });
 
   const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
 
@@ -120,13 +123,16 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS);
 
-  useEffect(() => {
-    tagScreenName('PassportScreen');
-  }, []);
-
   const userDetails = userData?.myPassport;
   const identity = userDetails?.identity.map((item: any) => item.id);
   const dateOfBirth = userDetails?.dob;
+
+  useEffect(() => {
+    if (userDetails) {
+      tagScreenName('PassportScreen');
+      Mixpanel.identify(userDetails?.id);
+    }
+  }, [userDetails]);
 
   const [imageLoad, setImageLoad] = useState(true);
 
@@ -189,12 +195,7 @@ export default function PassportScreen(props: ScreenProp) {
     uri: cache?.avatar,
     secure_url: '',
     formData: null,
-    imageData: {
-      uri: '',
-      mime: '',
-      filename: '',
-      cropRect: null
-    },
+    imageData: { uri: '', mime: '', filename: '', cropRect: null },
     loading: false
   });
 
@@ -413,6 +414,7 @@ export default function PassportScreen(props: ScreenProp) {
       Sentry.captureException(error);
     }
   };
+
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
@@ -446,22 +448,22 @@ export default function PassportScreen(props: ScreenProp) {
 
   const handleLocationPermission = async () => {
     const iosData = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-    const andriodData = await check(
+    const androidData = await check(
       PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION
     );
-    if (iosData === 'granted' || andriodData === 'granted') {
+    if (iosData === 'granted' || androidData === 'granted') {
       handleLocation();
     } else if (
       iosData === 'denied' ||
-      andriodData === 'denied' ||
+      androidData === 'denied' ||
       iosData === 'blocked' ||
-      andriodData === 'blocked'
+      androidData === 'blocked'
     ) {
-      const iosData2 = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-      const andriodData2 = await request(
+      const iosData = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      const androidData = await request(
         PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION
       );
-      iosData2 === 'granted' || andriodData2 === 'granted'
+      iosData === 'granted' || androidData === 'granted'
         ? handleLocation()
         : null;
     }
@@ -538,9 +540,14 @@ export default function PassportScreen(props: ScreenProp) {
 
       const { mime, data, filename, cropRect } = await ImagePicker.openCropper({
         path: resizedImage,
+        mediaType: 'photo',
+        includeBase64: true,
         width: RFValue(200),
         height: RFValue(200),
-        includeBase64: true
+        cropperCircleOverlay: true,
+        compressImageMaxWidth: RFValue(200),
+        compressImageMaxHeight: RFValue(200),
+        cropperStatusBarColor: colors.STATUS_BAR_COLOR
       });
 
       const uri = `data:${mime};base64,${data}`;
