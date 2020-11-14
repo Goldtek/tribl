@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   createStackNavigator,
   TransitionPresets
@@ -13,11 +13,7 @@ import { DEVICE_OS } from '../../utils/device';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { GET_USER_DETAILS } from '../../graphql/cache/query';
-import {
-  StoreInterface,
-  UpdatePassportInterface,
-  PassportInterface
-} from '../../graphql/types';
+import { StoreInterface, UpdatePassportInterface } from '../../graphql/types';
 import { UPDATE_USER_PASSPORT } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
@@ -35,15 +31,15 @@ export default function SignupNavigator() {
 
   const [update, setUpdate] = useState(false);
 
-  const [userDetail, setUserDetail] = useState<
-    PassportInterface | null | undefined
-  >(undefined);
+  // const [userDetail, setUserDetail] = useState<
+  //   PassportInterface | null | undefined
+  // >(undefined);
 
   const userDetails = data?.userDetails;
 
-  useEffect(() => {
-    setUserDetail(data?.userDetails);
-  }, [data?.userDetails]);
+  // useEffect(() => {
+  //   setUserDetail(data?.userDetails);
+  // }, [data?.userDetails]);
 
   const currentLocation = userDetails?.currentLocation[0];
   const birthPlace = userDetails?.birthPlace[0];
