@@ -82,8 +82,7 @@ export default function OTPScreen(props: ScreenProp) {
       await Storage.setUserCredentials(otpData?.validateOtp);
 
       if (!otpData?.validateOtp.verified) {
-        Mixpanel.identify(`${otpData?.validateOtp.passport.id}`);
-
+        Mixpanel.createAlias(`${otpData?.validateOtp.passport.id}`);
         await Storage.setUserRegistration({
           route: 'CreateAccountScreen',
           completed: false
