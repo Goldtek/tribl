@@ -68,7 +68,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
       ...Array.from(state.selectedIdentities.values())
     ];
 
-    Mixpanel.people_union({ 'User Selected Identities': selectedIdentities });
+    Mixpanel.people_union('User Selected Identities', [...selectedIdentities]);
 
     await Storage.setUserRegistration({
       route: 'UserLocationScreen',
