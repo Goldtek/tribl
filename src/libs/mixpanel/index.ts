@@ -64,6 +64,11 @@ export default class MixpanelAnalytics {
     RNMixpanel.identify(userId);
   }
 
+  createAlias(userId: string): void {
+    this.userId = userId;
+    RNMixpanel.createAlias(userId);
+  }
+
   people_set(props: Props) {
     RNMixpanel.set(this._pushEvent(props));
   }
