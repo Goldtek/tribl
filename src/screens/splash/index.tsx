@@ -52,7 +52,7 @@ export default function SplashScreen(props: ScreenProp) {
         const tokenExpiryTime = fromUnixTime(payload?.exp);
         const tokenExpiryMinute = addMinutes(new Date(), 30);
         const expiryHour =
-          tokenExpiryTime.getTime() >= tokenExpiryMinute.getTime();
+          tokenExpiryTime.getTime() <= tokenExpiryMinute.getTime();
 
         if (expiryHour) {
           const { data } = await refreshToken({
@@ -91,16 +91,12 @@ export default function SplashScreen(props: ScreenProp) {
         credentials.id_token
       );
 
-      console.log(payload);
-
       const tokenExpiryTime = fromUnixTime(payload?.exp);
       const tokenExpiryMinute = addMinutes(new Date(), 30);
       const expiryHour =
-        tokenExpiryTime.getTime() >= tokenExpiryMinute.getTime();
+        tokenExpiryTime.getTime() <= tokenExpiryMinute.getTime();
 
       if (expiryHour) {
-        console.log({ expiryHour });
-
         const { data } = await refreshToken({
           variables: { payload: { refreshToken: credentials.refresh_token } }
         });
