@@ -1,9 +1,10 @@
 import React, { Fragment, useCallback, useState } from 'react';
-import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
+import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
+import { Mixpanel } from '../../config';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
@@ -18,10 +19,10 @@ import {
   GET_USER_PASSPORT
 } from '../../graphql/server/query';
 import { MyPassportInterface } from '../../graphql/types';
+import { logEvent } from '../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
-import { logEvent } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface PopularCommunityProp {
@@ -72,6 +73,10 @@ function PopularCommunity(props: PopularCommunityProp) {
   const handleJoin = async () => {
     logEvent('join community', { from: 'community' });
     try {
+      Mixpanel.track('User Joins Tribe', {
+        info: `User Joins ${name} Tribe`,
+        'Activity Screen': 'Popular Community Card'
+      });
       await joinCommunity();
       setMember(true);
     } catch (error) {
@@ -82,6 +87,10 @@ function PopularCommunity(props: PopularCommunityProp) {
   const handleLeave = async () => {
     logEvent('leave community', { from: 'community' });
     try {
+      Mixpanel.track('User Leaves Tribe', {
+        info: `User Leaves ${name} Tribe`,
+        'Activity Screen': 'Popular Community Card'
+      });
       await leaveCommunity();
       setMember(false);
     } catch (error) {
@@ -134,31 +143,22 @@ function PopularCommunity(props: PopularCommunityProp) {
               ? `${membersCount} ${t(`community.tabPanel.member`)}`
               : `${membersCount} ${t(`community.tabPanel.member`)}s`}
           </Paragraph>
-          {isMember || member ? (
-            <Paragraph
-              style={{
-                fontSize: fonts.MEDIUM_SIZE,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                lineHeight: RFValue(19),
-                color: colors.PRIMARY,
-                textTransform: 'uppercase'
-              }}
-            >
-              {t(`community.recommended.leave`)}
-            </Paragraph>
-          ) : (
-            <Paragraph
-              style={{
-                fontSize: fonts.MEDIUM_SIZE,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                lineHeight: RFValue(19),
-                color: colors.PRIMARY,
-                textTransform: 'uppercase'
-              }}
-            >
-              {t(`community.recommended.join`)}
-            </Paragraph>
-          )}
+
+          <Button
+            mode="text"
+            loading={isMember || member ? leaveLoading : loading}
+            onPress={isMember || member ? handleLeave : handleJoin}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY,
+              textTransform: 'uppercase'
+            }}
+          >
+            {isMember || member
+              ? t(`community.recommended.leave`)
+              : t(`community.recommended.join`)}
+          </Button>
         </TextContainer>
       </Fragment>
     </TouchableRipple>

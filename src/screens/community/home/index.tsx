@@ -6,17 +6,17 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
-import { useQuery, useSubscription, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
 import RecentActivity from '../../../components/recentActivity';
 import JoinCommunity from '../../../components/joinCommunity';
+import { Mixpanel } from '../../../config';
 import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   GET_MY_COMMUNITIES,
-  USER_ONLINE_SUBSCRIPTION,
   GET_ALL_MEMBERS,
   GET_CONNECTION_REQUEST,
   GET_MY_CONNECTIONS,
@@ -64,15 +64,11 @@ export default function HomeScreen(props: ScreenProp) {
     update: false
   });
 
-  useSubscription(USER_ONLINE_SUBSCRIPTION);
-
   const { loading: myCommunityLoading, data: myCommunityData } = useQuery<
     MyCommunitiesRequestInterface
   >(GET_MY_COMMUNITIES, { pollInterval: 500 });
 
-  const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
-    GET_CONNECTION_REQUEST
-  );
+  const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
 
@@ -99,7 +95,9 @@ export default function HomeScreen(props: ScreenProp) {
     { pollInterval: 500 }
   );
 
-  const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS);
+  const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
+    variables: { filter: { verified: true } }
+  });
 
   const myCommunity = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers;
@@ -110,7 +108,7 @@ export default function HomeScreen(props: ScreenProp) {
       return 0;
     });
 
-  const navigateToSearch = (index: number, event: any) => () => {
+  const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
 
@@ -197,10 +195,14 @@ export default function HomeScreen(props: ScreenProp) {
 
             <Button
               mode="text"
-              onPress={navigateToSearch(
-                0,
-                logEvent('view more members', { from: 'community' })
-              )}
+              onPress={() => {
+                Mixpanel.track('User Taps View More (Members)', {
+                  info: 'User taps view more recommended (Members)',
+                  'Activity Screen': 'View More Recommended Members Button'
+                });
+                logEvent('view more members', { from: 'community' });
+                navigateToSearch(0);
+              }}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -244,10 +246,14 @@ export default function HomeScreen(props: ScreenProp) {
 
             <Button
               mode="text"
-              onPress={navigateToSearch(
-                1,
-                logEvent('view more tribes', { from: 'community' })
-              )}
+              onPress={() => {
+                Mixpanel.track('User Taps View More (Tribes)', {
+                  info: 'User taps view more recommended (Tribes)',
+                  'Activity Screen': 'View More Recommended Tribes Button'
+                });
+                logEvent('view more tribes', { from: 'community' });
+                navigateToSearch(1);
+              }}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),

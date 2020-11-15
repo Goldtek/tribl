@@ -21,10 +21,7 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function DirectDMScreen(props: ScreenProp) {
   const { fonts } = useThemeContext();
-  const [history, setHistory] = useState({
-    chatHistory: true,
-    firstRender: true
-  });
+  const [chatHistory, setChatHistory] = useState(true);
 
   const [directMessages, setDirectMessages] = useState<ConversationInterface[]>(
     []
@@ -44,11 +41,9 @@ export default function DirectDMScreen(props: ScreenProp) {
 
       unsubscribe = userConservations?.onSnapshot({
         next: async (snapshot) => {
-          if (!snapshot.docs.length) {
-            return setHistory({ ...history, chatHistory: false });
-          }
+          if (!snapshot.docs.length) return setChatHistory(false);
 
-          setHistory({ ...history, chatHistory: true });
+          setChatHistory(true);
           const conversationIds = snapshot.docs.map((document) => document.id);
 
           const userDirectMessages = await Firechat.getConversationMessages(
@@ -67,10 +62,7 @@ export default function DirectDMScreen(props: ScreenProp) {
                   (a, b) => b.lastMessage.createdAt - a.lastMessage.createdAt
                 );
 
-              if (history.firstRender) {
-                setDirectMessages(directMessages);
-                setHistory({ ...history, firstRender: false });
-              }
+              setDirectMessages(directMessages);
             }
           });
         }
@@ -93,7 +85,7 @@ export default function DirectDMScreen(props: ScreenProp) {
     []
   );
 
-  return history.chatHistory ? (
+  return chatHistory ? (
     <FlatList
       bounces={false}
       data={directMessages}

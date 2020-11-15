@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import * as Sentry from '@sentry/react-native';
 import { useTranslation } from 'react-i18next';
 import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Mixpanel } from '../../../config';
 import {
   VALIDATE_USER_OTP,
   SEND_USER_OTP
@@ -31,9 +32,9 @@ interface ScreenProp extends NavigationInterface {}
 export default function OTPScreen(props: ScreenProp) {
   const { navigation } = props;
 
-  const [timeLeft, restartOtpTimer] = useCountDown();
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
+  const [timeLeft, restartOtpTimer] = useCountDown();
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -41,8 +42,6 @@ export default function OTPScreen(props: ScreenProp) {
     tagScreenName('OTPScreen');
     logEvent('enter otp', { from: 'signup' });
   }, []);
-
-  const [otp, setOtp] = useState('');
 
   const [sendOtp] = useMutation(SEND_USER_OTP, {
     variables: {
@@ -54,16 +53,7 @@ export default function OTPScreen(props: ScreenProp) {
   });
 
   const [verifyOtp, { loading }] = useMutation<VerifyOTPInterface>(
-    VALIDATE_USER_OTP,
-    {
-      variables: {
-        payload: {
-          phoneNumber: data?.userDetails.phoneNumber,
-          deviceId: DEVICE_ID,
-          otp
-        }
-      }
-    }
+    VALIDATE_USER_OTP
   );
 
   const resendOtp = () => {
@@ -75,42 +65,48 @@ export default function OTPScreen(props: ScreenProp) {
     Toast.show(t(`signup.OTPScreen.inputError`));
   };
 
-  const handleSubmit = (otpValue: string) => {
-    if (!otpValue || loading) return handleInputError();
-    setOtp(otpValue);
+  const handleSubmit = async (otp: string) => {
+    if (!otp || loading) return handleInputError();
 
-    setImmediate(async () => {
-      try {
-        const { data } = await verifyOtp();
-
-        await Storage.setUserCredentials(data?.validateOtp);
-
-        if (!data?.validateOtp.verified) {
-          await Storage.setUserRegistration({
-            route: 'CreateAccountScreen',
-            completed: false
-          });
-
-          return navigation.reset({
-            index: 0,
-            routes: [{ name: 'CreateAccountScreen' }]
-          });
+    try {
+      const { data: otpData } = await verifyOtp({
+        variables: {
+          payload: {
+            phoneNumber: data?.userDetails.phoneNumber,
+            deviceId: DEVICE_ID,
+            otp
+          }
         }
+      });
 
+      await Storage.setUserCredentials(otpData?.validateOtp);
+
+      if (!otpData?.validateOtp.verified) {
+        Mixpanel.createAlias(`${otpData?.validateOtp.passport.id}`);
         await Storage.setUserRegistration({
-          route: 'CommunityScreen',
-          completed: true
+          route: 'CreateAccountScreen',
+          completed: false
         });
 
-        navigation.reset({
+        return navigation.reset({
           index: 0,
-          routes: [{ name: 'CommunityScreen' }]
+          routes: [{ name: 'CreateAccountScreen' }]
         });
-      } catch (error) {
-        Sentry.captureException(error);
-        handleInputError();
       }
-    });
+
+      await Storage.setUserRegistration({
+        route: 'CommunityScreen',
+        completed: true
+      });
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'CommunityScreen' }]
+      });
+    } catch (error) {
+      Sentry.captureException(error);
+      handleInputError();
+    }
   };
 
   return (

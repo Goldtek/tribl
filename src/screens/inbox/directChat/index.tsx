@@ -3,6 +3,7 @@ import { ChatScreenProps, NavigationInterface } from '../../types';
 import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
 import { Platform, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Mixpanel } from '../../../config';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
@@ -112,6 +113,11 @@ export default function ChatScreen(props: ScreenProp) {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages)
     );
+
+    Mixpanel.track('User Sends DM', {
+      info: `User sends direct message to ${firstName} ${lastName}`,
+      'Activity Screen': 'Direct Message Screen'
+    });
 
     sendMessage({
       variables: { payload: { receiverId, content: message.text } }

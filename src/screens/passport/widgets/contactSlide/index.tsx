@@ -383,6 +383,7 @@ function contactSlide(props: ScreenProp) {
         <Button
           mode="text"
           uppercase={false}
+          disabled={click}
           labelStyle={{
             fontFamily: fonts.WORK_SANS_REGULAR,
             fontSize: RFValue(fonts.MEDIUM_SIZE + 2),

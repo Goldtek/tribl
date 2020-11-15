@@ -3,6 +3,7 @@ import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
+import { Mixpanel } from '../../config';
 import { useTranslation } from 'react-i18next';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../theme';
@@ -60,6 +61,10 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
     try {
+      Mixpanel.track('User Adds Connection', {
+        info: `User adds ${firstName} ${lastName} as a connection`,
+        'Activity Screen': 'Recommended member passport card'
+      });
       await requestConnection();
       setPending(true);
     } catch (error) {

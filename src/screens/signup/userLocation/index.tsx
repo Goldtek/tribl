@@ -6,6 +6,7 @@ import {
   Title,
   Paragraph
 } from 'react-native-paper';
+import { Mixpanel } from '../../../config';
 import * as Sentry from '@sentry/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -80,6 +81,10 @@ export default function UserLocationScreen(props: ScreenProp) {
   useEffect(() => {
     tagScreenName('LocationScreen');
     logEvent('get user location', { from: 'signup' });
+    Mixpanel.track('User Location', {
+      info: 'User on location selection screen',
+      'Activity Screen': 'User Location Screen'
+    });
   }, []);
 
   useEffect(() => {
@@ -88,7 +93,12 @@ export default function UserLocationScreen(props: ScreenProp) {
       setTimeoutError(timeoutError + 1);
 
       if (timeoutError === 5 && !state.birthPlaceInput) {
-        setState({ ...state, loading: false });
+        setState({
+          ...state,
+          isVisible: false,
+          loading: false,
+          isModalVisible: false
+        });
         handleInputError('currentPosition');
       }
     }, 1000);
@@ -125,6 +135,12 @@ export default function UserLocationScreen(props: ScreenProp) {
         },
         birthPlace: { ...state.birthPlace, __typename: 'birthPlace' }
       }
+    });
+
+    Mixpanel.people_set_once({
+      currentLocation: state.currentLocation,
+      citizenShip: state.birthPlace.country,
+      birthPlace: state.birthPlace
     });
 
     setTimeout(() => {

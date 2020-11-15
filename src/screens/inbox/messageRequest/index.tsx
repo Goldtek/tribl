@@ -47,6 +47,7 @@ import {
   tagScreenName,
   logEvent
 } from '../../../utils/uxcamHelper';
+import { Mixpanel } from '../../../config';
 
 import { Cover, TextContainer } from './styles';
 
@@ -386,6 +387,10 @@ export default function ChatScreen(props: ScreenProp) {
             <Button
               onPress={() => {
                 acceptMessageRequest();
+                Mixpanel.track('User Accepts Message Request', {
+                  info: `User accepts message request from ${firstName} ${lastName}`,
+                  'Activity Screen': 'Message Request Chat Screen'
+                });
                 logEvent('accept message request', { from: 'chat' });
               }}
               loading={acceptRequestLoading}
