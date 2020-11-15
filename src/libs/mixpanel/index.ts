@@ -1,14 +1,17 @@
 import Constants from 'expo-constants';
-import { Buffer } from 'buffer';
-import * as Sentry from '@sentry/react-native';
+import RNMixpanel from 'react-native-mixpanel';
 import {
   DEVICE_ID,
   DEVICE_OS,
   DEVICE_FULL_WIDTH,
-  DEVICE_FULL_HEIGHT
+  DEVICE_FULL_HEIGHT,
+  DEVICE_MODEL,
+  SYSTEM_VERSION,
+  APP_VERSION,
+  APPLICATION_NAME,
+  DEVICE_NAME
 } from '../../utils/device';
 
-const MIXPANEL_API_URL = 'http://api.mixpanel.com';
 const isIosPlatform = DEVICE_OS === 'ios';
 
 interface Props<T = any> {
@@ -16,152 +19,90 @@ interface Props<T = any> {
 }
 
 export default class MixpanelAnalytics {
-  ready: boolean;
-  queue: any[];
-  token: string;
   appId?: string;
-  appName?: string;
-  userId: string | null;
-  clientId: string;
-  appVersion?: string;
-  screenSize: string | null;
-  deviceName?: string;
-  userAgent: string | null;
-  platform?: string;
   model?: string;
+  appName?: string;
+  clientId: string;
+  platform?: string;
   osVersion?: string;
+  appVersion?: string;
+  deviceName?: string;
+  userId: string | null;
+  userAgent: string | null;
+  screenSize: string | null;
 
-  constructor(token: string) {
-    this.ready = false;
-    this.queue = [];
-    this.token = token;
+  constructor() {
     this.userId = null;
-    this.screenSize = null;
     this.userAgent = null;
+    this.screenSize = null;
     this.clientId = DEVICE_ID;
-    this.identify(this.clientId);
 
     Constants.getWebViewUserAgentAsync().then((userAgent) => {
+      this.appId = DEVICE_ID;
       this.userAgent = userAgent;
-      this.appName = Constants.manifest.name;
-      this.appId = Constants.manifest.slug;
-      this.appVersion = Constants.manifest.version;
+      this.appVersion = APP_VERSION;
+      this.appName = APPLICATION_NAME;
+      DEVICE_NAME.then((name) => (this.deviceName = name));
       this.screenSize = `${DEVICE_FULL_WIDTH}x${DEVICE_FULL_HEIGHT}`;
-      this.deviceName = Constants.deviceName;
 
       if (isIosPlatform) {
-        this.platform = Constants.platform?.ios?.platform;
-        this.model = Constants.platform?.ios?.model;
-        this.osVersion = Constants.platform?.ios?.systemVersion;
+        this.model = DEVICE_MODEL;
+        this.platform = DEVICE_OS;
+        this.osVersion = SYSTEM_VERSION;
       } else {
-        this.platform = 'android';
+        this.platform = DEVICE_OS;
       }
-
-      this.ready = true;
-      this._flush();
     });
   }
 
   track(name: string, props: Props): void {
-    this.queue.push({ name, props });
-    this._flush();
+    RNMixpanel.trackWithProperties(name, this._pushEvent(props));
   }
 
   identify(userId: string): void {
     this.userId = userId;
+    RNMixpanel.identify(userId);
   }
 
-  reset(): void {
-    this.identify(this.clientId);
-  }
-
-  people_set(props: any) {
-    this._people('set', props);
+  people_set(props: Props) {
+    RNMixpanel.set(this._pushEvent(props));
   }
 
   people_set_once(props: Props): void {
-    this._people('set_once', props);
+    RNMixpanel.setOnce(this._pushEvent(props));
   }
 
-  people_unset(props: string[]): void {
-    this._people('unset', props);
+  people_increment(name: string, props: number) {
+    RNMixpanel.increment(name, props);
   }
 
-  people_increment(props: any) {
-    this._people('add', props);
+  people_append(name: string, props: any[]): void {
+    RNMixpanel.append(name, [...props]);
   }
 
-  people_append(props: Props<number>): void {
-    this._people('append', props);
+  people_union(name: string, props: any[]): void {
+    RNMixpanel.append(name, [...props]);
   }
 
-  people_union(props: Props<string[]>): void {
-    this._people('union', props);
-  }
+  _pushEvent(props: Props) {
+    const data = { ...props };
 
-  people_delete_user(): void {
-    this._people('delete', '');
-  }
+    data.app_id = this.appId;
+    data.app_name = this.appName;
+    data.client_id = this.clientId;
+    data.user_agent = this.userAgent;
+    data.screen_size = this.screenSize;
+    data.app_version = this.appVersion;
+    data.device_name = this.deviceName;
 
-  // ===========================================================================================
+    if (this.model) data.model = this.model;
 
-  _flush() {
-    if (this.ready) {
-      while (this.queue.length) {
-        const event = this.queue.pop();
-        this._pushEvent(event).then(() => (event.sent = true));
-      }
-    }
-  }
+    if (this.userId) data.distinct_id = this.userId;
 
-  _people(operation: string, props: any) {
-    if (this.userId) {
-      const data = { $token: this.token, $distinct_id: this.userId } as {
-        [key: string]: string;
-      };
+    if (this.platform) data.platform = this.platform;
 
-      data[`$${operation}`] = props;
-      this._pushProfile(data);
-    }
-  }
+    if (this.osVersion) data.os_version = this.osVersion;
 
-  _pushEvent(event: any) {
-    let data: any = { event: event.name, properties: event.props };
-
-    if (this.userId) {
-      data.properties.distinct_id = this.userId;
-    }
-
-    data.properties.token = this.token;
-    data.properties.user_agent = this.userAgent;
-    data.properties.app_name = this.appName;
-    data.properties.app_id = this.appId;
-    data.properties.app_version = this.appVersion;
-    data.properties.screen_size = this.screenSize;
-    data.properties.client_id = this.clientId;
-    data.properties.device_name = this.deviceName;
-
-    if (this.platform) {
-      data.properties.platform = this.platform;
-    }
-
-    if (this.model) {
-      data.properties.model = this.model;
-    }
-
-    if (this.osVersion) {
-      data.properties.os_version = this.osVersion;
-    }
-
-    data = Buffer.from(JSON.stringify(data)).toString('base64');
-
-    return fetch(`${MIXPANEL_API_URL}/track/?data=${data}`);
-  }
-
-  _pushProfile(data: any) {
-    data = Buffer.from(JSON.stringify(data)).toString('base64');
-    return fetch(`${MIXPANEL_API_URL}/engage/?data=${data}`)
-      .then(() => {})
-      .catch((error) => Sentry.captureException(error));
+    return data;
   }
 }
