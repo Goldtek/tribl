@@ -14,6 +14,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 import { logEvent } from '../../utils/uxcamHelper';
+import { Mixpanel } from '../../config';
 
 const accountStack = createStackNavigator();
 
@@ -47,6 +48,10 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
               {...props}
               onPress={() => {
                 navigation.toggleDrawer();
+                Mixpanel.track('User Taps Side Drawer', {
+                  info: `User taps side drawer on account setting screen`,
+                  'Activity Screen': 'Account Setting Screen'
+                });
                 logEvent('open drawer', { from: 'community' });
               }}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}

@@ -5,8 +5,8 @@ const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${ENVIRONMENT_VARIABLES.
 export interface CloudinaryUploadType {
   uri: string;
   mime: string;
-  filename: string;
-  cropRect: { width: number; height: number } | null;
+  filename?: string;
+  cropRect?: { width: number; height: number } | null;
 }
 
 export interface CloudinaryResponseType {
@@ -36,7 +36,7 @@ const cloudinaryUpload = async (payload: CloudinaryUploadType) => {
   const data = new FormData();
   data.append('file', uri);
   data.append('mimetype', mime);
-  data.append('name', filename);
+  data.append('name', `${filename}`);
   data.append('width', String(cropRect?.width));
   data.append('height', String(cropRect?.height));
   data.append('upload_preset', ENVIRONMENT_VARIABLES.CLOUDINARY_PRESET);

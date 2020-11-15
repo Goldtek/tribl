@@ -21,6 +21,7 @@ import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { DEVICE_OS } from '../../utils/device';
 import { logEvent } from '../../utils/uxcamHelper';
+import { Mixpanel } from '../../config';
 
 const CommunityStack = createStackNavigator();
 
@@ -80,6 +81,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               {...props}
               onPress={() => {
                 navigation.toggleDrawer();
+                Mixpanel.track('User Taps Side Drawer', {
+                  info: `User taps side drawer on community screen`,
+                  'Activity Screen': 'Community Screen'
+                });
                 logEvent('open drawer', { from: 'community' });
               }}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
@@ -112,7 +117,11 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               }}
               onPress={() => {
                 navigation.navigate('NewMessageScreen');
-                logEvent('tap chat icon', { from: 'chat' });
+                Mixpanel.track('User Taps Chat Icon', {
+                  info: `User taps chat icon on home screen`,
+                  'Activity Screen': 'Home Screen'
+                });
+                logEvent('tap chat icon', { from: 'home' });
               }}
               labelStyle={{ paddingLeft: 3 }}
             >
@@ -146,6 +155,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               {...props}
               onPress={() => {
                 navigation.toggleDrawer();
+                Mixpanel.track('User Taps Side Drawer', {
+                  info: `User taps side drawer on community search screen`,
+                  'Activity Screen': 'Community Search Screen'
+                });
                 logEvent('open drawer', { from: 'community' });
               }}
               underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
@@ -179,6 +192,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               }}
               onPress={() => {
                 navigation.navigate('NewMessageScreen');
+                Mixpanel.track('User Taps Chat Icon', {
+                  info: `User taps chat icon on community search screen`,
+                  'Activity Screen': 'Community Search Screen'
+                });
                 logEvent('tap chat icon', { from: 'chat' });
               }}
               labelStyle={{ paddingLeft: 3 }}

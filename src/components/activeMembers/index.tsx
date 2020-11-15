@@ -31,7 +31,9 @@ function ActiveModal(props: ModalProp) {
 
   const { data: recommendedData } = useQuery<
     RecommendedMembersRequestInterface
-  >(GET_RECOMMENDED_MEMBERS);
+  >(GET_RECOMMENDED_MEMBERS, {
+    variables: { filter: { verified: true } }
+  });
 
   const recommendedMembers = recommendedData?.recommendedMembers;
 
