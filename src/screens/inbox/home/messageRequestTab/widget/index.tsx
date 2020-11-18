@@ -99,7 +99,7 @@ function RequestChatCard(props: RequestChatCard) {
               style={{
                 color: colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontSize: RFValue(fonts.LARGE_SIZE - 2),
                 textTransform: 'capitalize'
               }}
             >
@@ -117,7 +117,7 @@ function RequestChatCard(props: RequestChatCard) {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE)
+              fontSize: RFValue(fonts.MEDIUM_SIZE - 2)
             }}
           >
             {formatMessageTime(lastMessage.createdAt)}
@@ -129,7 +129,7 @@ function RequestChatCard(props: RequestChatCard) {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontSize: RFValue(fonts.MEDIUM_SIZE - 2),
               marginVertical: 5
             }}
           >

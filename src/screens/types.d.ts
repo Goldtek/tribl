@@ -27,6 +27,7 @@ export type RootStackParamList = {
   DirectChatScreen: ChatScreenProps;
   DirectMessageTab?: Object;
   SignupPassportScreen?: Object;
+  ChannelsTab?: Object;
   MessageRequestTab?: Object;
   CommunityDetailScreen?: Object;
   ConnectionRequestScreen?: Object;
@@ -92,6 +93,7 @@ export type RootStackParamScreensList =
   | 'NewMessageScreen'
   | 'CommunityScreen'
   | 'PassportScreen'
+  | 'ChannelsTab'
   | 'MyConnectionScreen'
   | 'MemberPassportScreen'
   | 'GetStartedScreen'
