@@ -14,11 +14,9 @@ import {
   LEAVE_COMMUNITY
 } from '../../graphql/server/mutations';
 import {
-  GET_COMMUNITY_CHANNELS,
   GET_COMMUNITY_MEMBERS,
-  GET_USER_PASSPORT
+  GET_NEARBY_MEMBERS_OF_A_COMMUNITY
 } from '../../graphql/server/query';
-import { MyPassportInterface } from '../../graphql/types';
 import { logEvent } from '../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -49,19 +47,19 @@ function PopularCommunity(props: PopularCommunityProp) {
     });
   }, []);
 
-  const [member, setMember] = useState(false);
+  const [member, setMember] = useState(isMember);
 
   useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
-
-  const [joinCommunity, { loading }] = useMutation(JOIN_COMMUNITY, {
-    variables: { payload: { communityId: id } }
+  useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
+    variables: { filter: { participantOf: { id } } }
   });
 
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-
-  useQuery(GET_COMMUNITY_CHANNELS, {
-    variables: { communityId: id, userId: userData?.myPassport.id }
-  });
+  const [joinCommunity, { loading: joinLoading }] = useMutation(
+    JOIN_COMMUNITY,
+    {
+      variables: { payload: { communityId: id } }
+    }
+  );
 
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
     LEAVE_COMMUNITY,
@@ -78,7 +76,7 @@ function PopularCommunity(props: PopularCommunityProp) {
         'Activity Screen': 'Popular Community Card'
       });
       await joinCommunity();
-      setMember(true);
+      setMember(!member);
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -92,7 +90,7 @@ function PopularCommunity(props: PopularCommunityProp) {
         'Activity Screen': 'Popular Community Card'
       });
       await leaveCommunity();
-      setMember(false);
+      setMember(!member);
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -146,16 +144,19 @@ function PopularCommunity(props: PopularCommunityProp) {
 
           <Button
             mode="text"
-            loading={isMember || member ? leaveLoading : loading}
-            onPress={isMember || member ? handleLeave : handleJoin}
+            loading={member ? leaveLoading : joinLoading}
+            onPress={member ? handleLeave : handleJoin}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.MEDIUM_SIZE),
               color: colors.PRIMARY,
-              textTransform: 'uppercase'
+              textTransform: 'uppercase',
+              marginHorizontal: leaveLoading || joinLoading ? 15 : 0
             }}
+            contentStyle={{ justifyContent: 'flex-start' }}
+            style={{ width: '40%' }}
           >
-            {isMember || member
+            {member
               ? t(`community.recommended.leave`)
               : t(`community.recommended.join`)}
           </Button>

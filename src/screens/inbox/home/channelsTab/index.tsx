@@ -1,14 +1,14 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Text } from 'react-native-paper';
+import DirectChatCard from './widget';
 import { NavigationInterface } from '../../../types';
 import Firechat from '../../../../firebase';
-import MessageRequestCard from './widget';
-import ChatCardSkeleton from '../../../../components/chatCardSkeleton';
-import { ConversationInterface } from '../../types';
-import { ROOM_TYPES } from '../../../../firebase/types';
 import { useThemeContext } from '../../../../theme';
+import { ConversationInterface } from '../../types';
+import ChatCardSkeleton from '../../../../components/chatCardSkeleton';
+import { ROOM_TYPES } from '../../../../firebase/types';
 import {
   hideSensitiveView,
   tagScreenName
@@ -19,47 +19,42 @@ import { Container } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function MessageRequestTab(props: ScreenProp) {
+export default function ChannelsTab(props: ScreenProp) {
   const { fonts } = useThemeContext();
-  const [requestHistory, setRequestHistory] = useState(true);
+  const [channelHistory, setChannelHistory] = useState(true);
 
-  const [messageRequests, setMessageRequests] = useState<
+  const [channelMessages, setChannelMessages] = useState<
     ConversationInterface[]
   >([]);
 
   useEffect(() => {
-    tagScreenName('MessageRequestTab');
+    tagScreenName('ChannelsTab');
   }, []);
 
   useEffect(() => {
     let unsubscribe: any = null;
 
     (async () => {
-      const userConservations = await Firechat.getUserConversations(
-        ROOM_TYPES.MESSAGE_REQUEST
+      const userChannels = await Firechat.getUserChannels(
+        ROOM_TYPES.PARTICIPANTS
       );
 
-      unsubscribe = userConservations?.onSnapshot({
+      unsubscribe = userChannels?.onSnapshot({
         next: async (snapshot) => {
-          if (!snapshot.docs.length) return setRequestHistory(false);
+          if (!snapshot.docs.length) return setChannelHistory(false);
 
-          setRequestHistory(true);
-          const conversationIds = snapshot.docs.map((document) => document.id);
+          setChannelHistory(true);
+          const channelMessages = snapshot.docs
+            .map((document) => {
+              const message = document.data() as ConversationInterface;
+              return { ...message, id: document.id };
+            })
+            .sort(
+              //@ts-ignore
+              (a, b) => b.lastMessage.createdAt - a.lastMessage.createdAt
+            );
 
-          const userMessageRequest = await Firechat.getConversationMessages(
-            conversationIds
-          );
-
-          userMessageRequest?.onSnapshot({
-            next: (snapshot) => {
-              const messages = snapshot.docs.map((document) => {
-                const message = document.data() as ConversationInterface;
-                return { ...message, id: document.id };
-              });
-
-              setMessageRequests(messages);
-            }
-          });
+          setChannelMessages(channelMessages);
         }
       });
     })();
@@ -68,7 +63,7 @@ export default function MessageRequestTab(props: ScreenProp) {
   }, []);
 
   const _renderItem = ({ item }: { item: ConversationInterface }) => (
-    <MessageRequestCard key={item.id} {...item} {...props} />
+    <DirectChatCard key={item.id} {...item} />
   );
 
   const renderEmptyList = useMemo(
@@ -80,20 +75,20 @@ export default function MessageRequestTab(props: ScreenProp) {
     []
   );
 
-  return requestHistory ? (
+  return channelHistory ? (
     <FlatList
       bounces={false}
-      data={messageRequests}
-      ref={hideSensitiveView}
+      data={channelMessages}
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),
         paddingBottom: RFValue(20)
       }}
+      ref={hideSensitiveView}
       ListEmptyComponent={renderEmptyList}
       showsVerticalScrollIndicator={false}
       renderItem={_renderItem}
-      keyExtractor={(item: any) => item.id}
+      keyExtractor={(item) => item.id}
     />
   ) : (
     <Text
@@ -104,7 +99,7 @@ export default function MessageRequestTab(props: ScreenProp) {
         textAlign: 'center'
       }}
     >
-      You currently don't have any request connection
+      You currently haven't joined any channel
     </Text>
   );
 }

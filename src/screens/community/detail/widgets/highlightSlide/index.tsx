@@ -21,9 +21,13 @@ import {
   JOIN_COMMUNITY,
   LEAVE_COMMUNITY
 } from '../../../../../graphql/server/mutations';
-import { PassportInterface } from '../../../../../graphql/types';
+import {
+  CommunityInterface,
+  PassportInterface
+} from '../../../../../graphql/types';
 import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
+import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
 
 import {
   Container,
@@ -33,9 +37,10 @@ import {
   Tags,
   TagText
 } from './styles';
-import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
 
-interface singleCommunityScreenProp extends NavigationInterface {}
+interface singleCommunityScreenProp extends NavigationInterface {
+  route: { communityDetails: CommunityInterface };
+}
 
 export default function singleCommunity(props: singleCommunityScreenProp) {
   const detail = props.route;
@@ -52,14 +57,10 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const [data, setData] = useState(communityDetails);
   const [member, setMember] = useState(false);
 
-  const { data: communityData, refetch: communityRefetch } = useQuery(
-    GET_SINGLE_COMMUNITY,
-    {
-      variables: { id },
-      fetchPolicy: 'cache-and-network',
-      pollInterval: 500
-    }
-  );
+  const {
+    data: communityData,
+    refetch: communityRefetch
+  } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id } });
 
   const { data: communityMembersData } = useQuery(
     GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
@@ -102,7 +103,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     });
   }, [singleCommunity?.id]);
 
-  const resizeAvatar = data.avatar?.split('upload/');
+  const resizeAvatar = communityDetails.avatar?.split('upload/');
 
   const banner = resizeAvatar?.length
     ? resizeAvatar[0] +

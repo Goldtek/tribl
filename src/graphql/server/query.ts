@@ -419,6 +419,11 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
       membersCount
       description
       isMember
+      channels {
+        id
+        name
+        isMember
+      }
       interests {
         id
         name
@@ -435,12 +440,17 @@ export const GET_POPULAR_COMMUNITIES = gql`
       name
       description
       avatar
+      membersCount
       isMember
+      channels {
+        id
+        name
+        isMember
+      }
       interests {
         id
         name
       }
-      membersCount
     }
   }
 `;
@@ -453,7 +463,13 @@ export const GET_MY_COMMUNITIES = gql`
       description
       avatar
       name
+      isMember
       membersCount
+      channels {
+        id
+        name
+        isMember
+      }
       interests {
         id
         name
@@ -742,14 +758,19 @@ export const GET_SINGLE_COMMUNITY = gql`
       description
       id
       avatar
+      membersCount
+      isMember
+      name
       description
+      channels {
+        id
+        name
+        isMember
+      }
       interests {
         id
         name
       }
-      membersCount
-      isMember
-      name
     }
   }
 `;
@@ -879,19 +900,6 @@ export const GET_SINGLE_PASSPORT = gql`
             year
           }
         }
-      }
-    }
-  }
-`;
-
-//GET CHANNELS OF A COMMUNITY
-export const GET_COMMUNITY_CHANNELS = gql`
-  query Channel($communityId: ID!, $userId: ID!) {
-    Channel(filter: { community: { id: $communityId } }) {
-      id
-      name
-      participants(filter: { id: $userId }) {
-        id
       }
     }
   }

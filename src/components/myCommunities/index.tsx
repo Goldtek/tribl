@@ -5,11 +5,10 @@ import FastImage from 'react-native-fast-image';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
-import { CommunityInterface, MyPassportInterface } from '../../graphql/types';
+import { CommunityInterface } from '../../graphql/types';
 import {
-  GET_COMMUNITY_CHANNELS,
   GET_COMMUNITY_MEMBERS,
-  GET_USER_PASSPORT
+  GET_NEARBY_MEMBERS_OF_A_COMMUNITY
 } from '../../graphql/server/query';
 
 export default function MyCommunity(props: CommunityInterface) {
@@ -18,11 +17,10 @@ export default function MyCommunity(props: CommunityInterface) {
 
   const { avatar, name, id } = props;
 
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-
   useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
-  useQuery(GET_COMMUNITY_CHANNELS, {
-    variables: { communityId: id, userId: userData?.myPassport.id }
+
+  useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
+    variables: { filter: { participantOf: { id } } }
   });
 
   const handleNavigation = () => {

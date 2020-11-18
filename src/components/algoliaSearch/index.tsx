@@ -1,7 +1,7 @@
 import React, { useState, useCallback, ReactNode } from 'react';
 import { Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { View, ViewStyle } from 'react-native';
+import { ViewStyle } from 'react-native';
 import { Octicons } from '@expo/vector-icons';
 import SearchModal from '../searchModal';
 import { RFValue } from 'react-native-responsive-fontsize';

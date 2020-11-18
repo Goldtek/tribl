@@ -5,13 +5,11 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import highlightSlide from './widgets/highlightSlide';
 import channelSlide from './widgets/channelSlide';
 import memberSlide from './widgets/membersSlide';
 import { StatusBar } from 'expo-status-bar';
-import { GET_SINGLE_COMMUNITY } from '../../../graphql/server/query';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -24,15 +22,9 @@ export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const details = props.route.params;
-  const id = details?.details?.id || details?.communityHit?.id;
+  const isMember =
+    details?.details?.isMember || details?.communityHit?.isMember;
 
-  const { data: communityData } = useQuery(GET_SINGLE_COMMUNITY, {
-    variables: { id },
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 500
-  });
-
-  const member = communityData?.Community[0]?.isMember;
   const [tabIndex, setTabIndex] = React.useState(0);
   const [routes] = React.useState([
     {
@@ -69,7 +61,7 @@ export default function SearchScreen(props: ScreenProp) {
         fontSize: RFValue(fonts.LARGE_SIZE + 1),
         color: focused
           ? colors.PRIMARY
-          : !member
+          : !isMember
           ? colors.INACTIVE
           : colors.PRIMARY_TEXT,
         textTransform: 'capitalize',
@@ -102,7 +94,7 @@ export default function SearchScreen(props: ScreenProp) {
   };
 
   const handleIndexChange = (index: number) => {
-    member ? setTabIndex(index) : setTabIndex(0);
+    isMember ? setTabIndex(index) : setTabIndex(0);
   };
 
   return (
@@ -114,7 +106,7 @@ export default function SearchScreen(props: ScreenProp) {
         renderTabBar={renderTabBar}
         onIndexChange={handleIndexChange}
         initialLayout={{ width: DEVICE_FULL_WIDTH }}
-        swipeEnabled={member ? true : false}
+        swipeEnabled={isMember ? true : false}
       />
     </Container>
   );
