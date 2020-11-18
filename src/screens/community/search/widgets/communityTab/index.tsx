@@ -39,7 +39,10 @@ function CommunityTabScreen(props: ScreenProp) {
     data: communityData
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
-  const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES);
+  const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES, {
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 1000
+  });
 
   const community = communityData?.recommendedCommunities;
   const randomCommunity = communityData?.recommendedCommunities[0];
