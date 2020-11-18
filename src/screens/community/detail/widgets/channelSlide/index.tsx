@@ -1,6 +1,6 @@
 import React, { useMemo, Fragment, useEffect } from 'react';
 import { FlatList } from 'react-native';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { Paragraph, Divider, TouchableRipple } from 'react-native-paper';
@@ -9,24 +9,21 @@ import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
 import { Mixpanel } from '../../../../../config';
 import {
-  GET_COMMUNITY_CHANNELS,
-  GET_USER_PASSPORT
-} from '../../../../../graphql/server/query';
-import {
   JOIN_COMMUNITY_CHANNEL,
   LEAVE_COMMUNITY_CHANNEL,
   SEND_CHANNEL_MESSAGE
 } from '../../../../../graphql/server/mutations';
 import {
   ChannelInterface,
-  CommunityChannelRequestInterface,
-  MyPassportInterface
+  CommunityInterface
 } from '../../../../../graphql/types';
 import { useTranslation } from 'react-i18next';
 import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: { communityDetails: CommunityInterface };
+}
 
 export default function ChannelScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
@@ -37,28 +34,14 @@ export default function ChannelScreen(props: ScreenProp) {
     tagScreenName('TribeChannelScreen');
   }, []);
 
-  const detail = props.route;
-  const { communityDetails } = detail;
-
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-
-  const userDetails = userData?.myPassport;
+  const communityDetails = props.route.communityDetails;
 
   const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
 
-  const { data } = useQuery<CommunityChannelRequestInterface>(
-    GET_COMMUNITY_CHANNELS,
-    {
-      variables: { communityId: communityDetails?.id, userId: userDetails?.id },
-      fetchPolicy: 'cache-and-network',
-      pollInterval: 500
-    }
-  );
-
   const handleNavigation = async (item: ChannelInterface) => {
-    const isMember = item.participants[0]?.id;
+    const { isMember } = item;
 
     if (!isMember) {
       logEvent('join channel', { from: 'channel' });
@@ -128,7 +111,7 @@ export default function ChannelScreen(props: ScreenProp) {
   return (
     <FlatList
       renderItem={_renderItem}
-      data={data?.Channel}
+      data={communityDetails?.channels}
       ItemSeparatorComponent={_seperator}
       keyExtractor={(item) => item.id}
     />
