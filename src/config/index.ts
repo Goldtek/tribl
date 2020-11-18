@@ -4,6 +4,7 @@ import RNUxcam from 'react-native-ux-cam';
 import ENVIRONMENT_VARIABLES from 'react-native-config';
 import RNMixpanel from 'react-native-mixpanel';
 import MixpanelAnalytics from '../libs/mixpanel';
+import algolia from 'algoliasearch';
 
 declare global {
   interface Console {
@@ -19,6 +20,11 @@ if (__DEV__) {
   //@ts-ignore
   console.tron = Reactotron.log;
 }
+
+export const searchClient = algolia(
+  ENVIRONMENT_VARIABLES.TRIBL_ALGOLIA_APP_ID,
+  ENVIRONMENT_VARIABLES.TRIBL_ALGOLIA_API_KEY
+);
 
 RNUxcam.optIntoSchematicRecordings();
 RNUxcam.startWithKey(ENVIRONMENT_VARIABLES.TRIBL_UX_CAM);
