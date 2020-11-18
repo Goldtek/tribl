@@ -222,7 +222,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           },
           headerTitleContainerStyle: {
             flex: 1,
-            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
           },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
@@ -246,7 +246,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           },
           headerTitleContainerStyle: {
             flex: 1,
-            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
           },
           headerRight: () => (
             <Menu
@@ -362,7 +362,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}

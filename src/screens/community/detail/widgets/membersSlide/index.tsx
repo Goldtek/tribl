@@ -1,28 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList } from 'react-native';
-import { Title } from 'react-native-paper';
+import { Divider, Title, Searchbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@apollo/react-hooks';
+import {
+  connectInfiniteHits,
+  InstantSearch,
+  connectSearchBox,
+  Configure
+} from 'react-instantsearch-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import MemberCard from './widget/member';
 import { NavigationInterface } from '../../../../types';
-import AlgoliaSearch from '../../../../../components/algoliaSearch';
-import AlgoliaList from '../../../../../components/algoliaCommunityMembersList';
-import {
-  GET_COMMUNITY_MEMBERS,
-  GET_USER_PASSPORT
-} from '../../../../../graphql/server/query';
+import { Results } from '../../../../../components/algoliaCommunityMembersList';
 import {
   CommunityInterface,
   PassportInterface
 } from '../../../../../graphql/types';
-import ENVIRONMENT_VARIABLES from '../../../../../config';
-import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
+import ENVIRONMENT_VARIABLES, { searchClient } from '../../../../../config';
+import { tagScreenName } from '../../../../../utils/uxcamHelper';
+import hexToRGB from '../../../../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface MemberSlideProp extends NavigationInterface {
@@ -34,66 +34,102 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const [state, setState] = useState({ search: {} });
+
+  const onSearchStateChange = (search: string) => {
+    setState({ ...state, search });
+  };
 
   useEffect(() => {
     tagScreenName('TribeMembersScreen');
   }, []);
 
-  const { data } = useQuery<CommunityMembersRequestInterface>(
-    GET_COMMUNITY_MEMBERS,
-    {
-      variables: { id: communityDetails.id },
-      fetchPolicy: 'cache-and-network',
-      pollInterval: 500
-    }
+  const _separator = useMemo(
+    () => () => (
+      <Divider
+        style={{
+          height: 1.5,
+          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+        }}
+      />
+    ),
+    []
   );
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
-  const userDetails = userData?.myPassport;
-  const userId = userDetails?.id;
+  const _memberList = (props: any) => {
+    const { hits, hasMore, refine } = props;
 
-  const participants = data?.communityMembers;
+    const _renderItem = ({ item }: { item: PassportInterface }) => {
+      return <MemberCard key={item.id} {...item} />;
+    };
 
-  const filteredParticipants = participants?.filter((member) => {
-    return member.id !== userId;
-  });
+    return (
+      <Results>
+        <FlatList
+          data={hits}
+          keyExtractor={(item) => item.id}
+          ItemSeparatorComponent={_separator}
+          onEndReached={() => hasMore && refine()}
+          renderItem={_renderItem}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 20, paddingBottom: RFValue(60) }}
+        />
+      </Results>
+    );
+  };
 
-  const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <MemberCard key={item.id} {...item} />
+  const _searchBox = ({ currentRefinement, refine }: any) => (
+    <Searchbar
+      value={currentRefinement}
+      onChangeText={(value) => refine(value)}
+      placeholder={t(`community.chat.search`)}
+      style={{
+        marginLeft: RFValue(10),
+        marginRight: RFValue(10),
+        fontFamily: fonts.WORK_SANS_REGULAR,
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        color: colors.SECONDARY_TEXT,
+        marginHorizontal: 15,
+        elevation: 0,
+        borderColor: colors.INACTIVE,
+        borderRadius: 4,
+        borderWidth: 1
+      }}
+      iconColor={colors.PRIMARY_TEXT}
+    />
   );
+
+  const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), []);
+  const AlgoliaMemberList = useMemo(() => connectInfiniteHits(_memberList), []);
 
   return (
     <Container>
-      <AlgoliaSearch
+      <InstantSearch
+        searchClient={searchClient}
         indexName={ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME}
-        filters={`"communityId": ${communityDetails.id}`}
+        searchState={state.search}
+        onSearchStateChange={onSearchStateChange}
       >
-        <AlgoliaList />
-      </AlgoliaSearch>
-      <Title
-        style={{
-          color: colors.PRIMARY_TEXT,
-          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-          fontSize: RFValue(fonts.LARGE_SIZE),
-          marginTop: RFValue(20),
-          marginLeft: RFValue(10),
-          textTransform: 'capitalize'
-        }}
-      >
-        {t(`community.tabPanel.memberTitle`)}
-      </Title>
-
-      <FlatList
-        data={filteredParticipants}
-        contentContainerStyle={{
-          flexGrow: 1,
-          marginTop: RFValue(10),
-          paddingBottom: RFValue(120)
-        }}
-        showsVerticalScrollIndicator={false}
-        renderItem={_renderItem}
-        keyExtractor={(item) => item.id}
-      />
+        <Configure
+          filters={`"communityId": ${communityDetails?.id}`}
+          hitsPerPage={8}
+          distinct
+        />
+        <AlgoliaSearchBox />
+        <Title
+          style={{
+            color: colors.PRIMARY_TEXT,
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            marginTop: RFValue(20),
+            marginLeft: RFValue(10),
+            textTransform: 'capitalize'
+          }}
+        >
+          {t(`community.tabPanel.memberTitle`)}
+        </Title>
+        <AlgoliaMemberList />
+      </InstantSearch>
     </Container>
   );
 }

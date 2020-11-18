@@ -52,8 +52,7 @@ export const ConnectionCover = styled.View`
   flex: 1;
   flex-direction: row;
   align-items: flex-end;
-  justify-content: space-between;
-  padding-left: 30px;
+  justify-content: space-around;
 `;
 
 export const Connection = styled.View`

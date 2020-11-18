@@ -100,6 +100,7 @@
     "message": "direct messages",
     "group": "group chat",
     "request": "request",
+    "channels": "channels",
     "chatTitle": "new chat",
     "search": "search",
     "connection": "my connections",
