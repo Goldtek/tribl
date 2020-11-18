@@ -1,17 +1,18 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import * as Sentry from '@sentry/react-native';
 import { Feather } from '@expo/vector-icons';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../../../theme';
 import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
-import { PassportInterface } from '../../../../../../../graphql/types';
-import { OnlinePresence } from '../../../../../../inbox/types';
-import Firechat from '../../../../../../../firebase';
-import formatMessageTime from '../../../../../../../utils/timesince';
+import {
+  PassportInterface,
+  SinglePassportRequestInterface
+} from '../../../../../../../graphql/types';
+import { GET_SINGLE_PASSPORT } from '../../../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -23,38 +24,18 @@ function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const {
-    avatar,
-    firstName,
-    lastName,
-    connected,
-    phoneNumber,
-    id,
-    conversation,
-    presence
-  } = props;
+  const { avatar, firstName, lastName, phoneNumber, id } = props;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
 
-  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: presence.status.toString(),
-    lastSeen: new Date(
-      `${presence.lastSeen.year}/${presence.lastSeen.month}/${presence.lastSeen.day}`
-    ).getTime()
-  });
+  const { data: passportData } = useQuery<SinglePassportRequestInterface>(
+    GET_SINGLE_PASSPORT,
+    { variables: { id } }
+  );
 
-  useEffect(() => {
-    Firechat.getOnlineStatus(id).onSnapshot({
-      next: (snapshot) => {
-        if (snapshot.exists) {
-          const { presence } = snapshot.data() as { presence: OnlinePresence };
-          setOnlinePresence({ ...onlinePresence, ...presence });
-        }
-      }
-    });
-  }, []);
+  const singlePassport = passportData?.singlePassport;
 
   const handleRequest = async () => {
     try {
@@ -66,12 +47,14 @@ function Member(props: MemberProp) {
 
   const handleNavigation = () => {
     navigation.navigate(
-      conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      singlePassport?.conversation?.id
+        ? 'DirectChatScreen'
+        : 'ConnectionChatScreen',
       {
         receiverId: id,
-        chatId: conversation?.id,
+        chatId: singlePassport?.conversation?.id,
         title: `${firstName} ${lastName}`,
-        ...props
+        ...{ ...props, ...singlePassport }
       }
     );
   };
@@ -89,7 +72,7 @@ function Member(props: MemberProp) {
       onPress={() =>
         navigation.navigate('MemberDetailScreen', {
           title: `${firstName} ${lastName}`,
-          details: { ...props }
+          details: { ...props, ...singlePassport }
         })
       }
     >
@@ -122,12 +105,10 @@ function Member(props: MemberProp) {
               textTransform: 'lowercase'
             }}
           >
-            {onlinePresence.status === 'ONLINE'
-              ? onlinePresence.status
-              : formatMessageTime(Number(onlinePresence.lastSeen))}
+            ONLINE
           </Text>
         </NameContainer>
-        {connected ? (
+        {singlePassport?.connected === 'CONNECTED' ? (
           <TouchableRipple
             style={{
               marginLeft: 'auto',
@@ -169,4 +150,4 @@ function Member(props: MemberProp) {
   );
 }
 
-export default React.memo(Member);
+export default React.memo(Member, () => false);
