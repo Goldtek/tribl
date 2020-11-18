@@ -66,7 +66,7 @@ export default function HomeScreen(props: ScreenProp) {
 
   const { loading: myCommunityLoading, data: myCommunityData } = useQuery<
     MyCommunitiesRequestInterface
-  >(GET_MY_COMMUNITIES, { pollInterval: 500 });
+  >(GET_MY_COMMUNITIES, { pollInterval: 1000 });
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST);
 
@@ -92,7 +92,7 @@ export default function HomeScreen(props: ScreenProp) {
     data: communityData
   } = useQuery<RecommendedCommunitiesRequestInterface>(
     GET_RECOMMENDED_COMMUNITIES,
-    { pollInterval: 500 }
+    { pollInterval: 1000 }
   );
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
