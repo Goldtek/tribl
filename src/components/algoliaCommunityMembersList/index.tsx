@@ -12,9 +12,9 @@ import { useThemeContext } from '../../theme';
 import HighLight from '../algoliaInboxCard';
 
 function AlgoliaList(props: any) {
-  const { colors, fonts } = useThemeContext();
+  const { colors } = useThemeContext();
 
-  const { hits, hasMore, refine, navigation, closeModal, attribute } = props;
+  const { hits, hasMore, refine, closeModal, attribute } = props;
 
   const _separator = useMemo(
     () => () => (
@@ -34,137 +34,10 @@ function AlgoliaList(props: any) {
         attribute="id"
         hit={item}
         //@ts-ignore
-        navigation={navigation}
         closeModal={closeModal}
       />
     ),
     []
-  );
-
-  const Results = connectStateResults(
-    ({ searchState, searchResults, children }: any) => {
-      return searchResults && searchResults.nbHits !== 0 ? (
-        children
-      ) : searchState && !searchState.query ? (
-        <Fragment>
-          <SkeletonPlaceholder>
-            <SkeletonPlaceholder.Item
-              flexDirection="row"
-              alignItems="center"
-              margin={10}
-            >
-              <SkeletonPlaceholder.Item
-                width={60}
-                height={60}
-                borderRadius={50}
-              />
-              <SkeletonPlaceholder.Item marginLeft={20}>
-                <SkeletonPlaceholder.Item
-                  width={120}
-                  height={20}
-                  borderRadius={4}
-                />
-                <SkeletonPlaceholder.Item
-                  marginTop={6}
-                  width={80}
-                  height={20}
-                  borderRadius={4}
-                />
-              </SkeletonPlaceholder.Item>
-            </SkeletonPlaceholder.Item>
-          </SkeletonPlaceholder>
-          <SkeletonPlaceholder>
-            <SkeletonPlaceholder.Item
-              flexDirection="row"
-              alignItems="center"
-              margin={10}
-            >
-              <SkeletonPlaceholder.Item
-                width={60}
-                height={60}
-                borderRadius={50}
-              />
-              <SkeletonPlaceholder.Item marginLeft={20}>
-                <SkeletonPlaceholder.Item
-                  width={120}
-                  height={20}
-                  borderRadius={4}
-                />
-                <SkeletonPlaceholder.Item
-                  marginTop={6}
-                  width={80}
-                  height={20}
-                  borderRadius={4}
-                />
-              </SkeletonPlaceholder.Item>
-            </SkeletonPlaceholder.Item>
-          </SkeletonPlaceholder>
-          <SkeletonPlaceholder>
-            <SkeletonPlaceholder.Item
-              flexDirection="row"
-              alignItems="center"
-              margin={10}
-            >
-              <SkeletonPlaceholder.Item
-                width={60}
-                height={60}
-                borderRadius={50}
-              />
-              <SkeletonPlaceholder.Item marginLeft={20}>
-                <SkeletonPlaceholder.Item
-                  width={120}
-                  height={20}
-                  borderRadius={4}
-                />
-                <SkeletonPlaceholder.Item
-                  marginTop={6}
-                  width={80}
-                  height={20}
-                  borderRadius={4}
-                />
-              </SkeletonPlaceholder.Item>
-            </SkeletonPlaceholder.Item>
-          </SkeletonPlaceholder>
-          <SkeletonPlaceholder>
-            <SkeletonPlaceholder.Item
-              flexDirection="row"
-              alignItems="center"
-              margin={10}
-            >
-              <SkeletonPlaceholder.Item
-                width={60}
-                height={60}
-                borderRadius={50}
-              />
-              <SkeletonPlaceholder.Item marginLeft={20}>
-                <SkeletonPlaceholder.Item
-                  width={120}
-                  height={20}
-                  borderRadius={4}
-                />
-                <SkeletonPlaceholder.Item
-                  marginTop={6}
-                  width={80}
-                  height={20}
-                  borderRadius={4}
-                />
-              </SkeletonPlaceholder.Item>
-            </SkeletonPlaceholder.Item>
-          </SkeletonPlaceholder>
-        </Fragment>
-      ) : (
-        <Text
-          style={{
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            margin: RFValue(20),
-            textAlign: 'center'
-          }}
-        >
-          No results have been found for {searchState.query}.
-        </Text>
-      );
-    }
   );
 
   return (
@@ -185,5 +58,133 @@ function AlgoliaList(props: any) {
     </Results>
   );
 }
+
+export const Results = connectStateResults(
+  ({ searchState, searchResults, children }: any) => {
+    const { fonts } = useThemeContext();
+
+    return searchResults && searchResults.nbHits !== 0 ? (
+      children
+    ) : searchState && !searchState.query ? (
+      <Fragment>
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item
+            flexDirection="row"
+            alignItems="center"
+            margin={10}
+          >
+            <SkeletonPlaceholder.Item
+              width={60}
+              height={60}
+              borderRadius={50}
+            />
+            <SkeletonPlaceholder.Item marginLeft={20}>
+              <SkeletonPlaceholder.Item
+                width={120}
+                height={20}
+                borderRadius={4}
+              />
+              <SkeletonPlaceholder.Item
+                marginTop={6}
+                width={80}
+                height={20}
+                borderRadius={4}
+              />
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item
+            flexDirection="row"
+            alignItems="center"
+            margin={10}
+          >
+            <SkeletonPlaceholder.Item
+              width={60}
+              height={60}
+              borderRadius={50}
+            />
+            <SkeletonPlaceholder.Item marginLeft={20}>
+              <SkeletonPlaceholder.Item
+                width={120}
+                height={20}
+                borderRadius={4}
+              />
+              <SkeletonPlaceholder.Item
+                marginTop={6}
+                width={80}
+                height={20}
+                borderRadius={4}
+              />
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item
+            flexDirection="row"
+            alignItems="center"
+            margin={10}
+          >
+            <SkeletonPlaceholder.Item
+              width={60}
+              height={60}
+              borderRadius={50}
+            />
+            <SkeletonPlaceholder.Item marginLeft={20}>
+              <SkeletonPlaceholder.Item
+                width={120}
+                height={20}
+                borderRadius={4}
+              />
+              <SkeletonPlaceholder.Item
+                marginTop={6}
+                width={80}
+                height={20}
+                borderRadius={4}
+              />
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+        <SkeletonPlaceholder>
+          <SkeletonPlaceholder.Item
+            flexDirection="row"
+            alignItems="center"
+            margin={10}
+          >
+            <SkeletonPlaceholder.Item
+              width={60}
+              height={60}
+              borderRadius={50}
+            />
+            <SkeletonPlaceholder.Item marginLeft={20}>
+              <SkeletonPlaceholder.Item
+                width={120}
+                height={20}
+                borderRadius={4}
+              />
+              <SkeletonPlaceholder.Item
+                marginTop={6}
+                width={80}
+                height={20}
+                borderRadius={4}
+              />
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+      </Fragment>
+    ) : (
+      <Text
+        style={{
+          fontSize: RFValue(fonts.LARGE_SIZE),
+          fontFamily: fonts.WORK_SANS_BOLD,
+          margin: RFValue(20),
+          textAlign: 'center'
+        }}
+      >
+        No results have been found for {searchState.query}.
+      </Text>
+    );
+  }
+);
 
 export default connectInfiniteHits(AlgoliaList);
