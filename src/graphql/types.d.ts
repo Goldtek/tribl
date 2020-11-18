@@ -171,6 +171,7 @@ export interface StoreInterface {
 export type ChannelInterface = {
   id: string;
   name: string;
+  isMember: boolean;
   isDefault: boolean;
   isPrivate: boolean;
   participants: PassportInterface[];
