@@ -93,7 +93,7 @@ export default function DrawerStackNavigator() {
           },
           headerTitleContainerStyle: {
             flex: 1,
-            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
           },
           headerRight: () => (
             <TouchableRipple
@@ -113,7 +113,6 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           ),
-          headerLeftContainerStyle: { paddingLeft: 10 },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
         })}
@@ -122,7 +121,7 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="ChannelChatScreen"
         component={Screens.ChannelChatScreen}
-        options={({ route }) => {
+        options={({ route }: any) => {
           // @ts-ignore
           setChatId(route.params?.chatId);
           return {
@@ -309,7 +308,7 @@ export default function DrawerStackNavigator() {
           },
           headerTitleContainerStyle: {
             flex: 1,
-            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
           },
           headerRight: () => (
             <TouchableRipple
@@ -329,7 +328,6 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           ),
-          headerLeftContainerStyle: { paddingLeft: 10 },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
         })}
@@ -351,7 +349,7 @@ export default function DrawerStackNavigator() {
           },
           headerTitleContainerStyle: {
             flex: 1,
-            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
           },
           headerRight: () => (
             <TouchableRipple
@@ -371,7 +369,6 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           ),
-          headerLeftContainerStyle: { paddingLeft: 10 },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
         })}
