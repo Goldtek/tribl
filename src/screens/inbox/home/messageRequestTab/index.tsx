@@ -19,7 +19,7 @@ import { Container } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function ChannelScreen(props: ScreenProp) {
+export default function MessageRequestTab(props: ScreenProp) {
   const { fonts } = useThemeContext();
   const [requestHistory, setRequestHistory] = useState(true);
 
@@ -98,7 +98,7 @@ export default function ChannelScreen(props: ScreenProp) {
   ) : (
     <Text
       style={{
-        fontSize: RFValue(fonts.LARGE_SIZE),
+        fontSize: RFValue(fonts.MEDIUM_SIZE),
         fontFamily: fonts.WORK_SANS_BOLD,
         margin: RFValue(20),
         textAlign: 'center'

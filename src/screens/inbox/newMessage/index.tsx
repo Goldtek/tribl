@@ -19,7 +19,6 @@ import {
 } from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
 import ENVIRONMENT_VARIABLES from '../../../config';
-import { fireAuth } from '../../../firebase/config';
 import {
   NearbyMembersRequestInterface,
   MyConnectionsInterface,
@@ -27,10 +26,10 @@ import {
   PassportInterface
 } from '../../../graphql/types';
 import { NavigationInterface } from '../../types';
+import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer, HeaderContainer } from './styles';
-import { tagScreenName } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}

@@ -100,7 +100,7 @@ function DirectChatCard(props: DirectChatProp) {
                 style={{
                   color: colors.PRIMARY_TEXT,
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontSize: RFValue(fonts.LARGE_SIZE - 2),
                   textTransform: 'capitalize'
                 }}
               >
@@ -119,7 +119,7 @@ function DirectChatCard(props: DirectChatProp) {
               style={{
                 color: colors.SECONDARY_TEXT,
                 fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE)
+                fontSize: RFValue(fonts.MEDIUM_SIZE - 2)
               }}
             >
               {lastMessage.text.length >= 30
@@ -134,7 +134,7 @@ function DirectChatCard(props: DirectChatProp) {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontSize: RFValue(fonts.MEDIUM_SIZE - 2),
               marginVertical: 5
             }}
           >
