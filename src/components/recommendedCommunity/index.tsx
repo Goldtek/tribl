@@ -13,8 +13,10 @@ import {
   JOIN_COMMUNITY,
   LEAVE_COMMUNITY
 } from '../../graphql/server/mutations';
-import { GET_COMMUNITY_MEMBERS } from '../../graphql/server/query';
-import { CLOUDINARY_BANNER, CLOUDINARY_THUMBNAIL } from '../../constants';
+import {
+  GET_COMMUNITY_MEMBERS,
+  GET_NEARBY_MEMBERS_OF_A_COMMUNITY
+} from '../../graphql/server/query';
 import { CommunityInterface } from '../../graphql/types';
 import { logEvent } from '../../utils/uxcamHelper';
 
@@ -40,15 +42,17 @@ function RecommendedCommunity(props: CommunityInterface) {
       }`
     : avatar;
 
-  const thumbnail = resizeAvatar?.length
-    ? `${resizeAvatar[0]}${CLOUDINARY_THUMBNAIL}${resizeAvatar[1]}`
-    : avatar;
-
   useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
-
-  const [joinCommunity, { loading }] = useMutation(JOIN_COMMUNITY, {
-    variables: { payload: { communityId: id } }
+  useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
+    variables: { filter: { participantOf: { id } } }
   });
+
+  const [joinCommunity, { loading: joinLoading }] = useMutation(
+    JOIN_COMMUNITY,
+    {
+      variables: { payload: { communityId: id } }
+    }
+  );
 
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
     LEAVE_COMMUNITY,
@@ -166,12 +170,13 @@ function RecommendedCommunity(props: CommunityInterface) {
         right={() => (
           <Button
             mode="text"
-            loading={isMember || member ? leaveLoading : loading}
+            loading={isMember || member ? leaveLoading : joinLoading}
             onPress={isMember || member ? handleLeave : handleJoin}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.MEDIUM_SIZE),
-              left: 15
+              left: 15,
+              marginLeft: 0
             }}
           >
             {isMember || member
