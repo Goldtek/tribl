@@ -480,8 +480,8 @@ export const GET_MY_COMMUNITIES = gql`
 
 //GET MY CONNECTIONS
 export const GET_MY_CONNECTIONS = gql`
-  query myConnections {
-    myConnections {
+  query myConnections($offset: Int, $first: Int) {
+    myConnections(offset: $offset, first: $first) {
       id
       email
       firstName
@@ -1290,6 +1290,16 @@ export const USER_ONLINE_SUBSCRIPTION = gql`
         status
         lastSeen
       }
+    }
+  }
+`;
+
+// GET ALL USER CHANNELS
+export const USER_CHANNELS = gql`
+  query myChannels($offset: Int, $first: Int) {
+    myChannels(offset: $offset, first: $first) {
+      id
+      name
     }
   }
 `;
