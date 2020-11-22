@@ -13,6 +13,7 @@ import {
   hideSensitiveView,
   tagScreenName
 } from '../../../../utils/uxcamHelper';
+import batchConversation from '../../../../utils/batchConversation';
 
 import { Container } from './styles';
 
@@ -34,7 +35,7 @@ export default function MessageRequestTab(props: ScreenProp) {
   useEffect(() => {
     let unsubscribe: any = null;
 
-    (async () => {
+    const getMessageRequests = async () => {
       const userConservations = await Firechat.getUserConversations(
         ROOM_TYPES.MESSAGE_REQUEST
       );
@@ -44,26 +45,44 @@ export default function MessageRequestTab(props: ScreenProp) {
           if (!snapshot.docs.length) return setRequestHistory(false);
 
           setRequestHistory(true);
-          const conversationIds = snapshot.docs.map((document) => document.id);
+          const batchedConversationIds = batchConversation(snapshot.docs);
 
-          const userMessageRequest = await Firechat.getConversationMessages(
-            conversationIds
+          const userMessageRequests = await Promise.all(
+            batchedConversationIds.map((conversationIds) =>
+              Firechat.getConversationMessages(conversationIds)
+            )
           );
 
-          userMessageRequest?.onSnapshot({
-            next: (snapshot) => {
-              const messages = snapshot.docs.map((document) => {
-                const message = document.data() as ConversationInterface;
-                return { ...message, id: document.id };
-              });
+          let snapshotMessages: ConversationInterface[] = [];
 
-              setMessageRequests(messages);
-            }
+          userMessageRequests.forEach((userMessageRequest, index) => {
+            userMessageRequest?.onSnapshot({
+              next: (snapshot) => {
+                for (let index = 0; index < snapshot.docs.length; index++) {
+                  const document = snapshot.docs[index];
+                  const message = document.data() as ConversationInterface;
+                  snapshotMessages = snapshotMessages.filter(
+                    (x) => x.id !== document.id
+                  );
+                  snapshotMessages.push({ ...message, id: document.id });
+                }
+
+                if (index === userMessageRequests.length - 1) {
+                  const messageRequests = snapshotMessages.sort(
+                    (a, b) =>
+                      new Date(b.lastMessage.createdAt).getTime() -
+                      new Date(a.lastMessage.createdAt).getTime()
+                  );
+                  setMessageRequests(messageRequests);
+                }
+              }
+            });
           });
         }
       });
-    })();
+    };
 
+    getMessageRequests();
     return () => unsubscribe && unsubscribe();
   }, []);
 
