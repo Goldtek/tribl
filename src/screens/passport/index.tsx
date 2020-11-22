@@ -35,7 +35,8 @@ import {
   GET_POPULAR_COMMUNITIES,
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
-  GET_USER_PASSPORT
+  GET_USER_PASSPORT,
+  USER_CHANNELS
 } from '../../graphql/server/query';
 import {
   GenerateFirebaseTokenIT,
@@ -116,6 +117,8 @@ export default function PassportScreen(props: ScreenProp) {
   const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
     GET_CONNECTION_REQUEST
   );
+
+  const [getUserChannels] = useLazyQuery(USER_CHANNELS);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
 
@@ -334,6 +337,7 @@ export default function PassportScreen(props: ScreenProp) {
     getMyCommunities();
     getNearbyMembers();
     getMyConnections();
+    getUserChannels();
     getAllMembers();
   }, []);
 
