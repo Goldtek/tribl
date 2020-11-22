@@ -3,54 +3,45 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
-import { useQuery } from '@apollo/react-hooks';
 import { Image } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { ConversationInterface } from '../../../types';
+import { ChannelConversationInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
 import formatMessageTime from '../../../../../utils/timesince';
-import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
-import { UserPassportInterface } from '../../../../../graphql/types';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
-import { fireAuth } from '../../../../../firebase/config';
+import { subMinutes } from 'date-fns';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface DirectChatProp extends ConversationInterface {}
+interface ChannelChatProp extends ChannelConversationInterface {}
 
-function DirectChatCard(props: DirectChatProp) {
+function ChannelChatCard(props: ChannelChatProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { id: chatId, lastMessage, members } = props;
+  const { id: chatId, lastMessage, channel, community, sender } = props;
 
-  const userId = fireAuth.currentUser?.uid;
+  const title = `#${community.name}-${channel.name}`;
 
-  const [sender, receiver] = members.sort((a) => {
-    if (a.id !== userId) return -1;
-    return 0;
-  });
+  let text = lastMessage.text;
 
-  const { data: passportData } = useQuery<UserPassportInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: sender.id } }
-  );
+  if (text.includes('has joined the channel!')) {
+    text = `${sender.firstName} ${sender.lastName} ${lastMessage.text}`;
+  }
 
-  const receiverPassport = passportData?.singlePassport;
-  const title = `${sender.firstName} ${sender.lastName}`;
+  if (text.length >= 30) text = `${text.substr(0, 30)}...`;
 
   const showNotificationBadge =
-    lastMessage.receiverId === userId &&
-    lastMessage.createdAt >= receiver.readAt;
+    lastMessage.createdAt >= subMinutes(new Date(), 2);
 
   const handleNavigation = () => {
-    navigation.navigate('DirectChatScreen', {
+    navigation.navigate('ChannelChatScreen', {
       title,
       chatId,
-      receiverId: sender.id,
-      ...receiverPassport
+      isMember: true,
+      channel: { community: community.name, name: channel.name }
     });
   };
 
@@ -72,11 +63,11 @@ function DirectChatCard(props: DirectChatProp) {
       onPress={handleNavigation}
     >
       <Fragment>
-        {sender.avatar ? (
+        {community.avatar ? (
           <FastImage
             resizeMode={FastImage.resizeMode.cover}
             source={{
-              uri: sender.avatar,
+              uri: community.avatar,
               priority: FastImage.priority.high
             }}
             style={{ width: RFValue(50), height: RFValue(50), borderRadius: 4 }}
@@ -100,8 +91,7 @@ function DirectChatCard(props: DirectChatProp) {
                 style={{
                   color: colors.PRIMARY_TEXT,
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                  textTransform: 'capitalize'
+                  fontSize: RFValue(fonts.LARGE_SIZE - 2)
                 }}
               >
                 {title.length >= 30 ? `${title.substr(0, 30)}...` : title}
@@ -122,9 +112,7 @@ function DirectChatCard(props: DirectChatProp) {
                 fontSize: RFValue(fonts.MEDIUM_SIZE - 2)
               }}
             >
-              {lastMessage.text.length >= 30
-                ? `${lastMessage.text.substr(0, 30)}...`
-                : lastMessage.text}
+              {text}
             </Text>
           </Fragment>
         </NameContainer>
@@ -148,4 +136,4 @@ function DirectChatCard(props: DirectChatProp) {
   );
 }
 
-export default React.memo(DirectChatCard);
+export default React.memo(ChannelChatCard);
