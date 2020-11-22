@@ -39,7 +39,8 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   }, []);
 
   const { data, refetch } = useQuery<MyConnectionsInterface>(
-    GET_MY_CONNECTIONS
+    GET_MY_CONNECTIONS,
+    { variables: { offset: 0, first: 20 } }
   );
 
   const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
