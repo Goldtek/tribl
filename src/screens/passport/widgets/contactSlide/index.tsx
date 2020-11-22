@@ -63,6 +63,7 @@ function contactSlide(props: ScreenProp) {
   const { data: userData, loading } = useQuery<MyPassportInterface>(
     GET_USER_PASSPORT
   );
+
   const userDetails = userData?.myPassport;
 
   const [isVisible, setIsVisible] = useState(false);

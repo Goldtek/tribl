@@ -13,6 +13,7 @@ import {
   hideSensitiveView,
   tagScreenName
 } from '../../../../utils/uxcamHelper';
+import batchConversation from '../../../../utils/batchConversation';
 
 import { Container } from './styles';
 
@@ -34,7 +35,7 @@ export default function DirectMessageTab(props: ScreenProp) {
   useEffect(() => {
     let unsubscribe: any = null;
 
-    (async () => {
+    const getDirectMessages = async () => {
       const userConservations = await Firechat.getUserConversations(
         ROOM_TYPES.CONVERSATIONS
       );
@@ -44,30 +45,44 @@ export default function DirectMessageTab(props: ScreenProp) {
           if (!snapshot.docs.length) return setChatHistory(false);
 
           setChatHistory(true);
-          const conversationIds = snapshot.docs.map((document) => document.id);
+          const batchedConversationIds = batchConversation(snapshot.docs);
 
-          const userDirectMessages = await Firechat.getConversationMessages(
-            conversationIds
+          const userDirectMessages = await Promise.all(
+            batchedConversationIds.map((conversationIds) =>
+              Firechat.getConversationMessages(conversationIds)
+            )
           );
 
-          userDirectMessages?.onSnapshot({
-            next: (snapshot) => {
-              const directMessages = snapshot.docs
-                .map((document) => {
-                  const message = document.data() as ConversationInterface;
-                  return { ...message, id: document.id };
-                })
-                .sort(
-                  //@ts-ignore
-                  (a, b) => b.lastMessage.createdAt - a.lastMessage.createdAt
-                );
+          let snapshotMessages: ConversationInterface[] = [];
 
-              setDirectMessages(directMessages);
-            }
+          userDirectMessages.forEach((userDirectMessage, index) => {
+            userDirectMessage?.onSnapshot({
+              next: (snapshot) => {
+                for (let index = 0; index < snapshot.docs.length; index++) {
+                  const document = snapshot.docs[index];
+                  const message = document.data() as ConversationInterface;
+                  snapshotMessages = snapshotMessages.filter(
+                    (x) => x.id !== document.id
+                  );
+                  snapshotMessages.push({ ...message, id: document.id });
+                }
+
+                if (index === userDirectMessages.length - 1) {
+                  const directMessages = snapshotMessages.sort(
+                    (a, b) =>
+                      new Date(b.lastMessage.createdAt).getTime() -
+                      new Date(a.lastMessage.createdAt).getTime()
+                  );
+                  setDirectMessages(directMessages);
+                }
+              }
+            });
           });
         }
       });
-    })();
+    };
+
+    getDirectMessages();
 
     return () => unsubscribe && unsubscribe();
   }, []);

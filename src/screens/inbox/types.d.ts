@@ -1,4 +1,4 @@
-import { UserAvailability } from '../../graphql/types';
+import { UserAvailability, _Neo4jDate } from '../../graphql/types';
 
 export interface MessageInterface {
   _id: string;
@@ -58,4 +58,24 @@ export interface ConversationInterface {
     receiverId: string;
   };
   members: ConversationUser[];
+}
+
+export interface ChannelConversationInterface {
+  id: string;
+  lastMessage: {
+    text: string;
+    image?: string;
+    video?: string;
+    audio?: string;
+    createdAt: Date;
+  };
+  channel: { name: string };
+  sender: ConversationUser;
+  community: {
+    id: string;
+    name: string;
+    avatar: string;
+    createdAt: _Neo4jDate;
+    updatedAt: _Neo4jDate;
+  };
 }

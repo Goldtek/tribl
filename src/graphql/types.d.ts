@@ -345,3 +345,8 @@ export type ShowMessageNotificationBadge = {
 export type ShowConnectionNotificationBadge = {
   showConnectionNotificationBadge: boolean;
 };
+
+// USER COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
+export type MyChannelRequestInterface = {
+  myChannels: { id: string; name: string }[];
+};
