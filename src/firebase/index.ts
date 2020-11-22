@@ -28,11 +28,12 @@ class Firechat {
 
   // THIS METHOD GETS USERS DIRECT MESSAGES
   async getUserChannels(
-    conversationType: ROOM_TYPES
+    conversationIds: string[]
   ): Promise<FirebaseFirestoreTypes.Query> {
     // get user channels via userId
-    return firechat.collection(ROOM_TYPES.CHANNELS);
-    // .where(firestore.FieldPath.documentId(), '==', this.userId.trim());
+    return firechat
+      .collection(ROOM_TYPES.CHANNELS)
+      .where(firestore.FieldPath.documentId(), 'in', conversationIds);
   }
 
   // THIS METHOD GETS USERS DIRECT MESSAGES
