@@ -2,17 +2,20 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Text } from 'react-native-paper';
-import DirectChatCard from './widget';
+import ChannelChatCard from './widget';
 import { NavigationInterface } from '../../../types';
 import Firechat from '../../../../firebase';
 import { useThemeContext } from '../../../../theme';
-import { ConversationInterface } from '../../types';
+import { ChannelConversationInterface } from '../../types';
 import ChatCardSkeleton from '../../../../components/chatCardSkeleton';
-import { ROOM_TYPES } from '../../../../firebase/types';
+import { useQuery } from '@apollo/react-hooks';
 import {
   hideSensitiveView,
   tagScreenName
 } from '../../../../utils/uxcamHelper';
+import { USER_CHANNELS } from '../../../../graphql/server/query';
+import { MyChannelRequestInterface } from '../../../../graphql/types';
+import batchConversation from '../../../../utils/batchConversation';
 
 import { Container } from './styles';
 
@@ -24,8 +27,12 @@ export default function ChannelsTab(props: ScreenProp) {
   const [channelHistory, setChannelHistory] = useState(true);
 
   const [channelMessages, setChannelMessages] = useState<
-    ConversationInterface[]
+    ChannelConversationInterface[]
   >([]);
+
+  const { data } = useQuery<MyChannelRequestInterface>(USER_CHANNELS, {
+    pollInterval: 1000
+  });
 
   useEffect(() => {
     tagScreenName('ChannelsTab');
@@ -34,36 +41,52 @@ export default function ChannelsTab(props: ScreenProp) {
   useEffect(() => {
     let unsubscribe: any = null;
 
-    (async () => {
-      const userChannels = await Firechat.getUserChannels(
-        ROOM_TYPES.PARTICIPANTS
+    if (!data?.myChannels.length) return setChannelHistory(false);
+
+    const batchedChannelIds = batchConversation(data?.myChannels);
+
+    const getChannelsMessages = async () => {
+      setChannelHistory(true);
+      const userChannels = await Promise.all(
+        batchedChannelIds.map((channelIds) =>
+          Firechat.getUserChannels(channelIds)
+        )
       );
 
-      unsubscribe = userChannels?.onSnapshot({
-        next: async (snapshot) => {
-          if (!snapshot.docs.length) return setChannelHistory(false);
+      let snapshotChannels: ChannelConversationInterface[] = [];
 
-          setChannelHistory(true);
-          const channelMessages = snapshot.docs
-            .map((document) => {
-              const message = document.data() as ConversationInterface;
-              return { ...message, id: document.id };
-            })
-            .sort(
-              //@ts-ignore
-              (a, b) => b.lastMessage.createdAt - a.lastMessage.createdAt
-            );
+      userChannels.forEach((channel, index) => {
+        channel?.onSnapshot({
+          next: (snapshot) => {
+            for (let index = 0; index < snapshot.docs.length; index++) {
+              const document = snapshot.docs[index];
+              const message = document.data() as ChannelConversationInterface;
+              snapshotChannels = snapshotChannels.filter(
+                (x) => x.id !== document.id
+              );
+              snapshotChannels.push({ ...message, id: document.id });
+            }
 
-          setChannelMessages(channelMessages);
-        }
+            if (index === userChannels.length - 1) {
+              const channelMessages = snapshotChannels.sort(
+                (a, b) =>
+                  new Date(b.lastMessage.createdAt).getTime() -
+                  new Date(a.lastMessage.createdAt).getTime()
+              );
+              setChannelMessages(channelMessages);
+            }
+          }
+        });
       });
-    })();
+    };
+
+    getChannelsMessages();
 
     return () => unsubscribe && unsubscribe();
-  }, []);
+  }, [data?.myChannels]);
 
-  const _renderItem = ({ item }: { item: ConversationInterface }) => (
-    <DirectChatCard key={item.id} {...item} />
+  const _renderItem = ({ item }: { item: ChannelConversationInterface }) => (
+    <ChannelChatCard key={item.id} {...item} />
   );
 
   const renderEmptyList = useMemo(
