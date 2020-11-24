@@ -37,8 +37,8 @@ export const occludeSensitiveScreen = (bool: boolean) => {
 };
 
 //set user identity
-export const addUserIdentity = (email: string) => {
-  RNUxcam.setUserIdentity(email);
+export const addUserIdentity = (id: string) => {
+  RNUxcam.setUserIdentity(id);
 };
 
 export const setUserPropertyValue = (key: string, val: string) => {
