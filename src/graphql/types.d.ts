@@ -194,6 +194,7 @@ export interface CommunityInterface {
   name: string;
   avatar: string;
   isMember: boolean;
+  isModerator: boolean;
   description: string;
   membersCount: number;
   channels: ChannelInterface[];
