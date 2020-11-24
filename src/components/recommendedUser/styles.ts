@@ -5,7 +5,9 @@ export const TextContainer = styled.View`
   align-items: center;
 `;
 
-export const AvatarContainer = styled.View``;
+export const AvatarContainer = styled.View`
+  position: relative;
+`;
 
 export const OnlineNotifier = styled.View`
   width: ${RFValue(17)}px;

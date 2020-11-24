@@ -13,6 +13,7 @@ import hexToRGB from '../../utils/hexToRGB';
 import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
 import { PassportInterface, UserPassportInterface } from '../../graphql/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
+import AdminBadge from '../adminBadge';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
@@ -36,8 +37,13 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     currentLocation,
     phoneNumber,
     connected,
-    conversation
+    conversation,
+    participantOf
   } = member;
+
+  const moderator = participantOf?.filter((member) => {
+    return member.isModerator == false;
+  });
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
@@ -130,6 +136,15 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               borderRadius: RFValue(70)
             }}
           />
+          {moderator?.length ? (
+            <AdminBadge
+              style={{
+                position: 'absolute',
+                bottom: RFValue(-5),
+                right: RFValue(-25)
+              }}
+            />
+          ) : null}
         </AvatarContainer>
         <TextContainer>
           <Title
