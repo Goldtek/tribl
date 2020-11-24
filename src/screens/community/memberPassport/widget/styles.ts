@@ -59,3 +59,8 @@ export const ConnectionCover = styled.View`
 export const Connection = styled.View`
   align-items: center;
 `;
+
+export const CommunityCover = styled.View`
+  position: relative;
+  height: ${RFValue(70)}px;
+`;
