@@ -199,6 +199,10 @@ export interface CommunityInterface {
   membersCount: number;
   channels: ChannelInterface[];
   interests: Interest[];
+  uniqueInterests: {
+    name;
+    id;
+  }[];
   privacy: CommunityPrivacy;
   moderators: PassportInterface[];
   participants: PassportInterface[];
