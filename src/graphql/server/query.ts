@@ -431,6 +431,10 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
         id
         name
       }
+      uniqueInterests {
+        name
+        id
+      }
     }
   }
 `;
@@ -454,6 +458,10 @@ export const GET_POPULAR_COMMUNITIES = gql`
         id
         name
       }
+      uniqueInterests {
+        name
+        id
+      }
     }
   }
 `;
@@ -476,6 +484,10 @@ export const GET_MY_COMMUNITIES = gql`
       interests {
         id
         name
+      }
+      uniqueInterests {
+        name
+        id
       }
     }
   }
@@ -775,6 +787,10 @@ export const GET_SINGLE_COMMUNITY = gql`
       interests {
         id
         name
+      }
+      uniqueInterests {
+        name
+        id
       }
     }
   }
