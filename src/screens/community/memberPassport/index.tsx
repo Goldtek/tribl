@@ -559,7 +559,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 color: colors.PRIMARY_TEXT,
                 textTransform: 'uppercase',
                 marginBottom: 10,
-                marginTop: RFValue(40)
+                marginTop: RFValue(15)
               }}
             >
               {t(`community.memberPassport.connection`)}
