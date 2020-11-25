@@ -42,7 +42,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   } = member;
 
   const moderator = participantOf?.filter((member) => {
-    return member.isModerator == false;
+    return member.isModerator == true;
   });
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
