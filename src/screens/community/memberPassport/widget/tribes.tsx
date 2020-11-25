@@ -26,8 +26,6 @@ export default function MyCommunity(props: MyCommunityProp) {
 
   const { avatar, name, isModerator } = props;
 
-  console.tron('pO', isModerator);
-
   const handleNavigation = () =>
     navigation.navigate('CommunityDetailScreen', {
       title: name,

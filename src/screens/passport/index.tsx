@@ -8,9 +8,7 @@ import { check, PERMISSIONS, request } from 'react-native-permissions';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
-
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
-
 import { useTranslation } from 'react-i18next';
 import {
   Title,
