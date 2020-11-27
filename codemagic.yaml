@@ -1,0 +1,47 @@
+workflows:
+    react-native-android:
+        name: React Native Android
+        environment:
+            vars:
+                CM_KEYSTORE: Encrypted(Z0FBQUFBQmZ2OXFVRXZRX3dDZnpCc0JLaEQxa3ZscEU2Yl9RSHNnNVg5UklCUEtpZGxCb3Nqb3BoX1pGZ0htS09fa2U3V1FseEthV0UtcHNSbnRmdEpESU5hdXhUUmxFNUE9PQ==) # <-- Put your encrypted keystore file here
+                CM_KEYSTORE_PASSWORD: Encrypted(Z0FBQUFBQmZ2OXJOZVNiMTRBaURyVzRFWVlJQkY1UlhFZmE5dkF0NkNXX0hiWTFPZ2lNdmZXRG8xaFg1VzJucWE3bUhJTElYM3lwV1NDWXZFZEwwaXJyMk5jTDdvTEx3eFE9PQ==) # <-- Put your encrypted keystore password here
+                CM_KEY_ALIAS_PASSWORD: Encrypted(Z0FBQUFBQmZ2OXJOZVNiMTRBaURyVzRFWVlJQkY1UlhFZmE5dkF0NkNXX0hiWTFPZ2lNdmZXRG8xaFg1VzJucWE3bUhJTElYM3lwV1NDWXZFZEwwaXJyMk5jTDdvTEx3eFE9PQ==) # <-- Put your encrypted keystore alias password here
+                CM_KEY_ALIAS_USERNAME: Encrypted(Z0FBQUFBQmZ2OXI5QjJrYk5JWldvMlZkb3VMMjRIcW0tTHROR3B4NkJuLU14QUhrOXBydFFMR3FkcmNLN2MzdkU2bFZDV2w1dWtnZFhZdDQybmQzRmhhS1kxVHFPRmFrQ1E9PQ==) # <-- Put your encrypted keystore alias username here
+            node: latest
+        triggering:
+            events:
+                - push
+                - tag
+                - pull_request
+            branch_patterns:
+                - pattern: tribl
+                  include: true
+                  source: true
+        scripts:
+            - name: Install npm dependencies
+              script: |
+                npm install
+            - name: Set Android SDK location
+              script: |
+                echo "sdk.dir=$HOME/programs/android-sdk-macosx" > "$FCI_BUILD_DIR/android/local.properties"
+            - name: Set up keystore
+              script: |
+                    echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
+                    cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
+                    storePassword=$CM_KEYSTORE_PASSWORD
+                    keyPassword=$CM_KEY_ALIAS_PASSWORD
+                    keyAlias=$CM_KEY_ALIAS_USERNAME
+                    storeFile=/tmp/keystore.keystore
+                    EOF
+            - name: Build Android release
+              script: |
+                # build Android
+                cd android 
+                ./gradlew 
+        artifacts:
+            - android/app/build/outputs/**/*.apk
+        publishing:
+            email:
+                recipients:
+                    - stephen.olabode@nautilus.tech
+    
