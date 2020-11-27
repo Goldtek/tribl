@@ -20,8 +20,7 @@ workflows:
         scripts:
             - name: Install npm dependencies
               script: |
-                npm i graphql@15.3.0
-                npm i express-graphql@0.11.0
+                npm install --save graphql
             - name: Set Android SDK location
               script: |
                 echo "sdk.dir=$HOME/programs/android-sdk-macosx" > "$FCI_BUILD_DIR/android/local.properties"
