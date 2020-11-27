@@ -10,6 +10,7 @@ import Firechat from '../../../../../firebase';
 import formatMessageTime from '../../../../../utils/timesince';
 import { OnlinePresence } from '../../../types';
 import { fireAuth } from '../../../../../firebase/config';
+import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -72,6 +73,7 @@ function ConnectionCard(props: ConnectionCardProp) {
 
   return (
     <TouchableRipple
+      ref={hideSensitiveView}
       style={{
         height: RFValue(80),
         flexDirection: 'row',
@@ -94,7 +96,7 @@ function ConnectionCard(props: ConnectionCardProp) {
             borderRadius: RFValue(4)
           }}
         />
-        <NameContainer>
+        <NameContainer ref={hideSensitiveView}>
           <Title
             style={{
               color: colors.PRIMARY_TEXT,

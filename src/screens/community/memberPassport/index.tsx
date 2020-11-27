@@ -19,7 +19,11 @@ import MyCommunity from './widget/tribes';
 import MyConnections from './widget/connections';
 import { NavigationInterface } from '../../types';
 import { SinglePassportRequestInterface } from '../../../graphql/types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import {
+  tagScreenName,
+  logEvent,
+  hideSensitiveView
+} from '../../../utils/uxcamHelper';
 
 import {
   ContactContainer,
@@ -32,7 +36,8 @@ import {
   Header,
   Connection,
   ConnectionCover,
-  ButtonCover
+  ButtonCover,
+  Cover
 } from './styles';
 
 interface MemberDetailProps extends NavigationInterface {
@@ -359,7 +364,7 @@ export default function PassportDetail(props: MemberDetailProps) {
         )}
 
         {data?.bio ? (
-          <Fragment>
+          <Cover ref={hideSensitiveView}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -382,7 +387,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {data?.bio}
             </Text>
-          </Fragment>
+          </Cover>
         ) : null}
 
         {data?.currentLocation || data?.birthPlace ? (
@@ -400,7 +405,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               {t(`signup.passportScreen.locality`)}
             </Title>
             {data?.birthPlace ? (
-              <Location>
+              <Location ref={hideSensitiveView}>
                 <AntDesign
                   name="home"
                   color="#CACEE5"
@@ -441,7 +446,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               </Location>
             ) : null}
             {data?.currentLocation ? (
-              <Location>
+              <Location ref={hideSensitiveView}>
                 <SimpleLineIcons
                   name="location-pin"
                   color="#CACEE5"
@@ -551,7 +556,7 @@ export default function PassportDetail(props: MemberDetailProps) {
           </Fragment>
         ) : null}
         {data?.myConnections?.length ? (
-          <Fragment>
+          <Cover ref={hideSensitiveView}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -575,7 +580,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 backgroundColor: colors.WHITE
               }}
             />
-          </Fragment>
+          </Cover>
         ) : null}
       </ContactContainer>
     </ScrollView>

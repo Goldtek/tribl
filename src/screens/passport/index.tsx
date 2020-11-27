@@ -53,7 +53,12 @@ import cloudinaryUpload, {
 } from '../../utils/cloudinaryUpload';
 import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import { tagScreenName } from '../../utils/uxcamHelper';
+import {
+  tagScreenName,
+  addUserIdentity,
+  logEvent,
+  hideSensitiveView
+} from '../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -132,6 +137,10 @@ export default function PassportScreen(props: ScreenProp) {
     if (userDetails) {
       tagScreenName('PassportScreen');
       Mixpanel.identify(userDetails?.id);
+      addUserIdentity(userDetails?.id);
+      //Log mixpanel user id to UXCam
+      let user = Mixpanel.identify(userDetails?.id);
+      logEvent('mixpanel', { 'mixpanel-user-ID': user });
     }
   }, [userDetails]);
 
@@ -647,7 +656,10 @@ export default function PassportScreen(props: ScreenProp) {
                     )}
                   </FastImage>
                 ) : (
-                  <TouchableHighlight onPress={handleAvatar}>
+                  <TouchableHighlight
+                    onPress={handleAvatar}
+                    ref={hideSensitiveView}
+                  >
                     <FastImage
                       source={{
                         uri: avatar.uri || cache?.avatar,
@@ -676,7 +688,7 @@ export default function PassportScreen(props: ScreenProp) {
                   </TouchableHighlight>
                 )}
 
-                <ImageTextContainer>
+                <ImageTextContainer ref={hideSensitiveView}>
                   <Paragraph
                     style={{
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,
