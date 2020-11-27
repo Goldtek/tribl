@@ -127,3 +127,5 @@ export const ButtonDot = styled.View`
   border-radius: ${RFValue(20)}px;
   border: 3px ${({ theme }) => theme.colors.WHITE} solid;
 `;
+
+export const Cover = styled.View``;

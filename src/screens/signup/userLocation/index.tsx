@@ -33,7 +33,11 @@ import { useThemeContext } from '../../../theme';
 import Input from '../../../components/input';
 import LoadingModal from '../../../components/loadingModal';
 import ENVIRONMENT_VARIABLES from '../../../config';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import {
+  tagScreenName,
+  logEvent,
+  hideSensitiveView
+} from '../../../utils/uxcamHelper';
 import Storage from '../../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -304,7 +308,10 @@ export default function UserLocationScreen(props: ScreenProp) {
             {t(`signup.userLocationScreen.paragraph`)}
           </Paragraph>
 
-          <Container style={{ flex: 1, paddingTop: RFValue(30) }}>
+          <Container
+            style={{ flex: 1, paddingTop: RFValue(30) }}
+            ref={hideSensitiveView}
+          >
             {!state.locationInput ? (
               <TouchableHighlight
                 onPress={handleLocation}

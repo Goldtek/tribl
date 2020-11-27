@@ -13,7 +13,7 @@ import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
 import { fireAuth } from '../../../firebase/config';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import { logEvent } from '../../../utils/uxcamHelper';
+import { logEvent, hideSensitiveView } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -132,7 +132,7 @@ function NearbyModal(props: NearbyUserProp) {
             borderRadius: RFValue(5)
           }}
         />
-        <TextContainer>
+        <TextContainer ref={hideSensitiveView}>
           <Title
             style={{
               color: colors.PRIMARY_TEXT,

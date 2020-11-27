@@ -17,7 +17,7 @@ import AdminBadge from '../adminBadge';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
-import { logEvent } from '../../utils/uxcamHelper';
+import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp extends PassportInterface {}
@@ -146,7 +146,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             />
           ) : null}
         </AvatarContainer>
-        <TextContainer>
+        <TextContainer ref={hideSensitiveView}>
           <Title
             numberOfLines={1}
             style={{

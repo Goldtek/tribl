@@ -66,6 +66,7 @@ function RequestChatCard(props: RequestChatCard) {
         paddingRight: RFValue(15)
       }}
       onPress={handleNavigation}
+      ref={hideSensitiveView}
     >
       <Fragment>
         {sender?.avatar ? (

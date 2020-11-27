@@ -21,10 +21,14 @@ import { NavigationInterface } from '../../types';
 import { DEVICE_ID } from '../../../utils/device';
 import { useThemeContext } from '../../../theme';
 import Storage from '../../../libs/storage';
+import {
+  tagScreenName,
+  logEvent,
+  hideSensitiveView
+} from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { Container, Cover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -153,20 +157,24 @@ export default function OTPScreen(props: ScreenProp) {
           >
             {t(`signup.OTPScreen.title`)}
           </Title>
+          <Cover ref={hideSensitiveView}>
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.SECONDARY_TEXT,
+                lineHeight: RFValue(22)
+              }}
+            >
+              {t(`signup.OTPScreen.paragraph`) +
+                ` ${data?.userDetails.phoneNumber}`}
+            </Paragraph>
+          </Cover>
 
-          <Paragraph
-            style={{
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              color: colors.SECONDARY_TEXT,
-              lineHeight: RFValue(22)
-            }}
+          <Container
+            style={{ height: RFValue(100), marginTop: 10 }}
+            ref={hideSensitiveView}
           >
-            {t(`signup.OTPScreen.paragraph`) +
-              ` ${data?.userDetails.phoneNumber}`}
-          </Paragraph>
-
-          <Container style={{ height: RFValue(100), marginTop: 10 }}>
             <OTPInputView
               pinCount={4}
               autoFocusOnLoad={true}
@@ -188,6 +196,7 @@ export default function OTPScreen(props: ScreenProp) {
             />
           </Container>
           <Container
+            ref={hideSensitiveView}
             style={{
               flexDirection: 'row',
               alignItems: 'center',

@@ -234,6 +234,7 @@ export default function ChatScreen(props: ScreenProp) {
         onSend={onSend}
         renderSend={(props) => (
           <Send
+            ref={hideSensitiveView}
             {...props}
             containerStyle={{
               width: RFValue(40),
@@ -273,6 +274,7 @@ export default function ChatScreen(props: ScreenProp) {
         renderAvatar={(props) => (
           <Avatar
             {...props}
+            ref={hideSensitiveView}
             imageStyle={{
               left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
               right: {}
@@ -281,6 +283,7 @@ export default function ChatScreen(props: ScreenProp) {
         )}
         renderBubble={(props) => (
           <Bubble
+            ref={hideSensitiveView}
             {...props}
             wrapperStyle={{
               right: {
@@ -322,7 +325,7 @@ export default function ChatScreen(props: ScreenProp) {
           closeOnOverlayTap={false}
           withOverlay={false}
         >
-          <TextContainer>
+          <TextContainer ref={hideSensitiveView}>
             <Text
               style={{
                 color: colors.PRIMARY_TEXT,
@@ -385,6 +388,7 @@ export default function ChatScreen(props: ScreenProp) {
               delete
             </Button>
             <Button
+              ref={hideSensitiveView}
               onPress={() => {
                 acceptMessageRequest();
                 Mixpanel.track('User Accepts Message Request', {

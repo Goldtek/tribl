@@ -26,7 +26,7 @@ import {
   PassportInterface
 } from '../../../graphql/types';
 import { NavigationInterface } from '../../types';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer, HeaderContainer } from './styles';
@@ -244,6 +244,7 @@ export default function ChatScreen(props: ScreenProp) {
           <Skeleton />
         ) : data?.length ? (
           <FlatList
+            ref={hideSensitiveView}
             data={data}
             bounces={false}
             renderItem={_renderItem}

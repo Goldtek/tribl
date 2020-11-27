@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/react-native';
 import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
 import {
   Button,
-  IconButton,
   Title,
   Paragraph,
   TextInput,
@@ -23,6 +22,7 @@ import { ADD_USER_DETAILS } from '../../../../../graphql/cache/mutations';
 import { GET_ALL_IDENTITIES } from '../../../../../graphql/server/query';
 import { IdentitiesInterface } from '../../../../../graphql/types';
 import IdentityModal from '../identityModal';
+import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
 import {
   ContactContainer,
@@ -267,6 +267,7 @@ export default function contactSlide() {
           </EditTextInput>
         </FirstNameContainer>
         <TextInput
+          ref={hideSensitiveView}
           value={firstName}
           onSubmitEditing={() => setTimeout(() => addUserDetails(), 0)}
           onChangeText={(firstName: string) =>
@@ -311,6 +312,7 @@ export default function contactSlide() {
           </EditTextInput>
         </LastNameContainer>
         <TextInput
+          ref={hideSensitiveView}
           value={lastName}
           onSubmitEditing={() => setTimeout(() => addUserDetails(), 0)}
           onChangeText={(lastName: string) =>
@@ -355,6 +357,7 @@ export default function contactSlide() {
           </EditTextInput>
         </LastNameContainer>
         <TextInput
+          ref={hideSensitiveView}
           value={bio}
           onSubmitEditing={() => setTimeout(() => addUserDetails(), 0)}
           onChangeText={(bio: string) =>
@@ -394,6 +397,7 @@ export default function contactSlide() {
         </Title>
 
         <Button
+          ref={hideSensitiveView}
           mode="text"
           uppercase={false}
           labelStyle={{
@@ -422,7 +426,7 @@ export default function contactSlide() {
       </DOBContainer>
 
       {userDetails?.birthPlace[0] || location.birthPlace.city ? (
-        <CitizenshipContainer>
+        <CitizenshipContainer ref={hideSensitiveView}>
           <Title
             style={{
               fontFamily: fonts.WORK_SANS_BOLD,
@@ -451,7 +455,7 @@ export default function contactSlide() {
       {userDetails?.birthPlace[0] ||
       (location.birthPlace.state && userDetails?.currentLocation[0]) ||
       location.currentLocation.state ? (
-        <LocationContainer>
+        <LocationContainer ref={hideSensitiveView}>
           <Title
             style={{
               fontFamily: fonts.WORK_SANS_BOLD,

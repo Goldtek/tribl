@@ -70,6 +70,7 @@ function DirectChatCard(props: DirectChatProp) {
         paddingRight: RFValue(15)
       }}
       onPress={handleNavigation}
+      ref={hideSensitiveView}
     >
       <Fragment>
         {sender.avatar ? (
