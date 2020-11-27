@@ -14,7 +14,7 @@ workflows:
                 - tag
                 - pull_request
             branch_patterns:
-                - pattern: tribl
+                - pattern: develop
                   include: true
                   source: true
         scripts:
