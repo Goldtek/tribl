@@ -19,7 +19,11 @@ import { useQuery } from '@apollo/react-hooks';
 // import { FontAwesome } from '@expo/vector-icons';
 import TabViewSlider from './widgets/tabs';
 import Storage from '../../../libs/storage';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import {
+  tagScreenName,
+  logEvent,
+  hideSensitiveView
+} from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -111,7 +115,7 @@ export default function PassportScreen(props: ScreenProp) {
             {t(`signup.passportScreen.subTitle`)}
           </Paragraph>
 
-          <ImageContainer>
+          <ImageContainer ref={hideSensitiveView}>
             <FastImage
               source={{
                 uri: userRegInfo?.user?.avatar || userDetails?.avatar,
@@ -135,7 +139,7 @@ export default function PassportScreen(props: ScreenProp) {
               )}
             </FastImage>
 
-            <ImageTextContainer>
+            <ImageTextContainer ref={hideSensitiveView}>
               <Paragraph
                 style={{
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,

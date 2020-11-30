@@ -121,5 +121,10 @@
     "change2": "fix notification icon on inbox tab",
     "yes": "yes",
     "no": "no"
+  },
+  "addTags": {
+    "title": "Looks like you’re visiting for the first time.",
+    "text": "Let us know what interests you want added to your passport so we can help you find your tribe",
+    "button": "add tags to passport"
   }
 }

@@ -38,7 +38,7 @@ import {
   logEvent
 } from '../../../utils/uxcamHelper';
 
-import { Container } from './styles';
+import { Container, Cover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -241,6 +241,7 @@ export default function ChatScreen(props: ScreenProp) {
         }}
         renderAvatar={(props) => (
           <Avatar
+            ref={hideSensitiveView}
             {...props}
             imageStyle={{
               left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
@@ -261,7 +262,9 @@ export default function ChatScreen(props: ScreenProp) {
               >
                 {props.currentMessage?.user.name}
               </Button>
-              <Paragraph>{props.currentMessage?.text}</Paragraph>
+              <Cover ref={hideSensitiveView}>
+                <Paragraph>{props.currentMessage?.text}</Paragraph>
+              </Cover>
             </Container>
           );
         }}
@@ -275,6 +278,7 @@ export default function ChatScreen(props: ScreenProp) {
             return (
               <Bubble
                 {...props}
+                ref={hideSensitiveView}
                 wrapperStyle={{
                   right: {
                     backgroundColor: colors.PRIMARY,
@@ -292,6 +296,7 @@ export default function ChatScreen(props: ScreenProp) {
           return userId === props.currentMessage.user._id ? (
             <Bubble
               {...props}
+              ref={hideSensitiveView}
               wrapperStyle={{
                 right: {
                   backgroundColor: colors.PRIMARY,
@@ -316,6 +321,7 @@ export default function ChatScreen(props: ScreenProp) {
               </Text>
 
               <Bubble
+                ref={hideSensitiveView}
                 {...props}
                 wrapperStyle={{
                   right: {

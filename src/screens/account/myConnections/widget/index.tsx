@@ -9,6 +9,7 @@ import Firechat from '../../../../firebase';
 import { OnlinePresence } from '../../../inbox/types';
 import { PassportInterface } from '../../../../graphql/types';
 import formatMessageTime from '../../../../utils/timesince';
+import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 
 import { NameContainer } from './styles';
 
@@ -77,7 +78,7 @@ export default function Connection(props: ConnectionProp) {
             borderRadius: RFValue(4)
           }}
         />
-        <NameContainer>
+        <NameContainer ref={hideSensitiveView}>
           <Title
             style={{
               color: colors.PRIMARY_TEXT,

@@ -23,6 +23,7 @@ import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
 import IdentityModal from '../identityModal';
 import ContactSlideSkeleton from './skeleton';
 import Storage from '../../../../libs/storage';
+import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 
 import {
   ContactContainer,
@@ -39,7 +40,8 @@ import {
   CitizenshipContainer,
   EditTextInput,
   AddIdentity,
-  BioContainer
+  BioContainer,
+  Cover
   // LinkAccountsContainer,
   // InstagramButton,
   // SpotifyButton,
@@ -252,6 +254,7 @@ function contactSlide(props: ScreenProp) {
           </Title>
         </FirstNameContainer>
         <TextInput
+          ref={hideSensitiveView}
           value={firstName}
           onChangeText={(firstName: string) =>
             setState({
@@ -287,6 +290,7 @@ function contactSlide(props: ScreenProp) {
           </Title>
         </LastNameContainer>
         <TextInput
+          ref={hideSensitiveView}
           value={lastName}
           onChangeText={(lastName: string) =>
             setState({
@@ -323,6 +327,7 @@ function contactSlide(props: ScreenProp) {
         </BioContainer>
         {bio ? (
           <TextInput
+            ref={hideSensitiveView}
             value={bio}
             multiline={true}
             dense={true}
@@ -345,6 +350,7 @@ function contactSlide(props: ScreenProp) {
           />
         ) : (
           <TextInput
+            ref={hideSensitiveView}
             placeholder={t(`community.memberPassport.bioInfo`)}
             multiline={true}
             dense={true}
@@ -382,6 +388,7 @@ function contactSlide(props: ScreenProp) {
         </Title>
 
         <Button
+          ref={hideSensitiveView}
           mode="text"
           uppercase={false}
           disabled={click}
@@ -411,7 +418,7 @@ function contactSlide(props: ScreenProp) {
       </DOBContainer>
 
       {birthPlace?.country ? (
-        <CitizenshipContainer>
+        <CitizenshipContainer ref={hideSensitiveView}>
           <Title
             style={{
               fontFamily: fonts.WORK_SANS_BOLD,
@@ -474,6 +481,7 @@ function contactSlide(props: ScreenProp) {
                       borderColor: colors.PRIMARY
                     }}
                     onPress={handleNavigation}
+                    ref={hideSensitiveView}
                   >
                     <Paragraph
                       style={{
@@ -489,6 +497,7 @@ function contactSlide(props: ScreenProp) {
                   </TouchableRipple>
                 ) : (
                   <TouchableRipple
+                    ref={hideSensitiveView}
                     style={{
                       flex: 1,
                       borderBottomWidth: 2,
@@ -511,7 +520,7 @@ function contactSlide(props: ScreenProp) {
                 )}
               </Fragment>
             ) : (
-              <Fragment>
+              <Cover ref={hideSensitiveView}>
                 {userDetails?.birthPlace[0]?.city ? (
                   <Paragraph
                     style={{
@@ -537,11 +546,11 @@ function contactSlide(props: ScreenProp) {
                     {`${birthPlace?.state}, ${birthPlace?.country}`}
                   </Paragraph>
                 )}
-              </Fragment>
+              </Cover>
             )}
           </Location>
 
-          <Location>
+          <Location ref={hideSensitiveView}>
             <SimpleLineIcons
               name="location-pin"
               color="#CACEE5"
