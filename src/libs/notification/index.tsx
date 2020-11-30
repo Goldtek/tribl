@@ -7,8 +7,6 @@ import fcmMessaging, {
   FirebaseMessagingTypes
 } from '@react-native-firebase/messaging';
 import { UPDATE_NOTIFICATION } from '../../graphql/server/mutations';
-import AsyncStorage from '@react-native-community/async-storage';
-import { USER_FCM_TOKEN } from '../../constants';
 import {
   CHANGE_MESSAGE_NOTIFICATION_BADGE,
   CHANGE_CONNECTION_NOTIFICATION_BADGE
@@ -74,13 +72,7 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
 
   const getToken = async () => {
     try {
-      let token = await AsyncStorage.getItem(USER_FCM_TOKEN);
-
-      if (!token) {
-        token = await messaging.getToken();
-        await AsyncStorage.setItem(USER_FCM_TOKEN, token);
-      }
-
+      const token = await messaging.getToken();
       updatePassportFCM({ variables: { payload: { token } } });
     } catch (error) {
       Sentry.captureException(error);
@@ -112,7 +104,7 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
     },
 
     // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-    onRegistrationError: (error) => {},
+    onRegistrationError: (error) => Sentry.captureException(error),
 
     // IOS ONLY (optional): default: all - Permissions to register.
     permissions: { alert: true, badge: false, sound: true },
