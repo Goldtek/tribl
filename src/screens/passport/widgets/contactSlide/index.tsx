@@ -24,6 +24,8 @@ import IdentityModal from '../identityModal';
 import ContactSlideSkeleton from './skeleton';
 import Storage from '../../../../libs/storage';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationInterface } from '../../../types';
 
 import {
   ContactContainer,
@@ -40,15 +42,12 @@ import {
   CitizenshipContainer,
   EditTextInput,
   AddIdentity,
-  BioContainer,
-  Cover
+  BioContainer
   // LinkAccountsContainer,
   // InstagramButton,
   // SpotifyButton,
   // ButtonDot,
 } from './styles';
-import { NavigationInterface } from '../../../types';
-import { useNavigation } from '@react-navigation/native';
 
 interface ScreenProp extends NavigationInterface {
   click: boolean;
@@ -83,13 +82,6 @@ function contactSlide(props: ScreenProp) {
     showDatePicker: boolean;
     selectedIdentity: string[];
     selectedId: string[];
-    birthPlace: {
-      lat: number | null | undefined;
-      long: number | null | undefined;
-      country: string | null | undefined;
-      state: string | null | undefined;
-      city: string | null | undefined;
-    };
     birthPlaceInput: string;
   }>({
     date: '',
@@ -102,13 +94,6 @@ function contactSlide(props: ScreenProp) {
     showDatePicker: false,
     selectedIdentity: [],
     selectedId: [],
-    birthPlace: {
-      lat: 0,
-      long: 0,
-      country: '',
-      state: '',
-      city: ''
-    },
     birthPlaceInput: ''
   });
 
@@ -145,14 +130,7 @@ function contactSlide(props: ScreenProp) {
         date: `${cache?.dob?.month}/${cache?.dob?.day}/${cache?.dob?.year}`,
         firstName: cache?.firstName,
         lastName: cache?.lastName,
-        bio: cache?.bio,
-        birthPlace: {
-          lat: cache?.birthPlace[0]?.lat,
-          long: cache?.birthPlace[0]?.long,
-          country: cache?.birthPlace[0]?.country,
-          state: cache?.birthPlace[0]?.state,
-          city: cache?.birthPlace[0]?.city
-        }
+        bio: cache?.bio
       });
     }
   }, [cache]);
@@ -164,14 +142,7 @@ function contactSlide(props: ScreenProp) {
       date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`,
       firstName: userDetails?.firstName,
       lastName: userDetails?.lastName,
-      bio: userDetails?.bio,
-      birthPlace: {
-        lat: userDetails?.birthPlace[0]?.lat,
-        long: userDetails?.birthPlace[0]?.long,
-        country: userDetails?.birthPlace[0]?.country,
-        state: userDetails?.birthPlace[0]?.state,
-        city: userDetails?.birthPlace[0]?.city
-      }
+      bio: userDetails?.bio
     });
   }, [userData?.myPassport.id]);
 
@@ -181,23 +152,16 @@ function contactSlide(props: ScreenProp) {
       date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`,
       firstName: userDetails?.firstName,
       lastName: userDetails?.lastName,
-      bio: userDetails?.bio,
-      birthPlace: {
-        lat: childData?.lat,
-        long: childData?.long,
-        country: childData?.country,
-        state: childData?.state,
-        city: childData?.city
-      }
+      bio: userDetails?.bio
     });
   };
 
-  const handleNavigation = useCallback(() => {
-    navigation.navigate('BirthPlaceScreen', {
-      details: state,
-      getBirthplaceDetails: getBirthplaceDetails
-    });
-  }, []);
+  // const handleNavigation = useCallback(() => {
+  //   navigation.navigate('BirthPlaceScreen', {
+  //     details: state,
+  //     getBirthplaceDetails: getBirthplaceDetails
+  //   });
+  // }, []);
 
   const onChange = (selectedDate: Date) => {
     const newDate = formatMessageTime(selectedDate);
@@ -232,7 +196,7 @@ function contactSlide(props: ScreenProp) {
 
   const SelectedIdentities = Array.from(state.selectedIdentity.values());
 
-  const { firstName, lastName, bio, birthPlace } = state;
+  const { firstName, lastName, bio } = state;
 
   useEffect(() => {
     props.getUserDetails(state);
@@ -417,7 +381,7 @@ function contactSlide(props: ScreenProp) {
         />
       </DOBContainer>
 
-      {birthPlace?.country ? (
+      {/* {birthPlace?.country ? (
         <CitizenshipContainer ref={hideSensitiveView}>
           <Title
             style={{
@@ -441,7 +405,7 @@ function contactSlide(props: ScreenProp) {
             {birthPlace?.country}
           </Paragraph>
         </CitizenshipContainer>
-      ) : null}
+      ) : null} */}
 
       {currentLocation ? (
         <LocationContainer>
@@ -457,7 +421,7 @@ function contactSlide(props: ScreenProp) {
             {t(`signup.passportScreen.locality`)}
           </Title>
 
-          <Location>
+          {/* <Location>
             <AntDesign
               name="home"
               color="#CACEE5"
@@ -548,7 +512,7 @@ function contactSlide(props: ScreenProp) {
                 )}
               </Cover>
             )}
-          </Location>
+          </Location> */}
 
           <Location ref={hideSensitiveView}>
             <SimpleLineIcons
