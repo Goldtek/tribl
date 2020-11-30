@@ -5,7 +5,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useThemeContext } from '../../../theme';
 import DirectMessageTab from './directMessageTab';
 import ChannelsTab from './channelsTab';
-import MessageRequestTab from './messageRequestTab';
 import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
@@ -33,11 +32,8 @@ export default function InboxScreen() {
             backgroundColor: colors.PRIMARY,
             height: RFValue(4)
           },
-          tabStyle: { width: DEVICE_FULL_WIDTH / 3 },
-          style: {
-            ...GLOBAL_HEADER_STYLE,
-            paddingTop: RFValue(10)
-          }
+          tabStyle: { width: DEVICE_FULL_WIDTH / 2 },
+          style: { ...GLOBAL_HEADER_STYLE, paddingTop: RFValue(10) }
         }}
         sceneContainerStyle={{ flex: 1, backgroundColor: colors.WHITE }}
         style={{ flex: 1, backgroundColor: colors.WHITE }}
@@ -51,11 +47,6 @@ export default function InboxScreen() {
           name="ChannelsTab"
           component={ChannelsTab}
           options={{ tabBarLabel: t('community.chat.channels') }}
-        />
-        <Tab.Screen
-          name="RequestTab"
-          component={MessageRequestTab}
-          options={{ tabBarLabel: t('community.chat.request') }}
         />
       </Tab.Navigator>
     </Fragment>

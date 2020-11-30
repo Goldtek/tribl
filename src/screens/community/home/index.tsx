@@ -1,7 +1,14 @@
-import React, { Fragment, useState, useMemo, useEffect } from 'react';
+import React, {
+  Fragment,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback
+} from 'react';
+import debounce from 'lodash.debounce';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
-import { Title, Button } from 'react-native-paper';
+import { Title, Button, ActivityIndicator } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
@@ -37,6 +44,7 @@ import {
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -64,19 +72,36 @@ export default function HomeScreen(props: ScreenProp) {
     update: false
   });
 
-  const { loading: myCommunityLoading, data: myCommunityData } = useQuery<
-    MyCommunitiesRequestInterface
-  >(GET_MY_COMMUNITIES, { pollInterval: 1000 });
+  const [moreAction, setMoreAction] = useState(false);
+  const [fetchingMore, setFetchingMore] = useState(false);
 
-  const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST);
+  const {
+    loading: myCommunityLoading,
+    data: myCommunityData,
+    fetchMore
+  } = useQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
+    pollInterval: 1000
+  });
 
-  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
+  const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
-  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS);
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT / 2 }
+  });
 
-  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS);
+  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
-  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
+  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
+
+  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   useEffect(() => {
     tagScreenName('TriblScreen');
@@ -133,6 +158,34 @@ export default function HomeScreen(props: ScreenProp) {
     []
   );
 
+  const _renderFooter = useCallback(
+    () => (fetchingMore ? <ActivityIndicator /> : null),
+    [fetchingMore]
+  );
+
+  const _onEndReached = useCallback(() => {
+    if (!moreAction) return;
+
+    setFetchingMore(true);
+    fetchMore({
+      variables: { offset: myCommunity?.length },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          setFetchingMore(false);
+          return prev;
+        }
+
+        setFetchingMore(false);
+        return Object.assign({}, prev, {
+          myConnections: [
+            ...prev.myCommunities,
+            ...fetchMoreResult.myCommunities
+          ]
+        });
+      }
+    });
+  }, [moreAction]);
+
   return (
     <Fragment>
       <ScrollView
@@ -165,9 +218,19 @@ export default function HomeScreen(props: ScreenProp) {
             </RecommendedListHeader>
             <FlatList
               data={myCommunity}
-              ListEmptyComponent={<MyCommunitySkeleton skeletonSize={2} />}
               horizontal={true}
+              onEndReachedThreshold={0.01}
+              ListEmptyComponent={<MyCommunitySkeleton skeletonSize={2} />}
+              onEndReached={({ distanceFromEnd }) => {
+                if (distanceFromEnd > 0) debounce(_onEndReached, 500)();
+              }}
+              ListFooterComponent={_renderFooter}
               renderItem={_renderMyCommunityItem}
+              onScrollBeginDrag={() => setMoreAction(true)}
+              onScrollEndDrag={() => setMoreAction(false)}
+              onMomentumScrollBegin={() => setMoreAction(true)}
+              onMomentumScrollEnd={() => setMoreAction(false)}
+              ListFooterComponentStyle={{ justifyContent: 'center' }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
                 marginTop: 10,

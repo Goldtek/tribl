@@ -3,6 +3,8 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useLazyQuery } from '@apollo/react-hooks';
+import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
@@ -10,6 +12,7 @@ import Firechat from '../../../../../firebase';
 import formatMessageTime from '../../../../../utils/timesince';
 import { OnlinePresence } from '../../../types';
 import { fireAuth } from '../../../../../firebase/config';
+import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -32,6 +35,10 @@ function ConnectionCard(props: ConnectionCardProp) {
     ).getTime()
   });
 
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
+    variables: { id }
+  });
+
   useEffect(() => {
     Firechat.getOnlineStatus(id).onSnapshot({
       next: (snapshot) => {
@@ -41,6 +48,8 @@ function ConnectionCard(props: ConnectionCardProp) {
         }
       }
     });
+
+    getUserPassport();
   }, []);
 
   const handleNavigation = () => {
@@ -51,7 +60,7 @@ function ConnectionCard(props: ConnectionCardProp) {
       senderId !== userId && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
-      return navigation.navigate('MessageRequestScreen', {
+      return navigation.navigate('MessageRequestChatScreen', {
         title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
         senderId: id,
@@ -72,6 +81,7 @@ function ConnectionCard(props: ConnectionCardProp) {
 
   return (
     <TouchableRipple
+      ref={hideSensitiveView}
       style={{
         height: RFValue(80),
         flexDirection: 'row',
@@ -94,7 +104,7 @@ function ConnectionCard(props: ConnectionCardProp) {
             borderRadius: RFValue(4)
           }}
         />
-        <NameContainer>
+        <NameContainer ref={hideSensitiveView}>
           <Title
             style={{
               color: colors.PRIMARY_TEXT,

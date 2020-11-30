@@ -15,6 +15,7 @@ import {
   PassportInterface
 } from '../../graphql/types';
 import Skeleton from './widget/skeleton';
+import { PAGINATION_DEFAULT } from '../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface ModalProp {
@@ -29,7 +30,8 @@ function NearbyModal(props: ModalProp) {
   const { t } = useTranslation();
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
-    GET_NEARBY_MEMBERS
+    GET_NEARBY_MEMBERS,
+    { variables: { offset: 0, first: PAGINATION_DEFAULT } }
   );
 
   const NearbyMembers = nearbyData?.nearbyMembers;

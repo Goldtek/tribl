@@ -14,7 +14,7 @@ export const USER_FCM_TOKEN: string = '@USER_FCM_TOKEN';
 export const USER_PASSPORT_INFO: string = '@USER_PASSPORT_INFO';
 
 // ALL PAGE LOGICAL CONSTANTS
-export const PAGINATION_DEFAULT: number = 15;
+export const PAGINATION_DEFAULT: number = 20;
 export const LANGUAGE_DEFAULT: string = 'en';
 
 // APP HEADER SETTING

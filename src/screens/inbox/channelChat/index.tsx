@@ -14,8 +14,7 @@ import {
   Platform,
   SafeAreaView,
   KeyboardAvoidingView,
-  View,
-  NativeScrollEvent
+  View
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -29,7 +28,10 @@ import {
   GET_SINGLE_PASSPORT,
   GET_USER_PASSPORT
 } from '../../../graphql/server/query';
-import { SEND_CHANNEL_MESSAGE } from '../../../graphql/server/mutations';
+import {
+  MARK_CHANNEL_CONVERSATION_MESSAGE_READ,
+  SEND_CHANNEL_MESSAGE
+} from '../../../graphql/server/mutations';
 import { DEVICE_OS } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
 import {
@@ -38,14 +40,14 @@ import {
   logEvent
 } from '../../../utils/uxcamHelper';
 
-import { Container } from './styles';
+import { Container, Cover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
   route: { params: ChatScreenProps };
 }
 
-export default function ChatScreen(props: ScreenProp) {
+export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation } = props;
   const { chatId, channel } = props.route.params;
   const userId = fireAuth.currentUser?.uid as string;
@@ -60,14 +62,17 @@ export default function ChatScreen(props: ScreenProp) {
 
   const [userPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
+  const [markConversationAsRead] = useMutation(
+    MARK_CHANNEL_CONVERSATION_MESSAGE_READ,
+    {
+      variables: { payload: { channelId: chatId } }
+    }
+  );
+
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET = 100;
   const userDetails = userData?.myPassport;
-
-  // let lastVisible = useRef<FirebaseFirestoreTypes.QueryDocumentSnapshot<
-  //   FirebaseFirestoreTypes.DocumentData
-  // > | null>(null);
 
   const [messages, setMessages] = useState<MessageInterface[]>([]);
 
@@ -78,11 +83,15 @@ export default function ChatScreen(props: ScreenProp) {
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
-        const conversations = snapshot.docs.map((document) => {
+        const conversations = snapshot.docs.map((document, index) => {
           const message = document.data();
 
           if (message.senderId !== userId) {
             userPassport({ variables: { id: message?.senderId } });
+          }
+
+          if (snapshot.docs.length - 1 === index) {
+            setImmediate(markConversationAsRead);
           }
 
           return {
@@ -96,8 +105,6 @@ export default function ChatScreen(props: ScreenProp) {
           } as MessageInterface;
         });
 
-        // lastVisible.current = snapshot.docs[snapshot.docs.length - 1];
-
         setMessages(conversations);
       }
     });
@@ -105,53 +112,15 @@ export default function ChatScreen(props: ScreenProp) {
     return () => unsubscribe();
   }, []);
 
-  const isCloseToTop = (props: NativeScrollEvent) => {
-    const { layoutMeasurement, contentOffset, contentSize } = props;
+  // const isCloseToTop = (props: NativeScrollEvent) => {
+  //   const { layoutMeasurement, contentOffset, contentSize } = props;
 
-    const contentTopOffset =
-      contentSize.height - layoutMeasurement.height - contentOffset.y;
-    // if the screen is not full of messages, offset would be too big
-    return contentSize.height < layoutMeasurement.height
-      ? contentOffset.y > LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET // so we only check bottom offset
-      : contentTopOffset + LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET < 0;
-  };
-
-  // const loadMoreMessage = async () => {
-  //   const chatMessages = Firechat.getChannelMessages(
-  //     chatId,
-  //     lastVisible.current
-  //   );
-
-  //   const prevChatMessages = await chatMessages.get();
-
-  //   if (prevChatMessages.empty) {
-  //     return console.log('EMPTYEMPTYEMPTYEMPTYEMPTYEMPTYEMPTYEMPTYEMPTY');
-  //   }
-
-  //   const conversations = prevChatMessages.docs.map((document) => {
-  //     const message = document.data();
-
-  //     if (message.senderId !== userId) {
-  //       userPassport({ variables: { id: message?.senderId } });
-  //     }
-
-  //     return {
-  //       ...message,
-  //       _id: document.id,
-  //       user: {
-  //         ...message.sender,
-  //         _id: message?.senderId,
-  //         name: `${message.sender?.firstName} ${message.sender?.lastName}`
-  //       }
-  //     } as MessageInterface;
-  //   });
-
-  //   lastVisible.current =
-  //     prevChatMessages.docs[prevChatMessages.docs.length - 1];
-
-  //   console.tron({ conversations, conversationsLength: prevChatMessages.size });
-
-  //   setMessages([...messages, ...conversations]);
+  //   const contentTopOffset =
+  //     contentSize.height - layoutMeasurement.height - contentOffset.y;
+  //   // if the screen is not full of messages, offset would be too big
+  //   return contentSize.height < layoutMeasurement.height
+  //     ? contentOffset.y > LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET // so we only check bottom offset
+  //     : contentTopOffset + LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET < 0;
   // };
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
@@ -241,6 +210,7 @@ export default function ChatScreen(props: ScreenProp) {
         }}
         renderAvatar={(props) => (
           <Avatar
+            ref={hideSensitiveView}
             {...props}
             imageStyle={{
               left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
@@ -261,7 +231,9 @@ export default function ChatScreen(props: ScreenProp) {
               >
                 {props.currentMessage?.user.name}
               </Button>
-              <Paragraph>{props.currentMessage?.text}</Paragraph>
+              <Cover ref={hideSensitiveView}>
+                <Paragraph>{props.currentMessage?.text}</Paragraph>
+              </Cover>
             </Container>
           );
         }}
@@ -275,6 +247,7 @@ export default function ChatScreen(props: ScreenProp) {
             return (
               <Bubble
                 {...props}
+                ref={hideSensitiveView}
                 wrapperStyle={{
                   right: {
                     backgroundColor: colors.PRIMARY,
@@ -292,6 +265,7 @@ export default function ChatScreen(props: ScreenProp) {
           return userId === props.currentMessage.user._id ? (
             <Bubble
               {...props}
+              ref={hideSensitiveView}
               wrapperStyle={{
                 right: {
                   backgroundColor: colors.PRIMARY,
@@ -316,6 +290,7 @@ export default function ChatScreen(props: ScreenProp) {
               </Text>
 
               <Bubble
+                ref={hideSensitiveView}
                 {...props}
                 wrapperStyle={{
                   right: {

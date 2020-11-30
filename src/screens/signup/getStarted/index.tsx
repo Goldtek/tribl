@@ -24,10 +24,14 @@ import { SEND_USER_OTP } from '../../../graphql/server/mutations';
 import { StoreInterface, OTPInterface } from '../../../graphql/types';
 import { DEVICE_OS, DEVICE_ID } from '../../../utils/device';
 import GradientButton from '../../../components/gradientButton';
+import {
+  tagScreenName,
+  logEvent,
+  hideSensitiveView
+} from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -69,12 +73,9 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     if (!phoneNumber) return handleInputError();
 
     try {
-      const { data } = await sendOtp();
-
-      if (data?.sendOtp.success) {
-        navigation.navigate('OTPScreen');
-        addPhoneNumber();
-      }
+      await sendOtp();
+      navigation.navigate('OTPScreen');
+      addPhoneNumber();
     } catch (error) {
       handleInputError();
       Sentry.captureException(error);
@@ -153,6 +154,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                 returnKeyType="done"
               >
                 <TouchableOpacity
+                  ref={hideSensitiveView}
                   onPress={() => navigation.navigate('SelectCountryScreen')}
                   style={{
                     height: '100%',

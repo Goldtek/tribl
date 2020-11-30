@@ -13,6 +13,7 @@ import {
   SinglePassportRequestInterface
 } from '../../../../../../../graphql/types';
 import { GET_SINGLE_PASSPORT } from '../../../../../../../graphql/server/query';
+import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -86,7 +87,7 @@ function Member(props: MemberProp) {
             borderRadius: RFValue(4)
           }}
         />
-        <NameContainer>
+        <NameContainer ref={hideSensitiveView}>
           <Title
             style={{
               color: colors.PRIMARY_TEXT,

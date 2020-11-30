@@ -29,7 +29,14 @@ function RecommendedCommunity(props: CommunityInterface) {
 
   const { ...restProps } = props;
 
-  const { avatar, name, membersCount, isMember, id } = restProps;
+  const {
+    avatar,
+    name,
+    membersCount,
+    isMember,
+    id,
+    uniqueInterests
+  } = restProps;
 
   const resizeAvatar = avatar?.split('upload/');
 

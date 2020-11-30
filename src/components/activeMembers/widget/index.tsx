@@ -75,7 +75,7 @@ function ActiveModal(props: ActiveUserProp) {
       senderId !== userId && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
-      return rootNavigator.navigate('MessageRequestScreen', {
+      return rootNavigator.navigate('MessageRequestChatScreen', {
         title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
         senderId: id,

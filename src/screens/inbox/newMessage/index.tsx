@@ -26,7 +26,8 @@ import {
   PassportInterface
 } from '../../../graphql/types';
 import { NavigationInterface } from '../../types';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer, HeaderContainer } from './styles';
@@ -94,28 +95,15 @@ export default function ChatScreen(props: ScreenProp) {
     : filterNearby;
 
   const handleConnectionClick = () => {
-    setState({
-      ...state,
-      connections: !connections,
-      all: false
-    });
+    setState({ ...state, connections: !connections, all: false });
   };
 
   const handleNearbyClick = () => {
-    setState({
-      ...state,
-      nearby: !nearby,
-      all: false
-    });
+    setState({ ...state, nearby: !nearby, all: false });
   };
 
   const handleAllMembersClick = () => {
-    setState({
-      ...state,
-      all: !all,
-      nearby: false,
-      connections: false
-    });
+    setState({ ...state, all: !all, nearby: false, connections: false });
   };
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
@@ -244,6 +232,7 @@ export default function ChatScreen(props: ScreenProp) {
           <Skeleton />
         ) : data?.length ? (
           <FlatList
+            ref={hideSensitiveView}
             data={data}
             bounces={false}
             renderItem={_renderItem}

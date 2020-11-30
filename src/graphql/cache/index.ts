@@ -54,16 +54,16 @@ cache.writeData<StoreInterface>({
           __typename: 'currentLocation'
         }
       ],
-      birthPlace: [
-        {
-          lat: null,
-          long: null,
-          country: '',
-          city: '',
-          state: '',
-          __typename: 'birthPlace'
-        }
-      ],
+      // birthPlace: [
+      //   {
+      //     lat: null,
+      //     long: null,
+      //     country: '',
+      //     city: '',
+      //     state: '',
+      //     __typename: 'birthPlace'
+      //   }
+      // ],
       avatar: USER_DEFAULT_AVATAR,
       __typename: 'userDetails'
     },

@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../graphql/types';
 import { USER_DEFAULT_AVATAR } from '../../../../constants';
+import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionProp extends PassportInterface {}
@@ -27,6 +28,7 @@ export default function MyCommunity(props: MyConnectionProp) {
 
   return (
     <TouchableRipple
+      ref={hideSensitiveView}
       onPress={handleNavigation}
       rippleColor={hexToRGB(colors.PRIMARY, 0.5)}
       style={{

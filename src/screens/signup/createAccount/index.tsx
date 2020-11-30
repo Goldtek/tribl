@@ -19,10 +19,14 @@ import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import Storage from '../../../libs/storage';
 import LoadingModal from '../../../components/loadingModal';
 import { validateEmailInput } from '../../../utils/validateEmailInput';
+import {
+  tagScreenName,
+  logEvent,
+  hideSensitiveView
+} from '../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}

@@ -35,7 +35,7 @@ interface ScreenProp extends NavigationInterface {
   route: { params: ChatScreenProps };
 }
 
-export default function ChatScreen(props: ScreenProp) {
+export default function DirectChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
@@ -197,6 +197,7 @@ export default function ChatScreen(props: ScreenProp) {
         renderBubble={(props) => (
           <Bubble
             {...props}
+            ref={hideSensitiveView}
             wrapperStyle={{
               right: {
                 backgroundColor: colors.PRIMARY,
