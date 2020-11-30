@@ -4,6 +4,8 @@ import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
+import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
 import Firechat from '../../../../firebase';
 import { OnlinePresence } from '../../../inbox/types';
@@ -28,6 +30,10 @@ export default function Connection(props: ConnectionProp) {
     ).getTime()
   });
 
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
+    variables: { id }
+  });
+
   useEffect(() => {
     Firechat.getOnlineStatus(id).onSnapshot({
       next: (snapshot) => {
@@ -37,6 +43,8 @@ export default function Connection(props: ConnectionProp) {
         }
       }
     });
+
+    getUserPassport();
   }, []);
 
   const handleMessageNavigation = () => {
