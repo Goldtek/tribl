@@ -1,13 +1,13 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { NavigationInterface } from '../../types';
-import { Text, Title } from 'react-native-paper';
+import React, { Fragment, useState, useEffect, useCallback } from 'react';
+import debounce from 'lodash.debounce';
+import { ActivityIndicator, Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
-import PTRView from 'react-native-pull-to-refresh';
 import { StatusBar, FlatList, TouchableHighlight } from 'react-native';
+import { NavigationInterface } from '../../types';
 import SearchInput, { createFilter } from 'react-native-search-filter';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
@@ -22,6 +22,7 @@ import {
 } from '../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, MenuBadgeWrapper } from './styles';
@@ -38,14 +39,19 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     tagScreenName('MyConnectionScreen');
   }, []);
 
-  const { data, refetch } = useQuery<MyConnectionsInterface>(
+  const { data, refetch, fetchMore } = useQuery<MyConnectionsInterface>(
     GET_MY_CONNECTIONS,
-    { variables: { offset: 0, first: 20 } }
+    { variables: { offset: 0, first: PAGINATION_DEFAULT } }
   );
 
   const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
     GET_CONNECTION_NOTIFICATION_BADGE
   );
+
+  const [moreAction, setMoreAction] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [fetchingMore, setFetchingMore] = useState(false);
+  const [search, setSearch] = useState({ searchTerm: '' });
 
   const myConnection = data?.myConnections;
 
@@ -57,7 +63,41 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     return 0;
   });
 
-  const [search, setSearch] = useState({ searchTerm: '' });
+  const _renderFooter = useCallback(
+    () => (fetchingMore ? <ActivityIndicator /> : null),
+    [fetchingMore]
+  );
+
+  const _onEndReached = useCallback(() => {
+    if (!moreAction) return;
+
+    setFetchingMore(true);
+    fetchMore({
+      variables: { offset: data?.myConnections.length },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          setFetchingMore(false);
+          return prev;
+        }
+
+        setFetchingMore(false);
+        return Object.assign({}, prev, {
+          myConnections: [
+            ...prev.myConnections,
+            ...fetchMoreResult.myConnections
+          ]
+        });
+      }
+    });
+  }, [moreAction]);
+
+  const _onRefresh = useCallback(() => {
+    if (!moreAction) return;
+    setRefreshing(true);
+    refetch()
+      .then(() => setRefreshing(false))
+      .catch(() => setRefreshing(false));
+  }, [moreAction]);
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
@@ -120,7 +160,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
       <Container>
         <SearchInput
-          onChangeText={(text) => searchUpdated(text)}
+          onChangeText={searchUpdated}
           placeholder="Search"
           placeholderTextColor={colors.PRIMARY_TEXT}
           style={{
@@ -151,35 +191,44 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           </Title>
         ) : null}
 
-        <PTRView onRefresh={refetch} style={{ marginTop: RFValue(10) }}>
-          {myConnection ? (
-            <FlatList
-              data={filteredWords}
-              contentContainerStyle={{
-                flexGrow: 1,
-                marginTop: RFValue(10),
-                paddingBottom: RFValue(60)
-              }}
-              ListEmptyComponent={
-                <Text
-                  style={{
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    margin: RFValue(20),
-                    textAlign: 'center'
-                  }}
-                >
-                  You currently don't have any connection
-                </Text>
-              }
-              showsVerticalScrollIndicator={false}
-              renderItem={_renderItem}
-              keyExtractor={(item) => item.id}
-            />
-          ) : (
-            <Skeleton />
-          )}
-        </PTRView>
+        {myConnection ? (
+          <FlatList
+            data={filteredWords}
+            refreshing={refreshing}
+            onRefresh={_onRefresh}
+            ListFooterComponent={_renderFooter}
+            onEndReachedThreshold={0.01}
+            onEndReached={({ distanceFromEnd }) => {
+              if (distanceFromEnd > 0) debounce(_onEndReached, 500)();
+            }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              marginTop: RFValue(10),
+              paddingBottom: RFValue(60)
+            }}
+            ListEmptyComponent={
+              <Text
+                style={{
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  margin: RFValue(20),
+                  textAlign: 'center'
+                }}
+              >
+                You currently don't have any connection
+              </Text>
+            }
+            onScrollBeginDrag={() => setMoreAction(true)}
+            onScrollEndDrag={() => setMoreAction(false)}
+            onMomentumScrollBegin={() => setMoreAction(true)}
+            onMomentumScrollEnd={() => setMoreAction(false)}
+            showsVerticalScrollIndicator={false}
+            renderItem={_renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        ) : (
+          <Skeleton />
+        )}
       </Container>
     </Fragment>
   );
