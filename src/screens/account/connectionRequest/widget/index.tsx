@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { useMutation } from '@apollo/react-hooks';
+import React, { Fragment, useEffect } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import { ActivityIndicator } from 'react-native';
 import * as Sentry from '@sentry/react-native';
@@ -15,6 +15,7 @@ import {
   ACCEPT_CONNECTION,
   REJECT_CONNECTION
 } from '../../../../graphql/server/mutations';
+import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
 
 import { NameContainer } from './styles';
 
@@ -25,7 +26,7 @@ interface ConnectionRequestProp {
 
 const ConnectionRequest = (props: ConnectionRequestProp) => {
   const { refetch, item } = props;
-  const { phoneNumber, firstName, lastName, avatar, connection } = item;
+  const { phoneNumber, firstName, lastName, avatar, id } = item;
 
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
@@ -43,6 +44,14 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
       variables: { payload: { phoneNumber: phoneNumber } }
     }
   );
+
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
+    variables: { id }
+  });
+
+  useEffect(() => {
+    getUserPassport();
+  });
 
   const handleAcceptConnection = async () => {
     logEvent('accept connection request', { from: 'passport' });
