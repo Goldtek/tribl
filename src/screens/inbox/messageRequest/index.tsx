@@ -1,416 +1,133 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import * as Sentry from '@sentry/react-native';
-import { MessageRequestScreenProps, NavigationInterface } from '../../types';
+import React, { useMemo, useState, useEffect } from 'react';
+import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
-import { Ionicons } from '@expo/vector-icons';
-import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { KeyboardAvoidingView, Platform } from 'react-native';
-import { useThemeContext } from '../../../theme';
-import { MessageInterface } from '../types';
-import { fireAuth } from '../../../firebase/config';
-import { Text, Button } from 'react-native-paper';
+import { Text } from 'react-native-paper';
+import { NavigationInterface } from '../../types';
 import Firechat from '../../../firebase';
-import {
-  GET_SINGLE_PASSPORT,
-  GET_USER_PASSPORT
-} from '../../../graphql/server/query';
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import { useNavigation } from '@react-navigation/native';
-import {
-  DEVICE_FULL_HEIGHT,
-  DEVICE_FULL_WIDTH,
-  DEVICE_OS
-} from '../../../utils/device';
-import {
-  ACCEPT_MESSAGE_REQUEST,
-  BLOCK_MESSAGE_REQUEST,
-  DELETE_MESSAGE_REQUEST,
-  MARK_MESSAGE_READ,
-  SEND_DIRECT_MESSAGE
-} from '../../../graphql/server/mutations';
-import {
-  MyPassportInterface,
-  UserPassportInterface,
-  AcceptMessageRequestInterface,
-  DeleteMessageRequestInterface,
-  BlockMessageRequestInterface,
-  ShowMessageNotificationBadge
-} from '../../../graphql/types';
-import hexToRGB from '../../../utils/hexToRGB';
-import { GET_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
-import { CHANGE_MESSAGE_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
-import {
-  hideSensitiveView,
-  tagScreenName,
-  logEvent
-} from '../../../utils/uxcamHelper';
-import { Mixpanel } from '../../../config';
+import MessageRequestCard from './widget';
+import ChatCardSkeleton from '../../../components/chatCardSkeleton';
+import { ConversationInterface } from '../types';
+import { ROOM_TYPES } from '../../../firebase/types';
+import { useThemeContext } from '../../../theme';
+import { hideSensitiveView, tagScreenName } from '../../../utils/uxcamHelper';
+import batchConversation from '../../../utils/batchConversation';
 
-import { Cover, TextContainer } from './styles';
+import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {
-  route: { params: MessageRequestScreenProps };
-}
+interface ScreenProp extends NavigationInterface {}
 
-export default function ChatScreen(props: ScreenProp) {
-  const { colors, fonts } = useThemeContext();
-  const navigation = useNavigation();
-  const modalizeRef = useRef<Modalize>(null);
+export default function MessageRequestTab(props: ScreenProp) {
+  const { fonts, colors } = useThemeContext();
+  const [requestHistory, setRequestHistory] = useState(true);
+
+  const [messageRequests, setMessageRequests] = useState<
+    ConversationInterface[]
+  >([]);
 
   useEffect(() => {
-    tagScreenName('MessageRequestScreen');
+    tagScreenName('MessageRequestTab');
   }, []);
 
-  const {
-    chatId,
-    title,
-    senderId,
-    avatar,
-    firstName,
-    lastName
-  } = props.route.params;
-
-  const userId = fireAuth.currentUser?.uid as string;
-
-  const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
-
-  const [markConversationAsRead] = useMutation(MARK_MESSAGE_READ, {
-    variables: { payload: { conversationId: chatId } }
-  });
-
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-
-  const { data: senderPassportData } = useQuery<UserPassportInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: senderId } }
-  );
-
-  const senderPassport = senderPassportData?.singlePassport;
-
-  const [changeMutation] = useMutation(CHANGE_MESSAGE_NOTIFICATION_BADGE);
-
-  const { data: notificationData } = useQuery<ShowMessageNotificationBadge>(
-    GET_MESSAGE_NOTIFICATION_BADGE
-  );
-
-  const [
-    acceptMessageRequest,
-    { data: acceptRequest, loading: acceptRequestLoading }
-  ] = useMutation<AcceptMessageRequestInterface>(ACCEPT_MESSAGE_REQUEST, {
-    variables: { payload: { conversationId: chatId } }
-  });
-
-  const [deleteMessageRequest, { loading: deleteRequestLoading }] = useMutation<
-    DeleteMessageRequestInterface
-  >(DELETE_MESSAGE_REQUEST, {
-    variables: { payload: { conversationId: chatId } }
-  });
-
-  const [blockMessageRequest, { loading: blockRequestLoading }] = useMutation<
-    BlockMessageRequestInterface
-  >(BLOCK_MESSAGE_REQUEST, {
-    variables: { payload: { conversationId: chatId } }
-  });
-
-  const userDetails = userData?.myPassport;
-
-  const [messages, setMessages] = useState<MessageInterface[]>([]);
-
   useEffect(() => {
-    if (!acceptRequest?.acceptMessageRequest.success) return;
+    let unsubscribe: any = null;
 
-    modalizeRef.current?.close();
+    const getMessageRequests = async () => {
+      const userConservations = await Firechat.getUserConversations(
+        ROOM_TYPES.MESSAGE_REQUEST
+      );
 
-    const chatMessages = Firechat.getChatMessages(chatId);
+      unsubscribe = userConservations?.onSnapshot({
+        next: async (snapshot) => {
+          if (!snapshot.docs.length) return setRequestHistory(false);
 
-    const unsubscribe = chatMessages.onSnapshot({
-      next: (snapshot) => {
-        const conversations = snapshot.docs.map((document, index) => {
-          const message = document.data();
+          setRequestHistory(true);
+          const batchedConversationIds = batchConversation(snapshot.docs);
 
-          if (snapshot.docs.length - 1 === index) {
-            if (notificationData?.showMessageNotificationBadge) {
-              changeMutation({
-                variables: {
-                  showMessageNotificationBadge: !notificationData?.showMessageNotificationBadge
+          const userMessageRequests = await Promise.all(
+            batchedConversationIds.map((conversationIds) =>
+              Firechat.getConversationMessages(conversationIds)
+            )
+          );
+
+          let snapshotMessages: ConversationInterface[] = [];
+
+          userMessageRequests.forEach((userMessageRequest, index) => {
+            userMessageRequest?.onSnapshot({
+              next: (snapshot) => {
+                for (let index = 0; index < snapshot.docs.length; index++) {
+                  const document = snapshot.docs[index];
+                  const message = document.data() as ConversationInterface;
+                  snapshotMessages = snapshotMessages.filter(
+                    (x) => x.id !== document.id
+                  );
+                  snapshotMessages.push({ ...message, id: document.id });
                 }
-              });
-            }
-            setImmediate(markConversationAsRead);
-          }
 
-          return {
-            ...message,
-            user: { _id: message.senderId, avatar },
-            _id: document.id
-          } as MessageInterface;
-        });
-
-        setMessages(conversations);
-      }
-    });
-
-    return () => {
-      modalizeRef.current?.close();
-      unsubscribe();
-    };
-  }, [acceptRequest?.acceptMessageRequest.success]);
-
-  const onSend = useCallback(async (messages: MessageInterface[] = []) => {
-    const [message] = messages;
-    logEvent('message request', { from: 'chat' });
-
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, messages)
-    );
-
-    sendMessage({
-      variables: { payload: { receiverId: senderId, content: message.text } }
-    });
-  }, []);
-
-  const handleMessageRequest = (type: string) => async () => {
-    switch (type) {
-      case 'block':
-        try {
-          await blockMessageRequest();
-          logEvent('block message request', { from: 'chat' });
-          navigation.goBack();
-        } catch (error) {
-          Sentry.captureException(error);
-        }
-
-        break;
-
-      case 'delete':
-        try {
-          await deleteMessageRequest();
-          logEvent('delete message request', { from: 'chat' });
-          navigation.goBack();
-        } catch (error) {
-          Sentry.captureException(error);
-        }
-
-        break;
-
-      default:
-        break;
-    }
-
-    if (notificationData?.showMessageNotificationBadge) {
-      changeMutation({
-        variables: {
-          showMessageNotificationBadge: !notificationData?.showMessageNotificationBadge
+                if (index === userMessageRequests.length - 1) {
+                  const messageRequests = snapshotMessages.sort(
+                    (a, b) =>
+                      new Date(b.lastMessage.createdAt).getTime() -
+                      new Date(a.lastMessage.createdAt).getTime()
+                  );
+                  setMessageRequests(messageRequests);
+                }
+              }
+            });
+          });
         }
       });
-    }
-  };
+    };
 
-  const handleNavigation = useCallback(() => {
-    navigation.navigate('MemberDetailScreen', {
-      title: `${firstName} ${lastName}`,
-      details: props.route.params
-    });
+    getMessageRequests();
+    return () => unsubscribe && unsubscribe();
   }, []);
+
+  const _renderItem = ({ item }: { item: ConversationInterface }) => (
+    <MessageRequestCard key={item.id} {...item} {...props} />
+  );
+
+  const renderEmptyList = useMemo(
+    () => () => (
+      <Container>
+        <ChatCardSkeleton skeletonSize={3} />
+      </Container>
+    ),
+    []
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
-      <GiftedChat
-        ref={hideSensitiveView}
-        placeholder="Start typing ..."
-        messages={messages}
-        user={{
-          _id: userId,
-          avatar: userDetails?.avatar,
-          name: `${userDetails?.firstName} ${userDetails?.lastName}`
-        }}
-        alwaysShowSend
-        isLoadingEarlier={true}
-        onPressAvatar={handleNavigation}
-        onSend={onSend}
-        renderSend={(props) => (
-          <Send
+      <Container>
+        {requestHistory ? (
+          <FlatList
+            bounces={false}
+            data={messageRequests}
             ref={hideSensitiveView}
-            {...props}
-            containerStyle={{
-              width: RFValue(40),
-              height: RFValue(40),
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: colors.PRIMARY,
-              borderRadius: RFValue(40 / 2),
-              marginRight: 10,
-              marginVertical: 5
+            contentContainerStyle={{
+              flexGrow: 1,
+              marginTop: RFValue(20),
+              paddingBottom: RFValue(20)
+            }}
+            ListEmptyComponent={renderEmptyList}
+            showsVerticalScrollIndicator={false}
+            renderItem={_renderItem}
+            keyExtractor={(item: any) => item.id}
+          />
+        ) : (
+          <Text
+            style={{
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              margin: RFValue(20),
+              textAlign: 'center'
             }}
           >
-            <Ionicons name="ios-send" color={colors.WHITE} size={RFValue(20)} />
-          </Send>
+            You currently don't have any request connection
+          </Text>
         )}
-        listViewProps={{
-          showsVerticalScrollIndicator: false,
-          style: { marginBottom: RFValue(15) }
-        }}
-        textInputProps={{
-          style: {
-            flex: 1,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
-            fontFamily: fonts.WORK_SANS_MEDIUM,
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingTop: Platform.select({ ios: RFValue(12) }),
-            paddingBottom: Platform.select({ ios: RFValue(12) }),
-            color: colors.PRIMARY_TEXT,
-            borderRadius: 5,
-            marginHorizontal: 10,
-            marginVertical: 5,
-            borderWidth: 1,
-            borderColor: colors.INACTIVE
-          }
-        }}
-        renderAvatar={(props) => (
-          <Avatar
-            {...props}
-            ref={hideSensitiveView}
-            imageStyle={{
-              left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
-              right: {}
-            }}
-          />
-        )}
-        renderBubble={(props) => (
-          <Bubble
-            ref={hideSensitiveView}
-            {...props}
-            wrapperStyle={{
-              right: {
-                backgroundColor: colors.PRIMARY,
-                borderRadius: 7
-              },
-              left: {
-                backgroundColor: hexToRGB(colors.DISABLED, 0.7),
-                borderRadius: 7
-              }
-            }}
-          />
-        )}
-        isKeyboardInternallyHandled={true}
-      />
-
-      {DEVICE_OS === 'ios' && (
-        <KeyboardAvoidingView
-          behavior="padding"
-          keyboardVerticalOffset={RFValue(-170)}
-        />
-      )}
-
-      <Portal>
-        <Modalize
-          ref={modalizeRef}
-          alwaysOpen={RFValue(
-            DEVICE_FULL_WIDTH <= 375
-              ? DEVICE_FULL_HEIGHT / 3
-              : DEVICE_FULL_HEIGHT / 4
-          )}
-          modalHeight={RFValue(
-            DEVICE_FULL_WIDTH <= 375
-              ? DEVICE_FULL_HEIGHT / 3
-              : DEVICE_FULL_HEIGHT / 4
-          )}
-          withHandle={false}
-          panGestureEnabled={false}
-          closeOnOverlayTap={false}
-          withOverlay={false}
-        >
-          <TextContainer ref={hideSensitiveView}>
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                marginBottom: RFValue(7)
-              }}
-            >
-              {title} wants to message you.
-            </Text>
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                paddingBottom: RFValue(10),
-                textTransform: 'capitalize'
-              }}
-            >
-              {`${senderPassport?.communityCount} communities ${senderPassport?.connectionCount} connections`}
-            </Text>
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textAlign: 'center'
-              }}
-            >
-              if you accept, they will also be to see info such as your activity
-              status and when you've seen messages.
-            </Text>
-          </TextContainer>
-
-          <Cover>
-            <Button
-              onPress={handleMessageRequest('block')}
-              loading={blockRequestLoading}
-              mode="text"
-              labelStyle={{
-                color: colors.RED,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-            >
-              block
-            </Button>
-            <Button
-              onPress={handleMessageRequest('delete')}
-              loading={deleteRequestLoading}
-              mode="text"
-              labelStyle={{
-                color: colors.RED,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-            >
-              delete
-            </Button>
-            <Button
-              ref={hideSensitiveView}
-              onPress={() => {
-                acceptMessageRequest();
-                Mixpanel.track('User Accepts Message Request', {
-                  info: `User accepts message request from ${firstName} ${lastName}`,
-                  'Activity Screen': 'Message Request Chat Screen'
-                });
-                logEvent('accept message request', { from: 'chat' });
-              }}
-              loading={acceptRequestLoading}
-              mode="text"
-              labelStyle={{
-                color: colors.PRIMARY,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-            >
-              accept
-            </Button>
-          </Cover>
-        </Modalize>
-      </Portal>
+      </Container>
     </SafeAreaView>
   );
 }
