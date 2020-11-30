@@ -355,3 +355,8 @@ export type ShowConnectionNotificationBadge = {
 export type MyChannelRequestInterface = {
   myChannels: { id: string; name: string }[];
 };
+
+// USER CONNECTIONS REQUESTS (RESPONSE) TYPE
+export type ConnectionRequestsInterface = {
+  connectionRequests: PassportInterface[];
+};
