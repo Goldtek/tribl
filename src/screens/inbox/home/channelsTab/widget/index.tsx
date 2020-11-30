@@ -112,7 +112,7 @@ function ChannelChatCard(props: ChannelChatProp) {
                   fontSize: RFValue(fonts.LARGE_SIZE - 2)
                 }}
               >
-                {title.length >= 30 ? `${title.substr(0, 20)}...` : title}
+                {title.length >= 20 ? `${title.substr(0, 20)}...` : title}
               </Title>
             ) : (
               <SkeletonPlaceholder>

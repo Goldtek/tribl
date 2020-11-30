@@ -680,16 +680,7 @@ export const GET_USER_PASSPORT = gql`
       phoneNumber
       connectionCount
       communityCount
-      birthPlace {
-        lat
-        long
-        city
-        country
-        state
-      }
       currentLocation {
-        lat
-        long
         country
         state
         city

@@ -525,6 +525,7 @@ export default function DrawerStackNavigator() {
         component={Screens.MessageRequestScreen}
         options={{
           headerShown: true,
+          headerBackTitleVisible: false,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -532,12 +533,23 @@ export default function DrawerStackNavigator() {
             textTransform: 'capitalize'
           },
           headerTitle: t(`community.chat.messageRequest`),
-          headerBackImage: () => (
-            <Ionicons
-              name="md-arrow-back"
-              size={RFValue(24)}
-              color={colors.PRIMARY_TEXT}
-            />
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY_TEXT}
+              />
+            </TouchableRipple>
           )
         }}
       />
