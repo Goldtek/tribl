@@ -4,21 +4,13 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../../../theme';
 import { useNavigation } from '@react-navigation/native';
+import { CommunityInterface } from '../../../../graphql/types';
 import AdminBadge from '../../../../components/adminBadge';
 
 import { CommunityCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MyCommunityProp {
-  name: string;
-  membersCount: string;
-  id: string;
-  avatar: string;
-  isMember: boolean;
-  isModerator: boolean;
-  interests: [];
-  description: string;
-}
+interface MyCommunityProp extends CommunityInterface {}
 
 export default function MyCommunity(props: MyCommunityProp) {
   const { colors } = useThemeContext();
