@@ -66,13 +66,6 @@ export default function UserLocationScreen(props: ScreenProp) {
       state: '',
       city: ''
     },
-    birthPlace: {
-      lat: 0,
-      long: 0,
-      country: '',
-      state: '',
-      city: ''
-    },
     loading: false,
     isModalVisible: false,
     isVisible: false
@@ -115,18 +108,15 @@ export default function UserLocationScreen(props: ScreenProp) {
       details: {
         currentLocation: [
           { ...state.currentLocation, __typename: 'currentLocation' }
-        ],
-        birthPlace: [{ ...state.birthPlace, __typename: 'birthPlace' }]
+        ]
       }
     }
   });
 
   const handleSubmit = async () => {
-    const { locationInput, birthPlaceInput } = state;
+    const { locationInput } = state;
 
-    if (!locationInput || !birthPlaceInput) {
-      return handleInputError('inputError');
-    }
+    if (!locationInput) return handleInputError('inputError');
 
     setState({ ...state, loading: true });
 
@@ -136,16 +126,11 @@ export default function UserLocationScreen(props: ScreenProp) {
         currentLocation: {
           ...state.currentLocation,
           __typename: 'currentLocation'
-        },
-        birthPlace: { ...state.birthPlace, __typename: 'birthPlace' }
+        }
       }
     });
 
-    Mixpanel.people_set_once({
-      currentLocation: state.currentLocation,
-      citizenShip: state.birthPlace.country,
-      birthPlace: state.birthPlace
-    });
+    Mixpanel.people_set_once({ currentLocation: state.currentLocation });
 
     setTimeout(() => {
       setState({ ...state, loading: false, isModalVisible: true });
@@ -205,46 +190,6 @@ export default function UserLocationScreen(props: ScreenProp) {
       handleInputError('currentPosition');
       Sentry.captureException(error);
     }
-  };
-
-  const handleBirthLocation = (
-    data: GooglePlaceData,
-    details: GooglePlaceDetail | null = null
-  ): void => {
-    // 'details' is provided when fetchDetails = true
-
-    const address = details?.address_components.reduce(
-      (acc, address) => {
-        const { long_name, types } = address;
-
-        if (types.length) {
-          types.forEach((type) => {
-            // this is the selected location state
-            if (type === 'administrative_area_level_1') acc.state = long_name;
-
-            // this is the selected location country
-            if (type === 'country') acc.country = long_name;
-
-            //this is the selected location city
-            if (type === 'locality') acc.city = long_name;
-          });
-        }
-
-        return acc;
-      },
-      { country: '', state: '', city: '' }
-    );
-
-    const birthPlace = {
-      lat: details?.geometry.location.lat as number,
-      long: details?.geometry.location.lng as number,
-      country: address?.country as string,
-      state: address?.state as string,
-      city: address?.city as string
-    };
-
-    const { description } = data;
-    setState({ ...state, birthPlaceInput: description, birthPlace });
   };
 
   return (
@@ -383,7 +328,7 @@ export default function UserLocationScreen(props: ScreenProp) {
                   }}
                 />
 
-                <Paragraph
+                {/* <Paragraph
                   style={{
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -393,9 +338,9 @@ export default function UserLocationScreen(props: ScreenProp) {
                   }}
                 >
                   {t(`signup.userLocationScreen.birthPlace`)}
-                </Paragraph>
+                </Paragraph> */}
 
-                <GooglePlacesAutocomplete
+                {/* <GooglePlacesAutocomplete
                   ref={birthPlaceRef}
                   fetchDetails={true}
                   returnKeyType="done"
@@ -437,8 +382,8 @@ export default function UserLocationScreen(props: ScreenProp) {
                       fontFamily: fonts.WORK_SANS_REGULAR
                     }
                   }}
-                />
-                <Paragraph
+                /> */}
+                {/* <Paragraph
                   style={{
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
@@ -448,7 +393,7 @@ export default function UserLocationScreen(props: ScreenProp) {
                   }}
                 >
                   {t(`signup.userLocationScreen.placePlaceholderInstruction`)}
-                </Paragraph>
+                </Paragraph> */}
               </Container>
             )}
 
