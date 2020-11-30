@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useMutation } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { Mixpanel } from '../../../config';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { fireAuth } from '../../../firebase/config';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { logEvent, hideSensitiveView } from '../../../utils/uxcamHelper';
+import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -44,6 +45,14 @@ function NearbyModal(props: NearbyUserProp) {
 
   const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
+
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
+    variables: { id }
+  });
+
+  useEffect(() => {
+    getUserPassport();
+  });
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber } }
