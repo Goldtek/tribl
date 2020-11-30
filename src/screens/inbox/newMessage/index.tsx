@@ -27,6 +27,7 @@ import {
 } from '../../../graphql/types';
 import { NavigationInterface } from '../../types';
 import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, FilterContainer, HeaderContainer } from './styles';
@@ -41,15 +42,21 @@ export default function ChatScreen(props: ScreenProp) {
 
   const { loading: nearbyLoading, data: nearbyData } = useQuery<
     NearbyMembersRequestInterface
-  >(GET_NEARBY_MEMBERS);
+  >(GET_NEARBY_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   const { loading: connectionLoading, data: connectionData } = useQuery<
     MyConnectionsInterface
-  >(GET_MY_CONNECTIONS);
+  >(GET_MY_CONNECTIONS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   const { loading: allMembersLoading, data: allMembersData } = useQuery<
     AllMembersRequestInterface
-  >(GET_ALL_MEMBERS);
+  >(GET_ALL_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
