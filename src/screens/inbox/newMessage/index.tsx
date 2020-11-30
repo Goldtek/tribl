@@ -42,21 +42,15 @@ export default function ChatScreen(props: ScreenProp) {
 
   const { loading: nearbyLoading, data: nearbyData } = useQuery<
     NearbyMembersRequestInterface
-  >(GET_NEARBY_MEMBERS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
-  });
+  >(GET_NEARBY_MEMBERS);
 
   const { loading: connectionLoading, data: connectionData } = useQuery<
     MyConnectionsInterface
-  >(GET_MY_CONNECTIONS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
-  });
+  >(GET_MY_CONNECTIONS);
 
   const { loading: allMembersLoading, data: allMembersData } = useQuery<
     AllMembersRequestInterface
-  >(GET_ALL_MEMBERS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
-  });
+  >(GET_ALL_MEMBERS);
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
@@ -101,28 +95,15 @@ export default function ChatScreen(props: ScreenProp) {
     : filterNearby;
 
   const handleConnectionClick = () => {
-    setState({
-      ...state,
-      connections: !connections,
-      all: false
-    });
+    setState({ ...state, connections: !connections, all: false });
   };
 
   const handleNearbyClick = () => {
-    setState({
-      ...state,
-      nearby: !nearby,
-      all: false
-    });
+    setState({ ...state, nearby: !nearby, all: false });
   };
 
   const handleAllMembersClick = () => {
-    setState({
-      ...state,
-      all: !all,
-      nearby: false,
-      connections: false
-    });
+    setState({ ...state, all: !all, nearby: false, connections: false });
   };
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
