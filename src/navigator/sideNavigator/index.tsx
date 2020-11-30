@@ -334,8 +334,8 @@ export default function DrawerStackNavigator() {
       />
 
       <DrawerStack.Screen
-        name="MessageRequestScreen"
-        component={Screens.MessageRequestScreen}
+        name="MessageRequestChatScreen"
+        component={Screens.MessageRequestChatScreen}
         options={({ route }) => ({
           headerShown: true,
           height: RFValue(90),
@@ -373,6 +373,7 @@ export default function DrawerStackNavigator() {
           headerTintColor: colors.PRIMARY
         })}
       />
+
       <DrawerStack.Screen
         name="MemberDetailScreen"
         component={MemberDetailScreen}
@@ -516,6 +517,28 @@ export default function DrawerStackNavigator() {
         options={{
           headerTitle: t(`community.chat.chatTitle`),
           headerStyle: GLOBAL_HEADER_STYLE
+        }}
+      />
+
+      <DrawerStack.Screen
+        name="MessageRequestScreen"
+        component={Screens.MessageRequestScreen}
+        options={{
+          headerShown: true,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerTitle: t(`community.chat.messageRequest`),
+          headerBackImage: () => (
+            <Ionicons
+              name="md-arrow-back"
+              size={RFValue(24)}
+              color={colors.PRIMARY_TEXT}
+            />
+          )
         }}
       />
     </DrawerStack.Navigator>
