@@ -9,8 +9,10 @@ import { rootNavigator } from '../../constants';
 import { PassportInterface } from '../../graphql/types';
 import { OnlinePresence } from '../../screens/inbox/types';
 import formatMessageTime from '../../utils/timesince';
+import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import Firechat from '../../firebase';
 import { fireAuth } from '../../firebase/config';
+import { useLazyQuery } from '@apollo/react-hooks';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
@@ -40,6 +42,10 @@ const Highlight = (props: HighlightProp) => {
     lastSeen: new Date().getTime()
   });
 
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
+    variables: { id: hit.id }
+  });
+
   useEffect(() => {
     Firechat.getOnlineStatus(hit.id).onSnapshot({
       next: (snapshot) => {
@@ -49,6 +55,8 @@ const Highlight = (props: HighlightProp) => {
         }
       }
     });
+
+    getUserPassport();
   }, []);
 
   const handleNavigation = () => {
