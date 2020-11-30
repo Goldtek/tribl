@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, Fragment } from 'react';
 import { FlatList } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Text } from 'react-native-paper';
+import { Text, Badge } from 'react-native-paper';
+import { AntDesign } from '@expo/vector-icons';
 import DirectChatCard from './widget';
 import { NavigationInterface } from '../../../types';
 import Firechat from '../../../../firebase';
@@ -15,14 +16,20 @@ import {
 } from '../../../../utils/uxcamHelper';
 import batchConversation from '../../../../utils/batchConversation';
 
-import { Container } from './styles';
+import {
+  Container,
+  MessageRequestContainer,
+  MessageRequestBadgeContainer
+} from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function DirectMessageTab(props: ScreenProp) {
-  const { fonts } = useThemeContext();
+  const { navigation } = props;
+  const { fonts, colors } = useThemeContext();
   const [chatHistory, setChatHistory] = useState(true);
+  const [requestNumber, setRequestNumber] = useState(0);
 
   const [directMessages, setDirectMessages] = useState<ConversationInterface[]>(
     []
@@ -87,6 +94,23 @@ export default function DirectMessageTab(props: ScreenProp) {
     return () => unsubscribe && unsubscribe();
   }, []);
 
+  useEffect(() => {
+    let unsubscribe: any = null;
+
+    const getMessageRequests = async () => {
+      const userConservations = await Firechat.getUserConversations(
+        ROOM_TYPES.MESSAGE_REQUEST
+      );
+
+      unsubscribe = userConservations?.onSnapshot({
+        next: async (snapshot) => setRequestNumber(snapshot.docs.length)
+      });
+    };
+
+    getMessageRequests();
+    return () => unsubscribe && unsubscribe();
+  }, []);
+
   const _renderItem = ({ item }: { item: ConversationInterface }) => (
     <DirectChatCard key={item.id} {...item} />
   );
@@ -101,20 +125,52 @@ export default function DirectMessageTab(props: ScreenProp) {
   );
 
   return chatHistory ? (
-    <FlatList
-      bounces={false}
-      data={directMessages}
-      contentContainerStyle={{
-        flexGrow: 1,
-        marginTop: RFValue(20),
-        paddingBottom: RFValue(20)
-      }}
-      ref={hideSensitiveView}
-      ListEmptyComponent={renderEmptyList}
-      showsVerticalScrollIndicator={false}
-      renderItem={_renderItem}
-      keyExtractor={(item) => item.id}
-    />
+    <Fragment>
+      {requestNumber ? (
+        <MessageRequestContainer
+          onPress={() => navigation.navigate('MessageRequestScreen')}
+        >
+          <Fragment>
+            <MessageRequestBadgeContainer>
+              <Badge
+                style={{
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  fontFamily: fonts.WORK_SANS_MEDIUM,
+                  color: colors.WHITE,
+                  marginRight: 10
+                }}
+              >
+                {requestNumber}
+              </Badge>
+              <Text
+                style={{
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  fontFamily: fonts.WORK_SANS_BOLD
+                }}
+              >
+                Message request
+              </Text>
+            </MessageRequestBadgeContainer>
+            <AntDesign
+              name="caretright"
+              size={20}
+              color={colors.PRIMARY_TEXT}
+            />
+          </Fragment>
+        </MessageRequestContainer>
+      ) : null}
+
+      <FlatList
+        bounces={false}
+        data={directMessages}
+        contentContainerStyle={{ flexGrow: 1, paddingVertical: RFValue(20) }}
+        ref={hideSensitiveView}
+        ListEmptyComponent={renderEmptyList}
+        showsVerticalScrollIndicator={false}
+        renderItem={_renderItem}
+        keyExtractor={(item) => item.id}
+      />
+    </Fragment>
   ) : (
     <Text
       style={{

@@ -1,15 +1,15 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
 import { Image } from 'react-native';
+import Firechat from '../../../../../firebase';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ChannelConversationInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
 import formatMessageTime from '../../../../../utils/timesince';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
-import { subMinutes } from 'date-fns';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
@@ -20,10 +20,11 @@ interface ChannelChatProp extends ChannelConversationInterface {}
 function ChannelChatCard(props: ChannelChatProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+  const [userReadAt, setUserReadAt] = useState(0);
 
   const { id: chatId, lastMessage, channel, community, sender } = props;
 
-  const title = `#${community.name}-${channel.name}`;
+  const title = `#${community.name.split(' ').join('')}-${channel.name}`;
 
   let text = lastMessage.text;
 
@@ -34,11 +35,11 @@ function ChannelChatCard(props: ChannelChatProp) {
   if (text.length >= 30) text = `${text.substr(0, 30)}...`;
 
   const showNotificationBadge =
-    lastMessage.createdAt >= subMinutes(new Date(), 2);
+    new Date(lastMessage.createdAt).getTime() >= new Date(userReadAt).getTime();
 
   const handleNavigation = () => {
     navigation.navigate('ChannelChatScreen', {
-      title,
+      title: channel.name,
       chatId,
       isMember: true,
       channel: { community: community.name, name: channel.name }
@@ -49,6 +50,22 @@ function ChannelChatCard(props: ChannelChatProp) {
     if (!lastMessage.createdAt) return;
     return formatMessageTime(lastMessage.createdAt);
   };
+
+  useEffect(() => {
+    const unsubscribe = Firechat.getChannelParticipantReadAt(chatId).onSnapshot(
+      {
+        next: (snapshot) => {
+          const readMessages = snapshot.data();
+
+          readMessages?.readAt
+            ? setUserReadAt(readMessages?.readAt)
+            : setUserReadAt(readMessages?.createdAt);
+        }
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <TouchableRipple
@@ -95,7 +112,7 @@ function ChannelChatCard(props: ChannelChatProp) {
                   fontSize: RFValue(fonts.LARGE_SIZE - 2)
                 }}
               >
-                {title.length >= 30 ? `${title.substr(0, 30)}...` : title}
+                {title.length >= 30 ? `${title.substr(0, 20)}...` : title}
               </Title>
             ) : (
               <SkeletonPlaceholder>
