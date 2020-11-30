@@ -62,10 +62,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const [member, setMember] = useState(false);
 
   const displayTagModal = (childData: boolean) => {
-    setState({
-      ...state,
-      tagModal: childData
-    });
+    setState({ ...state, tagModal: childData });
   };
 
   const {
@@ -335,18 +332,15 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
           </Card>
         </Container>
       </ScrollView>
+
       {state.tagModal ? (
         <TagModal
-          onPress={() =>
-            setState({
-              ...state,
-              tagModal: false
-            })
-          }
+          onPress={() => setState({ ...state, tagModal: false })}
           data={data?.uniqueInterests}
           displayTagModal={displayTagModal}
         />
       ) : null}
+
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
       ) : null}
