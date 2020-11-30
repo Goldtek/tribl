@@ -31,18 +31,9 @@ export default function SignupNavigator() {
 
   const [update, setUpdate] = useState(false);
 
-  // const [userDetail, setUserDetail] = useState<
-  //   PassportInterface | null | undefined
-  // >(undefined);
-
   const userDetails = data?.userDetails;
 
-  // useEffect(() => {
-  //   setUserDetail(data?.userDetails);
-  // }, [data?.userDetails]);
-
   const currentLocation = userDetails?.currentLocation[0];
-  const birthPlace = userDetails?.birthPlace[0];
 
   const [updatePassport] = useMutation<UpdatePassportInterface>(
     UPDATE_USER_PASSPORT
@@ -103,16 +94,6 @@ export default function SignupNavigator() {
                   city:
                     currentLocation?.city ||
                     userRegInfo?.user?.currentLocation?.city
-                },
-                birthPlace: {
-                  lat: birthPlace?.lat || userRegInfo?.user?.birthPlace?.lat,
-                  long: birthPlace?.long || userRegInfo?.user?.birthPlace?.long,
-                  country:
-                    birthPlace?.country ||
-                    userRegInfo?.user?.birthPlace?.country,
-                  state:
-                    birthPlace?.state || userRegInfo?.user?.birthPlace?.state,
-                  city: birthPlace?.city || userRegInfo?.user?.birthPlace?.city
                 }
               }
             }
