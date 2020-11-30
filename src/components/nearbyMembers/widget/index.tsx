@@ -76,7 +76,7 @@ function NearbyModal(props: NearbyUserProp) {
       senderId !== userId && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
-      return rootNavigator.navigate('MessageRequestScreen', {
+      return rootNavigator.navigate('MessageRequestChatScreen', {
         title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
         senderId: id,
