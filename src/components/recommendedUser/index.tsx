@@ -14,10 +14,10 @@ import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
 import { PassportInterface, UserPassportInterface } from '../../graphql/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import AdminBadge from '../adminBadge';
+import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
-import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp extends PassportInterface {}
