@@ -9,8 +9,9 @@ import gql from 'graphql-tag';
 // GET  RECOMMENDED MEMBERS
 export const GET_RECOMMENDED_MEMBERS = gql`
   query RecommendedMembers($filter: _PassportFilter!) {
-    recommendedMembers(filter: $filter) {
+    recommendedMembers(filter: $filter, first: 8) {
       id
+      bio
       email
       firstName
       lastName
@@ -20,81 +21,6 @@ export const GET_RECOMMENDED_MEMBERS = gql`
       connected
       connectionCount
       communityCount
-      participantOf {
-        id
-        name
-        membersCount
-        description
-        avatar
-        isMember
-        isModerator
-        interests {
-          id
-          name
-        }
-        channels {
-          id
-          name
-        }
-        participants {
-          id
-          connected
-          firstName
-          lastName
-          phoneNumber
-          conversation {
-            id
-            messageRequest {
-              id
-              senderId
-              approvedAt {
-                formatted
-                day
-                month
-                year
-              }
-              createdAt {
-                formatted
-                day
-                month
-                year
-              }
-            }
-          }
-        }
-        membersCount
-      }
-      myConnections {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        phoneNumber
-        connected
-        connectionCount
-        communityCount
-        bio
-        birthPlace {
-          id
-          country
-          state
-          city
-        }
-        currentLocation {
-          id
-          country
-          state
-          city
-        }
-        identity {
-          name
-        }
-        interest {
-          name
-        }
-      }
-      bio
       birthPlace {
         id
         country
@@ -138,9 +64,10 @@ export const GET_RECOMMENDED_MEMBERS = gql`
 
 // GET  NEARBY MEMBERS
 export const GET_NEARBY_MEMBERS = gql`
-  query nearbyMembers {
-    nearbyMembers {
+  query nearbyMembers($offset: Int, $first: Int) {
+    nearbyMembers(offset: $offset, first: $first) {
       id
+      bio
       email
       firstName
       lastName
@@ -149,81 +76,6 @@ export const GET_NEARBY_MEMBERS = gql`
       avatar
       communityCount
       connectionCount
-      participantOf {
-        id
-        name
-        membersCount
-        isModerator
-        description
-        avatar
-        isMember
-        interests {
-          id
-          name
-        }
-        channels {
-          id
-          name
-        }
-        participants {
-          id
-          connected
-          firstName
-          lastName
-          phoneNumber
-          conversation {
-            id
-            messageRequest {
-              id
-              senderId
-              approvedAt {
-                formatted
-                day
-                month
-                year
-              }
-              createdAt {
-                formatted
-                day
-                month
-                year
-              }
-            }
-          }
-        }
-        membersCount
-      }
-      myConnections {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        phoneNumber
-        connected
-        connectionCount
-        communityCount
-        bio
-        birthPlace {
-          id
-          country
-          state
-          city
-        }
-        currentLocation {
-          id
-          country
-          state
-          city
-        }
-        identity {
-          name
-        }
-        interest {
-          name
-        }
-      }
-      bio
       birthPlace {
         id
         country
@@ -277,8 +129,9 @@ export const GET_NEARBY_MEMBERS = gql`
 // GET NEARBY MEMBERS OF A COMMUNITY
 export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
   query nearbyMembers($filter: _PassportFilter!) {
-    nearbyMembers(filter: $filter) {
+    nearbyMembers(filter: $filter, first: 8) {
       id
+      bio
       email
       firstName
       lastName
@@ -287,81 +140,6 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
       avatar
       communityCount
       connectionCount
-      participantOf {
-        id
-        name
-        membersCount
-        description
-        avatar
-        isMember
-        isModerator
-        interests {
-          id
-          name
-        }
-        channels {
-          id
-          name
-        }
-        participants {
-          id
-          connected
-          firstName
-          lastName
-          phoneNumber
-          conversation {
-            id
-            messageRequest {
-              id
-              senderId
-              approvedAt {
-                formatted
-                day
-                month
-                year
-              }
-              createdAt {
-                formatted
-                day
-                month
-                year
-              }
-            }
-          }
-        }
-        membersCount
-      }
-      myConnections {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        phoneNumber
-        connected
-        connectionCount
-        communityCount
-        bio
-        birthPlace {
-          id
-          country
-          state
-          city
-        }
-        currentLocation {
-          id
-          country
-          state
-          city
-        }
-        identity {
-          name
-        }
-        interest {
-          name
-        }
-      }
-      bio
       birthPlace {
         id
         country
@@ -415,7 +193,7 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
 // GET  RECOMMENDED COMMUNITIES
 export const GET_RECOMMENDED_COMMUNITIES = gql`
   query recommendedCommunities {
-    recommendedCommunities {
+    recommendedCommunities(first: 6) {
       id
       avatar
       name
@@ -441,8 +219,8 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
 
 //GET POPULAR COMMUNITIES
 export const GET_POPULAR_COMMUNITIES = gql`
-  query popularCommunities {
-    popularCommunities {
+  query popularCommunities($offset: Int, $first: Int) {
+    popularCommunities(offset: $offset, first: $first) {
       id
       name
       description
@@ -498,6 +276,7 @@ export const GET_MY_CONNECTIONS = gql`
   query myConnections($offset: Int, $first: Int) {
     myConnections(offset: $offset, first: $first) {
       id
+      bio
       email
       firstName
       lastName
@@ -506,81 +285,6 @@ export const GET_MY_CONNECTIONS = gql`
       connected
       connectionCount
       communityCount
-      participantOf {
-        id
-        name
-        membersCount
-        description
-        avatar
-        isMember
-        isModerator
-        interests {
-          id
-          name
-        }
-        channels {
-          id
-          name
-        }
-        participants {
-          id
-          connected
-          firstName
-          lastName
-          phoneNumber
-          conversation {
-            id
-            messageRequest {
-              id
-              senderId
-              approvedAt {
-                formatted
-                day
-                month
-                year
-              }
-              createdAt {
-                formatted
-                day
-                month
-                year
-              }
-            }
-          }
-        }
-        membersCount
-      }
-      myConnections {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        phoneNumber
-        connected
-        connectionCount
-        communityCount
-        bio
-        birthPlace {
-          id
-          country
-          state
-          city
-        }
-        currentLocation {
-          id
-          country
-          state
-          city
-        }
-        identity {
-          name
-        }
-        interest {
-          name
-        }
-      }
-      bio
       birthPlace {
         id
         country
@@ -633,9 +337,10 @@ export const GET_MY_CONNECTIONS = gql`
 
 //GET MY CONNECTION REQUESTS
 export const GET_CONNECTION_REQUEST = gql`
-  query connectionRequests {
-    connectionRequests {
+  query connectionRequests($offset: Int, $first: Int) {
+    connectionRequests(offset: $offset, first: $first) {
       id
+      bio
       email
       firstName
       lastName
@@ -644,81 +349,6 @@ export const GET_CONNECTION_REQUEST = gql`
       connected
       connectionCount
       communityCount
-      participantOf {
-        id
-        name
-        membersCount
-        description
-        avatar
-        isMember
-        isModerator
-        interests {
-          id
-          name
-        }
-        channels {
-          id
-          name
-        }
-        participants {
-          id
-          connected
-          firstName
-          lastName
-          phoneNumber
-          conversation {
-            id
-            messageRequest {
-              id
-              senderId
-              approvedAt {
-                formatted
-                day
-                month
-                year
-              }
-              createdAt {
-                formatted
-                day
-                month
-                year
-              }
-            }
-          }
-        }
-        membersCount
-      }
-      myConnections {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        phoneNumber
-        connected
-        connectionCount
-        communityCount
-        bio
-        birthPlace {
-          id
-          country
-          state
-          city
-        }
-        currentLocation {
-          id
-          country
-          state
-          city
-        }
-        identity {
-          name
-        }
-        interest {
-          name
-        }
-      }
-      bio
       birthPlace {
         id
         country
@@ -737,6 +367,15 @@ export const GET_CONNECTION_REQUEST = gql`
       interest {
         name
       }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
       conversation {
         id
         messageRequest {
@@ -754,14 +393,6 @@ export const GET_CONNECTION_REQUEST = gql`
             month
             year
           }
-        }
-      }
-      connection {
-        createdAt {
-          day
-          month
-          hour
-          second
         }
       }
     }
@@ -904,6 +535,15 @@ export const GET_SINGLE_PASSPORT = gql`
         country
         city
       }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
       conversation {
         id
         messageRequest {
@@ -923,24 +563,7 @@ export const GET_SINGLE_PASSPORT = gql`
           }
         }
       }
-    }
-  }
-`;
-
-//GET PARTICIPANTS OF A COMMUNITY
-export const GET_COMMUNITY_MEMBERS = gql`
-  query communityMembersCommunityChannels($id: ID!) {
-    communityMembers(communityId: $id) {
-      id
-      email
-      firstName
-      lastName
-      avatar
-      phoneNumber
-      connected
-      connectionCount
-      communityCount
-      participantOf {
+      participantOf(first: 5) {
         id
         name
         membersCount
@@ -956,35 +579,9 @@ export const GET_COMMUNITY_MEMBERS = gql`
           id
           name
         }
-        participants {
-          id
-          connected
-          firstName
-          lastName
-          phoneNumber
-          conversation {
-            id
-            messageRequest {
-              id
-              senderId
-              approvedAt {
-                formatted
-                day
-                month
-                year
-              }
-              createdAt {
-                formatted
-                day
-                month
-                year
-              }
-            }
-          }
-        }
         membersCount
       }
-      myConnections {
+      myConnections(first: 5) {
         id
         email
         firstName
@@ -1014,7 +611,24 @@ export const GET_COMMUNITY_MEMBERS = gql`
           name
         }
       }
+    }
+  }
+`;
+
+//GET PARTICIPANTS OF A COMMUNITY
+export const GET_COMMUNITY_MEMBERS = gql`
+  query communityMembersCommunityChannels($id: ID!) {
+    communityMembers(communityId: $id, first: 8) {
+      id
       bio
+      email
+      firstName
+      lastName
+      avatar
+      phoneNumber
+      connected
+      connectionCount
+      communityCount
       birthPlace {
         id
         country
@@ -1140,25 +754,6 @@ export const GET_USER_PASSPORT = gql`
         locality
         visibility
       }
-      conversation {
-        id
-        messageRequest {
-          id
-          senderId
-          approvedAt {
-            formatted
-            day
-            month
-            year
-          }
-          createdAt {
-            formatted
-            day
-            month
-            year
-          }
-        }
-      }
       presence {
         status
         lastSeen {
@@ -1174,8 +769,8 @@ export const GET_USER_PASSPORT = gql`
 
 //GET ALL MEMBERS ON THE APP
 export const GET_ALL_MEMBERS = gql`
-  query Passport {
-    Passport(verified: true) {
+  query Passport($offset: Int, $first: Int) {
+    Passport(verified: true, offset: $offset, first: $first) {
       id
       avatar
       phoneNumber
@@ -1185,80 +780,6 @@ export const GET_ALL_MEMBERS = gql`
       email
       connected
       bio
-      participantOf {
-        id
-        name
-        membersCount
-        description
-        avatar
-        isMember
-        isModerator
-        interests {
-          id
-          name
-        }
-        channels {
-          id
-          name
-        }
-        participants {
-          id
-          connected
-          firstName
-          lastName
-          phoneNumber
-          conversation {
-            id
-            messageRequest {
-              id
-              senderId
-              approvedAt {
-                formatted
-                day
-                month
-                year
-              }
-              createdAt {
-                formatted
-                day
-                month
-                year
-              }
-            }
-          }
-        }
-        membersCount
-      }
-      myConnections {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        phoneNumber
-        connected
-        connectionCount
-        communityCount
-        bio
-        birthPlace {
-          id
-          country
-          state
-          city
-        }
-        currentLocation {
-          id
-          country
-          state
-          city
-        }
-        identity {
-          name
-        }
-        interest {
-          name
-        }
-      }
       currentLocation {
         state
         country
