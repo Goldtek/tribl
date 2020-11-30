@@ -72,6 +72,17 @@ class Firechat {
       .orderBy('createdAt', 'desc');
   }
 
+  // GET CHANNEL PARTICIPANT READ AT
+  getChannelParticipantReadAt(
+    chatId: string
+  ): FirebaseFirestoreTypes.DocumentReference {
+    return firechat
+      .collection(ROOM_TYPES.CHANNELS)
+      .doc(chatId.trim())
+      .collection(ROOM_TYPES.PARTICIPANTS)
+      .doc(this.userId.trim());
+  }
+
   // GET USER ONLINE PRESENCE
   getOnlineStatus(userId: string): FirebaseFirestoreTypes.DocumentReference {
     return firechat.collection(ROOM_TYPES.USERS).doc(userId.trim());
