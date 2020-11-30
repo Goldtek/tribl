@@ -61,7 +61,7 @@ const Highlight = (props: HighlightProp) => {
       senderId !== userId && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
-      return rootNavigator.navigate('MessageRequestScreen', {
+      return rootNavigator.navigate('MessageRequestChatScreen', {
         title: `${hit.firstName} ${hit.lastName}`,
         chatId: hit.conversation?.id,
         senderId: hit.id,
