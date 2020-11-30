@@ -170,6 +170,17 @@ export const ACCEPT_MESSAGE_REQUEST = gql`
 `;
 
 // MARK MESSAGE READ
+export const MARK_CHANNEL_CONVERSATION_MESSAGE_READ = gql`
+  mutation markChannelConversationAsRead(
+    $payload: MarkChannelConversationAsReadInput!
+  ) {
+    markChannelConversationAsRead(input: $payload) {
+      success
+    }
+  }
+`;
+
+// MARK MESSAGE READ
 export const MARK_MESSAGE_READ = gql`
   mutation markConversationAsRead($payload: MarkConversationAsReadInput!) {
     markConversationAsRead(input: $payload) {
