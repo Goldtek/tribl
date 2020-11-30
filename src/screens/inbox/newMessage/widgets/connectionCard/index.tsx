@@ -52,7 +52,7 @@ function ConnectionCard(props: ConnectionCardProp) {
       senderId !== userId && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
-      return navigation.navigate('MessageRequestScreen', {
+      return navigation.navigate('MessageRequestChatScreen', {
         title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
         senderId: id,
