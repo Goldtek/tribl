@@ -102,6 +102,7 @@
     "request": "request",
     "channels": "channels",
     "chatTitle": "new chat",
+    "messageRequest": "Message request",
     "search": "search",
     "connection": "my connections",
     "nearby": "nearby",
