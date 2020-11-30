@@ -194,10 +194,15 @@ export interface CommunityInterface {
   name: string;
   avatar: string;
   isMember: boolean;
+  isModerator: boolean;
   description: string;
   membersCount: number;
   channels: ChannelInterface[];
   interests: Interest[];
+  uniqueInterests: {
+    name;
+    id;
+  }[];
   privacy: CommunityPrivacy;
   moderators: PassportInterface[];
   participants: PassportInterface[];

@@ -63,3 +63,5 @@ export const ButtonCover = styled.View`
   flex-direction: row;
   justify-content: space-between;
 `;
+
+export const Cover = styled.View``;

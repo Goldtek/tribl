@@ -28,6 +28,7 @@ import {
 import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
+import TagModal from '../../../../../components/tagModal';
 
 import {
   Container,
@@ -53,9 +54,19 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [state, setState] = useState({ showJoinCommunityModal: false });
+  const [state, setState] = useState({
+    showJoinCommunityModal: false,
+    tagModal: false
+  });
   const [data, setData] = useState(communityDetails);
   const [member, setMember] = useState(false);
+
+  const displayTagModal = (childData: boolean) => {
+    setState({
+      ...state,
+      tagModal: childData
+    });
+  };
 
   const {
     data: communityData,
@@ -99,9 +110,19 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       isMember: singleCommunity?.isMember,
       interests: singleCommunity?.interests,
       description: singleCommunity?.description,
-      membersCount: singleCommunity?.membersCount
+      membersCount: singleCommunity?.membersCount,
+      uniqueInterests: singleCommunity?.uniqueInterests
     });
   }, [singleCommunity?.id]);
+
+  useEffect(() => {
+    if (data.isMember && data.uniqueInterests?.length) {
+      setState({
+        ...state,
+        tagModal: true
+      });
+    }
+  }, [data?.isMember]);
 
   const resizeAvatar = communityDetails.avatar?.split('upload/');
 
@@ -314,6 +335,18 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
           </Card>
         </Container>
       </ScrollView>
+      {state.tagModal ? (
+        <TagModal
+          onPress={() =>
+            setState({
+              ...state,
+              tagModal: false
+            })
+          }
+          data={data?.uniqueInterests}
+          displayTagModal={displayTagModal}
+        />
+      ) : null}
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
       ) : null}

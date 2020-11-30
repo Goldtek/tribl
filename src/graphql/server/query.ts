@@ -27,6 +27,7 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         description
         avatar
         isMember
+        isModerator
         interests {
           id
           name
@@ -152,6 +153,7 @@ export const GET_NEARBY_MEMBERS = gql`
         id
         name
         membersCount
+        isModerator
         description
         avatar
         isMember
@@ -292,6 +294,7 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         description
         avatar
         isMember
+        isModerator
         interests {
           id
           name
@@ -428,6 +431,10 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
         id
         name
       }
+      uniqueInterests {
+        name
+        id
+      }
     }
   }
 `;
@@ -451,6 +458,10 @@ export const GET_POPULAR_COMMUNITIES = gql`
         id
         name
       }
+      uniqueInterests {
+        name
+        id
+      }
     }
   }
 `;
@@ -473,6 +484,10 @@ export const GET_MY_COMMUNITIES = gql`
       interests {
         id
         name
+      }
+      uniqueInterests {
+        name
+        id
       }
     }
   }
@@ -498,6 +513,7 @@ export const GET_MY_CONNECTIONS = gql`
         description
         avatar
         isMember
+        isModerator
         interests {
           id
           name
@@ -635,6 +651,7 @@ export const GET_CONNECTION_REQUEST = gql`
         description
         avatar
         isMember
+        isModerator
         interests {
           id
           name
@@ -771,6 +788,10 @@ export const GET_SINGLE_COMMUNITY = gql`
         id
         name
       }
+      uniqueInterests {
+        name
+        id
+      }
     }
   }
 `;
@@ -794,6 +815,7 @@ export const GET_SINGLE_PASSPORT = gql`
         description
         avatar
         isMember
+        isModerator
         interests {
           id
           name
@@ -925,6 +947,7 @@ export const GET_COMMUNITY_MEMBERS = gql`
         description
         avatar
         isMember
+        isModerator
         interests {
           id
           name
@@ -1169,6 +1192,7 @@ export const GET_ALL_MEMBERS = gql`
         description
         avatar
         isMember
+        isModerator
         interests {
           id
           name

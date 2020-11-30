@@ -66,6 +66,7 @@ export type RootStackParamList = {
   ViewAllScreen?: Object;
   ViewAllTribes?: Object;
   ViewAllMembers?: Object;
+  AddTags?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -113,7 +114,8 @@ export type RootStackParamScreensList =
   | 'OTPScreen'
   | 'ViewAllScreen'
   | 'ViewAllMembers'
-  | 'ViewAllTribes';
+  | 'ViewAllTribes'
+  | 'AddTags';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

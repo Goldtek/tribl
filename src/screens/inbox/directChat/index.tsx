@@ -197,6 +197,7 @@ export default function ChatScreen(props: ScreenProp) {
         renderBubble={(props) => (
           <Bubble
             {...props}
+            ref={hideSensitiveView}
             wrapperStyle={{
               right: {
                 backgroundColor: colors.PRIMARY,

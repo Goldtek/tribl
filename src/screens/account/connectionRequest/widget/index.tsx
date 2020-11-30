@@ -10,7 +10,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
 import { PassportInterface } from '../../../../graphql/types';
-import { logEvent } from '../../../../utils/uxcamHelper';
+import { logEvent, hideSensitiveView } from '../../../../utils/uxcamHelper';
 import {
   ACCEPT_CONNECTION,
   REJECT_CONNECTION
@@ -97,7 +97,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             borderRadius: RFValue(4)
           }}
         />
-        <NameContainer>
+        <NameContainer ref={hideSensitiveView}>
           <Title
             style={{
               color: colors.PRIMARY_TEXT,

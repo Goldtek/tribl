@@ -61,6 +61,7 @@ function ChannelChatCard(props: ChannelChatProp) {
         paddingRight: RFValue(15)
       }}
       onPress={handleNavigation}
+      ref={hideSensitiveView}
     >
       <Fragment>
         {community.avatar ? (
