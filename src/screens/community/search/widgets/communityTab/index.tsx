@@ -17,10 +17,11 @@ import {
 import PopularCommunitySkeleton from '../../../../../components/popularCommunitySkeleton';
 import RecommendedCommunitySkeleton from '../../../../../components/recommendedCommunitySkeleton';
 import ComingSoonCommunities from '../../../../../components/recommendedCommunity/comingSoon';
+import { PAGINATION_DEFAULT } from '../../../../../constants';
+import { tagScreenName } from '../../../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, CommunityWrapper, PopularContainer } from './styles';
-import { tagScreenName } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -40,14 +41,15 @@ function CommunityTabScreen(props: ScreenProp) {
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
   const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES, {
+    pollInterval: 1000,
     fetchPolicy: 'cache-and-network',
-    pollInterval: 1000
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
   });
 
   const community = communityData?.recommendedCommunities;
   const randomCommunity = communityData?.recommendedCommunities[0];
-
   const popular = popularData?.popularCommunities;
+
   const _renderPopularCommunityItem = useMemo(
     () => ({ item }: any) => <PopularCommunity key={item.id} {...item} />,
     []
