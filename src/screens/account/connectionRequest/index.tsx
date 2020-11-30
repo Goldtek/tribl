@@ -1,10 +1,10 @@
-import React, { Fragment, useCallback, useEffect } from 'react';
-import { Text, Title } from 'react-native-paper';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import debounce from 'lodash.debounce';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import PTRView from 'react-native-pull-to-refresh';
 import { Feather } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { FlatList, TouchableHighlight } from 'react-native';
@@ -19,6 +19,8 @@ import Skeleton from './widget/connectionRequestSkeleton';
 import { PassportInterface } from '../../../graphql/types';
 import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { ConnectionRequestsInterface } from '../../../graphql/types';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, MenuBadgeWrapper } from './styles';
@@ -34,16 +36,59 @@ export default function ConnectionRequestScreen(
   const { top } = useSafeAreaInsets();
   const { t } = useTranslation();
 
-  const { data, refetch } = useQuery(GET_CONNECTION_REQUEST);
+  const { data, refetch, fetchMore } = useQuery<ConnectionRequestsInterface>(
+    GET_CONNECTION_REQUEST,
+    { variables: { offset: 0, first: PAGINATION_DEFAULT } }
+  );
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
   );
+
+  const [moreAction, setMoreAction] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [fetchingMore, setFetchingMore] = useState(false);
 
   const connectionRequest = data?.connectionRequests;
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <ConnectionRequest key={item.id} item={item} refetch={refetch} />
   );
+
+  const _renderFooter = useCallback(
+    () => (fetchingMore ? <ActivityIndicator /> : null),
+    [fetchingMore]
+  );
+
+  const _onEndReached = useCallback(() => {
+    if (!moreAction) return;
+
+    setFetchingMore(true);
+    fetchMore({
+      variables: { offset: data?.connectionRequests.length },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          setFetchingMore(false);
+          return prev;
+        }
+
+        setFetchingMore(false);
+        return Object.assign({}, prev, {
+          myConnections: [
+            ...prev.connectionRequests,
+            ...fetchMoreResult.connectionRequests
+          ]
+        });
+      }
+    });
+  }, [moreAction]);
+
+  const _onRefresh = useCallback(() => {
+    if (!moreAction) return;
+    setRefreshing(true);
+    refetch()
+      .then(() => setRefreshing(false))
+      .catch(() => setRefreshing(false));
+  }, [moreAction]);
 
   useEffect(() => {
     tagScreenName('ConnectionRequestScreen');
@@ -121,35 +166,44 @@ export default function ConnectionRequestScreen(
           </Title>
         ) : null}
 
-        <PTRView onRefresh={refetch} style={{ marginTop: RFValue(10) }}>
-          {connectionRequest ? (
-            <FlatList
-              data={connectionRequest}
-              contentContainerStyle={{
-                flexGrow: 1,
-                marginTop: RFValue(10),
-                paddingBottom: RFValue(120)
-              }}
-              renderItem={_renderItem}
-              ListEmptyComponent={
-                <Text
-                  style={{
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    margin: RFValue(20),
-                    textAlign: 'center'
-                  }}
-                >
-                  You don't have any connection request.
-                </Text>
-              }
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item) => item.id}
-            />
-          ) : (
-            <Skeleton />
-          )}
-        </PTRView>
+        {connectionRequest ? (
+          <FlatList
+            data={connectionRequest}
+            refreshing={refreshing}
+            onRefresh={_onRefresh}
+            ListFooterComponent={_renderFooter}
+            onEndReachedThreshold={0.01}
+            onEndReached={({ distanceFromEnd }) => {
+              if (distanceFromEnd > 0) debounce(_onEndReached, 500)();
+            }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              marginTop: RFValue(10),
+              paddingBottom: RFValue(120)
+            }}
+            renderItem={_renderItem}
+            ListEmptyComponent={
+              <Text
+                style={{
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  margin: RFValue(20),
+                  textAlign: 'center'
+                }}
+              >
+                You don't have any connection request.
+              </Text>
+            }
+            onScrollBeginDrag={() => setMoreAction(true)}
+            onScrollEndDrag={() => setMoreAction(false)}
+            onMomentumScrollBegin={() => setMoreAction(true)}
+            onMomentumScrollEnd={() => setMoreAction(false)}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+          />
+        ) : (
+          <Skeleton />
+        )}
       </Container>
     </Fragment>
   );
