@@ -563,54 +563,6 @@ export const GET_SINGLE_PASSPORT = gql`
           }
         }
       }
-      participantOf(first: 5) {
-        id
-        name
-        membersCount
-        description
-        avatar
-        isMember
-        isModerator
-        interests {
-          id
-          name
-        }
-        channels {
-          id
-          name
-        }
-        membersCount
-      }
-      myConnections(first: 5) {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        phoneNumber
-        connected
-        connectionCount
-        communityCount
-        bio
-        birthPlace {
-          id
-          country
-          state
-          city
-        }
-        currentLocation {
-          id
-          country
-          state
-          city
-        }
-        identity {
-          name
-        }
-        interest {
-          name
-        }
-      }
     }
   }
 `;
