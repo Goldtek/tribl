@@ -194,10 +194,15 @@ export interface CommunityInterface {
   name: string;
   avatar: string;
   isMember: boolean;
+  isModerator: boolean;
   description: string;
   membersCount: number;
   channels: ChannelInterface[];
   interests: Interest[];
+  uniqueInterests: {
+    name;
+    id;
+  }[];
   privacy: CommunityPrivacy;
   moderators: PassportInterface[];
   participants: PassportInterface[];
@@ -349,4 +354,9 @@ export type ShowConnectionNotificationBadge = {
 // USER COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
 export type MyChannelRequestInterface = {
   myChannels: { id: string; name: string }[];
+};
+
+// USER CONNECTIONS REQUESTS (RESPONSE) TYPE
+export type ConnectionRequestsInterface = {
+  connectionRequests: PassportInterface[];
 };

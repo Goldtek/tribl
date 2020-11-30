@@ -14,12 +14,16 @@ import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
 import PassportSkeleton from './widget';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import { PassportInterface } from '../../../graphql/types';
+import { CommunityInterface, PassportInterface } from '../../../graphql/types';
 import MyCommunity from './widget/tribes';
 import MyConnections from './widget/connections';
 import { NavigationInterface } from '../../types';
 import { SinglePassportRequestInterface } from '../../../graphql/types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import {
+  tagScreenName,
+  logEvent,
+  hideSensitiveView
+} from '../../../utils/uxcamHelper';
 
 import {
   ContactContainer,
@@ -32,7 +36,8 @@ import {
   Header,
   Connection,
   ConnectionCover,
-  ButtonCover
+  ButtonCover,
+  Cover
 } from './styles';
 
 interface MemberDetailProps extends NavigationInterface {
@@ -54,32 +59,20 @@ export default function PassportDetail(props: MemberDetailProps) {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
 
-  const { loading: passportLoading, data: passportData } = useQuery<
-    SinglePassportRequestInterface
-  >(GET_SINGLE_PASSPORT, {
-    variables: { id },
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 1000
-  });
+  const { data: passportData } = useQuery<SinglePassportRequestInterface>(
+    GET_SINGLE_PASSPORT,
+    {
+      variables: { id },
+      fetchPolicy: 'cache-and-network',
+      pollInterval: 1000
+    }
+  );
 
   const singlePassport = passportData?.singlePassport;
 
-  const [data, setData] = useState({
-    firstName: passport.firstName,
-    lastName: passport.lastName,
-    avatar: passport.avatar,
-    connected: passport.connected,
-    communityCount: passport.communityCount,
-    connectionCount: passport.connectionCount,
-    phoneNumber: passport.phoneNumber,
-    bio: passport.bio,
-    currentLocation: passport.currentLocation,
-    birthPlace: passport.birthPlace,
-    interest: passport.interest,
-    identity: passport.identity,
-    participantOf: passport.participantOf,
-    myConnections: passport.myConnections
-  });
+  console.tron({ singlePassport });
+
+  const [data, setData] = useState({ ...passport });
 
   useEffect(() => {
     if (singlePassport?.id) {
@@ -88,21 +81,7 @@ export default function PassportDetail(props: MemberDetailProps) {
         'Activity Screen': 'Member Passport Screen'
       });
 
-      setData({
-        ...data,
-        firstName: singlePassport?.avatar,
-        connected: singlePassport?.connected,
-        communityCount: singlePassport?.communityCount,
-        connectionCount: singlePassport?.connectionCount,
-        phoneNumber: singlePassport?.phoneNumber,
-        bio: singlePassport?.bio,
-        currentLocation: singlePassport?.currentLocation,
-        birthPlace: singlePassport?.birthPlace,
-        interest: singlePassport?.interest,
-        identity: singlePassport?.identity,
-        participantOf: singlePassport?.participantOf,
-        myConnections: singlePassport?.myConnections
-      });
+      setData({ ...data, ...singlePassport });
     }
   }, [singlePassport?.id]);
 
@@ -112,29 +91,26 @@ export default function PassportDetail(props: MemberDetailProps) {
   }, []);
 
   const handleMessageNavigation = () => {
-    const messageRequest = singlePassport?.conversation?.messageRequest;
-    const senderId = singlePassport?.conversation?.messageRequest?.senderId;
-    const isRequestApproved =
-      singlePassport?.conversation?.messageRequest?.approvedAt;
+    const messageRequest = data?.conversation?.messageRequest;
+    const senderId = data?.conversation?.messageRequest?.senderId;
+    const isRequestApproved = data?.conversation?.messageRequest?.approvedAt;
     const approveRequest =
-      senderId !== singlePassport?.id && messageRequest && !isRequestApproved;
+      senderId !== data?.id && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
-      return navigation.navigate('MessageRequestScreen', {
+      return navigation.navigate('MessageRequestChatScreen', {
         receiverId: id,
-        chatId: `${singlePassport?.conversation?.id}`,
+        chatId: `${data?.conversation?.id}`,
         title: `${firstName} ${lastName}`,
         ...passport
       });
     }
 
     navigation.navigate(
-      singlePassport?.conversation?.id
-        ? 'DirectChatScreen'
-        : 'ConnectionChatScreen',
+      data?.conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
       {
         receiverId: id,
-        chatId: `${singlePassport?.conversation?.id}`,
+        chatId: `${data?.conversation?.id}`,
         title: `${firstName} ${lastName}`,
         ...passport
       }
@@ -163,7 +139,9 @@ export default function PassportDetail(props: MemberDetailProps) {
   const { loading, pending } = state;
 
   const _renderMyCommunityItem = useMemo(
-    () => ({ item }: any) => <MyCommunity key={item.id} {...item} />,
+    () => ({ item }: { item: CommunityInterface }) => (
+      <MyCommunity key={item.id} {...item} />
+    ),
     []
   );
 
@@ -359,7 +337,7 @@ export default function PassportDetail(props: MemberDetailProps) {
         )}
 
         {data?.bio ? (
-          <Fragment>
+          <Cover ref={hideSensitiveView}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -382,7 +360,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {data?.bio}
             </Text>
-          </Fragment>
+          </Cover>
         ) : null}
 
         {data?.currentLocation || data?.birthPlace ? (
@@ -400,7 +378,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               {t(`signup.passportScreen.locality`)}
             </Title>
             {data?.birthPlace ? (
-              <Location>
+              <Location ref={hideSensitiveView}>
                 <AntDesign
                   name="home"
                   color="#CACEE5"
@@ -441,7 +419,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               </Location>
             ) : null}
             {data?.currentLocation ? (
-              <Location>
+              <Location ref={hideSensitiveView}>
                 <SimpleLineIcons
                   name="location-pin"
                   color="#CACEE5"
@@ -525,6 +503,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             </Identities>
           </InterestContainer>
         ) : null}
+
         {data?.participantOf?.length ? (
           <Fragment>
             <Title
@@ -550,8 +529,9 @@ export default function PassportDetail(props: MemberDetailProps) {
             />
           </Fragment>
         ) : null}
+
         {data?.myConnections?.length ? (
-          <Fragment>
+          <Cover ref={hideSensitiveView}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -559,7 +539,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 color: colors.PRIMARY_TEXT,
                 textTransform: 'uppercase',
                 marginBottom: 10,
-                marginTop: RFValue(40)
+                marginTop: RFValue(15)
               }}
             >
               {t(`community.memberPassport.connection`)}
@@ -575,7 +555,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 backgroundColor: colors.WHITE
               }}
             />
-          </Fragment>
+          </Cover>
         ) : null}
       </ContactContainer>
     </ScrollView>

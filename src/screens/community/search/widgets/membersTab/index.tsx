@@ -27,6 +27,7 @@ import {
   RecommendedMembersRequestInterface
 } from '../../../../../graphql/types';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
@@ -71,7 +72,8 @@ function MemberSTabScreen(props: ScreenProp) {
   const recommendedMembers = membersData?.recommendedMembers;
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
-    GET_NEARBY_MEMBERS
+    GET_NEARBY_MEMBERS,
+    { variables: { offset: 0, first: PAGINATION_DEFAULT / 2 } }
   );
 
   const nearbyMembers = nearbyData?.nearbyMembers;

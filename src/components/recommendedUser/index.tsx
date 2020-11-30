@@ -13,10 +13,11 @@ import hexToRGB from '../../utils/hexToRGB';
 import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
 import { PassportInterface, UserPassportInterface } from '../../graphql/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
+import AdminBadge from '../adminBadge';
+import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
-import { logEvent } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp extends PassportInterface {}
@@ -36,8 +37,13 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     currentLocation,
     phoneNumber,
     connected,
-    conversation
+    conversation,
+    participantOf
   } = member;
+
+  const moderator = participantOf?.filter((member) => {
+    return member.isModerator == true;
+  });
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
@@ -130,8 +136,17 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               borderRadius: RFValue(70)
             }}
           />
+          {moderator?.length ? (
+            <AdminBadge
+              style={{
+                position: 'absolute',
+                bottom: RFValue(-5),
+                right: RFValue(-25)
+              }}
+            />
+          ) : null}
         </AvatarContainer>
-        <TextContainer>
+        <TextContainer ref={hideSensitiveView}>
           <Title
             numberOfLines={1}
             style={{

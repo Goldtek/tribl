@@ -8,9 +8,7 @@ import { check, PERMISSIONS, request } from 'react-native-permissions';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
-
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
-
 import { useTranslation } from 'react-i18next';
 import {
   Title,
@@ -55,7 +53,13 @@ import cloudinaryUpload, {
 } from '../../utils/cloudinaryUpload';
 import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import { tagScreenName } from '../../utils/uxcamHelper';
+import {
+  tagScreenName,
+  addUserIdentity,
+  logEvent,
+  hideSensitiveView
+} from '../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -112,19 +116,30 @@ export default function PassportScreen(props: ScreenProp) {
     variables: { filter: { verified: true } }
   });
 
-  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
+  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
-    GET_CONNECTION_REQUEST
+    GET_CONNECTION_REQUEST,
+    {
+      variables: { offset: 0, first: PAGINATION_DEFAULT }
+    }
   );
 
   const [getUserChannels] = useLazyQuery(USER_CHANNELS);
 
-  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT / 2 }
+  });
 
-  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS);
+  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
-  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS);
+  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   const userDetails = userData?.myPassport;
   const identity = userDetails?.identity.map((item: any) => item.id);
@@ -134,6 +149,10 @@ export default function PassportScreen(props: ScreenProp) {
     if (userDetails) {
       tagScreenName('PassportScreen');
       Mixpanel.identify(userDetails?.id);
+      addUserIdentity(userDetails?.id);
+      //Log mixpanel user id to UXCam
+      let user = Mixpanel.identify(userDetails?.id);
+      logEvent('mixpanel', { 'mixpanel-user-ID': user });
     }
   }, [userDetails]);
 
@@ -649,7 +668,10 @@ export default function PassportScreen(props: ScreenProp) {
                     )}
                   </FastImage>
                 ) : (
-                  <TouchableHighlight onPress={handleAvatar}>
+                  <TouchableHighlight
+                    onPress={handleAvatar}
+                    ref={hideSensitiveView}
+                  >
                     <FastImage
                       source={{
                         uri: avatar.uri || cache?.avatar,
@@ -678,7 +700,7 @@ export default function PassportScreen(props: ScreenProp) {
                   </TouchableHighlight>
                 )}
 
-                <ImageTextContainer>
+                <ImageTextContainer ref={hideSensitiveView}>
                   <Paragraph
                     style={{
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,

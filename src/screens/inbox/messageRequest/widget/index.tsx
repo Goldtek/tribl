@@ -6,13 +6,13 @@ import { Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { ConversationInterface } from '../../../types';
-import { useThemeContext } from '../../../../../theme';
-import formatMessageTime from '../../../../../utils/timesince';
-import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
-import { UserPassportInterface } from '../../../../../graphql/types';
-import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
-import { fireAuth } from '../../../../../firebase/config';
+import { ConversationInterface } from '../../types';
+import { useThemeContext } from '../../../../theme';
+import formatMessageTime from '../../../../utils/timesince';
+import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
+import { UserPassportInterface } from '../../../../graphql/types';
+import { hideSensitiveView } from '../../../../utils/uxcamHelper';
+import { fireAuth } from '../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
@@ -42,7 +42,7 @@ function RequestChatCard(props: RequestChatCard) {
   const title = `${sender.firstName} ${sender.lastName}`;
 
   const handleNavigation = () => {
-    navigation.navigate('MessageRequestScreen', {
+    navigation.navigate('MessageRequestChatScreen', {
       title,
       chatId,
       senderId: sender.id,
@@ -83,7 +83,7 @@ function RequestChatCard(props: RequestChatCard) {
           />
         ) : (
           <Image
-            source={require('../../../../../../assets/images/profile.png')}
+            source={require('../../../../../assets/images/profile.png')}
             resizeMode="cover"
             style={{
               width: RFValue(50),

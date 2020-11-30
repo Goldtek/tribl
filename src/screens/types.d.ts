@@ -22,7 +22,8 @@ export type RootStackParamList = {
   MemberDetailScreen: { title: string; details: Object };
   CommunitySearchScreen: { index: number };
   ConnectionChatScreen: ChatScreenProps;
-  MessageRequestScreen: ChatScreenProps;
+  MessageRequestChatScreen: ChatScreenProps;
+  MessageRequestScreen?: Object;
   ChannelChatScreen: ChatScreenProps;
   DirectChatScreen: ChatScreenProps;
   DirectMessageTab?: Object;
@@ -46,7 +47,7 @@ export type RootStackParamList = {
   MyConnectionScreen?: Object;
   MemberPassportScreen?: Object;
   NewMessageScreen?: Object;
-  MessageRequestScreen?: Object;
+  MessageRequestChatScreen?: Object;
   NewChatSearch?: Object;
   PassportScreen?: Object;
   PrivacyScreen?: Object;
@@ -66,6 +67,7 @@ export type RootStackParamList = {
   ViewAllScreen?: Object;
   ViewAllTribes?: Object;
   ViewAllMembers?: Object;
+  AddTags?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -83,6 +85,7 @@ export type RootStackParamScreensList =
   | 'SelectCountryScreen'
   | 'CreateAccountScreen'
   | 'MemberDetailScreen'
+  | 'MessageRequestChatScreen'
   | 'MessageRequestScreen'
   | 'AvatarUploadScreen'
   | 'IdentifyUserScreen'
@@ -113,7 +116,8 @@ export type RootStackParamScreensList =
   | 'OTPScreen'
   | 'ViewAllScreen'
   | 'ViewAllMembers'
-  | 'ViewAllTribes';
+  | 'ViewAllTribes'
+  | 'AddTags';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

@@ -7,85 +7,33 @@ interface MyConnectionSkeletonProps {
 }
 
 export default function MyConnectionSkeleton({
-  skeletonSize = 1
+  skeletonSize = 3
 }: MyConnectionSkeletonProps) {
   return (
     <Fragment>
       {[...Array(skeletonSize)].map((_, index) => (
         <SkeletonPlaceholder key={index.toString()}>
           <SkeletonPlaceholder.Item
-            marginTop={30}
+            marginTop={20}
             marginLeft={15}
             flexDirection="row"
             alignItems="center"
           >
             <SkeletonPlaceholder.Item
-              width={70}
-              height={70}
-              borderRadius={15}
+              width={55}
+              height={55}
+              borderRadius={10}
             />
-            <SkeletonPlaceholder.Item justifyContent="center" marginLeft={40}>
+            <SkeletonPlaceholder.Item justifyContent="center" marginLeft={20}>
               <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
+                width={100}
+                height={10}
                 borderRadius={4}
-                marginTop={10}
+                marginTop={5}
               />
               <SkeletonPlaceholder.Item
                 width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
-              />
-            </SkeletonPlaceholder.Item>
-          </SkeletonPlaceholder.Item>
-          <SkeletonPlaceholder.Item
-            marginTop={30}
-            marginLeft={15}
-            flexDirection="row"
-            alignItems="center"
-          >
-            <SkeletonPlaceholder.Item
-              width={70}
-              height={70}
-              borderRadius={15}
-            />
-            <SkeletonPlaceholder.Item justifyContent="center" marginLeft={40}>
-              <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
-              />
-              <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
-              />
-            </SkeletonPlaceholder.Item>
-          </SkeletonPlaceholder.Item>
-          <SkeletonPlaceholder.Item
-            marginTop={30}
-            marginLeft={15}
-            flexDirection="row"
-            alignItems="center"
-          >
-            <SkeletonPlaceholder.Item
-              width={70}
-              height={70}
-              borderRadius={15}
-            />
-            <SkeletonPlaceholder.Item justifyContent="center" marginLeft={40}>
-              <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
-                borderRadius={4}
-                marginTop={10}
-              />
-              <SkeletonPlaceholder.Item
-                width={150}
-                height={20}
+                height={15}
                 borderRadius={4}
                 marginTop={10}
               />

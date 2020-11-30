@@ -11,6 +11,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../../components/gradientButton';
 import { useThemeContext } from '../../../../theme';
 import ENVIRONMENT_VARIABLES from '../../../../config';
+import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 
 function BirthplaceModal(props: any) {
   const { navigation } = props;
@@ -90,6 +91,7 @@ function BirthplaceModal(props: any) {
 
   return (
     <Container
+      ref={hideSensitiveView}
       style={{
         height: '100%',
         paddingLeft: RFValue(20),

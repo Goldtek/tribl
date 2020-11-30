@@ -31,6 +31,7 @@ interface PopularCommunityProp {
   isMember: boolean;
   interests: [];
   description: string;
+  uniqueInterests: any;
 }
 
 function PopularCommunity(props: PopularCommunityProp) {
@@ -38,7 +39,7 @@ function PopularCommunity(props: PopularCommunityProp) {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
-  const { avatar, name, membersCount, isMember, id } = props;
+  const { avatar, name, membersCount, isMember, id, uniqueInterests } = props;
 
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
