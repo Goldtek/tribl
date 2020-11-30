@@ -73,12 +73,9 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     if (!phoneNumber) return handleInputError();
 
     try {
-      const { data } = await sendOtp();
-
-      if (data?.sendOtp.success) {
-        navigation.navigate('OTPScreen');
-        addPhoneNumber();
-      }
+      await sendOtp();
+      navigation.navigate('OTPScreen');
+      addPhoneNumber();
     } catch (error) {
       handleInputError();
       Sentry.captureException(error);

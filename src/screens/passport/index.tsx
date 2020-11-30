@@ -59,6 +59,7 @@ import {
   logEvent,
   hideSensitiveView
 } from '../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -115,19 +116,30 @@ export default function PassportScreen(props: ScreenProp) {
     variables: { filter: { verified: true } }
   });
 
-  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES);
+  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
-    GET_CONNECTION_REQUEST
+    GET_CONNECTION_REQUEST,
+    {
+      variables: { offset: 0, first: PAGINATION_DEFAULT }
+    }
   );
 
   const [getUserChannels] = useLazyQuery(USER_CHANNELS);
 
-  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT / 2 }
+  });
 
-  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS);
+  const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
-  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS);
+  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   const userDetails = userData?.myPassport;
   const identity = userDetails?.identity.map((item: any) => item.id);
