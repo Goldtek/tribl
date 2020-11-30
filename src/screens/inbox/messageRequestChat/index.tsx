@@ -132,14 +132,16 @@ export default function MessageRequestChat(props: ScreenProp) {
         const conversations = snapshot.docs.map((document, index) => {
           const message = document.data();
 
-          if (snapshot.docs.length - 1 === index) {
-            if (notificationData?.showMessageNotificationBadge) {
-              changeMutation({
-                variables: {
-                  showMessageNotificationBadge: !notificationData?.showMessageNotificationBadge
-                }
-              });
-            }
+          if (
+            snapshot.docs.length - 1 === index &&
+            notificationData?.showMessageNotificationBadge
+          ) {
+            changeMutation({
+              variables: {
+                showMessageNotificationBadge: !notificationData?.showMessageNotificationBadge
+              }
+            });
+
             setImmediate(markConversationAsRead);
           }
 
@@ -174,31 +176,18 @@ export default function MessageRequestChat(props: ScreenProp) {
   }, []);
 
   const handleMessageRequest = (type: string) => async () => {
-    switch (type) {
-      case 'block':
-        try {
-          await blockMessageRequest();
-          logEvent('block message request', { from: 'chat' });
-          navigation.goBack();
-        } catch (error) {
-          Sentry.captureException(error);
-        }
+    try {
+      if (type === 'block') {
+        await blockMessageRequest();
+        logEvent('block message request', { from: 'chat' });
+      }
 
-        break;
-
-      case 'delete':
-        try {
-          await deleteMessageRequest();
-          logEvent('delete message request', { from: 'chat' });
-          navigation.goBack();
-        } catch (error) {
-          Sentry.captureException(error);
-        }
-
-        break;
-
-      default:
-        break;
+      if (type === 'delete') {
+        await deleteMessageRequest();
+        logEvent('delete message request', { from: 'chat' });
+      }
+    } catch (error) {
+      Sentry.captureException(error);
     }
 
     if (notificationData?.showMessageNotificationBadge) {
@@ -208,6 +197,8 @@ export default function MessageRequestChat(props: ScreenProp) {
         }
       });
     }
+
+    navigation.goBack();
   };
 
   const handleNavigation = useCallback(() => {
