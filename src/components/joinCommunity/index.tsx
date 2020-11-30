@@ -31,41 +31,24 @@ interface JoinCommunityProp {
 function JoinCommunity(props: JoinCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [state, setState] = useState({
-    code: '',
-    loading: false
-  });
+  const [state, setState] = useState({ code: '', loading: false });
 
   const [joinCommunity] = useMutation(JOIN_COMMUNITY, {
-    variables: {
-      payload: {
-        code: state.code
-      }
-    }
+    variables: { payload: { code: state.code } }
   });
 
   const handleRequest = () => {};
 
   const handleJoin = async () => {
     Keyboard.dismiss();
-    setState({
-      ...state,
-      loading: true
-    });
+    setState({ ...state, loading: true });
+
     try {
-      const { data } = await joinCommunity();
-      if (data?.joinCommunity) {
-        setState({
-          ...state,
-          loading: false
-        });
-      }
+      await joinCommunity();
+      setState({ ...state, loading: false });
     } catch (error) {
       Sentry.captureException(error);
-      setState({
-        ...state,
-        loading: false
-      });
+      setState({ ...state, loading: false });
     }
   };
 
