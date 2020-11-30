@@ -96,7 +96,7 @@ export default function PassportScreen(props: ScreenProp) {
   const { top: paddingTop } = useSafeAreaInsets();
   const { t } = useTranslation();
 
-  const { data: userData, refetch } = useQuery<MyPassportInterface>(
+  const { data: userData, error, refetch } = useQuery<MyPassportInterface>(
     GET_USER_PASSPORT
   );
 
@@ -142,6 +142,7 @@ export default function PassportScreen(props: ScreenProp) {
   });
 
   const userDetails = userData?.myPassport;
+
   const identity = userDetails?.identity.map((item: any) => item.id);
   const dateOfBirth = userDetails?.dob;
 
@@ -298,17 +299,10 @@ export default function PassportScreen(props: ScreenProp) {
       lastName: userDetails?.lastName,
       bio: userDetails?.bio
     });
+
     setAvatar({
       ...avatar,
       uri: userDetails?.avatar
-    });
-    setBirthPlace({
-      ...birthPlace,
-      city: userDetails?.birthPlace[0]?.city,
-      state: userDetails?.birthPlace[0]?.state,
-      country: userDetails?.birthPlace[0]?.country,
-      long: userDetails?.birthPlace[0]?.long,
-      lat: userDetails?.birthPlace[0]?.lat
     });
 
     if (!location.city?.length) {
@@ -323,28 +317,7 @@ export default function PassportScreen(props: ScreenProp) {
   }, [userDetails?.id]);
 
   useEffect(() => {
-    if (state?.details?.birthPlace) {
-      setBirthPlace({
-        ...birthPlace,
-        //@ts-ignore
-        city: state?.details?.birthPlace?.city,
-        //@ts-ignore
-        state: state?.details?.birthPlace?.state,
-        //@ts-ignore
-        country: state?.details?.birthPlace.country,
-        //@ts-ignore
-        long: state?.details?.birthPlace?.long,
-        //@ts-ignore
-        lat: state?.details?.birthPlace?.lat
-      });
-    }
-  }, [state?.details?.birthPlace]);
-
-  useEffect(() => {
-    setState({
-      ...state,
-      identity: identity
-    });
+    setState({ ...state, identity: identity });
   }, [identity?.length]);
 
   useEffect(() => {
@@ -369,12 +342,7 @@ export default function PassportScreen(props: ScreenProp) {
         Sentry.captureException(error);
       }
     };
-    if (
-      location.city?.length &&
-      birthPlace.state?.length &&
-      state.identity?.length &&
-      day
-    ) {
+    if (location.city?.length && state.identity?.length && day) {
       updateLocation();
     }
   }, [state.identity]);
@@ -457,13 +425,6 @@ export default function PassportScreen(props: ScreenProp) {
           country: location.country,
           long: location.long,
           lat: location.lat
-        },
-        birthPlace: {
-          city: birthPlace.city,
-          state: birthPlace.state,
-          country: birthPlace.country,
-          long: birthPlace.long,
-          lat: birthPlace.lat
         }
       }
     }
@@ -513,10 +474,7 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   const getUserDetails = (childData: any) => {
-    setState({
-      ...state,
-      details: childData
-    });
+    setState({ ...state, details: childData });
   };
 
   const click = update;

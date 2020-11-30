@@ -90,7 +90,7 @@ export default function MessageRequestTab(props: ScreenProp) {
 
   const renderEmptyList = useMemo(
     () => () => (
-      <Container>
+      <Container style={{ paddingHorizontal: 10 }}>
         <ChatCardSkeleton skeletonSize={3} />
       </Container>
     ),
