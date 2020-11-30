@@ -3,6 +3,8 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useLazyQuery } from '@apollo/react-hooks';
+import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
@@ -33,6 +35,10 @@ function ConnectionCard(props: ConnectionCardProp) {
     ).getTime()
   });
 
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
+    variables: { id }
+  });
+
   useEffect(() => {
     Firechat.getOnlineStatus(id).onSnapshot({
       next: (snapshot) => {
@@ -42,6 +48,8 @@ function ConnectionCard(props: ConnectionCardProp) {
         }
       }
     });
+
+    getUserPassport();
   }, []);
 
   const handleNavigation = () => {
