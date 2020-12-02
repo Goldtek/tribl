@@ -17,7 +17,7 @@ import {
   GET_SINGLE_PASSPORT,
   GET_USER_PASSPORT
 } from '../../../graphql/server/query';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import {
   DEVICE_FULL_HEIGHT,
@@ -33,7 +33,6 @@ import {
 } from '../../../graphql/server/mutations';
 import {
   MyPassportInterface,
-  UserPassportInterface,
   AcceptMessageRequestInterface,
   DeleteMessageRequestInterface,
   BlockMessageRequestInterface,
@@ -71,10 +70,14 @@ export default function MessageRequestChat(props: ScreenProp) {
     senderId,
     avatar,
     firstName,
-    lastName
+    lastName,
+    communityCount,
+    connectionCount
   } = props.route.params;
 
   const userId = fireAuth.currentUser?.uid as string;
+
+  const [userPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
 
@@ -83,13 +86,6 @@ export default function MessageRequestChat(props: ScreenProp) {
   });
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-
-  const { data: senderPassportData } = useQuery<UserPassportInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: senderId } }
-  );
-
-  const senderPassport = senderPassportData?.singlePassport;
 
   const [changeMutation] = useMutation(CHANGE_MESSAGE_NOTIFICATION_BADGE);
 
@@ -143,6 +139,10 @@ export default function MessageRequestChat(props: ScreenProp) {
             });
 
             setImmediate(markConversationAsRead);
+          }
+
+          if (message.senderId !== userId) {
+            userPassport({ variables: { id: message?.senderId } });
           }
 
           return {
@@ -333,7 +333,7 @@ export default function MessageRequestChat(props: ScreenProp) {
                 textTransform: 'capitalize'
               }}
             >
-              {`${senderPassport?.communityCount} communities ${senderPassport?.connectionCount} connections`}
+              {`${communityCount} communities ${connectionCount} connections`}
             </Text>
             <Text
               style={{
