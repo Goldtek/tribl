@@ -12,6 +12,7 @@ import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE
 } from '../../graphql/cache/mutations';
 import { NotificationMessage } from '../../graphql/types';
+import { useNavigation } from '@react-navigation/native';
 
 type GlobalNotificationProps = {
   children: JSX.Element;
@@ -20,6 +21,8 @@ type GlobalNotificationProps = {
 const messaging = fcmMessaging();
 
 export default function GlobalNotification(props: GlobalNotificationProps) {
+  const { navigate } = useNavigation();
+
   const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
   const [changeMessageNotification] = useMutation(
     CHANGE_MESSAGE_NOTIFICATION_BADGE
@@ -39,13 +42,60 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
     messaging.setBackgroundMessageHandler(presentNotification);
 
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
-    messaging.onNotificationOpenedApp(presentNotification);
+    messaging.onNotificationOpenedApp(navigateNotification);
 
     // Check whether an initial notification is available
     messaging.getInitialNotification().then(presentNotification);
 
+    navigate('InboxScreen');
+
+    // NAVIGATE USER TO DIRECT MESSAGE SCREEN ON DM NOTIFICATION CLICK
+
+    // navigate('DirectChatScreen', {
+    //   title: 'Amakiri Joseph',
+    //   chatId:
+    //     '08edd453-891d-4852-83ec-b3c604c5ce9f|e52b0b1c-42e8-4515-9280-4ce4aa598c86',
+    //   receiverId: 'f1526d08-571c-4eda-bb41-0810407fdec2',
+    //   avatar:
+    //     'https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp',
+    //   firstName: 'Amakiri',
+    //   lastName: 'Joseph',
+    //   id: '08edd453-891d-4852-83ec-b3c604c5ce9f',
+    //   phoneNumber: '+2348132978120'
+    // });
+
+    // // NAVIGATE USER TO MESSAGE REQUEST CHAT SCREEN ON MESSAGE REQUEST NOTIFICATION CLICK
+
+    // navigate('MessageRequestChatScreen', {
+    //   title: 'Amakiri Joseph',
+    //   chatId:
+    //     '08edd453-891d-4852-83ec-b3c604c5ce9f|e52b0b1c-42e8-4515-9280-4ce4aa598c86',
+    //   senderId: 'f1526d08-571c-4eda-bb41-0810407fdec2',
+    //   avatar:
+    //     'https://drive.google.com/uc?view=&id=14SY6cRWX2ojTeynq1d_E9O1aIA-2l5Jp',
+    //   firstName: 'Amakiri',
+    //   lastName: 'Joseph',
+    //   id: '08edd453-891d-4852-83ec-b3c604c5ce9f',
+    //   communityCount: 4,
+    //   connectionCount: 9,
+    //   phoneNumber: '+2348132978120'
+    // });
+
+    // // NAVIGATE USER TO CHANNEL MESSAGE SCREEN ON CHANNEL MESSAGE NOTIFICATION CLICK
+
+    // navigate('ChannelChatScreen', {
+    //   title: 'barter',
+    //   chatId: '228bede4-9805-4c06-92f2-52cf86aeff38'
+    // });
+
     return unsubscribe;
   }, []);
+
+  const navigateNotification = (
+    remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
+  ) => {
+    const data = (remoteMessage?.data as unknown) as NotificationMessage;
+  };
 
   const presentNotification = async (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage | null

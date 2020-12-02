@@ -5,7 +5,7 @@ import { Platform, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Mixpanel } from '../../../config';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
@@ -15,7 +15,10 @@ import {
   MyPassportInterface,
   ShowMessageNotificationBadge
 } from '../../../graphql/types';
-import { GET_USER_PASSPORT } from '../../../graphql/server/query';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
 import {
   MARK_MESSAGE_READ,
   SEND_DIRECT_MESSAGE
@@ -52,6 +55,8 @@ export default function DirectChatScreen(props: ScreenProp) {
   useEffect(() => {
     tagScreenName('DirectChatScreen');
   }, []);
+
+  const [userPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   const [sendMessage] = useMutation(SEND_DIRECT_MESSAGE);
 
@@ -90,6 +95,10 @@ export default function DirectChatScreen(props: ScreenProp) {
               });
             }
             setImmediate(markConversationAsRead);
+          }
+
+          if (message.senderId !== userId) {
+            userPassport({ variables: { id: message?.senderId } });
           }
 
           return {
