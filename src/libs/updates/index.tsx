@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Title, Button, Paragraph } from 'react-native-paper';
+import { Title, Button, Paragraph, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import * as Updates from 'expo-updates';
+import { Entypo } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import GradientButton from '../../components/gradientButton';
@@ -12,10 +13,12 @@ import { APP_VERSION } from '../../utils/device';
 import {
   Container,
   BlurContentsContainer,
-  ButtonContainer,
   BlurContents,
-  ImageContainer,
-  TextContainer
+  TextContainer,
+  HeaderContainer,
+  LeftContainer,
+  RightContainer,
+  Alert
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -44,127 +47,121 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
       <TouchableWithoutFeedback>
         <BlurContents>
           <BlurContentsContainer style={{ elevation: 6 }}>
-            <ImageContainer>
-              <Image
-                source={require('../../../assets/images/update.png')}
-                style={{
-                  width: RFValue(80),
-                  height: RFValue(80),
-                  resizeMode: 'contain'
-                }}
-              />
-            </ImageContainer>
-
-            <Title
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 4),
-                lineHeight: RFValue(34),
-                marginBottom: RFValue(10),
-                marginTop: RFValue(20),
-                paddingHorizontal: RFValue(10),
-                textTransform: 'capitalize',
-                textAlign: 'center'
-              }}
-            >
-              {t(`community.update.title`)}
-            </Title>
+            <HeaderContainer>
+              <LeftContainer>
+                <Alert>
+                  <Text
+                    style={{
+                      color: colors.WHITE,
+                      fontSize: RFValue(fonts.SMALL_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      textTransform: 'capitalize',
+                      textAlign: 'center'
+                    }}
+                  >
+                    {t(`community.update.new`)}
+                  </Text>
+                </Alert>
+                <Title
+                  style={{
+                    color: colors.PRIMARY_TEXT,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    textTransform: 'capitalize',
+                    lineHeight: RFValue(16)
+                  }}
+                >
+                  {t(`community.update.version`)}
+                </Title>
+                <Text
+                  style={{
+                    color: colors.PRIMARY_TEXT,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    textTransform: 'capitalize',
+                    lineHeight: RFValue(16)
+                  }}
+                >
+                  Tribl {APP_VERSION} version upgrade
+                </Text>
+              </LeftContainer>
+              <RightContainer>
+                <Entypo
+                  name="arrow-bold-up"
+                  size={RFValue(20)}
+                  color={colors.WHITE}
+                />
+              </RightContainer>
+            </HeaderContainer>
             <TextContainer>
               <Paragraph
                 style={{
                   color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'uppercase',
-                  lineHeight: RFValue(14)
-                }}
-              >
-                {APP_VERSION}
-              </Paragraph>
-              <Paragraph
-                style={{
-                  color: colors.SECONDARY_TEXT,
                   fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  marginVertical: RFValue(10),
-                  textTransform: 'capitalize',
-                  lineHeight: RFValue(14)
-                }}
-              >
-                {t(`community.update.update`)}:
-              </Paragraph>
-              <Paragraph
-                style={{
-                  color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
                   textTransform: 'capitalize',
                   lineHeight: RFValue(18)
                 }}
               >
-                - {t(`community.update.change1`)}
+                1. {t(`community.update.change1`)}
               </Paragraph>
               <Paragraph
                 style={{
                   color: colors.SECONDARY_TEXT,
                   fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
                   textTransform: 'capitalize',
                   lineHeight: RFValue(18)
                 }}
               >
-                - {t(`community.update.change2`)}
+                2. {t(`community.update.change2`)}
               </Paragraph>
             </TextContainer>
-
-            <ButtonContainer>
-              <GradientButton
-                onPress={handleUpdate}
-                loading={loading}
-                labelStyle={{
-                  color: colors.WHITE,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'capitalize'
-                }}
-                contentStyle={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%'
-                }}
-                gradientContainerstyle={{
-                  maxHeight: RFValue(45),
-                  width: '45%'
-                }}
-              >
-                {t(`community.update.yes`)}
-              </GradientButton>
-              <Button
-                mode="outlined"
-                onPress={() => props.cancelUpdate()}
-                labelStyle={{
-                  color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  width: '80%',
-                  textTransform: 'capitalize'
-                }}
-                contentStyle={{
-                  borderColor: colors.INACTIVE,
-                  borderRadius: 4,
-                  height: RFValue(45)
-                }}
-                style={{
-                  width: '45%',
-                  height: RFValue(45),
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-              >
-                {t(`community.update.no`)}
-              </Button>
-            </ButtonContainer>
+            <GradientButton
+              onPress={handleUpdate}
+              loading={loading}
+              labelStyle={{
+                color: colors.WHITE,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%'
+              }}
+              gradientContainerstyle={{
+                maxHeight: RFValue(40),
+                marginHorizontal: RFValue(15)
+              }}
+            >
+              {t(`community.update.yes`)}
+            </GradientButton>
+            <Button
+              mode="text"
+              onPress={() => props.cancelUpdate()}
+              labelStyle={{
+                color: colors.PRIMARY,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                borderColor: colors.INACTIVE,
+                borderRadius: 4,
+                height: RFValue(40)
+              }}
+              style={{
+                height: RFValue(40),
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: RFValue(10),
+                marginHorizontal: RFValue(15)
+              }}
+            >
+              {t(`community.update.no`)}
+            </Button>
           </BlurContentsContainer>
         </BlurContents>
       </TouchableWithoutFeedback>
