@@ -11,6 +11,8 @@ coverage/
 .env
 .env.production
 .production
+.firebases
+
 
 # OSX
 #

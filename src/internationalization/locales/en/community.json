@@ -120,8 +120,10 @@
     "update": "this update",
     "change1": "fix notification on inbox view",
     "change2": "fix notification icon on inbox tab",
-    "yes": "yes",
-    "no": "no"
+    "yes": "upgrade",
+    "no": "next time",
+    "new": "new",
+    "version": "found new version"
   },
   "addTags": {
     "title": "Looks like you’re visiting for the first time.",

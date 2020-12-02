@@ -21,27 +21,38 @@ export const BlurContents = styled.View`
 
 export const BlurContentsContainer = styled(Surface)`
   background-color: ${({ theme }) => theme.colors.GREY};
-  padding: 20px 10px;
-  border-radius: 4px;
-`;
-
-export const ButtonContainer = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-top: 30px;
-`;
-
-export const ImageContainer = styled.View`
-  width: ${RFValue(100)}px;
-  height: ${RFValue(100)}px;
-  background-color: ${({ theme }) => theme.colors.INPUT};
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  border-radius: ${RFValue(50)}px;
+  border-radius: 10px;
 `;
 
 export const TextContainer = styled.View`
-  padding: 0 ${RFValue(20)}px;
+  padding: ${RFValue(20)}px ${RFValue(15)}px ${RFValue(10)}px;
+`;
+
+export const HeaderContainer = styled.View`
+  background-color: ${({ theme }) => theme.colors.INPUT};
+  flex-direction: row;
+  justify-content: space-between;
+  padding: ${RFValue(20)}px ${RFValue(15)}px ${RFValue(30)}px;
+`;
+
+export const LeftContainer = styled.View`
+  margin-right: ${RFValue(30)}px;
+`;
+
+export const RightContainer = styled.View`
+  background-color: ${({ theme }) => theme.colors.PRIMARY};
+  width: ${RFValue(35)}px;
+  height: ${RFValue(35)}px;
+  border-radius: ${RFValue(35)}px;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-end;
+`;
+
+export const Alert = styled.View`
+  background-color: ${({ theme }) => theme.colors.RED};
+  width: ${RFValue(30)}px;
+  padding: ${RFValue(2)}px 0;
+  border-radius: ${RFValue(20)}px;
+  margin-bottom: ${RFValue(5)}px;
 `;

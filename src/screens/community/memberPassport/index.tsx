@@ -70,8 +70,6 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const singlePassport = passportData?.singlePassport;
 
-  console.tron({ singlePassport });
-
   const [data, setData] = useState({ ...passport });
 
   useEffect(() => {
@@ -363,7 +361,7 @@ export default function PassportDetail(props: MemberDetailProps) {
           </Cover>
         ) : null}
 
-        {data?.currentLocation || data?.birthPlace ? (
+        {data?.currentLocation ? (
           <LocationContainer>
             <Title
               style={{
@@ -377,7 +375,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`signup.passportScreen.locality`)}
             </Title>
-            {data?.birthPlace ? (
+            {data?.birthPlace[0]?.country ? (
               <Location ref={hideSensitiveView}>
                 <AntDesign
                   name="home"
