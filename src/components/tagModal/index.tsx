@@ -64,13 +64,6 @@ function Tags(props: any) {
           country: userDetails?.currentLocation[0]?.country,
           long: userDetails?.currentLocation[0]?.long,
           lat: userDetails?.currentLocation[0]?.lat
-        },
-        birthPlace: {
-          city: userDetails?.birthPlace[0]?.city,
-          state: userDetails?.birthPlace[0]?.state,
-          country: userDetails?.birthPlace[0]?.country,
-          long: userDetails?.birthPlace[0]?.long,
-          lat: userDetails?.birthPlace[0]?.lat
         }
       }
     }
