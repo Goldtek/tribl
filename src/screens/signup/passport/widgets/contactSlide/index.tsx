@@ -425,7 +425,7 @@ export default function contactSlide() {
         />
       </DOBContainer>
 
-      {userDetails?.birthPlace[0] || location.birthPlace.city ? (
+      {/* {userDetails?.birthPlace[0] || location.birthPlace.city ? (
         <CitizenshipContainer ref={hideSensitiveView}>
           <Title
             style={{
@@ -450,11 +450,9 @@ export default function contactSlide() {
               userDetails?.currentLocation[0].country}
           </Paragraph>
         </CitizenshipContainer>
-      ) : null}
+      ) : null} */}
 
-      {userDetails?.birthPlace[0] ||
-      (location.birthPlace.state && userDetails?.currentLocation[0]) ||
-      location.currentLocation.state ? (
+      {userDetails?.currentLocation[0] || location.currentLocation.state ? (
         <LocationContainer ref={hideSensitiveView}>
           <Title
             style={{
@@ -467,7 +465,7 @@ export default function contactSlide() {
           >
             {t(`signup.passportScreen.locality`)}
           </Title>
-
+          {/* 
           <Location>
             <AntDesign
               name="home"
@@ -496,7 +494,7 @@ export default function contactSlide() {
                 userDetails?.birthPlace[0].state || location.birthPlace.state
               }`}
             </Paragraph>
-          </Location>
+          </Location> */}
 
           <Location>
             <SimpleLineIcons

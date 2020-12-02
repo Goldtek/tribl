@@ -35,7 +35,9 @@ export const LastNameContainer = styled.View`
   align-items: center;
 `;
 
-export const DOBContainer = styled.View``;
+export const DOBContainer = styled.View`
+  margin: ${RFValue(15)}px 0;
+`;
 
 export const IdentityContainer = styled.View`
   margin: ${RFValue(30)}px 0px;
@@ -66,7 +68,7 @@ export const LocationContainer = styled.View``;
 export const Location = styled.View`
   flex-direction: row;
   align-items: center;
-  margin-top: 10px;
+  margin-top: ${RFValue(10)}px;
 `;
 
 export const CitizenshipContainer = styled.View`
