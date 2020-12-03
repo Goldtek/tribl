@@ -47,7 +47,7 @@ export default function GlobalNotification(props: GlobalNotificationProps) {
     // Check whether an initial notification is available
     messaging.getInitialNotification().then(presentNotification);
 
-    navigate('InboxScreen');
+    // navigate('InboxScreen');
 
     // NAVIGATE USER TO DIRECT MESSAGE SCREEN ON DM NOTIFICATION CLICK
 
