@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Title, Button, Paragraph, Text } from 'react-native-paper';
+import { Title, Paragraph, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import * as Updates from 'expo-updates';
 import { Entypo } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../theme';
 import GradientButton from '../../components/gradientButton';
-import { TouchableWithoutFeedback, Image } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 import { APP_VERSION } from '../../utils/device';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -88,7 +88,7 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
               <RightContainer>
                 <Entypo
                   name="arrow-bold-up"
-                  size={RFValue(20)}
+                  size={RFValue(30)}
                   color={colors.WHITE}
                 />
               </RightContainer>
@@ -133,12 +133,14 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
               }}
               gradientContainerstyle={{
                 maxHeight: RFValue(40),
-                marginHorizontal: RFValue(15)
+                marginHorizontal: RFValue(15),
+                marginTop: 40,
+                marginBottom: 30
               }}
             >
               {t(`community.update.yes`)}
             </GradientButton>
-            <Button
+            {/* <Button
               mode="text"
               onPress={() => props.cancelUpdate()}
               labelStyle={{
@@ -161,7 +163,7 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
               }}
             >
               {t(`community.update.no`)}
-            </Button>
+            </Button> */}
           </BlurContentsContainer>
         </BlurContents>
       </TouchableWithoutFeedback>

@@ -2,6 +2,7 @@ import styled from 'styled-components/native';
 import { BlurView } from '@react-native-community/blur';
 import { Surface } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import hexToRGB from '../../utils/hexToRGB';
 
 export const Container = styled(BlurView)`
   position: absolute;
@@ -29,10 +30,10 @@ export const TextContainer = styled.View`
 `;
 
 export const HeaderContainer = styled.View`
-  background-color: ${({ theme }) => theme.colors.INPUT};
   flex-direction: row;
   justify-content: space-between;
   padding: ${RFValue(20)}px ${RFValue(15)}px ${RFValue(30)}px;
+  background-color: ${({ theme }) => hexToRGB(theme.colors.PRIMARY_LIGHT, 0.3)};
 `;
 
 export const LeftContainer = styled.View`
@@ -41,9 +42,9 @@ export const LeftContainer = styled.View`
 
 export const RightContainer = styled.View`
   background-color: ${({ theme }) => theme.colors.PRIMARY};
-  width: ${RFValue(35)}px;
-  height: ${RFValue(35)}px;
-  border-radius: ${RFValue(35)}px;
+  width: ${RFValue(45)}px;
+  height: ${RFValue(45)}px;
+  border-radius: ${RFValue(45 / 2)}px;
   justify-content: center;
   align-items: center;
   align-self: flex-end;
