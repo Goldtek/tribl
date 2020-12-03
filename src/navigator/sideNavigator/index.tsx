@@ -80,10 +80,9 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="DirectChatScreen"
         component={Screens.DirectChatScreen}
-        options={({ route }) => ({
+        options={({ route }: any) => ({
           headerShown: true,
           height: RFValue(90),
-          //@ts-ignore
           headerTitle: route.params?.title,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
@@ -122,7 +121,6 @@ export default function DrawerStackNavigator() {
         name="ChannelChatScreen"
         component={Screens.ChannelChatScreen}
         options={({ route }: any) => {
-          // @ts-ignore
           setChatId(route.params?.chatId);
           return {
             headerStyle: { height: RFValue(90) },
@@ -336,10 +334,9 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="MessageRequestChatScreen"
         component={Screens.MessageRequestChatScreen}
-        options={({ route }) => ({
+        options={({ route }: any) => ({
           headerShown: true,
           height: RFValue(90),
-          //@ts-ignore
           headerTitle: route.params?.title,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
@@ -377,9 +374,8 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="MemberDetailScreen"
         component={MemberDetailScreen}
-        options={({ route }) => ({
+        options={({ route }: any) => ({
           headerShown: true,
-          //@ts-ignore
           headerTitle: route.params?.title,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
