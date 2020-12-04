@@ -19,7 +19,7 @@ type GlobalNotificationProps = {
 
 const messaging = fcmMessaging();
 
-export default function GlobalNotification(props: GlobalNotificationProps) {
+export default function Notification(props: GlobalNotificationProps) {
   const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
   const [changeMessageNotification] = useMutation(
     CHANGE_MESSAGE_NOTIFICATION_BADGE
