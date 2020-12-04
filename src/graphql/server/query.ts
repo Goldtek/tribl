@@ -445,7 +445,7 @@ export const GET_SINGLE_COMMUNITY = gql`
   }
 `;
 
-//GET ONE PASSPORT
+// GET ONE PASSPORT
 export const GET_SINGLE_PASSPORT = gql`
   query singlePassport($id: String) {
     singlePassport(id: $id) {
@@ -567,6 +567,63 @@ export const GET_SINGLE_PASSPORT = gql`
           month
           year
         }
+      }
+      conversation {
+        id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
+      }
+    }
+  }
+`;
+
+// GET ONE PASSPORT
+export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
+  query singlePassport($id: String) {
+    singlePassport(id: $id) {
+      id
+      email
+      firstName
+      lastName
+      phoneNumber
+      connected
+      avatar
+      bio
+      communityCount
+      connectionCount
+      currentLocation {
+        id
+        country
+        state
+        city
+      }
+      identity {
+        id
+        name
+      }
+      interest {
+        id
+        name
+      }
+      birthPlace {
+        id
+        state
+        country
+        city
       }
       conversation {
         id
