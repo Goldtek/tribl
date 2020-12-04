@@ -602,21 +602,12 @@ function contactSlide(props: ScreenProp) {
           >
             {t(`signup.passportScreen.interest`)}
           </Title>
-          <IconButton
-            onPress={() => console.log('Pressed')}
-            icon="plus"
-            color={colors.PRIMARY_TEXT}
-            size={20}
-            style={{
-              width: RFValue(50),
-              height: RFValue(40),
-              borderRadius: 4,
-              margin: 0,
-              marginTop: 10,
-              borderColor: colors.INACTIVE,
-              borderWidth: RFValue(1.2)
-            }}
-          />
+          <Identities>
+            {userDetails?.interest.map((interest: any) => (
+              <IdentityText key={interest.id}>{interest.name}</IdentityText>
+            ))}
+            <AddIdentity>+</AddIdentity>
+          </Identities>
         </InterestContainer>
       ) : null}
 
