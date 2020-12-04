@@ -117,7 +117,7 @@ export default function HomeScreen(props: ScreenProp) {
     data: communityData
   } = useQuery<RecommendedCommunitiesRequestInterface>(
     GET_RECOMMENDED_COMMUNITIES,
-    { pollInterval: 1000 }
+    { pollInterval: 100 }
   );
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
