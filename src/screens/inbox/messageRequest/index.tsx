@@ -105,15 +105,11 @@ export default function MessageRequestTab(props: ScreenProp) {
             bounces={false}
             data={messageRequests}
             ref={hideSensitiveView}
-            contentContainerStyle={{
-              flexGrow: 1,
-              marginTop: RFValue(20),
-              paddingBottom: RFValue(20)
-            }}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
             ListEmptyComponent={renderEmptyList}
             showsVerticalScrollIndicator={false}
             renderItem={_renderItem}
-            keyExtractor={(item: any) => item.id}
+            keyExtractor={(item) => item.id}
           />
         ) : (
           <Text

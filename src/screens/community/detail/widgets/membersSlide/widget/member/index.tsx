@@ -12,8 +12,9 @@ import {
   PassportInterface,
   SinglePassportRequestInterface
 } from '../../../../../../../graphql/types';
-import { GET_SINGLE_PASSPORT } from '../../../../../../../graphql/server/query';
+import { GET_COMMUNITY_MEMBER_PASSPORT } from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
+import { fireAuth } from '../../../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -27,16 +28,24 @@ function Member(props: MemberProp) {
 
   const { avatar, firstName, lastName, phoneNumber, id } = props;
 
+  if (id === fireAuth.currentUser?.uid) return null;
+
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
   });
 
   const { data: passportData } = useQuery<SinglePassportRequestInterface>(
-    GET_SINGLE_PASSPORT,
+    GET_COMMUNITY_MEMBER_PASSPORT,
     { variables: { id } }
   );
 
   const singlePassport = passportData?.singlePassport;
+
+  const connectedUsers =
+    singlePassport?.connected === 'CONNECTED' ||
+    singlePassport?.connected === 'ACCEPTED'
+      ? true
+      : false;
 
   const handleRequest = async () => {
     try {
@@ -109,43 +118,31 @@ function Member(props: MemberProp) {
             ONLINE
           </Text>
         </NameContainer>
-        {singlePassport?.connected === 'CONNECTED' ? (
-          <TouchableRipple
-            style={{
-              marginLeft: 'auto',
-              width: RFValue(50),
-              height: RFValue(35),
-              backgroundColor: colors.WHITE,
-              borderWidth: 1,
-              borderColor: colors.INPUT,
-              borderRadius: 4,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-            onPress={handleNavigation}
-          >
+
+        <TouchableRipple
+          style={{
+            marginLeft: 'auto',
+            width: RFValue(50),
+            height: RFValue(35),
+            backgroundColor: connectedUsers ? colors.WHITE : colors.PRIMARY,
+            borderWidth: connectedUsers ? 1 : 0,
+            borderColor: connectedUsers ? colors.INPUT : colors.TRANSPARENT,
+            borderRadius: 4,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          onPress={connectedUsers ? handleNavigation : handleRequest}
+        >
+          {connectedUsers ? (
             <Feather
               name="message-square"
               size={20}
               color={colors.PRIMARY_TEXT}
             />
-          </TouchableRipple>
-        ) : (
-          <TouchableRipple
-            style={{
-              marginLeft: 'auto',
-              width: RFValue(50),
-              height: RFValue(35),
-              backgroundColor: colors.PRIMARY,
-              borderRadius: 4,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-            onPress={handleRequest}
-          >
+          ) : (
             <Feather name="plus" size={20} color={colors.WHITE} />
-          </TouchableRipple>
-        )}
+          )}
+        </TouchableRipple>
       </Fragment>
     </TouchableRipple>
   );
