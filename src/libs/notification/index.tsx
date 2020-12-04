@@ -54,7 +54,11 @@ export default function Notification(props: GlobalNotificationProps) {
     const { route, data } = JSON.parse(meta) as NotificationMetaData;
 
     // NAVIGATE USER TO DIRECT MESSAGE SCREEN ON DM NOTIFICATION CLICK
-    // rootNavigator?.navigate(route, data);
+
+    // navigation.replace('CommunityScreen', {
+    //   screen: 'CommunityScreen',
+    //   params: { screen: 'CommunityScreen', params: { screen: 'InboxScreen' } }
+    // });
   };
 
   const presentNotification = async (

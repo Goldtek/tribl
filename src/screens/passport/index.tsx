@@ -663,8 +663,7 @@ export default function PassportScreen(props: ScreenProp) {
                 >
                   {`${state?.firstName} ${state?.lastName}`}
                 </Paragraph>
-                {userDetails?.currentLocation[0]?.city ||
-                cache?.currentLocation[0].city ? (
+                {currentLocation?.city ? (
                   <Paragraph
                     style={{
                       fontFamily: fonts.WORK_SANS_REGULAR,
@@ -675,15 +674,7 @@ export default function PassportScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                   >
-                    {userDetails?.currentLocation[0].city ? (
-                      <Fragment>
-                        {`${userDetails?.currentLocation[0]?.city}, ${userDetails?.currentLocation[0]?.state}`}
-                      </Fragment>
-                    ) : (
-                      <Fragment>
-                        {`${cache?.currentLocation[0]?.city}, ${cache?.currentLocation[0]?.state}`}
-                      </Fragment>
-                    )}
+                    {`${currentLocation?.city}, ${currentLocation?.state}`}
                   </Paragraph>
                 ) : (
                   <Paragraph
@@ -696,15 +687,9 @@ export default function PassportScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                   >
-                    {userDetails?.currentLocation[0].state ? (
-                      <Fragment>
-                        {`${userDetails?.currentLocation[0]?.state}, ${userDetails?.currentLocation[0]?.country}`}
-                      </Fragment>
-                    ) : (
-                      <Fragment>
-                        {`${cache?.currentLocation[0]?.state}, ${cache?.currentLocation[0]?.country}`}
-                      </Fragment>
-                    )}
+                    <Fragment>
+                      {`${currentLocation?.state}, ${currentLocation?.country}`}
+                    </Fragment>
                   </Paragraph>
                 )}
                 <ConnectionCover>
