@@ -51,7 +51,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation } = props;
   const { chatId, channel } = props.route.params;
   const userId = fireAuth.currentUser?.uid as string;
-
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
   }, []);
@@ -203,7 +202,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
             color: colors.PRIMARY_TEXT,
             borderRadius: 5,
             marginHorizontal: 10,
-            marginVertical: 5,
+            marginVertical: RFValue(5),
             borderWidth: 1,
             borderColor: colors.INACTIVE
           }
@@ -312,7 +311,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
       {DEVICE_OS === 'ios' && (
         <KeyboardAvoidingView
           behavior="padding"
-          keyboardVerticalOffset={RFValue(-170)}
+          keyboardVerticalOffset={RFValue(-140)}
         />
       )}
     </SafeAreaView>

@@ -97,7 +97,7 @@ function contactSlide(props: ScreenProp) {
     birthPlaceInput: ''
   });
 
-  const currentLocation = userDetails?.currentLocation[0].country
+  const currentLocation = userDetails?.currentLocation[0]?.country
     ? userDetails?.currentLocation[0]
     : cache?.currentLocation[0];
 
@@ -221,10 +221,7 @@ function contactSlide(props: ScreenProp) {
           ref={hideSensitiveView}
           value={firstName}
           onChangeText={(firstName: string) =>
-            setState({
-              ...state,
-              firstName
-            })
+            setState({ ...state, firstName })
           }
           disabled={click}
           style={{
@@ -256,12 +253,7 @@ function contactSlide(props: ScreenProp) {
         <TextInput
           ref={hideSensitiveView}
           value={lastName}
-          onChangeText={(lastName: string) =>
-            setState({
-              ...state,
-              lastName
-            })
-          }
+          onChangeText={(lastName: string) => setState({ ...state, lastName })}
           disabled={click}
           style={{
             height: 30,
@@ -295,12 +287,7 @@ function contactSlide(props: ScreenProp) {
             value={bio}
             multiline={true}
             dense={true}
-            onChangeText={(bio: string) =>
-              setState({
-                ...state,
-                bio: bio
-              })
-            }
+            onChangeText={(bio: string) => setState({ ...state, bio })}
             disabled={click}
             style={{
               fontFamily: fonts.WORK_SANS_REGULAR,
@@ -318,12 +305,7 @@ function contactSlide(props: ScreenProp) {
             placeholder={t(`community.memberPassport.bioInfo`)}
             multiline={true}
             dense={true}
-            onChangeText={(bio: string) =>
-              setState({
-                ...state,
-                bio: bio
-              })
-            }
+            onChangeText={(bio: string) => setState({ ...state, bio: bio })}
             disabled={click}
             style={{
               fontFamily: fonts.WORK_SANS_REGULAR,
@@ -527,32 +509,17 @@ function contactSlide(props: ScreenProp) {
                 backgroundColor: colors.ACTION
               }}
             />
-            {userDetails?.currentLocation[0]?.city ||
-            cache?.currentLocation[0]?.city ? (
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  marginBottom: 10
-                }}
-              >
-                {`${currentLocation?.city}, ${currentLocation.state}`}
-              </Paragraph>
-            ) : (
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  marginBottom: 10
-                }}
-              >
-                {`${currentLocation.state}, ${currentLocation.country}`}
-              </Paragraph>
-            )}
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginBottom: 10
+              }}
+            >
+              {`${currentLocation?.city}, ${currentLocation.state}`}
+            </Paragraph>
           </Location>
         </LocationContainer>
       ) : null}
@@ -602,21 +569,12 @@ function contactSlide(props: ScreenProp) {
           >
             {t(`signup.passportScreen.interest`)}
           </Title>
-          <IconButton
-            onPress={() => console.log('Pressed')}
-            icon="plus"
-            color={colors.PRIMARY_TEXT}
-            size={20}
-            style={{
-              width: RFValue(50),
-              height: RFValue(40),
-              borderRadius: 4,
-              margin: 0,
-              marginTop: 10,
-              borderColor: colors.INACTIVE,
-              borderWidth: RFValue(1.2)
-            }}
-          />
+          <Identities>
+            {userDetails?.interest.map((interest: any) => (
+              <IdentityText key={interest.id}>{interest.name}</IdentityText>
+            ))}
+            <AddIdentity>+</AddIdentity>
+          </Identities>
         </InterestContainer>
       ) : null}
 
