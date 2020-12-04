@@ -32,6 +32,8 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         country
         state
         city
+        lat
+        long
       }
       identity {
         name
@@ -81,12 +83,16 @@ export const GET_NEARBY_MEMBERS = gql`
         country
         state
         city
+        lat
+        long
       }
       currentLocation {
         id
         country
         state
         city
+        lat
+        long
       }
       identity {
         name
@@ -145,12 +151,16 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         country
         state
         city
+        lat
+        long
       }
       currentLocation {
         id
         country
         state
         city
+        lat
+        long
       }
       identity {
         name
@@ -290,12 +300,16 @@ export const GET_MY_CONNECTIONS = gql`
         country
         state
         city
+        lat
+        long
       }
       currentLocation {
         id
         country
         state
         city
+        lat
+        long
       }
       identity {
         name
@@ -354,12 +368,16 @@ export const GET_CONNECTION_REQUEST = gql`
         country
         state
         city
+        lat
+        long
       }
       currentLocation {
         id
         country
         state
         city
+        lat
+        long
       }
       identity {
         name
@@ -499,12 +517,16 @@ export const GET_SINGLE_PASSPORT = gql`
           country
           state
           city
+          lat
+          long
         }
         currentLocation {
           id
           country
           state
           city
+          lat
+          long
         }
         identity {
           name
@@ -534,6 +556,8 @@ export const GET_SINGLE_PASSPORT = gql`
         state
         country
         city
+        lat
+        long
       }
       presence {
         status
@@ -586,12 +610,16 @@ export const GET_COMMUNITY_MEMBERS = gql`
         country
         state
         city
+        lat
+        long
       }
       currentLocation {
         id
         country
         state
         city
+        lat
+        long
       }
       identity {
         name
@@ -684,6 +712,8 @@ export const GET_USER_PASSPORT = gql`
         country
         state
         city
+        lat
+        long
       }
       privacy {
         blocked {
@@ -728,12 +758,16 @@ export const GET_ALL_MEMBERS = gql`
         country
         city
         id
+        lat
+        long
       }
       birthPlace {
         state
         country
         city
         id
+        lat
+        long
       }
       conversation {
         id

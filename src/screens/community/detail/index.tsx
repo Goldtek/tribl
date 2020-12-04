@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { useQuery } from '@apollo/react-hooks';
 import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
@@ -11,6 +12,7 @@ import channelSlide from './widgets/channelSlide';
 import memberSlide from './widgets/membersSlide';
 import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
+import { GET_SINGLE_COMMUNITY } from '../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -22,8 +24,33 @@ export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const details = props.route.params;
-  const isMember =
-    details?.details?.isMember || details?.communityHit?.isMember;
+  const [isMember, setIsMember] = useState(null);
+  const id = details?.details?.id || details?.communityHit?.id;
+
+  const { data } = useQuery(GET_SINGLE_COMMUNITY, {
+    variables: { id },
+    pollInterval: 100
+  });
+
+  const singleCommunity = data?.Community[0];
+
+  useEffect(() => {
+    if (details?.details?.isMember) {
+      setIsMember(details?.details?.isMember);
+    }
+  }, [details?.details?.isMember]);
+
+  useEffect(() => {
+    if (details?.communityHit?.isMember) {
+      setIsMember(details?.communityHit?.isMember);
+    }
+  }, [details?.details?.isMember]);
+
+  useEffect(() => {
+    if (singleCommunity?.isMember) {
+      setIsMember(singleCommunity?.isMember);
+    }
+  }, [singleCommunity?.isMember]);
 
   const [tabIndex, setTabIndex] = React.useState(0);
   const [routes] = React.useState([

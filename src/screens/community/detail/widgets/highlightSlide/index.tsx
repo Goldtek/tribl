@@ -68,7 +68,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const {
     data: communityData,
     refetch: communityRefetch
-  } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id } });
+  } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id }, pollInterval: 100 });
 
   const { data: communityMembersData } = useQuery(
     GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
@@ -111,9 +111,8 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       uniqueInterests: singleCommunity?.uniqueInterests
     });
   }, [singleCommunity?.id]);
-
   useEffect(() => {
-    if (data.isMember && data.uniqueInterests?.length) {
+    if (data.isMember && data.uniqueInterests?.length > 0) {
       setState({
         ...state,
         tagModal: true
@@ -163,6 +162,10 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     try {
       await joinCommunity();
       setMember(true);
+      setData({
+        ...data,
+        isMember: true
+      });
       communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
@@ -174,6 +177,10 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     try {
       await leaveCommunity();
       setMember(false);
+      setData({
+        ...data,
+        isMember: false
+      });
       communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
