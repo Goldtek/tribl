@@ -124,6 +124,7 @@ export enum IFCMMessageTypes {
 }
 
 type NotificationMessage = {
+  meta: string;
   receiverAvatar: string;
   receiverId: string;
   receiverName: string;
@@ -131,6 +132,23 @@ type NotificationMessage = {
   senderId: string;
   senderName: string;
   type: IFCMMessageTypes;
+};
+
+type NotificationMetaData = {
+  route: string;
+  data: {
+    id?: string;
+    title?: string;
+    chatId?: string;
+    senderId?: string;
+    avatar?: string;
+    firstName?: string;
+    lastName?: string;
+    communityCount?: number;
+    connectionCount?: number;
+    phoneNumber?: string;
+    receiverId?: string;
+  };
 };
 
 export interface PassportInterface {

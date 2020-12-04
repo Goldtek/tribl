@@ -1,7 +1,6 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TouchableHighlight } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -26,33 +25,12 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [menu, setMenu] = useState(false);
-  const showMenu = () => setMenu(!menu);
-  const { top: safeAreaTop } = useSafeAreaInsets();
-
   const { data } = useQuery<ShowConnectionNotificationBadge>(
     GET_CONNECTION_NOTIFICATION_BADGE
   );
 
-  const getMenuHeight = useCallback(() => {
-    switch (true) {
-      case Math.ceil(safeAreaTop) <= 20:
-        return Math.ceil(safeAreaTop + 50);
-
-      case Math.ceil(safeAreaTop) <= 36:
-        return Math.ceil(safeAreaTop + 50);
-
-      case Math.ceil(safeAreaTop) <= 44:
-        return Math.ceil(safeAreaTop + 35);
-
-      default:
-        return Math.ceil(safeAreaTop);
-    }
-  }, []);
-
   return (
     <ChatStack.Navigator
-      initialRouteName="InboxScreen"
       headerMode="screen"
       screenOptions={{ headerStyle: { height: RFValue(90) } }}
     >
