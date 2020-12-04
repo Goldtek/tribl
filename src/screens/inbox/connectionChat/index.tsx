@@ -223,7 +223,7 @@ export default function ConnectionChatScreen(props: ScreenProp) {
       {DEVICE_OS === 'ios' && (
         <KeyboardAvoidingView
           behavior="padding"
-          keyboardVerticalOffset={RFValue(-170)}
+          keyboardVerticalOffset={RFValue(-140)}
         />
       )}
     </SafeAreaView>

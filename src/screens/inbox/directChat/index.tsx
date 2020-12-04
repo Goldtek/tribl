@@ -224,7 +224,7 @@ export default function DirectChatScreen(props: ScreenProp) {
       {DEVICE_OS === 'ios' && (
         <KeyboardAvoidingView
           behavior="padding"
-          keyboardVerticalOffset={RFValue(-170)}
+          keyboardVerticalOffset={RFValue(-140)}
         />
       )}
     </SafeAreaView>
