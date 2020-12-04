@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
+import { Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -92,18 +93,26 @@ function ConnectionCard(props: ConnectionCardProp) {
       onPress={handleNavigation}
     >
       <Fragment>
-        <FastImage
-          resizeMode={FastImage.resizeMode.contain}
-          source={{
-            uri: avatar,
-            priority: FastImage.priority.high
-          }}
-          style={{
-            width: RFValue(60),
-            height: RFValue(60),
-            borderRadius: RFValue(4)
-          }}
-        />
+        {avatar ? (
+          <FastImage
+            resizeMode={FastImage.resizeMode.cover}
+            source={{
+              uri: avatar,
+              priority: FastImage.priority.high
+            }}
+            style={{ width: RFValue(50), height: RFValue(50), borderRadius: 4 }}
+          />
+        ) : (
+          <Image
+            source={require('../../../../../../assets/images/profile.png')}
+            resizeMode="cover"
+            style={{
+              width: RFValue(60),
+              height: RFValue(60),
+              borderRadius: RFValue(4)
+            }}
+          />
+        )}
         <NameContainer ref={hideSensitiveView}>
           <Title
             style={{
