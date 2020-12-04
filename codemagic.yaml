@@ -14,7 +14,7 @@ workflows:
                 - tag
                 - pull_request
             branch_patterns:
-                - pattern: stage # <<-- put the branch that the codemagic config file is
+                - pattern: staging # <<-- put the branch that the codemagic config file is
                   include: true
                   source: true
         scripts:
@@ -77,7 +77,7 @@ workflows:
                 - tag
                 - pull_request
             branch_patterns:
-                - pattern: stage # <<-- put the branch that the codemagic config file is
+                - pattern: staging # <<-- put the branch that the codemagic config file is
                   include: true
                   source: true
         scripts:
