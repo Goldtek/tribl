@@ -144,6 +144,7 @@ export default function PassportScreen(props: ScreenProp) {
   const userDetails = userData?.myPassport;
 
   const identity = userDetails?.identity.map((item: any) => item.id);
+  const interest = userDetails?.interest.map((item: any) => item.id);
   const dateOfBirth = userDetails?.dob;
 
   useEffect(() => {
@@ -192,6 +193,7 @@ export default function PassportScreen(props: ScreenProp) {
   const [state, setState] = useState<{
     details: StateProps;
     identity: string[] | undefined;
+    interest: string[] | undefined;
     firstName: string | undefined;
     lastName: string | undefined;
     dob: {
@@ -206,6 +208,7 @@ export default function PassportScreen(props: ScreenProp) {
     firstName: cache?.firstName,
     lastName: cache?.lastName,
     identity: identity,
+    interest: interest,
     dob: {
       day: null,
       month: null,
@@ -317,7 +320,7 @@ export default function PassportScreen(props: ScreenProp) {
   }, [userDetails?.id]);
 
   useEffect(() => {
-    setState({ ...state, identity: identity });
+    setState({ ...state, identity: identity, interest: interest });
   }, [identity?.length]);
 
   useEffect(() => {
@@ -336,31 +339,20 @@ export default function PassportScreen(props: ScreenProp) {
   useEffect(() => {
     const updateLocation = async () => {
       try {
-        await updatePassport();
-        refetch();
+        const { data } = await updatePassport();
+        if (data) {
+          refetch();
+        }
       } catch (error) {
         Sentry.captureException(error);
       }
     };
-    if (location.city?.length && state.identity?.length && day) {
-      updateLocation();
-    }
-  }, [state.identity]);
 
-  useEffect(() => {
-    const updateLocation = async () => {
-      try {
-        await updatePassport();
-        refetch();
-      } catch (error) {
-        Sentry.captureException(error);
-      }
-    };
-    if (location.city?.length == 0) {
+    if (location.city?.length && day && interest && identity) {
       handleLocation();
       updateLocation();
     }
-  }, [location.country]);
+  }, [state.identity]);
 
   useEffect(() => {
     if (firebase?.generateFirebaseToken) {
@@ -419,6 +411,7 @@ export default function PassportScreen(props: ScreenProp) {
           year: year
         },
         identity: state.identity,
+        interest: state.interest,
         currentLocation: {
           city: location.city,
           state: location.state,
