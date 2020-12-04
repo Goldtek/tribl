@@ -120,6 +120,8 @@ export default function PassportScreen(props: ScreenProp) {
     variables: { offset: 0, first: PAGINATION_DEFAULT }
   });
 
+  const [cache, setCache] = useState<PassportInterface | null>(null);
+
   const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
     GET_CONNECTION_REQUEST,
     {
@@ -147,6 +149,10 @@ export default function PassportScreen(props: ScreenProp) {
   const interest = userDetails?.interest.map((item: any) => item.id);
   const dateOfBirth = userDetails?.dob;
 
+  const currentLocation = userDetails?.currentLocation[0]?.country
+    ? userDetails?.currentLocation[0]
+    : cache?.currentLocation[0];
+
   useEffect(() => {
     if (userDetails) {
       tagScreenName('PassportScreen');
@@ -162,8 +168,6 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [update, setUpdate] = useState(true);
 
-  const [cache, setCache] = useState<PassportInterface | null>(null);
-
   const setCacheData = async () => {
     if (userDetails?.id?.length) {
       await Storage.setUserPassport({ ...userDetails });
@@ -173,10 +177,7 @@ export default function PassportScreen(props: ScreenProp) {
   const getCacheData = async () => {
     try {
       const passportInfo = await Storage.getUserPassport();
-      setCache({
-        ...cache,
-        ...passportInfo
-      });
+      setCache({ ...cache, ...passportInfo });
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -664,50 +665,20 @@ export default function PassportScreen(props: ScreenProp) {
                   >
                     {`${state?.firstName} ${state?.lastName}`}
                   </Paragraph>
-                  {userDetails?.currentLocation[0]?.city ||
-                  cache?.currentLocation[0].city ? (
-                    <Paragraph
-                      style={{
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE),
-                        paddingRight: 20,
-                        lineHeight: 16,
-                        color: colors.WHITE,
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      {userDetails?.currentLocation[0].city ? (
-                        <Fragment>
-                          {`${userDetails?.currentLocation[0]?.city}, ${userDetails?.currentLocation[0]?.state}`}
-                        </Fragment>
-                      ) : (
-                        <Fragment>
-                          {`${cache?.currentLocation[0]?.city}, ${cache?.currentLocation[0]?.state}`}
-                        </Fragment>
-                      )}
-                    </Paragraph>
-                  ) : (
-                    <Paragraph
-                      style={{
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE),
-                        paddingRight: 20,
-                        lineHeight: 16,
-                        color: colors.WHITE,
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      {userDetails?.currentLocation[0].state ? (
-                        <Fragment>
-                          {`${userDetails?.currentLocation[0]?.state}, ${userDetails?.currentLocation[0]?.country}`}
-                        </Fragment>
-                      ) : (
-                        <Fragment>
-                          {`${cache?.currentLocation[0]?.state}, ${cache?.currentLocation[0]?.country}`}
-                        </Fragment>
-                      )}
-                    </Paragraph>
-                  )}
+                  <Paragraph
+                    style={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      paddingRight: 20,
+                      lineHeight: 16,
+                      color: colors.WHITE,
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    <Fragment>
+                      {`${currentLocation?.city}, ${currentLocation?.state}`}
+                    </Fragment>
+                  </Paragraph>
                   <ConnectionCover>
                     <Connection>
                       <Paragraph
