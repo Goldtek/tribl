@@ -103,7 +103,7 @@ export default function DirectMessageTab(props: ScreenProp) {
       );
 
       unsubscribe = userConservations?.onSnapshot({
-        next: async (snapshot) => setRequestNumber(snapshot.docs.length)
+        next: async (snapshot) => setRequestNumber(snapshot.size)
       });
     };
 
@@ -124,9 +124,9 @@ export default function DirectMessageTab(props: ScreenProp) {
     []
   );
 
-  return chatHistory ? (
-    <Fragment>
-      {requestNumber ? (
+  const RenderMessageRequests = useMemo(
+    () => () =>
+      requestNumber ? (
         <MessageRequestContainer
           onPress={() => navigation.navigate('MessageRequestScreen')}
         >
@@ -158,8 +158,13 @@ export default function DirectMessageTab(props: ScreenProp) {
             />
           </Fragment>
         </MessageRequestContainer>
-      ) : null}
+      ) : null,
+    [requestNumber]
+  );
 
+  return chatHistory ? (
+    <Fragment>
+      <RenderMessageRequests />
       <FlatList
         bounces={false}
         data={directMessages}
@@ -172,15 +177,18 @@ export default function DirectMessageTab(props: ScreenProp) {
       />
     </Fragment>
   ) : (
-    <Text
-      style={{
-        fontSize: RFValue(fonts.MEDIUM_SIZE),
-        fontFamily: fonts.WORK_SANS_BOLD,
-        margin: RFValue(20),
-        textAlign: 'center'
-      }}
-    >
-      You currently don't have any messages
-    </Text>
+    <Fragment>
+      <RenderMessageRequests />
+      <Text
+        style={{
+          fontSize: RFValue(fonts.MEDIUM_SIZE),
+          fontFamily: fonts.WORK_SANS_BOLD,
+          margin: RFValue(20),
+          textAlign: 'center'
+        }}
+      >
+        You currently don't have any messages
+      </Text>
+    </Fragment>
   );
 }
