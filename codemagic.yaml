@@ -19,8 +19,8 @@ workflows:
                   source: true
         scripts:
             - name: Install yarn dependencies
-              script: |
-                yarn
+              script:
+                - yarn
             - name: Set Android SDK location
               script: |
                 echo "sdk.dir=$HOME/programs/android-sdk-macosx" > "$FCI_BUILD_DIR/android/local.properties"
