@@ -42,7 +42,7 @@ workflows:
             - android/app/build/outputs/**/*.apk
         publishing:
             google_play:                        # For Android app
-                credentials: Encrypted(...)  # Put your encrypted JSON key file for Google Play service account
+#                 credentials: Encrypted(...)  # Put your encrypted JSON key file for Google Play service account
                 track: alpha 
             email:
                 recipients:
