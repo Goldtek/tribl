@@ -43,7 +43,7 @@ workflows:
         publishing:
             google_play:                        # For Android app
                  credentials:  # Put your encrypted JSON key file for Google Play service account
-                track: alpha 
+                 track: alpha 
             email:
                 recipients:
                     - john.doe@gmail.com # Put your email address for build notifications (optional)
