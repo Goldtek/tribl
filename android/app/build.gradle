@@ -143,8 +143,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode project.env.get("APP_VERSION_CODE").toInteger()
-        versionName project.env.get("APP_VERSION_NAME")
+        versionCode project.env.get("$APP_VERSION_CODE").toInteger()
+        versionName project.env.get("$APP_VERSION_NAME") 
         multiDexEnabled true
     }
 
