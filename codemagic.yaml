@@ -2,11 +2,11 @@ workflows:
     react-native-android:
         name: React Native Android
         environment:
-#             vars:
-#                 CM_KEYSTORE: Encrypted(Z0FBQUFBQmZ5bjc3SFB3Z212NFBxVWdXOV83ZWFRd2tVSEFUaWN5VlFDM0VoSjhsOXFMNmZjTElPRlJscVdFUUtwMWdaNEhGajEzQnN3LWw1cmdIWGJrMHpESUxLYUpFNVE9PQ==) # <-- Put your encrypted keystore file here
-#                 CM_KEYSTORE_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore password here
-#                 CM_KEY_ALIAS_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore alias password here
-#                 CM_KEY_ALIAS_USERNAME: Encrypted(Z0FBQUFBQmZ5bjh6OWRwd3huMnhOaVp0TkxEOW11YkNVOXlKVV9RTUNBdms5eDJISF9PTkVFVmVFS2MtazdYNWRvNFZMejBQNVRpRUl2cTA3MGlJSVZkSF90bDJHWVpuekE9PQ==) # <-- Put your encrypted keystore alias username here
+            vars:
+                 CM_KEYSTORE: Encrypted(Z0FBQUFBQmZ5bjc3SFB3Z212NFBxVWdXOV83ZWFRd2tVSEFUaWN5VlFDM0VoSjhsOXFMNmZjTElPRlJscVdFUUtwMWdaNEhGajEzQnN3LWw1cmdIWGJrMHpESUxLYUpFNVE9PQ==) # <-- Put your encrypted keystore file here
+                 CM_KEYSTORE_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore password here
+                 CM_KEY_ALIAS_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore alias password here
+                 CM_KEY_ALIAS_USERNAME: Encrypted(Z0FBQUFBQmZ5bjh6OWRwd3huMnhOaVp0TkxEOW11YkNVOXlKVV9RTUNBdms5eDJISF9PTkVFVmVFS2MtazdYNWRvNFZMejBQNVRpRUl2cTA3MGlJSVZkSF90bDJHWVpuekE9PQ==) # <-- Put your encrypted keystore alias username here
             node: latest
         triggering:
             events:
@@ -42,7 +42,7 @@ workflows:
             - android/app/build/outputs/**/*.apk
         publishing:
             google_play:                        # For Android app
-#                 credentials: Encrypted(...)  # Put your encrypted JSON key file for Google Play service account
+                 credentials:  # Put your encrypted JSON key file for Google Play service account
                 track: alpha 
             email:
                 recipients:
