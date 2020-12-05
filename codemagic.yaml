@@ -3,6 +3,8 @@ workflows:
         name: React Native Android
         environment:
             vars:
+                 CM_APP_VERSION_CODE: Encrypted(Z0FBQUFBQmZ5MjJGZEpIRjBhRndfai1aT21UbWtIckU2VmUtSGtTekNJdFo4dE1JUDF2d19leWktSHlWdWdWTF9LZWdjY3lGVFlKaGJ1cG1sNFFZNThwZ0luZUVaTXQyX1E9PQ==)
+                 CM_APP_VERSION_NAME: Encrypted(Z0FBQUFBQmZ5MjNDWnJodjc5MURsTVJrR3d2WkVXU2w4bmtKajFjajBqd015VHBxUGdyaUZJV0ZUckNFc0pGUWxhOHp2OEFXRHFfMVRIVGNkbEl3dVZ4R19GNlB2cWNaV2c9PQ==)
                  CM_KEYSTORE: Encrypted(Z0FBQUFBQmZ5bjc3SFB3Z212NFBxVWdXOV83ZWFRd2tVSEFUaWN5VlFDM0VoSjhsOXFMNmZjTElPRlJscVdFUUtwMWdaNEhGajEzQnN3LWw1cmdIWGJrMHpESUxLYUpFNVE9PQ==) # <-- Put your encrypted keystore file here
                  CM_KEYSTORE_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore password here
                  CM_KEY_ALIAS_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore alias password here
