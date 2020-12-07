@@ -64,7 +64,7 @@ workflows:
               script: |
                 # build Android
                 cd android 
-                ./gradlew assembleRelease --scan
+                ./gradlew assembleRelease --debug
         artifacts:
             - android/app/build/outputs/**/*.apk
         publishing:
