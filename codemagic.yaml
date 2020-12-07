@@ -43,7 +43,7 @@ workflows:
                   source: true
         scripts:
             - name: Install yarn dependencies
-              script:
+              script: |
                  yarn
             - name: Set Android SDK location
               script: |
