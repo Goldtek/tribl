@@ -54,7 +54,7 @@ workflows:
                      echo "APP_VERSION_CODE=$APP_VERSION_CODE
                      APP_VERSION_NAME=$APP_VERSION_NAME" > .env
                      cat .env
-                     echo "google-services.json=$FIREBASE_JSON" > /android/app
+                     echo "google-services.json=$FIREBASE_JSON" > /tmp/android/app
                      echo $CM_KEYSTORE | base64 --decode > /tmp/android/app/tribl.keystore
                      cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
                      storePassword=$CM_KEYSTORE_PASSWORD
