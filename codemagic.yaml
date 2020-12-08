@@ -25,8 +25,8 @@ workflows:
                 TRIBL_MIX_PANEL: Encrypted(Z0FBQUFBQmZ5NUYwUnZWdHBFaUNYQWRETWdtOUphSlNyZXNLS0hLRGNGRU8tdnppcjA0LVdraHNETy1zMDRuUzYwMDdpaExpMmwxYUtlMnpDUkpNbjFYV2pPWkw4VnJTZE5lcmR5ZVJjRzY5dGJNMXE3VWp3V0RNalhidGVTMW05cEpmdEtzR3NKV0Q=)
                 TRIBL_ALGOLIA_APP_ID: Encrypted(Z0FBQUFBQmZ5NUVVUzY4eU5Fd2gyZUI3Q2tsM3hfMjhsbzF0cFN3ZVMzZTdzbzloQjc3dWtDQVZzUGRMai13eWxGUEhzZ0FQQm1zdEFfSkNteTVLcHNuVnhlUkNVOUlhOGc9PQ==)
                 TRIBL_ALGOLIA_API_KEY: Encrypted(Z0FBQUFBQmZ5NURUbjVkM0NaSHdRcmlaWkd2endDU3Q3QmgwdHlNc1daWXFBNnVqRGlnVWRNMldROTNrVW96WGtEdWxfNWlxN2Z4aGsxaDl3WG5uZXhPUzNpSnE5ZGJlSE5BTXRhOHhJU01wcGY0ZHVaemljdkgyRDFZM3NYbVFYRmVxcFR1Nm9mNzA=)
-                APP_VERSION_CODE: 101033
-                APP_VERSION_NAME: 1.2.2
+                APP_VERSION_CODE: Encrypted(Z0FBQUFBQmZ6elhlT0I4V3RaLVg2M2JMUTd4Q0d3cnpaNWpVX05TeW51dXN6ak9WdUhBWGUzNlpmQVhXQV9NajI2cGtWQU5ldld2Mm1oT054RjNNanZfMDVWeEpDTFNrLXc9PQ==)
+                APP_VERSION_NAME: Encrypted(Z0FBQUFBQmZ6elh5cTRkU2ZrRVhYdDE3Y01Kb1lta2ZTWl9KbDdsNGxwdnBMeklobUVyTVpfYmFadFZLMk1YMG8xMkE5cmo5NWdBOHNRTDlTT3oxS2I3N3FxS29aZ1JseUE9PQ==)
                 CM_KEYSTORE: Encrypted(Z0FBQUFBQmZ5bjc3SFB3Z212NFBxVWdXOV83ZWFRd2tVSEFUaWN5VlFDM0VoSjhsOXFMNmZjTElPRlJscVdFUUtwMWdaNEhGajEzQnN3LWw1cmdIWGJrMHpESUxLYUpFNVE9PQ==) # <-- Put your encrypted keystore file here
                 CM_KEYSTORE_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore password here
                 CM_KEY_ALIAS_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore alias password here
@@ -50,10 +50,10 @@ workflows:
                 echo "sdk.dir=$HOME/programs/android-sdk-macosx" > "$FCI_BUILD_DIR/android/local.properties"
             - name: Set up keystore
               script: | base64 --decode > 
-                 cat <<EOF >.env
-                 APP_VERSION_CODE=$APP_VERSION_CODE
-                 APP_VERSION_NAME=$APP_VERSION_NAME
-                 EOF
+                     cat <<EOF >.env
+                     APP_VERSION_CODE=$APP_VERSION_CODE
+                     APP_VERSION_NAME=$APP_VERSION_NAME
+                     EOF
 #                     echo $CM_KEYSTORE | base64 --decode > /tmp/android/app/tribl.keystore
 #                     cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
 #                     storePassword=$CM_KEYSTORE_PASSWORD
