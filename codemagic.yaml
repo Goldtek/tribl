@@ -50,11 +50,11 @@ workflows:
                 echo "sdk.dir=$HOME/programs/android-sdk-macosx" > "$FCI_BUILD_DIR/android/local.properties"
             - name: Set up keystore
               script: |
-                 echo $CM_KEYSTORE | base64 --decode > /tmp/android/app/tribl.keystore
-                 cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF                  
-                 echo 'APP_VERSION_CODE=$APP_VERSION_CODE
-                 APP_VERSION_NAME= $APP_VERSION_NAME'>.env
-                 cat .env
+                 echo $APP_VERSION_CODE | base64 --decode > /tmp/.env
+                 cat >> "/tmp/.env" <<EOF                  
+                 APP_VERSION_CODE=$APP_VERSION_CODE
+                 APP_VERSION_NAME= $APP_VERSION_NAME
+                 EOF
 #                     echo $CM_KEYSTORE | base64 --decode > /tmp/android/app/tribl.keystore
 #                     cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
 #                     storePassword=$CM_KEYSTORE_PASSWORD
