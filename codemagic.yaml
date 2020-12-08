@@ -68,7 +68,7 @@ workflows:
                 cd android 
                 ./gradlew assembleRelease 
         artifacts:
-            - android/app/build/outputs/**/*.apk
+            - android/app/build/outputs/**/*.aab
         publishing:
             google_play:                        # For Android app
                  credentials: # Put your encrypted JSON key file for Google Play service account
