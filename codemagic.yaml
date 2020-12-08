@@ -27,10 +27,11 @@ workflows:
                 TRIBL_ALGOLIA_API_KEY: Encrypted(Z0FBQUFBQmZ6M1Q2ZzlHVGtYVGdqbGhJakluWlVpS01kQ25YdFF0S2ZNMy1Ra2ZCS0tJRm5ZVlFDVjJTRUxqdHVncHJkYzNaMFRQc20yVHZlcDVJdFN5UV9mVl9RbjNFa0hCeG5BRVZDRHduT3dTemJ5V0hDc29xMTkzTlN4Q1ZXUkRSelRvSERpUGI=)
                 APP_VERSION_CODE: Encrypted(Z0FBQUFBQmZ6M1ZhM0RWSW9YLWVHRURZalRJOW5PSkRtSWw5NVliN1dQV3FUTWFJUVR6dUp5cG4yWUJhSEUtRFVRVnphdUtlMEVLLUE3Wm51S2R2S3JSaFMxbEo1bVZhaGc9PQ==)
                 APP_VERSION_NAME: Encrypted(Z0FBQUFBQmZ6M1Z4dVNsZUJYQjE1N3Z6TGhfNGJmUThyQ0wzX3RhZ193ck9ncUNxZFlDRnkxTGlkZk1fSk1lQXMxWDBzcHI4bm5MODZjbDJJZ0FFTDBaYlBrM1BjblFkTmc9PQ==)
-                # CM_KEYSTORE: Encrypted(Z0FBQUFBQmZ5bjc3SFB3Z212NFBxVWdXOV83ZWFRd2tVSEFUaWN5VlFDM0VoSjhsOXFMNmZjTElPRlJscVdFUUtwMWdaNEhGajEzQnN3LWw1cmdIWGJrMHpESUxLYUpFNVE9PQ==) # <-- Put your encrypted keystore file here
-                # CM_KEYSTORE_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore password here
-                # CM_KEY_ALIAS_PASSWORD: Encrypted(Z0FBQUFBQmZ5bjlkdGppMXp5LXloaUFWYkRhSHVQNU01RXg2alNUTGI2T2tXVnQ5dmJoTUp2enJ0aGU1TmNsME9NcU5XVWQxTnd2VHdPR2E1bEJuSHhSa3hUaFYtZWl2aGc9PQ==) # <-- Put your encrypted keystore alias password here
-                # CM_KEY_ALIAS_USERNAME: Encrypted(Z0FBQUFBQmZ5bjh6OWRwd3huMnhOaVp0TkxEOW11YkNVOXlKVV9RTUNBdms5eDJISF9PTkVFVmVFS2MtazdYNWRvNFZMejBQNVRpRUl2cTA3MGlJSVZkSF90bDJHWVpuekE9PQ==) # <-- Put your encrypted keystore alias username here
+                CM_KEYSTORE: Encrypted(Z0FBQUFBQmZ6MzlDWERtUk5sb3dpdWVVbWU5QWxZQjBxYXNSeXZQVjVSekltb1NBMGRnTGdKMW42YlVjdXFTbWFGcGliSkVuNHZUY2s4UWpOQ0hKYUoyYzUzaVRudFdOeWc9PQ==)# <-- Put your encrypted keystore file here
+                CM_KEYSTORE_PASSWORD: Encrypted(Z0FBQUFBQmZ6My1XZkdfTVFBYS13cm0wRW1TdURobHBzZS1Kb1ZCQVpTaVhseFpsVk9LYVEyUFRRNk9HR2FnSWE1NUlpZGlFVkttOFp4bi01d3ktWU1DTmJhSWRZVU5yaUE9PQ==) # <-- Put your encrypted keystore password here
+                CM_KEY_ALIAS_PASSWORD: Encrypted(Z0FBQUFBQmZ6My1XZkdfTVFBYS13cm0wRW1TdURobHBzZS1Kb1ZCQVpTaVhseFpsVk9LYVEyUFRRNk9HR2FnSWE1NUlpZGlFVkttOFp4bi01d3ktWU1DTmJhSWRZVU5yaUE9PQ==) # <-- Put your encrypted keystore alias password here
+                CM_KEY_ALIAS_USERNAME: Encrypted(Z0FBQUFBQmZ6M19CMWdVa29oX1hyZ1lqVGp2OVJMZHhOZ01rX1lqcTkteFo2aklpSHZ5YnFsdEFoX0N3b0NJQ0dYWTk5SGdOWTdoNGRIY09ES0RQR2FSeFpyNVl6Y1ZJN0E9PQ==) # <-- Put your encrypted keystore alias username here
+                FIREBASE_JSON: Encrypted(Z0FBQUFBQmZ6NEE2dnh1Ym83bDFwS3ZSRHpXV2tNYXh4NE1iTzk4cVIxT0xBYkswaEYzdVdiWjdDZWJLdkhqMHBSemU1bnBCb25BcHRJbkxCdkJJWWZBcGZYOWIweU1TVDhLVjZPTkFfQ0FyY3ZScGZqOUR6ZWpZUDd5NXUwVU9nNWhjVGJQRF84MGE2TU9pNER4dC1QNmUzRXVZcnliQS1pUmFKeFRoVXpFQU96Y0g3SDFWNEluMWFnTmMwSkhHazZvRG83RHRhTWRITjJNUDNNODhiLUlyS0U5U3lTOG1VVHNCajRhWUJRdVFjeUNBb09UUTFpd1FrZXozZ2lvT04xX0xENTJUZmRwTmM3Rm9jdHpnaURma0ptc0FTcTdHa2RibzI1dF92UTFBdWNNa0VMaV9oRUM2anNkd041bmNzWkFiMkU5SWI3TTNpREE5UkxvalprRG5oamhhTWFqQ1hkbC1YVDF4S1BJdWtjS0M4d2d2a0lsZ3k4M01uR05jQnh0bjdLRlRLcU50MFZYWkRrVTlIcG9VTlNaY2NjTVJpQ3NvY1lyQlg0SzdrNVQxck1VS3RlYW85VVRsZFBtTlBPMjlQYTlzMVZxeHZkdDlZcFVYdHVoSlFUWlRQckdMRWlZRUNpckotUGJERVUxSWd2MklTNnMzNVlySVBsT2VwWTYyd1pzS04yUjAzQXhCTjRhSndmOURyN2lUd1lVSUxkOVVvMjlwZko2UGRjVk1wS0RhbXlscGVUWHVxQTFLNVVrOWJZLXRqcG5lQnRHcUlYOWVtRWhOanRwaG5OTjJhS1JfZm02NW9TYUI1RVZBbE4yNk5IOXhaRmhOX1ZhTTNQeE1SQUFFZ1BWNGZsQWppQVhTcnF1RHVuZ25saHU3bEg5aURwNHJyMTd3NnpqTkNqRnhQS2d2WnhybjhtYjhKMy1pS05hNTFOLU81ZHNaNllaOHhzMmpvRjZubnFtUnVCNGVGOXB5NVdqUWkwNlZ1WmtxSFEyLVhfcjRUeERKSVRiVWhTbWJnZW9rQjNBYVJfVWhwS1JIRlR2YS1odFRZMVNLTF9lLWVDSFBJNFNyWExFMWczVVNJNk51TUNZTkQ0c3dtaFBwU3Z0b2FyZ2RUQjFRMUxfQjVGNnhtUDlyYUJJaFB4UVVnYXJtT19QQUp3SUsxQnhLb3RDZDRZN0RJUHpCVU5SSVoyTzlZVGZxZ3dSR0kxQTJONzFpZFNhSk5YNjU0WDBpeURPc3N6aUFGU0lkbFU3bHhVWjZVYXR5dGpHc0d4VFh2M3c5NUZZQVZfaGN6aUwyWFJyS0pDSGtVMkthTkRfM3ZUZ3VwQ2c1ZlJBdFJoa1hvcmZKbktKZFZlTDN3YTBsVDZuN010UlZHQVlkdGJ3N3lXVDhsbE1XSmFCeVFYZmtoWFNrVGdWVnN2cGJVOXFvSGtORGpoY01pZlVDZUJ0aV8yZ0d3MWVFZEl1cWFnZWkxTGw3bFZDZ0h4Tk03VnpXczBhVmpLVi0taW5FWnYwVVJUWXpuUFFXV2hyb2h2M2ZXUHBSOXcyQzYxLU8xeVVya3hTNkZLNmtkWmlmVm5PSWVlNkdyVkxCb0Z5bkRQdDRiSDdrbDlmcktRNnJ6bExCWjlla2wxdzBLRmVXanNhMjVhZG83bFRUMTNLcHJJd2ZzcG5rZHVzRlVGSFp5U1pBY2dzVnZOQnZWSTF1SERMZFkyVWdObjgxZ3JtaFV3MXJpd1BxRmJ3SGdMYlNiY3lUUlBVWmV3U2tXclIxQ1JKYUM4SV9sUVJ1cHdIMVA2OVpmODY5WUoyVnEzTkpnOW1hQzZ4SVJWVEcxWE1qcXFCQldHLTVqSXhzam1YbTRzODIyRklqNVN0STlZcWRBaVNXMU1oRC1lQkcycmRwalE3WFo5cFM4OGNxbGZxNTl5TGdSVkpuU3U1X3daTHp6MkxkRVdfRG5vb1JtLXZYb1NRZklIemdJams2YVBRdFJYNW5hSWhOZEk4b1FqU1RfMjU5dzFfMEdldDBpWDJDLWVUa01QdlMzN0FOYmJYU1UyRFhTRVhUVWdqcnZ3T2Y5YVhaMUZtZGhWZlNNaEJ6c2tQVHFzRENxSXhsX29LSmZZTHFEVU5jekhiSnBtRTJaNUFtZDVBb2d5T2Y1SVlmRHN2SnFTaTNacEIwQ0NoU1VXb2V3RjZkOGFxNy10M0dIZlZTOTlHYm5VaFFTNWUtS240TTNRSGxxUER3bWw4MjM3S1BZX3QwdGlXNWxyZEozRFVUS2pZQUpyd0VyV2xyQW9zV3NiZTlISWxFNjNPQmlYemVLOU5uVEZxLTd3M2VtdW05aWkxaVM1ejRoNXBycVV0dlQyR0hwelgwQWVKNnY2cDVRMXRaanBIeVpDLTVSVEFvc1RLVW5RLXg0bHBfOGpMNGstU0x4cWo2YTN0WHlwRmxIbnpuUTd0X291WEV1TnFmNVRpSmxPY2hBd2NkZVpJT3BMc3Z4ZzA0dFJzUlNxRUl6aTMxU05nVksyQWwzbVQ5X01wWFBDR3VqN2J1M3RTbTlqN2JEMmFTR29VdXhzVUFQMTllMFI2d3lkUUNwb01zQWt5VXJiQUU0VjBYeWNNbG82MnBYeGV5aDhQRDFRUUZ6NnpGWnlseGJMNXlmSFFLMmFBVHZMLXZyeW9tS1VEZ3czTzdEUUZFZnNEWDdQVy1hdGhTMHAtV1pnVXA0NVdRNUtkQllkMUkwclYyMWJuTlpSWk1UYWZHajZXRTZBNHRHa0VYSE92NGhsWmE5Nk9SbmN1VGtMdVJ2Y2JqWWE0Q2V0MXFGS0dDbUxUaUh1NWc5X1JySzNhYUxvQzc4Smszc1B0RW9pSXdTdmI4U0t0RXhrVk9IaGh6VjBhZExzTWdab0xRVHFVSTVjREpLby03NVgzTExXeWd2TmZTZUdhM2ZERldldWpfa1lsWC1oOHNxYnlCWnM1VE10Wmk0YWx0WHlWT2xBN01VWUJ2dlZGQ1N2NklWTzRLQmlMMzBkbnhnYmhZS1B0cU1PeF85dkNUeHhmNzFjXzY2Uk9YTXh2N09FOF9sakl4V3RCQlNnMEtlX0RVQTl1MnVlVHZyM3FmeG1SVnNDZ2Z1TWlOUVcxUlRSc1UxV3dsYUVXekc3ekhieUNWSGxqWTVpb2pNRFVhR2phTnZLVDIzX0tYSi03LXlEX09hNUNQOG1PejRsR2xSblF3ZWxocjJEbUFfX2s9)
             node: latest
         triggering:
             events:
@@ -53,13 +54,14 @@ workflows:
                      echo "APP_VERSION_CODE=$APP_VERSION_CODE
                      APP_VERSION_NAME=$APP_VERSION_NAME" > .env
                      cat .env
-#                     echo $CM_KEYSTORE | base64 --decode > /tmp/android/app/tribl.keystore
-#                     cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
-#                     storePassword=$CM_KEYSTORE_PASSWORD
-#                     keyPassword=$CM_KEY_ALIAS_PASSWORD
-#                     keyAlias=$CM_KEY_ALIAS_USERNAME
-#                     storeFile=/tmp/keystore.keystore
-#                     EOF
+                     echo "google-services.json=$FIREBASE_JSON" > /android/app
+                     echo $CM_KEYSTORE | base64 --decode > /tmp/android/app/tribl.keystore
+                     cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
+                     storePassword=$CM_KEYSTORE_PASSWORD
+                     keyPassword=$CM_KEY_ALIAS_PASSWORD
+                     keyAlias=$CM_KEY_ALIAS_USERNAME
+                     storeFile=/tmp/android/app/tribl.keystore
+                     EOF
             - name: Build Android release
               script: |
                 # build Android
@@ -69,7 +71,7 @@ workflows:
             - android/app/build/outputs/**/*.apk
         publishing:
             google_play:                        # For Android app
-                 credentials:  # Put your encrypted JSON key file for Google Play service account
+                 credentials: # Put your encrypted JSON key file for Google Play service account
                  track: alpha 
             email:
                 recipients:
