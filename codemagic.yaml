@@ -51,7 +51,7 @@ workflows:
             - name: Set up keystore
               script: |
                  echo 'APP_VERSION_CODE=$APP_VERSION_CODE 
-                 APP_VERSION_NAME=$APP_VERSION_NAME' >.env
+                 APP_VERSION_NAME=$APP_VERSION_NAME' > /tmp/.env
                  echo $APP_VERSION_CODE | base64 --decode > /tmp/.env
                  cat >> "/tmp/.env" <<EOF                  
                  APP_VERSION_CODE=$APP_VERSION_CODE
