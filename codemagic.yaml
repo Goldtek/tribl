@@ -1,38 +1,27 @@
 workflows:
-    react-native-android:
-        name: React Native Android
+    react-native-ios:
+        name: React Native iOS
+        max_build_duration: 120
+        instance_type: mac_mini
         environment:
             vars:
-                TRIBL_SERVER_BASE_URI: Encrypted(Z0FBQUFBQmZ6MjgzVDNsdlM3TUJYSHYxRGRYUmxRQnR3eXFkRHAzRGp2UGQ1Tl83MjBCVXRCWmdfQkxVck5nVzRtQS1yN2FUOW1ld0Jxd3FQWmlzNGFZa3Q5YzNUXy0zNGJyYXVhaE5yRkI5bF9WVnhWV0p6aE10WXpYVmdWa0N2TGU1RXY2ck5qOTJjTWxZellGY2xHZlZWRE9lcTk3TEFXRnRSeDdyeFdmR2JuSWZabFR6Yk53PQ==)
-                TRIBL_WSS_SERVER_BASE_URI: Encrypted(Z0FBQUFBQmZ6Mjk0akZ1X1RZalJlV1lFVnRIcXhGV05HMjVTeGJfSjBBdkhPOFBLZGppcXpOUkUxMHYtblJqZTdEZUNFVDdDOEkzZHlrbGtYU0NZaEFFb2dwMUlzWkZOZTMxc0ZwSnpKS1lqOEJ1Mzl5WVlXY21EZ29NalJmZklieWlCOVdKTzhla3dRTU56YklNSFhQbEFkWHFaSmx4STVHc3EwV2RaUldNeUk3N3l5cjNKSGI0PQ==)
-                GOOGLE_PLACES_API: Encrypted(Z0FBQUFBQmZ6Ml9IMDVQQWZ5d2lHRi01dFhrdVlBaDVPeGpHRkNiVncwaDl6ekVyTFhqV2ZJZmphemZIZTZfV3BrOVREWTVfeW84WFlmMzdEdHVqQjFfeldYN0VNR012RUs3LUQwbzZjSFgxWXBHakJwczFXMGI5bGs3SVliSlhqXzNiUGhPbUNnZDI=)
-                CLOUDINARY_NAME: Encrypted(Z0FBQUFBQmZ6Ml8waENiRm1LZlFLb2R1NTU2RUxOZmRUWDU3RWdqdTFTVzQwb2FpeDJwMzEwell0Ymk4YjlhRE1pNG0xay1JdnFuUXY0cmhOVkdsb3VXMEt1U29JTW1OZVlJWnNseUNNbkFJel9KS1l5Y25WWm89)
-                CLOUDINARY_PRESET: Encrypted(Z0FBQUFBQmZ6M0FXZjFid2htdEVQMFRZSWUyR2pUc2xZM3dFR0hzZlBPNzktekNCZ3JpTUFiWWVOOWlLaGl3RXRFWDV1bmg5XzVhWG5LeVRBRW13cWY1b1MxeF9XcjRUcEE9PQ==)
-                SENTRY_KEY: Encrypted(Z0FBQUFBQmZ6M0JWVTEzUUkzemxCLXNSVnplaFNZTWxMODR6OTh6R2kwQWxOcHlIbnZGVnpxMjUzVUc1Zm9QaFNTclBvS3ZEWHY5eDliRFpFZDdUdE5TQkZEWXA5a0ZRQW5iUWJDdHEydkt6MzBaamxzaGMwTHRwSHo3c2pVdURDbDVyUmFNWF9VblpTQVpkbWlMNk13WThnVElFR2hkbHAzclRGMFAyb1ZOTDltXy1HWFctb3RNPQ==)
-                ALGOLIA_PASSPORT_INDEX_NAME: Encrypted(Z0FBQUFBQmZ6M0NhM2lRUmhTMnVKSXVzdFRURXlyODlBX2NoQkJRaFFUSHY3NkFVWTZzNDV5dnZpQmFmZHotUU51R2Nha2NINmZaaUdQWVZQaTN2TDRqaVg3SXczWEdCMEtQWHdFUmNIMWd3UHo4aXlEMzc5YVU9)
-                ALGOLIA_COMMUNITY_INDEX_NAME: Encrypted(Z0FBQUFBQmZ6M0RKcnBTYkdmYVAyajdGdDBWVTlwRW9jaGs4LWNMaVNiRTNYU2gza29ISS0wUVJjV0U2YU15bFRHZ3dHQi1uakw5aDk4MGY1U2ZELUJhX2IydzRwVXNBNlUzVC01TXM1cTZUTDNpQ1h5OWhYcnM9)
-                ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME: Encrypted(Z0FBQUFBQmZ6M0VHLXNWVHBWVGw0N3YweGp0XzVoY0pXMm0yaGJqNWJWRnZraWJWQjAxZGVwVE9YQUdYV21mMXFId0o4WkJ4M3MtN2hic2FaaVpNOVZHalZybzIxWHJ5VUh3OUtwNTJKQmV6emxiamxxbUpNM0k9)
-                ALGOLIA_PASSPORT_LOCATION_INDEX_NAME: Encrypted(Z0FBQUFBQmZ6M0U2MU9fWGlTYkF3NWhKS1k3UlQ1ZnFDQWlveUxGcW80aU9WT1IxbFFpMFpuOGt4SGpWaFhnWVl0ZDVTamFkNlc2NlFBOFFyazVZT3JwMEZtUzFZdklVaXBfa1JNZHFRQlo1MU1pbnVYcnRPOXM9)
-                FIREBASE_PROJECT_ID: Encrypted(Z0FBQUFBQmZ6M0trZXpGNjloWTF6Y19iUnJlcWU5TWFleDJla2lMcEkxNXB1UWc2dlBOeDk2ZnZYVmlXenFmSE8tX2FBSnRYWjNSOGJWMFVOOTN1UmdfMDhzd21EZl9oWFE9PQ==)
-                FIREBASE_MEASUREMENT_ID: Encrypted(Z0FBQUFBQmZ6M0xRTjRHNklTX054UXVuMGZscl9ZRllUeGFjdkxQUEVYZWNnMDhFa1EtTU9fTERkcENnWGdoTXpmcUdTM0tjYzdBTDdqTkY2U1FOUkpDUUVvUmwyQjJMeFE9PQ==)
-                FIREBASE_MESSAGING_SENDER_ID: Encrypted(Z0FBQUFBQmZ6M0w0ak9YZ3ZuaHl0NGZqUFFHQWtWejY3M1RzX0JiYVhQeUlvQkVBbWh2RTlNUThzUEJ1MkV3UXJZTXlNQ1R2aTYtWDNDTmtGQ2R4ZkRDOW5vdDljM1hWT1E9PQ==)
-                FIREBASE_STORAGE_BUCKET: Encrypted(Z0FBQUFBQmZ6M01xLTluN2tXZ1N6SjZyU2NhMDhkNDdMeXo2c1lpX1hMNWNQOTdsOVVqOFI4VEhYYnhaS1g3RXFzU0VzanpfdzdlcUFsYXJIR1N0eDAzQXJZcFAyX3h6UEJRNEdkYWQ2N1NoQl9yQXQ4cFAtMTg9)
-                FIREBASE_AUTH_DOMAIN: Encrypted(Z0FBQUFBQmZ6M05qbHhtSVBJR0RGdTZ2ZVpjbHRmWWxVSlhfRldLcFU0UzNuX3FFWW1UTGx4d3FuaUlWdi1uLXBUWlJBaXplWEtOcnVGb2RvVVRCWDllZFkwaXM5WnJpY2JVLW9SVUNLZFhPTUhrRWNKNjBmMWs9)
-                FIREBASE_API_KEY: Encrypted(Z0FBQUFBQmZ6M09lOWlaVjJ6MVVjclBodnZUd0ZnbHYxZ0tGOXVzWm1GbGVtV3N4WHZhaS00b0RjNU5xSmhnZFhXTVVTWUdRcXpvZkd3ekRtLVNYaDFfS2NROXROLUFzSjBZWDRqZm9yTVBwQTE1MmRoZnZlWjhJMWhNWThWdEp6V0I3RHI5Z19Vcnk=)
-                FIREBASE_APP_ID: Encrypted(Z0FBQUFBQmZ6M1BielowRmJaUFFCYzQyX1RJRVhpT1NFSDg2OHZMRzByLXdEbVFGckk5OFl2aHpXZEExempSRGFHZUpYekJtTDNkZ2IySVF4Q1ZRR1RRZWpHMlQ5RVFzbmExZGF5Z3BrSTRmN2xYX2Z1ZTRIZ2d6X0dYMk54ZWNBVUdVbWxaUHhmSko=)
-                FIREBASE_DATA_BASEURL: Encrypted(Z0FBQUFBQmZ6M1FPQmF0andBUi1SWjVHYXVhUHQtWEFqU0dnNWtQekZiRHFpa2NkNHF3YUU2ZlhHSF9DNXIwWGt1OGpCbDVvY190Z1l4d3JiQ1hzak9MZWZJaHBuZ3cyak9yVzNwUnM5Q0tnQkh0MGxpVkRWWVM1aUgzaVpicU1oUHVMb0VXMFI0WW4=)
-                TRIBL_UX_CAM: Encrypted(Z0FBQUFBQmZ6M1FfTnh3UHJYR1VlTnpIV2xXZ0NURnY3UndxX1lpVnlRaHYxTWo2a1lNOHVmT1M4V0ZqTjNfWG0xY09wczRpRlYycGtsaGJUSjBLNVU1aDZDaGtIWnZnTUE9PQ==)
-                TRIBL_MIX_PANEL: Encrypted(Z0FBQUFBQmZ6M1IzTEtFRndLTTBLd3B4Y0ZfLWFMSkt2UGtvTGJxQml1VWVNQ1RpZzF3UkpKcmUxVVliOFJDWXU2WUdZVDZ4d0RjdGpZdVpzNEtBUHd3aWdjTjRJb2plbm15UGd4T0I2MTBrbHZNVWJETmE1cUJtS2VGdVBFRDF2Y19Qa29FR0RlTlE=)
-                TRIBL_ALGOLIA_APP_ID: Encrypted(Z0FBQUFBQmZ6M1M1UVJoOTJEMHhNcWt3VUlib2dXbDFkdWVBTE5JUkRvcDFxVlN2Mkg3T2tCVUhnS2Z1M3FzSlVsRDh6QWxxZFJZeVlPbDhnZlhKcTBSdjV4X3RfeWVzVXc9PQ==)
-                TRIBL_ALGOLIA_API_KEY: Encrypted(Z0FBQUFBQmZ6M1Q2ZzlHVGtYVGdqbGhJakluWlVpS01kQ25YdFF0S2ZNMy1Ra2ZCS0tJRm5ZVlFDVjJTRUxqdHVncHJkYzNaMFRQc20yVHZlcDVJdFN5UV9mVl9RbjNFa0hCeG5BRVZDRHduT3dTemJ5V0hDc29xMTkzTlN4Q1ZXUkRSelRvSERpUGI=)
-                APP_VERSION_CODE: Encrypted(Z0FBQUFBQmZ6M1ZhM0RWSW9YLWVHRURZalRJOW5PSkRtSWw5NVliN1dQV3FUTWFJUVR6dUp5cG4yWUJhSEUtRFVRVnphdUtlMEVLLUE3Wm51S2R2S3JSaFMxbEo1bVZhaGc9PQ==)
-                APP_VERSION_NAME: Encrypted(Z0FBQUFBQmZ6M1Z4dVNsZUJYQjE1N3Z6TGhfNGJmUThyQ0wzX3RhZ193ck9ncUNxZFlDRnkxTGlkZk1fSk1lQXMxWDBzcHI4bm5MODZjbDJJZ0FFTDBaYlBrM1BjblFkTmc9PQ==)
-                CM_KEYSTORE: Encrypted(Z0FBQUFBQmZ6MzlDWERtUk5sb3dpdWVVbWU5QWxZQjBxYXNSeXZQVjVSekltb1NBMGRnTGdKMW42YlVjdXFTbWFGcGliSkVuNHZUY2s4UWpOQ0hKYUoyYzUzaVRudFdOeWc9PQ==)# <-- Put your encrypted keystore file here
-                CM_KEYSTORE_PASSWORD: Encrypted(Z0FBQUFBQmZ6My1XZkdfTVFBYS13cm0wRW1TdURobHBzZS1Kb1ZCQVpTaVhseFpsVk9LYVEyUFRRNk9HR2FnSWE1NUlpZGlFVkttOFp4bi01d3ktWU1DTmJhSWRZVU5yaUE9PQ==) # <-- Put your encrypted keystore password here
-                CM_KEY_ALIAS_PASSWORD: Encrypted(Z0FBQUFBQmZ6My1XZkdfTVFBYS13cm0wRW1TdURobHBzZS1Kb1ZCQVpTaVhseFpsVk9LYVEyUFRRNk9HR2FnSWE1NUlpZGlFVkttOFp4bi01d3ktWU1DTmJhSWRZVU5yaUE9PQ==) # <-- Put your encrypted keystore alias password here
-                CM_KEY_ALIAS_USERNAME: Encrypted(Z0FBQUFBQmZ6M19CMWdVa29oX1hyZ1lqVGp2OVJMZHhOZ01rX1lqcTkteFo2aklpSHZ5YnFsdEFoX0N3b0NJQ0dYWTk5SGdOWTdoNGRIY09ES0RQR2FSeFpyNVl6Y1ZJN0E9PQ==) # <-- Put your encrypted keystore alias username here
-                FIREBASE_JSON: Encrypted(Z0FBQUFBQmZ6NEE2dnh1Ym83bDFwS3ZSRHpXV2tNYXh4NE1iTzk4cVIxT0xBYkswaEYzdVdiWjdDZWJLdkhqMHBSemU1bnBCb25BcHRJbkxCdkJJWWZBcGZYOWIweU1TVDhLVjZPTkFfQ0FyY3ZScGZqOUR6ZWpZUDd5NXUwVU9nNWhjVGJQRF84MGE2TU9pNER4dC1QNmUzRXVZcnliQS1pUmFKeFRoVXpFQU96Y0g3SDFWNEluMWFnTmMwSkhHazZvRG83RHRhTWRITjJNUDNNODhiLUlyS0U5U3lTOG1VVHNCajRhWUJRdVFjeUNBb09UUTFpd1FrZXozZ2lvT04xX0xENTJUZmRwTmM3Rm9jdHpnaURma0ptc0FTcTdHa2RibzI1dF92UTFBdWNNa0VMaV9oRUM2anNkd041bmNzWkFiMkU5SWI3TTNpREE5UkxvalprRG5oamhhTWFqQ1hkbC1YVDF4S1BJdWtjS0M4d2d2a0lsZ3k4M01uR05jQnh0bjdLRlRLcU50MFZYWkRrVTlIcG9VTlNaY2NjTVJpQ3NvY1lyQlg0SzdrNVQxck1VS3RlYW85VVRsZFBtTlBPMjlQYTlzMVZxeHZkdDlZcFVYdHVoSlFUWlRQckdMRWlZRUNpckotUGJERVUxSWd2MklTNnMzNVlySVBsT2VwWTYyd1pzS04yUjAzQXhCTjRhSndmOURyN2lUd1lVSUxkOVVvMjlwZko2UGRjVk1wS0RhbXlscGVUWHVxQTFLNVVrOWJZLXRqcG5lQnRHcUlYOWVtRWhOanRwaG5OTjJhS1JfZm02NW9TYUI1RVZBbE4yNk5IOXhaRmhOX1ZhTTNQeE1SQUFFZ1BWNGZsQWppQVhTcnF1RHVuZ25saHU3bEg5aURwNHJyMTd3NnpqTkNqRnhQS2d2WnhybjhtYjhKMy1pS05hNTFOLU81ZHNaNllaOHhzMmpvRjZubnFtUnVCNGVGOXB5NVdqUWkwNlZ1WmtxSFEyLVhfcjRUeERKSVRiVWhTbWJnZW9rQjNBYVJfVWhwS1JIRlR2YS1odFRZMVNLTF9lLWVDSFBJNFNyWExFMWczVVNJNk51TUNZTkQ0c3dtaFBwU3Z0b2FyZ2RUQjFRMUxfQjVGNnhtUDlyYUJJaFB4UVVnYXJtT19QQUp3SUsxQnhLb3RDZDRZN0RJUHpCVU5SSVoyTzlZVGZxZ3dSR0kxQTJONzFpZFNhSk5YNjU0WDBpeURPc3N6aUFGU0lkbFU3bHhVWjZVYXR5dGpHc0d4VFh2M3c5NUZZQVZfaGN6aUwyWFJyS0pDSGtVMkthTkRfM3ZUZ3VwQ2c1ZlJBdFJoa1hvcmZKbktKZFZlTDN3YTBsVDZuN010UlZHQVlkdGJ3N3lXVDhsbE1XSmFCeVFYZmtoWFNrVGdWVnN2cGJVOXFvSGtORGpoY01pZlVDZUJ0aV8yZ0d3MWVFZEl1cWFnZWkxTGw3bFZDZ0h4Tk03VnpXczBhVmpLVi0taW5FWnYwVVJUWXpuUFFXV2hyb2h2M2ZXUHBSOXcyQzYxLU8xeVVya3hTNkZLNmtkWmlmVm5PSWVlNkdyVkxCb0Z5bkRQdDRiSDdrbDlmcktRNnJ6bExCWjlla2wxdzBLRmVXanNhMjVhZG83bFRUMTNLcHJJd2ZzcG5rZHVzRlVGSFp5U1pBY2dzVnZOQnZWSTF1SERMZFkyVWdObjgxZ3JtaFV3MXJpd1BxRmJ3SGdMYlNiY3lUUlBVWmV3U2tXclIxQ1JKYUM4SV9sUVJ1cHdIMVA2OVpmODY5WUoyVnEzTkpnOW1hQzZ4SVJWVEcxWE1qcXFCQldHLTVqSXhzam1YbTRzODIyRklqNVN0STlZcWRBaVNXMU1oRC1lQkcycmRwalE3WFo5cFM4OGNxbGZxNTl5TGdSVkpuU3U1X3daTHp6MkxkRVdfRG5vb1JtLXZYb1NRZklIemdJams2YVBRdFJYNW5hSWhOZEk4b1FqU1RfMjU5dzFfMEdldDBpWDJDLWVUa01QdlMzN0FOYmJYU1UyRFhTRVhUVWdqcnZ3T2Y5YVhaMUZtZGhWZlNNaEJ6c2tQVHFzRENxSXhsX29LSmZZTHFEVU5jekhiSnBtRTJaNUFtZDVBb2d5T2Y1SVlmRHN2SnFTaTNacEIwQ0NoU1VXb2V3RjZkOGFxNy10M0dIZlZTOTlHYm5VaFFTNWUtS240TTNRSGxxUER3bWw4MjM3S1BZX3QwdGlXNWxyZEozRFVUS2pZQUpyd0VyV2xyQW9zV3NiZTlISWxFNjNPQmlYemVLOU5uVEZxLTd3M2VtdW05aWkxaVM1ejRoNXBycVV0dlQyR0hwelgwQWVKNnY2cDVRMXRaanBIeVpDLTVSVEFvc1RLVW5RLXg0bHBfOGpMNGstU0x4cWo2YTN0WHlwRmxIbnpuUTd0X291WEV1TnFmNVRpSmxPY2hBd2NkZVpJT3BMc3Z4ZzA0dFJzUlNxRUl6aTMxU05nVksyQWwzbVQ5X01wWFBDR3VqN2J1M3RTbTlqN2JEMmFTR29VdXhzVUFQMTllMFI2d3lkUUNwb01zQWt5VXJiQUU0VjBYeWNNbG82MnBYeGV5aDhQRDFRUUZ6NnpGWnlseGJMNXlmSFFLMmFBVHZMLXZyeW9tS1VEZ3czTzdEUUZFZnNEWDdQVy1hdGhTMHAtV1pnVXA0NVdRNUtkQllkMUkwclYyMWJuTlpSWk1UYWZHajZXRTZBNHRHa0VYSE92NGhsWmE5Nk9SbmN1VGtMdVJ2Y2JqWWE0Q2V0MXFGS0dDbUxUaUh1NWc5X1JySzNhYUxvQzc4Smszc1B0RW9pSXdTdmI4U0t0RXhrVk9IaGh6VjBhZExzTWdab0xRVHFVSTVjREpLby03NVgzTExXeWd2TmZTZUdhM2ZERldldWpfa1lsWC1oOHNxYnlCWnM1VE10Wmk0YWx0WHlWT2xBN01VWUJ2dlZGQ1N2NklWTzRLQmlMMzBkbnhnYmhZS1B0cU1PeF85dkNUeHhmNzFjXzY2Uk9YTXh2N09FOF9sakl4V3RCQlNnMEtlX0RVQTl1MnVlVHZyM3FmeG1SVnNDZ2Z1TWlOUVcxUlRSc1UxV3dsYUVXekc3ekhieUNWSGxqWTVpb2pNRFVhR2phTnZLVDIzX0tYSi03LXlEX09hNUNQOG1PejRsR2xSblF3ZWxocjJEbUFfX2s9)
+                # XCODE_WORKSPACE: "codemagicreactnative.xcworkspace" # <-- Put the name of your Xcode workspace here
+                # XCODE_SCHEME: "codemagicreactnative" # <-- Put the name of your Xcode scheme here
+                # Manual Code Signing
+                # CM_CERTIFICATE: Encrypted(...) # <-- Put your encrypted certificate file here
+                # CM_CERTIFICATE_PASSWORD: Encrypted(...) # <-- Put your encrypted certificate password here
+                # CM_PROVISIONING_PROFILE: Encrypted(...) # <-- Put your encrypted provisioning profile here
+                
+                # Automatic Code Signing 
+                # https://docs.codemagic.io/yaml/distribution/
+                # https://appstoreconnect.apple.com/access/api
+                # APP_STORE_CONNECT_ISSUER_ID: 5a451239-51eb-10b6-bfcc-60e61ddab13c # <-- Put your App Store Connect Issuer Id here
+                # APP_STORE_CONNECT_KEY_IDENTIFIER: LY55E1G322 # <-- Put your App Store Connect Key Identifier here
+                # APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your App Store Connect Private Key here
+                # CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your Certificate Private key here
             node: latest
+            xcode: latest
+            cocoapods: default
         triggering:
             events:
                 - push
@@ -43,36 +32,56 @@ workflows:
                   include: true
                   source: true
         scripts:
-            - name: Install yarn dependencies
+            - name: Install npm dependencies
               script: |
-                 yarn
-            - name: Set Android SDK location
+                npm install
+            - name: Install CocoaPods dependencies
               script: |
-                echo "sdk.dir=$HOME/programs/android-sdk-macosx" > "$FCI_BUILD_DIR/android/local.properties"
-            - name: Set up keystore
-              script: | 
-                     echo "APP_VERSION_CODE=$APP_VERSION_CODE
-                     APP_VERSION_NAME=$APP_VERSION_NAME" > .env
-                     cat .env
-                     echo "google-services.json=$FIREBASE_JSON" > /android/app
-                     ls /android/app
-                     echo $CM_KEYSTORE | base64 --decode > /android/app/tribl.keystore
-                     cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
-                     storePassword=$CM_KEYSTORE_PASSWORD
-                     keyPassword=$CM_KEY_ALIAS_PASSWORD
-                     keyAlias=$CM_KEY_ALIAS_USERNAME
-                     storeFile=/android/app/tribl.keystore
-                     EOF
-            - name: Build Android release
+                cd ios && pod install
+            - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
               script: |
-                cd android 
-                ./gradlew assembleRelease 
+                keychain initialize
+            # - name: Set up Provisioning profiles from environment variables (Use with manual code signing)
+              # script: |
+                # PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
+                # mkdir -p "$PROFILES_HOME"
+                # PROFILE_PATH="$(mktemp "$PROFILES_HOME"/$(uuidgen).mobileprovision)"
+                # echo ${CM_PROVISIONING_PROFILE} | base64 --decode > $PROFILE_PATH
+                # echo "Saved provisioning profile $PROFILE_PATH"
+            - name: 
+              script: |  
+                app-store-connect fetch-signing-files "com.codemagicreactnative" --type IOS_APP_ADHOC --create
+            # - name: Set up signing certificate (Use with manual code signing)
+            #   script: |
+            #     echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
+            #     keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password $CM_CERTIFICATE_PASSWORD
+            - name: Use system default keychain
+              script: |
+                keychain add-certificates
+            - name: Increment build number
+              script: |
+                #!/bin/sh
+                set -e
+                set -x
+                cd $FCI_BUILD_DIR/ios
+                agvtool new-version -all $(($BUILD_NUMBER + 1))
+            - name: Set up code signing settings on Xcode project
+              script: |
+                xcode-project use-profiles
+            - name: Build ipa for distribution
+              script: |
+                xcode-project build-ipa --workspace "$FCI_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
         artifacts:
-            - android/app/build/outputs/**/*.aab
+            - build/ios/ipa/*.ipa
+            - /tmp/xcodebuild_logs/*.log
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
         publishing:
-            google_play:                        # For Android app
-                 credentials: # Put your encrypted JSON key file for Google Play service account
-                 track: alpha 
-            email:
-                recipients:
-                    - john.doe@gmail.com # Put your email address for build notifications (optional)
+          app_store_connect:                 
+              apple_id: yourAppleId@example.com  
+              password: Encrypted(...) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
+          email:
+            recipients:
+                - john.doe@gmail.com
+     
