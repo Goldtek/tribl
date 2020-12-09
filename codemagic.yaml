@@ -80,7 +80,7 @@ workflows:
         publishing:
           app_store_connect:                 
               apple_id: yourAppleId@example.com  
-              password: Encrypted(...) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
+            #   password: Encrypted(...) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
           email:
             recipients:
                 - john.doe@gmail.com
