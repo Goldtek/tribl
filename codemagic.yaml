@@ -70,9 +70,9 @@ workflows:
         artifacts:
             - android/app/build/**/outputs/**/*.aab
         publishing:
-            google_play:                        # For Android app
-                 credentials: $GOOGLE_JSON # Put your encrypted JSON key file for Google Play service account
-                 track: alpha 
+            # google_play:                        # For Android app
+                #  credentials: $GOOGLE_JSON # Put your encrypted JSON key file for Google Play service account
+                #  track: alpha 
             email:
                 recipients:
                     - john.doe@gmail.com # Put your email address for build notifications (optional)
