@@ -6,7 +6,10 @@ import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
 import { Ionicons } from '@expo/vector-icons';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets
+} from 'react-native-safe-area-context';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
@@ -58,6 +61,7 @@ interface ScreenProp extends NavigationInterface {
 export default function MessageRequestChat(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+  const { bottom } = useSafeAreaInsets();
   const modalizeRef = useRef<Modalize>(null);
 
   useEffect(() => {
@@ -298,16 +302,8 @@ export default function MessageRequestChat(props: ScreenProp) {
       <Portal>
         <Modalize
           ref={modalizeRef}
-          alwaysOpen={RFValue(
-            DEVICE_FULL_WIDTH <= 375
-              ? DEVICE_FULL_HEIGHT / 3
-              : DEVICE_FULL_HEIGHT / 4
-          )}
-          modalHeight={RFValue(
-            DEVICE_FULL_WIDTH <= 375
-              ? DEVICE_FULL_HEIGHT / 3
-              : DEVICE_FULL_HEIGHT / 4
-          )}
+          alwaysOpen={DEVICE_FULL_WIDTH / 1.7 + bottom}
+          modalHeight={RFValue(DEVICE_FULL_WIDTH / 1.7 + bottom)}
           withHandle={false}
           panGestureEnabled={false}
           closeOnOverlayTap={false}
