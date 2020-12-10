@@ -118,8 +118,8 @@
   "update": {
     "title": "limited update release",
     "update": "this update",
-    "change1": "fix notification on inbox view",
-    "change2": "fix notification icon on inbox tab",
+    "change1": "fix online presence crash",
+    "change2": "fix OTA push errors",
     "yes": "upgrade",
     "no": "next time",
     "new": "new",
