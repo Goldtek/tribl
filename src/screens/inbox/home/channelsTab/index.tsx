@@ -24,11 +24,14 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function ChannelsTab(props: ScreenProp) {
   const { fonts } = useThemeContext();
-  const [channelHistory, setChannelHistory] = useState(true);
 
-  const [channelMessages, setChannelMessages] = useState<
-    ChannelConversationInterface[]
-  >([]);
+  const [chats, setChats] = useState<{
+    history: boolean;
+    messages: ChannelConversationInterface[];
+  }>({
+    history: true,
+    messages: []
+  });
 
   const { data } = useQuery<MyChannelRequestInterface>(USER_CHANNELS, {
     pollInterval: 1000
@@ -41,12 +44,15 @@ export default function ChannelsTab(props: ScreenProp) {
   useEffect(() => {
     let unsubscribe: any = null;
 
-    if (!data?.myChannels.length) return setChannelHistory(false);
+    if (!data?.myChannels.length) {
+      return setChats({ ...chats, history: false });
+    }
 
     const batchedChannelIds = batchConversation(data?.myChannels);
 
     const getChannelsMessages = async () => {
-      setChannelHistory(true);
+      setChats({ ...chats, history: true });
+
       const userChannels = await Promise.all(
         batchedChannelIds.map((channelIds) =>
           Firechat.getUserChannels(channelIds)
@@ -73,7 +79,7 @@ export default function ChannelsTab(props: ScreenProp) {
                   new Date(b.lastMessage.createdAt).getTime() -
                   new Date(a.lastMessage.createdAt).getTime()
               );
-              setChannelMessages(channelMessages);
+              setChats({ ...chats, messages: channelMessages });
             }
           }
         });
@@ -98,10 +104,10 @@ export default function ChannelsTab(props: ScreenProp) {
     []
   );
 
-  return channelHistory ? (
+  return chats.history ? (
     <FlatList
       bounces={false}
-      data={channelMessages}
+      data={chats.messages}
       contentContainerStyle={{
         flexGrow: 1,
         marginTop: RFValue(20),
