@@ -83,6 +83,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
 
   const displayTagModal = (childData: boolean) => {
     setState({ ...state, tagModal: childData });
+    clearTagModal();
   };
   const {
     data: communityData,
