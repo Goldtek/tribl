@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import { ActivityIndicator } from 'react-native';
 import * as Sentry from '@sentry/react-native';
 import { Mixpanel } from '../../../../config';
 import FastImage from 'react-native-fast-image';
-import { Feather, AntDesign } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
@@ -31,19 +31,16 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const [acceptConnection, { loading: acceptLoading }] = useMutation(
-    ACCEPT_CONNECTION,
-    {
-      variables: { payload: { phoneNumber: phoneNumber } }
-    }
-  );
+  const [acceptLoading, setAcceptLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
 
-  const [declineConnection, { loading: rejectLoading }] = useMutation(
-    REJECT_CONNECTION,
-    {
-      variables: { payload: { phoneNumber: phoneNumber } }
-    }
-  );
+  const [acceptConnection] = useMutation(ACCEPT_CONNECTION, {
+    variables: { payload: { phoneNumber: phoneNumber } }
+  });
+
+  const [declineConnection] = useMutation(REJECT_CONNECTION, {
+    variables: { payload: { phoneNumber: phoneNumber } }
+  });
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
     variables: { id }
@@ -51,9 +48,10 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
 
   useEffect(() => {
     getUserPassport();
-  });
+  }, []);
 
   const handleAcceptConnection = async () => {
+    setAcceptLoading(true);
     logEvent('accept connection request', { from: 'passport' });
     try {
       Mixpanel.track('User Accepts Connection Request', {
@@ -62,21 +60,25 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
       });
       await acceptConnection();
       refetch();
+      setAcceptLoading(false);
     } catch (error) {
       Sentry.captureException(error);
+      setAcceptLoading(false);
     }
   };
 
   const handleDeclineConnection = async () => {
+    setRejectLoading(true);
     logEvent('rejects connection request', { from: 'passport' });
     try {
       await declineConnection();
       refetch();
+      setRejectLoading(false);
     } catch (error) {
       Sentry.captureException(error);
+      setRejectLoading(false);
     }
   };
-
   return (
     <TouchableRipple
       style={{
@@ -171,7 +173,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             }}
             onPress={handleAcceptConnection}
           >
-            <AntDesign name="check" size={17} color={colors.WHITE} />
+            <Feather name="check" size={17} color={colors.WHITE} />
           </TouchableRipple>
         )}
       </Fragment>
