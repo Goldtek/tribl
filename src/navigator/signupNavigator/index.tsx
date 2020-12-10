@@ -113,6 +113,7 @@ export default function SignupNavigator() {
           }
         };
 
+        const locationHeader = t(`signup.userRegSteps.UserLocationScreen`);
         return {
           headerShown: true,
           headerTitle: headerTitle,
@@ -132,7 +133,13 @@ export default function SignupNavigator() {
               }}
               onPress={handleNavigation}
             >
-              {t(headerTitle ? 'signup.skipSignup' : 'signup.finishSignup')}
+              {t(
+                headerTitle == locationHeader
+                  ? ''
+                  : headerTitle
+                  ? 'signup.skipSignup'
+                  : 'signup.finishSignup'
+              )}
             </Button>
           ),
           headerLeftContainerStyle: {
