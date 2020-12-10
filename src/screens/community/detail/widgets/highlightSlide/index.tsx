@@ -29,6 +29,7 @@ import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
 import TagModal from '../../../../../components/tagModal';
+import storage from '../../../../../libs/storage';
 
 import {
   Container,
@@ -47,11 +48,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const detail = props.route;
   const { communityDetails } = detail;
   const { id } = communityDetails;
-
-  useEffect(() => {
-    tagScreenName('TribeHighlightScreen');
-  }, []);
-
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({
@@ -61,10 +57,33 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const [data, setData] = useState(communityDetails);
   const [member, setMember] = useState(false);
 
+  const clearTagModal = async () => {
+    try {
+      await storage.removeTagModal(id);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
+
+  const getTagModal = async () => {
+    const TagInfo = await storage.checkTagModal();
+    const filteredTag = TagInfo?.community.filter((tag) => tag == id);
+    if (filteredTag.length && singleCommunity?.uniqueInterests.length > 0) {
+      setState({
+        ...state,
+        tagModal: true
+      });
+    }
+  };
+
+  useEffect(() => {
+    tagScreenName('TribeHighlightScreen');
+    getTagModal();
+  }, []);
+
   const displayTagModal = (childData: boolean) => {
     setState({ ...state, tagModal: childData });
   };
-
   const {
     data: communityData,
     refetch: communityRefetch
@@ -111,14 +130,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       uniqueInterests: singleCommunity?.uniqueInterests
     });
   }, [singleCommunity?.id]);
-  useEffect(() => {
-    if (data.isMember && data.uniqueInterests?.length > 0) {
-      setState({
-        ...state,
-        tagModal: true
-      });
-    }
-  }, [data?.isMember]);
 
   const resizeAvatar = communityDetails.avatar?.split('upload/');
 
@@ -161,11 +172,18 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     logEvent('join community', { from: 'community' });
     try {
       await joinCommunity();
+      if (data.uniqueInterests.length) {
+        setState({
+          ...state,
+          tagModal: true
+        });
+      }
       setMember(true);
       setData({
         ...data,
         isMember: true
       });
+
       communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
@@ -177,14 +195,24 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     try {
       await leaveCommunity();
       setMember(false);
+      clearTagModal();
       setData({
         ...data,
         isMember: false
+      });
+      setState({
+        ...state,
+        tagModal: false
       });
       communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
     }
+  };
+
+  const closeModal = () => {
+    clearTagModal();
+    setState({ ...state, tagModal: false });
   };
 
   return (
@@ -342,7 +370,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
 
       {state.tagModal ? (
         <TagModal
-          onPress={() => setState({ ...state, tagModal: false })}
+          onPress={closeModal}
           data={data?.uniqueInterests}
           displayTagModal={displayTagModal}
         />
