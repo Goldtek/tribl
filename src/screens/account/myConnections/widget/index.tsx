@@ -7,7 +7,7 @@ import { useThemeContext } from '../../../../theme';
 import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
-import Firechat from '../../../../firebase';
+import database from '@react-native-firebase/database';
 import { OnlinePresence } from '../../../inbox/types';
 import { PassportInterface } from '../../../../graphql/types';
 import formatMessageTime from '../../../../utils/timesince';
@@ -21,13 +21,11 @@ export default function Connection(props: ConnectionProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { id, avatar, firstName, lastName, conversation, presence } = props;
+  const { id, avatar, firstName, lastName, conversation } = props;
 
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: presence.status.toString(),
-    lastSeen: new Date(
-      `${presence.lastSeen.year}/${presence.lastSeen.month}/${presence.lastSeen.day}`
-    ).getTime()
+    status: 'OFFLINE',
+    lastSeen: new Date().setDate(5)
   });
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
@@ -35,13 +33,11 @@ export default function Connection(props: ConnectionProp) {
   });
 
   useEffect(() => {
-    Firechat.getOnlineStatus(id).onSnapshot({
-      next: (snapshot) => {
-        if (snapshot.exists) {
-          const { presence } = snapshot.data() as { presence: OnlinePresence };
-          setOnlinePresence({ ...onlinePresence, ...presence });
-        }
-      }
+    const reference = database().ref(`/presence/${id}`);
+    reference.on('value', (snapshot: any) => {
+      const presence = snapshot.val();
+
+      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
     });
 
     getUserPassport();
