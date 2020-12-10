@@ -82,10 +82,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
         setFetchingMore(false);
         return Object.assign({}, prev, {
-          myConnections: [
-            ...prev.myConnections,
-            ...fetchMoreResult.myConnections
-          ]
+          myConnections: [...fetchMoreResult.myConnections]
         });
       }
     });
