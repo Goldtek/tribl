@@ -4,12 +4,14 @@ import { DEVICE_ID } from '../../utils/device';
 import {
   USER_FIRST_LAUNCH,
   USER_REG_INFO,
-  USER_PASSPORT_INFO
+  USER_PASSPORT_INFO,
+  SHOW_MODAL
 } from '../../constants';
 import {
   VerifyOTPIT,
   RegistrationInfo,
-  PassportInterface
+  PassportInterface,
+  ShowModal
 } from '../../graphql/types';
 
 class Storage {
@@ -80,6 +82,48 @@ class Storage {
     return this.MMKV?.getMapAsync(USER_PASSPORT_INFO) as Promise<
       PassportInterface
     >;
+  }
+
+  async checkTagModal() {
+    return this.MMKV?.getMapAsync(SHOW_MODAL) as Promise<ShowModal>;
+  }
+
+  async setTagModal(id?: ShowModal) {
+    try {
+      const tagModal = await this.checkTagModal();
+      let data = { community: [...tagModal.community, ...id?.community!] };
+      await this.MMKV?.setMapAsync(SHOW_MODAL, data);
+    } catch (error) {
+      await this.MMKV?.setMapAsync(SHOW_MODAL, { ...id! });
+    }
+  }
+
+  async removeTagModal(community?: string) {
+    try {
+      const currentTagModal = await this.checkTagModal();
+
+      let communityIndex = null;
+      if (currentTagModal.community.length === 1) {
+        currentTagModal.community.pop();
+      }
+      if (currentTagModal.community.length) {
+        //Get community index
+        for (let i = 0; i < currentTagModal.community.length; i++) {
+          if (currentTagModal.community[i] === community) {
+            communityIndex = i;
+            break;
+          } else {
+            continue;
+          }
+        }
+        //Remove community from tagModal
+        if (communityIndex) currentTagModal.community.splice(communityIndex, 1);
+        //Set tag modal to updated version
+        await this.MMKV?.setMapAsync(SHOW_MODAL, currentTagModal);
+      }
+    } catch (error) {
+      await this.MMKV?.setMapAsync(SHOW_MODAL, [community]);
+    }
   }
 }
 
