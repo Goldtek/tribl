@@ -20,11 +20,14 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function MessageRequestTab(props: ScreenProp) {
   const { fonts, colors } = useThemeContext();
-  const [requestHistory, setRequestHistory] = useState(true);
 
-  const [messageRequests, setMessageRequests] = useState<
-    ConversationInterface[]
-  >([]);
+  const [chats, setChats] = useState<{
+    history: boolean;
+    messages: ConversationInterface[];
+  }>({
+    history: true,
+    messages: []
+  });
 
   useEffect(() => {
     tagScreenName('MessageRequestTab');
@@ -40,9 +43,11 @@ export default function MessageRequestTab(props: ScreenProp) {
 
       unsubscribe = userConservations?.onSnapshot({
         next: async (snapshot) => {
-          if (!snapshot.docs.length) return setRequestHistory(false);
+          if (!snapshot.docs.length) {
+            return setChats({ ...chats, history: false });
+          }
 
-          setRequestHistory(true);
+          setChats({ ...chats, history: true });
           const batchedConversationIds = batchConversation(snapshot.docs);
 
           const userMessageRequests = await Promise.all(
@@ -71,7 +76,7 @@ export default function MessageRequestTab(props: ScreenProp) {
                       new Date(b.lastMessage.createdAt).getTime() -
                       new Date(a.lastMessage.createdAt).getTime()
                   );
-                  setMessageRequests(messageRequests);
+                  setChats({ ...chats, messages: messageRequests });
                 }
               }
             });
@@ -100,10 +105,10 @@ export default function MessageRequestTab(props: ScreenProp) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <Container>
-        {requestHistory ? (
+        {chats.history ? (
           <FlatList
             bounces={false}
-            data={messageRequests}
+            data={chats.messages}
             ref={hideSensitiveView}
             contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
             ListEmptyComponent={renderEmptyList}

@@ -28,12 +28,15 @@ interface ScreenProp extends NavigationInterface {}
 export default function DirectMessageTab(props: ScreenProp) {
   const { navigation } = props;
   const { fonts, colors } = useThemeContext();
-  const [chatHistory, setChatHistory] = useState(true);
   const [requestNumber, setRequestNumber] = useState(0);
 
-  const [directMessages, setDirectMessages] = useState<ConversationInterface[]>(
-    []
-  );
+  const [chats, setChats] = useState<{
+    history: boolean;
+    messages: ConversationInterface[];
+  }>({
+    history: true,
+    messages: []
+  });
 
   useEffect(() => {
     tagScreenName('DirectMessageTab');
@@ -49,9 +52,11 @@ export default function DirectMessageTab(props: ScreenProp) {
 
       unsubscribe = userConservations?.onSnapshot({
         next: async (snapshot) => {
-          if (!snapshot.docs.length) return setChatHistory(false);
+          if (!snapshot.docs.length) {
+            return setChats({ ...chats, history: false });
+          }
 
-          setChatHistory(true);
+          setChats({ ...chats, history: true });
           const batchedConversationIds = batchConversation(snapshot.docs);
 
           const userDirectMessages = await Promise.all(
@@ -80,7 +85,7 @@ export default function DirectMessageTab(props: ScreenProp) {
                       new Date(b.lastMessage.createdAt).getTime() -
                       new Date(a.lastMessage.createdAt).getTime()
                   );
-                  setDirectMessages(directMessages);
+                  setChats({ ...chats, messages: directMessages });
                 }
               }
             });
@@ -162,12 +167,12 @@ export default function DirectMessageTab(props: ScreenProp) {
     [requestNumber]
   );
 
-  return chatHistory ? (
+  return chats.history ? (
     <Fragment>
       <RenderMessageRequests />
       <FlatList
         bounces={false}
-        data={directMessages}
+        data={chats.messages}
         contentContainerStyle={{ flexGrow: 1, paddingVertical: RFValue(20) }}
         ref={hideSensitiveView}
         ListEmptyComponent={renderEmptyList}
