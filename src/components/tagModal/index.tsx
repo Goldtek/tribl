@@ -44,6 +44,12 @@ function Tags(props: any) {
 
   const identity = userDetails?.identity.map((item: any) => item.id);
 
+  const interest = userDetails?.interest.map((item: any) => item.id);
+
+  const allInterest = interest?.concat([
+    ...Array.from(state.selectedId.values())
+  ]);
+
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
@@ -57,7 +63,7 @@ function Tags(props: any) {
           year: userDetails?.dob.year
         },
         identity: identity,
-        interest: [...Array.from(state.selectedId.values())],
+        interest: allInterest,
         currentLocation: {
           city: userDetails?.currentLocation[0]?.city,
           state: userDetails?.currentLocation[0]?.state,

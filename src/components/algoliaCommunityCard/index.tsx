@@ -53,6 +53,7 @@ const Highlight = (props: HighlightProp) => {
       {highlights.map(({ value }: any, index: number) => {
         const filteredList = hit.id !== fireAuth.currentUser?.uid ? hit : null;
         const state = hit?.currentLocation?.state;
+        const city = hit?.currentLocation?.city;
         const country = hit?.currentLocation?.country;
         return (
           <Fragment>
@@ -151,7 +152,7 @@ const Highlight = (props: HighlightProp) => {
                         fontSize: RFValue(fonts.MEDIUM_SIZE)
                       }}
                     >
-                      {`${state} ${country}`}
+                      {city ? `${city} ${state}` : `${state} ${country}`}
                     </Text>
                   </NameContainer>
                 </Fragment>

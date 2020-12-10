@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Button, Card } from 'react-native-paper';
 import * as Sentry from '@sentry/react-native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -19,6 +19,7 @@ import {
 } from '../../graphql/server/query';
 import { CommunityInterface } from '../../graphql/types';
 import { logEvent } from '../../utils/uxcamHelper';
+import Storage from '../../libs/storage';
 
 function RecommendedCommunity(props: CommunityInterface) {
   const { colors, fonts } = useThemeContext();
@@ -40,6 +41,8 @@ function RecommendedCommunity(props: CommunityInterface) {
 
   const resizeAvatar = avatar?.split('upload/');
 
+  const [modal, setModal] = useState(false);
+
   const banner = resizeAvatar?.length
     ? resizeAvatar[0] +
       `upload/c_fill,g_auto,h_${RFValue(230 * 2)},w_${RFValue(
@@ -53,6 +56,14 @@ function RecommendedCommunity(props: CommunityInterface) {
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
     variables: { filter: { participantOf: { id } } }
   });
+
+  const clearTagModal = async () => {
+    try {
+      await Storage.removeTagModal(id);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
 
   const [joinCommunity, { loading: joinLoading }] = useMutation(
     JOIN_COMMUNITY,
@@ -76,7 +87,9 @@ function RecommendedCommunity(props: CommunityInterface) {
         'Activity Screen': 'Recommended Community Card'
       });
       await joinCommunity();
+      await Storage.setTagModal({ community: [id] });
       setMember(true);
+      setModal(true);
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -90,7 +103,9 @@ function RecommendedCommunity(props: CommunityInterface) {
         'Activity Screen': 'Recommended Community Card'
       });
       await leaveCommunity();
+      clearTagModal();
       setMember(false);
+      setModal(false);
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -99,9 +114,11 @@ function RecommendedCommunity(props: CommunityInterface) {
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
       title: name,
-      details: restProps
+      details: restProps,
+      showModal: modal,
+      showModalCount: 1
     });
-  }, []);
+  }, [modal]);
 
   return (
     <Card

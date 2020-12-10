@@ -83,7 +83,11 @@ function SearchModal(props: ModalProp) {
       <Modalize
         ref={modalRef}
         onClose={closeSearchModal}
-        modalStyle={{ height: DEVICE_FULL_HEIGHT / 2, paddingTop: RFValue(30) }}
+        modalStyle={{
+          height: DEVICE_FULL_HEIGHT / 2,
+          paddingTop: RFValue(30),
+          marginTop: RFValue(50)
+        }}
         HeaderComponent={
           <InstantSearch
             searchClient={searchClient}

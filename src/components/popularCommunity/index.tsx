@@ -18,6 +18,7 @@ import {
   GET_NEARBY_MEMBERS_OF_A_COMMUNITY
 } from '../../graphql/server/query';
 import { logEvent } from '../../utils/uxcamHelper';
+import Storage from '../../libs/storage';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -41,12 +42,16 @@ function PopularCommunity(props: PopularCommunityProp) {
 
   const { avatar, name, membersCount, isMember, id, uniqueInterests } = props;
 
+  const [modal, setModal] = useState(false);
+
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
       title: name,
-      details: props
+      details: props,
+      showModal: modal,
+      showModalCount: 1
     });
-  }, []);
+  }, [modal]);
 
   const [member, setMember] = useState(isMember);
 
@@ -54,6 +59,14 @@ function PopularCommunity(props: PopularCommunityProp) {
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
     variables: { filter: { participantOf: { id } } }
   });
+
+  const clearTagModal = async () => {
+    try {
+      await Storage.removeTagModal(id);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  };
 
   const [joinCommunity, { loading: joinLoading }] = useMutation(
     JOIN_COMMUNITY,
@@ -77,7 +90,9 @@ function PopularCommunity(props: PopularCommunityProp) {
         'Activity Screen': 'Popular Community Card'
       });
       await joinCommunity();
+      await Storage.setTagModal({ community: [id] });
       setMember(!member);
+      setModal(true);
     } catch (error) {
       Sentry.captureException(error);
     }
@@ -91,7 +106,9 @@ function PopularCommunity(props: PopularCommunityProp) {
         'Activity Screen': 'Popular Community Card'
       });
       await leaveCommunity();
+      clearTagModal();
       setMember(!member);
+      setModal(false);
     } catch (error) {
       Sentry.captureException(error);
     }
