@@ -274,6 +274,10 @@ interface RegistrationInfo {
   };
 }
 
+interface ShowModal {
+  community: string[];
+}
+
 export type VerifyOTPInterface = { validateOtp: VerifyOTPIT };
 
 export type RefreshTokenInterface = { refreshToken: VerifyOTPIT };
