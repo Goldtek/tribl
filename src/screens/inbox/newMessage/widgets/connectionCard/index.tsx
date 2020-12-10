@@ -9,7 +9,7 @@ import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
-import Firechat from '../../../../../firebase';
+import database from '@react-native-firebase/database';
 import formatMessageTime from '../../../../../utils/timesince';
 import { OnlinePresence } from '../../../types';
 import { fireAuth } from '../../../../../firebase/config';
@@ -27,13 +27,11 @@ function ConnectionCard(props: ConnectionCardProp) {
 
   const userId = fireAuth.currentUser?.uid;
 
-  const { id, avatar, firstName, lastName, conversation, presence } = props;
+  const { id, avatar, firstName, lastName, conversation } = props;
 
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: presence.status.toString(),
-    lastSeen: new Date(
-      `${presence.lastSeen.year}/${presence.lastSeen.month}/${presence.lastSeen.day}`
-    ).getTime()
+    status: 'OFFLINE',
+    lastSeen: new Date().setDate(5)
   });
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
@@ -41,13 +39,11 @@ function ConnectionCard(props: ConnectionCardProp) {
   });
 
   useEffect(() => {
-    Firechat.getOnlineStatus(id).onSnapshot({
-      next: (snapshot) => {
-        if (snapshot.exists) {
-          const { presence } = snapshot.data() as { presence: OnlinePresence };
-          setOnlinePresence({ ...onlinePresence, ...presence });
-        }
-      }
+    const reference = database().ref(`/presence/${id}`);
+    reference.on('value', (snapshot: any) => {
+      const presence = snapshot.val();
+
+      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
     });
 
     getUserPassport();

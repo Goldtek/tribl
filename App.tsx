@@ -8,7 +8,6 @@ import {
 import RNUxcam from 'react-native-ux-cam';
 import database from '@react-native-firebase/database';
 import { enableScreens } from 'react-native-screens';
-import firestore from '@react-native-firebase/firestore';
 import loadResources from './src/libs/loadResources';
 import './src/internationalization';
 import AppRouter from './src';
