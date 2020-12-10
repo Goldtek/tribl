@@ -7,7 +7,7 @@ import { useThemeContext } from '../../../../theme';
 import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
-import database from '@react-native-firebase/database';
+// import database from '@react-native-firebase/database';
 import { OnlinePresence } from '../../../inbox/types';
 import { PassportInterface } from '../../../../graphql/types';
 import formatMessageTime from '../../../../utils/timesince';
@@ -32,16 +32,16 @@ export default function Connection(props: ConnectionProp) {
     variables: { id }
   });
 
-  useEffect(() => {
-    const reference = database().ref(`/presence/${id}`);
-    reference.on('value', (snapshot: any) => {
-      const presence = snapshot.val();
+  // useEffect(() => {
+  //   const reference = database().ref(`/presence/${id}`);
+  //   reference.on('value', (snapshot: any) => {
+  //     const presence = snapshot.val();
 
-      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
-    });
+  //     if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
+  //   });
 
-    getUserPassport();
-  }, []);
+  //   getUserPassport();
+  // }, []);
 
   const handleMessageNavigation = () => {
     navigation.navigate('DirectChatScreen', {
@@ -101,9 +101,10 @@ export default function Connection(props: ConnectionProp) {
               textTransform: 'lowercase'
             }}
           >
-            {onlinePresence.status === 'ONLINE'
+            {/* {onlinePresence.status === 'ONLINE'
               ? onlinePresence.status
-              : formatMessageTime(Number(onlinePresence.lastSeen))}
+              : formatMessageTime(Number(onlinePresence.lastSeen))} */}
+            ONLINE
           </Text>
         </NameContainer>
         <TouchableRipple
