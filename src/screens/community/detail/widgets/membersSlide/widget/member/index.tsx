@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import * as Sentry from '@sentry/react-native';
@@ -8,13 +8,16 @@ import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../../../theme';
 import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
+import database from '@react-native-firebase/database';
 import {
   PassportInterface,
   SinglePassportRequestInterface
 } from '../../../../../../../graphql/types';
 import { GET_COMMUNITY_MEMBER_PASSPORT } from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
+import { OnlinePresence } from '../../../../../../inbox/types';
 import { fireAuth } from '../../../../../../../firebase/config';
+import formatMessageTime from '../../../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -38,6 +41,20 @@ function Member(props: MemberProp) {
     GET_COMMUNITY_MEMBER_PASSPORT,
     { variables: { id } }
   );
+
+  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
+    status: 'OFFLINE',
+    lastSeen: new Date().setDate(5)
+  });
+
+  useEffect(() => {
+    const reference = database().ref(`/presence/${id}`);
+    reference.on('value', (snapshot: any) => {
+      const presence = snapshot.val();
+
+      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
+    });
+  }, []);
 
   const singlePassport = passportData?.singlePassport;
 
@@ -115,7 +132,9 @@ function Member(props: MemberProp) {
               textTransform: 'lowercase'
             }}
           >
-            ONLINE
+            {onlinePresence.status === 'ONLINE'
+              ? onlinePresence.status
+              : formatMessageTime(Number(onlinePresence.lastSeen))}
           </Text>
         </NameContainer>
 

@@ -73,10 +73,7 @@ export default function ConnectionRequestScreen(
 
         setFetchingMore(false);
         return Object.assign({}, prev, {
-          myConnections: [
-            ...prev.connectionRequests,
-            ...fetchMoreResult.connectionRequests
-          ]
+          myConnections: [...fetchMoreResult.connectionRequests]
         });
       }
     });
