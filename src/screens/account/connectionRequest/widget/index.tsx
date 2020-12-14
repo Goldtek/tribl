@@ -113,8 +113,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              fontSize: RFValue(fonts.LARGE_SIZE)
             }}
           >
             {`${firstName} ${lastName}`}

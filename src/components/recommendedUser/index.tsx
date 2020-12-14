@@ -153,7 +153,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
               lineHeight: 20,
               marginTop: 0,
               marginBottom: 0,

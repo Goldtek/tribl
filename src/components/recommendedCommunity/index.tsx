@@ -136,11 +136,7 @@ function RecommendedCommunity(props: CommunityInterface) {
         <FastImage
           resizeMode={FastImage.resizeMode.stretch}
           source={{ uri: avatar, priority: FastImage.priority.high }}
-          style={{
-            width: '100%',
-            height: '100%',
-            borderRadius: 4
-          }}
+          style={{ width: '100%', height: '100%', borderRadius: 4 }}
         />
       </Card.Content>
       <Card.Title
