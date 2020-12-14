@@ -101,8 +101,7 @@ function DirectChatCard(props: DirectChatProp) {
                 style={{
                   color: colors.PRIMARY_TEXT,
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                  textTransform: 'capitalize'
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2)
                 }}
               >
                 {title.length >= 30 ? `${title.substr(0, 30)}...` : title}
