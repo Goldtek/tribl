@@ -203,7 +203,7 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
 // GET  RECOMMENDED COMMUNITIES
 export const GET_RECOMMENDED_COMMUNITIES = gql`
   query recommendedCommunities {
-    recommendedCommunities(first: 6) {
+    recommendedCommunities(first: 5) {
       id
       avatar
       name

@@ -127,7 +127,7 @@ function PopularCommunity(props: PopularCommunityProp) {
     >
       <Fragment>
         <FastImage
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode={FastImage.resizeMode.stretch}
           source={{ uri: avatar, priority: FastImage.priority.high }}
           style={{
             width: RFValue(90),
@@ -141,8 +141,7 @@ function PopularCommunity(props: PopularCommunityProp) {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: fonts.LARGE_SIZE + 1,
-              lineHeight: RFValue(20),
-              textTransform: 'capitalize'
+              lineHeight: RFValue(20)
             }}
           >
             {name}

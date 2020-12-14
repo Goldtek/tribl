@@ -50,6 +50,8 @@ export default function DirectMessageTab(props: ScreenProp) {
         ROOM_TYPES.CONVERSATIONS
       );
 
+      let snapshotMessages: ConversationInterface[] = [];
+
       unsubscribe = userConservations?.onSnapshot({
         next: async (snapshot) => {
           if (!snapshot.docs.length) {
@@ -64,8 +66,6 @@ export default function DirectMessageTab(props: ScreenProp) {
               Firechat.getConversationMessages(conversationIds)
             )
           );
-
-          let snapshotMessages: ConversationInterface[] = [];
 
           userDirectMessages.forEach((userDirectMessage, index) => {
             userDirectMessage?.onSnapshot({
