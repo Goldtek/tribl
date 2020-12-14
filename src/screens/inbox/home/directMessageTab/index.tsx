@@ -50,8 +50,6 @@ export default function DirectMessageTab(props: ScreenProp) {
         ROOM_TYPES.CONVERSATIONS
       );
 
-      let snapshotMessages: ConversationInterface[] = [];
-
       unsubscribe = userConservations?.onSnapshot({
         next: async (snapshot) => {
           if (!snapshot.docs.length) {
@@ -67,26 +65,28 @@ export default function DirectMessageTab(props: ScreenProp) {
             )
           );
 
-          userDirectMessages.forEach((userDirectMessage, index) => {
+          let snapshotMessages: ConversationInterface[] = [];
+
+          userDirectMessages.forEach((userDirectMessage) => {
             userDirectMessage?.onSnapshot({
               next: (snapshot) => {
                 for (let index = 0; index < snapshot.docs.length; index++) {
                   const document = snapshot.docs[index];
                   const message = document.data() as ConversationInterface;
+
                   snapshotMessages = snapshotMessages.filter(
                     (x) => x.id !== document.id
                   );
                   snapshotMessages.push({ ...message, id: document.id });
                 }
 
-                if (index === userDirectMessages.length - 1) {
-                  const directMessages = snapshotMessages.sort(
-                    (a, b) =>
-                      new Date(b.lastMessage.createdAt).getTime() -
-                      new Date(a.lastMessage.createdAt).getTime()
-                  );
-                  setChats({ ...chats, messages: directMessages });
-                }
+                const directMessages = snapshotMessages.sort(
+                  (a, b) =>
+                    new Date(b.lastMessage.createdAt).getTime() -
+                    new Date(a.lastMessage.createdAt).getTime()
+                );
+
+                setChats({ ...chats, messages: directMessages });
               }
             });
           });
