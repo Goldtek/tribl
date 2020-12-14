@@ -99,22 +99,20 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
                   color: colors.SECONDARY_TEXT,
                   fontFamily: fonts.WORK_SANS_REGULAR,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  textTransform: 'capitalize',
                   lineHeight: RFValue(18)
                 }}
               >
-                1. {t(`community.update.change1`)}
+                1. {t(`community.update.update_one`)}
               </Paragraph>
               <Paragraph
                 style={{
                   color: colors.SECONDARY_TEXT,
                   fontFamily: fonts.WORK_SANS_REGULAR,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  textTransform: 'capitalize',
                   lineHeight: RFValue(18)
                 }}
               >
-                2. {t(`community.update.change2`)}
+                2. {t(`community.update.update_two`)}
               </Paragraph>
             </TextContainer>
             <GradientButton
