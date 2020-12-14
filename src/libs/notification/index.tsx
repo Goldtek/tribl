@@ -39,7 +39,7 @@ export default function Notification(props: GlobalNotificationProps) {
     messaging.setBackgroundMessageHandler(presentNotification);
 
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
-    messaging.onNotificationOpenedApp(navigateNotification);
+    messaging.onNotificationOpenedApp(presentNotification);
 
     // Check whether an initial notification is available
     messaging.getInitialNotification().then(presentNotification);
@@ -47,19 +47,19 @@ export default function Notification(props: GlobalNotificationProps) {
     return unsubscribe;
   }, []);
 
-  const navigateNotification = (
-    remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
-  ) => {
-    const { meta } = (remoteMessage?.data as unknown) as NotificationMessage;
-    const { route, data } = JSON.parse(meta) as NotificationMetaData;
+  // const navigateNotification = (
+  //   remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
+  // ) => {
+  //   const { meta } = (remoteMessage?.data as unknown) as NotificationMessage;
+  //   const { route, data } = JSON.parse(meta) as NotificationMetaData;
 
-    // NAVIGATE USER TO DIRECT MESSAGE SCREEN ON DM NOTIFICATION CLICK
+  //   // NAVIGATE USER TO DIRECT MESSAGE SCREEN ON DM NOTIFICATION CLICK
 
-    // navigation.replace('CommunityScreen', {
-    //   screen: 'CommunityScreen',
-    //   params: { screen: 'CommunityScreen', params: { screen: 'InboxScreen' } }
-    // });
-  };
+  //   // navigation.replace('CommunityScreen', {
+  //   //   screen: 'CommunityScreen',
+  //   //   params: { screen: 'CommunityScreen', params: { screen: 'InboxScreen' } }
+  //   // });
+  // };
 
   const presentNotification = async (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
