@@ -39,18 +39,7 @@ function RecommendedCommunity(props: CommunityInterface) {
     uniqueInterests
   } = restProps;
 
-  const resizeAvatar = avatar?.split('upload/');
-
   const [modal, setModal] = useState(false);
-
-  const banner = resizeAvatar?.length
-    ? resizeAvatar[0] +
-      `upload/c_fill,g_auto,h_${RFValue(230 * 2)},w_${RFValue(
-        DEVICE_FULL_WIDTH * 2
-      )}/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/${
-        resizeAvatar[1]
-      }`
-    : avatar;
 
   useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
@@ -145,8 +134,8 @@ function RecommendedCommunity(props: CommunityInterface) {
         }}
       >
         <FastImage
-          resizeMode={FastImage.resizeMode.cover}
-          source={{ uri: banner, priority: FastImage.priority.high }}
+          resizeMode={FastImage.resizeMode.stretch}
+          source={{ uri: avatar, priority: FastImage.priority.high }}
           style={{
             width: '100%',
             height: '100%',
@@ -182,7 +171,7 @@ function RecommendedCommunity(props: CommunityInterface) {
         }}
         left={({ size }) => (
           <FastImage
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.stretch}
             source={{ uri: avatar, priority: FastImage.priority.high }}
             style={{
               width: RFValue(size + 2),

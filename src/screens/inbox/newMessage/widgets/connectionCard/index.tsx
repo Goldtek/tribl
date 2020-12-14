@@ -41,7 +41,7 @@ function ConnectionCard(props: ConnectionCardProp) {
   useEffect(() => {
     const reference = database().ref(`/presence/${id}`);
     reference.on('value', (snapshot: any) => {
-      const presence = snapshot.val();
+      const presence = snapshot.val() as OnlinePresence;
 
       if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
     });
