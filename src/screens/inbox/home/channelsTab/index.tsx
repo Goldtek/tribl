@@ -61,7 +61,7 @@ export default function ChannelsTab(props: ScreenProp) {
 
       let snapshotChannels: ChannelConversationInterface[] = [];
 
-      userChannels.forEach((channel, index) => {
+      userChannels.forEach((channel) => {
         channel?.onSnapshot({
           next: (snapshot) => {
             for (let index = 0; index < snapshot.docs.length; index++) {
@@ -73,14 +73,12 @@ export default function ChannelsTab(props: ScreenProp) {
               snapshotChannels.push({ ...message, id: document.id });
             }
 
-            if (index === userChannels.length - 1) {
-              const channelMessages = snapshotChannels.sort(
-                (a, b) =>
-                  new Date(b.lastMessage.createdAt).getTime() -
-                  new Date(a.lastMessage.createdAt).getTime()
-              );
-              setChats({ ...chats, messages: channelMessages });
-            }
+            const channelMessages = snapshotChannels.sort(
+              (a, b) =>
+                new Date(b.lastMessage.createdAt).getTime() -
+                new Date(a.lastMessage.createdAt).getTime()
+            );
+            setChats({ ...chats, messages: channelMessages });
           }
         });
       });
