@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../../../theme';
 import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
-// import database from '@react-native-firebase/database';
+import database from '@react-native-firebase/database';
 import {
   PassportInterface,
   SinglePassportRequestInterface
@@ -48,11 +48,11 @@ function Member(props: MemberProp) {
   });
 
   useEffect(() => {
-    // const reference = database().ref(`/presence/${id}`);
-    // reference.on('value', (snapshot: any) => {
-    //   const presence = snapshot.val() as OnlinePresence;
-    //   if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
-    // });
+    const reference = database().ref(`/presence/${id}`);
+    reference.on('value', (snapshot: any) => {
+      const presence = snapshot.val() as OnlinePresence;
+      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
+    });
   }, []);
 
   const singlePassport = passportData?.singlePassport;

@@ -9,7 +9,7 @@ import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
-// import database from '@react-native-firebase/database';
+import database from '@react-native-firebase/database';
 import formatMessageTime from '../../../../../utils/timesince';
 import { OnlinePresence } from '../../../types';
 import { fireAuth } from '../../../../../firebase/config';
@@ -39,12 +39,12 @@ function ConnectionCard(props: ConnectionCardProp) {
   });
 
   useEffect(() => {
-    // const reference = database().ref(`/presence/${id}`);
-    // reference.on('value', (snapshot: any) => {
-    //   const presence = snapshot.val() as OnlinePresence;
+    const reference = database().ref(`/presence/${id}`);
+    reference.on('value', (snapshot: any) => {
+      const presence = snapshot.val() as OnlinePresence;
 
-    //   if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
-    // });
+      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
+    });
 
     getUserPassport();
   }, []);
