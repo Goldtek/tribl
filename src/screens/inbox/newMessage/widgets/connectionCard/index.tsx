@@ -9,9 +9,9 @@ import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
-// import database from '@react-native-firebase/database';
-// import formatMessageTime from '../../../../../utils/timesince';
-// import { OnlinePresence } from '../../../types';
+import database from '@react-native-firebase/database';
+import formatMessageTime from '../../../../../utils/timesince';
+import { OnlinePresence } from '../../../types';
 import { fireAuth } from '../../../../../firebase/config';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
@@ -29,22 +29,22 @@ function ConnectionCard(props: ConnectionCardProp) {
 
   const { id, avatar, firstName, lastName, conversation } = props;
 
-  // const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-  //   status: 'OFFLINE',
-  //   lastSeen: new Date().setDate(5)
-  // });
+  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
+    status: 'OFFLINE',
+    lastSeen: new Date().setDate(5)
+  });
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
     variables: { id }
   });
 
   useEffect(() => {
-    //   const reference = database().ref(`/presence/${id}`);
-    //   reference.on('value', (snapshot: any) => {
-    //     const presence = snapshot.val();
+    const reference = database().ref(`/presence/${id}`);
+    reference.on('value', (snapshot: any) => {
+      const presence = snapshot.val() as OnlinePresence;
 
-    //     if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
-    //   });
+      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
+    });
 
     getUserPassport();
   }, []);
@@ -128,10 +128,9 @@ function ConnectionCard(props: ConnectionCardProp) {
               textTransform: 'lowercase'
             }}
           >
-            {/* {onlinePresence.status === 'ONLINE'
+            {onlinePresence.status === 'ONLINE'
               ? onlinePresence.status
-              : formatMessageTime(Number(onlinePresence.lastSeen))} */}
-            ONLINE
+              : formatMessageTime(Number(onlinePresence.lastSeen))}
           </Text>
         </NameContainer>
       </Fragment>

@@ -132,17 +132,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     });
   }, [singleCommunity?.id]);
 
-  const resizeAvatar = communityDetails.avatar?.split('upload/');
-
-  const banner = resizeAvatar?.length
-    ? resizeAvatar[0] +
-      `upload/c_fill,g_auto,h_${RFValue(230 * 2)},w_${RFValue(
-        DEVICE_FULL_WIDTH * 2
-      )}/b_rgb:000000,y_-0.60/c_scale,co_rgb:ffffff,fl_relative,w_0.9,y_1/${
-        resizeAvatar[1]
-      }`
-    : singleCommunity?.avatar;
-
   const handleJoinCommunity = () => {
     setState({
       ...state,
@@ -229,9 +218,9 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 }}
               >
                 <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
+                  resizeMode={FastImage.resizeMode.stretch}
                   source={{
-                    uri: banner,
+                    uri: singleCommunity?.avatar,
                     priority: FastImage.priority.high
                   }}
                   style={{ width: '100%', height: '100%', borderRadius: 4 }}
@@ -241,7 +230,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
             <Card style={{ marginTop: RFValue(5) }}>
               <CardContainer>
                 <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
+                  resizeMode={FastImage.resizeMode.stretch}
                   source={{
                     uri: data.avatar,
                     priority: FastImage.priority.high
