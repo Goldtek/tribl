@@ -91,7 +91,7 @@ function ConnectionCard(props: ConnectionCardProp) {
       <Fragment>
         {avatar ? (
           <FastImage
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.stretch}
             source={{
               uri: avatar,
               priority: FastImage.priority.high
@@ -114,8 +114,7 @@ function ConnectionCard(props: ConnectionCardProp) {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              fontSize: RFValue(fonts.LARGE_SIZE - 2)
             }}
           >
             {`${firstName} ${lastName}`}
@@ -124,7 +123,7 @@ function ConnectionCard(props: ConnectionCardProp) {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontSize: RFValue(fonts.MEDIUM_SIZE - 2),
               textTransform: 'lowercase'
             }}
           >

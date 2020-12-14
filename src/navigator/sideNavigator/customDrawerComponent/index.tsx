@@ -45,7 +45,6 @@ export default function CustomDrawerComponent(props: any) {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(17),
-              textTransform: 'capitalize',
               paddingTop: RFValue(10)
             }}
           >

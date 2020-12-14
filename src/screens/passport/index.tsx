@@ -657,8 +657,7 @@ export default function PassportScreen(props: ScreenProp) {
                     fontSize: RFValue(fonts.LARGE_SIZE - 2),
                     paddingRight: 20,
                     lineHeight: 21,
-                    color: colors.WHITE,
-                    textTransform: 'capitalize'
+                    color: colors.WHITE
                   }}
                 >
                   {`${state?.firstName} ${state?.lastName}`}
