@@ -51,6 +51,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation } = props;
   const { chatId, channel } = props.route.params;
   const userId = fireAuth.currentUser?.uid as string;
+
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
   }, []);
