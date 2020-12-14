@@ -118,8 +118,8 @@
   "update": {
     "title": "limited update release",
     "update": "this update",
-    "change1": "fix online presence crash",
-    "change2": "fix OTA push errors",
+    "update_one": "Fix inbox and channel refresh issue",
+    "update_two": "Fix push notification crash error on click",
     "yes": "upgrade",
     "no": "next time",
     "new": "new",
