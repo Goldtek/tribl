@@ -193,7 +193,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
             data={filteredWords}
             refreshing={refreshing}
             onRefresh={_onRefresh}
-            ListFooterComponent={_renderFooter}
+            // ListFooterComponent={_renderFooter}
             onEndReachedThreshold={0.01}
             onEndReached={({ distanceFromEnd }) => {
               if (distanceFromEnd > 0) debounce(_onEndReached, 500)();
