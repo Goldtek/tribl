@@ -51,7 +51,6 @@ function Member(props: MemberProp) {
     const reference = database().ref(`/presence/${id}`);
     reference.on('value', (snapshot: any) => {
       const presence = snapshot.val() as OnlinePresence;
-
       if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
     });
   }, []);
