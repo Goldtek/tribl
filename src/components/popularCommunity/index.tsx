@@ -140,7 +140,7 @@ function PopularCommunity(props: PopularCommunityProp) {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: fonts.LARGE_SIZE + 1,
+              fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
               lineHeight: RFValue(20)
             }}
           >
@@ -148,7 +148,7 @@ function PopularCommunity(props: PopularCommunityProp) {
           </Title>
           <Paragraph
             style={{
-              fontSize: fonts.LARGE_SIZE,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
               fontFamily: fonts.WORK_SANS_REGULAR,
               lineHeight: RFValue(19),
               color: colors.SECONDARY_TEXT
