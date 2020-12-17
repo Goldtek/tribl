@@ -50,7 +50,7 @@ workflows:
                 # echo "Saved provisioning profile $PROFILE_PATH"
             - name: 
               script: |  
-                app-store-connect fetch-signing-files "com.codemagicreactnative" --type IOS_APP_ADHOC --create
+                app-store-connect fetch-signing-files "$(xcode-project detect-bundle-id)" --type IOS_APP_DEVELOPMENT --create
             # - name: Set up signing certificate (Use with manual code signing)
             #   script: |
             #     echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
