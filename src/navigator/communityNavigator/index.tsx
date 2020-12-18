@@ -364,6 +364,27 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
+
+      <CommunityStack.Screen
+        name="CommunityAlgoliaScreen"
+        component={Screens.AlgoliaScreen}
+        options={{
+          headerTitle: () => (
+            <Image
+              source={require('../../../assets/images/logo.png')}
+              style={{
+                width: RFValue(50),
+                height: RFValue(50),
+                resizeMode: 'contain'
+              }}
+            />
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 }
+        }}
+      />
     </CommunityStack.Navigator>
   );
 }
