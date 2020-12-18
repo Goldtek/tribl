@@ -93,20 +93,20 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
   const handleAvatar = async () => {
     try {
-      let divider = 1;
+      let divider = 0;
 
       const { size, height, width, path } = (await ImagePicker.openPicker({
         cropping: false,
         mediaType: 'photo'
       })) as Image;
 
-      if (size > 300000) divider = size / 900000;
+      if (size > 900000) divider = size / 900000;
 
       const { uri: resizedImage } = await ImageResizer.createResizedImage(
         path,
         width / divider,
         height / divider,
-        'JPEG',
+        'PNG',
         100,
         0,
         undefined
@@ -114,16 +114,17 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
       const { mime, data, filename, cropRect } = await ImagePicker.openCropper({
         path: resizedImage,
+        cropping: true,
         mediaType: 'photo',
         includeBase64: true,
         width: RFValue(200),
         height: RFValue(200),
-        cropperCircleOverlay: true,
         compressImageMaxWidth: RFValue(200),
         compressImageMaxHeight: RFValue(200),
-        cropperStatusBarColor: colors.STATUS_BAR_COLOR
+        cropperStatusBarColor: colors.STATUS_BAR_COLOR,
+        cropperCircleOverlay: true,
+        freeStyleCropEnabled: true
       });
-
       const uri = `data:${mime};base64,${data}`;
       const imageData = { mime, filename, cropRect, uri };
       setAvatar({ ...avatar, uri, imageData });
