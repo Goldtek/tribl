@@ -38,12 +38,8 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     phoneNumber,
     connected,
     conversation,
-    participantOf
+    moderatorOf
   } = member;
-
-  const moderator = participantOf?.filter((member) => {
-    return member.isModerator == true;
-  });
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
@@ -136,7 +132,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               borderRadius: RFValue(70)
             }}
           />
-          {moderator?.length ? (
+          {moderatorOf?.length ? (
             <AdminBadge
               style={{
                 position: 'absolute',
