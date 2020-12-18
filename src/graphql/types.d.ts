@@ -177,6 +177,7 @@ export interface PassportInterface {
   conversation: Conversation | null;
   myConnections: PassportInterface[];
   participantOf?: CommunityInterface[];
+  moderatorOf?: CommunityInterface[];
 }
 
 export interface StoreInterface {
