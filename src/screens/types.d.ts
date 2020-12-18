@@ -4,6 +4,7 @@ import { StackActionHelpers } from '@react-navigation/native';
 import { PassportInterface } from '../graphql/types';
 
 interface ChatScreenProps extends PassportInterface {
+  channelId: string;
   title: string;
   chatId: string;
   receiverId: string;
@@ -68,6 +69,8 @@ export type RootStackParamList = {
   ViewAllTribes?: Object;
   ViewAllMembers?: Object;
   AddTags?: Object;
+  CommunityAlgoliaScreen?: Object;
+  ChannelMembersScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -117,7 +120,9 @@ export type RootStackParamScreensList =
   | 'ViewAllScreen'
   | 'ViewAllMembers'
   | 'ViewAllTribes'
-  | 'AddTags';
+  | 'AddTags'
+  | 'CommunityAlgoliaScreen'
+  | 'ChannelMembersScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
