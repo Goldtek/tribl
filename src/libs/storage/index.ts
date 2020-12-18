@@ -101,7 +101,6 @@ class Storage {
   async removeTagModal(community?: string) {
     try {
       const currentTagModal = await this.checkTagModal();
-      console.tron('currentTagModal', currentTagModal);
       let communityIndex = null;
       if (currentTagModal.community?.length === 0) {
         await this.setTagModal({ community: [] });

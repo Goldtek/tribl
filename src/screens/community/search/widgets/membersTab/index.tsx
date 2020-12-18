@@ -50,7 +50,6 @@ function MemberSTabScreen(props: ScreenProp) {
   const showNearbyModal = useCallback(
     (visible: boolean) => () => {
       setNearbyVisble(visible);
-      console.tron('nearby members');
       return true;
     },
     []
