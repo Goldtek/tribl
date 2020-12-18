@@ -78,7 +78,8 @@ export default function ChannelsTab(props: ScreenProp) {
                 new Date(b.lastMessage.createdAt).getTime() -
                 new Date(a.lastMessage.createdAt).getTime()
             );
-            setChats({ ...chats, messages: channelMessages });
+
+            setChats({ ...chats, history: true, messages: channelMessages });
           }
         });
       });

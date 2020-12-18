@@ -231,7 +231,6 @@ export default function DrawerStackNavigator() {
                         }}
                       />
                     </Surface>
-
                     <Surface
                       style={{
                         width: RFValue(40),

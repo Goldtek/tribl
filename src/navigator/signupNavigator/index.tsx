@@ -113,7 +113,6 @@ export default function SignupNavigator() {
           }
         };
 
-        const locationHeader = t(`signup.userRegSteps.UserLocationScreen`);
         return {
           headerShown: true,
           headerTitle: headerTitle,
@@ -121,27 +120,22 @@ export default function SignupNavigator() {
           headerTintColor: colors.PRIMARY,
           headerBackTitleVisible: false,
           headerPressColorAndroid: colors.PRIMARY,
-          headerRight: () => (
-            <Button
-              mode="text"
-              loading={update}
-              color={colors.PRIMARY}
-              labelStyle={{
-                fontSize: fonts.MEDIUM_SIZE,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                color: headerTitle ? colors.PRIMARY : colors.WHITE
-              }}
-              onPress={handleNavigation}
-            >
-              {t(
-                headerTitle == locationHeader
-                  ? ''
-                  : headerTitle
-                  ? 'signup.skipSignup'
-                  : 'signup.finishSignup'
-              )}
-            </Button>
-          ),
+          headerRight: () =>
+            route.name === 'UserLocationScreen' ? null : (
+              <Button
+                mode="text"
+                loading={update}
+                color={colors.PRIMARY}
+                labelStyle={{
+                  fontSize: fonts.MEDIUM_SIZE,
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  color: headerTitle ? colors.PRIMARY : colors.WHITE
+                }}
+                onPress={handleNavigation}
+              >
+                {t(headerTitle ? 'signup.skipSignup' : 'signup.finishSignup')}
+              </Button>
+            ),
           headerLeftContainerStyle: {
             marginLeft: DEVICE_OS === 'ios' ? 13 : 3
           },
