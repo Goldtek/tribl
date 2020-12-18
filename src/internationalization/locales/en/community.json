@@ -112,7 +112,10 @@
     "online": "online",
     "all": "all",
     "join": "has joined the channel!",
-    "leave": "has left the channel!"
+    "leave": "has left the channel!",
+    "channelMembers": "view channel members",
+    "leaveChannel": "leave channel",
+    "members": "members"
   },
 
   "update": {
