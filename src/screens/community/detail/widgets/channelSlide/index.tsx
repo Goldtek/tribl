@@ -1,24 +1,11 @@
-import React, { useMemo, Fragment, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { FlatList } from 'react-native';
-import { useMutation } from '@apollo/react-hooks';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useNavigation } from '@react-navigation/native';
-import { Paragraph, Divider, TouchableRipple } from 'react-native-paper';
-import { AntDesign } from '@expo/vector-icons';
-import { NavigationInterface } from '../../../../types';
+import { Divider } from 'react-native-paper';
+import ChannelCard from './widget';
 import { useThemeContext } from '../../../../../theme';
-import { Mixpanel } from '../../../../../config';
-import {
-  JOIN_COMMUNITY_CHANNEL,
-  LEAVE_COMMUNITY_CHANNEL,
-  SEND_CHANNEL_MESSAGE
-} from '../../../../../graphql/server/mutations';
-import {
-  ChannelInterface,
-  CommunityInterface
-} from '../../../../../graphql/types';
-import { useTranslation } from 'react-i18next';
-import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
+import { NavigationInterface } from '../../../../types';
+import { CommunityInterface } from '../../../../../graphql/types';
+import { tagScreenName } from '../../../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -26,93 +13,27 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function ChannelScreen(props: ScreenProp) {
-  const { colors, fonts } = useThemeContext();
-  const navigation = useNavigation();
-  const { t } = useTranslation();
+  const { communityDetails } = props.route;
+  const { colors } = useThemeContext();
 
   useEffect(() => {
     tagScreenName('TribeChannelScreen');
   }, []);
 
-  const communityDetails = props.route.communityDetails;
-
-  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
-  const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
-  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
-
-  const handleNavigation = async (item: ChannelInterface) => {
-    const { isMember } = item;
-
-    if (!isMember) {
-      logEvent('join channel', { from: 'channel' });
-      Mixpanel.track('User Joins Channel', {
-        info: `User Joins ${item.name} Channel on ${communityDetails.name} community`,
-        'Activity Screen': 'Community Channel Slide Screen'
-      });
-
-      joinChannel({ variables: { payload: { channelId: item.id } } }).then(
-        () => {
-          sendMessage({
-            variables: {
-              payload: {
-                system: true,
-                channelId: item.id,
-                content: t(`community.chat.join`)
-              }
-            }
-          });
-        }
-      );
-    }
-
-    navigation.navigate('ChannelChatScreen', {
-      isMember,
-      chatId: item.id,
-      title: `#${item.name}`,
-      channel: { community: communityDetails?.name, name: item.name }
-    });
-  };
-
   const _renderItem = useMemo(
-    () => ({ item }: { item: ChannelInterface }) => (
-      <TouchableRipple
-        onPress={() => handleNavigation(item)}
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          padding: RFValue(20),
-          paddingTop: RFValue(25),
-          paddingBottom: RFValue(25),
-          backgroundColor: colors.WHITE
-        }}
-      >
-        <Fragment>
-          <Paragraph
-            style={{
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize'
-            }}
-          >
-            {item.name}
-          </Paragraph>
-          <AntDesign name="caretright" size={18} color={colors.PRIMARY_TEXT} />
-        </Fragment>
-      </TouchableRipple>
+    () => (props: any) => (
+      <ChannelCard {...props} communityDetails={communityDetails} />
     ),
     []
-  );
-
-  const _seperator = () => (
-    <Divider style={{ borderWidth: 0.6, borderColor: colors.DISABLED }} />
   );
 
   return (
     <FlatList
       renderItem={_renderItem}
       data={communityDetails?.channels}
-      ItemSeparatorComponent={_seperator}
+      ItemSeparatorComponent={() => (
+        <Divider style={{ borderWidth: 0.6, borderColor: colors.DISABLED }} />
+      )}
       keyExtractor={(item) => item.id}
     />
   );
