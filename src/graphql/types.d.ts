@@ -328,6 +328,11 @@ export type RecommendedMembersRequestInterface = {
   recommendedMembers: PassportInterface[];
 };
 
+// CHANNEL MEMBERS REQUEST (RESPONSE) TYPE
+export type ChannelMembersRequestInterface = {
+  channelMembers: PassportInterface[];
+};
+
 // RECOMMENDED COMMUNITIES REQUEST (RESPONSE) TYPE
 export type RecommendedCommunitiesRequestInterface = {
   recommendedCommunities: CommunityInterface[];
