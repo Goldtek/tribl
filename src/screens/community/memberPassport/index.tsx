@@ -137,7 +137,6 @@ export default function PassportDetail(props: MemberDetailProps) {
   const { loading, pending } = state;
 
   const moderator = singlePassport?.moderatorOf;
-  console.tron('abcdefg', moderator);
 
   const _renderMyCommunityItem = useMemo(
     () => ({ item }: { item: CommunityInterface }) => (

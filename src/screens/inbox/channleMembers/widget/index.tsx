@@ -49,9 +49,7 @@ function ChannelMember(props: ChannelUserProp) {
     try {
       await requestConnection();
       setPending(true);
-      console.tron('success');
     } catch (error) {
-      console.tron('error', error);
       Sentry.captureException(error);
     }
   };
