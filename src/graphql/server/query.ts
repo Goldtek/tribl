@@ -132,6 +132,74 @@ export const GET_NEARBY_MEMBERS = gql`
   }
 `;
 
+//GET CHANNEL MEMBERS
+export const GET_CHANNEL_MEMBERS = gql`
+  query channelMembers($channelId: ID!) {
+    channelMembers(channelId: $channelId) {
+      id
+      bio
+      email
+      firstName
+      lastName
+      phoneNumber
+      connected
+      avatar
+      communityCount
+      connectionCount
+      birthPlace {
+        id
+        country
+        state
+        city
+        lat
+        long
+      }
+      currentLocation {
+        id
+        country
+        state
+        city
+        lat
+        long
+      }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+      conversation {
+        id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
+      }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
+    }
+  }
+`;
+
 // GET NEARBY MEMBERS OF A COMMUNITY
 export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
   query nearbyMembers($filter: _PassportFilter!) {
