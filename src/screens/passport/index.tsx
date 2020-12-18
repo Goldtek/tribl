@@ -340,9 +340,7 @@ export default function PassportScreen(props: ScreenProp) {
     const updateLocation = async () => {
       try {
         const { data } = await updatePassport();
-        if (data) {
-          refetch();
-        }
+        if (data) refetch();
       } catch (error) {
         Sentry.captureException(error);
       }
@@ -500,7 +498,7 @@ export default function PassportScreen(props: ScreenProp) {
         mediaType: 'photo'
       })) as Image;
 
-      if (size > 300000) divider = size / 900000;
+      if (size > 900000) divider = size / 900000;
 
       const { uri: resizedImage } = await ImageResizer.createResizedImage(
         path,
@@ -514,14 +512,16 @@ export default function PassportScreen(props: ScreenProp) {
 
       const { mime, data, filename, cropRect } = await ImagePicker.openCropper({
         path: resizedImage,
+        cropping: true,
         mediaType: 'photo',
         includeBase64: true,
         width: RFValue(200),
         height: RFValue(200),
-        cropperCircleOverlay: true,
         compressImageMaxWidth: RFValue(200),
         compressImageMaxHeight: RFValue(200),
-        cropperStatusBarColor: colors.STATUS_BAR_COLOR
+        cropperStatusBarColor: colors.STATUS_BAR_COLOR,
+        cropperCircleOverlay: true,
+        freeStyleCropEnabled: true
       });
 
       const uri = `data:${mime};base64,${data}`;

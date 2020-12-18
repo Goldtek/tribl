@@ -123,27 +123,44 @@ export default function ChannelChatScreen(props: ScreenProp) {
   //     : contentTopOffset + LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET < 0;
   // };
 
-  const onSend = useCallback(async (messages: MessageInterface[] = []) => {
-    const [message] = messages;
-    logEvent('send channel message', { from: 'chat' });
-    setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
+  const onSend = useCallback(
+    async (messages: MessageInterface[] = []) => {
+      const [message] = messages;
+      logEvent('send channel message', { from: 'chat' });
+      setMessages((prevMessages) => {
+        return GiftedChat.append(prevMessages, [
+          {
+            ...message,
+            user: {
+              ...message.user,
+              avatar: `${userDetails?.avatar}`,
+              name: `${userDetails?.firstName} ${userDetails?.lastName}`
+            }
+          }
+        ]);
+      });
 
-    Mixpanel.track('User Sends Channel Message', {
-      info: `User sends message on ${channel?.name} channel in ${channel?.community} community`,
-      'Activity Screen': 'Channel Message Screen'
-    });
+      Mixpanel.track('User Sends Channel Message', {
+        info: `User sends message on ${channel?.name} channel in ${channel?.community} community`,
+        'Activity Screen': 'Channel Message Screen'
+      });
 
-    sendMessage({
-      variables: { payload: { content: message.text, channelId: chatId } }
-    });
-  }, []);
+      sendMessage({
+        variables: { payload: { content: message.text, channelId: chatId } }
+      });
+    },
+    [userDetails]
+  );
 
-  const handleNavigation = useCallback((user?: User) => {
-    navigation.navigate('MemberDetailScreen', {
-      title: `${user?.name}`,
-      details: { ...user, id: `${user?._id}` }
-    });
-  }, []);
+  const handleNavigation = useCallback(
+    (user?: User) => {
+      navigation.navigate('MemberDetailScreen', {
+        title: `${user?.name}`,
+        details: { ...user, id: `${user?._id}` }
+      });
+    },
+    [userDetails]
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
