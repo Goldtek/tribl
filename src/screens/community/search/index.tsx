@@ -9,7 +9,7 @@ import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import communityTab from './widgets/communityTab';
 import { useThemeContext } from '../../../theme';
 import membersTab from './widgets/membersTab';
-import AlgoliaSearch from '../../../components/algoliaSearch';
+import AlgoliaSearch from '../search/widgets/algoliaSearch';
 import AlgoliaCommunityList from '../../../components/algoliaCommunityList ';
 import ENVIRONMENT_VARIABLES from '../../../config';
 
@@ -95,9 +95,7 @@ export default function SearchScreen(props: ScreenProp) {
   return (
     <Fragment>
       <Container>
-        <AlgoliaSearch indexName={indexName[tabIndex]}>
-          <AlgoliaCommunityList />
-        </AlgoliaSearch>
+        <AlgoliaSearch indexName={indexName[tabIndex]}></AlgoliaSearch>
       </Container>
       <TabView
         lazy
