@@ -10,13 +10,15 @@ import AdminBadge from '../../../../components/adminBadge';
 import { CommunityCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MyCommunityProp extends CommunityInterface {}
+interface MyCommunityProp extends CommunityInterface {
+  moderatorOf: any;
+}
 
 export default function MyCommunity(props: MyCommunityProp) {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, name, isModerator } = props;
+  const { avatar, name, moderatorOf } = props;
 
   const handleNavigation = () =>
     navigation.navigate('CommunityDetailScreen', {
@@ -49,11 +51,11 @@ export default function MyCommunity(props: MyCommunityProp) {
             }}
             style={{ width: '100%', height: '100%', borderRadius: 4 }}
           />
-          {isModerator == true ? (
+          {moderatorOf?.length ? (
             <AdminBadge
               style={{
                 position: 'absolute',
-                bottom: RFValue(-20),
+                bottom: RFValue(-15),
                 zIndex: 11099,
                 right: RFValue(-25)
               }}
