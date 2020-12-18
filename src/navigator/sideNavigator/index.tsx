@@ -42,6 +42,9 @@ export default function DrawerStackNavigator() {
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
 
+  const [channelMenu, setChannelMenu] = useState(false);
+  const showChannelMenu = () => setChannelMenu(!channelMenu);
+
   const getMenuHeight = useCallback(() => {
     switch (true) {
       case Math.ceil(safeAreaTop) <= 20:
@@ -73,10 +76,20 @@ export default function DrawerStackNavigator() {
     return () => unsubscribe();
   }, [chatId]);
 
+  const handleChannelMembersNavigation = useCallback(
+    (route: any) => () => {
+      navigation.navigate('ChannelMembersScreen', {
+        title: route.params?.title,
+        channelId: route.params?.chatId
+      });
+      setChannelMenu(false);
+    },
+    []
+  );
+
   return (
     <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
       <DrawerStack.Screen name="CommunityScreen" component={DrawerNavigator} />
-
       <DrawerStack.Screen
         name="DirectChatScreen"
         component={Screens.DirectChatScreen}
@@ -115,7 +128,6 @@ export default function DrawerStackNavigator() {
           headerTintColor: colors.PRIMARY
         })}
       />
-
       <DrawerStack.Screen
         name="ChannelChatScreen"
         component={Screens.ChannelChatScreen}
@@ -123,8 +135,8 @@ export default function DrawerStackNavigator() {
           setChatId(route.params?.chatId);
           return {
             headerStyle: { height: RFValue(90) },
-            headerShown: true,
             height: RFValue(90),
+            headerShown: true,
             headerTitle: () => null,
             headerTitleStyle: {
               color: colors.PRIMARY_TEXT,
@@ -132,22 +144,78 @@ export default function DrawerStackNavigator() {
               fontFamily: fonts.WORK_SANS_BOLD
             },
             headerRight: () => (
-              <TouchableRipple
-                onPress={() => {}}
-                style={{
-                  height: RFValue(40),
-                  width: RFValue(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: RFValue(40 / 2)
+              <Menu
+                visible={channelMenu}
+                onDismiss={showChannelMenu}
+                anchor={
+                  <TouchableRipple
+                    rippleColor={colors.PRIMARY}
+                    onPress={showChannelMenu}
+                    style={{
+                      padding: RFValue(3),
+                      paddingTop: RFValue(6),
+                      paddingBottom: RFValue(6),
+                      backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                      borderRadius: 4,
+                      borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                      borderWidth: 1,
+                      marginRight: RFValue(10)
+                    }}
+                  >
+                    <Entypo
+                      name="dots-three-vertical"
+                      color={channelMenu ? colors.WHITE : colors.PRIMARY_TEXT}
+                      size={20}
+                    />
+                  </TouchableRipple>
+                }
+                contentStyle={{
+                  right: 10,
+                  top: 10,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  overflow: Platform.select({ android: 'hidden' })
                 }}
+                style={{ top: RFValue(getMenuHeight()) }}
               >
-                <Entypo
-                  name="dots-three-vertical"
-                  color={colors.DISABLED}
-                  size={RFValue(17)}
+                <Menu.Item
+                  onPress={handleChannelMembersNavigation(route)}
+                  title={t(`community.chat.channelMembers`)}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize'
+                  }}
                 />
-              </TouchableRipple>
+                <Divider />
+                <Menu.Item
+                  onPress={() => {}}
+                  title={t(`community.chat.leaveChannel`)}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.DISABLED,
+                    textTransform: 'capitalize'
+                  }}
+                />
+              </Menu>
             ),
             headerLeft: () => (
               <Container>
@@ -326,7 +394,6 @@ export default function DrawerStackNavigator() {
           headerTintColor: colors.PRIMARY
         })}
       />
-
       <DrawerStack.Screen
         name="MessageRequestChatScreen"
         component={Screens.MessageRequestChatScreen}
@@ -365,7 +432,6 @@ export default function DrawerStackNavigator() {
           headerTintColor: colors.PRIMARY
         })}
       />
-
       <DrawerStack.Screen
         name="MemberDetailScreen"
         component={MemberDetailScreen}
@@ -501,7 +567,6 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
-
       <DrawerStack.Screen
         name="NewMessageScreen"
         component={Screens.NewMessageScreen}
@@ -510,7 +575,6 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         }}
       />
-
       <DrawerStack.Screen
         name="MessageRequestScreen"
         component={Screens.MessageRequestScreen}
@@ -542,6 +606,57 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           )
+        }}
+      />
+      <DrawerStack.Screen
+        name="ChannelMembersScreen"
+        component={Screens.ChannelMembersScreen}
+        options={({ route }: any) => {
+          return {
+            headerShown: true,
+            headerBackTitleVisible: false,
+            headerStyle: { height: RFValue(90) },
+            height: RFValue(90),
+            headerTitleStyle: {
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              textTransform: 'capitalize'
+            },
+            headerTitle: () => null,
+            headerLeft: () => (
+              <Container>
+                <TouchableRipple
+                  onPress={navigation.goBack}
+                  style={{
+                    height: RFValue(40),
+                    width: RFValue(40),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: RFValue(40 / 2),
+                    marginRight: 10
+                  }}
+                >
+                  <Ionicons
+                    name="md-arrow-back"
+                    size={RFValue(24)}
+                    color={colors.PRIMARY}
+                  />
+                </TouchableRipple>
+
+                <Paragraph
+                  style={{
+                    fontSize: RFValue(fonts.LARGE_SIZE),
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontWeight: 'bold',
+                    marginLeft: 10
+                  }}
+                >
+                  {route.params?.title} {t(`community.chat.members`)}
+                </Paragraph>
+              </Container>
+            )
+          };
         }}
       />
     </DrawerStack.Navigator>
