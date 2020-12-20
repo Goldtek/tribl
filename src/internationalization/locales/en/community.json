@@ -112,14 +112,19 @@
     "online": "online",
     "all": "all",
     "join": "has joined the channel!",
-    "leave": "has left the channel!"
+    "leave": "has left the channel!",
+    "channelMembers": "view channel members",
+    "leaveChannel": "leave channel",
+    "members": "members"
   },
 
   "update": {
     "title": "limited update release",
     "update": "this update",
-    "update_one": "Fix inbox and channel refresh issue",
-    "update_two": "Fix push notification crash error on click",
+    "update_one": "Fix view all of nearby members",
+    "update_two": "Fix interest modal",
+    "update_three": "View channel members",
+    "update_four": "Change algolia modals to screens",
     "yes": "upgrade",
     "no": "next time",
     "new": "new",

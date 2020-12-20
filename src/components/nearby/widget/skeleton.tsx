@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { RFValue } from 'react-native-responsive-fontsize';
 
 export default function Skeleton() {
   return (

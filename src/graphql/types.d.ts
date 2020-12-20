@@ -177,6 +177,7 @@ export interface PassportInterface {
   conversation: Conversation | null;
   myConnections: PassportInterface[];
   participantOf?: CommunityInterface[];
+  moderatorOf?: CommunityInterface[];
 }
 
 export interface StoreInterface {
@@ -326,6 +327,11 @@ export type BlockMessageRequestInterface = {
 // RECOMMENDED MEMBERS REQUEST (RESPONSE) TYPE
 export type RecommendedMembersRequestInterface = {
   recommendedMembers: PassportInterface[];
+};
+
+// CHANNEL MEMBERS REQUEST (RESPONSE) TYPE
+export type ChannelMembersRequestInterface = {
+  channelMembers: PassportInterface[];
 };
 
 // RECOMMENDED COMMUNITIES REQUEST (RESPONSE) TYPE

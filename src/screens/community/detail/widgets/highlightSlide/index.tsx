@@ -27,7 +27,7 @@ import {
 } from '../../../../../graphql/types';
 import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
-import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
+import { Mixpanel } from '../../../../../config';
 import TagModal from '../../../../../components/tagModal';
 import storage from '../../../../../libs/storage';
 
@@ -161,6 +161,10 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const handleJoin = async () => {
     logEvent('join community', { from: 'community' });
     try {
+      Mixpanel.track('User Joins Tribe', {
+        info: `User Joins ${name} Tribe`,
+        'Activity Screen': 'Recommended Community Card'
+      });
       await joinCommunity();
       if (data.uniqueInterests.length) {
         setState({

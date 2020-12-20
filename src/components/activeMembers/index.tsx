@@ -8,7 +8,10 @@ import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
-import { GET_RECOMMENDED_MEMBERS } from '../../graphql/server/query';
+import {
+  GET_RECOMMENDED_MEMBERS,
+  GET_USER_PASSPORT
+} from '../../graphql/server/query';
 import ActiveMember from './widget';
 import Skeleton from './widget/skeleton';
 
@@ -37,13 +40,19 @@ function ActiveModal(props: ModalProp) {
 
   const recommendedMembers = recommendedData?.recommendedMembers;
 
-  const filterMembers = recommendedMembers?.slice().sort((a, b) => {
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userId = userDetails?.id;
+
+  const activeList = recommendedMembers?.slice().sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
 
     return 0;
   });
+
+  const filterMembers = activeList?.filter((member) => member.id !== userId);
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -70,7 +79,7 @@ function ActiveModal(props: ModalProp) {
           height: DEVICE_FULL_HEIGHT / 2,
           paddingTop: RFValue(30),
           paddingBottom: RFValue(20),
-          marginTop: RFValue(55)
+          marginTop: RFValue(80)
         }}
         HeaderComponent={
           <Text

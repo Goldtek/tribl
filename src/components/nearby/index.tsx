@@ -8,13 +8,16 @@ import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { DEVICE_FULL_HEIGHT } from '../../utils/device';
-import { GET_NEARBY_MEMBERS } from '../../graphql/server/query';
-import NearbyMember from './widget';
 import {
-  NearbyMembersRequestInterface,
-  PassportInterface
-} from '../../graphql/types';
+  GET_NEARBY_MEMBERS,
+  GET_USER_PASSPORT
+} from '../../graphql/server/query';
+import NearbyMember from './widget';
 import Skeleton from './widget/skeleton';
+import {
+  PassportInterface,
+  NearbyMembersRequestInterface
+} from '../../graphql/types';
 import { PAGINATION_DEFAULT } from '../../constants';
 
 // DEFINE SCREEN PROP TYPES
@@ -31,18 +34,26 @@ function NearbyModal(props: ModalProp) {
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
     GET_NEARBY_MEMBERS,
-    { variables: { offset: 0, first: PAGINATION_DEFAULT } }
+    {
+      variables: { offset: 0, first: PAGINATION_DEFAULT }
+    }
   );
 
-  const NearbyMembers = nearbyData?.nearbyMembers;
+  const nearbyMember = nearbyData?.nearbyMembers;
 
-  const filterMembers = NearbyMembers?.slice().sort((a, b) => {
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userId = userDetails?.id;
+
+  const nearbyList = nearbyMember?.slice().sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
 
     return 0;
   });
+
+  const filterMembers = nearbyList?.filter((member) => member.id !== userId);
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -55,12 +66,13 @@ function NearbyModal(props: ModalProp) {
   }, [isVisible]);
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <NearbyMember key={item.id} {...item} closeNearbyModal={closeNearbyModal} />
+    <NearbyMember key={item.id} {...item} NearbyUserModal={closeNearbyModal} />
   );
 
   return (
     <Portal>
       <StatusBar translucent animated style="light" />
+
       <Modalize
         ref={modalizeRef}
         onClose={closeNearbyModal}
@@ -68,7 +80,7 @@ function NearbyModal(props: ModalProp) {
           height: DEVICE_FULL_HEIGHT / 2,
           paddingTop: RFValue(30),
           paddingBottom: RFValue(20),
-          marginTop: RFValue(55)
+          marginTop: RFValue(80)
         }}
         HeaderComponent={
           <Text
@@ -79,7 +91,7 @@ function NearbyModal(props: ModalProp) {
               textTransform: 'capitalize',
               lineHeight: 20,
               marginLeft: RFValue(15),
-              marginBottom: RFValue(20)
+              marginBottom: RFValue(30)
             }}
           >
             {t(`community.tabPanel.nearby`)}

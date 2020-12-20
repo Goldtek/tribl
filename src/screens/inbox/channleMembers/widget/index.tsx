@@ -1,34 +1,31 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
+import React, { Fragment, useState } from 'react';
 import * as Sentry from '@sentry/react-native';
+import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import { Mixpanel } from '../../../config';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
-import { useThemeContext } from '../../../theme';
-import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
-import { PassportInterface } from '../../../graphql/types';
-import { rootNavigator } from '../../../constants';
-import hexToRGB from '../../../utils/hexToRGB';
-import { fireAuth } from '../../../firebase/config';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import { logEvent, hideSensitiveView } from '../../../utils/uxcamHelper';
-import { GET_SINGLE_PASSPORT } from '../../../graphql/server/query';
+import { useThemeContext } from '../../../../theme';
+import { REQUEST_CONNECTION } from '../../../../graphql/server/mutations';
+import { PassportInterface } from '../../../../graphql/types';
+import { rootNavigator } from '../../../../constants';
+import hexToRGB from '../../../../utils/hexToRGB';
+import { fireAuth } from '../../../../firebase/config';
+import { logEvent } from '../../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface NearbyUserProp extends PassportInterface {
-  closeNearbyModal(): void;
-}
+interface ChannelUserProp extends PassportInterface {}
 
-function NearbyModal(props: NearbyUserProp) {
+function ChannelMember(props: ChannelUserProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { closeNearbyModal, ...member } = props;
+  const userId = fireAuth.currentUser?.uid;
+
+  const { ...member } = props;
 
   const {
     id,
@@ -41,46 +38,33 @@ function NearbyModal(props: NearbyUserProp) {
     conversation
   } = member;
 
-  const userId = fireAuth.currentUser?.uid;
-
-  const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
-
-  useEffect(() => {
-    getUserPassport();
-  });
-
-  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+  const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber } }
   });
 
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
-    Mixpanel.track('User Adds Connection', {
-      info: `User adds ${firstName} ${lastName} as a connection`,
-      'Activity Screen': 'Nearby member passport card'
-    });
-    setLoading(true);
     try {
       await requestConnection();
-      setLoading(false);
       setPending(true);
     } catch (error) {
       Sentry.captureException(error);
-      setLoading(false);
     }
   };
 
-  const handleMessageNavigation = () => {
-    closeNearbyModal();
+  const handleNavigation = () => {
+    rootNavigator.navigate('MemberDetailScreen', {
+      title: `${firstName} ${lastName}`,
+      details: member
+    });
+  };
 
+  const handleMessageNavigation = () => {
     const senderId = conversation?.messageRequest.senderId;
     const messageRequest = conversation?.messageRequest;
-    const isRequestApproved = conversation?.messageRequest.approvedAt;
+    const isRequestApproved = conversation?.messageRequest?.approvedAt;
     const approveRequest =
       senderId !== userId && messageRequest && !isRequestApproved;
 
@@ -104,14 +88,6 @@ function NearbyModal(props: NearbyUserProp) {
     );
   };
 
-  const handleNavigation = () => {
-    closeNearbyModal();
-    rootNavigator.navigate('MemberDetailScreen', {
-      title: `${firstName} ${lastName}`,
-      details: member
-    });
-  };
-
   const state = currentLocation[0]?.state;
   const country = currentLocation[0]?.country;
   const city = currentLocation[0]?.city;
@@ -119,7 +95,7 @@ function NearbyModal(props: NearbyUserProp) {
   return (
     <TouchableRipple
       onPress={handleNavigation}
-      rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
+      rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
       style={{
         flex: 1,
         flexDirection: 'row',
@@ -141,13 +117,12 @@ function NearbyModal(props: NearbyUserProp) {
             borderRadius: RFValue(5)
           }}
         />
-        <TextContainer ref={hideSensitiveView}>
+        <TextContainer>
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
-              lineHeight: RFValue(18),
               textTransform: 'capitalize'
             }}
           >
@@ -158,22 +133,24 @@ function NearbyModal(props: NearbyUserProp) {
               style={{
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
                 fontFamily: fonts.WORK_SANS_REGULAR,
+                lineHeight: RFValue(15),
                 color: colors.SECONDARY_TEXT,
                 textTransform: 'capitalize'
               }}
             >
-              {`${city}, ${state}`}
+              {`${state}, ${country}`}
             </Paragraph>
           ) : (
             <Paragraph
               style={{
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
                 fontFamily: fonts.WORK_SANS_REGULAR,
+                lineHeight: RFValue(15),
                 color: colors.SECONDARY_TEXT,
                 textTransform: 'capitalize'
               }}
             >
-              {`${state}, ${country}`}
+              {`${city}, ${state}`}
             </Paragraph>
           )}
         </TextContainer>
@@ -186,14 +163,15 @@ function NearbyModal(props: NearbyUserProp) {
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
-              color: colors.PRIMARY_TEXT
+              color: colors.PRIMARY_TEXT,
+              marginHorizontal: 0
             }}
             contentStyle={{
               backgroundColor: colors.DISABLED,
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{ borderRadius: 5 }}
+            style={{ borderRadius: 5, width: RFValue(60) }}
           >
             {t(`community.recommended.pending`)}
           </Button>
@@ -205,14 +183,15 @@ function NearbyModal(props: NearbyUserProp) {
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
-              color: colors.WHITE
+              color: colors.WHITE,
+              marginHorizontal: 0
             }}
             contentStyle={{
               backgroundColor: colors.PRIMARY,
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{ borderRadius: 5 }}
+            style={{ borderRadius: 5, width: RFValue(60) }}
             onPress={handleMessageNavigation}
           >
             {t(`community.recommended.message`)}
@@ -233,10 +212,7 @@ function NearbyModal(props: NearbyUserProp) {
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{
-              width: RFValue(DEVICE_FULL_WIDTH <= 375 ? 73 : 65),
-              borderRadius: 5
-            }}
+            style={{ borderRadius: 5, width: RFValue(60) }}
             onPress={handleRequest}
           >
             {t(`community.recommended.add`)}+
@@ -247,4 +223,4 @@ function NearbyModal(props: NearbyUserProp) {
   );
 }
 
-export default React.memo(NearbyModal, () => false);
+export default React.memo(ChannelMember, () => false);
