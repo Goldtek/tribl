@@ -114,6 +114,26 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
               >
                 2. {t(`community.update.update_two`)}
               </Paragraph>
+              <Paragraph
+                style={{
+                  color: colors.SECONDARY_TEXT,
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  lineHeight: RFValue(18)
+                }}
+              >
+                3. {t(`community.update.update_three`)}
+              </Paragraph>
+              <Paragraph
+                style={{
+                  color: colors.SECONDARY_TEXT,
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  lineHeight: RFValue(18)
+                }}
+              >
+                4. {t(`community.update.update_four`)}
+              </Paragraph>
             </TextContainer>
             <GradientButton
               onPress={handleUpdate}
