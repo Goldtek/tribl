@@ -51,8 +51,9 @@ workflows:
                 # echo "Saved provisioning profile $PROFILE_PATH"
             - name: Fetch or create certificate
               script: |  
-                APP_STORE_CONNECT_PRIVATE_KEY=$($APP_STORE_CONNECT_PRIVATE_KEY | base64 --decode)
-                CERTIFICATE_PRIVATE_KEY=$($CERTIFICATE_PRIVATE_KEY | base64 --decode)
+                
+                
+                echo $CERTIFICATE_PRIVATE_KEY | base64 --decode > /tmp/certificate.p12
                 app-store-connect fetch-signing-files "com.thetriblnetwork.tribl" --type IOS_APP_ADHOC --create
               #  echo $APP_STORE_CONNECT_PRIVATE_KEY | base64 --decode > /tmp/key.p8
 
