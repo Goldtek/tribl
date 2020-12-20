@@ -18,7 +18,7 @@ import {
   GET_NEARBY_MEMBERS,
   GET_RECOMMENDED_MEMBERS
 } from '../../../../../graphql/server/query';
-import NearbyModal from '../../../../../components/nearbyMembers';
+import NearbyModal from '../../../../../components/nearby';
 import ActiveModal from '../../../../../components/activeMembers';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import {
@@ -43,13 +43,13 @@ function MemberSTabScreen(props: ScreenProp) {
     tagScreenName('ViewAllMembers');
   }, []);
 
-  const [isVisible, setIsVisible] = useState(false);
+  const [nearbyVisible, setNearbyVisble] = useState(false);
 
   const [visible, setVisible] = useState(false);
 
   const showNearbyModal = useCallback(
-    (isVisible: boolean) => () => {
-      setIsVisible(isVisible);
+    (visible: boolean) => () => {
+      setNearbyVisble(visible);
       return true;
     },
     []
@@ -217,7 +217,7 @@ function MemberSTabScreen(props: ScreenProp) {
       </Container>
       <NearbyModal
         closeNearbyModal={showNearbyModal(false)}
-        isVisible={isVisible}
+        isVisible={nearbyVisible}
       />
       <ActiveModal
         closeActiveModal={showActiveModal(false)}

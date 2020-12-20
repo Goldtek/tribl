@@ -101,28 +101,27 @@ class Storage {
   async removeTagModal(community?: string) {
     try {
       const currentTagModal = await this.checkTagModal();
-
       let communityIndex = null;
+      if (currentTagModal.community?.length === 0) {
+        await this.setTagModal({ community: [] });
+        await this.MMKV?.setMapAsync(SHOW_MODAL, { community: [] });
+      }
       if (currentTagModal.community.length === 1) {
         currentTagModal.community.pop();
+        await this.setTagModal({ community: [] });
+        await this.MMKV?.setMapAsync(SHOW_MODAL, { community: [] });
       }
       if (currentTagModal.community.length) {
-        //Get community index
-        for (let i = 0; i < currentTagModal.community.length; i++) {
-          if (currentTagModal.community[i] === community) {
-            communityIndex = i;
-            break;
-          } else {
-            continue;
-          }
-        }
         //Remove community from tagModal
-        if (communityIndex) currentTagModal.community.splice(communityIndex, 1);
+        const filteredId = currentTagModal?.community?.filter(
+          (id) => id !== community
+        );
         //Set tag modal to updated version
-        await this.MMKV?.setMapAsync(SHOW_MODAL, currentTagModal);
+        await this.setTagModal({ community: filteredId });
+        await this.MMKV?.setMapAsync(SHOW_MODAL, { community: filteredId });
       }
     } catch (error) {
-      await this.MMKV?.setMapAsync(SHOW_MODAL, [community]);
+      await this.MMKV?.setMapAsync(SHOW_MODAL, []);
     }
   }
 }

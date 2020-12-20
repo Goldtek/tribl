@@ -21,6 +21,13 @@ export const GET_RECOMMENDED_MEMBERS = gql`
       connected
       connectionCount
       communityCount
+      moderatorOf {
+        isModerator
+        id
+      }
+      participantOf {
+        isModerator
+      }
       birthPlace {
         id
         country
@@ -68,6 +75,81 @@ export const GET_RECOMMENDED_MEMBERS = gql`
 export const GET_NEARBY_MEMBERS = gql`
   query nearbyMembers($offset: Int, $first: Int) {
     nearbyMembers(offset: $offset, first: $first) {
+      id
+      bio
+      email
+      firstName
+      lastName
+      phoneNumber
+      connected
+      avatar
+      communityCount
+      connectionCount
+      moderatorOf {
+        isModerator
+        id
+      }
+      participantOf {
+        isModerator
+      }
+      birthPlace {
+        id
+        country
+        state
+        city
+        lat
+        long
+      }
+      currentLocation {
+        id
+        country
+        state
+        city
+        lat
+        long
+      }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+      conversation {
+        id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
+      }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
+    }
+  }
+`;
+
+//GET CHANNEL MEMBERS
+export const GET_CHANNEL_MEMBERS = gql`
+  query channelMembers($channelId: ID!) {
+    channelMembers(channelId: $channelId) {
       id
       bio
       email
@@ -146,6 +228,13 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
       avatar
       communityCount
       connectionCount
+      moderatorOf {
+        isModerator
+        id
+      }
+      participantOf {
+        isModerator
+      }
       birthPlace {
         id
         country
@@ -457,6 +546,10 @@ export const GET_SINGLE_PASSPORT = gql`
       connected
       avatar
       bio
+      moderatorOf {
+        isModerator
+        id
+      }
       participantOf {
         id
         name
@@ -605,6 +698,13 @@ export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
       bio
       communityCount
       connectionCount
+      moderatorOf {
+        isModerator
+        id
+      }
+      participantOf {
+        isModerator
+      }
       currentLocation {
         id
         country
@@ -662,6 +762,13 @@ export const GET_COMMUNITY_MEMBERS = gql`
       connected
       connectionCount
       communityCount
+      moderatorOf {
+        isModerator
+        id
+      }
+      participantOf {
+        isModerator
+      }
       birthPlace {
         id
         country
