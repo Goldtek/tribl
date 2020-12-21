@@ -5,8 +5,8 @@ workflows:
         instance_type: mac_mini
         environment:
             vars:
-                XCODE_WORKSPACE: "/tmp/ios/tribl.xcworkspace" # <-- Put the name of your Xcode workspace here
-                XCODE_SCHEME: "/tmp/ios/tribl.xcodeproj" # <-- Put the name of your Xcode scheme here
+                XCODE_WORKSPACE: "tribl.xcworkspace" # <-- Put the name of your Xcode workspace here
+                XCODE_SCHEME: "tribl.xcodeproj" # <-- Put the name of your Xcode scheme here
                 # Automatic Code Signing 
                 # https://docs.codemagic.io/yaml/distribution/
                 # https://appstoreconnect.apple.com/access/api
