@@ -6,7 +6,7 @@ workflows:
         environment:
             vars:
                 XCODE_WORKSPACE: "tribl.xcworkspace" # <-- Put the name of your Xcode workspace here
-                XCODE_SCHEME: "tribl.xcodeproj" # <-- Put the name of your Xcode scheme here
+                XCODE_SCHEME: "tribl" # <-- Put the name of your Xcode scheme here
                 # Automatic Code Signing 
                 # https://docs.codemagic.io/yaml/distribution/
                 # https://appstoreconnect.apple.com/access/api
