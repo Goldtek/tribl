@@ -1,3 +1,5 @@
+
+
 workflows:
     react-native-ios:
         name: React Native iOS
@@ -64,12 +66,12 @@ workflows:
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
         publishing:
-          # app_store_connect:                 
-              # apple_id: ikechi@thetriblnetwork.com  
-              # password: Encrypted(Z0FBQUFBQmY0aU9HMVNuSlVWMWp6TWZONWJURjl6c3piVnEyWXBfV3RKdURpUFJ3N2RJUXNHODNYQ1lNZzRWU0dHenZadjJHWm4tLUNqWUxhTUpSVFgtUzVBOWczMTFJSVE9PQ==) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
+          app_store_connect:                 
+              apple_id: ikechi@thetriblnetwork.com  
+              password: Encrypted(Z0FBQUFBQmY0bENWMzVJN21PaU1Vd2Qzak1JM0JOWFRwM0pFSWtVNmEzM2xKZnVFY2ZMYkdxU0hLb0JqRlRkZUpvVEZ6eHVrRGlvcGE3RDByN2xSazk2NjBTSURKU2xNM3c9PQ==) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
           email:
             recipients:
-                - akinduko@thetriblnetwork.com     
+                - product@thetriblnetwork.com     
     react-native-android:
         name: React Native Android
         max_build_duration: 120
@@ -148,4 +150,4 @@ workflows:
                  track: alpha 
             email:
                 recipients:
-                    - akinduko@thetriblnetwork.com # Put your email address for build notifications (optional)
+                    - product@thetriblnetwork.com # Put your email address for build notifications (optional)
