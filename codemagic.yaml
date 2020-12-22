@@ -67,7 +67,7 @@ workflows:
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
         publishing:
           app_store_connect:                 
-              apple_id: ikechi@thetriblnetwork.com  
+              apple_id: nwabuisi@siliconjunglelabs.co  
               password: Encrypted(Z0FBQUFBQmY0bENWMzVJN21PaU1Vd2Qzak1JM0JOWFRwM0pFSWtVNmEzM2xKZnVFY2ZMYkdxU0hLb0JqRlRkZUpvVEZ6eHVrRGlvcGE3RDByN2xSazk2NjBTSURKU2xNM3c9PQ==) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
           email:
             recipients:
