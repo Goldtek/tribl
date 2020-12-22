@@ -64,9 +64,9 @@ workflows:
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
         publishing:
-          app_store_connect:                 
-              apple_id: ikechi@thetriblnetwork.com  
-              password: Encrypted(Z0FBQUFBQmY0aU9HMVNuSlVWMWp6TWZONWJURjl6c3piVnEyWXBfV3RKdURpUFJ3N2RJUXNHODNYQ1lNZzRWU0dHenZadjJHWm4tLUNqWUxhTUpSVFgtUzVBOWczMTFJSVE9PQ==) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
+          # app_store_connect:                 
+              # apple_id: ikechi@thetriblnetwork.com  
+              # password: Encrypted(Z0FBQUFBQmY0aU9HMVNuSlVWMWp6TWZONWJURjl6c3piVnEyWXBfV3RKdURpUFJ3N2RJUXNHODNYQ1lNZzRWU0dHenZadjJHWm4tLUNqWUxhTUpSVFgtUzVBOWczMTFJSVE9PQ==) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
           email:
             recipients:
                 - akinduko@thetriblnetwork.com     
