@@ -1,77 +1,6 @@
 
 
 workflows:
-    react-native-ios:
-        name: React Native iOS
-        max_build_duration: 120
-        instance_type: mac_mini
-        environment:
-            vars:
-                XCODE_WORKSPACE: "tribl.xcworkspace" # <-- Put the name of your Xcode workspace here
-                XCODE_SCHEME: "tribl" # <-- Put the name of your Xcode scheme here
-                # Automatic Code Signing 
-                # https://docs.codemagic.io/yaml/distribution/
-                # https://appstoreconnect.apple.com/access/api
-                APP_STORE_CONNECT_ISSUER_ID: 69a6de90-b9ed-47e3-e053-5b8c7c11a4d1 # <-- Put your App Store Connect Issuer Id here
-                APP_STORE_CONNECT_KEY_IDENTIFIER: GMJ454PN89 # <-- Put your App Store Connect Key Identifier here
-                APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(Z0FBQUFBQmY0anVoTE5LbXlLVVpSZFZOUzMyZzB0bVpjd3pzY1RXdjQ1MVA3RVIyRTBlNWZkV1dGWERnS01BRXJ4SUFmUk9GWHZyMFZDcWp6TEhpTkZISkROUk42cWdGcVFQM3hqZHlvQl9HM2J3UHhydDJSc1QyRzJhNVUwZkl5VTI5SUYyVkI0Q08xZE4yTWJtZGdXb0xWMDcxWjdzelpERFFQSjF3QWNBVlltTmtDNkdHU3VUb2lrSG9sUDNoS0VlYVR4UWhNdFVsU3dJVjBFQVIyR0xfX0FmYld1cE9GbU9tazNVSEZheDlWSGNjN2dPWU02cmhpSFFpcU5OcF9UWmlwTXVpdi1YemZ0ZlJUTkhHMTlhQ2JFVXIzQ3FsRDk1QzVDV1BwUk8yai1yT2xFZFdWVFdpLXgwaFFQZEMyMmtlQ25MNktxd2Q0a0VnaUZpOGNWWE1fSGNyVHY0RUNDSUMwTU1KYmJwRDNJQUR5WGRzdDJXRDZUWjByenVLaWI5dW5lckJXeVp6bUlsOTVTNERCRjhsY0ZRQ1NXSXEzcHNlS0FQT1RSaGF6ejI3a0NmcmpFST0=) # <-- Put your App Store Connect Private Key here
-                CERTIFICATE_PRIVATE_KEY: Encrypted(Z0FBQUFBQmY0anRXYkpLd3dHVE50NTdlRjdULW5ucTV1bWNDbXBwQXdKNFluTW0xZHdiSzdsTFlrSnZJTExxbXR4Uld0aS1nemVLbjlOa2ZMdUZYRllIQ3pQRGVRaFdhaGltNnUyanlpLWdnbkVHdEJySmlxZmZpdlJ0dElIQmNnS1FleWt3bklpTGdxSkdiR3BBay1SOWRTa29zOExHQnBWa3I0WlFudzhUYjhGUGhjbHYxM2tWRjd6d0JqVVFhdmttWXNxUXpMeFNWUlFhVjhVNlVKVEk0UHdKWnpQZzUyYU5oVy13MkhSUS1zUm0xRE9uZUJrVzVmUFpzLUFONVlZcGFCRkJNcTZZTndwWlVJcFh0QVRMY2w1WV81S1VXWnIxTFdUaC1MOVpPV2JORzZPcFR4TVhoZno5QXlCVktQRWVIOF9kZHRDckJtajlTYlhNTlFZaTJxTHgzcDlTX1AzOFpPM01Lcm8xbDNiSV9ucW9VYjctSldIaFVUaVJyUk5wX1pPSFhvLUJDcExQWU1XNjJDTUo4WE9sOENBLUtQYW5jNkRGUV9CSXBTMGpVTUZiTU0wYzRjRVdkOUZHUjBpdlYtYWhIUHV5bGVtYWd2SURQM256NDRqUEp4UVFfN3VfT2hycXNpRGVvSk5IWTQ2bTNwUGxmRFBTdE5sVHhBMlQ0MlJkSGc5VTlld0FHX1RVWDVOSk5JWGxyejVCVE5nTGpIR2oxM002VEZrYVVWOTN6VmhWQ3NiYjlsMXVXMzVMRXhLSXB6U01VWGtvY185d0V1YWlyUFk5SlZpNTluUDZuRWJWbVN0R0xIMEs4UEptWEZETklHNnVrWmdyM05JS2NaTjU5a0NwZHE1YWVETTE5RHBLaDFtRHhka09YcjZNQUhWWkdTaEdEa3ZSLV9IdXhuQUpjMUFXa2cwcVRqUk1XTFZnOV9kcnNDYnktNE5EeFM1Rnp3NXNFdTNXVjJtNVEya2cwSG94cGtKZWpEWkVjRWVLUGFEVmpQOEZOQUlBVHM4MU9XYlhQeXJhWE1lSXVTcFhrSzQyM09DWTJwbFc1Zmw2STVmdjEwZkpSbmxSemEyMnRmZnN1T3pTVVItbXFocnBBR29YNWF5WURJNXpETlRCYk10NjhtTFZHeW1QOTZEdjJQUm9BWUlpZmdVam5FU1lZQzZtU3ZZOTIwRW9Rb3pENHdyUXd5Nl94WE1pUm9QR1g1Xy00aU1jR3A1dU03cUJjTzBJbE9VbnE2SnhyUjNVSjItMXNOUklSajFENy0xaW90MmhkVVRWVThIbzM3clo1LXFfTkJCOE9TWU9uTlJBMHA2dE9WOTQydldhNHJPWW5NcHE5RFNjQVJxVkxILUFWLUE2cGNfWDhodTNEYzRVUDRlVFl1d3FOckllR19mSGFxcVV1WDFHcWQ5V01RUmZuYmJJbVNWS014Q0wtcldrTmNJMWlLenNsM2lYNUJyWU1nMmdMMVI5aTl4eGdVMW5DNzl2MUJjbjFZSkVMUzBKSzBrc1gyQWszVmpYN3Q4NDRRa0dzOFZVQWI0MkxCUzQwaWtfbktyc0JVeTdyaFM0UUhwcjVMQUVtZVNqaFdXNVl4U2xBdTktaE5fbEZBdkNSTjR1MVpuVDFYSzZtNkgwdl9EV3kxWVM3bXQ5WnZyX1pnT0lXbzFydWFkX1BmbUZaMU9oMzRFWktlZU84TVpTaE9ta01OaEdjNGEyOUhoa0kzdXp6RGlTSGdjZElLWlZ2em1IRWhkWUk1SU9pYnhpT1pXcWZiTlRHTk5oeDRFSWx5Y2dnbnhuNWxwbmRnaHkwVG1OLVlPRUhEbXZKQk9La1NxRXF6X19MWXJQbUxSd3puQjNja2RLVnFXQUJueENfYXZDY05HdEFpSk5JR3JIU3dyZHdwR09pUUtGTTdZbTl4ZUg5eXBVQUNSZW1BTG5HMGdSQTF6dVZZNFlIOG13TjVoVjVGSk9ub1FEUm1RZDIwdzREM0gxV0kwTGcyQVFPN3ZDYnp4ZGs3aGFzTC0yUDBTNk9HdGV6SEw5R3JGZVFkOElSTHMwbS01R29VWGhyVy16clZVcjR6UUFSd1hGcjJQVl9laEpGZEtncnNuWXFtNzhfbHpydnJ1eUVPSGtpNlBieHlHMUpqVjRCWEoxUWNKbkFvMlRWdC1fZW9EbHJiZE5BRm5SZzQ4STZrQVNXYWhWMUZkb090VllxQTNDd3loTTdXZWtvbGRCS0piZlJjV1lLWlVWclFsVU5BYS16SjFkZUlkRkgwVGZ1UlVMTldrOGk1OEFtZVk5dlM1RkZwSDRCMThrazQzckdReWtRMGd6cFVPRGRjbVVWOTZpbnZZd2NJNjFYMEFsclBva21rMGdkTU5CR09mcnllRE1XQkdsdkJkYkItUk5majNuSUQ1MUxSeFlWck1QZWJYc1Q0ekZDQmFWNWgwOTl0aU84R3NIOGVJeWltV1dWQXJfaXdqZk1uUWVkUGhLUlZDVVpVdl9qRFFmeHJkdHNFTXBBc1BlUW5PS3otRlNLUTFLN3NLVHlGVEJ4ZTZXQ1BqUlZ1V2JMVWdiMUxmVGRqMWpTQWJzbWpBS1hFaWpLdVBwWVNrMHpwX3pDcDkxQ1lQMVRMd2YzM04zS3hKdHowd29uLVk5bUZuazVQcUZOYlJnUmlLZGlHank2OXdpMm1QSkVGbjlCV19MbFhGRE5NUjRFOThodEtIT25vazRtVWNHU0lJaWNhakFNZHVLbVdzaExJb1I4Q2I2ZmNGUnBXMkJvR2xneVFtWmxDU1VLeDl4elV4RXU2aDVRd2N0VGhydm9NMjVkOFhDcXBpMnhjLTNiNW1tR1lqTTNiVldRRkMzOTk3ZWc3TXNRQUUyS21LMzczWmtLYThpbEJ1R0dxeXlTRjZQVUpudzkyUUdWN0tpdjZtUUdkREN4aEpxcXBqRXZ6Mkw2ZjIyQXdjeXUwS3NqZGpNQnctQV9hbXdVYnJIb3dzMTdKbWVIS0RpZHlNeUQ4MFV5RmlnRUwzNHhqLWdOV3RwTFRyYXYwVFJieGJnenJlLVA1VjA3OVpXUzVoOUVEZk9B)
-            node: latest
-            xcode: latest
-            cocoapods: default
-        triggering:
-            events:
-                - push
-                - tag
-                - pull_request
-            branch_patterns:
-                - pattern: develop # <<-- put the branch that the codemagic config file is
-                  include: true
-                  source: true
-        scripts:
-            - name: Install yarn dependencies
-              script: |
-                yarn
-            - name: Install CocoaPods dependencies
-              script: |
-                cd ios && pod install
-            - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-              script: |
-                keychain initialize
-            - name: Fetch or create certificate
-              script: |  
-                echo $CERTIFICATE_PRIVATE_KEY | base64 --decode > /tmp/certificate.p12
-                app-store-connect fetch-signing-files "com.thetriblnetwork.tribl" --type IOS_APP_ADHOC --create
-
-            - name: Use system default keychain
-              script: |
-                keychain add-certificates 
-            - name: Increment build number
-              script: |
-                #!/bin/sh
-                set -e
-                set -x
-                cd $FCI_BUILD_DIR/ios
-                agvtool new-version -all $(($BUILD_NUMBER + 1))
-            - name: Set up code signing settings on Xcode project
-              script: |
-                cd ios && pod install
-                xcode-project use-profiles
-            - name: Build ipa for distribution
-              script: |
-                xcode-project build-ipa --workspace "$FCI_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
-        artifacts:
-            - build/ios/ipa/*.ipa
-            - /tmp/xcodebuild_logs/*.log
-            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-        publishing:
-          app_store_connect:                 
-              apple_id: product@thetriblnetwork.com  
-              password: Encrypted(Z0FBQUFBQmY0eHEyLUxfaGNKYnVyUmZWZ1JWQ18wUTBiOFNLODRuYU5BQ1h2VTAtODJfdmJ6aHlIVFIxQXE2WEJUZUZfVXh6c0R6MlVpRndpSlNaQkw4SGhuZ01WY0FhRmtCaHBmZ0VUcnBvU2pzcTNVemp0YlE9) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
-          email:
-            recipients:
-                - product@thetriblnetwork.com                     
     react-native-android:
         name: React Native Android
         max_build_duration: 120
@@ -151,3 +80,75 @@ workflows:
             email:
                 recipients:
                     - product@thetriblnetwork.com # Put your email address for build notifications (optional)
+
+    react-native-ios:
+        name: React Native iOS
+        max_build_duration: 120
+        instance_type: mac_mini
+        environment:
+            vars:
+                XCODE_WORKSPACE: "tribl.xcworkspace" # <-- Put the name of your Xcode workspace here
+                XCODE_SCHEME: "tribl" # <-- Put the name of your Xcode scheme here
+                # Automatic Code Signing 
+                # https://docs.codemagic.io/yaml/distribution/
+                # https://appstoreconnect.apple.com/access/api
+                APP_STORE_CONNECT_ISSUER_ID: 69a6de90-b9ed-47e3-e053-5b8c7c11a4d1 # <-- Put your App Store Connect Issuer Id here
+                APP_STORE_CONNECT_KEY_IDENTIFIER: GMJ454PN89 # <-- Put your App Store Connect Key Identifier here
+                APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(Z0FBQUFBQmY0anVoTE5LbXlLVVpSZFZOUzMyZzB0bVpjd3pzY1RXdjQ1MVA3RVIyRTBlNWZkV1dGWERnS01BRXJ4SUFmUk9GWHZyMFZDcWp6TEhpTkZISkROUk42cWdGcVFQM3hqZHlvQl9HM2J3UHhydDJSc1QyRzJhNVUwZkl5VTI5SUYyVkI0Q08xZE4yTWJtZGdXb0xWMDcxWjdzelpERFFQSjF3QWNBVlltTmtDNkdHU3VUb2lrSG9sUDNoS0VlYVR4UWhNdFVsU3dJVjBFQVIyR0xfX0FmYld1cE9GbU9tazNVSEZheDlWSGNjN2dPWU02cmhpSFFpcU5OcF9UWmlwTXVpdi1YemZ0ZlJUTkhHMTlhQ2JFVXIzQ3FsRDk1QzVDV1BwUk8yai1yT2xFZFdWVFdpLXgwaFFQZEMyMmtlQ25MNktxd2Q0a0VnaUZpOGNWWE1fSGNyVHY0RUNDSUMwTU1KYmJwRDNJQUR5WGRzdDJXRDZUWjByenVLaWI5dW5lckJXeVp6bUlsOTVTNERCRjhsY0ZRQ1NXSXEzcHNlS0FQT1RSaGF6ejI3a0NmcmpFST0=) # <-- Put your App Store Connect Private Key here
+                CERTIFICATE_PRIVATE_KEY: Encrypted(Z0FBQUFBQmY0anRXYkpLd3dHVE50NTdlRjdULW5ucTV1bWNDbXBwQXdKNFluTW0xZHdiSzdsTFlrSnZJTExxbXR4Uld0aS1nemVLbjlOa2ZMdUZYRllIQ3pQRGVRaFdhaGltNnUyanlpLWdnbkVHdEJySmlxZmZpdlJ0dElIQmNnS1FleWt3bklpTGdxSkdiR3BBay1SOWRTa29zOExHQnBWa3I0WlFudzhUYjhGUGhjbHYxM2tWRjd6d0JqVVFhdmttWXNxUXpMeFNWUlFhVjhVNlVKVEk0UHdKWnpQZzUyYU5oVy13MkhSUS1zUm0xRE9uZUJrVzVmUFpzLUFONVlZcGFCRkJNcTZZTndwWlVJcFh0QVRMY2w1WV81S1VXWnIxTFdUaC1MOVpPV2JORzZPcFR4TVhoZno5QXlCVktQRWVIOF9kZHRDckJtajlTYlhNTlFZaTJxTHgzcDlTX1AzOFpPM01Lcm8xbDNiSV9ucW9VYjctSldIaFVUaVJyUk5wX1pPSFhvLUJDcExQWU1XNjJDTUo4WE9sOENBLUtQYW5jNkRGUV9CSXBTMGpVTUZiTU0wYzRjRVdkOUZHUjBpdlYtYWhIUHV5bGVtYWd2SURQM256NDRqUEp4UVFfN3VfT2hycXNpRGVvSk5IWTQ2bTNwUGxmRFBTdE5sVHhBMlQ0MlJkSGc5VTlld0FHX1RVWDVOSk5JWGxyejVCVE5nTGpIR2oxM002VEZrYVVWOTN6VmhWQ3NiYjlsMXVXMzVMRXhLSXB6U01VWGtvY185d0V1YWlyUFk5SlZpNTluUDZuRWJWbVN0R0xIMEs4UEptWEZETklHNnVrWmdyM05JS2NaTjU5a0NwZHE1YWVETTE5RHBLaDFtRHhka09YcjZNQUhWWkdTaEdEa3ZSLV9IdXhuQUpjMUFXa2cwcVRqUk1XTFZnOV9kcnNDYnktNE5EeFM1Rnp3NXNFdTNXVjJtNVEya2cwSG94cGtKZWpEWkVjRWVLUGFEVmpQOEZOQUlBVHM4MU9XYlhQeXJhWE1lSXVTcFhrSzQyM09DWTJwbFc1Zmw2STVmdjEwZkpSbmxSemEyMnRmZnN1T3pTVVItbXFocnBBR29YNWF5WURJNXpETlRCYk10NjhtTFZHeW1QOTZEdjJQUm9BWUlpZmdVam5FU1lZQzZtU3ZZOTIwRW9Rb3pENHdyUXd5Nl94WE1pUm9QR1g1Xy00aU1jR3A1dU03cUJjTzBJbE9VbnE2SnhyUjNVSjItMXNOUklSajFENy0xaW90MmhkVVRWVThIbzM3clo1LXFfTkJCOE9TWU9uTlJBMHA2dE9WOTQydldhNHJPWW5NcHE5RFNjQVJxVkxILUFWLUE2cGNfWDhodTNEYzRVUDRlVFl1d3FOckllR19mSGFxcVV1WDFHcWQ5V01RUmZuYmJJbVNWS014Q0wtcldrTmNJMWlLenNsM2lYNUJyWU1nMmdMMVI5aTl4eGdVMW5DNzl2MUJjbjFZSkVMUzBKSzBrc1gyQWszVmpYN3Q4NDRRa0dzOFZVQWI0MkxCUzQwaWtfbktyc0JVeTdyaFM0UUhwcjVMQUVtZVNqaFdXNVl4U2xBdTktaE5fbEZBdkNSTjR1MVpuVDFYSzZtNkgwdl9EV3kxWVM3bXQ5WnZyX1pnT0lXbzFydWFkX1BmbUZaMU9oMzRFWktlZU84TVpTaE9ta01OaEdjNGEyOUhoa0kzdXp6RGlTSGdjZElLWlZ2em1IRWhkWUk1SU9pYnhpT1pXcWZiTlRHTk5oeDRFSWx5Y2dnbnhuNWxwbmRnaHkwVG1OLVlPRUhEbXZKQk9La1NxRXF6X19MWXJQbUxSd3puQjNja2RLVnFXQUJueENfYXZDY05HdEFpSk5JR3JIU3dyZHdwR09pUUtGTTdZbTl4ZUg5eXBVQUNSZW1BTG5HMGdSQTF6dVZZNFlIOG13TjVoVjVGSk9ub1FEUm1RZDIwdzREM0gxV0kwTGcyQVFPN3ZDYnp4ZGs3aGFzTC0yUDBTNk9HdGV6SEw5R3JGZVFkOElSTHMwbS01R29VWGhyVy16clZVcjR6UUFSd1hGcjJQVl9laEpGZEtncnNuWXFtNzhfbHpydnJ1eUVPSGtpNlBieHlHMUpqVjRCWEoxUWNKbkFvMlRWdC1fZW9EbHJiZE5BRm5SZzQ4STZrQVNXYWhWMUZkb090VllxQTNDd3loTTdXZWtvbGRCS0piZlJjV1lLWlVWclFsVU5BYS16SjFkZUlkRkgwVGZ1UlVMTldrOGk1OEFtZVk5dlM1RkZwSDRCMThrazQzckdReWtRMGd6cFVPRGRjbVVWOTZpbnZZd2NJNjFYMEFsclBva21rMGdkTU5CR09mcnllRE1XQkdsdkJkYkItUk5majNuSUQ1MUxSeFlWck1QZWJYc1Q0ekZDQmFWNWgwOTl0aU84R3NIOGVJeWltV1dWQXJfaXdqZk1uUWVkUGhLUlZDVVpVdl9qRFFmeHJkdHNFTXBBc1BlUW5PS3otRlNLUTFLN3NLVHlGVEJ4ZTZXQ1BqUlZ1V2JMVWdiMUxmVGRqMWpTQWJzbWpBS1hFaWpLdVBwWVNrMHpwX3pDcDkxQ1lQMVRMd2YzM04zS3hKdHowd29uLVk5bUZuazVQcUZOYlJnUmlLZGlHank2OXdpMm1QSkVGbjlCV19MbFhGRE5NUjRFOThodEtIT25vazRtVWNHU0lJaWNhakFNZHVLbVdzaExJb1I4Q2I2ZmNGUnBXMkJvR2xneVFtWmxDU1VLeDl4elV4RXU2aDVRd2N0VGhydm9NMjVkOFhDcXBpMnhjLTNiNW1tR1lqTTNiVldRRkMzOTk3ZWc3TXNRQUUyS21LMzczWmtLYThpbEJ1R0dxeXlTRjZQVUpudzkyUUdWN0tpdjZtUUdkREN4aEpxcXBqRXZ6Mkw2ZjIyQXdjeXUwS3NqZGpNQnctQV9hbXdVYnJIb3dzMTdKbWVIS0RpZHlNeUQ4MFV5RmlnRUwzNHhqLWdOV3RwTFRyYXYwVFJieGJnenJlLVA1VjA3OVpXUzVoOUVEZk9B)
+            node: latest
+            xcode: latest
+            cocoapods: default
+        triggering:
+            events:
+                - push
+                - tag
+                - pull_request
+            branch_patterns:
+                - pattern: develop # <<-- put the branch that the codemagic config file is
+                  include: true
+                  source: true
+        scripts:
+            - name: Install yarn dependencies
+              script: |
+                yarn
+            - name: Install CocoaPods dependencies
+              script: |
+                cd ios && pod install
+            - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+              script: |
+                keychain initialize
+            - name: Fetch or create certificate
+              script: |  
+                echo $CERTIFICATE_PRIVATE_KEY | base64 --decode > /tmp/certificate.p12
+                app-store-connect fetch-signing-files "com.thetriblnetwork.tribl" --type IOS_APP_ADHOC --create
+
+            - name: Use system default keychain
+              script: |
+                keychain add-certificates 
+            - name: Increment build number
+              script: |
+                #!/bin/sh
+                set -e
+                set -x
+                cd $FCI_BUILD_DIR/ios
+                agvtool new-version -all $(($BUILD_NUMBER + 1))
+            - name: Set up code signing settings on Xcode project
+              script: |
+                cd ios && pod install
+                xcode-project use-profiles
+            - name: Build ipa for distribution
+              script: |
+                xcode-project build-ipa --workspace "$FCI_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+        artifacts:
+            - build/ios/ipa/*.ipa
+            - /tmp/xcodebuild_logs/*.log
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        publishing:
+          app_store_connect:                 
+              apple_id: product@thetriblnetwork.com  
+              password: Encrypted(Z0FBQUFBQmY0eHEyLUxfaGNKYnVyUmZWZ1JWQ18wUTBiOFNLODRuYU5BQ1h2VTAtODJfdmJ6aHlIVFIxQXE2WEJUZUZfVXh6c0R6MlVpRndpSlNaQkw4SGhuZ01WY0FhRmtCaHBmZ0VUcnBvU2pzcTNVemp0YlE9) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
+          email:
+            recipients:
+                - product@thetriblnetwork.com                     
