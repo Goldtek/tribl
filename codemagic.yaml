@@ -68,12 +68,10 @@ workflows:
         publishing:
           app_store_connect:                 
               apple_id: product@thetriblnetwork.com  
-              password: Encrypted(Z0FBQUFBQmY0dkdJc1dUMlFPU3hjUzBXVEhRN3lRcTFYZUdFSHFpYjlET2ZTTHFSMG9ZS0FiZWpHWjhjRnhMekRJdmRxVkJlQ0otNGQ2eDQyTWp4ZTZhWkxQNURsbzJmbG5pazNhODM0VHcwa3dpZXZEakdPN1U9) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
+              password: Encrypted(Z0FBQUFBQmY0eHEyLUxfaGNKYnVyUmZWZ1JWQ18wUTBiOFNLODRuYU5BQ1h2VTAtODJfdmJ6aHlIVFIxQXE2WEJUZUZfVXh6c0R6MlVpRndpSlNaQkw4SGhuZ01WY0FhRmtCaHBmZ0VUcnBvU2pzcTNVemp0YlE9) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
           email:
             recipients:
-                - product@thetriblnetwork.com     
-
-workflow:                
+                - product@thetriblnetwork.com                     
     react-native-android:
         name: React Native Android
         max_build_duration: 120
