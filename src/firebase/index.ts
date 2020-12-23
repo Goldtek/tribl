@@ -47,12 +47,16 @@ class Firechat {
   }
 
   // GET ROOM CHAT MESSAGES
-  getChatMessages(chatId: string): FirebaseFirestoreTypes.Query {
+  getChatMessages(
+    chatId: string,
+    pagination: number
+  ): FirebaseFirestoreTypes.Query {
     return firechat
       .collection(ROOM_TYPES.CONVERSATIONS)
       .doc(chatId.trim())
       .collection(ROOM_TYPES.CHATS)
-      .orderBy('createdAt', 'desc');
+      .orderBy('createdAt', 'desc')
+      .limit(pagination);
   }
 
   // GET ALL CHANNEL PARTICIPANTS
@@ -64,12 +68,16 @@ class Firechat {
   }
 
   // GET ROOM CHAT MESSAGES
-  getChannelMessages(chatId: string): FirebaseFirestoreTypes.Query {
+  getChannelMessages(
+    chatId: string,
+    pagination: number
+  ): FirebaseFirestoreTypes.Query {
     return firechat
       .collection(ROOM_TYPES.CHANNELS)
       .doc(chatId.trim())
       .collection(ROOM_TYPES.CHATS)
-      .orderBy('createdAt', 'desc');
+      .orderBy('createdAt', 'desc')
+      .limit(pagination);
   }
 
   // GET CHANNEL PARTICIPANT READ AT
