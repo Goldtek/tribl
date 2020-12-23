@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Image, Platform, TouchableHighlight } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TransitionPresets } from '@react-navigation/stack';
 import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
@@ -369,6 +370,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
         name="CommunityAlgoliaScreen"
         component={Screens.AlgoliaScreen}
         options={{
+          ...TransitionPresets.ModalTransition,
           headerTitle: () => (
             <Image
               source={require('../../../assets/images/logo.png')}
