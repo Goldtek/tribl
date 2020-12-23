@@ -67,11 +67,13 @@ workflows:
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
         publishing:
           app_store_connect:                 
-              apple_id: nwabuisi@siliconjunglelabs.co  
-              password: Encrypted(Z0FBQUFBQmY0bENWMzVJN21PaU1Vd2Qzak1JM0JOWFRwM0pFSWtVNmEzM2xKZnVFY2ZMYkdxU0hLb0JqRlRkZUpvVEZ6eHVrRGlvcGE3RDByN2xSazk2NjBTSURKU2xNM3c9PQ==) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
+              apple_id: product@thetriblnetwork.com  
+              password: Encrypted(Z0FBQUFBQmY0dkdJc1dUMlFPU3hjUzBXVEhRN3lRcTFYZUdFSHFpYjlET2ZTTHFSMG9ZS0FiZWpHWjhjRnhMekRJdmRxVkJlQ0otNGQ2eDQyTWp4ZTZhWkxQNURsbzJmbG5pazNhODM0VHcwa3dpZXZEakdPN1U9) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
           email:
             recipients:
                 - product@thetriblnetwork.com     
+
+workflow:                
     react-native-android:
         name: React Native Android
         max_build_duration: 120
