@@ -84,13 +84,10 @@ export default function DrawerStackNavigator() {
     return () => unsubscribe();
   }, [chatId]);
 
-  const handleChannelMembersNavigation = useCallback(
-    () => () => {
-      navigation.navigate('ChannelMembersScreen', { channelId: chatId });
-      setChannelMenu(false);
-    },
-    [chatId]
-  );
+  const handleChannelMembersNavigation = () => {
+    navigation.navigate('ChannelMembersScreen', { channelId: chatId });
+    setChannelMenu(false);
+  };
 
   return (
     <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
