@@ -10,7 +10,12 @@ import {
   SafeAreaView,
   useSafeAreaInsets
 } from 'react-native-safe-area-context';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  Platform,
+  KeyboardAvoidingView,
+  NativeSyntheticEvent,
+  NativeScrollEvent
+} from 'react-native';
 import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
 import { fireAuth } from '../../../firebase/config';
@@ -22,11 +27,7 @@ import {
 } from '../../../graphql/server/query';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
-import {
-  DEVICE_FULL_HEIGHT,
-  DEVICE_FULL_WIDTH,
-  DEVICE_OS
-} from '../../../utils/device';
+import { DEVICE_FULL_HEIGHT, DEVICE_OS } from '../../../utils/device';
 import {
   ACCEPT_MESSAGE_REQUEST,
   BLOCK_MESSAGE_REQUEST,
@@ -50,6 +51,7 @@ import {
   logEvent
 } from '../../../utils/uxcamHelper';
 import { Mixpanel } from '../../../config';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 import { Cover, TextContainer } from './styles';
 
@@ -80,6 +82,14 @@ export default function MessageRequestChat(props: ScreenProp) {
   } = props.route.params;
 
   const userId = fireAuth.currentUser?.uid as string;
+
+  const [loadEarlier, setLoadEarlier] = useState(false);
+  const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
+  const [messages, setMessages] = useState<MessageInterface[]>([]);
+  const [pagination, setPagination] = useState(PAGINATION_DEFAULT * 2);
+  const [firstMessage, setFirstMessage] = useState<MessageInterface | null>(
+    null
+  );
 
   const [userPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
@@ -118,14 +128,37 @@ export default function MessageRequestChat(props: ScreenProp) {
 
   const userDetails = userData?.myPassport;
 
-  const [messages, setMessages] = useState<MessageInterface[]>([]);
+  useEffect(() => {
+    const firstChatMessages = Firechat.getChatFirstMessage(chatId);
+
+    const unsubscribe = firstChatMessages.onSnapshot({
+      next: (snapshot) => {
+        const [document] = snapshot.docs;
+        const message = document.data();
+
+        const firstMessage = {
+          ...message,
+          _id: document.id,
+          user: {
+            ...message.sender,
+            _id: message?.senderId,
+            name: `${message.sender?.firstName} ${message.sender?.lastName}`
+          }
+        } as MessageInterface;
+
+        setFirstMessage(firstMessage);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [chatId]);
 
   useEffect(() => {
     if (!acceptRequest?.acceptMessageRequest.success) return;
 
     modalizeRef.current?.close();
 
-    const chatMessages = Firechat.getChatMessages(chatId);
+    const chatMessages = Firechat.getChatMessages(chatId, pagination);
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
@@ -149,6 +182,10 @@ export default function MessageRequestChat(props: ScreenProp) {
             userPassport({ variables: { id: message?.senderId } });
           }
 
+          if (document.id === firstMessage?._id) {
+            setLoadEarlier(false);
+          } else setLoadEarlier(true);
+
           return {
             ...message,
             user: { _id: message.senderId, avatar },
@@ -156,6 +193,7 @@ export default function MessageRequestChat(props: ScreenProp) {
           } as MessageInterface;
         });
 
+        setIsLoadingEarlier(false);
         setMessages(conversations);
       }
     });
@@ -164,7 +202,23 @@ export default function MessageRequestChat(props: ScreenProp) {
       modalizeRef.current?.close();
       unsubscribe();
     };
-  }, [acceptRequest?.acceptMessageRequest.success]);
+  }, [acceptRequest?.acceptMessageRequest.success, pagination]);
+
+  const isCloseToTop = (props: NativeScrollEvent) => {
+    const { layoutMeasurement, contentOffset, contentSize } = props;
+    const paddingToTop = RFValue(90);
+
+    return (
+      contentSize.height - layoutMeasurement.height - paddingToTop <=
+      contentOffset.y
+    );
+  };
+
+  const loadMoreMessage = () => {
+    const nextPage = PAGINATION_DEFAULT * 2;
+    setPagination(pagination + nextPage);
+    setIsLoadingEarlier(true);
+  };
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
@@ -224,7 +278,9 @@ export default function MessageRequestChat(props: ScreenProp) {
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
         alwaysShowSend
-        isLoadingEarlier={true}
+        loadEarlier={loadEarlier}
+        isLoadingEarlier={isLoadingEarlier}
+        onLoadEarlier={loadMoreMessage}
         onPressAvatar={handleNavigation}
         onSend={onSend}
         renderSend={(props) => (
@@ -246,6 +302,13 @@ export default function MessageRequestChat(props: ScreenProp) {
         )}
         listViewProps={{
           showsVerticalScrollIndicator: false,
+          scrollEventThrottle: 16,
+          onEndReachedThreshold: 0.5,
+          onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+            const { nativeEvent } = event;
+            if (!isCloseToTop(nativeEvent)) return;
+            loadMoreMessage();
+          },
           style: { marginBottom: RFValue(15) }
         }}
         textInputProps={{
@@ -302,8 +365,8 @@ export default function MessageRequestChat(props: ScreenProp) {
       <Portal>
         <Modalize
           ref={modalizeRef}
-          alwaysOpen={DEVICE_FULL_WIDTH / 1.7 + bottom}
-          modalHeight={RFValue(DEVICE_FULL_WIDTH / 1.7 + bottom)}
+          alwaysOpen={DEVICE_FULL_HEIGHT / 2.5}
+          modalHeight={RFValue(DEVICE_FULL_HEIGHT / 2.5)}
           withHandle={false}
           panGestureEnabled={false}
           closeOnOverlayTap={false}

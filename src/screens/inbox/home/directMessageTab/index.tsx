@@ -33,10 +33,7 @@ export default function DirectMessageTab(props: ScreenProp) {
   const [chats, setChats] = useState<{
     history: boolean;
     messages: ConversationInterface[];
-  }>({
-    history: true,
-    messages: []
-  });
+  }>({ history: true, messages: [] });
 
   useEffect(() => {
     tagScreenName('DirectMessageTab');
@@ -86,7 +83,7 @@ export default function DirectMessageTab(props: ScreenProp) {
                     new Date(a.lastMessage.createdAt).getTime()
                 );
 
-                setChats({ ...chats, messages: directMessages });
+                setChats({ ...chats, history: true, messages: directMessages });
               }
             });
           });
@@ -167,7 +164,25 @@ export default function DirectMessageTab(props: ScreenProp) {
     [requestNumber]
   );
 
-  return chats.history ? (
+  if (!chats.history) {
+    return (
+      <Fragment>
+        <RenderMessageRequests />
+        <Text
+          style={{
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            margin: RFValue(20),
+            textAlign: 'center'
+          }}
+        >
+          You currently don't have any messages
+        </Text>
+      </Fragment>
+    );
+  }
+
+  return (
     <Fragment>
       <RenderMessageRequests />
       <FlatList
@@ -180,20 +195,6 @@ export default function DirectMessageTab(props: ScreenProp) {
         renderItem={_renderItem}
         keyExtractor={(item) => item.id}
       />
-    </Fragment>
-  ) : (
-    <Fragment>
-      <RenderMessageRequests />
-      <Text
-        style={{
-          fontSize: RFValue(fonts.MEDIUM_SIZE),
-          fontFamily: fonts.WORK_SANS_BOLD,
-          margin: RFValue(20),
-          textAlign: 'center'
-        }}
-      >
-        You currently don't have any messages
-      </Text>
     </Fragment>
   );
 }
