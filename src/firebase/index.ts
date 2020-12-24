@@ -59,6 +59,16 @@ class Firechat {
       .limit(pagination);
   }
 
+  // GET CHAT FIRST MESSAGE
+  getChatFirstMessage(chatId: string): FirebaseFirestoreTypes.Query {
+    return firechat
+      .collection(ROOM_TYPES.CONVERSATIONS)
+      .doc(chatId.trim())
+      .collection(ROOM_TYPES.CHATS)
+      .orderBy('createdAt', 'asc')
+      .limit(1);
+  }
+
   // GET ALL CHANNEL PARTICIPANTS
   getChannelParticipants(chatId: string): FirebaseFirestoreTypes.Query {
     return firechat
@@ -78,6 +88,16 @@ class Firechat {
       .collection(ROOM_TYPES.CHATS)
       .orderBy('createdAt', 'desc')
       .limit(pagination);
+  }
+
+  // GET ROOM CHAT FIRST MESSAGE
+  getChannelFirstMessage(chatId: string): FirebaseFirestoreTypes.Query {
+    return firechat
+      .collection(ROOM_TYPES.CHANNELS)
+      .doc(chatId.trim())
+      .collection(ROOM_TYPES.CHATS)
+      .orderBy('createdAt', 'asc')
+      .limit(1);
   }
 
   // GET CHANNEL PARTICIPANT READ AT
