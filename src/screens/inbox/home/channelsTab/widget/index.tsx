@@ -3,6 +3,7 @@ import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
+import { useQuery } from '@apollo/react-hooks';
 import { Image } from 'react-native';
 import Firechat from '../../../../../firebase';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -10,6 +11,7 @@ import { ChannelConversationInterface } from '../../../types';
 import { useThemeContext } from '../../../../../theme';
 import formatMessageTime from '../../../../../utils/timesince';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
+import { GET_CHANNEL_MEMBERS } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
@@ -23,6 +25,8 @@ function ChannelChatCard(props: ChannelChatProp) {
   const [userReadAt, setUserReadAt] = useState(0);
 
   const { id: chatId, lastMessage, channel, community, sender } = props;
+
+  useQuery(GET_CHANNEL_MEMBERS, { variables: { channelId: chatId } });
 
   const title = `#${community.name.split(' ').join('')}-${channel.name}`;
 
@@ -83,7 +87,7 @@ function ChannelChatCard(props: ChannelChatProp) {
       <Fragment>
         {community.avatar ? (
           <FastImage
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.stretch}
             source={{
               uri: community.avatar,
               priority: FastImage.priority.high
