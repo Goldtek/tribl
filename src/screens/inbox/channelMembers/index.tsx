@@ -84,13 +84,11 @@ function ChannelMembers(props: ModalProp) {
   );
 
   return (
-    <SafeAreaView>
-      <FlatList
-        data={filterMembers || []}
-        ListEmptyComponent={
-          channelLoading ? (
-            <Skeleton />
-          ) : (
+    <SafeAreaView style={{ flex: 1 }}>
+      {filterMembers ? (
+        <FlatList
+          data={filterMembers}
+          ListEmptyComponent={
             <Text
               style={{
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
@@ -101,29 +99,31 @@ function ChannelMembers(props: ModalProp) {
             >
               There are no members in this channel
             </Text>
-          )
-        }
-        keyExtractor={({ id }) => id}
-        onMomentumScrollEnd={handleEndReach}
-        scrollEventThrottle={16}
-        onEndReachedThreshold={0.5}
-        removeClippedSubviews={true}
-        onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: RFValue(20),
-          paddingTop: RFValue(20)
-        }}
-        renderItem={_renderItem}
-        refreshControl={
-          <RefreshControl
-            refreshing={state.refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.BLACK}
-            colors={[colors.BLACK]}
-          />
-        }
-      />
+          }
+          keyExtractor={({ id }) => id}
+          onMomentumScrollEnd={handleEndReach}
+          scrollEventThrottle={16}
+          onEndReachedThreshold={0.5}
+          removeClippedSubviews={true}
+          onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingBottom: RFValue(20),
+            paddingTop: RFValue(20)
+          }}
+          renderItem={_renderItem}
+          refreshControl={
+            <RefreshControl
+              refreshing={state.refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.BLACK}
+              colors={[colors.BLACK]}
+            />
+          }
+        />
+      ) : (
+        <Skeleton />
+      )}
     </SafeAreaView>
   );
 }
