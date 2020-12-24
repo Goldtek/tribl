@@ -22,11 +22,10 @@ interface HighlightProp {
   attribute: string;
   hit: PassportInterface;
   highlight(T: any): any[];
-  closeModal(): void;
 }
 
 const Highlight = (props: HighlightProp) => {
-  const { attribute, hit, highlight, closeModal } = props;
+  const { attribute, hit, highlight } = props;
   const highlights = highlight({
     highlightProperty: '_highlightResult',
     attribute,
@@ -60,8 +59,6 @@ const Highlight = (props: HighlightProp) => {
   }, []);
 
   const handleNavigation = () => {
-    closeModal();
-
     const senderId = hit.conversation?.messageRequest.senderId;
     const messageRequest = hit.conversation?.messageRequest;
     const isRequestApproved = hit.conversation?.messageRequest.approvedAt;

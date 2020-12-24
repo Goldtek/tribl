@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useMutation } from '@apollo/react-hooks';
+import { LEAVE_COMMUNITY_CHANNEL } from '../../graphql/server/mutations';
 import DrawerNavigator from './drawer';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { useThemeContext } from '../../theme';
@@ -44,6 +46,12 @@ export default function DrawerStackNavigator() {
 
   const [channelMenu, setChannelMenu] = useState(false);
   const showChannelMenu = () => setChannelMenu(!channelMenu);
+  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
+
+  const handleLeaveChannel = async () => {
+    await leaveChannel({ variables: { payload: { channelId: chatId } } });
+    navigation.goBack();
+  };
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -76,16 +84,10 @@ export default function DrawerStackNavigator() {
     return () => unsubscribe();
   }, [chatId]);
 
-  const handleChannelMembersNavigation = useCallback(
-    (route: any) => () => {
-      navigation.navigate('ChannelMembersScreen', {
-        title: route.params?.title,
-        channelId: route.params?.chatId
-      });
-      setChannelMenu(false);
-    },
-    []
-  );
+  const handleChannelMembersNavigation = () => {
+    navigation.navigate('ChannelMembersScreen', { channelId: chatId });
+    setChannelMenu(false);
+  };
 
   return (
     <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
@@ -181,7 +183,7 @@ export default function DrawerStackNavigator() {
                 style={{ top: RFValue(getMenuHeight()) }}
               >
                 <Menu.Item
-                  onPress={handleChannelMembersNavigation(route)}
+                  onPress={handleChannelMembersNavigation}
                   title={t(`community.chat.channelMembers`)}
                   style={{
                     alignItems: 'center',
@@ -199,7 +201,7 @@ export default function DrawerStackNavigator() {
                 />
                 <Divider />
                 <Menu.Item
-                  onPress={() => {}}
+                  onPress={handleLeaveChannel}
                   title={t(`community.chat.leaveChannel`)}
                   style={{
                     alignItems: 'center',
@@ -211,7 +213,7 @@ export default function DrawerStackNavigator() {
                   }}
                   titleStyle={{
                     fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.DISABLED,
+                    color: colors.PRIMARY_TEXT,
                     textTransform: 'capitalize'
                   }}
                 />
@@ -611,52 +613,36 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="ChannelMembersScreen"
         component={Screens.ChannelMembersScreen}
-        options={({ route }: any) => {
-          return {
-            headerShown: true,
-            headerBackTitleVisible: false,
-            headerStyle: { height: RFValue(90) },
-            height: RFValue(90),
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              textTransform: 'capitalize'
-            },
-            headerTitle: () => null,
-            headerLeft: () => (
-              <Container>
-                <TouchableRipple
-                  onPress={navigation.goBack}
-                  style={{
-                    height: RFValue(40),
-                    width: RFValue(40),
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: RFValue(40 / 2),
-                    marginRight: 10
-                  }}
-                >
-                  <Ionicons
-                    name="md-arrow-back"
-                    size={RFValue(24)}
-                    color={colors.PRIMARY}
-                  />
-                </TouchableRipple>
-
-                <Paragraph
-                  style={{
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontWeight: 'bold',
-                    marginLeft: 10
-                  }}
-                >
-                  {route.params?.title} {t(`community.chat.members`)}
-                </Paragraph>
-              </Container>
-            )
-          };
+        options={{
+          headerShown: true,
+          headerBackTitleVisible: false,
+          headerStyle: { height: RFValue(90) },
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerTitle: 'channel members',
+          headerTitleAlign: 'left',
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY}
+              />
+            </TouchableRipple>
+          )
         }}
       />
     </DrawerStack.Navigator>

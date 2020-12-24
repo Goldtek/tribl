@@ -1,20 +1,20 @@
 import React, { useState, Fragment, useEffect } from 'react';
-import { Title } from 'react-native-paper';
+import { Title, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Octicons } from '@expo/vector-icons';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { ADD_COMMUNITY_SEARCH_INDEX } from '../../../graphql/cache/mutations';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import communityTab from './widgets/communityTab';
 import { useThemeContext } from '../../../theme';
 import membersTab from './widgets/membersTab';
-import AlgoliaSearch from '../search/widgets/algoliaSearch';
-import AlgoliaCommunityList from '../../../components/algoliaCommunityList ';
+import { useNavigation } from '@react-navigation/native';
 import ENVIRONMENT_VARIABLES from '../../../config';
-
-import { Container } from './styles';
 import { tagScreenName } from '../../../utils/uxcamHelper';
+
+import { Container, SearchInput } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp {
   route: { params: { index: number } };
@@ -27,9 +27,9 @@ export default function SearchScreen(props: ScreenProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [changeCommunitySearchIndex] = useMutation(ADD_COMMUNITY_SEARCH_INDEX);
-
+  const navigation = useNavigation();
   const [tabIndex, setTabIndex] = useState(index);
+  const [changeCommunitySearchIndex] = useMutation(ADD_COMMUNITY_SEARCH_INDEX);
 
   useEffect(() => {
     tagScreenName('ViewAllScreen');
@@ -51,6 +51,13 @@ export default function SearchScreen(props: ScreenProp) {
     ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME,
     ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_INDEX_NAME
   ];
+
+  const showSearchScreen = () => {
+    navigation.navigate('CommunityAlgoliaScreen', {
+      indexName: indexName[tabIndex]
+    });
+    return true;
+  };
 
   const renderLabel = ({
     route,
@@ -95,7 +102,21 @@ export default function SearchScreen(props: ScreenProp) {
   return (
     <Fragment>
       <Container>
-        <AlgoliaSearch indexName={indexName[tabIndex]}></AlgoliaSearch>
+        <Container>
+          <SearchInput onStartShouldSetResponder={showSearchScreen}>
+            <Octicons name="search" color={colors.PRIMARY_TEXT} size={20} />
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                paddingHorizontal: RFValue(18)
+              }}
+            >
+              {t(`community.chat.search`)}
+            </Text>
+          </SearchInput>
+        </Container>
       </Container>
       <TabView
         lazy

@@ -14,6 +14,7 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_POPULAR_COMMUNITIES
 } from '../../../../../graphql/server/query';
+import { PopularCommunitiesRequestInterface } from '../../../../../graphql/types';
 import PopularCommunitySkeleton from '../../../../../components/popularCommunitySkeleton';
 import RecommendedCommunitySkeleton from '../../../../../components/recommendedCommunitySkeleton';
 import ComingSoonCommunities from '../../../../../components/recommendedCommunity/comingSoon';
@@ -29,7 +30,11 @@ interface ScreenProp extends NavigationInterface {}
 function CommunityTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [state, setState] = useState({ showJoinCommunityModal: false });
+  const [showModal, setShowModal] = useState(false);
+  const [state, setState] = useState({
+    refreshing: false,
+    callOnScrollEnd: false
+  });
 
   useEffect(() => {
     tagScreenName('ViewAllTribes');
@@ -40,7 +45,9 @@ function CommunityTabScreen(props: ScreenProp) {
     data: communityData
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
-  const { data: popularData } = useQuery(GET_POPULAR_COMMUNITIES, {
+  const { data: popularData, fetchMore } = useQuery<
+    PopularCommunitiesRequestInterface
+  >(GET_POPULAR_COMMUNITIES, {
     pollInterval: 1000,
     fetchPolicy: 'cache-and-network',
     variables: { offset: 0, first: PAGINATION_DEFAULT }
@@ -50,17 +57,35 @@ function CommunityTabScreen(props: ScreenProp) {
   const randomCommunity = communityData?.recommendedCommunities[0];
   const popular = popularData?.popularCommunities;
 
+  const handleEndReach = async () => {
+    if (!state.callOnScrollEnd) return;
+
+    fetchMore({
+      variables: {
+        offset: popular?.length,
+        first: PAGINATION_DEFAULT
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setState({ ...state, callOnScrollEnd: false });
+
+        if (!fetchMoreResult) return prev;
+
+        return Object.assign({}, prev, {
+          popularCommunities: [
+            ...prev.popularCommunities,
+            ...fetchMoreResult.popularCommunities
+          ]
+        });
+      }
+    });
+  };
+
   const _renderPopularCommunityItem = useMemo(
     () => ({ item }: any) => <PopularCommunity key={item.id} {...item} />,
     []
   );
 
-  const handleJoinCommunity = () => {
-    setState({
-      ...state,
-      showJoinCommunityModal: !state.showJoinCommunityModal
-    });
-  };
+  const handleJoinCommunity = () => setShowModal(!showModal);
 
   return (
     <Fragment>
@@ -116,13 +141,16 @@ function CommunityTabScreen(props: ScreenProp) {
               ListEmptyComponent={<PopularCommunitySkeleton skeletonSize={3} />}
               showsVerticalScrollIndicator={false}
               keyExtractor={(item: any) => item.id}
+              scrollEventThrottle={16}
+              onEndReachedThreshold={0.5}
+              removeClippedSubviews={true}
+              onMomentumScrollEnd={handleEndReach}
+              onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
             />
           </PopularContainer>
         </Container>
       </ScrollView>
-      {state.showJoinCommunityModal ? (
-        <JoinCommunity onPress={handleJoinCommunity} />
-      ) : null}
+      {showModal ? <JoinCommunity onPress={handleJoinCommunity} /> : null}
     </Fragment>
   );
 }

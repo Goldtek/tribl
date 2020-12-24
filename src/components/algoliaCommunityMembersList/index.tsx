@@ -14,7 +14,7 @@ import HighLight from '../algoliaInboxCard';
 function AlgoliaList(props: any) {
   const { colors } = useThemeContext();
 
-  const { hits, hasMore, refine, closeModal, attribute } = props;
+  const { hits, hasMore, refine } = props;
 
   const _separator = useMemo(
     () => () => (
@@ -29,14 +29,7 @@ function AlgoliaList(props: any) {
   );
 
   const _renderItem = useMemo(
-    () => ({ item }: any) => (
-      <HighLight
-        attribute="id"
-        hit={item}
-        //@ts-ignore
-        closeModal={closeModal}
-      />
-    ),
+    () => ({ item }: any) => <HighLight attribute="id" hit={item} />,
     []
   );
 

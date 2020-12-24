@@ -1,5 +1,5 @@
 import React, { Fragment, useRef } from 'react';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { Paragraph, TouchableRipple } from 'react-native-paper';
@@ -10,7 +10,6 @@ import { useThemeContext } from '../../../../../../theme';
 import { Mixpanel } from '../../../../../../config';
 import {
   JOIN_COMMUNITY_CHANNEL,
-  LEAVE_COMMUNITY_CHANNEL,
   SEND_CHANNEL_MESSAGE
 } from '../../../../../../graphql/server/mutations';
 import {
@@ -18,6 +17,7 @@ import {
   CommunityInterface
 } from '../../../../../../graphql/types';
 import { logEvent } from '../../../../../../utils/uxcamHelper';
+import { GET_CHANNEL_MEMBERS } from '../../../../../../graphql/server/query';
 
 // DEFINE SCREEN PROP TYPES
 interface ChannelCardProp extends NavigationInterface {
@@ -36,7 +36,7 @@ export default function ChannelCard(props: ChannelCardProp) {
 
   const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
-  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
+  useQuery(GET_CHANNEL_MEMBERS, { variables: { channelId: id } });
 
   const handleNavigation = () => {
     if (!isMember && !joinedChannel.current) {
@@ -58,11 +58,6 @@ export default function ChannelCard(props: ChannelCardProp) {
           }
         });
       });
-    }
-
-    if (isMember || joinedChannel.current) {
-      leaveChannel({ variables: { payload: { channelId: item.id } } });
-      joinedChannel.current = false;
     }
 
     navigation.navigate('ChannelChatScreen', {
