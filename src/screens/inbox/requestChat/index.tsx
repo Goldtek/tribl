@@ -133,6 +133,8 @@ export default function MessageRequestChat(props: ScreenProp) {
 
     const unsubscribe = firstChatMessages.onSnapshot({
       next: (snapshot) => {
+        if (snapshot.empty) return;
+
         const [document] = snapshot.docs;
         const message = document.data();
 
@@ -184,7 +186,9 @@ export default function MessageRequestChat(props: ScreenProp) {
 
           if (document.id === firstMessage?._id) {
             setLoadEarlier(false);
-          } else setLoadEarlier(true);
+          } else if (snapshot.size >= PAGINATION_DEFAULT) {
+            setLoadEarlier(true);
+          }
 
           return {
             ...message,

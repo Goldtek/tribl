@@ -1,5 +1,4 @@
 import React, { Fragment, useState, useEffect, useCallback } from 'react';
-import debounce from 'lodash.debounce';
 import { ActivityIndicator, Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
