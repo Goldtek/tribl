@@ -57,7 +57,7 @@ export default function MemberSlide(props: MemberSlideProp) {
   );
 
   const _memberList = (props: any) => {
-    const { hits, hasMore, refine } = props;
+    const { hits, hasMore, refineNext } = props;
 
     const _renderItem = ({ item }: { item: PassportInterface }) => {
       return <MemberCard key={item.id} {...item} />;
@@ -69,7 +69,7 @@ export default function MemberSlide(props: MemberSlideProp) {
           data={hits}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={_separator}
-          onEndReached={() => hasMore && refine()}
+          onEndReached={() => hasMore && refineNext()}
           renderItem={_renderItem}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 20, paddingBottom: RFValue(60) }}
