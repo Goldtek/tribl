@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
-import { Platform, SafeAreaView, KeyboardAvoidingView } from 'react-native';
+import {
+  Platform,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  NativeSyntheticEvent,
+  NativeScrollEvent
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Mixpanel } from '../../../config';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -32,6 +38,7 @@ import {
   tagScreenName,
   logEvent
 } from '../../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -74,12 +81,41 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   const userDetails = userData?.myPassport;
 
+  const [loadEarlier, setLoadEarlier] = useState(false);
   const [messages, setMessages] = useState<MessageInterface[]>([]);
+  const [pagination, setPagination] = useState(PAGINATION_DEFAULT * 2);
+  const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
+  const [firstMessage, setFirstMessage] = useState<MessageInterface | null>(
+    null
+  );
 
   useEffect(() => {
-    if (!chatId) return;
+    const firstChatMessages = Firechat.getChatFirstMessage(chatId);
 
-    const chatMessages = Firechat.getChatMessages(chatId);
+    const unsubscribe = firstChatMessages.onSnapshot({
+      next: (snapshot) => {
+        const [document] = snapshot.docs;
+        const message = document.data();
+
+        const firstMessage = {
+          ...message,
+          _id: document.id,
+          user: {
+            ...message.sender,
+            _id: message?.senderId,
+            name: `${message.sender?.firstName} ${message.sender?.lastName}`
+          }
+        } as MessageInterface;
+
+        setFirstMessage(firstMessage);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [chatId]);
+
+  useEffect(() => {
+    const chatMessages = Firechat.getChatMessages(chatId, pagination);
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
@@ -101,6 +137,10 @@ export default function DirectChatScreen(props: ScreenProp) {
             userPassport({ variables: { id: message?.senderId } });
           }
 
+          if (document.id === firstMessage?._id) {
+            setLoadEarlier(false);
+          } else setLoadEarlier(true);
+
           return {
             ...message,
             user: { _id: message.senderId, avatar },
@@ -108,12 +148,29 @@ export default function DirectChatScreen(props: ScreenProp) {
           } as MessageInterface;
         });
 
+        setIsLoadingEarlier(false);
         setMessages(conversations);
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [pagination, chatId]);
+
+  const isCloseToTop = (props: NativeScrollEvent) => {
+    const { layoutMeasurement, contentOffset, contentSize } = props;
+    const paddingToTop = RFValue(90);
+
+    return (
+      contentSize.height - layoutMeasurement.height - paddingToTop <=
+      contentOffset.y
+    );
+  };
+
+  const loadMoreMessage = () => {
+    const nextPage = PAGINATION_DEFAULT * 2;
+    setPagination(pagination + nextPage);
+    setIsLoadingEarlier(true);
+  };
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
@@ -152,6 +209,9 @@ export default function DirectChatScreen(props: ScreenProp) {
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
         alwaysShowSend={true}
+        loadEarlier={loadEarlier}
+        isLoadingEarlier={isLoadingEarlier}
+        onLoadEarlier={loadMoreMessage}
         onPressAvatar={handleNavigation}
         onSend={onSend}
         renderSend={(props) => (
@@ -174,6 +234,13 @@ export default function DirectChatScreen(props: ScreenProp) {
         )}
         listViewProps={{
           showsVerticalScrollIndicator: false,
+          scrollEventThrottle: 16,
+          onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+            const { nativeEvent } = event;
+            if (!isCloseToTop(nativeEvent)) return;
+            loadMoreMessage();
+          },
+          onEndReachedThreshold: 0.5,
           style: { marginBottom: RFValue(15) }
         }}
         textInputProps={{
