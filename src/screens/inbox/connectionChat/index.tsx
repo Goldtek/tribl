@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  Platform,
+  KeyboardAvoidingView,
+  NativeScrollEvent,
+  NativeSyntheticEvent
+} from 'react-native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
@@ -33,6 +38,7 @@ import {
   tagScreenName,
   logEvent
 } from '../../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -42,9 +48,16 @@ interface ScreenProp extends NavigationInterface {
 export default function ConnectionChatScreen(props: ScreenProp) {
   const { receiverId, avatar, firstName, lastName } = props.route.params;
 
-  const [chatId, setChatId] = useState<string | null>(null);
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
+  const [loadEarlier, setLoadEarlier] = useState(false);
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [pagination, setPagination] = useState(PAGINATION_DEFAULT * 2);
+  const [messages, setMessages] = useState<MessageInterface[]>([]);
+  const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
+  const [firstMessage, setFirstMessage] = useState<MessageInterface | null>(
+    null
+  );
 
   useEffect(() => {
     tagScreenName('ConnectionChatScreen');
@@ -73,8 +86,6 @@ export default function ConnectionChatScreen(props: ScreenProp) {
   const userDetails = userData?.myPassport;
   const receiverDetails = receiverPassport?.singlePassport;
 
-  const [messages, setMessages] = useState<MessageInterface[]>([]);
-
   useEffect(() => {
     if (receiverDetails?.conversation && receiverDetails?.conversation.id) {
       setChatId(receiverDetails?.conversation.id);
@@ -84,7 +95,36 @@ export default function ConnectionChatScreen(props: ScreenProp) {
   useEffect(() => {
     if (!chatId) return;
 
-    const chatMessages = Firechat.getChatMessages(chatId);
+    const firstChatMessages = Firechat.getChatFirstMessage(chatId);
+
+    const unsubscribe = firstChatMessages.onSnapshot({
+      next: (snapshot) => {
+        if (snapshot.empty) return;
+
+        const [document] = snapshot.docs;
+        const message = document.data();
+
+        const firstMessage = {
+          ...message,
+          _id: document.id,
+          user: {
+            ...message.sender,
+            _id: message?.senderId,
+            name: `${message.sender?.firstName} ${message.sender?.lastName}`
+          }
+        } as MessageInterface;
+
+        setFirstMessage(firstMessage);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [chatId]);
+
+  useEffect(() => {
+    if (!chatId) return;
+
+    const chatMessages = Firechat.getChatMessages(chatId, pagination);
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
@@ -102,6 +142,12 @@ export default function ConnectionChatScreen(props: ScreenProp) {
             setImmediate(markConversationAsRead);
           }
 
+          if (document.id === firstMessage?._id) {
+            setLoadEarlier(false);
+          } else if (snapshot.size >= PAGINATION_DEFAULT) {
+            setLoadEarlier(true);
+          }
+
           return {
             ...message,
             user: { _id: message.senderId, avatar },
@@ -109,12 +155,29 @@ export default function ConnectionChatScreen(props: ScreenProp) {
           } as MessageInterface;
         });
 
+        setIsLoadingEarlier(false);
         setMessages(conversations);
       }
     });
 
     return () => unsubscribe();
-  }, [chatId]);
+  }, [chatId, pagination]);
+
+  const isCloseToTop = (props: NativeScrollEvent) => {
+    const { layoutMeasurement, contentOffset, contentSize } = props;
+    const paddingToTop = RFValue(90);
+
+    return (
+      contentSize.height - layoutMeasurement.height - paddingToTop <=
+      contentOffset.y
+    );
+  };
+
+  const loadMoreMessage = () => {
+    const nextPage = PAGINATION_DEFAULT * 2;
+    setPagination(pagination + nextPage);
+    setIsLoadingEarlier(true);
+  };
 
   const onSend = useCallback(async (messages: MessageInterface[] = []) => {
     const [message] = messages;
@@ -150,7 +213,9 @@ export default function ConnectionChatScreen(props: ScreenProp) {
           name: `${userDetails?.firstName} ${userDetails?.lastName}`
         }}
         alwaysShowSend={true}
-        isLoadingEarlier={true}
+        loadEarlier={loadEarlier}
+        isLoadingEarlier={isLoadingEarlier}
+        onLoadEarlier={loadMoreMessage}
         onPressAvatar={handleNavigation}
         onSend={onSend}
         renderSend={(props) => (
@@ -173,6 +238,13 @@ export default function ConnectionChatScreen(props: ScreenProp) {
         )}
         listViewProps={{
           showsVerticalScrollIndicator: false,
+          scrollEventThrottle: 16,
+          onEndReachedThreshold: 0.5,
+          onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+            const { nativeEvent } = event;
+            if (!isCloseToTop(nativeEvent)) return;
+            loadMoreMessage();
+          },
           style: { marginBottom: RFValue(15) }
         }}
         textInputProps={{

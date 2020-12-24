@@ -14,7 +14,9 @@ import {
   Platform,
   SafeAreaView,
   KeyboardAvoidingView,
-  View
+  View,
+  NativeScrollEvent,
+  NativeSyntheticEvent
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -39,6 +41,7 @@ import {
   tagScreenName,
   logEvent
 } from '../../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 import { Container, Cover } from './styles';
 
@@ -51,10 +54,13 @@ export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation } = props;
   const { chatId, channel } = props.route.params;
   const userId = fireAuth.currentUser?.uid as string;
-
-  useEffect(() => {
-    tagScreenName('ChannelChatScreen');
-  }, []);
+  const [pagination, setPagination] = useState(PAGINATION_DEFAULT * 2);
+  const [loadEarlier, setLoadEarlier] = useState(false);
+  const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
+  const [messages, setMessages] = useState<MessageInterface[]>([]);
+  const [firstMessage, setFirstMessage] = useState<MessageInterface | null>(
+    null
+  );
 
   const { colors, fonts } = useThemeContext();
 
@@ -71,15 +77,41 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
-  const LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET = 100;
   const userDetails = userData?.myPassport;
 
-  const [messages, setMessages] = useState<MessageInterface[]>([]);
+  useEffect(() => {
+    tagScreenName('ChannelChatScreen');
+  }, []);
 
   useEffect(() => {
-    if (!chatId) return;
+    const firstChatMessages = Firechat.getChannelFirstMessage(chatId);
 
-    const chatMessages = Firechat.getChannelMessages(chatId);
+    const unsubscribe = firstChatMessages.onSnapshot({
+      next: (snapshot) => {
+        if (snapshot.empty) return;
+
+        const [document] = snapshot.docs;
+        const message = document.data();
+
+        const firstMessage = {
+          ...message,
+          _id: document.id,
+          user: {
+            ...message.sender,
+            _id: message?.senderId,
+            name: `${message.sender?.firstName} ${message.sender?.lastName}`
+          }
+        } as MessageInterface;
+
+        setFirstMessage(firstMessage);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [chatId]);
+
+  useEffect(() => {
+    const chatMessages = Firechat.getChannelMessages(chatId, pagination);
 
     const unsubscribe = chatMessages.onSnapshot({
       next: (snapshot) => {
@@ -94,6 +126,12 @@ export default function ChannelChatScreen(props: ScreenProp) {
             setImmediate(markConversationAsRead);
           }
 
+          if (document.id === firstMessage?._id) {
+            setLoadEarlier(false);
+          } else if (snapshot.size >= PAGINATION_DEFAULT) {
+            setLoadEarlier(true);
+          }
+
           return {
             ...message,
             _id: document.id,
@@ -105,23 +143,28 @@ export default function ChannelChatScreen(props: ScreenProp) {
           } as MessageInterface;
         });
 
+        setIsLoadingEarlier(false);
         setMessages(conversations);
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [pagination, chatId]);
 
-  // const isCloseToTop = (props: NativeScrollEvent) => {
-  //   const { layoutMeasurement, contentOffset, contentSize } = props;
+  const isCloseToTop = (props: NativeScrollEvent) => {
+    const { layoutMeasurement, contentOffset, contentSize } = props;
+    const paddingToTop = RFValue(90);
 
-  //   const contentTopOffset =
-  //     contentSize.height - layoutMeasurement.height - contentOffset.y;
-  //   // if the screen is not full of messages, offset would be too big
-  //   return contentSize.height < layoutMeasurement.height
-  //     ? contentOffset.y > LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET // so we only check bottom offset
-  //     : contentTopOffset + LOAD_EARLIER_ON_SCROLL_HEGHT_OFFSET < 0;
-  // };
+    return (
+      contentSize.height - layoutMeasurement.height - paddingToTop <=
+      contentOffset.y
+    );
+  };
+
+  const loadMoreMessage = () => {
+    setPagination(pagination + messages.length);
+    setIsLoadingEarlier(true);
+  };
 
   const onSend = useCallback(
     async (messages: MessageInterface[] = []) => {
@@ -198,16 +241,18 @@ export default function ChannelChatScreen(props: ScreenProp) {
         )}
         listViewProps={{
           showsVerticalScrollIndicator: false,
-          scrollEventThrottle: 400,
-          // onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-          //   const { nativeEvent } = event;
-          //   if (!isCloseToTop(nativeEvent)) return;
-          //   loadMoreMessage();
-          // },
-          // onEndReached: loadMoreMessage,
-          // onEndReachedThreshold: 0.01,
+          scrollEventThrottle: 16,
+          onEndReachedThreshold: 0.5,
+          onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+            const { nativeEvent } = event;
+            if (!isCloseToTop(nativeEvent)) return;
+            loadMoreMessage();
+          },
           style: { marginBottom: RFValue(15) }
         }}
+        isLoadingEarlier={isLoadingEarlier}
+        loadEarlier={loadEarlier}
+        onLoadEarlier={loadMoreMessage}
         textInputProps={{
           style: {
             flex: 1,

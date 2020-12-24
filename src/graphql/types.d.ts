@@ -388,3 +388,8 @@ export type MyChannelRequestInterface = {
 export type ConnectionRequestsInterface = {
   connectionRequests: PassportInterface[];
 };
+
+// POPULAR COMMUNITIES REQUEST (RESPONSE) TYPE
+export type PopularCommunitiesRequestInterface = {
+  popularCommunities: CommunityInterface[];
+};

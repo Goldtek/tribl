@@ -1,12 +1,11 @@
 import React, { Fragment } from 'react';
 import { connectHighlight } from 'react-instantsearch-native';
-import { useQuery } from '@apollo/react-hooks';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
-import { rootNavigator } from '../../constants';
 import { fireAuth } from '../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -17,11 +16,11 @@ interface HighlightProp {
   attribute: string;
   hit: any;
   highlight(T: any): any[];
-  closeModal(): void;
 }
 
 const Highlight = (props: HighlightProp) => {
-  const { attribute, hit, highlight, closeModal } = props;
+  const navigation = useNavigation();
+  const { attribute, hit, highlight } = props;
   const highlights = highlight({
     highlightProperty: '_highlightResult',
     attribute,
@@ -31,8 +30,7 @@ const Highlight = (props: HighlightProp) => {
   const { colors, fonts } = useThemeContext();
 
   const handleNavigation = () => {
-    closeModal();
-    rootNavigator.navigate('CommunityDetailScreen', {
+    navigation.navigate('CommunityDetailScreen', {
       title: `${hit.name}`,
       avatar: `${hit.avatar}`,
       communityHit: hit
@@ -40,8 +38,7 @@ const Highlight = (props: HighlightProp) => {
   };
 
   const handlePassportNavigation = () => {
-    closeModal();
-    rootNavigator.navigate('MemberDetailScreen', {
+    navigation.navigate('MemberDetailScreen', {
       title: `${hit.firstName} ${hit.lastName}`,
       avatar: `${hit.avatar}`,
       details: hit
@@ -50,11 +47,12 @@ const Highlight = (props: HighlightProp) => {
 
   return (
     <Container>
-      {highlights.map(({ value }: any, index: number) => {
+      {highlights.map((_, index: number) => {
         const filteredList = hit.id !== fireAuth.currentUser?.uid ? hit : null;
         const state = hit?.currentLocation?.state;
         const city = hit?.currentLocation?.city;
         const country = hit?.currentLocation?.country;
+
         return (
           <Fragment>
             {hit.name ? (

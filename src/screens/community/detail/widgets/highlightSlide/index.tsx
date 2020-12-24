@@ -47,7 +47,7 @@ interface singleCommunityScreenProp extends NavigationInterface {
 export default function singleCommunity(props: singleCommunityScreenProp) {
   const detail = props.route;
   const { communityDetails } = detail;
-  const { id } = communityDetails;
+  const { id, name } = communityDetails;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({
@@ -69,10 +69,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     const TagInfo = await storage.checkTagModal();
     const filteredTag = TagInfo?.community.filter((tag) => tag == id);
     if (filteredTag.length && singleCommunity?.uniqueInterests.length > 0) {
-      setState({
-        ...state,
-        tagModal: true
-      });
+      setState({ ...state, tagModal: true });
     }
   };
 
@@ -120,16 +117,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   useEffect(() => {
     if (!singleCommunity?.id) return;
 
-    setData({
-      ...data,
-      name: singleCommunity?.name,
-      avatar: singleCommunity?.avatar,
-      isMember: singleCommunity?.isMember,
-      interests: singleCommunity?.interests,
-      description: singleCommunity?.description,
-      membersCount: singleCommunity?.membersCount,
-      uniqueInterests: singleCommunity?.uniqueInterests
-    });
+    setData({ ...data, ...singleCommunity });
   }, [singleCommunity?.id]);
 
   const handleJoinCommunity = () => {
@@ -148,7 +136,9 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
 
   const [joinCommunity, { loading: joinLoading }] = useMutation(
     JOIN_COMMUNITY,
-    { variables: { payload: { communityId: singleCommunity?.id } } }
+    {
+      variables: { payload: { communityId: id } }
+    }
   );
 
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
@@ -166,18 +156,12 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
         'Activity Screen': 'Recommended Community Card'
       });
       await joinCommunity();
+
       if (data.uniqueInterests.length) {
-        setState({
-          ...state,
-          tagModal: true
-        });
+        setState({ ...state, tagModal: true });
       }
       setMember(true);
-      setData({
-        ...data,
-        isMember: true
-      });
-
+      setData({ ...data, isMember: true });
       communityRefetch();
     } catch (error) {
       Sentry.captureException(error);
@@ -190,14 +174,8 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       await leaveCommunity();
       setMember(false);
       clearTagModal();
-      setData({
-        ...data,
-        isMember: false
-      });
-      setState({
-        ...state,
-        tagModal: false
-      });
+      setData({ ...data, isMember: false });
+      setState({ ...state, tagModal: false });
       communityRefetch();
     } catch (error) {
       Sentry.captureException(error);

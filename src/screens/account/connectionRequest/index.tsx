@@ -44,52 +44,52 @@ export default function ConnectionRequestScreen(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
   );
 
-  const [moreAction, setMoreAction] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [fetchingMore, setFetchingMore] = useState(false);
+  const [state, setState] = useState({
+    refreshing: false,
+    callOnScrollEnd: false
+  });
+
+  useEffect(() => {
+    tagScreenName('ConnectionRequestScreen');
+  }, []);
 
   const connectionRequest = data?.connectionRequests;
 
-  const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <ConnectionRequest key={item.id} item={item} refetch={refetch} />
-  );
-
   const _renderFooter = useCallback(
-    () => (fetchingMore ? <ActivityIndicator /> : null),
-    [fetchingMore]
+    () => (state.callOnScrollEnd ? <ActivityIndicator /> : null),
+    [state.callOnScrollEnd]
   );
 
-  const _onEndReached = useCallback(() => {
-    if (!moreAction) return;
+  const onRefresh = async () => {
+    try {
+      setState({ ...state, refreshing: true });
+      await refetch();
+      setState({ ...state, refreshing: false });
+    } catch (error) {
+      setState({ ...state, refreshing: false });
+    }
+  };
 
-    setFetchingMore(true);
+  const handleEndReach = () => {
+    if (!state.callOnScrollEnd) return;
+
     fetchMore({
       variables: { offset: data?.connectionRequests.length },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          setFetchingMore(false);
-          return prev;
-        }
+        setState({ ...state, callOnScrollEnd: false });
 
-        setFetchingMore(false);
+        if (!fetchMoreResult) return prev;
+
         return Object.assign({}, prev, {
           myConnections: [...fetchMoreResult.connectionRequests]
         });
       }
     });
-  }, [moreAction]);
+  };
 
-  const _onRefresh = useCallback(() => {
-    if (!moreAction) return;
-    setRefreshing(true);
-    refetch()
-      .then(() => setRefreshing(false))
-      .catch(() => setRefreshing(false));
-  }, [moreAction]);
-
-  useEffect(() => {
-    tagScreenName('ConnectionRequestScreen');
-  }, []);
+  const _renderItem = ({ item }: { item: PassportInterface }) => (
+    <ConnectionRequest key={item.id} item={item} refetch={refetch} />
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -166,13 +166,9 @@ export default function ConnectionRequestScreen(
         {connectionRequest ? (
           <FlatList
             data={connectionRequest}
-            refreshing={refreshing}
-            onRefresh={_onRefresh}
+            refreshing={state.refreshing}
+            onRefresh={onRefresh}
             ListFooterComponent={_renderFooter}
-            onEndReachedThreshold={0.01}
-            onEndReached={({ distanceFromEnd }) => {
-              if (distanceFromEnd > 0) debounce(_onEndReached, 500)();
-            }}
             contentContainerStyle={{
               flexGrow: 1,
               marginTop: RFValue(10),
@@ -191,10 +187,9 @@ export default function ConnectionRequestScreen(
                 You don't have any connection request.
               </Text>
             }
-            onScrollBeginDrag={() => setMoreAction(true)}
-            onScrollEndDrag={() => setMoreAction(false)}
-            onMomentumScrollBegin={() => setMoreAction(true)}
-            onMomentumScrollEnd={() => setMoreAction(false)}
+            onEndReachedThreshold={0.5}
+            onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
+            onMomentumScrollEnd={handleEndReach}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.id}
           />

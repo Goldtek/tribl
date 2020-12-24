@@ -69,6 +69,7 @@ function MemberSTabScreen(props: ScreenProp) {
       variables: { filter: { verified: true } }
     }
   );
+
   const recommendedMembers = membersData?.recommendedMembers;
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
