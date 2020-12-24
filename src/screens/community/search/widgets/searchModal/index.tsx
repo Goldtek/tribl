@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef, ReactNode } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Searchbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { TextInput } from 'react-native';
@@ -10,18 +10,19 @@ import {
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import { searchClient } from '../../../../../config';
-import AlgoliaCommunityList from '../../../../../components/algoliaCommunityList ';
+import AlgoliaList from '../../../../../components/algoliaList';
+import { PAGINATION_DEFAULT } from '../../../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ModalProp {
-  route: { params: { indexName: string; filters: any } };
+  route: { params: { indexName: string } };
 }
 
-function SearchModal(props: ModalProp) {
-  const details = props.route.params;
+function SearchScreen(props: ModalProp) {
+  const { indexName } = props.route.params;
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
@@ -46,13 +47,12 @@ function SearchModal(props: ModalProp) {
       onChangeText={(value) => refine(value)}
       placeholder={t(`community.chat.search`)}
       style={{
-        marginLeft: RFValue(10),
-        marginRight: RFValue(10),
-        marginTop: RFValue(15),
+        height: RFValue(40),
         fontFamily: fonts.WORK_SANS_REGULAR,
         fontSize: RFValue(fonts.LARGE_SIZE),
         color: colors.SECONDARY_TEXT,
         marginHorizontal: 15,
+        marginVertical: 15,
         elevation: 0,
         borderColor: colors.INACTIVE,
         borderRadius: 4,
@@ -62,7 +62,9 @@ function SearchModal(props: ModalProp) {
     />
   );
 
-  const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), []);
+  const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), [
+    indexName
+  ]);
 
   return (
     <Container
@@ -74,16 +76,16 @@ function SearchModal(props: ModalProp) {
     >
       <InstantSearch
         searchClient={searchClient}
-        indexName={details?.indexName}
+        indexName={indexName}
         searchState={state.search}
         onSearchStateChange={onSearchStateChange}
       >
-        <Configure filters={details?.filters} hitsPerPage={8} distinct />
+        <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
         <AlgoliaSearchBox />
-        <AlgoliaCommunityList />
+        <AlgoliaList />
       </InstantSearch>
     </Container>
   );
 }
 
-export default React.memo(SearchModal);
+export default React.memo(SearchScreen);
