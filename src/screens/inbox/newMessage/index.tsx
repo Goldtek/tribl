@@ -40,6 +40,17 @@ export default function ChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
+  const [pagination, setPagination] = useState({
+    refreshing: false,
+    callOnScrollEnd: false
+  });
+
+  const [state, setState] = useState({
+    all: true,
+    connections: false,
+    nearby: false
+  });
+
   const { loading: nearbyLoading, data: nearbyData } = useQuery<
     NearbyMembersRequestInterface
   >(GET_NEARBY_MEMBERS);
@@ -66,12 +77,6 @@ export default function ChatScreen(props: ScreenProp) {
 
   const filteredMembers = allMembers?.filter((member) => {
     return member.id !== userId && member.verified == true;
-  });
-
-  const [state, setState] = useState({
-    all: true,
-    connections: false,
-    nearby: false
   });
 
   const { all, connections, nearby } = state;

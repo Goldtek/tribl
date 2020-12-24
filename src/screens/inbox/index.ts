@@ -4,8 +4,8 @@ import DirectChatScreen from './directChat';
 import ChannelChatScreen from './channelChat';
 import ConnectionChatScreen from './connectionChat';
 import MessageRequestScreen from './messageRequest';
-import MessageRequestChatScreen from './messageRequestChat';
-import ChannelMembersScreen from './channleMembers';
+import ChannelMembersScreen from './channelMembers';
+import MessageRequestChatScreen from './requestChat';
 
 export default {
   InboxScreen,
@@ -14,6 +14,6 @@ export default {
   ChannelChatScreen,
   MessageRequestScreen,
   ConnectionChatScreen,
-  MessageRequestChatScreen,
-  ChannelMembersScreen
+  ChannelMembersScreen,
+  MessageRequestChatScreen
 };
