@@ -352,7 +352,7 @@ export default function PassportDetail(props: MemberDetailProps) {
           </Cover>
         ) : null}
 
-        {data?.currentLocation ? (
+        {data?.birthPlace ? (
           <LocationContainer>
             <Title
               style={{
@@ -366,6 +366,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`signup.passportScreen.locality`)}
             </Title>
+
             {data?.birthPlace[0]?.country ? (
               <Location ref={hideSensitiveView}>
                 <AntDesign
@@ -407,6 +408,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 )}
               </Location>
             ) : null}
+
             {data?.currentLocation ? (
               <Location ref={hideSensitiveView}>
                 <SimpleLineIcons
