@@ -48,10 +48,11 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     GET_CONNECTION_NOTIFICATION_BADGE
   );
 
-  const [moreAction, setMoreAction] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [fetchingMore, setFetchingMore] = useState(false);
   const [search, setSearch] = useState({ searchTerm: '' });
+  const [state, setState] = useState({
+    refreshing: false,
+    callOnScrollEnd: false
+  });
 
   const myConnection = data?.myConnections;
 
@@ -64,37 +65,39 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   });
 
   const _renderFooter = useCallback(
-    () => (fetchingMore ? <ActivityIndicator /> : null),
-    [fetchingMore]
+    () => (state.callOnScrollEnd ? <ActivityIndicator /> : null),
+    [state.callOnScrollEnd]
   );
 
-  const _onEndReached = useCallback(() => {
-    if (!moreAction) return;
+  const onRefresh = async () => {
+    try {
+      setState({ ...state, refreshing: true });
+      await refetch();
+      setState({ ...state, refreshing: false });
+    } catch (error) {
+      setState({ ...state, refreshing: false });
+    }
+  };
 
-    setFetchingMore(true);
+  const handleEndReach = async () => {
+    if (!state.callOnScrollEnd) return;
+
     fetchMore({
-      variables: { offset: data?.myConnections.length },
+      variables: {
+        offset: data?.myConnections.length,
+        first: PAGINATION_DEFAULT
+      },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          setFetchingMore(false);
-          return prev;
-        }
+        setState({ ...state, callOnScrollEnd: false });
 
-        setFetchingMore(false);
+        if (!fetchMoreResult) return prev;
+
         return Object.assign({}, prev, {
           myConnections: [...fetchMoreResult.myConnections]
         });
       }
     });
-  }, [moreAction]);
-
-  const _onRefresh = useCallback(() => {
-    if (!moreAction) return;
-    setRefreshing(true);
-    refetch()
-      .then(() => setRefreshing(false))
-      .catch(() => setRefreshing(false));
-  }, [moreAction]);
+  };
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
@@ -191,13 +194,12 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         {myConnection ? (
           <FlatList
             data={filteredWords}
-            refreshing={refreshing}
-            onRefresh={_onRefresh}
-            // ListFooterComponent={_renderFooter}
-            onEndReachedThreshold={0.01}
-            onEndReached={({ distanceFromEnd }) => {
-              if (distanceFromEnd > 0) debounce(_onEndReached, 500)();
-            }}
+            refreshing={state.refreshing}
+            onRefresh={onRefresh}
+            ListFooterComponent={_renderFooter}
+            onEndReachedThreshold={0.5}
+            onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
+            onMomentumScrollEnd={handleEndReach}
             contentContainerStyle={{
               flexGrow: 1,
               marginTop: RFValue(10),
@@ -215,13 +217,9 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
                 You currently don't have any connection
               </Text>
             }
-            onScrollBeginDrag={() => setMoreAction(true)}
-            onScrollEndDrag={() => setMoreAction(false)}
-            onMomentumScrollBegin={() => setMoreAction(true)}
-            onMomentumScrollEnd={() => setMoreAction(false)}
             showsVerticalScrollIndicator={false}
             renderItem={_renderItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={({ id }) => id}
           />
         ) : (
           <Skeleton />
