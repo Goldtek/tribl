@@ -57,8 +57,7 @@ workflows:
             - name: Set up keystore
               script: | 
                      echo "APP_VERSION_CODE=$APP_VERSION_CODE
-                     APP_VERSION_NAME=$APP_VERSION_NAME" > .env
-                      
+                     APP_VERSION_NAME=$APP_VERSION_NAME" > .env 
                      cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
                      storePassword=$CM_KEYSTORE_PASSWORD
                      keyPassword=$CM_KEY_ALIAS_PASSWORD
