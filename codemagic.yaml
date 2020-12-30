@@ -60,7 +60,7 @@ workflows:
                      APP_VERSION_NAME=$APP_VERSION_NAME" > .env
                      cat .env
                      echo $CM_KEYSTORE | base64 --decode > $FCI_BUILD_DIR/android/app/tribl.keystore
-                     ls $FCI_BUILD_DIR/android 
+                     ls $FCI_BUILD_DIR/android/app 
                      cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
                      storePassword=$CM_KEYSTORE_PASSWORD
                      keyPassword=$CM_KEY_ALIAS_PASSWORD
@@ -70,7 +70,7 @@ workflows:
             # - name: Build Android release
               # script: |
                 # cd android 
-                
+                # ./gradlew assembleRelease
                 # ./gradlew bundleRelease 
         # artifacts:
             # - android/app/build/**/outputs/**/*.aab
