@@ -1,6 +1,5 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import * as Sentry from '@sentry/react-native';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
 import * as Updates from 'expo-updates';
@@ -59,6 +58,7 @@ import {
   hideSensitiveView
 } from '../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../constants';
+import { crashlytics } from '../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -178,7 +178,7 @@ export default function PassportScreen(props: ScreenProp) {
       const passportInfo = await Storage.getUserPassport();
       setCache({ ...cache, ...passportInfo });
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -342,7 +342,7 @@ export default function PassportScreen(props: ScreenProp) {
         const { data } = await updatePassport();
         if (data) refetch();
       } catch (error) {
-        Sentry.captureException(error);
+        crashlytics.recordError(error);
       }
     };
 
@@ -392,7 +392,7 @@ export default function PassportScreen(props: ScreenProp) {
         });
       }
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -460,7 +460,7 @@ export default function PassportScreen(props: ScreenProp) {
 
       // PROFILE SHARED HERE
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -484,7 +484,7 @@ export default function PassportScreen(props: ScreenProp) {
         setUpdate(true);
       }
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
       setUpdate(true);
     }
   };
@@ -529,7 +529,7 @@ export default function PassportScreen(props: ScreenProp) {
       setAvatar({ ...avatar, uri, imageData });
       ImagePicker.clean();
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
