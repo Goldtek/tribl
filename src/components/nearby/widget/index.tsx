@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react';
-import * as Sentry from '@sentry/react-native';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -11,7 +10,7 @@ import { PassportInterface } from '../../../graphql/types';
 import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import { fireAuth } from '../../../firebase/config';
+import { crashlytics, fireAuth } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -53,7 +52,7 @@ function NearbyModal(props: NearbyUserProp) {
       await requestConnection();
       setPending(true);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

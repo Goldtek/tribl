@@ -1,5 +1,4 @@
 import React, { Fragment, useState, useCallback, useEffect } from 'react';
-import * as Sentry from '@sentry/react-native';
 import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
 import {
   Button,
@@ -23,6 +22,7 @@ import { GET_ALL_IDENTITIES } from '../../../../../graphql/server/query';
 import { IdentitiesInterface } from '../../../../../graphql/types';
 import IdentityModal from '../identityModal';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
+import { crashlytics } from '../../../../../firebase/config';
 
 import {
   ContactContainer,
@@ -186,7 +186,7 @@ export default function contactSlide() {
         const regInfo = await Storage.getUserRegistration();
         setUserRegInfo({ ...userRegInfo, ...regInfo });
       } catch (error) {
-        Sentry.captureException(error);
+        crashlytics.recordError(error);
       }
     })();
   }, []);
