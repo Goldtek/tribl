@@ -1,5 +1,4 @@
 import React, { useState, Fragment, useMemo, useEffect } from 'react';
-import * as Sentry from '@sentry/react-native';
 import { NavigationInterface } from '../../../../types';
 import { Card, Title, Paragraph, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +29,7 @@ import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 import { Mixpanel } from '../../../../../config';
 import TagModal from '../../../../../components/tagModal';
 import storage from '../../../../../libs/storage';
+import { crashlytics } from '../../../../../firebase/config';
 
 import {
   Container,
@@ -61,7 +61,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     try {
       await storage.removeTagModal(id);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -164,7 +164,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       setData({ ...data, isMember: true });
       communityRefetch();
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -178,7 +178,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       setState({ ...state, tagModal: false });
       communityRefetch();
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

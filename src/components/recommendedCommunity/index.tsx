@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { Button, Card } from 'react-native-paper';
-import * as Sentry from '@sentry/react-native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +19,7 @@ import {
 import { CommunityInterface } from '../../graphql/types';
 import { logEvent } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
+import { crashlytics } from '../../firebase/config';
 
 function RecommendedCommunity(props: CommunityInterface) {
   const { colors, fonts } = useThemeContext();
@@ -50,7 +50,7 @@ function RecommendedCommunity(props: CommunityInterface) {
     try {
       await Storage.removeTagModal(id);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -80,7 +80,7 @@ function RecommendedCommunity(props: CommunityInterface) {
       setMember(true);
       setModal(true);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -96,7 +96,7 @@ function RecommendedCommunity(props: CommunityInterface) {
       setMember(false);
       setModal(false);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

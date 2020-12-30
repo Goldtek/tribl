@@ -8,7 +8,6 @@ import {
   TextInput,
   TouchableRipple
 } from 'react-native-paper';
-import * as Sentry from '@sentry/react-native';
 import { useTranslation } from 'react-i18next';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -26,6 +25,7 @@ import Storage from '../../../../libs/storage';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationInterface } from '../../../types';
+import { crashlytics } from '../../../../firebase/config';
 
 import {
   ContactContainer,
@@ -118,7 +118,7 @@ function contactSlide(props: ScreenProp) {
           ...passportInfo
         });
       } catch (error) {
-        Sentry.captureException(error);
+        crashlytics.recordError(error);
       }
     })();
   }, []);

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import * as Sentry from '@sentry/react-native';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +23,7 @@ import {
   logEvent,
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
+import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -50,7 +50,7 @@ export default function PassportScreen(props: ScreenProp) {
         const regInfo = await Storage.getUserRegistration();
         setUserRegInfo({ ...userRegInfo, ...regInfo });
       } catch (error) {
-        Sentry.captureException(error);
+        crashlytics.recordError(error);
       }
     })();
   }, []);
@@ -78,7 +78,7 @@ export default function PassportScreen(props: ScreenProp) {
 
       // PROFILE SHARED HERE
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

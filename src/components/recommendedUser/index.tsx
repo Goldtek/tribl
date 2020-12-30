@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
-import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { Mixpanel } from '../../config';
@@ -15,6 +14,7 @@ import { PassportInterface, UserPassportInterface } from '../../graphql/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import AdminBadge from '../adminBadge';
 import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
+import { crashlytics } from '../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
@@ -70,7 +70,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
       await requestConnection();
       setPending(true);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
