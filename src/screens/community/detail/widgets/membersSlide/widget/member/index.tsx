@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
-import * as Sentry from '@sentry/react-native';
 import { Feather } from '@expo/vector-icons';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
@@ -16,7 +15,7 @@ import {
 import { GET_COMMUNITY_MEMBER_PASSPORT } from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
 import { OnlinePresence } from '../../../../../../inbox/types';
-import { fireAuth } from '../../../../../../../firebase/config';
+import { fireAuth, crashlytics } from '../../../../../../../firebase/config';
 import formatMessageTime from '../../../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -67,7 +66,7 @@ function Member(props: MemberProp) {
     try {
       await requestConnection();
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

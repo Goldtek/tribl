@@ -1,5 +1,4 @@
 import React, { useState, Fragment, useEffect } from 'react';
-import * as Sentry from '@sentry/react-native';
 import { ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { KeyboardAvoidingView, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,6 +23,7 @@ import {
   logEvent,
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
+import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -127,7 +127,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
       }
     } catch (error) {
       handleInputError('serverError');
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -257,6 +257,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
 
             <Input
               placeholder={t(`signup.createAccountScreen.email`)}
+              autoCapitalize="none"
               defaultValue={state.email}
               onChangeText={(email) => setState({ ...state, email })}
               keyboardType="email-address"
