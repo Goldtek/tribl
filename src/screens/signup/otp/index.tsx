@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import * as Sentry from '@sentry/react-native';
 import { useTranslation } from 'react-i18next';
 import { Button, ProgressBar, Title, Paragraph } from 'react-native-paper';
 import { TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
@@ -26,6 +25,7 @@ import {
   logEvent,
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
+import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, Cover } from './styles';
@@ -108,7 +108,7 @@ export default function OTPScreen(props: ScreenProp) {
         routes: [{ name: 'CommunityScreen' }]
       });
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
       handleInputError();
     }
   };

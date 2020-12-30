@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Title, Paragraph } from 'react-native-paper';
-import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Feather } from '@expo/vector-icons';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -14,6 +13,7 @@ import { GET_USER_PASSPORT } from '../../graphql/server/query';
 import TagButton from './widget/tagButton';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import { MyPassportInterface } from '../../graphql/types';
+import { crashlytics } from '../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -82,7 +82,7 @@ function Tags(props: any) {
         props.displayTagModal(false);
       }
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

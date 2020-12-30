@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import * as Sentry from '@sentry/react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -9,6 +8,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../../../theme';
 import TabViewSlider from '../tabs';
+import { crashlytics } from '../../../../firebase/config';
+
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   HeaderContainer,
@@ -44,7 +45,7 @@ export default function PassportSkeleton(props: ScreenProp) {
 
       // PROFILE SHARED HERE
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
   const [state, setState] = useState({ details: {}, loading: false });

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import ImageResizer from 'react-native-image-resizer';
-import * as Sentry from '@sentry/react-native';
 import { ProgressBar, Title, Paragraph, Subheading } from 'react-native-paper';
 import { TouchableHighlight, SafeAreaView } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
@@ -21,6 +20,7 @@ import cloudinaryUpload, {
 } from '../../../utils/cloudinaryUpload';
 import Storage from '../../../libs/storage';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, GradientContainer } from './styles';
@@ -87,7 +87,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
     } catch (error) {
       setAvatar({ ...avatar, loading: false });
       handleInputError('uploadError');
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -130,7 +130,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
       setAvatar({ ...avatar, uri, imageData });
       ImagePicker.clean();
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
