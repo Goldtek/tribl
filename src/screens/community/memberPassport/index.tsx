@@ -1,7 +1,6 @@
 import React, { useState, useMemo, Fragment, useEffect } from 'react';
 import { Mixpanel } from '../../../config';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
-import * as Sentry from '@sentry/react-native';
 import { ScrollView, FlatList } from 'react-native';
 import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +24,7 @@ import {
   logEvent,
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
+import { crashlytics } from '../../../firebase/config';
 
 import {
   ContactContainer,
@@ -130,7 +130,7 @@ export default function PassportDetail(props: MemberDetailProps) {
       await requestConnection();
       setState({ ...state, loading: false, pending: true });
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
       setState({ ...state, loading: false });
     }
   };

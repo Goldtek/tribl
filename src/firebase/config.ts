@@ -3,6 +3,7 @@ import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import firebaseFirestore from '@react-native-firebase/firestore';
 import ENVIRONMENT_VARIABLES from '../config';
+import rnCrashlytics from '@react-native-firebase/crashlytics';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -23,3 +24,4 @@ if (!firebase.apps.length) {
 
 export const fireAuth = auth();
 export const firechat = firebaseFirestore();
+export const crashlytics = rnCrashlytics();

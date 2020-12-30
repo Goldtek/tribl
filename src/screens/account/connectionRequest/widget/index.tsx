@@ -2,7 +2,6 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import { ActivityIndicator } from 'react-native';
-import * as Sentry from '@sentry/react-native';
 import { Mixpanel } from '../../../../config';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
@@ -16,6 +15,7 @@ import {
   REJECT_CONNECTION
 } from '../../../../graphql/server/mutations';
 import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
+import { crashlytics } from '../../../../firebase/config';
 
 import { NameContainer } from './styles';
 
@@ -62,7 +62,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
       refetch();
       setAcceptLoading(false);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
       setAcceptLoading(false);
     }
   };
@@ -75,7 +75,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
       refetch();
       setRejectLoading(false);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
       setRejectLoading(false);
     }
   };
