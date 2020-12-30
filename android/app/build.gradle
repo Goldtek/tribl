@@ -143,6 +143,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
+        def buildNumber = System.getenv("CI") ? System.getenv("BUILD_NUMBER") : project.env.get("APP_VERSION_CODE")
         versionCode project.env.get("APP_VERSION_CODE").toInteger()
         versionName project.env.get("APP_VERSION_NAME") 
         multiDexEnabled true
