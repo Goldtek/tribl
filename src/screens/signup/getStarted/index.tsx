@@ -7,7 +7,6 @@ import {
   Keyboard
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Sentry from '@sentry/react-native';
 import { Title, Subheading, Paragraph } from 'react-native-paper';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -29,6 +28,7 @@ import {
   logEvent,
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
+import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -78,7 +78,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
       addPhoneNumber();
     } catch (error) {
       handleInputError();
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
