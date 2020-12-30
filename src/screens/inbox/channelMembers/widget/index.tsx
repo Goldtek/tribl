@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react';
-import * as Sentry from '@sentry/react-native';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -10,7 +9,7 @@ import { REQUEST_CONNECTION } from '../../../../graphql/server/mutations';
 import { PassportInterface } from '../../../../graphql/types';
 import { rootNavigator } from '../../../../constants';
 import hexToRGB from '../../../../utils/hexToRGB';
-import { fireAuth } from '../../../../firebase/config';
+import { crashlytics, fireAuth } from '../../../../firebase/config';
 import { logEvent } from '../../../../utils/uxcamHelper';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -50,7 +49,7 @@ function ChannelMember(props: ChannelUserProp) {
       await requestConnection();
       setPending(true);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

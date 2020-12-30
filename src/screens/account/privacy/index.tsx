@@ -1,6 +1,5 @@
 import React, { Fragment, useState, useCallback, useEffect } from 'react';
 import { NavigationInterface } from '../../types';
-import * as Sentry from '@sentry/react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Text, TouchableRipple, Divider } from 'react-native-paper';
@@ -11,6 +10,7 @@ import { useThemeContext } from '../../../theme';
 import PrivacyModal from './widget';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { UPDATE_PASSPORT } from '../../../graphql/server/mutations';
+import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, ToggleContainer, ToggleCover, Cover } from './styles';
@@ -83,7 +83,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     try {
       const { data } = await updatePassport();
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

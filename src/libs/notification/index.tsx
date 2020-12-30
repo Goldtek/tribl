@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useMutation } from '@apollo/react-hooks';
-import * as Sentry from '@sentry/react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import fcmMessaging, {
@@ -12,6 +11,7 @@ import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE
 } from '../../graphql/cache/mutations';
 import { NotificationMessage, NotificationMetaData } from '../../graphql/types';
+import { crashlytics } from '../../firebase/config';
 
 type GlobalNotificationProps = {
   children: JSX.Element;
@@ -89,7 +89,7 @@ export default function Notification(props: GlobalNotificationProps) {
       const token = await messaging.getToken();
       updatePassportFCM({ variables: { payload: { token } } });
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -102,7 +102,7 @@ export default function Notification(props: GlobalNotificationProps) {
 
       if (enabled) getToken();
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -118,7 +118,7 @@ export default function Notification(props: GlobalNotificationProps) {
     },
 
     // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-    onRegistrationError: (error) => Sentry.captureException(error),
+    onRegistrationError: (error) => crashlytics.recordError(error),
 
     // IOS ONLY (optional): default: all - Permissions to register.
     permissions: { alert: true, badge: false, sound: true },

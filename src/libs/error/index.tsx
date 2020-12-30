@@ -1,5 +1,4 @@
 import React from 'react';
-import * as Sentry from '@sentry/react-native';
 import { Alert } from 'react-native';
 import RNRestart from 'react-native-restart';
 import {
@@ -7,12 +6,13 @@ import {
   setNativeExceptionHandler
 } from 'react-native-exception-handler';
 import ENVIRONMENT_VARIABLES from '../../config';
+import { crashlytics } from '../../firebase/config';
 
 type GlobalErrorProps = {
   children: React.ReactElement;
 };
 
-Sentry.init({ dsn: ENVIRONMENT_VARIABLES.SENTRY_KEY });
+// Sentry.init({ dsn: ENVIRONMENT_VARIABLES.SENTRY_KEY });
 
 export default function GlobalErrorBoundary(props: GlobalErrorProps) {
   const errorHandler = (e: Error, isFatal: boolean) => {
@@ -26,7 +26,7 @@ export default function GlobalErrorBoundary(props: GlobalErrorProps) {
         {
           text: 'Close',
           onPress: () => {
-            exceptionHandler(e.message);
+            exceptionHandler(e);
             RNRestart.Restart();
           }
         }
@@ -34,10 +34,11 @@ export default function GlobalErrorBoundary(props: GlobalErrorProps) {
     );
   };
 
-  const exceptionHandler = (nativeError: string) => {
+  const exceptionHandler = (nativeError: Error | string) => {
     // our exception handler code here
-    // E.g. reporting error using sentry
-    Sentry.captureException(nativeError);
+    // E.g. reporting error using crashlytics
+    // @ts-ignore
+    crashlytics.recordError(nativeError);
   };
 
   setJSExceptionHandler(errorHandler);
