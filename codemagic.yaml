@@ -60,6 +60,7 @@ workflows:
                      APP_VERSION_NAME=$APP_VERSION_NAME" > .env
                      cat .env
                      echo $CM_KEYSTORE | base64 --decode > /android/app/tribl.keystore
+                     ls /android 
                      cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
                      storePassword=$CM_KEYSTORE_PASSWORD
                      keyPassword=$CM_KEY_ALIAS_PASSWORD
