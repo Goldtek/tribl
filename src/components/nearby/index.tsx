@@ -80,7 +80,7 @@ function NearbyModal(props: ModalProp) {
           height: DEVICE_FULL_HEIGHT / 2,
           paddingTop: RFValue(30),
           paddingBottom: RFValue(20),
-          marginTop: RFValue(80)
+          marginTop: RFValue(90)
         }}
         HeaderComponent={
           <Text
