@@ -277,6 +277,8 @@ export default function ChatScreen(props: ScreenProp) {
                 borderRadius: 4,
                 marginRight: 15,
                 marginBottom: 5,
+                borderWidth: 1,
+                borderColor: state.all ? colors.PRIMARY : colors.DISABLED,
                 backgroundColor: state.all ? colors.PRIMARY : colors.WHITE
               }}
             >
@@ -296,6 +298,10 @@ export default function ChatScreen(props: ScreenProp) {
                 borderRadius: 4,
                 marginRight: 15,
                 marginBottom: 5,
+                borderWidth: 1,
+                borderColor: state.connections
+                  ? colors.PRIMARY
+                  : colors.DISABLED,
                 backgroundColor: state.connections
                   ? colors.PRIMARY
                   : colors.WHITE
@@ -315,6 +321,8 @@ export default function ChatScreen(props: ScreenProp) {
               style={{
                 borderRadius: 4,
                 marginBottom: 5,
+                borderWidth: 1,
+                borderColor: state.nearby ? colors.PRIMARY : colors.DISABLED,
                 backgroundColor: state.nearby ? colors.PRIMARY : colors.WHITE
               }}
             >

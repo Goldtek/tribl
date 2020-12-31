@@ -146,9 +146,9 @@ export default function PassportDetail(props: MemberDetailProps) {
     []
   );
 
-  const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => {
-    return <MyConnections key={item.id} {...item} />;
-  };
+  const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
+    <MyConnections key={item.id} {...item} />
+  );
 
   const [displayInterest, setDisplayInterest] = useState(false);
 
@@ -560,12 +560,12 @@ export default function PassportDetail(props: MemberDetailProps) {
             <Fragment>
               <TouchableHighlight
                 underlayColor={colors.TRANSPARENT}
-                onPress={() =>
+                onPress={() => {
                   navigation.navigate('UserCommunityListScreen', {
                     details: data?.participantOf,
                     title: `${data?.firstName} ${data?.lastName}`
-                  })
-                }
+                  });
+                }}
               >
                 <Title
                   style={{
@@ -596,12 +596,12 @@ export default function PassportDetail(props: MemberDetailProps) {
             <Cover ref={hideSensitiveView}>
               <TouchableHighlight
                 underlayColor={colors.TRANSPARENT}
-                onPress={() =>
+                onPress={() => {
                   navigation.navigate('UserConnectionListScreen', {
                     details: data?.myConnections,
                     title: `${data?.firstName} ${data?.lastName}`
-                  })
-                }
+                  });
+                }}
               >
                 <Title
                   style={{
