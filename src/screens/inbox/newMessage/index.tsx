@@ -1,49 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FlatList, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Divider, Button, Text, TouchableRipple } from 'react-native-paper';
+import {
+  Divider,
+  Button,
+  Text,
+  TouchableRipple,
+  ActivityIndicator
+} from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Ionicons, Octicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import MemberCard from './widgets/connectionCard';
-import AlgoliaSearch from '../../../components/algoliaSearch';
-import AlgoliaList from '../../../components/algoliaInboxList';
 import hexToRGB from '../../../utils/hexToRGB';
-import { Ionicons } from '@expo/vector-icons';
 import {
   GET_NEARBY_MEMBERS,
   GET_MY_CONNECTIONS,
   GET_ALL_MEMBERS,
-  GET_USER_PASSPORT
+  GET_MY_CONNECTIONS_NEARBY
 } from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
 import ENVIRONMENT_VARIABLES from '../../../config';
 import {
+  MyConnectionNearbyRequestInterface,
   NearbyMembersRequestInterface,
-  MyConnectionsInterface,
   AllMembersRequestInterface,
+  MyConnectionsInterface,
   PassportInterface
 } from '../../../graphql/types';
 import { NavigationInterface } from '../../types';
 import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../../constants';
+import { fireAuth } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, FilterContainer, HeaderContainer } from './styles';
+import {
+  Container,
+  FilterContainer,
+  HeaderContainer,
+  SearchInput
+} from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function ChatScreen(props: ScreenProp) {
   const { navigation } = props;
+  const userId = fireAuth.currentUser?.uid;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [pagination, setPagination] = useState({
-    refreshing: false,
-    callOnScrollEnd: false
-  });
+  useEffect(() => {
+    tagScreenName('NewMessageScreen');
+  }, []);
+
+  // const [pagination, setPagination] = useState({
+  //   refreshing: false,
+  //   callOnScrollEnd: false
+  // });
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const [state, setState] = useState({
     all: true,
@@ -51,35 +70,32 @@ export default function ChatScreen(props: ScreenProp) {
     nearby: false
   });
 
-  const { loading: nearbyLoading, data: nearbyData } = useQuery<
-    NearbyMembersRequestInterface
-  >(GET_NEARBY_MEMBERS);
+  const [listData, setListData] = useState<PassportInterface[]>([]);
 
-  const { loading: connectionLoading, data: connectionData } = useQuery<
-    MyConnectionsInterface
-  >(GET_MY_CONNECTIONS);
-
-  const { loading: allMembersLoading, data: allMembersData } = useQuery<
-    AllMembersRequestInterface
-  >(GET_ALL_MEMBERS);
-
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
-  const userDetails = userData?.myPassport;
-
-  const nearbyMembers = nearbyData?.nearbyMembers;
-  const myConnection = connectionData?.myConnections;
-  const allMembers = allMembersData?.Passport;
-  const userId = userDetails?.id;
-
-  useEffect(() => {
-    tagScreenName('NewMessageScreen');
-  }, []);
-
-  const filteredMembers = allMembers?.filter((member) => {
-    return member.id !== userId && member.verified == true;
+  const { data: myConnectionNearbyData } = useQuery<
+    MyConnectionNearbyRequestInterface
+  >(GET_MY_CONNECTIONS_NEARBY, {
+    variables: { filter: { id: userId } }
   });
 
-  const { all, connections, nearby } = state;
+  const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
+    GET_NEARBY_MEMBERS
+  );
+
+  const { data: connectionData } = useQuery<MyConnectionsInterface>(
+    GET_MY_CONNECTIONS
+  );
+
+  const {
+    data: allMembersData,
+    loading: allMembersLoading,
+    fetchMore: fetchMoreAllMembers
+  } = useQuery<AllMembersRequestInterface>(GET_ALL_MEMBERS);
+
+  const allMembers = allMembersData?.Passport;
+  const nearbyMembers = nearbyData?.nearbyMembers;
+  const myConnection = connectionData?.myConnections;
+  const nearbyConnections = myConnectionNearbyData?.nearbyConnections;
 
   const sortName = (a: PassportInterface, b: PassportInterface) => {
     if (a.firstName < b.firstName) return -1;
@@ -87,32 +103,120 @@ export default function ChatScreen(props: ScreenProp) {
     return 0;
   };
 
-  const filterAll = filteredMembers?.slice().sort(sortName);
-  const filterConnection = myConnection?.slice().sort(sortName);
-  const filterNearby = nearbyMembers?.slice().sort(sortName);
-
-  const data = all
-    ? filterAll
-    : connections && nearby
-    ? filterConnection && filterNearby
-    : connections
-    ? filterConnection
-    : filterNearby;
-
-  const handleConnectionClick = () => {
-    setState({ ...state, connections: !connections, all: false });
+  const filterMember = (member: PassportInterface) => {
+    return member.id !== userId && member.verified === true;
   };
 
-  const handleNearbyClick = () => {
-    setState({ ...state, nearby: !nearby, all: false });
+  const filterAll = allMembers?.slice().sort(sortName).filter(filterMember);
+
+  const filterNearby = nearbyMembers
+    ?.slice()
+    .sort(sortName)
+    .filter(filterMember);
+
+  const filterConnection = myConnection
+    ?.slice()
+    .sort(sortName)
+    .filter(filterMember);
+
+  const filterConnectionsNearby = nearbyConnections
+    ?.slice()
+    .sort(sortName)
+    .filter(filterMember);
+
+  const handleOptionClick = (type: string) => () => {
+    const { all, connections, nearby } = state;
+
+    if (type === 'all' && all && !connections && !nearby) return;
+
+    if (type === 'connections' && connections && !all && !nearby) return;
+
+    if (type === 'nearby' && nearby && !all && !connections) return;
+
+    let option = {};
+
+    if (state.all && (type === 'connections' || 'nearby')) {
+      //@ts-ignore
+      option = { ...option, ...state, all: false, [type]: !state[type] };
+    } else {
+      //@ts-ignore
+      option = { ...option, ...state, [type]: !state[type] };
+    }
+
+    if (type === 'all') {
+      option = {
+        ...option,
+        ...state,
+        nearby: false,
+        connections: false,
+        [type]: !state[type]
+      };
+    }
+
+    setState({ ...state, ...option });
   };
 
-  const handleAllMembersClick = () => {
-    setState({ ...state, all: !all, nearby: false, connections: false });
+  useEffect(() => {
+    switch (true) {
+      case state.all:
+        setListData(filterAll ? filterAll : []);
+        break;
+      case state.connections && state.nearby:
+        setListData(filterConnectionsNearby ? filterConnectionsNearby : []);
+        break;
+      case state.connections:
+        setListData(filterConnection ? filterConnection : []);
+        break;
+      case state.nearby:
+        setListData(filterNearby ? filterNearby : []);
+        break;
+      default:
+        break;
+    }
+  }, [state, allMembersLoading]);
+
+  const handleEndReach = () => {
+    if (!callOnScrollEnd) return;
+
+    fetchMoreAllMembers({
+      variables: {
+        offset: allMembersData?.Passport.length,
+        first: PAGINATION_DEFAULT
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setCallOnScrollEnd(false);
+
+        if (!fetchMoreResult) return prev;
+        const filteredResult = fetchMoreResult.Passport?.slice()
+          .sort(sortName)
+          .filter(filterMember);
+
+        //@ts-ignore
+        setListData([...filterAll, ...filteredResult]);
+
+        return Object.assign({}, prev, {
+          Passport: [...prev.Passport, ...fetchMoreResult.Passport]
+        });
+      }
+    });
+  };
+
+  const handleRefresh = () => {};
+
+  const showSearchScreen = () => {
+    navigation.navigate('CommunityAlgoliaScreen', {
+      indexName: ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME
+    });
+    return true;
   };
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <MemberCard key={item.id} {...item} />
+  );
+
+  const _renderFooter = useCallback(
+    () => (callOnScrollEnd ? <ActivityIndicator /> : null),
+    [callOnScrollEnd]
   );
 
   return (
@@ -135,18 +239,26 @@ export default function ChatScreen(props: ScreenProp) {
               color={colors.PRIMARY}
             />
           </TouchableRipple>
-          <AlgoliaSearch
-            style={{ width: 0, flexGrow: 1 }}
-            indexName={ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME}
-          >
-            <AlgoliaList />
-          </AlgoliaSearch>
+
+          <SearchInput onStartShouldSetResponder={showSearchScreen}>
+            <Octicons name="search" color={colors.PRIMARY_TEXT} size={20} />
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                paddingHorizontal: RFValue(18)
+              }}
+            >
+              {t(`community.chat.search`)}
+            </Text>
+          </SearchInput>
         </HeaderContainer>
         <FilterContainer>
           <ScrollView
             horizontal
             contentContainerStyle={{
-              height: RFValue(50),
+              height: RFValue(45),
               paddingHorizontal: RFValue(15)
             }}
             showsHorizontalScrollIndicator={false}
@@ -154,50 +266,57 @@ export default function ChatScreen(props: ScreenProp) {
           >
             <Button
               mode="contained"
-              onPress={handleAllMembersClick}
+              onPress={handleOptionClick('all')}
               labelStyle={{
-                color: all ? colors.WHITE : colors.PRIMARY_TEXT,
+                color: state.all ? colors.WHITE : colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 textTransform: 'capitalize'
               }}
-              contentStyle={{
-                height: RFValue(45),
-                backgroundColor: all ? colors.PRIMARY : colors.WHITE
+              contentStyle={{ height: '100%' }}
+              style={{
+                borderRadius: 4,
+                marginRight: 15,
+                marginBottom: 5,
+                backgroundColor: state.all ? colors.PRIMARY : colors.WHITE
               }}
-              style={{ borderRadius: 4, height: RFValue(45), marginRight: 15 }}
             >
               {t(`community.chat.all`)}
             </Button>
 
             <Button
               mode="contained"
-              onPress={handleConnectionClick}
+              onPress={handleOptionClick('connections')}
               labelStyle={{
-                color: connections ? colors.WHITE : colors.PRIMARY_TEXT,
+                color: state.connections ? colors.WHITE : colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 textTransform: 'capitalize'
               }}
-              contentStyle={{
-                height: RFValue(45),
-                backgroundColor: connections ? colors.PRIMARY : colors.WHITE
+              contentStyle={{ height: '100%' }}
+              style={{
+                borderRadius: 4,
+                marginRight: 15,
+                marginBottom: 5,
+                backgroundColor: state.connections
+                  ? colors.PRIMARY
+                  : colors.WHITE
               }}
-              style={{ borderRadius: 4, height: RFValue(45), marginRight: 15 }}
             >
               {t(`community.chat.connection`)}
             </Button>
             <Button
               mode="contained"
-              onPress={handleNearbyClick}
+              onPress={handleOptionClick('nearby')}
               labelStyle={{
-                color: nearby ? colors.WHITE : colors.PRIMARY_TEXT,
+                color: state.nearby ? colors.WHITE : colors.PRIMARY_TEXT,
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 textTransform: 'capitalize'
               }}
-              contentStyle={{
-                height: RFValue(45),
-                backgroundColor: nearby ? colors.PRIMARY : colors.WHITE
+              contentStyle={{ height: '100%' }}
+              style={{
+                borderRadius: 4,
+                marginBottom: 5,
+                backgroundColor: state.nearby ? colors.PRIMARY : colors.WHITE
               }}
-              style={{ borderRadius: 4, height: RFValue(45) }}
             >
               {t(`community.chat.nearby`)}
             </Button>
@@ -233,14 +352,14 @@ export default function ChatScreen(props: ScreenProp) {
             <Divider />
           </Fragment>
         </TouchableRipple> */}
-        {allMembersLoading || connectionLoading || nearbyLoading ? (
-          <Skeleton />
-        ) : data?.length ? (
+        {!allMembersLoading ? (
           <FlatList
             ref={hideSensitiveView}
-            data={data}
+            data={listData}
             bounces={false}
+            refreshing={refreshing}
             renderItem={_renderItem}
+            onRefresh={handleRefresh}
             keyExtractor={(item) => item.id}
             ItemSeparatorComponent={() => (
               <Divider
@@ -251,21 +370,31 @@ export default function ChatScreen(props: ScreenProp) {
                 }}
               />
             )}
+            ListEmptyComponent={
+              <Text
+                style={{
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  margin: RFValue(20),
+                  textAlign: 'center'
+                }}
+              >
+                There are no members at this time
+              </Text>
+            }
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
-            style={{ backgroundColor: colors.WHITE, paddingTop: 10 }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingBottom: 20,
+              paddingVertical: RFValue(20)
+            }}
+            onEndReachedThreshold={0.5}
+            // onMomentumScrollEnd={handleEndReach}
+            // ListFooterComponent={_renderFooter}
+            // onEndReached={() => setCallOnScrollEnd(true)}
           />
         ) : (
-          <Text
-            style={{
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              margin: RFValue(20),
-              textAlign: 'center'
-            }}
-          >
-            There are no members at this time
-          </Text>
+          <Skeleton />
         )}
       </Container>
     </SafeAreaView>
