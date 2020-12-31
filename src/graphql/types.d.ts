@@ -304,6 +304,11 @@ export type IdentitiesInterface = {
   Identity: { name: string; id: string }[];
 };
 
+// USER SELECTABLE INTEREST (RESPONSE) TYPE
+export type InterestInterface = {
+  Interest: { name: string; id: string }[];
+};
+
 // SERVER UPDATE USER PASSPORT (RESPONSE) TYPE
 export type UpdatePassportInterface = {
   updatePassport: { success: boolean; __typename: string };
