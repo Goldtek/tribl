@@ -28,6 +28,7 @@
   },
 
   "memberPassport": {
+    "myTribes": "my tribes",
     "connection": "connections",
     "community": "tribes",
     "tribe": "tribes",
@@ -46,7 +47,9 @@
     "copy": "copy profile URL",
     "pending": "pending",
     "blocked": "blocked",
-    "requested": "requested"
+    "requested": "requested",
+    "interestTitle": "what are you interested in?",
+    "interestParagraph": "Let us know what you have interest in. \n(Select all that apply)"
   },
 
   "tabPanel": {
@@ -72,6 +75,7 @@
     "chat": "chat",
     "request": "connection requests",
     "connection": "my connections",
+    "userConnection": "connections",
     "wallet": "add wallet",
     "settings": "account settings",
     "invite": "invite friend",
