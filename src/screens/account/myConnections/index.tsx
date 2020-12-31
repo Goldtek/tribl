@@ -196,9 +196,9 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
             refreshing={state.refreshing}
             onRefresh={onRefresh}
             ListFooterComponent={_renderFooter}
-            onEndReachedThreshold={0.5}
-            onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
-            onMomentumScrollEnd={handleEndReach}
+            // onEndReachedThreshold={0.5}
+            // onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
+            // onMomentumScrollEnd={handleEndReach}
             contentContainerStyle={{
               flexGrow: 1,
               marginTop: RFValue(10),
