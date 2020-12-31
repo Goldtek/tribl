@@ -83,6 +83,7 @@ export const GET_NEARBY_MEMBERS = gql`
       phoneNumber
       connected
       avatar
+      verified
       communityCount
       connectionCount
       moderatorOf {
@@ -370,6 +371,78 @@ export const GET_MY_COMMUNITIES = gql`
   }
 `;
 
+export const GET_MY_CONNECTIONS_NEARBY = gql`
+  query nearbyConnections(
+    $filter: _PassportFilter!
+    $offset: Int
+    $first: Int
+  ) {
+    nearbyConnections(filter: $filter, offset: $offset, first: $first) {
+      id
+      bio
+      email
+      firstName
+      lastName
+      avatar
+      verified
+      phoneNumber
+      connected
+      connectionCount
+      communityCount
+      birthPlace {
+        id
+        country
+        state
+        city
+        lat
+        long
+      }
+      currentLocation {
+        id
+        country
+        state
+        city
+        lat
+        long
+      }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+      presence {
+        status
+        lastSeen {
+          formatted
+          day
+          month
+          year
+        }
+      }
+      conversation {
+        id
+        messageRequest {
+          id
+          senderId
+          approvedAt {
+            formatted
+            day
+            month
+            year
+          }
+          createdAt {
+            formatted
+            day
+            month
+            year
+          }
+        }
+      }
+    }
+  }
+`;
+
 //GET MY CONNECTIONS
 export const GET_MY_CONNECTIONS = gql`
   query myConnections($offset: Int, $first: Int) {
@@ -380,6 +453,7 @@ export const GET_MY_CONNECTIONS = gql`
       firstName
       lastName
       avatar
+      verified
       phoneNumber
       connected
       connectionCount
