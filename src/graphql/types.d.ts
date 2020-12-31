@@ -398,3 +398,8 @@ export type ConnectionRequestsInterface = {
 export type PopularCommunitiesRequestInterface = {
   popularCommunities: CommunityInterface[];
 };
+
+// MY CONNECTIONS NEARBY REQUEST (RESPONSE) TYPE
+export type MyConnectionNearbyRequestInterface = {
+  nearbyConnections: PassportInterface[];
+};
