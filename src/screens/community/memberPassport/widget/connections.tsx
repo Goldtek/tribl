@@ -37,12 +37,12 @@ export default function MyCommunity(props: MyConnectionProp) {
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: RFValue(10),
-        borderRadius: RFValue(80)
+        borderRadius: RFValue(40)
       }}
     >
       <Fragment>
         <FastImage
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode={FastImage.resizeMode.stretch}
           source={{
             uri: avatar ? avatar : USER_DEFAULT_AVATAR,
             priority: FastImage.priority.high
