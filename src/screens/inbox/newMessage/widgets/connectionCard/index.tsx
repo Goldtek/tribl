@@ -27,7 +27,14 @@ function ConnectionCard(props: ConnectionCardProp) {
 
   const userId = fireAuth.currentUser?.uid;
 
-  const { id, avatar, firstName, lastName, conversation } = props;
+  const {
+    id,
+    avatar,
+    firstName,
+    lastName,
+    conversation,
+    currentLocation
+  } = props;
 
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
     status: 'OFFLINE',
@@ -127,9 +134,9 @@ function ConnectionCard(props: ConnectionCardProp) {
               textTransform: 'lowercase'
             }}
           >
-            {onlinePresence.status === 'ONLINE'
-              ? onlinePresence.status
-              : formatMessageTime(Number(onlinePresence.lastSeen))}
+            {currentLocation[0].city.length
+              ? `${currentLocation[0].city}, ${currentLocation[0].state}`
+              : `${currentLocation[0].state}, ${currentLocation[0].country}`}
           </Text>
         </NameContainer>
       </Fragment>
