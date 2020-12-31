@@ -1,5 +1,8 @@
 import React, { useState, useCallback, useEffect, Fragment } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  TransitionPresets
+} from '@react-navigation/stack';
 import {
   TouchableRipple,
   Menu,
@@ -7,7 +10,7 @@ import {
   Paragraph,
   Surface
 } from 'react-native-paper';
-import { Platform } from 'react-native';
+import { Image, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +23,7 @@ import DrawerNavigator from './drawer';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { useThemeContext } from '../../theme';
 import Screens from '../../screens/inbox';
+import CommunityScreens from '../../screens/community';
 import Firechat from '../../firebase';
 import MemberDetailScreen from '../../screens/community/memberPassport';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
@@ -703,6 +707,29 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           )
+        }}
+      />
+
+      <DrawerStack.Screen
+        name="CommunityAlgoliaScreen"
+        component={CommunityScreens.AlgoliaScreen}
+        options={{
+          ...TransitionPresets.ModalTransition,
+          headerShown: true,
+          headerTitle: () => (
+            <Image
+              source={require('../../../assets/images/logo.png')}
+              style={{
+                width: RFValue(50),
+                height: RFValue(50),
+                resizeMode: 'contain'
+              }}
+            />
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 }
         }}
       />
     </DrawerStack.Navigator>
