@@ -57,7 +57,7 @@ const Highlight = (props: HighlightProp) => {
           <Fragment>
             {hit.name ? (
               <TouchableRipple
-                key={index}
+                key={hit.id}
                 style={{
                   flex: 1,
                   width: '100%',
@@ -107,7 +107,7 @@ const Highlight = (props: HighlightProp) => {
               </TouchableRipple>
             ) : (
               <TouchableRipple
-                key={index}
+                key={hit.id}
                 style={{
                   flex: 1,
                   width: '100%',
