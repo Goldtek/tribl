@@ -842,6 +842,16 @@ export const GET_ALL_IDENTITIES = gql`
   }
 `;
 
+//GET ALL INTEREST
+export const GET_ALL_INTEREST = gql`
+  query Interest {
+    Interest {
+      id
+      name
+    }
+  }
+`;
+
 // GET USER PROFILE
 export const GET_USER_PASSPORT = gql`
   query myPassport {
