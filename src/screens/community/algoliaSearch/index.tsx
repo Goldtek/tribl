@@ -47,12 +47,12 @@ function SearchScreen(props: ModalProp) {
       onChangeText={(value) => refine(value)}
       placeholder={t(`community.chat.search`)}
       style={{
-        height: RFValue(40),
+        height: RFValue(50),
         fontFamily: fonts.WORK_SANS_REGULAR,
         fontSize: RFValue(fonts.LARGE_SIZE),
         color: colors.SECONDARY_TEXT,
         marginHorizontal: 15,
-        marginVertical: 15,
+        marginVertical: 10,
         elevation: 0,
         borderColor: colors.INACTIVE,
         borderRadius: 4,
