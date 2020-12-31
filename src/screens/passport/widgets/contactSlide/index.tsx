@@ -1,8 +1,7 @@
 import React, { useState, useCallback, Fragment, useEffect } from 'react';
-import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
+import { SimpleLineIcons } from '@expo/vector-icons';
 import {
   Button,
-  IconButton,
   Title,
   Paragraph,
   TextInput,
@@ -21,7 +20,7 @@ import { useQuery } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../utils/timesince';
 import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
 import IdentityModal from '../identityModal';
-import ContactSlideSkeleton from './skeleton';
+import InterestModal from '../interestModal';
 import Storage from '../../../../libs/storage';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 import { useNavigation } from '@react-navigation/native';
@@ -39,8 +38,6 @@ import {
   IdentityText,
   LocationContainer,
   Location,
-  CitizenshipContainer,
-  EditTextInput,
   AddIdentity,
   BioContainer
   // LinkAccountsContainer,
@@ -69,6 +66,8 @@ function contactSlide(props: ScreenProp) {
 
   const [isVisible, setIsVisible] = useState(false);
 
+  const [interestVisible, setInterestVisible] = useState(false);
+
   const [cache, setCache] = useState<PassportInterface | null>(null);
 
   const [state, setState] = useState<{
@@ -83,6 +82,8 @@ function contactSlide(props: ScreenProp) {
     selectedIdentity: string[];
     selectedId: string[];
     birthPlaceInput: string;
+    selectedInterest: string[];
+    selectedInterestId: string[];
   }>({
     date: '',
     firstName: '',
@@ -94,7 +95,9 @@ function contactSlide(props: ScreenProp) {
     showDatePicker: false,
     selectedIdentity: [],
     selectedId: [],
-    birthPlaceInput: ''
+    birthPlaceInput: '',
+    selectedInterest: [],
+    selectedInterestId: []
   });
 
   const currentLocation = userDetails?.currentLocation[0]?.country
@@ -186,6 +189,15 @@ function contactSlide(props: ScreenProp) {
     []
   );
 
+  const showInterestModal = useCallback(
+    (interest: boolean) => () => {
+      setInterestVisible(interest);
+
+      return true;
+    },
+    []
+  );
+
   const getIdentity = (childData: any, idData: any) => {
     setState({
       ...state,
@@ -194,7 +206,17 @@ function contactSlide(props: ScreenProp) {
     });
   };
 
+  const getInterest = (childData: any, idData: any) => {
+    setState({
+      ...state,
+      selectedInterest: childData,
+      selectedInterestId: idData
+    });
+  };
+
   const SelectedIdentities = Array.from(state.selectedIdentity.values());
+
+  const SelectedInterest = Array.from(state.selectedInterest.values());
 
   const { firstName, lastName, bio } = state;
 
@@ -551,32 +573,46 @@ function contactSlide(props: ScreenProp) {
               ))}
             </Fragment>
           )}
-          <TouchableRipple onPress={showIdentityModal(true)}>
-            <AddIdentity>+</AddIdentity>
-          </TouchableRipple>
+          {!click ? (
+            <TouchableRipple onPress={showIdentityModal(true)}>
+              <AddIdentity>+</AddIdentity>
+            </TouchableRipple>
+          ) : null}
         </Identities>
       </IdentityContainer>
 
-      {userDetails?.interest.length ? (
-        <InterestContainer>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase'
-            }}
-          >
-            {t(`signup.passportScreen.interest`)}
-          </Title>
-          <Identities>
-            {userDetails?.interest.map((interest: any) => (
-              <IdentityText key={interest.id}>{interest.name}</IdentityText>
-            ))}
-            <AddIdentity>+</AddIdentity>
-          </Identities>
-        </InterestContainer>
-      ) : null}
+      <InterestContainer>
+        <Title
+          style={{
+            fontFamily: fonts.WORK_SANS_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.PRIMARY_TEXT,
+            textTransform: 'uppercase'
+          }}
+        >
+          {t(`signup.passportScreen.interest`)}
+        </Title>
+        <Identities>
+          {SelectedInterest?.length ? (
+            <Fragment>
+              {SelectedInterest.map((interest) => (
+                <IdentityText key={interest}>{interest}</IdentityText>
+              ))}
+            </Fragment>
+          ) : (
+            <Fragment>
+              {userDetails?.interest.map((interest: any) => (
+                <IdentityText key={interest.id}>{interest.name}</IdentityText>
+              ))}
+            </Fragment>
+          )}
+          {!click ? (
+            <TouchableRipple onPress={showInterestModal(true)}>
+              <AddIdentity>+</AddIdentity>
+            </TouchableRipple>
+          ) : null}
+        </Identities>
+      </InterestContainer>
 
       {/* 
       <LinkAccountsContainer>
@@ -667,6 +703,11 @@ function contactSlide(props: ScreenProp) {
         isVisible={isVisible}
         closeIdentityModal={showIdentityModal(false)}
         identity={getIdentity}
+      />
+      <InterestModal
+        isVisible={interestVisible}
+        closeIdentityModal={showInterestModal(false)}
+        interest={getInterest}
       />
     </ContactContainer>
   );
