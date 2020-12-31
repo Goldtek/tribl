@@ -8,10 +8,10 @@ import {
   Configure
 } from 'react-instantsearch-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../../../theme';
-import { searchClient } from '../../../../../config';
-import AlgoliaList from '../../../../../components/algoliaList';
-import { PAGINATION_DEFAULT } from '../../../../../constants';
+import { useThemeContext } from '../../../theme';
+import { searchClient } from '../../../config';
+import AlgoliaList from '../../../components/algoliaList';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -67,13 +67,7 @@ function SearchScreen(props: ModalProp) {
   ]);
 
   return (
-    <Container
-      style={{
-        width: '100%',
-        backgroundColor: 'transparent',
-        justifyContent: 'center'
-      }}
-    >
+    <Container>
       <InstantSearch
         searchClient={searchClient}
         indexName={indexName}
