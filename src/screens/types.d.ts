@@ -71,6 +71,10 @@ export type RootStackParamList = {
   AddTags?: Object;
   CommunityAlgoliaScreen?: Object;
   ChannelMembersScreen?: Object;
+  ConnectionListScreen?: Object;
+  CommunityListScreen?: Object;
+  UserConnectionListScreen?: Object;
+  UserCommunityListScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -122,7 +126,11 @@ export type RootStackParamScreensList =
   | 'ViewAllTribes'
   | 'AddTags'
   | 'CommunityAlgoliaScreen'
-  | 'ChannelMembersScreen';
+  | 'ChannelMembersScreen'
+  | 'ConnectionListScreen'
+  | 'CommunityListScreen'
+  | 'UserCommunityListScreen'
+  | 'UserConnectionListScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
