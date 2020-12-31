@@ -22,6 +22,7 @@ import { useThemeContext } from '../../theme';
 import Screens from '../../screens/inbox';
 import Firechat from '../../firebase';
 import MemberDetailScreen from '../../screens/community/memberPassport';
+import CommunityDetailScreen from '../../screens/community/detail';
 import { DEVICE_OS } from '../../utils/device';
 
 const DrawerStack = createStackNavigator();
@@ -566,6 +567,28 @@ export default function DrawerStackNavigator() {
           headerTintColor: colors.PRIMARY,
           headerRightContainerStyle: { marginRight: 10 },
           headerLeftContainerStyle: { paddingLeft: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <DrawerStack.Screen
+        name="CommunityDetailScreen"
+        component={CommunityDetailScreen}
+        options={({ route }: any) => ({
+          headerShown: true,
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
+
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
