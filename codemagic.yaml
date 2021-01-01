@@ -126,7 +126,29 @@ workflows:
             - name: Set up keystore
               script: | 
                      echo "APP_VERSION_CODE=$APP_VERSION_CODE
-                     APP_VERSION_NAME=$APP_VERSION_NAME" > .env 
+                     APP_VERSION_NAME=$APP_VERSION_NAME
+                     TRIBL_SERVER_BASE_URI=$TRIBL_SERVER_BASE_URI
+                     TRIBL_WSS_SERVER_BASE_URI=$TRIBL_WSS_SERVER_BASE_URI 
+                     GOOGLE_PLACES_API=$GOOGLE_PLACES_API
+                     CLOUDINARY_NAME=$CLOUDINARY_NAME
+                     CLOUDINARY_PRESET=$CLOUDINARY_PRESET
+                     SENTRY_KEY=$SENTRY_KEY
+                     ALGOLIA_PASSPORT_INDEX_NAME=$ALGOLIA_PASSPORT_INDEX_NAME
+                     ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME=$ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME
+                     ALGOLIA_PASSPORT_LOCATION_INDEX_NAME=$ALGOLIA_PASSPORT_LOCATION_INDEX_NAME
+                     FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID
+                     FIREBASE_MEASUREMENT_ID=$FIREBASE_MEASUREMENT_ID
+                     FIREBASE_MESSAGING_SENDER_ID=$FIREBASE_MESSAGING_SENDER_ID
+                     FIREBASE_STORAGE_BUCKET=$FIREBASE_STORAGE_BUCKET
+                     FIREBASE_AUTH_DOMAIN=$FIREBASE_AUTH_DOMAIN
+                     FIREBASE_API_KEY=$FIREBASE_API_KEY
+                     FIREBASE_APP_ID=$FIREBASE_APP_ID
+                     FIREBASE_DATA_BASEURL=$FIREBASE_DATA_BASEURL
+                     TRIBL_UX_CAM=$TRIBL_UX_CAM
+                     TRIBL_MIX_PANEL=$TRIBL_MIX_PANEL
+                     TRIBL_ALGOLIA_APP_ID=$TRIBL_ALGOLIA_APP_ID
+                     TRIBL_ALGOLIA_API_KEY=$TRIBL_ALGOLIA_API_KEY" > .env
+                     cat .env 
                      cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
                      storePassword=$CM_KEYSTORE_PASSWORD
                      keyPassword=$CM_KEY_ALIAS_PASSWORD
