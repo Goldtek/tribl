@@ -187,9 +187,9 @@ export default function ConnectionRequestScreen(
                 You don't have any connection request.
               </Text>
             }
-            onEndReachedThreshold={0.5}
-            onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
-            onMomentumScrollEnd={handleEndReach}
+            // onEndReachedThreshold={0.5}
+            // onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
+            // onMomentumScrollEnd={handleEndReach}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.id}
           />

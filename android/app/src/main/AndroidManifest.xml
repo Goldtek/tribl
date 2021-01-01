@@ -39,6 +39,8 @@
     android:allowBackup="false"
     android:theme="@style/AppTheme"
     android:usesCleartextTraffic="true"
+    android:hardwareAccelerated="false"
+    android:largeHeap="true"
   >
     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@josemak25/Tribl" />
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="38.0.0" />
