@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
@@ -30,6 +31,7 @@ function NearbyModal(props: ModalProp) {
   const { isVisible, closeNearbyModal } = props;
 
   const { colors, fonts } = useThemeContext();
+  const { bottom } = useSafeAreaInsets();
   const { t } = useTranslation();
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
@@ -72,7 +74,6 @@ function NearbyModal(props: ModalProp) {
   return (
     <Portal>
       <StatusBar translucent animated style="light" />
-
       <Modalize
         ref={modalizeRef}
         onClose={closeNearbyModal}
@@ -103,7 +104,8 @@ function NearbyModal(props: ModalProp) {
           ListEmptyComponent: <Skeleton />,
           showsVerticalScrollIndicator: false,
           keyExtractor: ({ id }: PassportInterface) => id,
-          contentContainerStyle: { paddingBottom: 20 }
+          style: { flex: 1 },
+          contentContainerStyle: { flexGrow: 1, paddingBottom: 120 + bottom }
         }}
       />
     </Portal>
