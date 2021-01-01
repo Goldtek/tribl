@@ -10,12 +10,9 @@ import { Share, ScrollView, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { useTranslation } from 'react-i18next';
-import {
-  Title,
-  Paragraph,
-  Button,
-  ActivityIndicator
-} from 'react-native-paper';
+// @ts-ignore
+import { SingleImage } from 'react-native-zoom-lightbox';
+import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 // import { FontAwesome } from '@expo/vector-icons';
@@ -52,6 +49,7 @@ import cloudinaryUpload, {
 } from '../../utils/cloudinaryUpload';
 import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 import {
   tagScreenName,
   addUserIdentity,
@@ -65,7 +63,6 @@ import {
   HeaderContainer,
   ImageContainer,
   ImageTextContainer,
-  Connection,
   ConnectionCover,
   Cover
   // ImageIconContainer,
@@ -80,6 +77,7 @@ interface ScreenProp extends NavigationInterface {
 interface StateProps extends PassportInterface {
   date: string;
   selectedId: string[];
+  selectedInterestId: string[];
 }
 
 type StateType = {
@@ -94,8 +92,9 @@ export default function PassportScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { top: paddingTop } = useSafeAreaInsets();
   const { t } = useTranslation();
+  const navigation = useNavigation();
 
-  const { data: userData, error, refetch } = useQuery<MyPassportInterface>(
+  const { data: userData, refetch } = useQuery<MyPassportInterface>(
     GET_USER_PASSPORT
   );
 
@@ -162,8 +161,6 @@ export default function PassportScreen(props: ScreenProp) {
       logEvent('mixpanel', { 'mixpanel-user-ID': user });
     }
   }, [userDetails]);
-
-  const [imageLoad, setImageLoad] = useState(true);
 
   const [update, setUpdate] = useState(true);
 
@@ -263,7 +260,9 @@ export default function PassportScreen(props: ScreenProp) {
   const month = dob?.length ? parseInt(dob[0]) : dateOfBirth?.month;
   const year = dob?.length ? parseInt(dob[2]) : dateOfBirth?.year;
   const identityID = state?.details?.selectedId || [];
+  const interestID = state?.details?.selectedInterestId || [];
   const SelectedIdentitiesID = Array.from(identityID?.values());
+  const SelectedInterestID = Array.from(interestID?.values());
 
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
@@ -283,6 +282,15 @@ export default function PassportScreen(props: ScreenProp) {
       });
     }
   }, [SelectedIdentitiesID?.length]);
+
+  useEffect(() => {
+    if (SelectedInterestID?.length > 0) {
+      setState({
+        ...state,
+        interest: SelectedInterestID
+      });
+    }
+  }, [SelectedInterestID?.length]);
 
   useEffect(() => {
     if (firstName?.length || lastName?.length || bio?.length) {
@@ -321,7 +329,7 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     setState({ ...state, identity: identity, interest: interest });
-  }, [identity?.length]);
+  }, [identity?.length, interest?.length]);
 
   useEffect(() => {
     handleLocationPermission();
@@ -595,28 +603,15 @@ export default function PassportScreen(props: ScreenProp) {
             </Cover>
             <ImageContainer>
               {update ? (
-                <FastImage
-                  source={{
-                    uri: avatar.uri || cache?.avatar,
-                    priority: FastImage.priority.high
-                  }}
-                  resizeMode={FastImage.resizeMode.cover}
-                  onLoadEnd={() => setImageLoad(false)}
+                <SingleImage
+                  uri={avatar.uri || cache?.avatar}
                   style={{
                     width: RFValue(120),
                     height: RFValue(120),
                     justifyContent: 'center',
                     borderRadius: 4
                   }}
-                >
-                  {imageLoad && (
-                    <ActivityIndicator
-                      animating={true}
-                      size={RFValue(50)}
-                      color={colors.WHITE}
-                    />
-                  )}
-                </FastImage>
+                />
               ) : (
                 <TouchableHighlight
                   onPress={handleAvatar}
@@ -627,8 +622,7 @@ export default function PassportScreen(props: ScreenProp) {
                       uri: avatar.uri || cache?.avatar,
                       priority: FastImage.priority.high
                     }}
-                    resizeMode={FastImage.resizeMode.cover}
-                    onLoadEnd={() => setImageLoad(false)}
+                    resizeMode={FastImage.resizeMode.stretch}
                     style={{
                       width: RFValue(120),
                       height: RFValue(120),
@@ -692,52 +686,63 @@ export default function PassportScreen(props: ScreenProp) {
                   </Paragraph>
                 )}
                 <ConnectionCover>
-                  <Connection>
-                    <Paragraph
-                      style={{
-                        color: colors.WHITE,
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        fontSize: fonts.LARGE_SIZE + 1,
-                        lineHeight: 20
-                      }}
-                    >
-                      {userDetails?.connectionCount || cache?.connectionCount}
-                    </Paragraph>
-                    <Paragraph
-                      style={{
-                        fontSize: fonts.MEDIUM_SIZE - 1,
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        color: colors.WHITE,
-                        textTransform: 'uppercase',
-                        lineHeight: 13
-                      }}
-                    >
-                      {t(`community.memberPassport.connection`)}
-                    </Paragraph>
-                  </Connection>
-                  <Connection>
-                    <Paragraph
-                      style={{
-                        color: colors.WHITE,
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        fontSize: fonts.LARGE_SIZE + 1,
-                        lineHeight: 20
-                      }}
-                    >
-                      {userDetails?.communityCount || cache?.communityCount}
-                    </Paragraph>
-                    <Paragraph
-                      style={{
-                        fontSize: fonts.MEDIUM_SIZE - 1,
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        color: colors.WHITE,
-                        textTransform: 'uppercase',
-                        lineHeight: 13
-                      }}
-                    >
-                      {t(`community.memberPassport.community`)}
-                    </Paragraph>
-                  </Connection>
+                  <TouchableRipple
+                    style={{ alignItems: 'center' }}
+                    onPress={() => navigation.navigate('MyConnections')}
+                  >
+                    <Fragment>
+                      <Paragraph
+                        style={{
+                          color: colors.WHITE,
+                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                          fontSize: fonts.LARGE_SIZE + 1,
+                          lineHeight: 20
+                        }}
+                      >
+                        {userDetails?.connectionCount || cache?.connectionCount}
+                      </Paragraph>
+
+                      <Paragraph
+                        style={{
+                          fontSize: fonts.MEDIUM_SIZE - 1,
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.WHITE,
+                          textTransform: 'uppercase',
+                          lineHeight: 13
+                        }}
+                      >
+                        {t(`community.memberPassport.connection`)}
+                      </Paragraph>
+                    </Fragment>
+                  </TouchableRipple>
+                  <TouchableRipple
+                    style={{ alignItems: 'center' }}
+                    onPress={() => navigation.navigate('CommunityListScreen')}
+                  >
+                    <Fragment>
+                      <Paragraph
+                        style={{
+                          color: colors.WHITE,
+                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                          fontSize: fonts.LARGE_SIZE + 1,
+                          lineHeight: 20
+                        }}
+                      >
+                        {userDetails?.communityCount || cache?.communityCount}
+                      </Paragraph>
+                      <Paragraph
+                        style={{
+                          fontSize: fonts.MEDIUM_SIZE - 1,
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.WHITE,
+                          textTransform: 'uppercase',
+                          lineHeight: 13
+                        }}
+                      >
+                        {t(`community.memberPassport.community`)}
+                      </Paragraph>
+                    </Fragment>
+                  </TouchableRipple>
                 </ConnectionCover>
 
                 {/* <ImageIconContainer>

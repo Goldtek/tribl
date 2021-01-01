@@ -29,6 +29,7 @@ export const IdentityText = styled.Text`
 
 export const InterestContainer = styled.View`
   margin-top: ${RFValue(20)}px;
+  margin-bottom: ${RFValue(30)}px;
 `;
 
 export const LocationContainer = styled.View``;

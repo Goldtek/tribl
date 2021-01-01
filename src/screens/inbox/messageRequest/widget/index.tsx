@@ -112,15 +112,15 @@ function RequestChatCard(props: RequestChatCard) {
               />
             </SkeletonPlaceholder>
           )}
-          <Text
+          {/* <Text
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
               fontSize: RFValue(fonts.MEDIUM_SIZE - 2)
             }}
           >
-            {formatMessageTime(lastMessage.createdAt)}
-          </Text>
+            `${sender.currentLocation.city} ${sender.currentLocation.state}`
+          </Text> */}
         </NameContainer>
 
         <TimeStamp>
