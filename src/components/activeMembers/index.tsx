@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
@@ -31,6 +32,7 @@ function ActiveModal(props: ModalProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const { bottom } = useSafeAreaInsets();
 
   const { data: recommendedData } = useQuery<
     RecommendedMembersRequestInterface
@@ -102,7 +104,7 @@ function ActiveModal(props: ModalProp) {
           ListEmptyComponent: <Skeleton />,
           showsVerticalScrollIndicator: false,
           keyExtractor: ({ id }: PassportInterface) => id,
-          contentContainerStyle: { paddingBottom: 20 }
+          contentContainerStyle: { flexGrow: 1, paddingBottom: 120 + bottom }
         }}
       />
     </Portal>
