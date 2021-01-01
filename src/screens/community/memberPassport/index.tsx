@@ -561,9 +561,9 @@ export default function PassportDetail(props: MemberDetailProps) {
               <TouchableHighlight
                 underlayColor={colors.TRANSPARENT}
                 onPress={() => {
-                  navigation.navigate('UserCommunityListScreen', {
+                  navigation.navigate('CommunityListScreen', {
                     details: data?.participantOf,
-                    title: `${data?.firstName} ${data?.lastName}`
+                    title: `${data?.firstName} ${data?.lastName} Tribes`
                   });
                 }}
               >
@@ -597,10 +597,10 @@ export default function PassportDetail(props: MemberDetailProps) {
               <TouchableHighlight
                 underlayColor={colors.TRANSPARENT}
                 onPress={() => {
-                  navigation.navigate('UserConnectionListScreen', {
-                    details: data?.myConnections,
-                    title: `${data?.firstName} ${data?.lastName}`
-                  });
+                  // navigation.navigate('UserConnectionListScreen', {
+                  //   details: data?.myConnections,
+                  //   title: `${data?.firstName} ${data?.lastName}`
+                  // });
                 }}
               >
                 <Title
