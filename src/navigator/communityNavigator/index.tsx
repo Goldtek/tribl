@@ -13,17 +13,12 @@ import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import GradientButton from '../../components/gradientButton';
 import { useQuery } from '@apollo/react-hooks';
-import {
-  GET_COMMUNITY_SEARCH_INDEX,
-  GET_CONNECTION_NOTIFICATION_BADGE
-} from '../../graphql/cache/query';
+import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { DEVICE_OS } from '../../utils/device';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
-import ConnectionListScren from '../../screens/community/memberPassport/widget/connectionListScreen';
-import CommunityListScren from '../../screens/community/memberPassport/widget/communityListScreen';
 
 const CommunityStack = createStackNavigator();
 
@@ -35,7 +30,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const { t } = useTranslation();
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
-  const { data } = useQuery(GET_COMMUNITY_SEARCH_INDEX);
   const { top: safeAreaTop } = useSafeAreaInsets();
 
   const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(

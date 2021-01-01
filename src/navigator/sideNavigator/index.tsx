@@ -677,17 +677,17 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="CommunityListScreen"
         component={CommunityListScreen}
-        options={{
+        options={({ route }: any) => ({
+          ...TransitionPresets.ModalTransition,
           headerShown: true,
           headerTitleAlign: 'left',
-          headerTitle: t(`community.memberPassport.myTribes`),
+          headerTitle: route.params.title,
           headerBackTitleVisible: false,
           headerStyle: { height: RFValue(90) },
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
+            fontFamily: fonts.WORK_SANS_BOLD
           },
           headerLeft: () => (
             <TouchableRipple
@@ -707,7 +707,7 @@ export default function DrawerStackNavigator() {
               />
             </TouchableRipple>
           )
-        }}
+        })}
       />
 
       <DrawerStack.Screen
