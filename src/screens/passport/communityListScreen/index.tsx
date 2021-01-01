@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { FlatList } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationInterface } from '../../types';
@@ -21,21 +21,30 @@ import { PAGINATION_DEFAULT } from '../../../constants';
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MyCommunityScreenProp extends NavigationInterface {}
+interface MyCommunityScreenProp extends NavigationInterface {
+  route: { params: { details: CommunityInterface[]; userTribe: boolean } };
+}
 
 export default function CommunityListScreen(props: MyCommunityScreenProp) {
+  const params = props.route?.params;
+
   const { colors, fonts } = useThemeContext();
+
+  const [fetchMyCommunities, { data, refetch, fetchMore }] = useLazyQuery<
+    MyCommunitiesRequestInterface
+  >(GET_MY_COMMUNITIES, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT * 2 }
+  });
 
   useEffect(() => {
     tagScreenName('UserCommunityListScreen');
   }, []);
 
-  const { data, refetch, fetchMore } = useQuery<MyCommunitiesRequestInterface>(
-    GET_MY_COMMUNITIES,
-    {
-      variables: { offset: 0, first: PAGINATION_DEFAULT }
+  useEffect(() => {
+    if (params.userTribe) {
+      fetchMyCommunities();
     }
-  );
+  }, [params.userTribe]);
 
   const [search, setSearch] = useState({ searchTerm: '' });
   const [state, setState] = useState({
@@ -43,13 +52,11 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
     callOnScrollEnd: false
   });
 
-  const myCommunities = data?.myCommunities;
+  const myCommunities = params.userTribe ? data?.myCommunities : params.details;
 
   const filterCommunities = myCommunities?.slice().sort(function (a, b) {
     if (a.name < b.name) return -1;
-
     if (a.name > b.name) return 1;
-
     return 0;
   });
 
@@ -144,7 +151,9 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
                 textAlign: 'center'
               }}
             >
-              You currently don't have any connection
+              {params.userTribe
+                ? `You currently don't have any tribes`
+                : `No tribes found`}
             </Text>
           }
           showsVerticalScrollIndicator={false}

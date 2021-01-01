@@ -717,7 +717,12 @@ export default function PassportScreen(props: ScreenProp) {
                   </TouchableRipple>
                   <TouchableRipple
                     style={{ alignItems: 'center' }}
-                    onPress={() => navigation.navigate('CommunityListScreen')}
+                    onPress={() => {
+                      navigation.navigate('CommunityListScreen', {
+                        userTribe: true,
+                        title: t(`community.memberPassport.myTribes`)
+                      });
+                    }}
                   >
                     <Fragment>
                       <Paragraph
