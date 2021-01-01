@@ -10,13 +10,9 @@ import { Share, ScrollView, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { useTranslation } from 'react-i18next';
-import {
-  Title,
-  Paragraph,
-  Button,
-  ActivityIndicator,
-  TouchableRipple
-} from 'react-native-paper';
+// @ts-ignore
+import { SingleImage } from 'react-native-zoom-lightbox';
+import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 // import { FontAwesome } from '@expo/vector-icons';
@@ -53,6 +49,7 @@ import cloudinaryUpload, {
 } from '../../utils/cloudinaryUpload';
 import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 import {
   tagScreenName,
   addUserIdentity,
@@ -60,20 +57,17 @@ import {
   hideSensitiveView
 } from '../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../constants';
-import ViewPassportAvatar from './widgets/viewPassort';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   HeaderContainer,
   ImageContainer,
   ImageTextContainer,
-  Connection,
   ConnectionCover,
   Cover
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
-import { useNavigation } from '@react-navigation/native';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -100,7 +94,7 @@ export default function PassportScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { data: userData, error, refetch } = useQuery<MyPassportInterface>(
+  const { data: userData, refetch } = useQuery<MyPassportInterface>(
     GET_USER_PASSPORT
   );
 
@@ -167,8 +161,6 @@ export default function PassportScreen(props: ScreenProp) {
       logEvent('mixpanel', { 'mixpanel-user-ID': user });
     }
   }, [userDetails]);
-
-  const [imageLoad, setImageLoad] = useState(true);
 
   const [update, setUpdate] = useState(true);
 
@@ -549,12 +541,6 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  const [viewPassport, setViewPassport] = useState(false);
-
-  const handlePassportAvatar = () => {
-    setViewPassport(!viewPassport);
-  };
-
   return (
     <SafeAreaView
       style={{
@@ -617,33 +603,15 @@ export default function PassportScreen(props: ScreenProp) {
             </Cover>
             <ImageContainer>
               {update ? (
-                <TouchableHighlight
-                  underlayColor={colors.TRANSPARENT}
-                  onPress={handlePassportAvatar}
-                >
-                  <FastImage
-                    source={{
-                      uri: avatar.uri || cache?.avatar,
-                      priority: FastImage.priority.high
-                    }}
-                    resizeMode={FastImage.resizeMode.cover}
-                    onLoadEnd={() => setImageLoad(false)}
-                    style={{
-                      width: RFValue(120),
-                      height: RFValue(120),
-                      justifyContent: 'center',
-                      borderRadius: 4
-                    }}
-                  >
-                    {imageLoad && (
-                      <ActivityIndicator
-                        animating={true}
-                        size={RFValue(50)}
-                        color={colors.WHITE}
-                      />
-                    )}
-                  </FastImage>
-                </TouchableHighlight>
+                <SingleImage
+                  uri={avatar.uri || cache?.avatar}
+                  style={{
+                    width: RFValue(120),
+                    height: RFValue(120),
+                    justifyContent: 'center',
+                    borderRadius: 4
+                  }}
+                />
               ) : (
                 <TouchableHighlight
                   onPress={handleAvatar}
@@ -654,8 +622,7 @@ export default function PassportScreen(props: ScreenProp) {
                       uri: avatar.uri || cache?.avatar,
                       priority: FastImage.priority.high
                     }}
-                    resizeMode={FastImage.resizeMode.cover}
-                    onLoadEnd={() => setImageLoad(false)}
+                    resizeMode={FastImage.resizeMode.stretch}
                     style={{
                       width: RFValue(120),
                       height: RFValue(120),
@@ -720,40 +687,39 @@ export default function PassportScreen(props: ScreenProp) {
                 )}
                 <ConnectionCover>
                   <TouchableRipple
-                    onPress={() => navigation.navigate('ConnectionListScreen')}
+                    style={{ alignItems: 'center' }}
+                    onPress={() => navigation.navigate('MyConnections')}
                   >
-                    <Connection>
-                      <Fragment>
-                        <Paragraph
-                          style={{
-                            color: colors.WHITE,
-                            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                            fontSize: fonts.LARGE_SIZE + 1,
-                            lineHeight: 20
-                          }}
-                        >
-                          {userDetails?.connectionCount ||
-                            cache?.connectionCount}
-                        </Paragraph>
+                    <Fragment>
+                      <Paragraph
+                        style={{
+                          color: colors.WHITE,
+                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                          fontSize: fonts.LARGE_SIZE + 1,
+                          lineHeight: 20
+                        }}
+                      >
+                        {userDetails?.connectionCount || cache?.connectionCount}
+                      </Paragraph>
 
-                        <Paragraph
-                          style={{
-                            fontSize: fonts.MEDIUM_SIZE - 1,
-                            fontFamily: fonts.WORK_SANS_REGULAR,
-                            color: colors.WHITE,
-                            textTransform: 'uppercase',
-                            lineHeight: 13
-                          }}
-                        >
-                          {t(`community.memberPassport.connection`)}
-                        </Paragraph>
-                      </Fragment>
-                    </Connection>
+                      <Paragraph
+                        style={{
+                          fontSize: fonts.MEDIUM_SIZE - 1,
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.WHITE,
+                          textTransform: 'uppercase',
+                          lineHeight: 13
+                        }}
+                      >
+                        {t(`community.memberPassport.connection`)}
+                      </Paragraph>
+                    </Fragment>
                   </TouchableRipple>
                   <TouchableRipple
+                    style={{ alignItems: 'center' }}
                     onPress={() => navigation.navigate('CommunityListScreen')}
                   >
-                    <Connection>
+                    <Fragment>
                       <Paragraph
                         style={{
                           color: colors.WHITE,
@@ -775,7 +741,7 @@ export default function PassportScreen(props: ScreenProp) {
                       >
                         {t(`community.memberPassport.community`)}
                       </Paragraph>
-                    </Connection>
+                    </Fragment>
                   </TouchableRipple>
                 </ConnectionCover>
 
@@ -837,13 +803,6 @@ export default function PassportScreen(props: ScreenProp) {
       </ScrollView>
 
       {OTAUpdate ? <CheckAppUpdates cancelUpdate={cancelUpdate} /> : null}
-
-      {viewPassport ? (
-        <ViewPassportAvatar
-          onPress={handlePassportAvatar}
-          avatar={avatar.uri || cache?.avatar}
-        />
-      ) : null}
     </SafeAreaView>
   );
 }
