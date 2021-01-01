@@ -41,10 +41,6 @@ export const ConnectionCover = styled.View`
   margin-right: ${RFValue(15)}px;
 `;
 
-export const Connection = styled.View`
-  align-items: center;
-`;
-
 export const Cover = styled.View`
   flex-direction: row;
   justify-content: space-between;
