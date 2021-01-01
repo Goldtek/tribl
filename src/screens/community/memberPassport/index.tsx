@@ -6,7 +6,8 @@ import { ScrollView, FlatList } from 'react-native';
 import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import FastImage from 'react-native-fast-image';
+// @ts-ignore
+import { SingleImage } from 'react-native-zoom-lightbox';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
@@ -18,12 +19,12 @@ import MyCommunity from './widget/tribes';
 import MyConnections from './widget/connections';
 import { NavigationInterface } from '../../types';
 import { SinglePassportRequestInterface } from '../../../graphql/types';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 import {
   tagScreenName,
   logEvent,
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
-import ViewPassportAvatar from './widget/viewPassort';
 
 import {
   ContactContainer,
@@ -39,7 +40,6 @@ import {
   ButtonCover,
   Cover
 } from './styles';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 
 interface MemberDetailProps extends NavigationInterface {
   route: { params: { details: PassportInterface } };
@@ -49,8 +49,6 @@ export default function PassportDetail(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
-
-  const [viewPassport, setViewPassport] = useState(false);
 
   const [state, setState] = useState({ loading: false, pending: false });
 
@@ -154,10 +152,6 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const [displayInterest, setDisplayInterest] = useState(false);
 
-  const handlePassportAvatar = () => {
-    setViewPassport(!viewPassport);
-  };
-
   return (
     <Fragment>
       <ScrollView
@@ -172,23 +166,14 @@ export default function PassportDetail(props: MemberDetailProps) {
       >
         <ContactContainer>
           <Header>
-            <TouchableHighlight
-              onPress={handlePassportAvatar}
-              underlayColor={colors.TRANSPARENT}
-            >
-              <FastImage
-                resizeMode={FastImage.resizeMode.stretch}
-                source={{
-                  uri: data.avatar,
-                  priority: FastImage.priority.high
-                }}
-                style={{
-                  width: RFValue(100),
-                  height: RFValue(80),
-                  borderRadius: 4
-                }}
-              />
-            </TouchableHighlight>
+            <SingleImage
+              uri={data.avatar}
+              style={{
+                width: RFValue(100),
+                height: RFValue(80),
+                borderRadius: 4
+              }}
+            />
             <ConnectionCover>
               <Connection>
                 <Paragraph
@@ -646,12 +631,6 @@ export default function PassportDetail(props: MemberDetailProps) {
           ) : null}
         </ContactContainer>
       </ScrollView>
-      {viewPassport ? (
-        <ViewPassportAvatar
-          onPress={handlePassportAvatar}
-          avatar={data.avatar}
-        />
-      ) : null}
     </Fragment>
   );
 }

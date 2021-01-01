@@ -3,41 +3,38 @@ import { ActivityIndicator, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { FlatList } from 'react-native';
-import { NavigationInterface } from '../../../types';
+import { StatusBar } from 'expo-status-bar';
+import { NavigationInterface } from '../../types';
 import SearchInput, { createFilter } from 'react-native-search-filter';
-import { useThemeContext } from '../../../../theme';
-import Connection from './widget';
-import { GET_MY_CONNECTIONS } from '../../../../graphql/server/query';
-import Skeleton from './widget/myConnectionSkeleton';
+import { useThemeContext } from '../../../theme';
+import Community from './widget';
+import { GET_MY_COMMUNITIES } from '../../../graphql/server/query';
+import Skeleton from './widget/myCommunitySkeleton';
 import {
-  MyConnectionsInterface,
-  PassportInterface,
-  ShowConnectionNotificationBadge
-} from '../../../../graphql/types';
-import { tagScreenName } from '../../../../utils/uxcamHelper';
-import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../../../graphql/cache/query';
-import { PAGINATION_DEFAULT } from '../../../../constants';
+  MyCommunitiesRequestInterface,
+  CommunityInterface
+} from '../../../graphql/types';
+import { tagScreenName } from '../../../utils/uxcamHelper';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MyConnectionScreenProp extends NavigationInterface {}
+interface MyCommunityScreenProp extends NavigationInterface {}
 
-export default function ProfileScreen(props: MyConnectionScreenProp) {
+export default function CommunityListScreen(props: MyCommunityScreenProp) {
   const { colors, fonts } = useThemeContext();
 
   useEffect(() => {
-    tagScreenName('UserConnectionListScreen');
+    tagScreenName('UserCommunityListScreen');
   }, []);
 
-  const { data, refetch, fetchMore } = useQuery<MyConnectionsInterface>(
-    GET_MY_CONNECTIONS,
-    { variables: { offset: 0, first: PAGINATION_DEFAULT } }
-  );
-
-  const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
-    GET_CONNECTION_NOTIFICATION_BADGE
+  const { data, refetch, fetchMore } = useQuery<MyCommunitiesRequestInterface>(
+    GET_MY_COMMUNITIES,
+    {
+      variables: { offset: 0, first: PAGINATION_DEFAULT }
+    }
   );
 
   const [search, setSearch] = useState({ searchTerm: '' });
@@ -46,12 +43,12 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     callOnScrollEnd: false
   });
 
-  const myConnection = data?.myConnections;
+  const myCommunities = data?.myCommunities;
 
-  const filterConnections = myConnection?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
+  const filterCommunities = myCommunities?.slice().sort(function (a, b) {
+    if (a.name < b.name) return -1;
 
-    if (a.firstName > b.firstName) return 1;
+    if (a.name > b.name) return 1;
 
     return 0;
   });
@@ -76,7 +73,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
     fetchMore({
       variables: {
-        offset: data?.myConnections.length,
+        offset: data?.myCommunities.length,
         first: PAGINATION_DEFAULT
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -85,7 +82,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
         if (!fetchMoreResult) return prev;
 
         return Object.assign({}, prev, {
-          myConnections: [...fetchMoreResult.myConnections]
+          myConnections: [...fetchMoreResult.myCommunities]
         });
       }
     });
@@ -93,18 +90,19 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
-  const KeysToFilter = ['firstName', 'lastName'];
+  const keysToFilter = ['name'];
 
   const filteredWords =
-    filterConnections &&
-    filterConnections?.filter(createFilter(search.searchTerm, KeysToFilter));
+    filterCommunities &&
+    filterCommunities?.filter(createFilter(search.searchTerm, keysToFilter));
 
-  const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <Connection key={item.id} {...item} />
+  const _renderItem = ({ item }: { item: CommunityInterface }) => (
+    <Community key={item.id} {...item} />
   );
 
   return (
     <Container>
+      <StatusBar style="dark" />
       <SearchInput
         onChangeText={searchUpdated}
         placeholder="Search"
@@ -118,19 +116,20 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           borderColor: colors.INACTIVE,
           borderRadius: 4,
           paddingHorizontal: 10,
-          marginHorizontal: 15
+          marginHorizontal: 10,
+          marginVertical: 10
         }}
       />
 
-      {myConnection ? (
+      {myCommunities ? (
         <FlatList
           data={filteredWords}
           refreshing={state.refreshing}
           onRefresh={onRefresh}
-          ListFooterComponent={_renderFooter}
           onEndReachedThreshold={0.5}
-          onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
-          onMomentumScrollEnd={handleEndReach}
+          // ListFooterComponent={_renderFooter}
+          // onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
+          // onMomentumScrollEnd={handleEndReach}
           contentContainerStyle={{
             flexGrow: 1,
             marginTop: RFValue(10),
