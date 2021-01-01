@@ -10,8 +10,15 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import hexToRGB from '../../utils/hexToRGB';
 import { useThemeContext } from '../../theme';
 import Highlight from '../algoliaHighlight';
+import { PassportInterface } from '../../graphql/types';
 
-function AlgoliaList(props: any) {
+type AlgoliaListProps = {
+  hits: PassportInterface[];
+  hasMore: boolean;
+  refineNext: () => void;
+};
+
+function AlgoliaList(props: AlgoliaListProps) {
   const { colors, fonts } = useThemeContext();
   const { hits, hasMore, refineNext } = props;
 
@@ -28,7 +35,9 @@ function AlgoliaList(props: any) {
   );
 
   const _renderItem = useMemo(
-    () => ({ item }: any) => <Highlight attribute="id" hit={item} />,
+    () => ({ item }: { item: PassportInterface }) => (
+      <Highlight attribute="id" hit={item} key={item.id} />
+    ),
     []
   );
 
@@ -39,7 +48,7 @@ function AlgoliaList(props: any) {
       ) : searchState && !searchState.query ? (
         <Fragment>
           {[...Array(5)].map((_, index) => (
-            <SkeletonPlaceholder key={`skeleton${index}`}>
+            <SkeletonPlaceholder key={`skeleton${index.toString()}`}>
               <SkeletonPlaceholder.Item
                 flexDirection="row"
                 alignItems="center"
@@ -87,7 +96,7 @@ function AlgoliaList(props: any) {
       <FlatList
         data={hits}
         renderItem={_renderItem}
-        keyExtractor={(item) => item.objectID}
+        keyExtractor={(item) => item.id}
         ItemSeparatorComponent={_separator}
         showsVerticalScrollIndicator={false}
         onEndReachedThreshold={0.5}

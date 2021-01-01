@@ -188,7 +188,11 @@ export default function DirectMessageTab(props: ScreenProp) {
       <FlatList
         bounces={false}
         data={chats.messages}
-        contentContainerStyle={{ flexGrow: 1, paddingVertical: RFValue(20) }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 20,
+          paddingVertical: RFValue(20)
+        }}
         ref={hideSensitiveView}
         ListEmptyComponent={renderEmptyList}
         showsVerticalScrollIndicator={false}

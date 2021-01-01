@@ -8,10 +8,10 @@ import {
   Configure
 } from 'react-instantsearch-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../../../theme';
-import { searchClient } from '../../../../../config';
-import AlgoliaList from '../../../../../components/algoliaList';
-import { PAGINATION_DEFAULT } from '../../../../../constants';
+import { useThemeContext } from '../../../theme';
+import { searchClient } from '../../../config';
+import AlgoliaList from '../../../components/algoliaList';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -47,12 +47,12 @@ function SearchScreen(props: ModalProp) {
       onChangeText={(value) => refine(value)}
       placeholder={t(`community.chat.search`)}
       style={{
-        height: RFValue(40),
+        height: RFValue(50),
         fontFamily: fonts.WORK_SANS_REGULAR,
         fontSize: RFValue(fonts.LARGE_SIZE),
         color: colors.SECONDARY_TEXT,
         marginHorizontal: 15,
-        marginVertical: 15,
+        marginVertical: 10,
         elevation: 0,
         borderColor: colors.INACTIVE,
         borderRadius: 4,
@@ -67,13 +67,7 @@ function SearchScreen(props: ModalProp) {
   ]);
 
   return (
-    <Container
-      style={{
-        width: '100%',
-        backgroundColor: 'transparent',
-        justifyContent: 'center'
-      }}
-    >
+    <Container>
       <InstantSearch
         searchClient={searchClient}
         indexName={indexName}
