@@ -22,6 +22,8 @@ import { useThemeContext } from '../../theme';
 import Screens from '../../screens/inbox';
 import Firechat from '../../firebase';
 import MemberDetailScreen from '../../screens/community/memberPassport';
+import CommunityListScreen from '../../screens/passport/communityListScreen';
+import CommunityDetailScreen from '../../screens/community/detail';
 import { DEVICE_OS } from '../../utils/device';
 
 const DrawerStack = createStackNavigator();
@@ -570,6 +572,28 @@ export default function DrawerStackNavigator() {
         })}
       />
       <DrawerStack.Screen
+        name="CommunityDetailScreen"
+        component={CommunityDetailScreen}
+        options={({ route }: any) => ({
+          headerShown: true,
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
+
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <DrawerStack.Screen
         name="NewMessageScreen"
         component={Screens.NewMessageScreen}
         options={{
@@ -625,6 +649,42 @@ export default function DrawerStackNavigator() {
           },
           headerTitle: 'channel members',
           headerTitleAlign: 'left',
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY}
+              />
+            </TouchableRipple>
+          )
+        }}
+      />
+
+      <DrawerStack.Screen
+        name="CommunityListScreen"
+        component={CommunityListScreen}
+        options={{
+          headerShown: true,
+          headerTitleAlign: 'left',
+          headerTitle: t(`community.memberPassport.myTribes`),
+          headerBackTitleVisible: false,
+          headerStyle: { height: RFValue(90) },
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
           headerLeft: () => (
             <TouchableRipple
               onPress={navigation.goBack}

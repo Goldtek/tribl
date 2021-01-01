@@ -114,7 +114,7 @@ function DirectChatCard(props: DirectChatProp) {
                 />
               </SkeletonPlaceholder>
             )}
-            <Text
+            {/* <Text
               numberOfLines={1}
               style={{
                 color: colors.SECONDARY_TEXT,
@@ -125,7 +125,7 @@ function DirectChatCard(props: DirectChatProp) {
               {lastMessage.text.length >= 30
                 ? `${lastMessage.text.substr(0, 30)}...`
                 : lastMessage.text}
-            </Text>
+            </Text> */}
           </Fragment>
         </NameContainer>
 

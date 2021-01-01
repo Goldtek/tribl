@@ -8,10 +8,10 @@ import {
   GooglePlaceDetail
 } from 'react-native-google-places-autocomplete';
 import { RFValue } from 'react-native-responsive-fontsize';
-import GradientButton from '../../../../components/gradientButton';
-import { useThemeContext } from '../../../../theme';
-import ENVIRONMENT_VARIABLES from '../../../../config';
-import { hideSensitiveView } from '../../../../utils/uxcamHelper';
+import GradientButton from '../../../components/gradientButton';
+import { useThemeContext } from '../../../theme';
+import ENVIRONMENT_VARIABLES from '../../../config';
+import { hideSensitiveView } from '../../../utils/uxcamHelper';
 
 function BirthplaceModal(props: any) {
   const { navigation } = props;

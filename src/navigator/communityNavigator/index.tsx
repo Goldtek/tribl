@@ -23,6 +23,8 @@ import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { DEVICE_OS } from '../../utils/device';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
+import ConnectionListScren from '../../screens/community/memberPassport/widget/connectionListScreen';
+import CommunityListScren from '../../screens/community/memberPassport/widget/communityListScreen';
 
 const CommunityStack = createStackNavigator();
 
@@ -386,6 +388,53 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 }
         }}
+      />
+      <CommunityStack.Screen
+        name="UserCommunityListScreen"
+        component={CommunityListScren}
+        options={({ route }) => ({
+          //@ts-ignore
+          headerTitle: `${route.params?.title}'s ${t(
+            `community.memberPassport.tribe`
+          )}`,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <CommunityStack.Screen
+        name="UserConnectionListScreen"
+        component={ConnectionListScren}
+        options={({ route }) => ({
+          //@ts-ignore
+          headerTitle: `${route.params?.title}'s ${t(
+            `community.sideNav.userConnection`
+          )}`,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
+
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
       />
     </CommunityStack.Navigator>
   );
