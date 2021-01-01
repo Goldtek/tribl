@@ -36,7 +36,6 @@ export default function MyCommunity(props: MyConnectionProp) {
         width: RFValue(80),
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: RFValue(10),
         borderRadius: RFValue(40)
       }}
     >
