@@ -3,14 +3,14 @@ import { TouchableRipple, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
-import { useThemeContext } from '../../../../../theme';
+import { useThemeContext } from '../../../../theme';
 import {
   GET_COMMUNITY_MEMBERS,
   GET_NEARBY_MEMBERS_OF_A_COMMUNITY
-} from '../../../../../graphql/server/query';
+} from '../../../../graphql/server/query';
 import { useQuery } from '@apollo/react-hooks';
-import { CommunityInterface } from '../../../../../graphql/types';
-import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
+import { CommunityInterface } from '../../../../graphql/types';
+import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 
 import { NameContainer } from './styles';
 
@@ -20,7 +20,7 @@ export default function Community(props: CommunityProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { id, avatar, name, isMember, membersCount } = props;
+  const { id, avatar, name } = props;
 
   useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
@@ -33,27 +33,27 @@ export default function Community(props: CommunityProp) {
         height: RFValue(60),
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: RFValue(10),
-        paddingLeft: RFValue(10),
-        paddingRight: RFValue(10)
+        marginBottom: 10,
+        paddingLeft: 10,
+        paddingRight: 10
       }}
-      onPress={() =>
-        navigation.navigate('CommunityDetailScreen', {
+      onPress={() => {
+        return navigation.navigate('CommunityDetailScreen', {
           title: name,
           details: { ...props }
-        })
-      }
+        });
+      }}
     >
       <Fragment>
         <FastImage
-          resizeMode={FastImage.resizeMode.contain}
+          resizeMode={FastImage.resizeMode.stretch}
           source={{
             uri: avatar,
             priority: FastImage.priority.high
           }}
           style={{
-            width: RFValue(70),
-            height: RFValue(100),
+            width: RFValue(50),
+            height: RFValue(50),
             borderRadius: RFValue(4)
           }}
         />
