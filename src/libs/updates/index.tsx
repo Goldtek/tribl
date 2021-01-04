@@ -38,6 +38,8 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
     await Updates.reloadAsync();
   };
 
+  const updateInfo = t(`community.update.update_info`).split(';');
+
   return (
     <Container
       blurType="light"
@@ -94,46 +96,18 @@ export default function CheckAppUpdates(props: CheckUpdateProps) {
               </RightContainer>
             </HeaderContainer>
             <TextContainer>
-              <Paragraph
-                style={{
-                  color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  lineHeight: RFValue(18)
-                }}
-              >
-                1. {t(`community.update.update_one`)}
-              </Paragraph>
-              <Paragraph
-                style={{
-                  color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  lineHeight: RFValue(18)
-                }}
-              >
-                2. {t(`community.update.update_two`)}
-              </Paragraph>
-              <Paragraph
-                style={{
-                  color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  lineHeight: RFValue(18)
-                }}
-              >
-                3. {t(`community.update.update_three`)}
-              </Paragraph>
-              <Paragraph
-                style={{
-                  color: colors.SECONDARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  lineHeight: RFValue(18)
-                }}
-              >
-                4. {t(`community.update.update_four`)}
-              </Paragraph>
+              {updateInfo.map((info, index) => (
+                <Paragraph
+                  style={{
+                    color: colors.SECONDARY_TEXT,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    lineHeight: RFValue(18)
+                  }}
+                >
+                  {++index}. {info.trim()}
+                </Paragraph>
+              ))}
             </TextContainer>
             <GradientButton
               onPress={handleUpdate}
