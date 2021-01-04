@@ -1,17 +1,14 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useLazyQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { useThemeContext } from '../../../../../theme';
 import hexToRGB from '../../../../../utils/hexToRGB';
 import { PassportInterface } from '../../../../../graphql/types';
-import database from '@react-native-firebase/database';
-import formatMessageTime from '../../../../../utils/timesince';
-import { OnlinePresence } from '../../../types';
 import { fireAuth } from '../../../../../firebase/config';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 
@@ -36,25 +33,7 @@ function ConnectionCard(props: ConnectionCardProp) {
     currentLocation
   } = props;
 
-  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: 'OFFLINE',
-    lastSeen: new Date().setDate(5)
-  });
-
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
-
-  useEffect(() => {
-    const reference = database().ref(`/presence/${id}`);
-    reference.on('value', (snapshot: any) => {
-      const presence = snapshot.val() as OnlinePresence;
-
-      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
-    });
-
-    getUserPassport();
-  }, []);
+  useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
 
   const handleNavigation = () => {
     const messageRequest = conversation?.messageRequest;
@@ -126,18 +105,18 @@ function ConnectionCard(props: ConnectionCardProp) {
           >
             {`${firstName} ${lastName}`}
           </Title>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE - 2),
-              textTransform: 'lowercase'
-            }}
-          >
-            {currentLocation[0].city.length
-              ? `${currentLocation[0].city}, ${currentLocation[0].state}`
-              : `${currentLocation[0].state}, ${currentLocation[0].country}`}
-          </Text>
+          {currentLocation.length ? (
+            <Text
+              style={{
+                color: colors.SECONDARY_TEXT,
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE - 2),
+                textTransform: 'lowercase'
+              }}
+            >
+              {currentLocation[0].city}, {currentLocation[0].state}
+            </Text>
+          ) : null}
         </NameContainer>
       </Fragment>
     </TouchableRipple>
