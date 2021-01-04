@@ -123,16 +123,13 @@
   },
 
   "update": {
-    "title": "limited update release",
-    "update": "this update",
-    "update_one": "Fix view all popular tribes",
-    "update_two": "Fix joining a tribe",
-    "update_three": "Fix inbox channel pagination",
-    "update_four": "Fix channel members pagination",
+    "new": "new",
     "yes": "upgrade",
     "no": "next time",
-    "new": "new",
-    "version": "found new version"
+    "update": "this update",
+    "version": "found new version",
+    "title": "limited update release",
+    "update_info": "Fix direct message text; Fix user location on new message view; Fix OTA update texts to be dynamic"
   },
   "addTags": {
     "title": "Looks like you’re visiting for the first time.",
