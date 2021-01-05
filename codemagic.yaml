@@ -21,8 +21,6 @@ workflows:
         triggering:
             events:
                 - push
-                - tag
-                - pull_request
             branch_patterns:
                 - pattern: develop # <<-- put the branch that the codemagic config file is
                   include: true
@@ -110,8 +108,6 @@ workflows:
         triggering:
             events:
                 - push
-                - tag
-                - pull_request
             branch_patterns:
                 - pattern: staging # <<-- put the branch that the codemagic config file is
                   include: true
