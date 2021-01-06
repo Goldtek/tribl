@@ -12,13 +12,17 @@ import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import GradientButton from '../../components/gradientButton';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { ShowConnectionNotificationBadge } from '../../graphql/types';
 import { DEVICE_OS } from '../../utils/device';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
+
+import { ShowSideMenu } from '../../graphql/types';
+import { GET_SIDE_MENU_STATE } from '../../graphql/cache/query';
+import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
 
 const CommunityStack = createStackNavigator();
 
@@ -35,6 +39,20 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
     GET_CONNECTION_NOTIFICATION_BADGE
   );
+
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU_STATE);
+
+  const [changeSideMenuState] = useMutation(TOGGLE_SIDE_MENU);
+
+  const toggleSideMenu = () => {
+    drawerData?.showSideMenu === false
+      ? changeSideMenuState({
+          variables: { showSideMenu: true }
+        })
+      : changeSideMenuState({
+          variables: { showSideMenu: false }
+        });
+  };
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -76,7 +94,8 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             <TouchableHighlight
               {...props}
               onPress={() => {
-                navigation.toggleDrawer();
+                toggleSideMenu();
+                // navigation.toggleDrawer();
                 Mixpanel.track('User Taps Side Drawer', {
                   info: `User taps side drawer on community screen`,
                   'Activity Screen': 'Community Screen'
