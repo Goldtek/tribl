@@ -184,6 +184,7 @@ export interface StoreInterface {
   communitySearchIndex: number;
   userDetails: PassportInterface;
   showMessageNotificationBadge: boolean;
+  showSideMenu: boolean;
   showConnectionNotificationBadge: boolean;
 }
 
@@ -377,6 +378,11 @@ export type CommunityChannelRequestInterface = {
 // SHOW MESSAGE NOTIFICATION REQUEST (RESPONSE) TYPE
 export type ShowMessageNotificationBadge = {
   showMessageNotificationBadge: boolean;
+};
+
+// SHOW SIDE MENU REQUEST (RESPONSE) TYPE
+export type ShowSideMenu = {
+  showSideMenu: boolean;
 };
 
 // SHOW NOTIFICATION REQUEST (RESPONSE) TYPE
