@@ -31,6 +31,17 @@ export const CHANGE_MESSAGE_NOTIFICATION_BADGE = gql`
   }
 `;
 
+// TOGGLE SIDE MENU
+export const TOGGLE_SIDE_MENU = gql`
+  mutation toggleSideMenu(
+    $showSideMenu: Boolean!
+  ) {
+    toggleSideMenu(
+      showSideMenu: $showSideMenu
+    ) @client
+  }
+`;
+
 // SHOW CONNECTION NOTIFICATION BADGE
 export const CHANGE_CONNECTION_NOTIFICATION_BADGE = gql`
   mutation changeConnectionNotificationBadge(
