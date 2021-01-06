@@ -69,6 +69,7 @@ cache.writeData<StoreInterface>({
     },
     communitySearchIndex: 0,
     showMessageNotificationBadge: false,
+    showSideMenu: false,
     showConnectionNotificationBadge: false
   }
 });
