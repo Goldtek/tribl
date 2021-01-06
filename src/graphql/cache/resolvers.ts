@@ -2,6 +2,7 @@ import {
   GET_USER_DETAILS,
   GET_COMMUNITY_SEARCH_INDEX,
   GET_MESSAGE_NOTIFICATION_BADGE,
+  GET_SIDE_MENU_STATE,
   GET_CONNECTION_NOTIFICATION_BADGE
 } from './query';
 import { StoreInterface, AppResolvers } from '../types';
@@ -60,6 +61,26 @@ const cacheResolvers: AppResolvers = {
         showMessageNotificationBadge
       } as StoreInterface;
       cache.writeQuery({ query: GET_MESSAGE_NOTIFICATION_BADGE, data });
+      return null;
+    },
+
+    // TOGGLE SIDE MENU
+    toggleSideMenu: (
+      _,
+      {
+        showSideMenu
+      }: { showSideMenu: Boolean },
+      { cache }
+    ) => {
+      const queryResult = cache.readQuery<StoreInterface>({
+        query: GET_SIDE_MENU_STATE
+      });
+
+      const data = {
+        ...queryResult,
+        showSideMenu
+      } as StoreInterface;
+      cache.writeQuery({ query: GET_SIDE_MENU_STATE, data });
       return null;
     },
 
