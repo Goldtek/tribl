@@ -58,6 +58,13 @@ export const GET_MESSAGE_NOTIFICATION_BADGE = gql`
   }
 `;
 
+// SHOW SIDE MENU
+export const GET_SIDE_MENU_STATE = gql`
+  query GetSideMenuState {
+    showSideMenu @client
+  }
+`;
+
 // SHOW CONNECTION NOTIFICATION BADGE
 export const GET_CONNECTION_NOTIFICATION_BADGE = gql`
   query GetConnectionNotificationBadge {
