@@ -15,13 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  Entypo,
-  SimpleLineIcons,
-  FontAwesome
-} from '@expo/vector-icons';
+import { Ionicons, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../graphql/server/mutations';
@@ -39,9 +33,6 @@ import MemberDetailScreen from '../../screens/community/memberPassport';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
 import CommunityDetailScreen from '../../screens/community/detail';
 import { DEVICE_OS } from '../../utils/device';
-import { ShowSideMenu } from '../../graphql/types';
-import { GET_SIDE_MENU_STATE } from '../../graphql/cache/query';
-import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
 
 const DrawerStack = createStackNavigator();
 
@@ -71,20 +62,6 @@ export default function DrawerStackNavigator() {
   const handleLeaveChannel = async () => {
     await leaveChannel({ variables: { payload: { channelId: chatId } } });
     navigation.goBack();
-  };
-
-  const { data } = useQuery<ShowSideMenu>(GET_SIDE_MENU_STATE);
-
-  const [changeSideMenuState] = useMutation(TOGGLE_SIDE_MENU);
-
-  const toggleSideMenu = () => {
-    data?.showSideMenu === false
-      ? changeSideMenuState({
-          variables: { showSideMenu: true }
-        })
-      : changeSideMenuState({
-          variables: { showSideMenu: false }
-        });
   };
 
   const getMenuHeight = useCallback(() => {
@@ -144,7 +121,10 @@ export default function DrawerStackNavigator() {
           component={AccountScreens.MyConnectionScreen}
         />
         <DrawerStack.Screen name="settings" component={AccountNavigator} />
-        <DrawerStack.Screen name="policy" component={Screens.UpcomingScreen} />
+        <DrawerStack.Screen
+          name="policy"
+          component={AccountScreens.PrivacyPolicyScreen}
+        />
 
         <DrawerStack.Screen
           name="DirectChatScreen"
@@ -782,11 +762,7 @@ export default function DrawerStackNavigator() {
         />
       </DrawerStack.Navigator>
 
-      <SideMenuModal
-        sideMenuVisible={data?.showSideMenu}
-        onBackdropPress={toggleSideMenu}
-        onSwipeComplete={toggleSideMenu}
-      />
+      <SideMenuModal />
     </Fragment>
   );
 }
