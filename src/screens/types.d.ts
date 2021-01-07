@@ -109,6 +109,7 @@ export type RootStackParamScreensList =
   | 'GetStartedScreen'
   | 'NewChatSearch'
   | 'PrivacyScreen'
+  | 'PrivacyPolicyScreen'
   | 'ProfileScreen'
   | 'SignupScreen'
   | 'SplashScreen'

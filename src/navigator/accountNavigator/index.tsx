@@ -10,9 +10,16 @@ import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
-import { useQuery } from '@apollo/react-hooks';
-import { ShowConnectionNotificationBadge } from '../../graphql/types';
-import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import {
+  ShowConnectionNotificationBadge,
+  ShowSideMenu
+} from '../../graphql/types';
+import {
+  GET_CONNECTION_NOTIFICATION_BADGE,
+  GET_SIDE_MENU_STATE
+} from '../../graphql/cache/query';
+import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
 
@@ -31,6 +38,20 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
     GET_CONNECTION_NOTIFICATION_BADGE
   );
 
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU_STATE);
+
+  const [changeSideMenuState] = useMutation(TOGGLE_SIDE_MENU);
+
+  const toggleSideMenu = () => {
+    drawerData?.showSideMenu === false
+      ? changeSideMenuState({
+          variables: { showSideMenu: true }
+        })
+      : changeSideMenuState({
+          variables: { showSideMenu: false }
+        });
+  };
+
   return (
     <accountStack.Navigator
       initialRouteName="AccountSettingScreen"
@@ -47,7 +68,7 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
             <TouchableHighlight
               {...props}
               onPress={() => {
-                navigation.toggleDrawer();
+                toggleSideMenu();
                 Mixpanel.track('User Taps Side Drawer', {
                   info: `User taps side drawer on account setting screen`,
                   'Activity Screen': 'Account Setting Screen'
@@ -94,6 +115,25 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
         options={{
           //@ts-ignore
           headerTitle: t(`community.accountSettings.privacy`),
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        }}
+      />
+      <accountStack.Screen
+        name="PrivacyPolicyScreen"
+        component={Screens.PrivacyPolicyScreen}
+        options={{
+          //@ts-ignore
+          headerTitle: t(`community.accountSettings.privacyPolicy`),
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
