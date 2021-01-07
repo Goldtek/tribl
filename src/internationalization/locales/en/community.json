@@ -86,6 +86,7 @@
 
   "accountSettings": {
     "privacy": "privacy",
+    "privacyPolicy": "privacy policy",
     "notification": "notifications",
     "number": "add/change number",
     "delete": "delete my account",
