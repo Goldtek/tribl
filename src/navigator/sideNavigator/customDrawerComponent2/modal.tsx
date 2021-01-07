@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import {
-  Image,
   Dimensions,
   TouchableOpacity,
   Text,
@@ -11,9 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Modal from 'react-native-modal';
 import {
-  Ionicons,
   MaterialCommunityIcons,
-  Entypo,
   SimpleLineIcons,
   FontAwesome
 } from '@expo/vector-icons';
@@ -22,22 +19,22 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import AccountNavigator from '../../accountNavigator';
 import { ConnectionBadgeWrapper } from '../../bottomNavigator/styles';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../../graphql/types';
-import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
+import {
+  GET_CONNECTION_NOTIFICATION_BADGE,
+  GET_SIDE_MENU_STATE
+} from '../../../graphql/cache/query';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
-import { MyPassportInterface } from '../../../graphql/types';
+import { MyPassportInterface, ShowSideMenu } from '../../../graphql/types';
 import { APP_VERSION } from '../../../utils/device';
+import { TOGGLE_SIDE_MENU } from '../../../graphql/cache/mutations';
 
 import { DrawerFooter, ProfileContainer } from './styles';
 
 const { width } = Dimensions.get('window');
 
-export default function SideMenuModal({
-  sideMenuVisible,
-  onBackdropPress,
-  onSwipeComplete
-}: any) {
+export default function SideMenuModal() {
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
@@ -48,11 +45,25 @@ export default function SideMenuModal({
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU_STATE);
+
   const userDetails = userData?.myPassport;
+
+  const [changeSideMenuState] = useMutation(TOGGLE_SIDE_MENU);
+
+  const toggleSideMenu = () => {
+    drawerData?.showSideMenu === false
+      ? changeSideMenuState({
+          variables: { showSideMenu: true }
+        })
+      : changeSideMenuState({
+          variables: { showSideMenu: false }
+        });
+  };
 
   const sideMenuScreens = [
     {
-      name: 'Community',
+      name: `community.sideNav.community`,
       screen: 'CommunityScreen',
       drawerIcon: (
         <MaterialCommunityIcons
@@ -63,7 +74,7 @@ export default function SideMenuModal({
       )
     },
     {
-      name: 'Connection Requests',
+      name: `community.sideNav.request`,
       screen: 'ConnectionRequest',
       drawerIcon: (
         <Fragment>
@@ -79,19 +90,19 @@ export default function SideMenuModal({
       )
     },
     {
-      name: 'My Connections',
+      name: `community.sideNav.connection`,
       screen: 'MyConnections',
       drawerIcon: (
         <SimpleLineIcons name="user" size={24} color={colors.PRIMARY_TEXT} />
       )
     },
+    // {
+    //   name: `community.sideNav.settings`,
+    //   screen: AccountNavigator,
+    //   drawerIcon: <Entypo name="cog" size={24} color={colors.PRIMARY_TEXT} />
+    // },
     {
-      name: 'Settings',
-      screen: AccountNavigator,
-      drawerIcon: <Entypo name="cog" size={24} color={colors.PRIMARY_TEXT} />
-    },
-    {
-      name: 'Privacy Policy',
+      name: `community.sideNav.policy`,
       screen: 'policy',
       drawerIcon: (
         <FontAwesome name="user-secret" size={24} color={colors.PRIMARY_TEXT} />
@@ -101,9 +112,9 @@ export default function SideMenuModal({
 
   return (
     <Modal
-      isVisible={sideMenuVisible}
-      onBackdropPress={onBackdropPress}
-      onSwipeComplete={onSwipeComplete}
+      isVisible={drawerData?.showSideMenu}
+      onBackdropPress={toggleSideMenu}
+      onSwipeComplete={toggleSideMenu}
       animationIn="slideInLeft"
       animationOut="slideOutLeft"
       swipeDirection="left"
@@ -118,7 +129,8 @@ export default function SideMenuModal({
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: '#fff'
+          backgroundColor: '#fff',
+          alignItems: 'center'
         }}
       >
         <ProfileContainer>
@@ -169,26 +181,25 @@ export default function SideMenuModal({
                     flexDirection: 'row',
                     flex: 1,
                     alignItems: 'center',
-                    paddingHorizontal: 10
-                    // borderTopWidth: 0.8
-                    // borderTopColor: colors.lightGrayColor
+                    paddingHorizontal: 10,
+                    paddingVertical: 10
                   }}
                   onPress={() => {
-                    // handleNavigation(item.tabIndex);
-                    navigation.navigate(`${item.screen}`);
-                    // toggleAction();
+                    navigation.replace(`${item.screen}`);
+                    toggleSideMenu();
                   }}
                 >
                   {item.drawerIcon}
                   <Text
                     style={{
+                      marginLeft: 20,
                       color: colors.PRIMARY_TEXT,
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                       fontSize: RFValue(fonts.MEDIUM_SIZE),
                       textTransform: 'capitalize'
                     }}
                   >
-                    {item.name}
+                    {t(item.name)}
                   </Text>
                 </TouchableOpacity>
               </View>
