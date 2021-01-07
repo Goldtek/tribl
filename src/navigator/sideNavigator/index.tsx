@@ -33,11 +33,11 @@ import MemberDetailScreen from '../../screens/community/memberPassport';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
 import CommunityDetailScreen from '../../screens/community/detail';
 import { DEVICE_OS } from '../../utils/device';
-
-const DrawerStack = createStackNavigator();
+import SideMenuModal from './customDrawerComponent/sideModal';
 
 import { Container, CountBadge } from './styles';
-import SideMenuModal from './customDrawerComponent2/modal';
+
+const DrawerStack = createStackNavigator();
 
 type ParticipantType = {
   avatar: string;
