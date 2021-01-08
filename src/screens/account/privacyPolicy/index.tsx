@@ -1,11 +1,12 @@
 import React, { Fragment, useEffect } from 'react';
-import { Text } from 'react-native-paper';
+import { ActivityIndicator, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
-import { TouchableHighlight } from 'react-native';
+import WebView from 'react-native-webview';
+import { SafeAreaView, TouchableHighlight } from 'react-native';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
@@ -21,7 +22,8 @@ import {
 } from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, Welcome, MenuBadgeWrapper } from './styles';
+import { MenuBadgeWrapper } from './styles';
+import { PRIVACY_POLICY_LINK } from '../../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface PrivacyPolicyScreenProp extends NavigationInterface {}
@@ -96,9 +98,19 @@ export default function PrivacyPolicyScreen(props: PrivacyPolicyScreenProp) {
         )}
         style={{ paddingTop: top }}
       />
-      <Container>
-        <Welcome>Privacy Policy Screen</Welcome>
-      </Container>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+        <WebView
+          source={{ uri: PRIVACY_POLICY_LINK }}
+          startInLoadingState={true}
+          renderLoading={() => (
+            <ActivityIndicator
+              color={colors.PRIMARY_LIGHT}
+              size="large"
+              style={{ flex: 1 }}
+            />
+          )}
+        />
+      </SafeAreaView>
     </Fragment>
   );
 }
