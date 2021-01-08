@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef } from 'react';
 import {
   Dimensions,
   TouchableOpacity,
@@ -6,7 +6,6 @@ import {
   View,
   SafeAreaView
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Modal from 'react-native-modal';
 import {
@@ -17,7 +16,6 @@ import {
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import AccountNavigator from '../../accountNavigator';
 import { ConnectionBadgeWrapper } from '../../bottomNavigator/styles';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { ShowConnectionNotificationBadge } from '../../../graphql/types';
@@ -27,15 +25,17 @@ import {
 } from '../../../graphql/cache/query';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { MyPassportInterface, ShowSideMenu } from '../../../graphql/types';
-import { APP_VERSION } from '../../../utils/device';
+import { APP_VERSION, DEVICE_FULL_HEIGHT } from '../../../utils/device';
 import { TOGGLE_SIDE_MENU } from '../../../graphql/cache/mutations';
+import { rootNavigator } from '../../../constants';
 
+// IMPORT FOR ALL CUSTOM STYLES
 import { DrawerFooter, ProfileContainer } from './styles';
 
 const { width } = Dimensions.get('window');
 
 export default function SideMenuModal() {
-  const navigation = useNavigation();
+  const navigation = rootNavigator;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -64,7 +64,10 @@ export default function SideMenuModal() {
   const sideMenuScreens = [
     {
       name: `community.sideNav.community`,
-      screen: 'CommunityScreen',
+      onPress: () => {
+        navigation.navigate('CommunityScreen');
+        toggleSideMenu();
+      },
       drawerIcon: (
         <MaterialCommunityIcons
           name="google-circles-communities"
@@ -75,7 +78,12 @@ export default function SideMenuModal() {
     },
     {
       name: `community.sideNav.request`,
-      screen: 'ConnectionRequest',
+      onPress: () => {
+        navigation.navigate('DrawerScreen', {
+          screen: 'ConnectionRequest'
+        });
+        toggleSideMenu();
+      },
       drawerIcon: (
         <Fragment>
           <SimpleLineIcons
@@ -91,19 +99,24 @@ export default function SideMenuModal() {
     },
     {
       name: `community.sideNav.connection`,
-      screen: 'MyConnections',
+      onPress: () => {
+        navigation.navigate('DrawerScreen', {
+          screen: 'MyConnections'
+        });
+        toggleSideMenu();
+      },
       drawerIcon: (
         <SimpleLineIcons name="user" size={24} color={colors.PRIMARY_TEXT} />
       )
     },
-    // {
-    //   name: `community.sideNav.settings`,
-    //   screen: AccountNavigator,
-    //   drawerIcon: <Entypo name="cog" size={24} color={colors.PRIMARY_TEXT} />
-    // },
     {
       name: `community.sideNav.policy`,
-      screen: 'policy',
+      onPress: () => {
+        navigation.navigate('DrawerScreen', {
+          screen: 'PrivacyPolicyScreen'
+        });
+        toggleSideMenu();
+      },
       drawerIcon: (
         <FontAwesome name="user-secret" size={24} color={colors.PRIMARY_TEXT} />
       )
@@ -184,10 +197,7 @@ export default function SideMenuModal() {
                     paddingHorizontal: 10,
                     paddingVertical: 10
                   }}
-                  onPress={() => {
-                    navigation.replace(`${item.screen}`);
-                    toggleSideMenu();
-                  }}
+                  onPress={item.onPress}
                 >
                   {item.drawerIcon}
                   <Text
