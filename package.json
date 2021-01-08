@@ -99,6 +99,7 @@
     "react-native-tab-view": "^2.14.4",
     "react-native-unimodules": "~0.10.0",
     "react-native-ux-cam": "^5.2.0",
+    "react-native-webview": "^11.0.2",
     "react-native-zoom-lightbox": "^0.0.2",
     "recyclerlistview": "^3.0.0",
     "styled-components": "^5.1.1",
