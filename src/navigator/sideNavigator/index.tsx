@@ -19,12 +19,8 @@ import { Ionicons, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../graphql/server/mutations';
-import DrawerNavigator from './drawer';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { useThemeContext } from '../../theme';
-import BottomNavigator from '../bottomNavigator';
-import AccountNavigator from '../accountNavigator';
-import Screens from '../../screens';
 import InboxScreens from '../../screens/inbox';
 import AccountScreens from '../../screens/account';
 import CommunityScreens from '../../screens/community';
@@ -33,7 +29,6 @@ import MemberDetailScreen from '../../screens/community/memberPassport';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
 import CommunityDetailScreen from '../../screens/community/detail';
 import { DEVICE_OS } from '../../utils/device';
-import SideMenuModal from './customDrawerComponent/sideModal';
 
 import { Container, CountBadge } from './styles';
 
@@ -101,179 +96,230 @@ export default function DrawerStackNavigator() {
   };
 
   return (
-    <Fragment>
-      <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
-        {/* <DrawerStack.Screen
-          name="CommunityScreen"
-          component={DrawerNavigator}
-        /> */}
+    <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
+      <DrawerStack.Screen
+        name="ConnectionRequest"
+        component={AccountScreens.ConnectionRequestScreen}
+      />
+      <DrawerStack.Screen
+        name="MyConnections"
+        component={AccountScreens.MyConnectionScreen}
+      />
 
-        <DrawerStack.Screen
-          name="CommunityScreen"
-          component={BottomNavigator}
-        />
-        <DrawerStack.Screen
-          name="ConnectionRequest"
-          component={AccountScreens.ConnectionRequestScreen}
-        />
-        <DrawerStack.Screen
-          name="MyConnections"
-          component={AccountScreens.MyConnectionScreen}
-        />
-        <DrawerStack.Screen name="settings" component={AccountNavigator} />
-        <DrawerStack.Screen
-          name="policy"
-          component={AccountScreens.PrivacyPolicyScreen}
-        />
+      <DrawerStack.Screen
+        name="PrivacyPolicyScreen"
+        component={AccountScreens.PrivacyPolicyScreen}
+      />
 
-        <DrawerStack.Screen
-          name="DirectChatScreen"
-          component={InboxScreens.DirectChatScreen}
-          options={({ route }: any) => ({
-            headerShown: true,
+      <DrawerStack.Screen
+        name="DirectChatScreen"
+        component={InboxScreens.DirectChatScreen}
+        options={({ route }: any) => ({
+          headerShown: true,
+          height: RFValue(90),
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
+          headerRight: () => (
+            <TouchableRipple
+              onPress={() => {}}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Entypo
+                name="dots-three-vertical"
+                color={colors.DISABLED}
+                size={RFValue(17)}
+              />
+            </TouchableRipple>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY
+        })}
+      />
+      <DrawerStack.Screen
+        name="ChannelChatScreen"
+        component={InboxScreens.ChannelChatScreen}
+        options={({ route }: any) => {
+          setChatId(route.params?.chatId);
+          return {
+            headerStyle: { height: RFValue(90) },
             height: RFValue(90),
-            headerTitle: route.params?.title,
+            headerShown: true,
+            headerTitle: () => null,
             headerTitleStyle: {
               color: colors.PRIMARY_TEXT,
               fontSize: RFValue(fonts.LARGE_SIZE),
               fontFamily: fonts.WORK_SANS_BOLD
             },
-            headerTitleContainerStyle: {
-              flex: 1,
-              paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
-            },
             headerRight: () => (
-              <TouchableRipple
-                onPress={() => {}}
-                style={{
-                  height: RFValue(40),
-                  width: RFValue(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: RFValue(40 / 2)
-                }}
-              >
-                <Entypo
-                  name="dots-three-vertical"
-                  color={colors.DISABLED}
-                  size={RFValue(17)}
-                />
-              </TouchableRipple>
-            ),
-            headerBackTitleVisible: false,
-            headerTintColor: colors.PRIMARY
-          })}
-        />
-        <DrawerStack.Screen
-          name="ChannelChatScreen"
-          component={InboxScreens.ChannelChatScreen}
-          options={({ route }: any) => {
-            setChatId(route.params?.chatId);
-            return {
-              headerStyle: { height: RFValue(90) },
-              height: RFValue(90),
-              headerShown: true,
-              headerTitle: () => null,
-              headerTitleStyle: {
-                color: colors.PRIMARY_TEXT,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_BOLD
-              },
-              headerRight: () => (
-                <Menu
-                  visible={channelMenu}
-                  onDismiss={showChannelMenu}
-                  anchor={
-                    <TouchableRipple
-                      rippleColor={colors.PRIMARY}
-                      onPress={showChannelMenu}
-                      style={{
-                        padding: RFValue(3),
-                        paddingTop: RFValue(6),
-                        paddingBottom: RFValue(6),
-                        backgroundColor: menu ? colors.PRIMARY : 'transparent',
-                        borderRadius: 4,
-                        borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
-                        borderWidth: 1,
-                        marginRight: RFValue(10)
-                      }}
-                    >
-                      <Entypo
-                        name="dots-three-vertical"
-                        color={channelMenu ? colors.WHITE : colors.PRIMARY_TEXT}
-                        size={20}
-                      />
-                    </TouchableRipple>
-                  }
-                  contentStyle={{
-                    right: 10,
-                    top: 10,
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                    overflow: Platform.select({ android: 'hidden' })
-                  }}
-                  style={{ top: RFValue(getMenuHeight()) }}
-                >
-                  <Menu.Item
-                    onPress={handleChannelMembersNavigation}
-                    title={t(`community.chat.channelMembers`)}
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      paddingLeft: 10,
-                      paddingRight: 10
-                    }}
-                    titleStyle={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize'
-                    }}
-                  />
-                  <Divider />
-                  <Menu.Item
-                    onPress={handleLeaveChannel}
-                    title={t(`community.chat.leaveChannel`)}
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      paddingLeft: 10,
-                      paddingRight: 10
-                    }}
-                    titleStyle={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize'
-                    }}
-                  />
-                </Menu>
-              ),
-              headerLeft: () => (
-                <Container>
+              <Menu
+                visible={channelMenu}
+                onDismiss={showChannelMenu}
+                anchor={
                   <TouchableRipple
-                    onPress={navigation.goBack}
+                    rippleColor={colors.PRIMARY}
+                    onPress={showChannelMenu}
                     style={{
-                      height: RFValue(40),
-                      width: RFValue(40),
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: RFValue(40 / 2),
-                      marginRight: 10
+                      padding: RFValue(3),
+                      paddingTop: RFValue(6),
+                      paddingBottom: RFValue(6),
+                      backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                      borderRadius: 4,
+                      borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                      borderWidth: 1,
+                      marginRight: RFValue(10)
                     }}
                   >
-                    <Ionicons
-                      name="md-arrow-back"
-                      size={RFValue(24)}
-                      color={colors.PRIMARY}
+                    <Entypo
+                      name="dots-three-vertical"
+                      color={channelMenu ? colors.WHITE : colors.PRIMARY_TEXT}
+                      size={20}
                     />
                   </TouchableRipple>
+                }
+                contentStyle={{
+                  right: 10,
+                  top: 10,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  overflow: Platform.select({ android: 'hidden' })
+                }}
+                style={{ top: RFValue(getMenuHeight()) }}
+              >
+                <Menu.Item
+                  onPress={handleChannelMembersNavigation}
+                  title={t(`community.chat.channelMembers`)}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize'
+                  }}
+                />
+                <Divider />
+                <Menu.Item
+                  onPress={handleLeaveChannel}
+                  title={t(`community.chat.leaveChannel`)}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize'
+                  }}
+                />
+              </Menu>
+            ),
+            headerLeft: () => (
+              <Container>
+                <TouchableRipple
+                  onPress={navigation.goBack}
+                  style={{
+                    height: RFValue(40),
+                    width: RFValue(40),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: RFValue(40 / 2),
+                    marginRight: 10
+                  }}
+                >
+                  <Ionicons
+                    name="md-arrow-back"
+                    size={RFValue(24)}
+                    color={colors.PRIMARY}
+                  />
+                </TouchableRipple>
 
-                  {participants.length === 1 ? (
+                {participants.length === 1 ? (
+                  <Surface
+                    style={{
+                      width: RFValue(40),
+                      height: RFValue(40),
+                      justifyContent: 'center',
+                      top: 1,
+                      right: 10,
+                      elevation: 4,
+                      borderRadius: 4
+                    }}
+                  >
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri: participants[0]?.avatar,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        width: RFValue(40),
+                        height: RFValue(40),
+                        borderRadius: 4
+                      }}
+                    />
+                    <CountBadge style={{ elevation: 4 }}>
+                      <Paragraph
+                        style={{
+                          fontSize: RFValue(fonts.MEDIUM_SIZE),
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          fontWeight: 'bold',
+                          color: colors.WHITE
+                        }}
+                      >
+                        {participants.length}
+                      </Paragraph>
+                    </CountBadge>
+                  </Surface>
+                ) : null}
+
+                {participants.length >= 2 ? (
+                  <Fragment>
+                    <Surface
+                      style={{
+                        width: RFValue(40),
+                        height: RFValue(40),
+                        elevation: 4,
+                        borderRadius: 4
+                      }}
+                    >
+                      <FastImage
+                        resizeMode={FastImage.resizeMode.cover}
+                        source={{
+                          uri: participants[participants.length - 2]?.avatar,
+                          priority: FastImage.priority.high
+                        }}
+                        style={{
+                          width: RFValue(40),
+                          height: RFValue(40),
+                          borderRadius: 4
+                        }}
+                      />
+                    </Surface>
                     <Surface
                       style={{
                         width: RFValue(40),
@@ -288,7 +334,7 @@ export default function DrawerStackNavigator() {
                       <FastImage
                         resizeMode={FastImage.resizeMode.cover}
                         source={{
-                          uri: participants[0]?.avatar,
+                          uri: participants[participants.length - 1]?.avatar,
                           priority: FastImage.priority.high
                         }}
                         style={{
@@ -306,463 +352,399 @@ export default function DrawerStackNavigator() {
                             color: colors.WHITE
                           }}
                         >
-                          {participants.length}
+                          {`${participants.length}+`}
                         </Paragraph>
                       </CountBadge>
                     </Surface>
-                  ) : null}
+                  </Fragment>
+                ) : null}
 
-                  {participants.length >= 2 ? (
-                    <Fragment>
-                      <Surface
-                        style={{
-                          width: RFValue(40),
-                          height: RFValue(40),
-                          elevation: 4,
-                          borderRadius: 4
-                        }}
-                      >
-                        <FastImage
-                          resizeMode={FastImage.resizeMode.cover}
-                          source={{
-                            uri: participants[participants.length - 2]?.avatar,
-                            priority: FastImage.priority.high
-                          }}
-                          style={{
-                            width: RFValue(40),
-                            height: RFValue(40),
-                            borderRadius: 4
-                          }}
-                        />
-                      </Surface>
-                      <Surface
-                        style={{
-                          width: RFValue(40),
-                          height: RFValue(40),
-                          justifyContent: 'center',
-                          top: 1,
-                          right: 10,
-                          elevation: 4,
-                          borderRadius: 4
-                        }}
-                      >
-                        <FastImage
-                          resizeMode={FastImage.resizeMode.cover}
-                          source={{
-                            uri: participants[participants.length - 1]?.avatar,
-                            priority: FastImage.priority.high
-                          }}
-                          style={{
-                            width: RFValue(40),
-                            height: RFValue(40),
-                            borderRadius: 4
-                          }}
-                        />
-                        <CountBadge style={{ elevation: 4 }}>
-                          <Paragraph
-                            style={{
-                              fontSize: RFValue(fonts.MEDIUM_SIZE),
-                              fontFamily: fonts.WORK_SANS_REGULAR,
-                              fontWeight: 'bold',
-                              color: colors.WHITE
-                            }}
-                          >
-                            {`${participants.length}+`}
-                          </Paragraph>
-                        </CountBadge>
-                      </Surface>
-                    </Fragment>
-                  ) : null}
-
-                  <Paragraph
-                    style={{
-                      fontSize: RFValue(fonts.LARGE_SIZE),
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontWeight: 'bold',
-                      marginLeft: 10
-                    }}
-                  >
-                    {route.params?.title}
-                  </Paragraph>
-                </Container>
-              ),
-              headerBackTitleVisible: false,
-              headerTintColor: colors.PRIMARY
-            };
-          }}
-        />
-        <DrawerStack.Screen
-          name="ConnectionChatScreen"
-          component={InboxScreens.ConnectionChatScreen}
-          options={({ route }) => ({
-            headerShown: true,
-            height: RFValue(90),
-            //@ts-ignore
-            headerTitle: route.params?.title,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD
-            },
-            headerTitleContainerStyle: {
-              flex: 1,
-              paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
-            },
-            headerRight: () => (
-              <TouchableRipple
-                onPress={() => {}}
-                style={{
-                  height: RFValue(40),
-                  width: RFValue(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: RFValue(40 / 2)
-                }}
-              >
-                <Entypo
-                  name="dots-three-vertical"
-                  color={colors.DISABLED}
-                  size={RFValue(17)}
-                />
-              </TouchableRipple>
+                <Paragraph
+                  style={{
+                    fontSize: RFValue(fonts.LARGE_SIZE),
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontWeight: 'bold',
+                    marginLeft: 10
+                  }}
+                >
+                  {route.params?.title}
+                </Paragraph>
+              </Container>
             ),
             headerBackTitleVisible: false,
             headerTintColor: colors.PRIMARY
-          })}
-        />
-        <DrawerStack.Screen
-          name="MessageRequestChatScreen"
-          component={InboxScreens.MessageRequestChatScreen}
-          options={({ route }: any) => ({
-            headerShown: true,
-            height: RFValue(90),
-            headerTitle: route.params?.title,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD
-            },
-            headerTitleContainerStyle: {
-              flex: 1,
-              paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
-            },
-            headerRight: () => (
-              <TouchableRipple
+          };
+        }}
+      />
+      <DrawerStack.Screen
+        name="ConnectionChatScreen"
+        component={InboxScreens.ConnectionChatScreen}
+        options={({ route }) => ({
+          headerShown: true,
+          height: RFValue(90),
+          //@ts-ignore
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
+          headerRight: () => (
+            <TouchableRipple
+              onPress={() => {}}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Entypo
+                name="dots-three-vertical"
+                color={colors.DISABLED}
+                size={RFValue(17)}
+              />
+            </TouchableRipple>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY
+        })}
+      />
+      <DrawerStack.Screen
+        name="MessageRequestChatScreen"
+        component={InboxScreens.MessageRequestChatScreen}
+        options={({ route }: any) => ({
+          headerShown: true,
+          height: RFValue(90),
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
+          headerRight: () => (
+            <TouchableRipple
+              onPress={() => {}}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Entypo
+                name="dots-three-vertical"
+                color={colors.DISABLED}
+                size={RFValue(17)}
+              />
+            </TouchableRipple>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY
+        })}
+      />
+      <DrawerStack.Screen
+        name="MemberDetailScreen"
+        component={MemberDetailScreen}
+        options={({ route }: any) => ({
+          headerShown: true,
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+          },
+          headerRight: () => (
+            <Menu
+              visible={menu}
+              onDismiss={showMenu}
+              anchor={
+                <TouchableRipple
+                  rippleColor={colors.PRIMARY}
+                  onPress={() => {}}
+                  style={{
+                    padding: RFValue(3),
+                    paddingTop: RFValue(6),
+                    paddingBottom: RFValue(6),
+                    backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                    borderRadius: 4,
+                    borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                    borderWidth: 1
+                  }}
+                >
+                  <Entypo
+                    name="dots-three-vertical"
+                    color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                    size={20}
+                  />
+                </TouchableRipple>
+              }
+              contentStyle={{
+                right: 10,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                paddingTop: 0,
+                paddingBottom: 0,
+                overflow: Platform.select({ android: 'hidden' })
+              }}
+              style={{ top: RFValue(getMenuHeight()) }}
+            >
+              <Menu.Item
                 onPress={() => {}}
+                title={t(`community.memberPassport.block`)}
                 style={{
-                  height: RFValue(40),
-                  width: RFValue(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: RFValue(40 / 2)
-                }}
-              >
-                <Entypo
-                  name="dots-three-vertical"
-                  color={colors.DISABLED}
-                  size={RFValue(17)}
-                />
-              </TouchableRipple>
-            ),
-            headerBackTitleVisible: false,
-            headerTintColor: colors.PRIMARY
-          })}
-        />
-        <DrawerStack.Screen
-          name="MemberDetailScreen"
-          component={MemberDetailScreen}
-          options={({ route }: any) => ({
-            headerShown: true,
-            headerTitle: route.params?.title,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              textTransform: 'capitalize'
-            },
-            headerTitleContainerStyle: {
-              flex: 1,
-              paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
-            },
-            headerRight: () => (
-              <Menu
-                visible={menu}
-                onDismiss={showMenu}
-                anchor={
-                  <TouchableRipple
-                    rippleColor={colors.PRIMARY}
-                    onPress={() => {}}
-                    style={{
-                      padding: RFValue(3),
-                      paddingTop: RFValue(6),
-                      paddingBottom: RFValue(6),
-                      backgroundColor: menu ? colors.PRIMARY : 'transparent',
-                      borderRadius: 4,
-                      borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
-                      borderWidth: 1
-                    }}
-                  >
-                    <Entypo
-                      name="dots-three-vertical"
-                      color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
-                      size={20}
-                    />
-                  </TouchableRipple>
-                }
-                contentStyle={{
-                  right: 10,
                   borderTopLeftRadius: 20,
                   borderTopRightRadius: 20,
-                  paddingTop: 0,
-                  paddingBottom: 0,
-                  overflow: Platform.select({ android: 'hidden' })
-                }}
-                style={{ top: RFValue(getMenuHeight()) }}
-              >
-                <Menu.Item
-                  onPress={() => {}}
-                  title={t(`community.memberPassport.block`)}
-                  style={{
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10
-                  }}
-                  titleStyle={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.RED,
-                    textAlign: 'center',
-                    textTransform: 'capitalize'
-                  }}
-                />
-                <Divider />
-                <Menu.Item
-                  onPress={() => {}}
-                  title={t(`community.memberPassport.report`)}
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10
-                  }}
-                  titleStyle={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.RED,
-                    textAlign: 'center',
-                    textTransform: 'capitalize'
-                  }}
-                />
-                <Divider />
-                <Menu.Item
-                  onPress={() => {}}
-                  title={t(`community.memberPassport.removeConnection`)}
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10
-                  }}
-                  titleStyle={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize'
-                  }}
-                />
-                <Divider />
-                <Menu.Item
-                  onPress={() => {}}
-                  title={t(`community.memberPassport.copy`)}
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10
-                  }}
-                  titleStyle={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize'
-                  }}
-                />
-              </Menu>
-            ),
-            headerBackTitleVisible: false,
-            headerTintColor: colors.PRIMARY,
-            headerRightContainerStyle: { marginRight: 10 },
-            headerLeftContainerStyle: { paddingLeft: 10 },
-            headerStyle: GLOBAL_HEADER_STYLE
-          })}
-        />
-        <DrawerStack.Screen
-          name="CommunityDetailScreen"
-          component={CommunityDetailScreen}
-          options={({ route }: any) => ({
-            headerShown: true,
-            headerTitle: route.params?.title,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD
-            },
-            headerTitleContainerStyle: {
-              flex: 1,
-              paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
-            },
-
-            headerBackTitleVisible: false,
-            headerTintColor: colors.PRIMARY,
-            headerRightContainerStyle: { marginRight: 10 },
-            headerStyle: GLOBAL_HEADER_STYLE
-          })}
-        />
-        <DrawerStack.Screen
-          name="NewMessageScreen"
-          component={InboxScreens.NewMessageScreen}
-          options={{
-            headerTitle: t(`community.chat.chatTitle`),
-            headerStyle: GLOBAL_HEADER_STYLE
-          }}
-        />
-        <DrawerStack.Screen
-          name="MessageRequestScreen"
-          component={InboxScreens.MessageRequestScreen}
-          options={{
-            headerShown: true,
-            headerBackTitleVisible: false,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              textTransform: 'capitalize'
-            },
-            headerTitle: t(`community.chat.messageRequest`),
-            headerLeft: () => (
-              <TouchableRipple
-                onPress={navigation.goBack}
-                style={{
-                  height: RFValue(40),
-                  width: RFValue(40),
                   alignItems: 'center',
                   justifyContent: 'center',
-                  borderRadius: RFValue(40 / 2)
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
                 }}
-              >
-                <Ionicons
-                  name="md-arrow-back"
-                  size={RFValue(24)}
-                  color={colors.PRIMARY_TEXT}
-                />
-              </TouchableRipple>
-            )
-          }}
-        />
-        <DrawerStack.Screen
-          name="ChannelMembersScreen"
-          component={InboxScreens.ChannelMembersScreen}
-          options={{
-            headerShown: true,
-            headerBackTitleVisible: false,
-            headerStyle: { height: RFValue(90) },
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              textTransform: 'capitalize'
-            },
-            headerTitle: 'channel members',
-            headerTitleAlign: 'left',
-            headerLeft: () => (
-              <TouchableRipple
-                onPress={navigation.goBack}
-                style={{
-                  height: RFValue(40),
-                  width: RFValue(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: RFValue(40 / 2)
-                }}
-              >
-                <Ionicons
-                  name="md-arrow-back"
-                  size={RFValue(24)}
-                  color={colors.PRIMARY}
-                />
-              </TouchableRipple>
-            )
-          }}
-        />
-
-        <DrawerStack.Screen
-          name="CommunityListScreen"
-          component={CommunityListScreen}
-          options={({ route }: any) => ({
-            ...TransitionPresets.ModalTransition,
-            headerShown: true,
-            headerTitleAlign: 'left',
-            headerTitle: route.params.title,
-            headerBackTitleVisible: false,
-            headerStyle: { height: RFValue(90) },
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD
-            },
-            headerLeft: () => (
-              <TouchableRipple
-                onPress={navigation.goBack}
-                style={{
-                  height: RFValue(40),
-                  width: RFValue(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: RFValue(40 / 2)
-                }}
-              >
-                <Ionicons
-                  name="md-arrow-back"
-                  size={RFValue(24)}
-                  color={colors.PRIMARY}
-                />
-              </TouchableRipple>
-            )
-          })}
-        />
-
-        <DrawerStack.Screen
-          name="CommunityAlgoliaScreen"
-          component={CommunityScreens.AlgoliaScreen}
-          options={{
-            ...TransitionPresets.ModalTransition,
-            headerShown: true,
-            headerTitle: () => (
-              <Image
-                source={require('../../../assets/images/logo.png')}
-                style={{
-                  width: RFValue(50),
-                  height: RFValue(50),
-                  resizeMode: 'contain'
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.RED,
+                  textAlign: 'center',
+                  textTransform: 'capitalize'
                 }}
               />
-            ),
-            headerBackTitleVisible: false,
-            headerTintColor: colors.PRIMARY,
-            headerTitleContainerStyle: { alignItems: 'center' },
-            headerLeftContainerStyle: { marginLeft: 5 }
-          }}
-        />
-      </DrawerStack.Navigator>
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title={t(`community.memberPassport.report`)}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.RED,
+                  textAlign: 'center',
+                  textTransform: 'capitalize'
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title={t(`community.memberPassport.removeConnection`)}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {}}
+                title={t(`community.memberPassport.copy`)}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}
+                titleStyle={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              />
+            </Menu>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <DrawerStack.Screen
+        name="CommunityDetailScreen"
+        component={CommunityDetailScreen}
+        options={({ route }: any) => ({
+          headerShown: true,
+          headerTitle: route.params?.title,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
 
-      <SideMenuModal />
-    </Fragment>
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <DrawerStack.Screen
+        name="NewMessageScreen"
+        component={InboxScreens.NewMessageScreen}
+        options={{
+          headerTitle: t(`community.chat.chatTitle`),
+          headerStyle: GLOBAL_HEADER_STYLE
+        }}
+      />
+      <DrawerStack.Screen
+        name="MessageRequestScreen"
+        component={InboxScreens.MessageRequestScreen}
+        options={{
+          headerShown: true,
+          headerBackTitleVisible: false,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerTitle: t(`community.chat.messageRequest`),
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY_TEXT}
+              />
+            </TouchableRipple>
+          )
+        }}
+      />
+      <DrawerStack.Screen
+        name="ChannelMembersScreen"
+        component={InboxScreens.ChannelMembersScreen}
+        options={{
+          headerShown: true,
+          headerBackTitleVisible: false,
+          headerStyle: { height: RFValue(90) },
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          },
+          headerTitle: 'channel members',
+          headerTitleAlign: 'left',
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY}
+              />
+            </TouchableRipple>
+          )
+        }}
+      />
+
+      <DrawerStack.Screen
+        name="CommunityListScreen"
+        component={CommunityListScreen}
+        options={({ route }: any) => ({
+          ...TransitionPresets.ModalTransition,
+          headerShown: true,
+          headerTitleAlign: 'left',
+          headerTitle: route.params.title,
+          headerBackTitleVisible: false,
+          headerStyle: { height: RFValue(90) },
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY}
+              />
+            </TouchableRipple>
+          )
+        })}
+      />
+
+      <DrawerStack.Screen
+        name="CommunityAlgoliaScreen"
+        component={CommunityScreens.AlgoliaScreen}
+        options={{
+          ...TransitionPresets.ModalTransition,
+          headerShown: true,
+          headerTitle: () => (
+            <Image
+              source={require('../../../assets/images/logo.png')}
+              style={{
+                width: RFValue(50),
+                height: RFValue(50),
+                resizeMode: 'contain'
+              }}
+            />
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 }
+        }}
+      />
+    </DrawerStack.Navigator>
   );
 }

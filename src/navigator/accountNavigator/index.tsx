@@ -23,7 +23,7 @@ import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
 
-const accountStack = createStackNavigator();
+const AccountStack = createStackNavigator();
 
 interface AccountNavigatorProps extends NavigationInterface {}
 
@@ -53,12 +53,12 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
   };
 
   return (
-    <accountStack.Navigator
+    <AccountStack.Navigator
       initialRouteName="AccountSettingScreen"
       headerMode="screen"
       screenOptions={{ headerStyle: { height: RFValue(90) } }}
     >
-      <accountStack.Screen
+      <AccountStack.Screen
         name="AccountSettingScreen"
         component={Screens.AccountSettingScreen}
         options={{
@@ -109,7 +109,7 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
           headerStyle: GLOBAL_HEADER_STYLE
         }}
       />
-      <accountStack.Screen
+      <AccountStack.Screen
         name="PrivacyScreen"
         component={Screens.PrivacyScreen}
         options={{
@@ -128,7 +128,7 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
           headerStyle: GLOBAL_HEADER_STYLE
         }}
       />
-      <accountStack.Screen
+      <AccountStack.Screen
         name="PrivacyPolicyScreen"
         component={Screens.PrivacyPolicyScreen}
         options={{
@@ -147,6 +147,6 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
           headerStyle: GLOBAL_HEADER_STYLE
         }}
       />
-    </accountStack.Navigator>
+    </AccountStack.Navigator>
   );
 }
