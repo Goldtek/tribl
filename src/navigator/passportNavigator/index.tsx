@@ -7,23 +7,23 @@ import PassportScreen from '../../screens/passport/index';
 import BirthplaceScreen from '../../screens/passport/birthplaceScreen';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 
-const passportStack = createStackNavigator();
+const PassportStack = createStackNavigator();
 
 export default function PassportNavigator() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
   return (
-    <passportStack.Navigator
+    <PassportStack.Navigator
       initialRouteName="PassportScreen"
       headerMode="screen"
     >
-      <passportStack.Screen
+      <PassportStack.Screen
         name="PassportScreen"
         component={PassportScreen}
         options={{ headerShown: false }}
       />
-      <passportStack.Screen
+      <PassportStack.Screen
         name="BirthPlaceScreen"
         component={BirthplaceScreen}
         options={{
@@ -41,6 +41,6 @@ export default function PassportNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         }}
       />
-    </passportStack.Navigator>
+    </PassportStack.Navigator>
   );
 }
