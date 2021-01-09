@@ -13,7 +13,11 @@ import { DEVICE_OS } from '../../utils/device';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { GET_USER_DETAILS } from '../../graphql/cache/query';
-import { StoreInterface, UpdatePassportInterface } from '../../graphql/types';
+import {
+  RegistrationInfo,
+  StoreInterface,
+  UpdatePassportInterface
+} from '../../graphql/types';
 import { UPDATE_USER_PASSPORT } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
@@ -61,55 +65,59 @@ export default function SignupNavigator() {
 
           setUpdate(!update);
 
-          const userRegInfo = await Storage.getUserRegistration();
+          const storageData = await Storage.getUserRegistration();
 
-          const { data } = await updatePassport({
-            variables: {
-              payload: {
-                bio: userDetails?.bio,
-                dob: {
-                  day: userDetails?.dob.day,
-                  month: userDetails?.dob.month,
-                  year: userDetails?.dob.year
-                },
-                avatar: userRegInfo.user?.avatar || userDetails?.avatar,
-                lastName: userRegInfo.user?.lastName || userDetails?.lastName,
-                firstName:
-                  userRegInfo.user?.firstName || userDetails?.firstName,
-                identity: userRegInfo.user?.identity || userDetails?.identity,
-                interest: userDetails?.interest,
-                currentLocation: {
-                  lat:
-                    currentLocation?.lat ||
-                    userRegInfo?.user?.currentLocation?.lat,
-                  long:
-                    currentLocation?.long ||
-                    userRegInfo?.user?.currentLocation?.long,
-                  country:
-                    currentLocation?.country ||
-                    userRegInfo?.user?.currentLocation?.country,
-                  state:
-                    currentLocation?.state ||
-                    userRegInfo?.user?.currentLocation?.state,
-                  city:
-                    currentLocation?.city ||
-                    userRegInfo?.user?.currentLocation?.city
+          if (storageData) {
+            const userRegInfo = JSON.parse(storageData) as RegistrationInfo;
+
+            const { data } = await updatePassport({
+              variables: {
+                payload: {
+                  bio: userDetails?.bio,
+                  dob: {
+                    day: userDetails?.dob.day,
+                    month: userDetails?.dob.month,
+                    year: userDetails?.dob.year
+                  },
+                  avatar: userRegInfo.user?.avatar || userDetails?.avatar,
+                  lastName: userRegInfo.user?.lastName || userDetails?.lastName,
+                  firstName:
+                    userRegInfo.user?.firstName || userDetails?.firstName,
+                  identity: userRegInfo.user?.identity || userDetails?.identity,
+                  interest: userDetails?.interest,
+                  currentLocation: {
+                    lat:
+                      currentLocation?.lat ||
+                      userRegInfo?.user?.currentLocation?.lat,
+                    long:
+                      currentLocation?.long ||
+                      userRegInfo?.user?.currentLocation?.long,
+                    country:
+                      currentLocation?.country ||
+                      userRegInfo?.user?.currentLocation?.country,
+                    state:
+                      currentLocation?.state ||
+                      userRegInfo?.user?.currentLocation?.state,
+                    city:
+                      currentLocation?.city ||
+                      userRegInfo?.user?.currentLocation?.city
+                  }
                 }
               }
-            }
-          });
-
-          if (data?.updatePassport.success) {
-            setUpdate(!update);
-            await Storage.setUserRegistration({
-              route: 'CommunityScreen',
-              completed: true
-            }).then(() => getUserProfile());
-
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'CommunityScreen' }]
             });
+
+            if (data?.updatePassport.success) {
+              setUpdate(!update);
+              await Storage.setUserRegistration({
+                route: 'CommunityScreen',
+                completed: true
+              }).then(() => getUserProfile());
+
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'CommunityScreen' }]
+              });
+            }
           }
         };
 

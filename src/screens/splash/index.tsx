@@ -6,7 +6,9 @@ import jsonwebtoken from 'jwt-decode';
 import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import {
   GenerateFirebaseTokenIT,
-  RefreshTokenInterface
+  RefreshTokenInterface,
+  RegistrationInfo,
+  VerifyOTPIT
 } from '../../graphql/types';
 import { REFRESH_TOKEN } from '../../graphql/server/mutations';
 import {
@@ -44,8 +46,11 @@ export default function SplashScreen(props: ScreenProp) {
 
     setImmediate(() => {
       setInterval(async () => {
-        const credentials = await Storage.getUserCredentials();
+        const storageData = await Storage.getUserCredentials();
 
+        if (!storageData) return;
+
+        const credentials = JSON.parse(storageData) as VerifyOTPIT;
         const payload: null | { [key: string]: any } | any = jsonwebtoken(
           credentials.id_token
         );
@@ -78,9 +83,17 @@ export default function SplashScreen(props: ScreenProp) {
       if (!value) {
         return navigation.replace('WalkThroughScreen');
       }
+      const userCredStorageData = await Storage.getUserCredentials();
+      const userRegStorageData = await Storage.getUserRegistration();
 
-      const credentials = await Storage.getUserCredentials();
-      const userRegistration = await Storage.getUserRegistration();
+      if (!userCredStorageData || !userRegStorageData) {
+        return navigation.replace('SignupScreen');
+      }
+
+      const credentials = JSON.parse(userCredStorageData) as VerifyOTPIT;
+      const userRegistration = JSON.parse(
+        userRegStorageData
+      ) as RegistrationInfo;
 
       if (!userRegistration.completed) {
         return navigation.replace('SignupScreen', {
