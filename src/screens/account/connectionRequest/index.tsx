@@ -13,13 +13,20 @@ import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
 import ConnectionRequest from './widget';
 import { StatusBar } from 'expo-status-bar';
+import { GET_SIDE_MENU } from '../../../graphql/cache/query';
 import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/connectionRequestSkeleton';
 import { PassportInterface } from '../../../graphql/types';
-import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
+import {
+  CHANGE_CONNECTION_NOTIFICATION_BADGE,
+  TOGGLE_SIDE_MENU
+} from '../../../graphql/cache/mutations';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
-import { ConnectionRequestsInterface } from '../../../graphql/types';
+import {
+  ConnectionRequestsInterface,
+  ShowSideMenu
+} from '../../../graphql/types';
 import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -31,7 +38,6 @@ interface ConnectionRequestScreenProp extends NavigationInterface {}
 export default function ConnectionRequestScreen(
   props: ConnectionRequestScreenProp
 ) {
-  const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -48,6 +54,14 @@ export default function ConnectionRequestScreen(
     refreshing: false,
     callOnScrollEnd: false
   });
+
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
+
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
+
+  const toggleMenu = () => {
+    toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
+  };
 
   useEffect(() => {
     tagScreenName('ConnectionRequestScreen');
@@ -123,7 +137,7 @@ export default function ConnectionRequestScreen(
           <TouchableHighlight
             {...props}
             onPress={() => {
-              navigation.toggleDrawer();
+              toggleMenu();
               logEvent('open drawer', { from: 'community' });
             }}
             underlayColor={hexToRGB(colors.PRIMARY, 0.1)}

@@ -58,9 +58,23 @@ export const GET_MESSAGE_NOTIFICATION_BADGE = gql`
   }
 `;
 
+// SHOW SIDE MENU
+export const GET_SIDE_MENU = gql`
+  query GetSideMenu {
+    showSideMenu @client
+  }
+`;
+
 // SHOW CONNECTION NOTIFICATION BADGE
 export const GET_CONNECTION_NOTIFICATION_BADGE = gql`
   query GetConnectionNotificationBadge {
     showConnectionNotificationBadge @client
+  }
+`;
+
+// GET ACTIVE SIDE MENU STATE
+export const GET_ACTIVE_SIDE_MENU_STATE = gql`
+  query ActiveSideMenuState {
+    activeSideMenu @client
   }
 `;

@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
-import * as Sentry from '@sentry/react-native';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
@@ -19,6 +18,7 @@ import {
 } from '../../graphql/server/query';
 import { logEvent } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
+import { crashlytics } from '../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -64,7 +64,7 @@ function PopularCommunity(props: PopularCommunityProp) {
     try {
       await Storage.removeTagModal(id);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -94,7 +94,7 @@ function PopularCommunity(props: PopularCommunityProp) {
       setMember(!member);
       setModal(true);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 
@@ -110,7 +110,7 @@ function PopularCommunity(props: PopularCommunityProp) {
       setMember(!member);
       setModal(false);
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

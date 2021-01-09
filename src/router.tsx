@@ -6,6 +6,9 @@ import SignupNavigator from './navigator/signupNavigator';
 import { navigationRef } from './constants';
 import { useThemeContext } from './theme';
 import Screens from './screens';
+import BottomNavigator from './navigator/bottomNavigator';
+import CustomDrawer from './navigator/sideNavigator/customDrawer';
+import AccountNavigator from './navigator/accountNavigator';
 
 const RootStack = createStackNavigator();
 
@@ -39,10 +42,19 @@ export default function AppNavigator() {
         <RootStack.Screen name="SignupScreen" component={SignupNavigator} />
 
         <RootStack.Screen
-          name="CommunityScreen"
+          name="DrawerScreen"
           component={DrawerStackNavigator}
         />
+
+        <RootStack.Screen
+          name="AccountSettingScreen"
+          component={AccountNavigator}
+        />
+
+        <RootStack.Screen name="CommunityScreen" component={BottomNavigator} />
       </RootStack.Navigator>
+
+      <CustomDrawer />
     </NavigationContainer>
   );
 }

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import * as Sentry from '@sentry/react-native';
 import { MessageRequestScreenProps, NavigationInterface } from '../../types';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GiftedChat, Send, Avatar, Bubble } from 'react-native-gifted-chat';
@@ -18,7 +17,7 @@ import {
 } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import { MessageInterface } from '../types';
-import { fireAuth } from '../../../firebase/config';
+import { crashlytics, fireAuth } from '../../../firebase/config';
 import { Text, Button } from 'react-native-paper';
 import Firechat from '../../../firebase';
 import {
@@ -249,7 +248,7 @@ export default function MessageRequestChat(props: ScreenProp) {
         logEvent('delete message request', { from: 'chat' });
       }
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
 
     if (notificationData?.showMessageNotificationBadge) {
