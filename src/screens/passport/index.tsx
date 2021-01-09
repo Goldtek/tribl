@@ -10,7 +10,7 @@ import ImageResizer from 'react-native-image-resizer';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { useTranslation } from 'react-i18next';
 // @ts-ignore
-import { SingleImage } from 'react-native-zoom-lightbox';
+import SingleImage from '../../libs/react-native-zoom-lightbox';
 import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';

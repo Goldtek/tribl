@@ -6,7 +6,7 @@ import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 // @ts-ignore
-import { SingleImage } from 'react-native-zoom-lightbox';
+import SingleImage from '../../../libs/react-native-zoom-lightbox';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
