@@ -101,14 +101,10 @@ export default function DrawerStackNavigator() {
         name="ConnectionRequest"
         component={AccountScreens.ConnectionRequestScreen}
       />
+
       <DrawerStack.Screen
         name="MyConnections"
         component={AccountScreens.MyConnectionScreen}
-      />
-
-      <DrawerStack.Screen
-        name="PrivacyPolicyScreen"
-        component={AccountScreens.PrivacyPolicyScreen}
       />
 
       <DrawerStack.Screen

@@ -385,6 +385,11 @@ export type ShowSideMenu = {
   showSideMenu: boolean;
 };
 
+// SHOW SIDE MENU REQUEST (RESPONSE) TYPE
+export type ActiveSideMenuRequestInterface = {
+  activeSideMenu: string;
+};
+
 // SHOW NOTIFICATION REQUEST (RESPONSE) TYPE
 export type ShowConnectionNotificationBadge = {
   showConnectionNotificationBadge: boolean;

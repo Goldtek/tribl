@@ -30,6 +30,7 @@ export type RootStackParamList = {
   DirectMessageTab?: Object;
   SignupPassportScreen?: Object;
   ChannelsTab?: Object;
+  PrivacyPolicyScreen?: Object;
   MessageRequestTab?: Object;
   CommunityDetailScreen?: Object;
   ConnectionRequestScreen?: Object;

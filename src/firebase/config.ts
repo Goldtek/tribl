@@ -2,8 +2,8 @@
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import firebaseFirestore from '@react-native-firebase/firestore';
-import ENVIRONMENT_VARIABLES from '../config';
 import rnCrashlytics from '@react-native-firebase/crashlytics';
+import ENVIRONMENT_VARIABLES from '../config';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {

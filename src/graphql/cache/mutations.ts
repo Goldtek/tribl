@@ -33,12 +33,8 @@ export const CHANGE_MESSAGE_NOTIFICATION_BADGE = gql`
 
 // TOGGLE SIDE MENU
 export const TOGGLE_SIDE_MENU = gql`
-  mutation toggleSideMenu(
-    $showSideMenu: Boolean!
-  ) {
-    toggleSideMenu(
-      showSideMenu: $showSideMenu
-    ) @client
+  mutation toggleSideMenu($showSideMenu: Boolean!) {
+    toggleSideMenu(showSideMenu: $showSideMenu) @client
   }
 `;
 
@@ -50,5 +46,12 @@ export const CHANGE_CONNECTION_NOTIFICATION_BADGE = gql`
     changeConnectionNotificationBadge(
       showConnectionNotificationBadge: $showConnectionNotificationBadge
     ) @client
+  }
+`;
+
+// CHANGE ACTIVE SIDE MENU STATE
+export const CHANGE_ACTIVE_SIDE_MENU_STATE = gql`
+  mutation changeActiveSideMenuState($activeSideMenu: String!) {
+    changeActiveSideMenuState(activeSideMenu: $activeSideMenu) @client
   }
 `;

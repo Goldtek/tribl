@@ -5,14 +5,11 @@ import {
   setJSExceptionHandler,
   setNativeExceptionHandler
 } from 'react-native-exception-handler';
-import ENVIRONMENT_VARIABLES from '../../config';
 import { crashlytics } from '../../firebase/config';
 
 type GlobalErrorProps = {
   children: React.ReactElement;
 };
-
-// Sentry.init({ dsn: ENVIRONMENT_VARIABLES.SENTRY_KEY });
 
 export default function GlobalErrorBoundary(props: GlobalErrorProps) {
   const errorHandler = (e: Error, isFatal: boolean) => {

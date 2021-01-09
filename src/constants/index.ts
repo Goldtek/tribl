@@ -42,8 +42,7 @@ export const CLOUDINARY_THUMBNAIL = 'upload/c_thumb,w_200,g_face/';
 export const navigationRef = React.createRef<NavigationContainerRef>();
 
 // PRIVACY_POLICY_LINK
-export const PRIVACY_POLICY_LINK =
-  'https://www.privacypolicies.com/live/b2a8dff8-b285-46ab-af15-c53623008a86';
+export const PRIVACY_POLICY_LINK = `https://www.privacypolicies.com/live/b2a8dff8-b285-46ab-af15-c53623008a86`;
 
 export const rootNavigator = {
   navigate(name: string, params: object = {}) {

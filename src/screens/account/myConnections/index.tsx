@@ -24,7 +24,7 @@ import {
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import {
   GET_CONNECTION_NOTIFICATION_BADGE,
-  GET_SIDE_MENU_STATE
+  GET_SIDE_MENU
 } from '../../../graphql/cache/query';
 import { PAGINATION_DEFAULT } from '../../../constants';
 
@@ -115,18 +115,12 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     <Connection key={item.id} {...item} />
   );
 
-  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU_STATE);
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
-  const [changeSideMenuState] = useMutation(TOGGLE_SIDE_MENU);
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
 
-  const toggleSideMenu = () => {
-    drawerData?.showSideMenu === false
-      ? changeSideMenuState({
-          variables: { showSideMenu: true }
-        })
-      : changeSideMenuState({
-          variables: { showSideMenu: false }
-        });
+  const toggleMenu = () => {
+    toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
   };
 
   return (
@@ -149,7 +143,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           <TouchableHighlight
             {...props}
             onPress={() => {
-              toggleSideMenu();
+              toggleMenu();
               logEvent('open drawer', { from: 'community' });
             }}
             underlayColor={hexToRGB(colors.PRIMARY, 0.1)}
