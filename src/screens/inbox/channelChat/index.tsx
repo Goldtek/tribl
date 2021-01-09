@@ -1,49 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
-import {
-  GiftedChat,
-  Send,
-  Avatar,
-  Bubble,
-  User,
-  utils
-} from 'react-native-gifted-chat';
-import { Mixpanel } from '../../../config';
-import { Button, Paragraph, Text } from 'react-native-paper';
-import {
-  Platform,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  View,
-  NativeScrollEvent,
-  NativeSyntheticEvent
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { SafeAreaView, View } from 'react-native';
 import { useThemeContext } from '../../../theme';
-import { MessageInterface } from '../types';
-import { fireAuth } from '../../../firebase/config';
-import Firechat from '../../../firebase';
-import { MyPassportInterface } from '../../../graphql/types';
-import {
-  GET_SINGLE_PASSPORT,
-  GET_USER_PASSPORT
-} from '../../../graphql/server/query';
-import {
-  MARK_CHANNEL_CONVERSATION_MESSAGE_READ,
-  SEND_CHANNEL_MESSAGE
-} from '../../../graphql/server/mutations';
-import { DEVICE_OS } from '../../../utils/device';
+import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
 import hexToRGB from '../../../utils/hexToRGB';
-import {
-  hideSensitiveView,
-  tagScreenName,
-  logEvent
-} from '../../../utils/uxcamHelper';
-import { PAGINATION_DEFAULT } from '../../../constants';
-
-import { Container, Cover } from './styles';
+import { tagScreenName } from '../../../utils/uxcamHelper';
+import { chatClient } from '../../../stream/types';
+import useStreamChatTheme from '../../../utils/useStreamChatTheme';
+import { useStreamContext } from '../../../stream';
+import { useHeaderHeight } from '@react-navigation/stack';
+import StreamInputBox from '../../../components/streamInputBox';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -52,331 +18,56 @@ interface ScreenProp extends NavigationInterface {
 
 export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation } = props;
-  const { chatId, channel } = props.route.params;
-  const userId = fireAuth.currentUser?.uid as string;
-  const [pagination, setPagination] = useState(PAGINATION_DEFAULT * 2);
-  const [loadEarlier, setLoadEarlier] = useState(false);
-  const [isLoadingEarlier, setIsLoadingEarlier] = useState(false);
-  const [messages, setMessages] = useState<MessageInterface[]>([]);
-  const [firstMessage, setFirstMessage] = useState<MessageInterface | null>(
-    null
-  );
 
-  const { colors, fonts } = useThemeContext();
-
-  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
-
-  const [userPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
-
-  const [markConversationAsRead] = useMutation(
-    MARK_CHANNEL_CONVERSATION_MESSAGE_READ,
-    {
-      variables: { payload: { channelId: chatId } }
-    }
-  );
-
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-
-  const userDetails = userData?.myPassport;
+  const [text, setText] = useState('');
+  const { channel, setThread } = useStreamContext();
+  const chatStyles = useStreamChatTheme();
+  const { colors } = useThemeContext();
+  const headerHeight = useHeaderHeight();
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
   }, []);
 
-  useEffect(() => {
-    const firstChatMessages = Firechat.getChannelFirstMessage(chatId);
-
-    const unsubscribe = firstChatMessages.onSnapshot({
-      next: (snapshot) => {
-        if (snapshot.empty) return;
-
-        const [document] = snapshot.docs;
-        const message = document.data();
-
-        const firstMessage = {
-          ...message,
-          _id: document.id,
-          user: {
-            ...message.sender,
-            _id: message?.senderId,
-            name: `${message.sender?.firstName} ${message.sender?.lastName}`
-          }
-        } as MessageInterface;
-
-        setFirstMessage(firstMessage);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [chatId]);
-
-  useEffect(() => {
-    const chatMessages = Firechat.getChannelMessages(chatId, pagination);
-
-    const unsubscribe = chatMessages.onSnapshot({
-      next: (snapshot) => {
-        const conversations = snapshot.docs.map((document, index) => {
-          const message = document.data();
-
-          if (message.senderId !== userId) {
-            userPassport({ variables: { id: message?.senderId } });
-          }
-
-          if (snapshot.docs.length - 1 === index) {
-            setImmediate(markConversationAsRead);
-          }
-
-          if (document.id === firstMessage?._id) {
-            setLoadEarlier(false);
-          } else if (snapshot.size >= PAGINATION_DEFAULT) {
-            setLoadEarlier(true);
-          }
-
-          return {
-            ...message,
-            _id: document.id,
-            user: {
-              ...message.sender,
-              _id: message?.senderId,
-              name: `${message.sender?.firstName} ${message.sender?.lastName}`
-            }
-          } as MessageInterface;
-        });
-
-        setIsLoadingEarlier(false);
-        setMessages(conversations);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [pagination, chatId]);
-
-  const isCloseToTop = (props: NativeScrollEvent) => {
-    const { layoutMeasurement, contentOffset, contentSize } = props;
-    const paddingToTop = RFValue(90);
-
-    return (
-      contentSize.height - layoutMeasurement.height - paddingToTop <=
-      contentOffset.y
-    );
-  };
-
-  const loadMoreMessage = () => {
-    setPagination(pagination + messages.length);
-    setIsLoadingEarlier(true);
-  };
-
-  const onSend = useCallback(
-    async (messages: MessageInterface[] = []) => {
-      const [message] = messages;
-      logEvent('send channel message', { from: 'chat' });
-      setMessages((prevMessages) => {
-        return GiftedChat.append(prevMessages, [
-          {
-            ...message,
-            user: {
-              ...message.user,
-              avatar: `${userDetails?.avatar}`,
-              name: `${userDetails?.firstName} ${userDetails?.lastName}`
-            }
-          }
-        ]);
-      });
-
-      Mixpanel.track('User Sends Channel Message', {
-        info: `User sends message on ${channel?.name} channel in ${channel?.community} community`,
-        'Activity Screen': 'Channel Message Screen'
-      });
-
-      sendMessage({
-        variables: { payload: { content: message.text, channelId: chatId } }
-      });
-    },
-    [userDetails]
-  );
-
-  const handleNavigation = useCallback(
-    (user?: User) => {
-      navigation.navigate('MemberDetailScreen', {
-        title: `${user?.name}`,
-        details: { ...user, id: `${user?._id}` }
-      });
-    },
-    [userDetails]
-  );
+  //     Mixpanel.track('User Sends Channel Message', {
+  //       info: `User sends message on ${channel?.name} channel in ${channel?.community} community`,
+  //       'Activity Screen': 'Channel Message Screen'
+  //     });
+  // );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
-      <GiftedChat
-        placeholder="Start typing ..."
-        messages={messages}
-        ref={hideSensitiveView}
-        user={{
-          _id: userId,
-          avatar: userDetails?.avatar,
-          name: `${userDetails?.firstName} ${userDetails?.lastName}`
-        }}
-        alwaysShowSend={true}
-        showUserAvatar={true}
-        renderAvatarOnTop={true}
-        onPressAvatar={handleNavigation}
-        onSend={onSend}
-        renderSend={(props) => (
-          <Send
-            ref={hideSensitiveView}
-            {...props}
-            containerStyle={{
-              width: RFValue(40),
-              height: RFValue(40),
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: colors.PRIMARY,
-              borderRadius: RFValue(40 / 2),
-              marginRight: 10,
-              marginVertical: 5
-            }}
-          >
-            <Ionicons name="ios-send" color={colors.WHITE} size={RFValue(20)} />
-          </Send>
-        )}
-        listViewProps={{
-          showsVerticalScrollIndicator: false,
-          scrollEventThrottle: 16,
-          onEndReachedThreshold: 0.5,
-          onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-            const { nativeEvent } = event;
-            if (!isCloseToTop(nativeEvent)) return;
-            loadMoreMessage();
-          },
-          style: { marginBottom: RFValue(15) }
-        }}
-        isLoadingEarlier={isLoadingEarlier}
-        loadEarlier={loadEarlier}
-        onLoadEarlier={loadMoreMessage}
-        textInputProps={{
-          style: {
-            flex: 1,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
-            fontFamily: fonts.WORK_SANS_MEDIUM,
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingTop: Platform.select({ ios: RFValue(12) }),
-            paddingBottom: Platform.select({ ios: RFValue(12) }),
-            color: colors.PRIMARY_TEXT,
-            borderRadius: 5,
-            marginHorizontal: 10,
-            marginVertical: RFValue(5),
-            borderWidth: 1,
-            borderColor: colors.INACTIVE
-          }
-        }}
-        renderAvatar={(props) => (
-          <Avatar
-            ref={hideSensitiveView}
-            {...props}
-            imageStyle={{
-              left: { marginRight: RFValue(-7), borderRadius: RFValue(40 / 2) },
-              right: { marginLeft: RFValue(-7), borderRadius: RFValue(40 / 2) }
-            }}
-          />
-        )}
-        renderSystemMessage={(props) => {
-          return (
-            <Container ref={hideSensitiveView}>
-              <Button
-                ref={hideSensitiveView}
-                onPress={() => handleNavigation(props.currentMessage?.user)}
-                labelStyle={{
-                  marginHorizontal: 5,
-                  textTransform: 'capitalize'
-                }}
-              >
-                {props.currentMessage?.user.name}
-              </Button>
-              <Cover ref={hideSensitiveView}>
-                <Paragraph>{props.currentMessage?.text}</Paragraph>
-              </Cover>
-            </Container>
-          );
-        }}
-        renderBubble={(props) => {
-          if (!props.currentMessage) return;
-
-          if (
-            utils.isSameUser(props.currentMessage, props.previousMessage) &&
-            utils.isSameDay(props.currentMessage, props.previousMessage)
-          ) {
-            return (
-              <Bubble
-                {...props}
-                ref={hideSensitiveView}
-                wrapperStyle={{
-                  right: {
-                    backgroundColor: colors.PRIMARY,
-                    borderRadius: 7
-                  },
-                  left: {
-                    backgroundColor: hexToRGB(colors.DISABLED, 0.7),
-                    borderRadius: 7
-                  }
-                }}
-              />
-            );
-          }
-
-          return userId === props.currentMessage.user._id ? (
-            <Bubble
-              {...props}
-              ref={hideSensitiveView}
-              wrapperStyle={{
-                right: {
-                  backgroundColor: colors.PRIMARY,
-                  borderRadius: 7
-                },
-                left: {
-                  backgroundColor: hexToRGB(colors.DISABLED, 0.7),
-                  borderRadius: 7
-                }
+      <Chat
+        //@ts-ignore
+        client={chatClient}
+        style={chatStyles}
+      >
+        <Channel
+          //@ts-ignore
+          channel={channel}
+          keyboardVerticalOffset={headerHeight}
+        >
+          <View style={{ flex: 1 }}>
+            <MessageList
+              onThreadSelect={(thread) => {
+                setThread(thread);
+                navigation.navigate('ThreadChatScreen', {
+                  channelId: channel.id
+                });
               }}
             />
-          ) : (
-            <View ref={hideSensitiveView}>
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  paddingHorizontal: 10,
-                  paddingVertical: 5
-                }}
-              >
-                {props.currentMessage.user.name}
-              </Text>
-
-              <Bubble
-                ref={hideSensitiveView}
-                {...props}
-                wrapperStyle={{
-                  right: {
-                    backgroundColor: colors.PRIMARY,
-                    borderRadius: 7,
-                    borderWidth: 1
-                  },
-                  left: {
-                    backgroundColor: hexToRGB(colors.DISABLED, 0.7),
-                    borderRadius: 7
-                  }
-                }}
-              />
-            </View>
-          );
-        }}
-        isKeyboardInternallyHandled={true}
-      />
-      {DEVICE_OS === 'ios' && (
-        <KeyboardAvoidingView
-          behavior="padding"
-          keyboardVerticalOffset={RFValue(-140)}
-        />
-      )}
+            <MessageInput
+              Input={StreamInputBox}
+              initialValue={text}
+              onChangeText={(text) => setText(text)}
+              additionalTextInputProps={{
+                placeholderTextColor: hexToRGB(colors.STATUS_BAR_COLOR, 0.7),
+                placeholder: 'Type your message here'
+              }}
+            />
+          </View>
+        </Channel>
+      </Chat>
     </SafeAreaView>
   );
 }
