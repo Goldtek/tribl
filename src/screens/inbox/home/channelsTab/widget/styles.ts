@@ -1,21 +1,41 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-export const NameContainer = styled.View`
-  margin-left: ${RFValue(10)}px;
+export const Date = styled.Text`
+  color: ${({ theme }) => theme.colors.SECONDARY_TEXT};
+  font-size: 11px;
+  text-align: right;
+  ${({ theme }) => theme.channelPreview.date.css}
 `;
 
-export const TimeStamp = styled.View`
-  margin-left: auto;
-  padding-right: ${RFValue(10)}px;
+export const Details = styled.View`
+  flex: 1;
+  padding-left: 10px;
+  ${({ theme }) => theme.channelPreview.details.css}
 `;
 
-export const BadgeWrapper = styled.View`
-  width: ${RFValue(10)}px;
-  height: ${RFValue(10)}px;
-  border-radius: ${RFValue(10)}px;
-  background-color: ${({ theme }) => theme.colors.RED};
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
+export const DetailsTop = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  ${({ theme }) => theme.channelPreview.detailsTop.css}
+`;
+
+export const StyledMessage = styled.Text<{ unread?: number }>`
+  color: ${({ theme, unread }) =>
+    unread
+      ? theme.channelPreview.message.unreadColor
+      : theme.channelPreview.message.color};
+  font-size: ${({ theme }) => RFValue(theme.fonts.SMALL_SIZE + 1)}px;
+  font-weight: ${({ theme, unread }) =>
+    unread
+      ? theme.channelPreview.message.unreadFontWeight
+      : theme.channelPreview.message.fontWeight};
+  ${({ theme }) => theme.channelPreview.message.css}
+`;
+
+export const Title = styled.Text`
+  font-size: ${({ theme }) => RFValue(theme.fonts.MEDIUM_SIZE - 1)}px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
+  ${({ theme }) => theme.channelPreview.title.css}
 `;
