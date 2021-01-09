@@ -1,8 +1,20 @@
 import 'styled-components';
 import { configureFonts, DefaultTheme } from 'react-native-paper';
+import { defaultTheme as streamChatTheme, Theme } from 'stream-chat-expo';
 
 // All app colors
 enum COLORS {
+  // START OF STREAM COLORS
+  light = '#EBEBEB',
+  danger = '#EDD8DD',
+  secondary = '#111',
+  textLight = 'white',
+  primary = '#006cff',
+  textDark = 'rgba(0,0,0,1)',
+  textGrey = 'rgba(0,0,0,0.5)',
+  transparent = 'transparent',
+  // END OF STREAM COLORS
+
   WHITE = '#FFFFFF',
   GREY = '#F8F8FB',
   ONLINE = '#7ED321',
@@ -20,7 +32,7 @@ enum COLORS {
   INPUT = '#E5E5E5',
   SYSTEM_COLOR = '#F5F5F5',
   STATUS_BAR_COLOR = '#424242',
-  SHADOW = 'F5F5F5',
+  SHADOW = '#F5F5F5',
   BLACK = '#000000',
   RED = '#FB4E4E'
 }
@@ -36,10 +48,21 @@ enum FONTS {
   WORK_SANS_BOLD = 'workSansBold'
 }
 
-declare module 'styled-components' {
-  export interface DefaultTheme {
+declare module 'styled-components/native' {
+  export interface DefaultTheme extends Theme {
     // All Global App Colors
     colors: {
+      // START OF STREAM COLORS
+      light: string;
+      danger: string;
+      primary: string;
+      textDark: string;
+      textGrey: string;
+      textLight: string;
+      secondary: string;
+      transparent: string;
+      // END OF STREAM COLORS
+
       WHITE: string;
       GREY: string;
       ONLINE: string;
@@ -116,4 +139,8 @@ export const paperTheme = {
 };
 
 // App theme
-export const styledComponentTheme = { colors: COLORS, fonts: FONTS };
+export const styledComponentTheme = {
+  ...streamChatTheme,
+  colors: COLORS,
+  fonts: FONTS
+};
