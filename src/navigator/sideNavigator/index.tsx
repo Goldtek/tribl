@@ -145,6 +145,7 @@ export default function DrawerStackNavigator() {
           headerTintColor: colors.PRIMARY
         })}
       />
+
       <DrawerStack.Screen
         name="ChannelChatScreen"
         component={InboxScreens.ChannelChatScreen}
@@ -372,6 +373,7 @@ export default function DrawerStackNavigator() {
           };
         }}
       />
+
       <DrawerStack.Screen
         name="ConnectionChatScreen"
         component={InboxScreens.ConnectionChatScreen}
@@ -411,6 +413,7 @@ export default function DrawerStackNavigator() {
           headerTintColor: colors.PRIMARY
         })}
       />
+
       <DrawerStack.Screen
         name="MessageRequestChatScreen"
         component={InboxScreens.MessageRequestChatScreen}
@@ -449,6 +452,7 @@ export default function DrawerStackNavigator() {
           headerTintColor: colors.PRIMARY
         })}
       />
+
       <DrawerStack.Screen
         name="MemberDetailScreen"
         component={MemberDetailScreen}
@@ -584,6 +588,7 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
+
       <DrawerStack.Screen
         name="CommunityDetailScreen"
         component={CommunityDetailScreen}
@@ -647,6 +652,7 @@ export default function DrawerStackNavigator() {
           )
         }}
       />
+
       <DrawerStack.Screen
         name="ChannelMembersScreen"
         component={InboxScreens.ChannelMembersScreen}

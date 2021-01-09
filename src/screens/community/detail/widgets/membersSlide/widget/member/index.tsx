@@ -71,17 +71,17 @@ function Member(props: MemberProp) {
   };
 
   const handleNavigation = () => {
-    navigation.navigate(
-      singlePassport?.conversation?.id
+    navigation.navigate('DrawerScreen', {
+      screen: singlePassport?.conversation?.id
         ? 'DirectChatScreen'
         : 'ConnectionChatScreen',
-      {
+      params: {
         receiverId: id,
         chatId: singlePassport?.conversation?.id,
         title: `${firstName} ${lastName}`,
         ...{ ...props, ...singlePassport }
       }
-    );
+    });
   };
 
   return (
