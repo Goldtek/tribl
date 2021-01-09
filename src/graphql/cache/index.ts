@@ -11,62 +11,63 @@ const cache = new InMemoryCache({ freezeResults: true });
  *******************  APP STATE MANAGEMENT ***********************
  ****************************************************************
  */
+export const userDetails = {
+  bio: '',
+  dob: {
+    formatted: null,
+    day: null,
+    month: null,
+    year: null,
+    hour: 0,
+    minute: 0,
+    second: 0,
+    timeZoneId: null,
+    nanosecond: null,
+    millisecond: null,
+    timeZoneOffsetSeconds: null,
+    __typename: 'dateOfBirth'
+  },
+  email: '',
+  phoneNumber: '',
+  countryCode: DEVICE_DEFAULT_COUNTRY,
+  firstName: '',
+  lastName: '',
+  citizenShip: '',
+  connectionCount: 0,
+  communityCount: 0,
+  connected: null,
+  status: null,
+  conversation: null,
+  identity: [],
+  interest: [],
+  currentLocation: [
+    {
+      lat: null,
+      long: null,
+      country: '',
+      city: '',
+      state: '',
+      __typename: 'currentLocation'
+    }
+  ],
+  birthPlace: [
+    {
+      lat: null,
+      long: null,
+      country: '',
+      city: '',
+      state: '',
+      __typename: 'birthPlace'
+    }
+  ],
+  avatar: USER_DEFAULT_AVATAR,
+  __typename: 'userDetails'
+};
 
 cache.writeData<StoreInterface>({
   data: {
     //@ts-ignore
-    userDetails: {
-      bio: '',
-      dob: {
-        formatted: null,
-        day: null,
-        month: null,
-        year: null,
-        hour: 0,
-        minute: 0,
-        second: 0,
-        timeZoneId: null,
-        nanosecond: null,
-        millisecond: null,
-        timeZoneOffsetSeconds: null,
-        __typename: 'dateOfBirth'
-      },
-      email: '',
-      phoneNumber: '',
-      countryCode: DEVICE_DEFAULT_COUNTRY,
-      firstName: '',
-      lastName: '',
-      citizenShip: '',
-      connectionCount: 0,
-      communityCount: 0,
-      connected: null,
-      status: null,
-      conversation: null,
-      identity: [],
-      interest: [],
-      currentLocation: [
-        {
-          lat: null,
-          long: null,
-          country: '',
-          city: '',
-          state: '',
-          __typename: 'currentLocation'
-        }
-      ],
-      birthPlace: [
-        {
-          lat: null,
-          long: null,
-          country: '',
-          city: '',
-          state: '',
-          __typename: 'birthPlace'
-        }
-      ],
-      avatar: USER_DEFAULT_AVATAR,
-      __typename: 'userDetails'
-    },
+    userDetails,
     communitySearchIndex: 0,
     showMessageNotificationBadge: false,
     showSideMenu: false,

@@ -46,11 +46,14 @@ function DirectChatCard(props: DirectChatProp) {
     lastMessage.createdAt >= receiver.readAt;
 
   const handleNavigation = () => {
-    navigation.navigate('DirectChatScreen', {
-      title,
-      chatId,
-      receiverId: sender.id,
-      ...receiverPassport
+    navigation.navigate('DrawerScreen', {
+      screen: 'DirectChatScreen',
+      params: {
+        title,
+        chatId,
+        receiverId: sender.id,
+        ...receiverPassport
+      }
     });
   };
 

@@ -127,7 +127,9 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                 marginBottom: RFValue(20)
               }}
               onPress={() => {
-                navigation.navigate('NewMessageScreen');
+                navigation.navigate('DrawerScreen', {
+                  screen: 'NewMessageScreen'
+                });
                 Mixpanel.track('User Taps Chat Icon', {
                   info: `User taps chat icon on home screen`,
                   'Activity Screen': 'Home Screen'
@@ -202,7 +204,9 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                 marginBottom: RFValue(20)
               }}
               onPress={() => {
-                navigation.navigate('NewMessageScreen');
+                navigation.navigate('DrawerScreen', {
+                  screen: 'NewMessageScreen'
+                });
                 Mixpanel.track('User Taps Chat Icon', {
                   info: `User taps chat icon on community search screen`,
                   'Activity Screen': 'Community Search Screen'

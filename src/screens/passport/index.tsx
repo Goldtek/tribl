@@ -1,4 +1,5 @@
-import React, { useState, Fragment, useEffect } from 'react';
+// @ts-nocheck
+import React, { useState, Fragment, useEffect, useLayoutEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
@@ -10,7 +11,7 @@ import ImageResizer from 'react-native-image-resizer';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { useTranslation } from 'react-i18next';
 // @ts-ignore
-import { SingleImage } from 'react-native-zoom-lightbox';
+import SingleImage from '../../libs/react-native-zoom-lightbox';
 import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
@@ -19,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationInterface } from '../types';
 import { useThemeContext } from '../../theme';
 import TabViewSlider from './widgets/tabs';
+import { userDetails as cacheData } from '../../graphql/cache';
 import {
   GET_ALL_MEMBERS,
   GET_CONNECTION_REQUEST,
@@ -118,7 +120,10 @@ export default function PassportScreen(props: ScreenProp) {
     variables: { offset: 0, first: PAGINATION_DEFAULT }
   });
 
-  const [cache, setCache] = useState<PassportInterface | null>(null);
+  const [cache, setCache] = useState({
+    ...cacheData,
+    details: {}
+  });
 
   const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
     GET_CONNECTION_REQUEST,
@@ -147,9 +152,7 @@ export default function PassportScreen(props: ScreenProp) {
   const interest = userDetails?.interest.map((item: any) => item.id);
   const dateOfBirth = userDetails?.dob;
 
-  const currentLocation = userDetails?.currentLocation[0]?.country
-    ? userDetails?.currentLocation[0]
-    : cache?.currentLocation[0];
+  const currentLocation = cache?.currentLocation[0];
 
   useEffect(() => {
     if (userDetails) {
@@ -157,7 +160,7 @@ export default function PassportScreen(props: ScreenProp) {
       Mixpanel.identify(userDetails?.id);
       addUserIdentity(userDetails?.id);
       //Log mixpanel user id to UXCam
-      let user = Mixpanel.identify(userDetails?.id);
+      const user = Mixpanel.identify(userDetails?.id);
       logEvent('mixpanel', { 'mixpanel-user-ID': user });
     }
   }, [userDetails]);
@@ -165,54 +168,31 @@ export default function PassportScreen(props: ScreenProp) {
   const [update, setUpdate] = useState(true);
 
   const setCacheData = async () => {
-    if (userDetails?.id?.length) {
-      await Storage.setUserPassport({ ...userDetails });
+    if (userDetails) {
+      await Storage.setUserPassport({ ...cache, ...userDetails });
     }
   };
 
   const getCacheData = async () => {
-    try {
-      const passportInfo = await Storage.getUserPassport();
+    const storageData = await Storage.getUserPassport();
+
+    if (storageData) {
+      const passportInfo = JSON.parse(storageData) as PassportInterface;
       setCache({ ...cache, ...passportInfo });
-    } catch (error) {
-      crashlytics.recordError(error);
     }
   };
 
   useEffect(() => {
     setCacheData();
-  }, [userData]);
 
-  useEffect(() => {
+    setTimeout(() => {
+      if (!userDetails) refetch();
+    }, 2000);
+  }, [userDetails]);
+
+  useLayoutEffect(() => {
     getCacheData();
   }, []);
-
-  const [state, setState] = useState<{
-    details: StateProps;
-    identity: string[] | undefined;
-    interest: string[] | undefined;
-    firstName: string | undefined;
-    lastName: string | undefined;
-    dob: {
-      day: number | null | undefined;
-      month: number | null | undefined;
-      year: number | null | undefined;
-    };
-    bio: string | null | undefined;
-  }>({
-    //@ts-ignore
-    details: {},
-    firstName: cache?.firstName,
-    lastName: cache?.lastName,
-    identity: identity,
-    interest: interest,
-    dob: {
-      day: null,
-      month: null,
-      year: null
-    },
-    bio: cache?.bio
-  });
 
   const [avatar, setAvatar] = useState<StateType>({
     uri: cache?.avatar,
@@ -252,15 +232,15 @@ export default function PassportScreen(props: ScreenProp) {
     long: 0
   });
 
-  const firstName = state?.details?.firstName;
-  const lastName = state?.details?.lastName;
-  const bio = state?.details?.bio;
-  const dob = state?.details?.date?.split('/');
+  const firstName = cache?.details?.firstName;
+  const lastName = cache?.details?.lastName;
+  const bio = cache?.details?.bio;
+  const dob = cache?.details?.date?.split('/');
   const day = dob?.length ? parseInt(dob[1]) : dateOfBirth?.day;
   const month = dob?.length ? parseInt(dob[0]) : dateOfBirth?.month;
   const year = dob?.length ? parseInt(dob[2]) : dateOfBirth?.year;
-  const identityID = state?.details?.selectedId || [];
-  const interestID = state?.details?.selectedInterestId || [];
+  const identityID = cache?.details?.selectedId || [];
+  const interestID = cache?.details?.selectedInterestId || [];
   const SelectedIdentitiesID = Array.from(identityID?.values());
   const SelectedInterestID = Array.from(interestID?.values());
 
@@ -276,8 +256,8 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     if (SelectedIdentitiesID?.length > 0) {
-      setState({
-        ...state,
+      setCache({
+        ...cache,
         identity: SelectedIdentitiesID
       });
     }
@@ -285,8 +265,8 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     if (SelectedInterestID?.length > 0) {
-      setState({
-        ...state,
+      setCache({
+        ...cache,
         interest: SelectedInterestID
       });
     }
@@ -294,8 +274,8 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     if (firstName?.length || lastName?.length || bio?.length) {
-      setState({
-        ...state,
+      setCache({
+        ...cache,
         firstName: firstName,
         lastName: lastName,
         bio: bio
@@ -304,8 +284,8 @@ export default function PassportScreen(props: ScreenProp) {
   }, [firstName?.length, lastName?.length, bio?.length]);
 
   useEffect(() => {
-    setState({
-      ...state,
+    setCache({
+      ...cache,
       firstName: userDetails?.firstName,
       lastName: userDetails?.lastName,
       bio: userDetails?.bio
@@ -328,7 +308,7 @@ export default function PassportScreen(props: ScreenProp) {
   }, [userDetails?.id]);
 
   useEffect(() => {
-    setState({ ...state, identity: identity, interest: interest });
+    setCache({ ...cache, identity: identity, interest: interest });
   }, [identity?.length, interest?.length]);
 
   useEffect(() => {
@@ -358,7 +338,7 @@ export default function PassportScreen(props: ScreenProp) {
       handleLocation();
       updateLocation();
     }
-  }, [state.identity]);
+  }, [cache.identity]);
 
   useEffect(() => {
     if (firebase?.generateFirebaseToken) {
@@ -408,16 +388,16 @@ export default function PassportScreen(props: ScreenProp) {
     variables: {
       payload: {
         avatar: avatar.uri,
-        firstName: state.firstName,
-        lastName: state.lastName,
-        bio: state.bio,
+        firstName: cache.firstName,
+        lastName: cache.lastName,
+        bio: cache.bio,
         dob: {
           day: day,
           month: month,
           year: year
         },
-        identity: state.identity,
-        interest: state.interest,
+        identity: cache.identity,
+        interest: cache.interest,
         currentLocation: {
           city: location.city,
           state: location.state,
@@ -473,7 +453,7 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   const getUserDetails = (childData: any) => {
-    setState({ ...state, details: childData });
+    setCache({ ...cache, details: childData });
   };
 
   const click = update;
@@ -604,7 +584,7 @@ export default function PassportScreen(props: ScreenProp) {
             <ImageContainer>
               {update ? (
                 <SingleImage
-                  uri={avatar.uri || cache?.avatar}
+                  uri={avatar.uri}
                   style={{
                     width: RFValue(120),
                     height: RFValue(120),
@@ -619,7 +599,7 @@ export default function PassportScreen(props: ScreenProp) {
                 >
                   <FastImage
                     source={{
-                      uri: avatar.uri || cache?.avatar,
+                      uri: avatar.uri,
                       priority: FastImage.priority.high
                     }}
                     resizeMode={FastImage.resizeMode.stretch}
@@ -654,7 +634,7 @@ export default function PassportScreen(props: ScreenProp) {
                     color: colors.WHITE
                   }}
                 >
-                  {`${state?.firstName} ${state?.lastName}`}
+                  {`${cache?.firstName} ${cache?.lastName}`}
                 </Paragraph>
                 {currentLocation?.city ? (
                   <Paragraph
@@ -680,15 +660,17 @@ export default function PassportScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                   >
-                    <Fragment>
-                      {`${currentLocation?.state}, ${currentLocation?.country}`}
-                    </Fragment>
+                    {`${currentLocation?.state}, ${currentLocation?.country}`}
                   </Paragraph>
                 )}
                 <ConnectionCover>
                   <TouchableRipple
                     style={{ alignItems: 'center' }}
-                    onPress={() => navigation.navigate('MyConnections')}
+                    onPress={() =>
+                      navigation.navigate('DrawerScreen', {
+                        screen: 'MyConnections'
+                      })
+                    }
                   >
                     <Fragment>
                       <Paragraph
@@ -699,7 +681,7 @@ export default function PassportScreen(props: ScreenProp) {
                           lineHeight: 20
                         }}
                       >
-                        {userDetails?.connectionCount || cache?.connectionCount}
+                        {cache.connectionCount}
                       </Paragraph>
 
                       <Paragraph
@@ -718,9 +700,12 @@ export default function PassportScreen(props: ScreenProp) {
                   <TouchableRipple
                     style={{ alignItems: 'center' }}
                     onPress={() => {
-                      navigation.navigate('CommunityListScreen', {
-                        userTribe: true,
-                        title: t(`community.memberPassport.myTribes`)
+                      navigation.navigate('DrawerScreen', {
+                        screen: 'CommunityListScreen',
+                        params: {
+                          userTribe: true,
+                          title: t(`community.memberPassport.myTribes`)
+                        }
                       });
                     }}
                   >
@@ -733,7 +718,7 @@ export default function PassportScreen(props: ScreenProp) {
                           lineHeight: 20
                         }}
                       >
-                        {userDetails?.communityCount || cache?.communityCount}
+                        {cache?.communityCount}
                       </Paragraph>
                       <Paragraph
                         style={{
@@ -749,7 +734,6 @@ export default function PassportScreen(props: ScreenProp) {
                     </Fragment>
                   </TouchableRipple>
                 </ConnectionCover>
-
                 {/* <ImageIconContainer>
                 <SocialMediaButton
                   onPress={() => console.log('Pressed')}

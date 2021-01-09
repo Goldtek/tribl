@@ -395,7 +395,9 @@ export default function MessageRequestChat(props: ScreenProp) {
                 textTransform: 'capitalize'
               }}
             >
-              {`${communityCount} communities ${connectionCount} connections`}
+              {`${communityCount || 0} communities ${
+                connectionCount || 0
+              } connections`}
             </Text>
             <Text
               style={{
