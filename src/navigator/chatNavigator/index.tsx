@@ -94,7 +94,9 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
                 marginBottom: RFValue(20)
               }}
               onPress={() => {
-                navigation.navigate('NewMessageScreen');
+                navigation.navigate('DrawerScreen', {
+                  screen: 'NewMessageScreen'
+                });
                 Mixpanel.track('User Taps Chat Icon', {
                   info: `User taps chat icon on inbox screen`,
                   'Activity Screen': 'Inbox Screen'

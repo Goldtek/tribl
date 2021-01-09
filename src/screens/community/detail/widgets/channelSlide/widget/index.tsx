@@ -60,11 +60,14 @@ export default function ChannelCard(props: ChannelCardProp) {
       });
     }
 
-    navigation.navigate('ChannelChatScreen', {
-      isMember,
-      chatId: id,
-      title: `#${name}`,
-      channel: { community: communityDetails?.name, name }
+    navigation.navigate('DrawerScreen', {
+      screen: 'ChannelChatScreen',
+      params: {
+        isMember,
+        chatId: id,
+        title: `#${name}`,
+        channel: { community: communityDetails?.name, name }
+      }
     });
   };
 
