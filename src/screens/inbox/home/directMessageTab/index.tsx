@@ -146,7 +146,7 @@ export default function DirectMessageTab(props: ScreenProp) {
               </Badge>
               <Text
                 style={{
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
                   fontFamily: fonts.WORK_SANS_BOLD
                 }}
               >
