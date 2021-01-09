@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useCallback, Fragment, useEffect } from 'react';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import {
@@ -25,6 +26,7 @@ import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationInterface } from '../../../types';
 import { crashlytics } from '../../../../firebase/config';
+import { userDetails as cacheData } from '../../../../graphql/cache';
 
 import {
   ContactContainer,
@@ -68,8 +70,6 @@ function contactSlide(props: ScreenProp) {
 
   const [interestVisible, setInterestVisible] = useState(false);
 
-  const [cache, setCache] = useState<PassportInterface | null>(null);
-
   const [state, setState] = useState<{
     date?: string;
     firstName?: string;
@@ -97,57 +97,43 @@ function contactSlide(props: ScreenProp) {
     selectedId: [],
     birthPlaceInput: '',
     selectedInterest: [],
-    selectedInterestId: []
+    selectedInterestId: [],
+    ...cacheData
   });
 
-  const currentLocation = userDetails?.currentLocation[0]?.country
-    ? userDetails?.currentLocation[0]
-    : cache?.currentLocation[0];
+  const currentLocation = state?.currentLocation[0];
 
   useEffect(() => {
     (async () => {
-      if (userDetails?.id.length) {
+      if (userDetails) {
         await Storage.setUserPassport({ ...userDetails });
       }
     })();
-  }, [userData]);
+  }, [userDetails]);
 
   useEffect(() => {
     (async () => {
-      try {
-        const passportInfo = await Storage.getUserPassport();
-        setCache({
-          ...cache,
-          ...passportInfo
+      const storageData = await Storage.getUserPassport();
+
+      if (storageData) {
+        const passportInfo = JSON.parse(storageData) as PassportInterface;
+        setState({
+          ...state,
+          ...passportInfo,
+          date: `${passportInfo?.dob?.month}/${passportInfo?.dob?.day}/${passportInfo?.dob?.year}`
         });
-      } catch (error) {
-        crashlytics.recordError(error);
       }
     })();
   }, []);
 
   useEffect(() => {
-    if (cache) {
-      setState({
-        ...state,
-        date: `${cache?.dob?.month}/${cache?.dob?.day}/${cache?.dob?.year}`,
-        firstName: cache?.firstName,
-        lastName: cache?.lastName,
-        bio: cache?.bio
-      });
-    }
-  }, [cache]);
-
-  useEffect(() => {
-    if (loading) return;
+    if (!userDetails) return;
     setState({
       ...state,
-      date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`,
-      firstName: userDetails?.firstName,
-      lastName: userDetails?.lastName,
-      bio: userDetails?.bio
+      ...userDetails,
+      date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`
     });
-  }, [userData?.myPassport.id]);
+  }, [userDetails]);
 
   const getBirthplaceDetails = (childData: any) => {
     setState({

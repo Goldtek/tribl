@@ -182,11 +182,11 @@ export default function contactSlide() {
 
   useEffect(() => {
     (async () => {
-      try {
-        const regInfo = await Storage.getUserRegistration();
+      const storageData = await Storage.getUserRegistration();
+
+      if (storageData) {
+        const regInfo = JSON.parse(storageData) as RegistrationInfo;
         setUserRegInfo({ ...userRegInfo, ...regInfo });
-      } catch (error) {
-        crashlytics.recordError(error);
       }
     })();
   }, []);

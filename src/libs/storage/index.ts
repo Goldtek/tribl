@@ -1,4 +1,3 @@
-import MMKVStorage from 'react-native-mmkv-storage';
 import AsyncStorage from '@react-native-community/async-storage';
 import { DEVICE_ID } from '../../utils/device';
 import {
@@ -15,18 +14,12 @@ import {
 } from '../../graphql/types';
 
 class Storage {
-  public MMKV: MMKVStorage.API | null = null;
-
-  constructor() {
-    this.MMKV = new MMKVStorage.Loader().withEncryption().initialize();
-  }
-
   async checkInitialLaunch() {
     return AsyncStorage.getItem(USER_FIRST_LAUNCH);
   }
 
   async clearStorage() {
-    return this.MMKV?.clearStore();
+    return AsyncStorage.clear();
   }
 
   async setInitialLaunch() {
@@ -34,94 +27,112 @@ class Storage {
   }
 
   async getUserCredentials() {
-    return this.MMKV?.getMapAsync(DEVICE_ID) as Promise<VerifyOTPIT>;
+    return AsyncStorage.getItem(DEVICE_ID);
   }
 
   async setUserRegistration(regInfo: RegistrationInfo) {
-    try {
-      const userRegInfo = await this.getUserRegistration();
-      await this.MMKV?.setMapAsync(USER_REG_INFO, {
+    const storageData = await this.getUserRegistration();
+
+    if (!storageData) {
+      return AsyncStorage.setItem(USER_REG_INFO, JSON.stringify(regInfo));
+    }
+
+    const userRegInfo = JSON.parse(storageData) as RegistrationInfo;
+
+    await AsyncStorage.setItem(
+      USER_REG_INFO,
+      JSON.stringify({
         ...userRegInfo,
         ...regInfo,
-        user: { ...userRegInfo.user, ...regInfo?.user }
-      });
-    } catch (error) {
-      return this.MMKV?.setMapAsync(USER_REG_INFO, regInfo);
-    }
+        user: { ...userRegInfo?.user, ...regInfo?.user }
+      })
+    );
   }
 
   async getUserRegistration() {
-    return this.MMKV?.getMapAsync(USER_REG_INFO) as Promise<RegistrationInfo>;
+    return AsyncStorage.getItem(USER_REG_INFO);
   }
 
   async setUserCredentials(credentials?: VerifyOTPIT) {
-    try {
-      const userCredentials = await this.getUserCredentials();
-      await this.MMKV?.setMapAsync(DEVICE_ID, {
-        ...userCredentials,
-        ...credentials
-      });
-    } catch (error) {
-      await this.MMKV?.setMapAsync(DEVICE_ID, { ...credentials });
+    const storageData = await this.getUserCredentials();
+
+    if (!storageData) {
+      return await AsyncStorage.setItem(
+        DEVICE_ID,
+        JSON.stringify({ ...credentials })
+      );
     }
+
+    const userCredentials = JSON.parse(storageData) as VerifyOTPIT;
+
+    await AsyncStorage.setItem(
+      DEVICE_ID,
+      JSON.stringify({ ...userCredentials, ...credentials })
+    );
   }
 
   async setUserPassport(passport?: PassportInterface) {
-    try {
-      const userPassport = await this.getUserPassport();
-      await this.MMKV?.setMapAsync(USER_PASSPORT_INFO, {
-        ...userPassport,
-        ...passport
-      });
-    } catch (error) {
-      await this.MMKV?.setMapAsync(USER_PASSPORT_INFO, { ...passport });
+    const storageData = await this.getUserPassport();
+
+    if (!storageData) {
+      return await AsyncStorage.setItem(
+        USER_PASSPORT_INFO,
+        JSON.stringify({ ...passport })
+      );
     }
+
+    const userPassport = JSON.parse(storageData) as PassportInterface;
+
+    await AsyncStorage.setItem(
+      USER_PASSPORT_INFO,
+      JSON.stringify({ ...userPassport, ...passport })
+    );
   }
 
   async getUserPassport() {
-    return this.MMKV?.getMapAsync(USER_PASSPORT_INFO) as Promise<
-      PassportInterface
-    >;
+    return AsyncStorage.getItem(USER_PASSPORT_INFO);
   }
 
-  async checkTagModal() {
-    return this.MMKV?.getMapAsync(SHOW_MODAL) as Promise<ShowModal>;
+  async getTagModal() {
+    return AsyncStorage.getItem(SHOW_MODAL);
   }
 
   async setTagModal(id?: ShowModal) {
-    try {
-      const tagModal = await this.checkTagModal();
-      let data = { community: [...tagModal.community, ...id?.community!] };
-      await this.MMKV?.setMapAsync(SHOW_MODAL, data);
-    } catch (error) {
-      await this.MMKV?.setMapAsync(SHOW_MODAL, { ...id! });
+    const storageData = await this.getTagModal();
+
+    if (!storageData) {
+      return await AsyncStorage.setItem(SHOW_MODAL, JSON.stringify({ ...id! }));
     }
+
+    const tagModal = JSON.parse(storageData) as ShowModal;
+
+    const data = { community: [...tagModal.community, ...id?.community!] };
+    await AsyncStorage.setItem(SHOW_MODAL, JSON.stringify(data));
   }
 
   async removeTagModal(community?: string) {
-    try {
-      const currentTagModal = await this.checkTagModal();
-      let communityIndex = null;
-      if (currentTagModal.community?.length === 0) {
-        await this.setTagModal({ community: [] });
-        await this.MMKV?.setMapAsync(SHOW_MODAL, { community: [] });
-      }
-      if (currentTagModal.community.length === 1) {
-        currentTagModal.community.pop();
-        await this.setTagModal({ community: [] });
-        await this.MMKV?.setMapAsync(SHOW_MODAL, { community: [] });
-      }
-      if (currentTagModal.community.length) {
-        //Remove community from tagModal
-        const filteredId = currentTagModal?.community?.filter(
-          (id) => id !== community
-        );
-        //Set tag modal to updated version
-        await this.setTagModal({ community: filteredId });
-        await this.MMKV?.setMapAsync(SHOW_MODAL, { community: filteredId });
-      }
-    } catch (error) {
-      await this.MMKV?.setMapAsync(SHOW_MODAL, []);
+    const storageData = await this.getTagModal();
+
+    if (!storageData) return;
+
+    const currentTagModal = JSON.parse(storageData) as ShowModal;
+
+    if (currentTagModal.community?.length === 0) {
+      await this.setTagModal({ community: [] });
+    }
+
+    if (currentTagModal.community.length === 1) {
+      currentTagModal.community.pop();
+      await this.setTagModal({ community: [] });
+    }
+
+    if (currentTagModal.community.length) {
+      //Remove community from tagModal
+      const filteredId = currentTagModal?.community?.filter(
+        (id) => id !== community
+      );
+      //Set tag modal to updated version
+      await this.setTagModal({ community: filteredId });
     }
   }
 }

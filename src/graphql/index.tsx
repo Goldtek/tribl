@@ -12,6 +12,7 @@ import resolvers from './cache/resolvers';
 import ENVIRONMENT_VARIABLES from '../config';
 import Storage from '../libs/storage';
 import { crashlytics } from '../firebase/config';
+import { VerifyOTPIT } from './types';
 
 // Create a Http link:
 const httpLink = new HttpLink({
@@ -40,12 +41,12 @@ const link = split(
 );
 
 const request = async (operation: Operation) => {
-  try {
-    const credentials = await Storage.getUserCredentials();
-    operation.setContext({ headers: { authorization: credentials?.id_token } });
-  } catch (error) {
-    operation.setContext({ headers: { authorization: undefined } });
+  const storageData = await Storage.getUserCredentials();
+  if (!storageData) {
+    return operation.setContext({ headers: { authorization: undefined } });
   }
+  const credentials = JSON.parse(storageData) as VerifyOTPIT;
+  operation.setContext({ headers: { authorization: credentials?.id_token } });
 };
 
 const requestLink = new ApolloLink(
