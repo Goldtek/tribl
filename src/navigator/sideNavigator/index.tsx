@@ -147,6 +147,45 @@ export default function DrawerStackNavigator() {
       />
 
       <DrawerStack.Screen
+        name="ThreadChatScreen"
+        component={Screens.ThreadChatScreen}
+        options={({ route }: any) => ({
+          headerShown: true,
+          height: RFValue(90),
+          headerTitle: 'Thread',
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
+          headerRight: () => (
+            <TouchableRipple
+              onPress={() => {}}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Entypo
+                name="dots-three-vertical"
+                color={colors.DISABLED}
+                size={RFValue(17)}
+              />
+            </TouchableRipple>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY
+        })}
+      />
+
+      <DrawerStack.Screen
         name="ChannelChatScreen"
         component={InboxScreens.ChannelChatScreen}
         options={({ route }: any) => {
