@@ -274,6 +274,9 @@ PODS:
     - FirebaseAuth (~> 6.8.0)
   - Firebase/CoreOnly (6.30.0):
     - FirebaseCore (= 6.10.0)
+  - Firebase/Crashlytics (6.30.0):
+    - Firebase/CoreOnly
+    - FirebaseCrashlytics (~> 4.4.0)
   - Firebase/Database (6.30.0):
     - Firebase/CoreOnly
     - FirebaseDatabase (~> 6.5.0)
@@ -297,6 +300,12 @@ PODS:
     - GoogleUtilities/Environment (~> 6.7)
     - GoogleUtilities/Logger (~> 6.7)
     - nanopb (~> 1.30905.0)
+  - FirebaseCrashlytics (4.4.0):
+    - FirebaseCore (~> 6.10)
+    - FirebaseInstallations (~> 1.6)
+    - GoogleDataTransport (~> 7.2)
+    - nanopb (~> 1.30905.0)
+    - PromisesObjC (~> 1.2)
   - FirebaseDatabase (6.5.0):
     - FirebaseCore (~> 6.10)
     - leveldb-library (~> 1.22)
@@ -660,6 +669,8 @@ PODS:
     - React
   - react-native-safe-area-context (3.1.8):
     - React-Core
+  - react-native-webview (11.0.2):
+    - React-Core
   - React-RCTActionSheet (0.63.0):
     - React-Core/RCTActionSheetHeaders (= 0.63.0)
   - React-RCTAnimation (0.63.0):
@@ -745,6 +756,10 @@ PODS:
     - Firebase/Auth (~> 6.30.0)
     - React
     - RNFBApp
+  - RNFBCrashlytics (10.3.1):
+    - Firebase/Crashlytics (~> 6.30.0)
+    - React-Core
+    - RNFBApp
   - RNFBDatabase (10.1.1):
     - Firebase/Database (~> 6.30.0)
     - React-Core
@@ -776,9 +791,6 @@ PODS:
     - React
   - RNScreens (2.11.0):
     - React
-  - RNSentry (1.8.2):
-    - React
-    - Sentry (~> 5.2.0)
   - RNSVG (12.1.0):
     - React
   - RNUxcam (5.2.0):
@@ -790,9 +802,6 @@ PODS:
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
-  - Sentry (5.2.2):
-    - Sentry/Core (= 5.2.2)
-  - Sentry/Core (5.2.2)
   - TOCropViewController (2.5.5)
   - UMAppLoader (1.2.0)
   - UMBarCodeScannerInterface (5.2.1)
@@ -885,6 +894,7 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
   - React-RCTBlob (from `../node_modules/react-native/Libraries/Blob`)
@@ -905,6 +915,7 @@ DEPENDENCIES:
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
+  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBDatabase (from `../node_modules/@react-native-firebase/database`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
@@ -914,7 +925,6 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
-  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNUxcam (from `../node_modules/react-native-ux-cam`)
   - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
@@ -943,6 +953,7 @@ SPEC REPOS:
     - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreDiagnostics
+    - FirebaseCrashlytics
     - FirebaseDatabase
     - FirebaseFirestore
     - FirebaseInstallations
@@ -971,7 +982,6 @@ SPEC REPOS:
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
-    - Sentry
     - TOCropViewController
     - UXCam
     - YogaKit
@@ -1071,6 +1081,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-webview:
+    :path: "../node_modules/react-native-webview"
   React-RCTActionSheet:
     :path: "../node_modules/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -1111,6 +1123,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
     :path: "../node_modules/@react-native-firebase/auth"
+  RNFBCrashlytics:
+    :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBDatabase:
     :path: "../node_modules/@react-native-firebase/database"
   RNFBFirestore:
@@ -1129,8 +1143,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
-  RNSentry:
-    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNUxcam:
@@ -1191,6 +1203,7 @@ SPEC CHECKSUMS:
   FirebaseAuth: 300433de340c1b058dbb8aec224a3f1bcfda5184
   FirebaseCore: 9a41e2de78fef10f63cee30ab10e2945266bc1fc
   FirebaseCoreDiagnostics: 7535fe695737f8c5b350584292a70b7f8ff0357b
+  FirebaseCrashlytics: 859918905322e8816d2b5ab7fe54bf5a0c84d21c
   FirebaseDatabase: d85b47213273708e48c972012b39105f76229588
   FirebaseFirestore: ff82cd15f8ed3b417c307eb729e3e2e68aad0bdd
   FirebaseInstallations: 466c7b4d1f58fe16707693091da253726a731ed2
@@ -1247,6 +1260,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-restart: d19a0f8d053d065fe64cd2baebb6487111c77149
   react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
+  react-native-webview: dfd7202ff115c44d3ea401c2f36122fb3ac79f07
   React-RCTActionSheet: aadd91a1d6cbfae50dd41f140004f816e9e47ade
   React-RCTAnimation: 7fa2ef6c0ef1e3f0b7d2261c827ec94412deb5e6
   React-RCTBlob: ccbbc70295aee3a76a70323b48f63fb7a7fcffd6
@@ -1267,6 +1281,7 @@ SPEC CHECKSUMS:
   RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
   RNFBApp: 570b136767f588b7eef0ab918284e9fe364d0c3e
   RNFBAuth: 8fd5ea881020a13deae2ca3e9810e30d15ce42ac
+  RNFBCrashlytics: ca8473a6f5326399a20b5faa7c5a2d95d8bd3125
   RNFBDatabase: 15279cd816d8a1916b7cabc22dad92c31e335893
   RNFBFirestore: af1be97b4fa9cede20b34f724c8e3260c6e2540d
   RNFBMessaging: eba0f7304bde2a6e785caa8661f8368df757272a
@@ -1276,12 +1291,10 @@ SPEC CHECKSUMS:
   RNPermissions: 5df468064df661a4c8c017e2791ce90d7695eea5
   RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
   RNScreens: 0e91da98ab26d5d04c7b59a9b6bd694124caf88c
-  RNSentry: cff88174a0b2e0289b2efe5be1abba1f6c54269d
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNUxcam: 5fda8c568f9788b78eefc6637d5c95450086d077
   SDWebImage: a31ee8e90a97303529e03fb0c333eae0eacb88e9
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
-  Sentry: 8fa58a051237554f22507fb483b9a1de0171a2dc
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   UMAppLoader: 61049c8d55590b74e9ae1d5429bf68d96b4a2528
   UMBarCodeScannerInterface: e5e4c87797d3d01214e25cd1618866caf5d4f17f

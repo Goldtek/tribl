@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Title, Button, Paragraph } from 'react-native-paper';
-import * as Sentry from '@sentry/react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation } from '@apollo/react-hooks';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +13,7 @@ import {
 } from 'react-native';
 import { DEVICE_OS } from '../../utils/device';
 import { JOIN_COMMUNITY } from '../../graphql/server/mutations';
+import { crashlytics } from '../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -47,7 +47,7 @@ function JoinCommunity(props: JoinCommunityProp) {
       await joinCommunity();
       setState({ ...state, loading: false });
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
       setState({ ...state, loading: false });
     }
   };

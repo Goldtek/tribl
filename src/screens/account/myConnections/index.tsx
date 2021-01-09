@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Feather } from '@expo/vector-icons';
 import { StatusBar, FlatList, TouchableHighlight } from 'react-native';
 import { NavigationInterface } from '../../types';
@@ -12,15 +12,20 @@ import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
 import Connection from './widget';
 import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
+import { TOGGLE_SIDE_MENU } from '../../../graphql/cache/mutations';
 import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/myConnectionSkeleton';
 import {
   MyConnectionsInterface,
   PassportInterface,
-  ShowConnectionNotificationBadge
+  ShowConnectionNotificationBadge,
+  ShowSideMenu
 } from '../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
-import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/query';
+import {
+  GET_CONNECTION_NOTIFICATION_BADGE,
+  GET_SIDE_MENU
+} from '../../../graphql/cache/query';
 import { PAGINATION_DEFAULT } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -110,6 +115,14 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     <Connection key={item.id} {...item} />
   );
 
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
+
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
+
+  const toggleMenu = () => {
+    toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
+  };
+
   return (
     <Fragment>
       <StatusBar translucent barStyle="dark-content" />
@@ -130,7 +143,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           <TouchableHighlight
             {...props}
             onPress={() => {
-              props.navigation.toggleDrawer();
+              toggleMenu();
               logEvent('open drawer', { from: 'community' });
             }}
             underlayColor={hexToRGB(colors.PRIMARY, 0.1)}

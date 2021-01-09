@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { ApolloLink, Observable, Operation, split } from 'apollo-link';
-import * as Sentry from '@sentry/react-native';
 import { ApolloProvider as Provider } from '@apollo/react-hooks';
 import { WebSocketLink } from 'apollo-link-ws';
 import { ApolloClient } from 'apollo-client';
@@ -12,6 +11,7 @@ import cache from './cache';
 import resolvers from './cache/resolvers';
 import ENVIRONMENT_VARIABLES from '../config';
 import Storage from '../libs/storage';
+import { crashlytics } from '../firebase/config';
 
 // Create a Http link:
 const httpLink = new HttpLink({
@@ -71,10 +71,11 @@ export const client = new ApolloClient<NormalizedCacheObject>({
   link: ApolloLink.from([
     onError(({ graphQLErrors, networkError }) => {
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
-      if (graphQLErrors) Sentry.captureException(graphQLErrors);
+      // @ts-ignore
+      if (graphQLErrors) crashlytics.recordError(graphQLErrors);
 
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
-      if (networkError) Sentry.captureException(networkError);
+      if (networkError) crashlytics.recordError(networkError);
     }),
     requestLink,
     link

@@ -10,11 +10,18 @@ import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import GradientButton from '../../components/gradientButton';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
-import { useQuery } from '@apollo/react-hooks';
-import { ShowConnectionNotificationBadge } from '../../graphql/types';
-import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import {
+  ShowConnectionNotificationBadge,
+  ShowSideMenu
+} from '../../graphql/types';
+import {
+  GET_CONNECTION_NOTIFICATION_BADGE,
+  GET_SIDE_MENU
+} from '../../graphql/cache/query';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
+import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
 
 const ChatStack = createStackNavigator();
 
@@ -28,6 +35,14 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
   const { data } = useQuery<ShowConnectionNotificationBadge>(
     GET_CONNECTION_NOTIFICATION_BADGE
   );
+
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
+
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
+
+  const toggleMenu = () => {
+    toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
+  };
 
   return (
     <ChatStack.Navigator
@@ -43,7 +58,7 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
             <TouchableHighlight
               {...props}
               onPress={() => {
-                navigation.toggleDrawer();
+                toggleMenu();
                 Mixpanel.track('User Taps Side Drawer', {
                   info: `User taps side drawer on inbox screen`,
                   'Activity Screen': 'Inbox Screen'

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
-import * as Sentry from '@sentry/react-native';
 import { TouchableRipple, Text } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -13,6 +12,7 @@ import { DEVICE_FULL_HEIGHT } from '../../../../utils/device';
 import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
 import { UPDATE_PASSPORT } from '../../../../graphql/server/mutations';
 import { MyPassportInterface } from '../../../../graphql/types';
+import { crashlytics } from '../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -121,7 +121,7 @@ function PrivacyModal(props: any) {
     try {
       const { data } = await updatePassport();
     } catch (error) {
-      Sentry.captureException(error);
+      crashlytics.recordError(error);
     }
   };
 

@@ -12,10 +12,17 @@ import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import GradientButton from '../../components/gradientButton';
-import { useQuery } from '@apollo/react-hooks';
-import { GET_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/query';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import {
+  GET_CONNECTION_NOTIFICATION_BADGE,
+  GET_SIDE_MENU
+} from '../../graphql/cache/query';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
-import { ShowConnectionNotificationBadge } from '../../graphql/types';
+import {
+  ShowConnectionNotificationBadge,
+  ShowSideMenu
+} from '../../graphql/types';
+import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
 import { DEVICE_OS } from '../../utils/device';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
@@ -35,6 +42,14 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
     GET_CONNECTION_NOTIFICATION_BADGE
   );
+
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
+
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
+
+  const toggleMenu = () => {
+    toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
+  };
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -76,7 +91,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             <TouchableHighlight
               {...props}
               onPress={() => {
-                navigation.toggleDrawer();
+                toggleMenu();
                 Mixpanel.track('User Taps Side Drawer', {
                   info: `User taps side drawer on community screen`,
                   'Activity Screen': 'Community Screen'
@@ -150,7 +165,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             <TouchableHighlight
               {...props}
               onPress={() => {
-                navigation.toggleDrawer();
+                toggleMenu();
                 Mixpanel.track('User Taps Side Drawer', {
                   info: `User taps side drawer on community search screen`,
                   'Activity Screen': 'Community Search Screen'

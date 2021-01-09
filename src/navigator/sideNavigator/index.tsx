@@ -15,14 +15,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Entypo, Ionicons } from '@expo/vector-icons';
+import { Ionicons, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../graphql/server/mutations';
-import DrawerNavigator from './drawer';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { useThemeContext } from '../../theme';
-import Screens from '../../screens/inbox';
+import InboxScreens from '../../screens/inbox';
+import AccountScreens from '../../screens/account';
 import CommunityScreens from '../../screens/community';
 import Firechat from '../../firebase';
 import MemberDetailScreen from '../../screens/community/memberPassport';
@@ -30,9 +30,9 @@ import CommunityListScreen from '../../screens/passport/communityListScreen';
 import CommunityDetailScreen from '../../screens/community/detail';
 import { DEVICE_OS } from '../../utils/device';
 
-const DrawerStack = createStackNavigator();
-
 import { Container, CountBadge } from './styles';
+
+const DrawerStack = createStackNavigator();
 
 type ParticipantType = {
   avatar: string;
@@ -97,10 +97,19 @@ export default function DrawerStackNavigator() {
 
   return (
     <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
-      <DrawerStack.Screen name="CommunityScreen" component={DrawerNavigator} />
+      <DrawerStack.Screen
+        name="ConnectionRequest"
+        component={AccountScreens.ConnectionRequestScreen}
+      />
+
+      <DrawerStack.Screen
+        name="MyConnections"
+        component={AccountScreens.MyConnectionScreen}
+      />
+
       <DrawerStack.Screen
         name="DirectChatScreen"
-        component={Screens.DirectChatScreen}
+        component={InboxScreens.DirectChatScreen}
         options={({ route }: any) => ({
           headerShown: true,
           height: RFValue(90),
@@ -138,7 +147,7 @@ export default function DrawerStackNavigator() {
       />
       <DrawerStack.Screen
         name="ChannelChatScreen"
-        component={Screens.ChannelChatScreen}
+        component={InboxScreens.ChannelChatScreen}
         options={({ route }: any) => {
           setChatId(route.params?.chatId);
           return {
@@ -365,7 +374,7 @@ export default function DrawerStackNavigator() {
       />
       <DrawerStack.Screen
         name="ConnectionChatScreen"
-        component={Screens.ConnectionChatScreen}
+        component={InboxScreens.ConnectionChatScreen}
         options={({ route }) => ({
           headerShown: true,
           height: RFValue(90),
@@ -404,7 +413,7 @@ export default function DrawerStackNavigator() {
       />
       <DrawerStack.Screen
         name="MessageRequestChatScreen"
-        component={Screens.MessageRequestChatScreen}
+        component={InboxScreens.MessageRequestChatScreen}
         options={({ route }: any) => ({
           headerShown: true,
           height: RFValue(90),
@@ -599,7 +608,7 @@ export default function DrawerStackNavigator() {
       />
       <DrawerStack.Screen
         name="NewMessageScreen"
-        component={Screens.NewMessageScreen}
+        component={InboxScreens.NewMessageScreen}
         options={{
           headerTitle: t(`community.chat.chatTitle`),
           headerStyle: GLOBAL_HEADER_STYLE
@@ -607,7 +616,7 @@ export default function DrawerStackNavigator() {
       />
       <DrawerStack.Screen
         name="MessageRequestScreen"
-        component={Screens.MessageRequestScreen}
+        component={InboxScreens.MessageRequestScreen}
         options={{
           headerShown: true,
           headerBackTitleVisible: false,
@@ -640,7 +649,7 @@ export default function DrawerStackNavigator() {
       />
       <DrawerStack.Screen
         name="ChannelMembersScreen"
-        component={Screens.ChannelMembersScreen}
+        component={InboxScreens.ChannelMembersScreen}
         options={{
           headerShown: true,
           headerBackTitleVisible: false,
