@@ -1,11 +1,5 @@
-import React, { Fragment, useRef } from 'react';
-import {
-  Dimensions,
-  TouchableOpacity,
-  Text,
-  View,
-  SafeAreaView
-} from 'react-native';
+import React, { Fragment, useState } from 'react';
+import { TouchableOpacity, View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Modal from 'react-native-modal';
 import {
@@ -14,28 +8,38 @@ import {
   FontAwesome
 } from '@expo/vector-icons';
 import FastImage from 'react-native-fast-image';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import { ConnectionBadgeWrapper } from '../../bottomNavigator/styles';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { ShowConnectionNotificationBadge } from '../../../graphql/types';
 import {
+  ActiveSideMenuRequestInterface,
+  ShowConnectionNotificationBadge
+} from '../../../graphql/types';
+import {
+  GET_ACTIVE_SIDE_MENU_STATE,
   GET_CONNECTION_NOTIFICATION_BADGE,
-  GET_SIDE_MENU_STATE
+  GET_SIDE_MENU
 } from '../../../graphql/cache/query';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { MyPassportInterface, ShowSideMenu } from '../../../graphql/types';
-import { APP_VERSION, DEVICE_FULL_HEIGHT } from '../../../utils/device';
-import { TOGGLE_SIDE_MENU } from '../../../graphql/cache/mutations';
-import { rootNavigator } from '../../../constants';
+import { APP_VERSION, DEVICE_FULL_WIDTH } from '../../../utils/device';
+import {
+  CHANGE_ACTIVE_SIDE_MENU_STATE,
+  TOGGLE_SIDE_MENU
+} from '../../../graphql/cache/mutations';
+import { navigationRef } from '../../../constants';
+import hexToRGB from '../../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { DrawerFooter, ProfileContainer } from './styles';
+import {
+  Container,
+  DrawerFooter,
+  MenuContainer,
+  ProfileContainer,
+  ConnectionBadgeWrapper
+} from './styles';
 
-const { width } = Dimensions.get('window');
-
-export default function SideMenuModal() {
-  const navigation = rootNavigator;
+export default function CustomDrawerComponent() {
+  const navigation = navigationRef?.current;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -43,30 +47,37 @@ export default function SideMenuModal() {
     GET_CONNECTION_NOTIFICATION_BADGE
   );
 
+  const { data: sideMenuData } = useQuery<ActiveSideMenuRequestInterface>(
+    GET_ACTIVE_SIDE_MENU_STATE
+  );
+
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
-  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU_STATE);
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
   const userDetails = userData?.myPassport;
 
-  const [changeSideMenuState] = useMutation(TOGGLE_SIDE_MENU);
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
+  const [changeSideMenuState] = useMutation(CHANGE_ACTIVE_SIDE_MENU_STATE);
 
-  const toggleSideMenu = () => {
-    drawerData?.showSideMenu === false
-      ? changeSideMenuState({
-          variables: { showSideMenu: true }
-        })
-      : changeSideMenuState({
-          variables: { showSideMenu: false }
-        });
+  const toggleMenu = () => {
+    toggleSideMenu({
+      variables: { showSideMenu: !drawerData?.showSideMenu }
+    });
+  };
+
+  const changeSideMenu = (menu: string) => {
+    changeSideMenuState({ variables: { activeSideMenu: menu } });
   };
 
   const sideMenuScreens = [
     {
+      key: 'drawer_community_key',
       name: `community.sideNav.community`,
       onPress: () => {
-        navigation.navigate('CommunityScreen');
-        toggleSideMenu();
+        changeSideMenu('drawer_community_key');
+        navigation?.navigate('CommunityScreen');
+        toggleMenu();
       },
       drawerIcon: (
         <MaterialCommunityIcons
@@ -77,12 +88,12 @@ export default function SideMenuModal() {
       )
     },
     {
+      key: 'drawer_request_key',
       name: `community.sideNav.request`,
       onPress: () => {
-        navigation.navigate('DrawerScreen', {
-          screen: 'ConnectionRequest'
-        });
-        toggleSideMenu();
+        changeSideMenu('drawer_request_key');
+        navigation?.navigate('DrawerScreen', { screen: 'ConnectionRequest' });
+        toggleMenu();
       },
       drawerIcon: (
         <Fragment>
@@ -98,24 +109,27 @@ export default function SideMenuModal() {
       )
     },
     {
+      key: 'drawer_connection_key',
       name: `community.sideNav.connection`,
       onPress: () => {
-        navigation.navigate('DrawerScreen', {
-          screen: 'MyConnections'
-        });
-        toggleSideMenu();
+        changeSideMenu('drawer_connection_key');
+        navigation?.navigate('DrawerScreen', { screen: 'MyConnections' });
+        toggleMenu();
       },
       drawerIcon: (
         <SimpleLineIcons name="user" size={24} color={colors.PRIMARY_TEXT} />
       )
     },
     {
+      key: 'drawer_policy_key',
       name: `community.sideNav.policy`,
       onPress: () => {
-        navigation.navigate('DrawerScreen', {
-          screen: 'PrivacyPolicyScreen'
+        navigation?.navigate('AccountSettingScreen', {
+          screen: 'PrivacyPolicyScreen',
+          params: { previousMenu: sideMenuData?.activeSideMenu }
         });
-        toggleSideMenu();
+        changeSideMenu('drawer_policy_key');
+        toggleMenu();
       },
       drawerIcon: (
         <FontAwesome name="user-secret" size={24} color={colors.PRIMARY_TEXT} />
@@ -126,26 +140,17 @@ export default function SideMenuModal() {
   return (
     <Modal
       isVisible={drawerData?.showSideMenu}
-      onBackdropPress={toggleSideMenu}
-      onSwipeComplete={toggleSideMenu}
+      onBackdropPress={toggleMenu}
+      onSwipeComplete={toggleMenu}
       animationIn="slideInLeft"
       animationOut="slideOutLeft"
       swipeDirection="left"
-      useNativeDriver // Faster animation
+      useNativeDriver
       hideModalContentWhileAnimating
       propagateSwipe
-      style={{
-        margin: 0,
-        width: width * 0.75
-      }} // Needs to contain the width, 75% of screen width in our case
+      style={{ margin: 0, width: DEVICE_FULL_WIDTH * 0.75 }}
     >
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: '#fff',
-          alignItems: 'center'
-        }}
-      >
+      <Container>
         <ProfileContainer>
           <FastImage
             resizeMode={FastImage.resizeMode.contain}
@@ -154,48 +159,48 @@ export default function SideMenuModal() {
               priority: FastImage.priority.high
             }}
             style={{
-              width: RFValue(80),
-              height: RFValue(80),
-              borderRadius: RFValue(40)
+              width: 80,
+              height: 80,
+              borderRadius: 40
             }}
           />
           <Text
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(17),
-              paddingTop: RFValue(10)
+              fontSize: fonts.LARGE_SIZE,
+              paddingTop: 10
             }}
           >
             {`${userDetails?.firstName} ${userDetails?.lastName}`}
           </Text>
         </ProfileContainer>
 
-        <View
-          style={{
-            flex: 1,
-            marginHorizontal: 10,
-            alignItems: 'center',
-            flexDirection: 'column'
-          }}
-        >
+        <MenuContainer>
           {sideMenuScreens.map((item, index) => {
             return (
               <View
-                key={index}
+                key={item.key}
                 style={{
-                  flexDirection: 'row'
+                  flexDirection: 'row',
+                  marginVertical: 10,
+                  paddingHorizontal: 10,
+                  backgroundColor:
+                    sideMenuData?.activeSideMenu === item.key
+                      ? hexToRGB(colors.PRIMARY_LIGHT, 0.3)
+                      : colors.TRANSPARENT,
+                  borderRadius: 3
                 }}
               >
                 <TouchableOpacity
+                  key={item.key}
                   activeOpacity={0.9}
-                  key={index}
                   style={{
-                    flexDirection: 'row',
                     flex: 1,
-                    alignItems: 'center',
-                    paddingHorizontal: 10,
-                    paddingVertical: 10
+                    flexDirection: 'row',
+                    alignItems: index ? 'baseline' : 'center',
+                    paddingVertical: 10,
+                    paddingHorizontal: 10
                   }}
                   onPress={item.onPress}
                 >
@@ -205,7 +210,7 @@ export default function SideMenuModal() {
                       marginLeft: 20,
                       color: colors.PRIMARY_TEXT,
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      fontSize: fonts.MEDIUM_SIZE,
                       textTransform: 'capitalize'
                     }}
                   >
@@ -215,16 +220,16 @@ export default function SideMenuModal() {
               </View>
             );
           })}
-        </View>
+        </MenuContainer>
 
         <DrawerFooter>
           <Text
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
+              fontSize: fonts.MEDIUM_SIZE,
               textAlign: 'center',
-              lineHeight: RFValue(15)
+              lineHeight: 15
             }}
           >
             {APP_VERSION}
@@ -233,16 +238,16 @@ export default function SideMenuModal() {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
+              fontSize: fonts.MEDIUM_SIZE,
               textAlign: 'center',
-              lineHeight: RFValue(15),
+              lineHeight: 15,
               textTransform: 'capitalize'
             }}
           >
             {t(`community.sideNav.company`)}
           </Text>
         </DrawerFooter>
-      </SafeAreaView>
+      </Container>
     </Modal>
   );
 }

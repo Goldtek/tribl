@@ -39,16 +39,3 @@ export const MenuBadgeWrapper = styled.View`
   border-width: 3px;
   border-color: ${({ theme }) => theme.colors.WHITE};
 `;
-
-export const ConnectionBadgeWrapper = styled.View`
-  width: ${RFValue(13)}px;
-  height: ${RFValue(13)}px;
-  border-radius: ${RFValue(13)}px;
-  background-color: ${({ theme }) => theme.colors.RED};
-  position: absolute;
-  position: absolute;
-  left: ${RFValue(20)}px;
-  top: ${RFValue(20)}px;
-  border-width: 3px;
-  border-color: ${({ theme }) => theme.colors.WHITE};
-`;

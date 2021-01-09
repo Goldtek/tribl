@@ -17,7 +17,7 @@ import {
 } from '../../graphql/types';
 import {
   GET_CONNECTION_NOTIFICATION_BADGE,
-  GET_SIDE_MENU_STATE
+  GET_SIDE_MENU
 } from '../../graphql/cache/query';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
@@ -36,18 +36,12 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
     GET_CONNECTION_NOTIFICATION_BADGE
   );
 
-  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU_STATE);
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
-  const [changeSideMenuState] = useMutation(TOGGLE_SIDE_MENU);
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
 
-  const toggleSideMenu = () => {
-    drawerData?.showSideMenu === false
-      ? changeSideMenuState({
-          variables: { showSideMenu: true }
-        })
-      : changeSideMenuState({
-          variables: { showSideMenu: false }
-        });
+  const toggleMenu = () => {
+    toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
   };
 
   return (
@@ -64,7 +58,7 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
             <TouchableHighlight
               {...props}
               onPress={() => {
-                toggleSideMenu();
+                toggleMenu();
                 Mixpanel.track('User Taps Side Drawer', {
                   info: `User taps side drawer on inbox screen`,
                   'Activity Screen': 'Inbox Screen'

@@ -791,9 +791,6 @@ PODS:
     - React
   - RNScreens (2.11.0):
     - React
-  - RNSentry (1.8.2):
-    - React
-    - Sentry (~> 5.2.0)
   - RNSVG (12.1.0):
     - React
   - RNUxcam (5.2.0):
@@ -805,9 +802,6 @@ PODS:
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
-  - Sentry (5.2.2):
-    - Sentry/Core (= 5.2.2)
-  - Sentry/Core (5.2.2)
   - TOCropViewController (2.5.5)
   - UMAppLoader (1.2.0)
   - UMBarCodeScannerInterface (5.2.1)
@@ -931,7 +925,6 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
-  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNUxcam (from `../node_modules/react-native-ux-cam`)
   - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
@@ -989,7 +982,6 @@ SPEC REPOS:
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
-    - Sentry
     - TOCropViewController
     - UXCam
     - YogaKit
@@ -1151,8 +1143,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
-  RNSentry:
-    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNUxcam:
@@ -1301,12 +1291,10 @@ SPEC CHECKSUMS:
   RNPermissions: 5df468064df661a4c8c017e2791ce90d7695eea5
   RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
   RNScreens: 0e91da98ab26d5d04c7b59a9b6bd694124caf88c
-  RNSentry: cff88174a0b2e0289b2efe5be1abba1f6c54269d
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNUxcam: 5fda8c568f9788b78eefc6637d5c95450086d077
   SDWebImage: a31ee8e90a97303529e03fb0c333eae0eacb88e9
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
-  Sentry: 8fa58a051237554f22507fb483b9a1de0171a2dc
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   UMAppLoader: 61049c8d55590b74e9ae1d5429bf68d96b4a2528
   UMBarCodeScannerInterface: e5e4c87797d3d01214e25cd1618866caf5d4f17f
@@ -1327,4 +1315,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 406204fdf29a203ed7ce4c20ed1e62dece6bab4f
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.0.beta.1

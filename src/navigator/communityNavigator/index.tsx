@@ -15,7 +15,7 @@ import GradientButton from '../../components/gradientButton';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
   GET_CONNECTION_NOTIFICATION_BADGE,
-  GET_SIDE_MENU_STATE
+  GET_SIDE_MENU
 } from '../../graphql/cache/query';
 import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import {
@@ -43,18 +43,12 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
     GET_CONNECTION_NOTIFICATION_BADGE
   );
 
-  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU_STATE);
+  const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
-  const [changeSideMenuState] = useMutation(TOGGLE_SIDE_MENU);
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
 
-  const toggleSideMenu = () => {
-    drawerData?.showSideMenu === false
-      ? changeSideMenuState({
-          variables: { showSideMenu: true }
-        })
-      : changeSideMenuState({
-          variables: { showSideMenu: false }
-        });
+  const toggleMenu = () => {
+    toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
   };
 
   const getMenuHeight = useCallback(() => {
@@ -97,7 +91,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             <TouchableHighlight
               {...props}
               onPress={() => {
-                toggleSideMenu();
+                toggleMenu();
                 Mixpanel.track('User Taps Side Drawer', {
                   info: `User taps side drawer on community screen`,
                   'Activity Screen': 'Community Screen'
@@ -171,7 +165,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             <TouchableHighlight
               {...props}
               onPress={() => {
-                toggleSideMenu();
+                toggleMenu();
                 Mixpanel.track('User Taps Side Drawer', {
                   info: `User taps side drawer on community search screen`,
                   'Activity Screen': 'Community Search Screen'
