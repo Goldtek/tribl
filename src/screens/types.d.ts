@@ -30,6 +30,7 @@ export type RootStackParamList = {
   DirectMessageTab?: Object;
   SignupPassportScreen?: Object;
   ChannelsTab?: Object;
+  DrawerScreen?: Object;
   PrivacyPolicyScreen?: Object;
   MessageRequestTab?: Object;
   CommunityDetailScreen?: Object;
@@ -90,6 +91,7 @@ export type RootStackParamScreensList =
   | 'MessageRequestTab'
   | 'AccountSettingScreen'
   | 'SelectCountry'
+  | 'DrawerScreen'
   | 'SelectCountryScreen'
   | 'CreateAccountScreen'
   | 'MemberDetailScreen'

@@ -42,11 +42,14 @@ function ChannelChatCard(props: ChannelChatProp) {
     new Date(lastMessage.createdAt).getTime() >= new Date(userReadAt).getTime();
 
   const handleNavigation = () => {
-    navigation.navigate('ChannelChatScreen', {
-      title: channel.name,
-      chatId,
-      isMember: true,
-      channel: { community: community.name, name: channel.name }
+    navigation.navigate('DrawerScreen', {
+      screen: 'ChannelChatScreen',
+      params: {
+        title: channel.name,
+        chatId,
+        isMember: true,
+        channel: { community: community.name, name: channel.name }
+      }
     });
   };
 

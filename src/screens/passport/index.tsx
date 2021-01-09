@@ -666,7 +666,11 @@ export default function PassportScreen(props: ScreenProp) {
                 <ConnectionCover>
                   <TouchableRipple
                     style={{ alignItems: 'center' }}
-                    onPress={() => navigation.navigate('MyConnections')}
+                    onPress={() =>
+                      navigation.navigate('DrawerScreen', {
+                        screen: 'MyConnections'
+                      })
+                    }
                   >
                     <Fragment>
                       <Paragraph
@@ -696,9 +700,12 @@ export default function PassportScreen(props: ScreenProp) {
                   <TouchableRipple
                     style={{ alignItems: 'center' }}
                     onPress={() => {
-                      navigation.navigate('CommunityListScreen', {
-                        userTribe: true,
-                        title: t(`community.memberPassport.myTribes`)
+                      navigation.navigate('DrawerScreen', {
+                        screen: 'CommunityListScreen',
+                        params: {
+                          userTribe: true,
+                          title: t(`community.memberPassport.myTribes`)
+                        }
                       });
                     }}
                   >
