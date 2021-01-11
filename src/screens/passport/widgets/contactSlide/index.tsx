@@ -85,6 +85,7 @@ function contactSlide(props: ScreenProp) {
     selectedInterest: string[];
     selectedInterestId: string[];
   }>({
+    ...cacheData,
     date: '',
     firstName: '',
     lastName: '',
@@ -97,8 +98,7 @@ function contactSlide(props: ScreenProp) {
     selectedId: [],
     birthPlaceInput: '',
     selectedInterest: [],
-    selectedInterestId: [],
-    ...cacheData
+    selectedInterestId: []
   });
 
   const currentLocation = state?.currentLocation[0];
@@ -107,6 +107,12 @@ function contactSlide(props: ScreenProp) {
     (async () => {
       if (userDetails) {
         await Storage.setUserPassport({ ...userDetails });
+
+        setState({
+          ...state,
+          ...userDetails,
+          date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`
+        });
       }
     })();
   }, [userDetails]);
@@ -125,15 +131,6 @@ function contactSlide(props: ScreenProp) {
       }
     })();
   }, []);
-
-  useEffect(() => {
-    if (!userDetails) return;
-    setState({
-      ...state,
-      ...userDetails,
-      date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`
-    });
-  }, [userDetails]);
 
   const getBirthplaceDetails = (childData: any) => {
     setState({
@@ -559,6 +556,7 @@ function contactSlide(props: ScreenProp) {
               ))}
             </Fragment>
           )}
+
           {!click ? (
             <TouchableRipple onPress={showIdentityModal(true)}>
               <AddIdentity>+</AddIdentity>
