@@ -53,8 +53,9 @@ export default function SearchScreen(props: ScreenProp) {
   ];
 
   const showSearchScreen = () => {
-    navigation.navigate('CommunityAlgoliaScreen', {
-      indexName: indexName[tabIndex]
+    navigation.navigate('DrawerScreen', {
+      screen: 'CommunityAlgoliaScreen',
+      params: { indexName: indexName[tabIndex] }
     });
     return true;
   };

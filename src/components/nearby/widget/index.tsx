@@ -82,15 +82,15 @@ function NearbyModal(props: NearbyUserProp) {
       });
     }
 
-    rootNavigator.navigate(
-      conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
-      {
+    rootNavigator.navigate('DrawerScreen', {
+      screen: conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      params: {
         title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
         receiverId: id,
         ...member
       }
-    );
+    });
   };
 
   const state = currentLocation[0]?.state;
