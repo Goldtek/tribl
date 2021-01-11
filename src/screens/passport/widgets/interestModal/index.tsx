@@ -30,7 +30,9 @@ function InterestModal(props: any) {
     selectedInterests: new Map(),
     selectedId: new Map()
   });
+
   const { data } = useQuery<InterestInterface>(GET_ALL_INTEREST);
+
   const handleSelect = (selected: string, id: string) => {
     if (!state.selectedInterests.has(selected)) {
       props.interest(state.selectedInterests, state.selectedId);
@@ -52,6 +54,8 @@ function InterestModal(props: any) {
       selectedId: new Map(state.selectedId)
     });
   };
+
+  const interests = Array.from(new Set(data?.Interest));
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -115,7 +119,7 @@ function InterestModal(props: any) {
               marginTop: RFValue(20)
             }}
           >
-            {data?.Interest?.map((interest) => {
+            {interests?.map((interest) => {
               return (
                 <InterestButton
                   key={interest.id}
