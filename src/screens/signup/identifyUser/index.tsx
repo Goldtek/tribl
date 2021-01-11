@@ -62,6 +62,8 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     setState({ ...state, showInstruction: false });
   };
 
+  const identities = Array.from(new Set(data?.Identity));
+
   const handleSubmit = async () => {
     if (!state.selectedIdentities.size) return handleInputError();
     const selectedIdentities = [
@@ -165,7 +167,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
               marginTop: RFValue(20)
             }}
           >
-            {data?.Identity?.map((identity) => (
+            {identities?.map((identity) => (
               <IdentityButton
                 key={identity.id}
                 identity={identity.name}
