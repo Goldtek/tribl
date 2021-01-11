@@ -43,7 +43,10 @@ import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
 import CheckAppUpdates from '../../libs/updates';
-import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/mutations';
+import {
+  CHANGE_ACTIVE_SIDE_MENU_STATE,
+  CHANGE_CONNECTION_NOTIFICATION_BADGE
+} from '../../graphql/cache/mutations';
 import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
@@ -96,9 +99,23 @@ export default function PassportScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
+  const [cache, setCache] = useState({ ...cacheData, details: {} });
+  const [OTAUpdate, setOTAUpdate] = useState(false);
+  const [update, setUpdate] = useState(true);
+
+  const [avatar, setAvatar] = useState<StateType>({
+    uri: cache?.avatar,
+    secure_url: '',
+    formData: null,
+    imageData: { uri: '', mime: '', filename: '', cropRect: null },
+    loading: false
+  });
+
   const { data: userData, refetch } = useQuery<MyPassportInterface>(
     GET_USER_PASSPORT
   );
+
+  const [changeSideMenuState] = useMutation(CHANGE_ACTIVE_SIDE_MENU_STATE);
 
   const { data: firebase, loading: firebaseLoading } = useQuery<
     GenerateFirebaseTokenIT
@@ -118,11 +135,6 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
     variables: { offset: 0, first: PAGINATION_DEFAULT }
-  });
-
-  const [cache, setCache] = useState({
-    ...cacheData,
-    details: {}
   });
 
   const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
@@ -147,9 +159,8 @@ export default function PassportScreen(props: ScreenProp) {
   });
 
   const userDetails = userData?.myPassport;
-
-  const identity = userDetails?.identity.map((item: any) => item.id);
-  const interest = userDetails?.interest.map((item: any) => item.id);
+  const identity = userDetails?.identity.map((item) => item.id);
+  const interest = userDetails?.interest.map((item) => item.id);
   const dateOfBirth = userDetails?.dob;
 
   const currentLocation = cache?.currentLocation[0];
@@ -164,8 +175,6 @@ export default function PassportScreen(props: ScreenProp) {
       logEvent('mixpanel', { 'mixpanel-user-ID': user });
     }
   }, [userDetails]);
-
-  const [update, setUpdate] = useState(true);
 
   const setCacheData = async () => {
     if (userDetails) {
@@ -182,27 +191,9 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  useEffect(() => {
-    setCacheData();
-
-    setTimeout(() => {
-      if (!userDetails) refetch();
-    }, 2000);
-  }, [userDetails]);
-
   useLayoutEffect(() => {
-    getCacheData();
-  }, []);
-
-  const [avatar, setAvatar] = useState<StateType>({
-    uri: cache?.avatar,
-    secure_url: '',
-    formData: null,
-    imageData: { uri: '', mime: '', filename: '', cropRect: null },
-    loading: false
-  });
-
-  const [OTAUpdate, setOTAUpdate] = useState(false);
+    if (!userDetails) getCacheData();
+  }, [userDetails]);
 
   const [location, setLocation] = useState<{
     city?: string;
@@ -211,26 +202,19 @@ export default function PassportScreen(props: ScreenProp) {
     lat?: number | null;
     long?: number | null;
   }>({
-    city: userDetails?.currentLocation[0]?.city,
-    state: userDetails?.currentLocation[0]?.state,
-    country: userDetails?.currentLocation[0]?.country,
-    lat: userDetails?.currentLocation[0]?.lat,
-    long: userDetails?.currentLocation[0]?.long
+    city: currentLocation?.city,
+    state: currentLocation?.state,
+    country: currentLocation?.country,
+    lat: currentLocation?.lat,
+    long: currentLocation?.long
   });
 
-  const [birthPlace, setBirthPlace] = useState<{
-    city?: string;
-    state?: string | null | undefined;
-    country?: string;
-    lat?: number | null;
-    long?: number | null;
-  }>({
-    city: '',
-    state: '',
-    country: '',
-    lat: 0,
-    long: 0
-  });
+  const changeSideMenu = () => {
+    navigation.navigate('DrawerScreen', { screen: 'MyConnections' });
+    changeSideMenuState({
+      variables: { activeSideMenu: 'drawer_connection_key' }
+    });
+  };
 
   const firstName = cache?.details?.firstName;
   const lastName = cache?.details?.lastName;
@@ -256,19 +240,13 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     if (SelectedIdentitiesID?.length > 0) {
-      setCache({
-        ...cache,
-        identity: SelectedIdentitiesID
-      });
+      setCache({ ...cache, identity: SelectedIdentitiesID });
     }
   }, [SelectedIdentitiesID?.length]);
 
   useEffect(() => {
     if (SelectedInterestID?.length > 0) {
-      setCache({
-        ...cache,
-        interest: SelectedInterestID
-      });
+      setCache({ ...cache, interest: SelectedInterestID });
     }
   }, [SelectedInterestID?.length]);
 
@@ -284,17 +262,8 @@ export default function PassportScreen(props: ScreenProp) {
   }, [firstName?.length, lastName?.length, bio?.length]);
 
   useEffect(() => {
-    setCache({
-      ...cache,
-      firstName: userDetails?.firstName,
-      lastName: userDetails?.lastName,
-      bio: userDetails?.bio
-    });
-
-    setAvatar({
-      ...avatar,
-      uri: userDetails?.avatar
-    });
+    setCache({ ...cache, ...userDetails });
+    setAvatar({ ...avatar, uri: userDetails?.avatar });
 
     if (!location.city?.length) {
       setLocation({
@@ -305,7 +274,7 @@ export default function PassportScreen(props: ScreenProp) {
         long: userDetails?.currentLocation[0]?.long
       });
     }
-  }, [userDetails?.id]);
+  }, [userDetails]);
 
   useEffect(() => {
     setCache({ ...cache, identity: identity, interest: interest });
@@ -327,7 +296,7 @@ export default function PassportScreen(props: ScreenProp) {
   useEffect(() => {
     const updateLocation = async () => {
       try {
-        const { data } = await updatePassport();
+        const { data } = await updatePassportLocation();
         if (data) refetch();
       } catch (error) {
         crashlytics.recordError(error);
@@ -347,6 +316,16 @@ export default function PassportScreen(props: ScreenProp) {
     }
     checkUpdate();
   }, [firebaseLoading]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (!userDetails) {
+        refetch().then(({ data }) =>
+          setCache({ ...cache, ...data.myPassport })
+        );
+      }
+    }, 2000);
+  }, [userDetails]);
 
   const checkUpdate = async () => {
     const update = await Updates.checkForUpdateAsync();
@@ -383,6 +362,20 @@ export default function PassportScreen(props: ScreenProp) {
       crashlytics.recordError(error);
     }
   };
+
+  const [updatePassportLocation] = useMutation(UPDATE_PASSPORT, {
+    variables: {
+      payload: {
+        currentLocation: {
+          city: location.city,
+          state: location.state,
+          country: location.country,
+          long: location.long,
+          lat: location.lat
+        }
+      }
+    }
+  });
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -460,10 +453,9 @@ export default function PassportScreen(props: ScreenProp) {
 
   const handleRequest = async () => {
     const formData = await cloudinaryUpload(avatar.imageData);
-
     const { secure_url } = (await formData.json()) as CloudinaryResponseType;
-
     setAvatar({ ...avatar, uri: secure_url, secure_url });
+
     try {
       const { data } = await updatePassport();
       if (data) {
@@ -666,11 +658,7 @@ export default function PassportScreen(props: ScreenProp) {
                 <ConnectionCover>
                   <TouchableRipple
                     style={{ alignItems: 'center' }}
-                    onPress={() =>
-                      navigation.navigate('DrawerScreen', {
-                        screen: 'MyConnections'
-                      })
-                    }
+                    onPress={changeSideMenu}
                   >
                     <Fragment>
                       <Paragraph
