@@ -97,23 +97,28 @@ export default function PassportDetail(props: MemberDetailProps) {
       senderId !== data?.id && messageRequest && !isRequestApproved;
 
     if (approveRequest) {
-      return navigation.navigate('MessageRequestChatScreen', {
-        receiverId: id,
-        chatId: `${data?.conversation?.id}`,
-        title: `${firstName} ${lastName}`,
-        ...passport
+      return navigation.navigate('DrawerScreen', {
+        screen: 'MessageRequestChatScreen',
+        params: {
+          receiverId: id,
+          chatId: `${data?.conversation?.id}`,
+          title: `${firstName} ${lastName}`,
+          ...passport
+        }
       });
     }
 
-    navigation.navigate(
-      data?.conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
-      {
+    navigation.navigate('DrawerScreen', {
+      screen: data?.conversation?.id
+        ? 'DirectChatScreen'
+        : 'ConnectionChatScreen',
+      params: {
         receiverId: id,
         chatId: `${data?.conversation?.id}`,
         title: `${firstName} ${lastName}`,
         ...passport
       }
-    );
+    });
   };
 
   const community = singlePassport?.participantOf;
