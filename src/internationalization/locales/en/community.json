@@ -130,7 +130,7 @@
     "update": "this update",
     "version": "found new version",
     "title": "limited update release",
-    "update_info": "Fix direct message text; Fix user location on new message view; Fix OTA update texts to be dynamic"
+    "update_info": "Fix passport cache issue; Fix user location update calls; Fix app chat view navigation"
   },
   "addTags": {
     "title": "Looks like you’re visiting for the first time.",
