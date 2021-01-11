@@ -51,15 +51,15 @@ function ConnectionCard(props: ConnectionCardProp) {
       });
     }
 
-    navigation.navigate(
-      conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
-      {
+    navigation.navigate('DrawerScreen', {
+      screen: conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      params: {
         title: `${firstName} ${lastName}`,
         chatId: conversation?.id,
         receiverId: id,
         ...props
       }
-    );
+    });
   };
 
   return (
