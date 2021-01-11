@@ -99,7 +99,11 @@ export default function PassportScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const [cache, setCache] = useState({ ...cacheData, details: {} });
+  const [cache, setCache] = useState({
+    ...cacheData,
+    details: { selectedId: [], selectedInterestId: [] }
+  });
+
   const [OTAUpdate, setOTAUpdate] = useState(false);
   const [update, setUpdate] = useState(true);
 
@@ -162,7 +166,6 @@ export default function PassportScreen(props: ScreenProp) {
   const identity = userDetails?.identity.map((item) => item.id);
   const interest = userDetails?.interest.map((item) => item.id);
   const dateOfBirth = userDetails?.dob;
-
   const currentLocation = cache?.currentLocation[0];
 
   useEffect(() => {
@@ -188,6 +191,7 @@ export default function PassportScreen(props: ScreenProp) {
     if (storageData) {
       const passportInfo = JSON.parse(storageData) as PassportInterface;
       setCache({ ...cache, ...passportInfo });
+      setAvatar({ ...avatar, uri: passportInfo.avatar });
     }
   };
 
@@ -223,10 +227,8 @@ export default function PassportScreen(props: ScreenProp) {
   const day = dob?.length ? parseInt(dob[1]) : dateOfBirth?.day;
   const month = dob?.length ? parseInt(dob[0]) : dateOfBirth?.month;
   const year = dob?.length ? parseInt(dob[2]) : dateOfBirth?.year;
-  const identityID = cache?.details?.selectedId || [];
-  const interestID = cache?.details?.selectedInterestId || [];
-  const SelectedIdentitiesID = Array.from(identityID?.values());
-  const SelectedInterestID = Array.from(interestID?.values());
+  const selectedIdentitiesId = cache.details?.selectedId;
+  const selectedInterestId = cache.details?.selectedInterestId;
 
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
@@ -239,16 +241,16 @@ export default function PassportScreen(props: ScreenProp) {
   }, [connectionRequestData?.connectionRequests.length]);
 
   useEffect(() => {
-    if (SelectedIdentitiesID?.length > 0) {
-      setCache({ ...cache, identity: SelectedIdentitiesID });
+    if (selectedIdentitiesId?.length > 0) {
+      setCache({ ...cache, identity: selectedIdentitiesId });
     }
-  }, [SelectedIdentitiesID?.length]);
+  }, [selectedIdentitiesId?.length]);
 
   useEffect(() => {
-    if (SelectedInterestID?.length > 0) {
-      setCache({ ...cache, interest: SelectedInterestID });
+    if (selectedInterestId?.length > 0) {
+      setCache({ ...cache, interest: selectedInterestId });
     }
-  }, [SelectedInterestID?.length]);
+  }, [selectedInterestId?.length]);
 
   useEffect(() => {
     if (firstName?.length || lastName?.length || bio?.length) {
@@ -320,9 +322,10 @@ export default function PassportScreen(props: ScreenProp) {
   useEffect(() => {
     setTimeout(() => {
       if (!userDetails) {
-        refetch().then(({ data }) =>
-          setCache({ ...cache, ...data.myPassport })
-        );
+        refetch().then(({ data }) => {
+          setCache({ ...cache, ...data.myPassport });
+          setAvatar({ ...avatar, uri: data.myPassport.avatar });
+        });
       }
     }, 2000);
   }, [userDetails]);
@@ -380,6 +383,7 @@ export default function PassportScreen(props: ScreenProp) {
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
+        ...userDetails,
         avatar: avatar.uri,
         firstName: cache.firstName,
         lastName: cache.lastName,
@@ -446,7 +450,7 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   const getUserDetails = (childData: any) => {
-    setCache({ ...cache, details: childData });
+    setCache({ ...cache, details: { ...cache.details, ...childData } });
   };
 
   const click = update;

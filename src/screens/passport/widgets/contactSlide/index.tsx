@@ -58,11 +58,7 @@ function contactSlide(props: ScreenProp) {
   const { t } = useTranslation();
   const click = props.click;
 
-  const navigation = useNavigation();
-
-  const { data: userData, loading } = useQuery<MyPassportInterface>(
-    GET_USER_PASSPORT
-  );
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
 
@@ -85,6 +81,7 @@ function contactSlide(props: ScreenProp) {
     selectedInterest: string[];
     selectedInterestId: string[];
   }>({
+    ...cacheData,
     date: '',
     firstName: '',
     lastName: '',
@@ -97,8 +94,7 @@ function contactSlide(props: ScreenProp) {
     selectedId: [],
     birthPlaceInput: '',
     selectedInterest: [],
-    selectedInterestId: [],
-    ...cacheData
+    selectedInterestId: []
   });
 
   const currentLocation = state?.currentLocation[0];
@@ -107,6 +103,12 @@ function contactSlide(props: ScreenProp) {
     (async () => {
       if (userDetails) {
         await Storage.setUserPassport({ ...userDetails });
+
+        setState({
+          ...state,
+          ...userDetails,
+          date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`
+        });
       }
     })();
   }, [userDetails]);
@@ -125,15 +127,6 @@ function contactSlide(props: ScreenProp) {
       }
     })();
   }, []);
-
-  useEffect(() => {
-    if (!userDetails) return;
-    setState({
-      ...state,
-      ...userDetails,
-      date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`
-    });
-  }, [userDetails]);
 
   const getBirthplaceDetails = (childData: any) => {
     setState({
@@ -169,7 +162,6 @@ function contactSlide(props: ScreenProp) {
   const showIdentityModal = useCallback(
     (isVisible: boolean) => () => {
       setIsVisible(isVisible);
-
       return true;
     },
     []
@@ -178,7 +170,6 @@ function contactSlide(props: ScreenProp) {
   const showInterestModal = useCallback(
     (interest: boolean) => () => {
       setInterestVisible(interest);
-
       return true;
     },
     []

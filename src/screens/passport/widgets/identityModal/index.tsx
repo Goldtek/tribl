@@ -31,6 +31,7 @@ function IdentityModal(props: any) {
     selectedIdentities: new Map(),
     selectedId: new Map()
   });
+
   const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
 
   const handleSelect = (selected: string, id: string) => {
@@ -54,6 +55,8 @@ function IdentityModal(props: any) {
       selectedId: new Map(state.selectedId)
     });
   };
+
+  const identities = Array.from(new Set(data?.Identity));
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -117,7 +120,7 @@ function IdentityModal(props: any) {
               marginTop: RFValue(20)
             }}
           >
-            {data?.Identity?.map((identity) => {
+            {identities?.map((identity) => {
               return (
                 <IdentityButton
                   key={identity.id}
