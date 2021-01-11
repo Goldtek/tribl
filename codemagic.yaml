@@ -1,5 +1,4 @@
 
-
 workflows:
     react-native-android:
         name: React Native Android
@@ -120,7 +119,6 @@ workflows:
               script: |  
                 echo $CERTIFICATE_PRIVATE_KEY | base64 --decode > /tmp/certificate.p12
                 app-store-connect fetch-signing-files "com.thetriblnetwork.tribl" --type IOS_APP_ADHOC --create
-
             - name: Use system default keychain
               script: |
                 keychain add-certificates 

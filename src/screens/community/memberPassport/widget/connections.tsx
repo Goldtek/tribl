@@ -54,7 +54,9 @@ export default function MyCommunity(props: MyConnectionProp) {
             borderColor: colors.PRIMARY
           }}
         />
-        <Paragraph>{firstName}</Paragraph>
+        <Paragraph>
+          {firstName.length >= 8 ? `${firstName.slice(0, 7)}...` : firstName}
+        </Paragraph>
       </Fragment>
     </TouchableRipple>
   );
