@@ -58,11 +58,7 @@ function contactSlide(props: ScreenProp) {
   const { t } = useTranslation();
   const click = props.click;
 
-  const navigation = useNavigation();
-
-  const { data: userData, loading } = useQuery<MyPassportInterface>(
-    GET_USER_PASSPORT
-  );
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
 
@@ -166,7 +162,6 @@ function contactSlide(props: ScreenProp) {
   const showIdentityModal = useCallback(
     (isVisible: boolean) => () => {
       setIsVisible(isVisible);
-
       return true;
     },
     []
@@ -175,7 +170,6 @@ function contactSlide(props: ScreenProp) {
   const showInterestModal = useCallback(
     (interest: boolean) => () => {
       setInterestVisible(interest);
-
       return true;
     },
     []
@@ -556,7 +550,6 @@ function contactSlide(props: ScreenProp) {
               ))}
             </Fragment>
           )}
-
           {!click ? (
             <TouchableRipple onPress={showIdentityModal(true)}>
               <AddIdentity>+</AddIdentity>
