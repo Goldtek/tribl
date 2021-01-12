@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, Fragment, useEffect, useLayoutEffect } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
@@ -101,7 +101,7 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [cache, setCache] = useState({
     ...cacheData,
-    details: { selectedId: [], selectedInterestId: [] }
+    details: { selectedIdentity: [], selectedInterest: [] }
   });
 
   const [OTAUpdate, setOTAUpdate] = useState(false);
@@ -163,8 +163,6 @@ export default function PassportScreen(props: ScreenProp) {
   });
 
   const userDetails = userData?.myPassport;
-  const identity = userDetails?.identity.map((item) => item.id);
-  const interest = userDetails?.interest.map((item) => item.id);
   const dateOfBirth = userDetails?.dob;
   const currentLocation = cache?.currentLocation[0];
 
@@ -192,12 +190,9 @@ export default function PassportScreen(props: ScreenProp) {
       const passportInfo = JSON.parse(storageData) as PassportInterface;
       setCache({ ...cache, ...passportInfo });
       setAvatar({ ...avatar, uri: passportInfo.avatar });
+      handleLocationPermission();
     }
   };
-
-  useLayoutEffect(() => {
-    if (!userDetails) getCacheData();
-  }, [userDetails]);
 
   const [location, setLocation] = useState<{
     city?: string;
@@ -220,48 +215,18 @@ export default function PassportScreen(props: ScreenProp) {
     });
   };
 
-  const firstName = cache?.details?.firstName;
-  const lastName = cache?.details?.lastName;
-  const bio = cache?.details?.bio;
-  const dob = cache?.details?.date?.split('/');
+  const dob = cache?.date?.split('/');
   const day = dob?.length ? parseInt(dob[1]) : dateOfBirth?.day;
   const month = dob?.length ? parseInt(dob[0]) : dateOfBirth?.month;
   const year = dob?.length ? parseInt(dob[2]) : dateOfBirth?.year;
-  const selectedIdentitiesId = cache.details?.selectedId;
-  const selectedInterestId = cache.details?.selectedInterestId;
 
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
       changeConnectionNotification({
-        variables: {
-          showConnectionNotificationBadge: true
-        }
+        variables: { showConnectionNotificationBadge: true }
       });
     }
   }, [connectionRequestData?.connectionRequests.length]);
-
-  useEffect(() => {
-    if (selectedIdentitiesId?.length > 0) {
-      setCache({ ...cache, identity: selectedIdentitiesId });
-    }
-  }, [selectedIdentitiesId?.length]);
-
-  useEffect(() => {
-    if (selectedInterestId?.length > 0) {
-      setCache({ ...cache, interest: selectedInterestId });
-    }
-  }, [selectedInterestId?.length]);
-
-  useEffect(() => {
-    if (firstName?.length || lastName?.length || bio?.length) {
-      setCache({
-        ...cache,
-        firstName: firstName,
-        lastName: lastName,
-        bio: bio
-      });
-    }
-  }, [firstName?.length, lastName?.length, bio?.length]);
 
   useEffect(() => {
     setCache({ ...cache, ...userDetails });
@@ -279,11 +244,10 @@ export default function PassportScreen(props: ScreenProp) {
   }, [userDetails]);
 
   useEffect(() => {
-    setCache({ ...cache, identity: identity, interest: interest });
-  }, [identity?.length, interest?.length]);
+    if (!userDetails) getCacheData();
+  }, []);
 
   useEffect(() => {
-    handleLocationPermission();
     getRecommendedCommunities();
     getRecommendedMembers();
     getPopularCommunities();
@@ -294,22 +258,6 @@ export default function PassportScreen(props: ScreenProp) {
     getUserChannels();
     getAllMembers();
   }, []);
-
-  useEffect(() => {
-    const updateLocation = async () => {
-      try {
-        const { data } = await updatePassportLocation();
-        if (data) refetch();
-      } catch (error) {
-        crashlytics.recordError(error);
-      }
-    };
-
-    if (location.city?.length && day && interest && identity) {
-      handleLocation();
-      updateLocation();
-    }
-  }, [cache.identity]);
 
   useEffect(() => {
     if (firebase?.generateFirebaseToken) {
@@ -335,8 +283,6 @@ export default function PassportScreen(props: ScreenProp) {
     setOTAUpdate(update.isAvailable);
   };
 
-  const cancelUpdate = () => setOTAUpdate(false);
-
   const handleLocation = async () => {
     try {
       const { coords } = await Location.getCurrentPositionAsync({
@@ -352,7 +298,7 @@ export default function PassportScreen(props: ScreenProp) {
       const { city, region, country } = currentLocation;
 
       if (currentLocation) {
-        setLocation({
+        await setLocation({
           ...location,
           city: city,
           state: region,
@@ -360,39 +306,39 @@ export default function PassportScreen(props: ScreenProp) {
           lat: coords.latitude,
           long: coords.longitude
         });
+
+        await updatePassport();
+        refetch();
       }
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
-  const [updatePassportLocation] = useMutation(UPDATE_PASSPORT, {
-    variables: {
-      payload: {
-        currentLocation: {
-          city: location.city,
-          state: location.state,
-          country: location.country,
-          long: location.long,
-          lat: location.lat
-        }
-      }
+  useEffect(() => {
+    if (userDetails?.interest || userDetails?.identity) {
+      const interest = [
+        ...userDetails.interest,
+        ...cache.details.selectedInterest
+      ].map(({ id }) => id);
+
+      const identity = [
+        ...userDetails?.identity,
+        ...cache.details.selectedIdentity
+      ].map(({ id }) => id);
+
+      setCache({ ...cache, identity, interest });
     }
-  });
+  }, [cache.details]);
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
-        ...userDetails,
         avatar: avatar.uri,
         firstName: cache.firstName,
         lastName: cache.lastName,
         bio: cache.bio,
-        dob: {
-          day: day,
-          month: month,
-          year: year
-        },
+        dob: { day: day, month: month, year: year },
         identity: cache.identity,
         interest: cache.interest,
         currentLocation: {
@@ -449,24 +395,29 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  const getUserDetails = (childData: any) => {
-    setCache({ ...cache, details: { ...cache.details, ...childData } });
+  const getUserDetails = (details: any) => {
+    setCache({
+      ...cache,
+      ...details,
+      details: { ...cache.details, ...details }
+    });
   };
 
-  const click = update;
-
   const handleRequest = async () => {
-    const formData = await cloudinaryUpload(avatar.imageData);
-    const { secure_url } = (await formData.json()) as CloudinaryResponseType;
-    setAvatar({ ...avatar, uri: secure_url, secure_url });
-
     try {
-      const { data } = await updatePassport();
-      if (data) {
-        refetch();
-        setCacheData();
-        setUpdate(true);
+      if (avatar.imageData) {
+        const formData = await cloudinaryUpload(avatar.imageData);
+        const {
+          secure_url
+        } = (await formData.json()) as CloudinaryResponseType;
+
+        await setAvatar({ ...avatar, uri: secure_url, secure_url });
       }
+
+      await updatePassport();
+      refetch();
+      setCacheData();
+      setUpdate(true);
     } catch (error) {
       crashlytics.recordError(error);
       setUpdate(true);
@@ -779,11 +730,13 @@ export default function PassportScreen(props: ScreenProp) {
               {t(`signup.passportScreen.sharePassport`)}
             </Button>
           </HeaderContainer>
-          <TabViewSlider getUserDetails={getUserDetails} click={click} />
+          <TabViewSlider getUserDetails={getUserDetails} click={update} />
         </Fragment>
       </ScrollView>
 
-      {OTAUpdate ? <CheckAppUpdates cancelUpdate={cancelUpdate} /> : null}
+      {OTAUpdate ? (
+        <CheckAppUpdates cancelUpdate={() => setOTAUpdate(false)} />
+      ) : null}
     </SafeAreaView>
   );
 }

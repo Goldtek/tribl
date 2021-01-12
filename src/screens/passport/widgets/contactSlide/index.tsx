@@ -19,14 +19,13 @@ import {
 import { useQuery } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../utils/timesince';
 import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
-import IdentityModal from '../identityModal';
+import IdentityModal, { IdentityInterface } from '../identityModal';
 import InterestModal from '../interestModal';
 import Storage from '../../../../libs/storage';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
-import { useNavigation } from '@react-navigation/native';
 import { NavigationInterface } from '../../../types';
-import { crashlytics } from '../../../../firebase/config';
 import { userDetails as cacheData } from '../../../../graphql/cache';
+import { InterestsInterface } from '../interestModal/interestButton';
 
 import {
   ContactContainer,
@@ -50,10 +49,10 @@ import {
 
 interface ScreenProp extends NavigationInterface {
   click: boolean;
-  getUserDetails: any;
+  getUserDetails(state: any): void;
 }
 
-function contactSlide(props: ScreenProp) {
+function ContactSlide(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const click = props.click;
@@ -63,7 +62,6 @@ function contactSlide(props: ScreenProp) {
   const userDetails = userData?.myPassport;
 
   const [isVisible, setIsVisible] = useState(false);
-
   const [interestVisible, setInterestVisible] = useState(false);
 
   const [state, setState] = useState<{
@@ -75,11 +73,9 @@ function contactSlide(props: ScreenProp) {
     disableLastName: boolean;
     disableFirstName: boolean;
     showDatePicker: boolean;
-    selectedIdentity: string[];
-    selectedId: string[];
     birthPlaceInput: string;
-    selectedInterest: string[];
-    selectedInterestId: string[];
+    selectedIdentity: IdentityInterface[];
+    selectedInterest: InterestsInterface[];
   }>({
     ...cacheData,
     date: '',
@@ -91,10 +87,8 @@ function contactSlide(props: ScreenProp) {
     disableFirstName: true,
     showDatePicker: false,
     selectedIdentity: [],
-    selectedId: [],
     birthPlaceInput: '',
-    selectedInterest: [],
-    selectedInterestId: []
+    selectedInterest: []
   });
 
   const currentLocation = state?.currentLocation[0];
@@ -128,23 +122,6 @@ function contactSlide(props: ScreenProp) {
     })();
   }, []);
 
-  const getBirthplaceDetails = (childData: any) => {
-    setState({
-      ...state,
-      date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`,
-      firstName: userDetails?.firstName,
-      lastName: userDetails?.lastName,
-      bio: userDetails?.bio
-    });
-  };
-
-  // const handleNavigation = useCallback(() => {
-  //   navigation.navigate('BirthPlaceScreen', {
-  //     details: state,
-  //     getBirthplaceDetails: getBirthplaceDetails
-  //   });
-  // }, []);
-
   const onChange = (selectedDate: Date) => {
     const newDate = formatMessageTime(selectedDate);
     const dob = newDate?.split('/');
@@ -175,25 +152,19 @@ function contactSlide(props: ScreenProp) {
     []
   );
 
-  const getIdentity = (childData: any, idData: any) => {
+  const getIdentity = (identity: IdentityInterface) => {
     setState({
       ...state,
-      selectedIdentity: childData,
-      selectedId: idData
+      selectedIdentity: [...state.selectedIdentity, identity]
     });
   };
 
-  const getInterest = (childData: any, idData: any) => {
+  const getInterest = (interest: InterestsInterface) => {
     setState({
       ...state,
-      selectedInterest: childData,
-      selectedInterestId: idData
+      selectedInterest: [...state.selectedInterest, interest]
     });
   };
-
-  const SelectedIdentities = Array.from(state.selectedIdentity.values());
-
-  const SelectedInterest = Array.from(state.selectedInterest.values());
 
   const { firstName, lastName, bio } = state;
 
@@ -537,10 +508,10 @@ function contactSlide(props: ScreenProp) {
         </Title>
 
         <Identities>
-          {SelectedIdentities?.length ? (
+          {state.selectedIdentity?.length ? (
             <Fragment>
-              {SelectedIdentities.map((identity) => (
-                <IdentityText key={identity}>{identity}</IdentityText>
+              {state.selectedIdentity.map((identity) => (
+                <IdentityText key={identity.id}>{identity.name}</IdentityText>
               ))}
             </Fragment>
           ) : (
@@ -550,6 +521,7 @@ function contactSlide(props: ScreenProp) {
               ))}
             </Fragment>
           )}
+
           {!click ? (
             <TouchableRipple onPress={showIdentityModal(true)}>
               <AddIdentity>+</AddIdentity>
@@ -570,19 +542,20 @@ function contactSlide(props: ScreenProp) {
           {t(`signup.passportScreen.interest`)}
         </Title>
         <Identities>
-          {SelectedInterest?.length ? (
+          {state.selectedInterest?.length ? (
             <Fragment>
-              {SelectedInterest.map((interest) => (
-                <IdentityText key={interest}>{interest}</IdentityText>
+              {state.selectedInterest.map((interest) => (
+                <IdentityText key={interest.id}>{interest.name}</IdentityText>
               ))}
             </Fragment>
           ) : (
             <Fragment>
-              {userDetails?.interest.map((interest: any) => (
+              {userDetails?.interest.map((interest) => (
                 <IdentityText key={interest.id}>{interest.name}</IdentityText>
               ))}
             </Fragment>
           )}
+
           {!click ? (
             <TouchableRipple onPress={showInterestModal(true)}>
               <AddIdentity>+</AddIdentity>
@@ -681,6 +654,7 @@ function contactSlide(props: ScreenProp) {
         closeIdentityModal={showIdentityModal(false)}
         identity={getIdentity}
       />
+
       <InterestModal
         isVisible={interestVisible}
         closeIdentityModal={showInterestModal(false)}
@@ -690,4 +664,4 @@ function contactSlide(props: ScreenProp) {
   );
 }
 
-export default React.memo(contactSlide);
+export default React.memo(ContactSlide);
