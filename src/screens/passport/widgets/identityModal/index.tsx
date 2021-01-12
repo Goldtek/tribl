@@ -1,17 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
-import { Text, Title, Paragraph } from 'react-native-paper';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { Title, Paragraph } from 'react-native-paper';
+import { useQuery } from '@apollo/react-hooks';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Toast } from '../../../../components/rootToaster';
 import GradientButton from '../../../../components/gradientButton';
 import { useThemeContext } from '../../../../theme';
 import { DEVICE_FULL_HEIGHT } from '../../../../utils/device';
-import { GET_ALL_IDENTITIES } from '../../../../graphql/server/query';
-import { IdentitiesInterface } from '../../../../graphql/types';
+import {
+  GET_ALL_IDENTITIES,
+  GET_USER_PASSPORT
+} from '../../../../graphql/server/query';
+import {
+  IdentitiesInterface,
+  MyPassportInterface
+} from '../../../../graphql/types';
 import IdentityButton from './identityButton';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -23,37 +28,52 @@ interface ModalProp {
   closePrivacyModal(): void;
 }
 
+export interface IdentityInterface {
+  name: string;
+  id: string;
+}
+
 function IdentityModal(props: any) {
   const { isVisible, closeIdentityModal } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [state, setState] = useState({
-    selectedIdentities: new Map(),
-    selectedId: new Map()
-  });
+  const [selectedIdentities, setSelectedIdentities] = useState<{
+    [key: string]: IdentityInterface;
+  }>({});
 
   const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
 
-  const handleSelect = (selected: string, id: string) => {
-    if (!state.selectedIdentities.has(selected)) {
-      props.identity(state.selectedIdentities, state.selectedId);
-      return setState({
-        ...state,
-        selectedIdentities: new Map(
-          state.selectedIdentities.set(selected, selected)
-        ),
-        selectedId: new Map(state.selectedId.set(id, id))
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
+  const userDetails = userData?.myPassport;
+
+  useEffect(() => {
+    if (userDetails) {
+      const identities = userDetails?.identity.reduce((acc, identity) => {
+        //@ts-ignore
+        if (!acc[identity.id]) {
+          //@ts-ignore
+          acc[identity.id] = identity;
+        }
+        return acc;
+      }, {});
+
+      setSelectedIdentities({ ...selectedIdentities, ...identities });
+    }
+  }, [userDetails]);
+
+  const handleSelect = (identity: IdentityInterface) => {
+    if (!selectedIdentities[identity.id]) {
+      props.identity(identity);
+      return setSelectedIdentities({
+        ...selectedIdentities,
+        [identity.id]: identity
       });
     }
 
-    state.selectedIdentities.delete(selected);
-    state.selectedId.delete(id);
-    props.identity(state.selectedIdentities, state.selectedId);
-    setState({
-      ...state,
-      selectedIdentities: new Map(state.selectedIdentities),
-      selectedId: new Map(state.selectedId)
-    });
+    props.identity(identity);
+    const { [identity.id]: deletedIdentity, ...rest } = selectedIdentities;
+    setSelectedIdentities({ ...rest });
   };
 
   const identities = Array.from(new Set(data?.Identity));
@@ -124,13 +144,9 @@ function IdentityModal(props: any) {
               return (
                 <IdentityButton
                   key={identity.id}
-                  identity={identity.name}
-                  selected={
-                    state.selectedIdentities.get(identity.name) &&
-                    state.selectedId.get(identity.id)
-                  }
-                  id={identity.id}
-                  handleSelect={handleSelect}
+                  identity={identity}
+                  selected={Boolean(selectedIdentities[identity.id])}
+                  handleSelect={() => handleSelect(identity)}
                 />
               );
             })}
