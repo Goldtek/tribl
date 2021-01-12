@@ -8,21 +8,18 @@ import { GradientContainer, Identity } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface IdentityButtonProp {
-  identity: string;
+  identity: { name: string; id: string };
   selected: boolean;
-  id: string;
-  handleSelect(T: string, K: string): void;
+  handleSelect(): void;
 }
 
 function IdentityButton(props: IdentityButtonProp) {
-  const { identity, handleSelect, selected, id } = props;
+  const { identity, handleSelect, selected } = props;
   const { colors } = useThemeContext();
-
-  const onPress = () => handleSelect(identity, id);
 
   return (
     <TouchableHighlight
-      onPress={onPress}
+      onPress={handleSelect}
       underlayColor={colors.DISABLED}
       style={{
         flex: 1,
@@ -36,7 +33,7 @@ function IdentityButton(props: IdentityButtonProp) {
       }}
     >
       {!selected ? (
-        <Identity>{identity}</Identity>
+        <Identity>{identity.name}</Identity>
       ) : (
         <GradientContainer
           start={{ x: 1, y: 0 }}
@@ -44,7 +41,7 @@ function IdentityButton(props: IdentityButtonProp) {
           colors={[colors.PRIMARY, colors.SECONDARY]}
           style={{ borderRadius: 4 }}
         >
-          <Identity style={{ color: colors.WHITE }}>{identity}</Identity>
+          <Identity style={{ color: colors.WHITE }}>{identity.name}</Identity>
         </GradientContainer>
       )}
     </TouchableHighlight>
