@@ -6,23 +6,25 @@ import { useThemeContext } from '../../../../../theme';
 // IMPORT FOR ALL CUSTOM STYLES
 import { GradientContainer, Interest } from './styles';
 
+export interface InterestsInterface {
+  name: string;
+  id: string;
+}
+
 // DEFINE SCREEN PROP TYPES
 interface InterestButtonProp {
-  interest: string;
   selected: boolean;
-  id: string;
-  handleSelect(T: string, K: string): void;
+  handleSelect(): void;
+  interest: InterestsInterface;
 }
 
 function InterestButton(props: InterestButtonProp) {
-  const { interest, handleSelect, selected, id } = props;
+  const { interest, handleSelect, selected } = props;
   const { colors } = useThemeContext();
-
-  const onPress = () => handleSelect(interest, id);
 
   return (
     <TouchableHighlight
-      onPress={onPress}
+      onPress={handleSelect}
       underlayColor={colors.DISABLED}
       style={{
         flex: 1,
@@ -36,7 +38,7 @@ function InterestButton(props: InterestButtonProp) {
       }}
     >
       {!selected ? (
-        <Interest>{interest}</Interest>
+        <Interest>{interest.name}</Interest>
       ) : (
         <GradientContainer
           start={{ x: 1, y: 0 }}
@@ -44,7 +46,7 @@ function InterestButton(props: InterestButtonProp) {
           colors={[colors.PRIMARY, colors.SECONDARY]}
           style={{ borderRadius: 4 }}
         >
-          <Interest style={{ color: colors.WHITE }}>{interest}</Interest>
+          <Interest style={{ color: colors.WHITE }}>{interest.name}</Interest>
         </GradientContainer>
       )}
     </TouchableHighlight>
