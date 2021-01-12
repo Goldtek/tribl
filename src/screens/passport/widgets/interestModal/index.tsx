@@ -9,9 +9,15 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../../components/gradientButton';
 import { useThemeContext } from '../../../../theme';
 import { DEVICE_FULL_HEIGHT } from '../../../../utils/device';
-import { GET_ALL_INTEREST } from '../../../../graphql/server/query';
-import { InterestInterface } from '../../../../graphql/types';
-import InterestButton from './interestButton';
+import {
+  GET_ALL_INTEREST,
+  GET_USER_PASSPORT
+} from '../../../../graphql/server/query';
+import {
+  InterestInterface,
+  MyPassportInterface
+} from '../../../../graphql/types';
+import InterestButton, { InterestsInterface } from './interestButton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -26,33 +32,44 @@ function InterestModal(props: any) {
   const { isVisible, closeIdentityModal } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const [state, setState] = useState({
-    selectedInterests: new Map(),
-    selectedId: new Map()
-  });
+
+  const [selectedInterests, setSelectedInterests] = useState<{
+    [key: string]: InterestsInterface;
+  }>({});
 
   const { data } = useQuery<InterestInterface>(GET_ALL_INTEREST);
 
-  const handleSelect = (selected: string, id: string) => {
-    if (!state.selectedInterests.has(selected)) {
-      props.interest(state.selectedInterests, state.selectedId);
-      return setState({
-        ...state,
-        selectedInterests: new Map(
-          state.selectedInterests.set(selected, selected)
-        ),
-        selectedId: new Map(state.selectedId.set(id, id))
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
+  const userDetails = userData?.myPassport;
+
+  useEffect(() => {
+    if (userDetails) {
+      const interests = userDetails?.interest.reduce((acc, interests) => {
+        //@ts-ignore
+        if (!acc[interests.id]) {
+          //@ts-ignore
+          acc[interests.id] = interests;
+        }
+        return acc;
+      }, {});
+
+      setSelectedInterests({ ...selectedInterests, ...interests });
+    }
+  }, [userDetails]);
+
+  const handleSelect = (interests: InterestsInterface) => {
+    if (!selectedInterests[interests.id]) {
+      props.interest(interests);
+      return setSelectedInterests({
+        ...selectedInterests,
+        [interests.id]: interests
       });
     }
 
-    state.selectedInterests.delete(selected);
-    state.selectedId.delete(id);
-    props.interest(state.selectedInterests, state.selectedId);
-    setState({
-      ...state,
-      selectedInterests: new Map(state.selectedInterests),
-      selectedId: new Map(state.selectedId)
-    });
+    props.interest(interests);
+    const { [interests.id]: deletedInterests, ...rest } = selectedInterests;
+    setSelectedInterests({ ...rest });
   };
 
   const interests = Array.from(new Set(data?.Interest));
@@ -123,13 +140,9 @@ function InterestModal(props: any) {
               return (
                 <InterestButton
                   key={interest.id}
-                  interest={interest.name}
-                  selected={
-                    state.selectedInterests.get(interest.name) &&
-                    state.selectedId.get(interest.id)
-                  }
-                  id={interest.id}
-                  handleSelect={handleSelect}
+                  interest={interest}
+                  selected={Boolean(selectedInterests[interest.id])}
+                  handleSelect={() => handleSelect(interest)}
                 />
               );
             })}

@@ -160,8 +160,6 @@ export interface PassportInterface {
   lastName: string;
   verified: boolean;
   firstName: string;
-  identity: string[];
-  interest: string[];
   __typename: string;
   countryCode: string;
   phoneNumber: string;
@@ -176,8 +174,10 @@ export interface PassportInterface {
   status: UserAvailability | null;
   conversation: Conversation | null;
   myConnections: PassportInterface[];
-  participantOf?: CommunityInterface[];
   moderatorOf?: CommunityInterface[];
+  participantOf?: CommunityInterface[];
+  interest: { name: string; id: string }[];
+  identity: { name: string; id: string }[];
 }
 
 export interface StoreInterface {
