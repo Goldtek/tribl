@@ -39,3 +39,16 @@ export const Title = styled.Text`
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   ${({ theme }) => theme.channelPreview.title.css}
 `;
+
+export const ListActionText = styled.Text`
+  color: ${({ theme }) => theme.colors.WHITE};
+  font-weight: bold;
+`;
+
+export const ListActionTextWrapper = styled.View<{ color?: string }>`
+  width: 70;
+  justify-content: center;
+  align-items: center;
+  background-color: ${({ theme, color }) =>
+    color ? color : theme.colors.PRIMARY};
+`;
