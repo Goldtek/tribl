@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { TouchableRipple } from 'react-native-paper';
 import truncate from 'lodash/truncate';
 import { useThemeContext } from '../../../../../theme';
@@ -9,9 +9,17 @@ import { useChannelPreviewDisplayAvatar } from 'stream-chat-react-native-core/sr
 import { RFValue } from 'react-native-responsive-fontsize';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import ChannelActions from './ChannelActions';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Details, DetailsTop, Title, Date, StyledMessage } from './styles';
+import {
+  Details,
+  DetailsTop,
+  DetailsBottom,
+  Title,
+  Date,
+  StyledMessage
+} from './styles';
 
 export default function CustomChannelPreview(
   props: ChannelPreviewMessengerProps
@@ -27,16 +35,27 @@ export default function CustomChannelPreview(
 
   const { colors } = useThemeContext();
 
+  const getMuteStatus = channel.muteStatus().muted;
+  const [muted, setMuted] = useState(getMuteStatus);
+
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
-  const handleDeleteAction = async () => {
-    await channel.delete();
-  };
+  const handleDeleteAction = () => channel.delete();
 
-  const handleMuteAction = async () => {
-    await channel.mute();
+  const toggleMuteAction = async () => {
+    try {
+      if (muted) {
+        await channel.unmute();
+        setMuted(false);
+      } else {
+        await channel.mute();
+        setMuted(true);
+      }
+    } catch {
+      setMuted(getMuteStatus);
+    }
   };
 
   return (
@@ -44,7 +63,8 @@ export default function CustomChannelPreview(
       renderRightActions={() => (
         <ChannelActions
           handleDeleteAction={handleDeleteAction}
-          handleMuteAction={handleMuteAction}
+          toggleMuteAction={toggleMuteAction}
+          muted={muted}
         />
       )}
     >
@@ -77,12 +97,21 @@ export default function CustomChannelPreview(
                   : latestMessagePreview?.created_at}
               </Date>
             </DetailsTop>
-            <StyledMessage unread={unread}>
-              {latestMessagePreview?.text &&
-                truncate(latestMessagePreview.text.replace(/\n/g, ' '), {
-                  length: latestMessageLength
-                })}
-            </StyledMessage>
+            <DetailsBottom>
+              <StyledMessage unread={unread}>
+                {latestMessagePreview?.text &&
+                  truncate(latestMessagePreview.text.replace(/\n/g, ' '), {
+                    length: latestMessageLength
+                  })}
+              </StyledMessage>
+              {muted && (
+                <MaterialCommunityIcons
+                  name="volume-off"
+                  size={12}
+                  color={colors.PRIMARY}
+                />
+              )}
+            </DetailsBottom>
           </Details>
         </Fragment>
       </TouchableRipple>
