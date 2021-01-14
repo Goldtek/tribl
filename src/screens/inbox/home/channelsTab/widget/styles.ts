@@ -19,6 +19,10 @@ export const DetailsTop = styled.View`
   justify-content: space-between;
   ${({ theme }) => theme.channelPreview.detailsTop.css}
 `;
+export const DetailsBottom = styled(DetailsTop)`
+  align-items: center;
+  margin-top: 2px;
+`;
 
 export const StyledMessage = styled.Text<{ unread?: number }>`
   color: ${({ theme, unread }) =>
@@ -42,7 +46,9 @@ export const Title = styled.Text`
 
 export const ListActionText = styled.Text`
   color: ${({ theme }) => theme.colors.WHITE};
+  font-size: ${({ theme }) => RFValue(theme.fonts.MEDIUM_SIZE - 1)}px;
   font-weight: bold;
+  text-transform: uppercase;
 `;
 
 export const ListActionTextWrapper = styled.View<{ color?: string }>`
