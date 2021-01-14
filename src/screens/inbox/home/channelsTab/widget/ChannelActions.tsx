@@ -1,13 +1,26 @@
 import React from 'react';
 import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { ListActionText, ListActionTextWrapper } from './styles';
 
-function ChannelActions({ handleDeleteAction, handleMuteAction, icon }: any) {
+type Props = {
+  handleDeleteAction: () => void;
+  toggleMuteAction: () => void;
+  muted: boolean;
+};
+
+function ChannelActions({
+  handleDeleteAction,
+  toggleMuteAction,
+  muted
+}: Props) {
   const { colors } = useThemeContext();
+  const { t } = useTranslation();
+
   return (
     <View
       style={{
@@ -18,38 +31,18 @@ function ChannelActions({ handleDeleteAction, handleMuteAction, icon }: any) {
     >
       <TouchableWithoutFeedback onPress={handleDeleteAction}>
         <ListActionTextWrapper color={colors.RED}>
-          {icon && (
-            <MaterialCommunityIcons
-              name="trash-can"
-              size={35}
-              color={colors.WHITE}
-            />
-          )}
-          {!icon && <ListActionText>DELETE</ListActionText>}
+          <ListActionText>{t(`community.chat.leave_channel`)}</ListActionText>
         </ListActionTextWrapper>
       </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback onPress={handleMuteAction}>
+      <TouchableWithoutFeedback onPress={toggleMuteAction}>
         <ListActionTextWrapper>
-          {icon && (
-            <MaterialCommunityIcons
-              name="volume-off-can"
-              size={35}
-              color={colors.WHITE}
-            />
-          )}
-          {!icon && <ListActionText>MUTE</ListActionText>}
+          <ListActionText>
+            {muted ? t(`community.chat.unmute`) : t(`community.chat.mute`)}
+          </ListActionText>
         </ListActionTextWrapper>
       </TouchableWithoutFeedback>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: 70,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
 
 export default ChannelActions;
