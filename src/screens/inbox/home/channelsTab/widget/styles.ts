@@ -55,6 +55,7 @@ export const ListActionTextWrapper = styled.View<{ color?: string }>`
   width: 70;
   justify-content: center;
   align-items: center;
+  height: 100%;
   background-color: ${({ theme, color }) =>
     color ? color : theme.colors.PRIMARY};
 `;
