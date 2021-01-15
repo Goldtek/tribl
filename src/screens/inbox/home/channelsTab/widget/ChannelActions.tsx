@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { ListActionText, ListActionTextWrapper } from './styles';
+import { TouchableRipple } from 'react-native-paper';
+import hexToRGB from '../../../../../utils/hexToRGB';
 
 type Props = {
   handleDeleteAction: () => void;
@@ -29,18 +30,24 @@ function ChannelActions({
         paddingVertical: 2
       }}
     >
-      <TouchableWithoutFeedback onPress={handleDeleteAction}>
+      <TouchableRipple
+        onPress={handleDeleteAction}
+        rippleColor={hexToRGB(colors.RED, 0.3)}
+      >
         <ListActionTextWrapper color={colors.RED}>
           <ListActionText>{t(`community.chat.leave_channel`)}</ListActionText>
         </ListActionTextWrapper>
-      </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback onPress={toggleMuteAction}>
+      </TouchableRipple>
+      <TouchableRipple
+        onPress={toggleMuteAction}
+        rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
+      >
         <ListActionTextWrapper>
           <ListActionText>
             {muted ? t(`community.chat.unmute`) : t(`community.chat.mute`)}
           </ListActionText>
         </ListActionTextWrapper>
-      </TouchableWithoutFeedback>
+      </TouchableRipple>
     </View>
   );
 }
