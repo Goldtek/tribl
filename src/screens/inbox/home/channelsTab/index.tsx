@@ -63,6 +63,7 @@ function ChannelsTab(props: ScreenProp) {
           sort={sort}
           options={options}
           Preview={CustomChannelPreview}
+          additionalFlatListProps={{ showsVerticalScrollIndicator: false }}
         />
       </Container>
     </Chat>

@@ -275,7 +275,7 @@ export default function DrawerStackNavigator() {
                   />
                 </TouchableRipple>
 
-                {channelMembers.length === 1 ? (
+                {channelMembers && channelMembers?.length === 1 ? (
                   <Surface
                     style={{
                       width: RFValue(40),
@@ -314,7 +314,7 @@ export default function DrawerStackNavigator() {
                   </Surface>
                 ) : null}
 
-                {channelMembers.length >= 2 ? (
+                {channelMembers && channelMembers?.length >= 2 ? (
                   <Fragment>
                     <Surface
                       style={{
@@ -327,7 +327,8 @@ export default function DrawerStackNavigator() {
                       <FastImage
                         resizeMode={FastImage.resizeMode.cover}
                         source={{
-                          uri: channelMembers[channelMembers.length - 2].avatar,
+                          uri:
+                            channelMembers[channelMembers?.length - 2]?.avatar,
                           priority: FastImage.priority.high
                         }}
                         style={{
@@ -351,7 +352,8 @@ export default function DrawerStackNavigator() {
                       <FastImage
                         resizeMode={FastImage.resizeMode.cover}
                         source={{
-                          uri: channelMembers[channelMembers.length - 1].avatar,
+                          uri:
+                            channelMembers[channelMembers?.length - 1]?.avatar,
                           priority: FastImage.priority.high
                         }}
                         style={{
