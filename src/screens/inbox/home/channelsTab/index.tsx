@@ -3,6 +3,7 @@ import CustomChannelPreview from './widget';
 import { NavigationInterface } from '../../../types';
 import { tagScreenName } from '../../../../utils/uxcamHelper';
 import { ChannelList, Chat, DefaultCommandType } from 'stream-chat-expo';
+import { useQuery } from '@apollo/react-hooks';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -15,6 +16,8 @@ import {
 } from '../../../../stream/types';
 import { ChannelSort } from 'stream-chat';
 import { useStreamContext } from '../../../../stream';
+import { MyPassportInterface } from '../../../../graphql/types';
+import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
 
 import { Container } from './styles';
 
@@ -25,10 +28,11 @@ function ChannelsTab(props: ScreenProp) {
   const { navigation } = props;
   const { setChannel } = useStreamContext();
 
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
   const filters = {
-    example: 'example-apps',
-    members: { $in: ['ron'] },
-    type: 'messaging'
+    members: { $in: [userData?.myPassport.id] },
+    type: 'team'
   };
 
   const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
@@ -54,13 +58,16 @@ function ChannelsTab(props: ScreenProp) {
           LocalReactionType,
           LocalUserType
         >
+          // @ts-ignore
           filters={filters}
           onSelect={(channel) => {
             setChannel(channel as ChannelType);
-            navigation.navigate('ChannelChatScreen');
+            navigation.navigate('DrawerScreen', {
+              screen: 'ChannelChatScreen'
+            });
           }}
-          options={options}
           sort={sort}
+          options={options}
           Preview={CustomChannelPreview}
         />
       </Container>
