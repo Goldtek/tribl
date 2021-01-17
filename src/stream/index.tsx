@@ -4,6 +4,14 @@ import React, {
   useEffect,
   useState
 } from 'react';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { GET_USER_PASSPORT } from '../graphql/server/query';
+import { GENERATE_STREAMS_TOKEN } from '../graphql/server/mutations';
+import {
+  GenerateStreamsTokenRequestInterface,
+  MyPassportInterface
+} from '../graphql/types';
+import { crashlytics } from '../firebase/config';
 
 import { chatClient, StreamContext, ChannelType, ThreadType } from './types';
 
@@ -11,35 +19,45 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   const [channel, setChannel] = useState<ChannelType>({} as ChannelType);
   const [thread, setThread] = useState<ThreadType>({} as ThreadType);
 
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
+  const [authenticateStream] = useMutation<
+    GenerateStreamsTokenRequestInterface
+  >(GENERATE_STREAMS_TOKEN);
+
   useEffect(() => {
-    const user = {
-      id: 'vishal',
-      name: 'Vishal Narkhede',
-      image: 'https://ca.slack-edge.com/T02RM6X6B-UHGDQJ8A0-31658896398c-512',
-      value: 'vishal'
-    };
+    if (userData?.myPassport) {
+      const user = {
+        id: `${userData?.myPassport.id}`,
+        image: `${userData?.myPassport.avatar}`,
+        name: `${userData?.myPassport.firstName} ${userData?.myPassport.firstName}`,
+        value: `${userData?.myPassport.firstName} ${userData?.myPassport.firstName}`
+      };
 
-    const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmlzaGFsIn0.LpDqH6U8V8Qg9sqGjz0bMQvOfWrWKAjPKqeODYM0Elk`;
+      // Initializes Stream's chat client.
+      // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
+      const initChat = async () => {
+        try {
+          await chatClient.connectUser(
+            user,
+            //@ts-ignore
+            async () => {
+              const { data } = await authenticateStream();
+              return data?.generateStreamsToken.streams_token;
+            }
+          );
+        } catch (error) {
+          crashlytics.recordError(Error(error.message));
+        }
+      };
 
-    // Initializes Stream's chat client.
-    // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
-    const initChat = async () => {
-      const r = await chatClient.connectUser(user, token);
-      console.log(r);
-
-      // We are going to store chatClient in following ChatClientService, so that it can be
-      // accessed in other places. Ideally one would store client in a context provider, so that
-      // component can re-render if client is updated. But in our case, client only gets updated
-      // when chat user is switched - and which case we re-render the entire chat application.
-      // So we don't need to worry about re-rendering every component on updating client.
-    };
-
-    initChat();
+      initChat();
+    }
 
     return () => {
       chatClient.disconnect();
     };
-  }, []);
+  }, [userData?.myPassport]);
 
   return (
     <StreamContext.Provider value={{ channel, thread, setChannel, setThread }}>

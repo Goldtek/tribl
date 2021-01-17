@@ -1,5 +1,6 @@
 import { createContext, SetStateAction, Dispatch } from 'react';
 import { Channel, StreamChat } from 'stream-chat';
+import ENVIRONMENT_VARIABLES from 'react-native-config';
 import {
   DefaultAttachmentType,
   DefaultReactionType,
@@ -26,7 +27,7 @@ export const chatClient = new StreamChat<
   LocalMessageType,
   LocalReactionType,
   LocalUserType
->('q95x9hkbyd6p');
+>(ENVIRONMENT_VARIABLES.TRIBL_STREAM_API_KEY);
 
 export type ChannelType = Channel<
   LocalAttachmentType,
