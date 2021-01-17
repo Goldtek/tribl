@@ -5,7 +5,7 @@ import { useThemeContext } from '../../../theme';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
 import hexToRGB from '../../../utils/hexToRGB';
 import { tagScreenName } from '../../../utils/uxcamHelper';
-import { chatClient } from '../../../stream/types';
+import { chatClient, ThreadType } from '../../../stream/types';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { useStreamContext } from '../../../stream';
 import { useHeaderHeight } from '@react-navigation/stack';
@@ -50,7 +50,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
           <View style={{ flex: 1 }}>
             <MessageList
               onThreadSelect={(thread) => {
-                setThread(thread);
+                setThread(thread as ThreadType);
                 navigation.navigate('ThreadChatScreen');
               }}
             />
