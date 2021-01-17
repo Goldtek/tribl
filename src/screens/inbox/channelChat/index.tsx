@@ -51,9 +51,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
             <MessageList
               onThreadSelect={(thread) => {
                 setThread(thread);
-                navigation.navigate('ThreadChatScreen', {
-                  channelId: channel.id
-                });
+                navigation.navigate('ThreadChatScreen');
               }}
             />
             <MessageInput
