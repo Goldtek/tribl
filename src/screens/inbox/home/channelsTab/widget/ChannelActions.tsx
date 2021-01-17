@@ -1,35 +1,29 @@
 import React from 'react';
-import { View } from 'react-native';
+import { TouchableRipple } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import hexToRGB from '../../../../../utils/hexToRGB';
 import { useThemeContext } from '../../../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { ListActionText, ListActionTextWrapper } from './styles';
-import { TouchableRipple } from 'react-native-paper';
-import hexToRGB from '../../../../../utils/hexToRGB';
+import {
+  ListActionText,
+  ActionContainer,
+  ListActionTextWrapper
+} from './styles';
 
-type Props = {
+type ChannelActionsProps = {
   handleDeleteAction: () => void;
   toggleMuteAction: () => void;
   muted: boolean;
 };
 
-function ChannelActions({
-  handleDeleteAction,
-  toggleMuteAction,
-  muted
-}: Props) {
+export default function ChannelActions(props: ChannelActionsProps) {
+  const { handleDeleteAction, toggleMuteAction, muted } = props;
   const { colors } = useThemeContext();
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        paddingVertical: 2
-      }}
-    >
+    <ActionContainer>
       <TouchableRipple
         onPress={handleDeleteAction}
         rippleColor={hexToRGB(colors.RED, 0.3)}
@@ -48,8 +42,6 @@ function ChannelActions({
           </ListActionText>
         </ListActionTextWrapper>
       </TouchableRipple>
-    </View>
+    </ActionContainer>
   );
 }
-
-export default ChannelActions;
