@@ -245,6 +245,7 @@ export interface JwtTokenResult {
   expires_in: number;
   token_type: string;
   access_token: string;
+  streams_token: string;
   refresh_token: string;
   firebase_token: string;
   passport: PassportInterface;
@@ -285,6 +286,11 @@ export type VerifyOTPInterface = { validateOtp: VerifyOTPIT };
 export type RefreshTokenInterface = { refreshToken: VerifyOTPIT };
 
 export type GenerateFirebaseTokenIT = { generateFirebaseToken: VerifyOTPIT };
+
+// GENERATE STREAMS TOKEN REQUEST (RESPONSE) TYPE
+export type GenerateStreamsTokenRequestInterface = {
+  generateStreamsToken: VerifyOTPIT;
+};
 
 // SERVER CREATE ACCOUNT (RESPONSE) TYPE
 export type CreateAccountInterface = {
