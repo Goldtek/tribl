@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { TouchableRipple } from 'react-native-paper';
+import React, { Fragment, useState } from 'react';
+import { Badge, TouchableRipple } from 'react-native-paper';
 import truncate from 'lodash/truncate';
 import { useThemeContext } from '../../../../../theme';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
@@ -8,17 +8,18 @@ import { useChannelPreviewDisplayName } from 'stream-chat-react-native-core/src/
 import { useChannelPreviewDisplayAvatar } from 'stream-chat-react-native-core/src/components/ChannelPreview/hooks/useChannelPreviewDisplayAvatar';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import ChannelActions from './ChannelActions';
+import ChannelActions from './channelActions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
+  Date,
+  Title,
   Details,
   DetailsTop,
   DetailsBottom,
-  Title,
-  Date,
-  StyledMessage
+  StyledMessage,
+  NotificationContainer
 } from './styles';
 
 export default function CustomChannelPreview(
@@ -104,13 +105,19 @@ export default function CustomChannelPreview(
                     length: latestMessageLength
                   })}
               </StyledMessage>
-              {muted && (
-                <MaterialCommunityIcons
-                  name="volume-off"
-                  size={12}
-                  color={colors.PRIMARY}
-                />
-              )}
+
+              <NotificationContainer>
+                {Boolean(unread) && <Badge>{unread}</Badge>}
+
+                {muted && (
+                  <MaterialCommunityIcons
+                    name="volume-off"
+                    size={12}
+                    color={colors.PRIMARY}
+                    style={{ marginLeft: 10 }}
+                  />
+                )}
+              </NotificationContainer>
             </DetailsBottom>
           </Details>
         </Fragment>
