@@ -148,7 +148,7 @@ export default function DrawerStackNavigator() {
 
       <DrawerStack.Screen
         name="ThreadChatScreen"
-        component={Screens.ThreadChatScreen}
+        component={InboxScreens.ThreadChatScreen}
         options={({ route }: any) => ({
           headerShown: true,
           height: RFValue(90),
