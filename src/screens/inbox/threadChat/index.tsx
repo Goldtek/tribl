@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
-import { Chat, Channel, Thread, MessageInput } from 'stream-chat-expo';
+import { Chat, Channel, Thread } from 'stream-chat-expo';
 import hexToRGB from '../../../utils/hexToRGB';
 import { tagScreenName } from '../../../utils/uxcamHelper';
 import { chatClient } from '../../../stream/types';
@@ -17,7 +17,6 @@ interface ScreenProp extends NavigationInterface {}
 
 function ThreadChatScreen(props: ScreenProp) {
   const { colors } = useThemeContext();
-  const [text, setText] = useState('');
   const { thread, channel } = useStreamContext();
   const chatStyles = useStreamChatTheme();
   const headerHeight = useHeaderHeight();
@@ -48,17 +47,13 @@ function ThreadChatScreen(props: ScreenProp) {
             <Thread
               //@ts-ignore
               thread={thread}
-              MessageInput={() => null}
-            />
-            <MessageInput
-              Input={StreamInputBox}
-              initialValue={text}
-              onChangeText={(text) => setText(text)}
-              additionalTextInputProps={{
-                placeholderTextColor: hexToRGB(colors.STATUS_BAR_COLOR, 0.7),
-                placeholder: 'Reply message here'
+              additionalMessageInputProps={{
+                Input: (props) => <StreamInputBox {...props} />,
+                additionalTextInputProps: {
+                  placeholderTextColor: hexToRGB(colors.STATUS_BAR_COLOR, 0.7),
+                  placeholder: 'Reply message here'
+                }
               }}
-              parent_id={thread?.id}
             />
           </ChartContainer>
         </Channel>
