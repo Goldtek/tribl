@@ -120,7 +120,11 @@
     "leave": "has left the channel!",
     "channelMembers": "view channel members",
     "leaveChannel": "leave channel",
-    "members": "members"
+    "members": "members",
+    "leave_channel": "leave",
+    "delete": "delete",
+    "mute": "mute",
+    "unmute": "unmute"
   },
 
   "update": {
