@@ -225,3 +225,12 @@ export const GENERATE_STREAMS_TOKEN = gql`
     }
   }
 `;
+
+// GET FIREBASE TOKEN
+export const GET_FIREBASE_TOKEN = gql`
+  mutation generateFirebaseToken {
+    generateFirebaseToken {
+      firebase_token
+    }
+  }
+`;

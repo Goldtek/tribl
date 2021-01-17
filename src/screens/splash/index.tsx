@@ -11,10 +11,8 @@ import {
   VerifyOTPIT
 } from '../../graphql/types';
 import { REFRESH_TOKEN } from '../../graphql/server/mutations';
-import {
-  GET_FIREBASE_TOKEN,
-  GET_USER_PASSPORT
-} from '../../graphql/server/query';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
+import { GET_FIREBASE_TOKEN } from '../../graphql/server/mutations';
 import { NavigationInterface } from '../types';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
@@ -33,7 +31,7 @@ export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
   const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN);
-  const [authenticateFirebase, { data: firebase }] = useLazyQuery<
+  const [authenticateFirebase, { data: firebase }] = useMutation<
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 
@@ -73,6 +71,7 @@ export default function SplashScreen(props: ScreenProp) {
 
   useEffect(() => {
     handleAuthentication();
+    authenticateFirebase();
     getUserPassport();
   }, []);
 
