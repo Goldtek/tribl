@@ -11,13 +11,18 @@ import {
   DefaultEventType,
   DefaultUserType
 } from 'stream-chat-expo';
+import { CommunityInterface, PassportInterface } from '../graphql/types';
 
 export interface LocalAttachmentType extends DefaultAttachmentType {}
 export interface LocalReactionType extends DefaultReactionType {}
-export interface LocalChannelType extends DefaultChannelType {}
+export interface LocalChannelType extends DefaultChannelType {
+  community: CommunityInterface;
+}
 export interface LocalMessageType extends DefaultMessageType {}
 export interface LocalEventType extends DefaultEventType {}
-export interface LocalUserType extends DefaultUserType {}
+export interface LocalUserType extends DefaultUserType {
+  user: PassportInterface;
+}
 
 export const chatClient = new StreamChat<
   LocalAttachmentType,
