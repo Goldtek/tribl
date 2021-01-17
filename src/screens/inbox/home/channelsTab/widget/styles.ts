@@ -25,6 +25,10 @@ export const DetailsBottom = styled(DetailsTop)`
   margin-top: 2px;
 `;
 
+export const NotificationContainer = styled(DetailsTop)`
+  align-items: center;
+`;
+
 export const StyledMessage = styled.Text<{ unread?: number }>`
   color: ${({ theme, unread }) =>
     unread
@@ -59,4 +63,8 @@ export const ListActionTextWrapper = styled.View<{ color?: string }>`
   height: 100%;
   background-color: ${({ theme, color }) =>
     color ? color : theme.colors.PRIMARY};
+`;
+
+export const ActionContainer = styled.View`
+  flex-direction: row;
 `;
