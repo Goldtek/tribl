@@ -39,6 +39,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       const initChat = async () => {
         try {
           await chatClient.connectUser(
+            //@ts-ignore
             user,
             //@ts-ignore
             async () => {
@@ -53,10 +54,6 @@ const StreamProvider: FunctionComponent = ({ children }) => {
 
       initChat();
     }
-
-    return () => {
-      chatClient.disconnect();
-    };
   }, [userData?.myPassport]);
 
   return (
