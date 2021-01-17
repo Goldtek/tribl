@@ -25,7 +25,6 @@ import { Container } from './styles';
 interface ScreenProp extends NavigationInterface {}
 
 function ChannelsTab(props: ScreenProp) {
-  const { navigation } = props;
   const { setChannel } = useStreamContext();
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
@@ -60,12 +59,7 @@ function ChannelsTab(props: ScreenProp) {
         >
           // @ts-ignore
           filters={filters}
-          onSelect={(channel) => {
-            setChannel(channel as ChannelType);
-            navigation.navigate('DrawerScreen', {
-              screen: 'ChannelChatScreen'
-            });
-          }}
+          onSelect={(channel) => setChannel(channel as ChannelType)}
           sort={sort}
           options={options}
           Preview={CustomChannelPreview}
