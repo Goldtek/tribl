@@ -20,6 +20,11 @@ export const DetailsTop = styled.View`
   ${({ theme }) => theme.channelPreview.detailsTop.css}
 `;
 
+export const DetailsBottom = styled(DetailsTop)`
+  align-items: center;
+  margin-top: 2px;
+`;
+
 export const StyledMessage = styled.Text<{ unread?: number }>`
   color: ${({ theme, unread }) =>
     unread
@@ -38,4 +43,20 @@ export const Title = styled.Text`
   font-weight: bold;
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   ${({ theme }) => theme.channelPreview.title.css}
+`;
+
+export const ListActionText = styled.Text`
+  color: ${({ theme }) => theme.colors.WHITE};
+  font-size: ${({ theme }) => RFValue(theme.fonts.MEDIUM_SIZE - 1)}px;
+  font-weight: bold;
+  text-transform: uppercase;
+`;
+
+export const ListActionTextWrapper = styled.View<{ color?: string }>`
+  width: 70px;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: ${({ theme, color }) =>
+    color ? color : theme.colors.PRIMARY};
 `;
