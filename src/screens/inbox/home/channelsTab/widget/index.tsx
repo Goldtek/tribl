@@ -13,10 +13,10 @@ import { useChannelPreviewDisplayAvatar } from 'stream-chat-react-native-core/sr
 import { RFValue } from 'react-native-responsive-fontsize';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useNavigation } from '@react-navigation/native';
-import { useMutation } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import ChannelActions from './channelActions';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
+import MuteIcon from '../../../../../../assets/icons/muteIcon';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -25,6 +25,7 @@ import {
   LocalReactionType,
   LocalUserType
 } from '../../../../../stream/types';
+import { GET_SINGLE_COMMUNITY } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -62,6 +63,7 @@ export default function CustomChannelPreview(
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
+  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
@@ -72,7 +74,7 @@ export default function CustomChannelPreview(
 
   const handleDeleteAction = async () => {
     await leaveChannel({ variables: { payload: { channelId: channel.id } } });
-    // channel.delete();
+    getChannelCommunity();
   };
 
   const toggleMuteAction = async () => {
@@ -143,16 +145,13 @@ export default function CustomChannelPreview(
               </StyledMessage>
 
               <NotificationContainer>
-                {Boolean(unread) && <Badge>{unread}</Badge>}
-
                 {muted && (
-                  <MaterialCommunityIcons
-                    name="volume-off"
-                    size={12}
-                    color={colors.PRIMARY}
-                    style={{ marginLeft: 10 }}
+                  <MuteIcon
+                    fillColor={colors.PRIMARY}
+                    style={{ marginRight: 8 }}
                   />
                 )}
+                {Boolean(unread) && <Badge>{unread}</Badge>}
               </NotificationContainer>
             </DetailsBottom>
           </Details>
