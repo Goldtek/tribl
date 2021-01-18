@@ -897,15 +897,6 @@ export const GET_COMMUNITY_MEMBERS = gql`
   }
 `;
 
-// GET FIREBASE TOKEN
-export const GET_FIREBASE_TOKEN = gql`
-  query generateFirebaseToken {
-    generateFirebaseToken {
-      firebase_token
-    }
-  }
-`;
-
 //GET ALL IDENTITIES
 export const GET_ALL_IDENTITIES = gql`
   query Identity {
