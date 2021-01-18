@@ -28,7 +28,8 @@ import {
   ButtonContainer,
   OuterInputContainer,
   InnerInputContainer,
-  SendButtonContainer
+  SendButtonContainer,
+  InputTextSpacer
 } from './styles';
 
 export type SendButtonProps = {
@@ -84,13 +85,14 @@ function StreamInputBox(props: InputProps) {
     <Container>
       <OuterInputContainer>
         <InnerInputContainer>
-          <IconContainer onPress={() => {}}>
+          {/* <IconContainer onPress={() => {}}>
             <Entypo
               name="emoji-happy"
               size={18}
               color={colors.STATUS_BAR_COLOR}
             />
-          </IconContainer>
+          </IconContainer> */}
+          <InputTextSpacer />
           <AutoCompleteInput {...props} />
           <IconContainer onPress={props._pickFile} style={{ marginRight: 0 }}>
             <Entypo
