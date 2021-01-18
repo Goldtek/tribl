@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
 import { TouchableHighlight } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Entypo } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/inbox';
 import { useThemeContext } from '../../theme';
@@ -105,7 +105,7 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
               }}
               labelStyle={{ paddingLeft: 3 }}
             >
-              <Feather name="message-square" color={colors.WHITE} size={20} />
+              <Entypo name="new-message" color={colors.WHITE} size={20} />
             </GradientButton>
           ),
           headerTitleContainerStyle: { alignItems: 'center' },

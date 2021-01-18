@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
 import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { Feather } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import database from '@react-native-firebase/database';
 import { OnlinePresence } from '../../../inbox/types';
 import { PassportInterface } from '../../../../graphql/types';
@@ -119,11 +119,7 @@ export default function Connection(props: ConnectionProp) {
           }}
           onPress={handleMessageNavigation}
         >
-          <Feather
-            name="message-square"
-            size={17}
-            color={colors.PRIMARY_TEXT}
-          />
+          <Entypo name="new-message" size={17} color={colors.PRIMARY_TEXT} />
         </TouchableRipple>
       </Fragment>
     </TouchableRipple>
