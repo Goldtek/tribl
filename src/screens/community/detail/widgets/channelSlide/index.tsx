@@ -4,8 +4,8 @@ import { Divider } from 'react-native-paper';
 import ChannelCard from './widget';
 import { useThemeContext } from '../../../../../theme';
 import { NavigationInterface } from '../../../../types';
-import { CommunityInterface } from '../../../../../graphql/types';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
+import { CommunityInterface } from '../../../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
