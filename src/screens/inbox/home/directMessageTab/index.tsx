@@ -130,7 +130,11 @@ export default function DirectMessageTab(props: ScreenProp) {
     () => () =>
       requestNumber ? (
         <MessageRequestContainer
-          onPress={() => navigation.navigate('MessageRequestScreen')}
+          onPress={() =>
+            navigation.navigate('DrawerScreen', {
+              screen: 'MessageRequestScreen'
+            })
+          }
         >
           <Fragment>
             <MessageRequestBadgeContainer>
