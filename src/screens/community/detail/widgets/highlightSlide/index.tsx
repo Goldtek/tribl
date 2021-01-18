@@ -66,8 +66,9 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   };
 
   const getTagModal = async () => {
+    // @ts-ignore
     const TagInfo = await storage.checkTagModal();
-    const filteredTag = TagInfo?.community.filter((tag) => tag == id);
+    const filteredTag = TagInfo?.community.filter((tag: any) => tag == id);
     if (filteredTag.length && singleCommunity?.uniqueInterests.length > 0) {
       setState({ ...state, tagModal: true });
     }
@@ -82,10 +83,11 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     setState({ ...state, tagModal: childData });
     clearTagModal();
   };
+
   const {
     data: communityData,
     refetch: communityRefetch
-  } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id }, pollInterval: 100 });
+  } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id } });
 
   const { data: communityMembersData } = useQuery(
     GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
