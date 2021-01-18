@@ -138,7 +138,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               }}
               labelStyle={{ paddingLeft: 3 }}
             >
-              <Feather name="message-square" color={colors.WHITE} size={20} />
+              <Entypo name="new-message" color={colors.WHITE} size={20} />
             </GradientButton>
           ),
           headerTitleContainerStyle: { alignItems: 'center' },
@@ -215,7 +215,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               }}
               labelStyle={{ paddingLeft: 3 }}
             >
-              <Feather name="message-square" color={colors.WHITE} size={20} />
+              <Entypo name="new-message" color={colors.WHITE} size={20} />
             </GradientButton>
           ),
           headerTitleContainerStyle: { alignItems: 'center' },
