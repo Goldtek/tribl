@@ -50,3 +50,7 @@ export const ButtonContainer = styled.TouchableOpacity`
   margin-left: 8px;
   ${({ theme }) => theme.messageInput.sendButton.css};
 `;
+
+export const InputTextSpacer = styled.View`
+  margin: 15px;
+`;
