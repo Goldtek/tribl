@@ -27,10 +27,7 @@ export default function SearchScreen(props: ScreenProp) {
   const [isMember, setIsMember] = useState(null);
   const id = details?.details?.id || details?.communityHit?.id;
 
-  const { data } = useQuery(GET_SINGLE_COMMUNITY, {
-    variables: { id },
-    pollInterval: 100
-  });
+  const { data } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id } });
 
   const singleCommunity = data?.Community[0];
 
@@ -57,17 +54,26 @@ export default function SearchScreen(props: ScreenProp) {
     {
       key: 'highlightSlide',
       title: `${t(`community.tabPanel.highlight`)}`,
-      communityDetails: details.details || details.communityHit
+      communityDetails: { ...details.details, ...singleCommunity } || {
+        ...details.communityHit,
+        ...singleCommunity
+      }
     },
     {
       key: 'channelSlide',
       title: `${t(`community.tabPanel.channel`)}`,
-      communityDetails: details.details || details.communityHit
+      communityDetails: { ...details.details, ...singleCommunity } || {
+        ...details.communityHit,
+        ...singleCommunity
+      }
     },
     {
       key: 'memberSlide',
       title: `${t(`community.tabPanel.member`)}`,
-      communityDetails: details.details || details.communityHit
+      communityDetails: { ...details.details, ...singleCommunity } || {
+        ...details.communityHit,
+        ...singleCommunity
+      }
     }
   ]);
 
