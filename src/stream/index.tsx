@@ -30,8 +30,8 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       const user = {
         id: `${userData?.myPassport.id}`,
         image: `${userData?.myPassport.avatar}`,
-        name: `${userData?.myPassport.firstName} ${userData?.myPassport.firstName}`,
-        value: `${userData?.myPassport.firstName} ${userData?.myPassport.firstName}`
+        name: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`,
+        value: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`
       };
 
       // Initializes Stream's chat client.
