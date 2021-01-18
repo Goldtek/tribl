@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../graphql/server/mutations';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { useThemeContext } from '../../theme';
@@ -30,6 +30,7 @@ import CommunityDetailScreen from '../../screens/community/detail';
 import getStreamChannelMembers from '../../utils/getStreamChannelMembers';
 import { DEVICE_OS } from '../../utils/device';
 import { useStreamContext } from '../../stream';
+import { GET_SINGLE_COMMUNITY } from '../../graphql/server/query';
 
 import { Container, CountBadge } from './styles';
 
@@ -48,9 +49,11 @@ export default function DrawerStackNavigator() {
   const [channelMenu, setChannelMenu] = useState(false);
   const showChannelMenu = () => setChannelMenu(!channelMenu);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
+  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
 
   const handleLeaveChannel = async () => {
     await leaveChannel({ variables: { payload: { channelId: channel.id } } });
+    getChannelCommunity({ variables: { id: channel.data?.community.id } });
     navigation.goBack();
   };
 
