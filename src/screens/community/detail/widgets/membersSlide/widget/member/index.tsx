@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
-import { Feather } from '@expo/vector-icons';
+import { Entypo, Feather } from '@expo/vector-icons';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -151,11 +151,7 @@ function Member(props: MemberProp) {
           onPress={connectedUsers ? handleNavigation : handleRequest}
         >
           {connectedUsers ? (
-            <Feather
-              name="message-square"
-              size={20}
-              color={colors.PRIMARY_TEXT}
-            />
+            <Entypo name="new-message" size={20} color={colors.PRIMARY_TEXT} />
           ) : (
             <Feather name="plus" size={20} color={colors.WHITE} />
           )}
