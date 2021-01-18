@@ -21,6 +21,7 @@ export const VALIDATE_USER_OTP = gql`
     validateOtp(input: $payload) {
       firebase_token
       refresh_token
+      streams_token
       access_token
       expires_in
       token_type
@@ -212,6 +213,24 @@ export const LEAVE_COMMUNITY_CHANNEL = gql`
   mutation leaveCommunityChannel($payload: ChannelActionInput!) {
     leaveCommunityChannel(input: $payload) {
       success
+    }
+  }
+`;
+
+// GENERATE STREAMS TOKEN
+export const GENERATE_STREAMS_TOKEN = gql`
+  mutation generateStreamsToken {
+    generateStreamsToken {
+      streams_token
+    }
+  }
+`;
+
+// GET FIREBASE TOKEN
+export const GET_FIREBASE_TOKEN = gql`
+  mutation generateFirebaseToken {
+    generateFirebaseToken {
+      firebase_token
     }
   }
 `;

@@ -1,5 +1,4 @@
 import styled from 'styled-components/native';
-import { RFValue } from 'react-native-responsive-fontsize';
 
 export const Container = styled.View`
   width: 100%;
@@ -12,5 +11,3 @@ export const Container = styled.View`
   border-top-right-radius: 4px;
   margin-bottom: 10px;
 `;
-
-export const Cover = styled.View``;

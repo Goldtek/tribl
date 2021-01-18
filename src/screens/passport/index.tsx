@@ -23,7 +23,6 @@ import { userDetails as cacheData } from '../../graphql/cache';
 import {
   GET_ALL_MEMBERS,
   GET_CONNECTION_REQUEST,
-  GET_FIREBASE_TOKEN,
   GET_MY_COMMUNITIES,
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
@@ -38,7 +37,10 @@ import {
   MyPassportInterface,
   PassportInterface
 } from '../../graphql/types';
-import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
+import {
+  UPDATE_PASSPORT,
+  GET_FIREBASE_TOKEN
+} from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
 import CheckAppUpdates from '../../libs/updates';
@@ -120,9 +122,10 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [changeSideMenuState] = useMutation(CHANGE_ACTIVE_SIDE_MENU_STATE);
 
-  const { data: firebase, loading: firebaseLoading } = useQuery<
-    GenerateFirebaseTokenIT
-  >(GET_FIREBASE_TOKEN);
+  const [
+    authenticateFirebase,
+    { data: firebase, loading: firebaseLoading }
+  ] = useMutation<GenerateFirebaseTokenIT>(GET_FIREBASE_TOKEN);
 
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
@@ -251,6 +254,7 @@ export default function PassportScreen(props: ScreenProp) {
     getRecommendedMembers();
     getPopularCommunities();
     getConnectionRequest();
+    authenticateFirebase();
     getMyCommunities();
     getNearbyMembers();
     getMyConnections();

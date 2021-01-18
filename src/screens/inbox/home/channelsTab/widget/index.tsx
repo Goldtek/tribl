@@ -1,164 +1,162 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { Title, Text, TouchableRipple } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import FastImage from 'react-native-fast-image';
-import { useQuery } from '@apollo/react-hooks';
-import { Image } from 'react-native';
-import Firechat from '../../../../../firebase';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { ChannelConversationInterface } from '../../../types';
+import React, { Fragment, useState } from 'react';
+import { Badge, TouchableRipple } from 'react-native-paper';
+import truncate from 'lodash/truncate';
 import { useThemeContext } from '../../../../../theme';
-import formatMessageTime from '../../../../../utils/timesince';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
-import { GET_CHANNEL_MEMBERS } from '../../../../../graphql/server/query';
+import {
+  Avatar,
+  ChannelPreviewMessengerProps,
+  DefaultCommandType
+} from 'stream-chat-expo';
+import { useChannelPreviewDisplayName } from 'stream-chat-react-native-core/src/components/ChannelPreview/hooks/useChannelPreviewDisplayName';
+import { useChannelPreviewDisplayAvatar } from 'stream-chat-react-native-core/src/components/ChannelPreview/hooks/useChannelPreviewDisplayAvatar';
+import { RFValue } from 'react-native-responsive-fontsize';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { useNavigation } from '@react-navigation/native';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import ChannelActions from './channelActions';
+import { LEAVE_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
+import MuteIcon from '../../../../../../assets/icons/muteIcon';
+import {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+} from '../../../../../stream/types';
+import { GET_SINGLE_COMMUNITY } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
+import {
+  Date,
+  Title,
+  Details,
+  DetailsTop,
+  DetailsBottom,
+  StyledMessage,
+  NotificationContainer
+} from './styles';
 
-// DEFINE SCREEN PROP TYPES
-interface ChannelChatProp extends ChannelConversationInterface {}
+export default function CustomChannelPreview(
+  props: ChannelPreviewMessengerProps<
+    LocalAttachmentType,
+    LocalChannelType,
+    DefaultCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >
+) {
+  const {
+    unread,
+    channel,
+    latestMessageLength = 30,
+    setActiveChannel,
+    latestMessagePreview,
+    formatLatestMessageDate
+  } = props;
 
-function ChannelChatCard(props: ChannelChatProp) {
-  const { colors, fonts } = useThemeContext();
+  const { colors } = useThemeContext();
   const navigation = useNavigation();
-  const [userReadAt, setUserReadAt] = useState(0);
+  const getMuteStatus = channel.muteStatus().muted;
+  const [muted, setMuted] = useState(getMuteStatus);
+  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
+  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
+  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
+  const displayName = useChannelPreviewDisplayName(channel);
+  const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
-  const { id: chatId, lastMessage, channel, community, sender } = props;
+  const channelTitle = `#${channel.data?.community.name
+    .split(' ')
+    .join('')}-${displayName}`;
 
-  useQuery(GET_CHANNEL_MEMBERS, { variables: { channelId: chatId } });
-
-  const title = `#${community.name.split(' ').join('')}-${channel.name}`;
-
-  let text = lastMessage.text;
-
-  if (text.includes('has joined the channel!')) {
-    text = `${sender.firstName} ${sender.lastName} ${lastMessage.text}`;
-  }
-
-  if (text.length >= 30) text = `${text.substr(0, 30)}...`;
-
-  const showNotificationBadge =
-    new Date(lastMessage.createdAt).getTime() >= new Date(userReadAt).getTime();
-
-  const handleNavigation = () => {
-    navigation.navigate('DrawerScreen', {
-      screen: 'ChannelChatScreen',
-      params: {
-        title: channel.name,
-        chatId,
-        isMember: true,
-        channel: { community: community.name, name: channel.name }
-      }
-    });
+  const handleDeleteAction = async () => {
+    await leaveChannel({ variables: { payload: { channelId: channel.id } } });
+    getChannelCommunity();
   };
 
-  const formatDate = () => {
-    if (!lastMessage.createdAt) return;
-    return formatMessageTime(lastMessage.createdAt);
-  };
-
-  useEffect(() => {
-    const unsubscribe = Firechat.getChannelParticipantReadAt(chatId).onSnapshot(
-      {
-        next: (snapshot) => {
-          const readMessages = snapshot.data();
-
-          readMessages?.readAt
-            ? setUserReadAt(readMessages?.readAt)
-            : setUserReadAt(readMessages?.createdAt);
-        }
+  const toggleMuteAction = async () => {
+    try {
+      if (muted) {
+        await channel.unmute();
+        setMuted(false);
+      } else {
+        await channel.mute();
+        setMuted(true);
       }
-    );
-
-    return () => unsubscribe();
-  }, []);
+    } catch {
+      setMuted(getMuteStatus);
+    }
+  };
 
   return (
-    <TouchableRipple
-      style={{
-        height: RFValue(60),
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: RFValue(20),
-        paddingLeft: RFValue(15),
-        paddingRight: RFValue(15)
-      }}
-      onPress={handleNavigation}
-      ref={hideSensitiveView}
+    <Swipeable
+      renderRightActions={() => (
+        <ChannelActions
+          handleDeleteAction={handleDeleteAction}
+          toggleMuteAction={toggleMuteAction}
+          muted={muted}
+        />
+      )}
     >
-      <Fragment>
-        {community.avatar ? (
-          <FastImage
-            resizeMode={FastImage.resizeMode.stretch}
-            source={{
-              uri: community.avatar,
-              priority: FastImage.priority.high
-            }}
-            style={{ width: RFValue(50), height: RFValue(50), borderRadius: 4 }}
+      <TouchableRipple
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderBottomColor: colors.light,
+          backgroundColor: colors.WHITE,
+          borderBottomWidth: 1,
+          padding: 10
+        }}
+        onPress={() => {
+          setActiveChannel && setActiveChannel(channel);
+          navigation.navigate('DrawerScreen', {
+            screen: 'ChannelChatScreen',
+            params: { title: channelTitle }
+          });
+        }}
+        ref={hideSensitiveView}
+      >
+        <Fragment>
+          <Avatar
+            image={displayAvatar.image}
+            name={displayAvatar.name}
+            size={RFValue(40)}
           />
-        ) : (
-          <Image
-            source={require('../../../../../../assets/images/profile.png')}
-            resizeMode="cover"
-            style={{
-              width: RFValue(50),
-              height: RFValue(50),
-              borderRadius: RFValue(4)
-            }}
-          />
-        )}
-
-        <NameContainer ref={hideSensitiveView}>
-          <Fragment>
-            {title ? (
-              <Title
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE - 2)
-                }}
-              >
-                {title.length >= 20 ? `${title.substr(0, 20)}...` : title}
+          <Details ref={hideSensitiveView}>
+            <DetailsTop>
+              <Title ellipsizeMode="tail" numberOfLines={1}>
+                {channelTitle}
               </Title>
-            ) : (
-              <SkeletonPlaceholder>
-                <SkeletonPlaceholder.Item
-                  width={RFValue(130)}
-                  height={RFValue(15)}
-                />
-              </SkeletonPlaceholder>
-            )}
-            <Text
-              numberOfLines={1}
-              style={{
-                color: colors.SECONDARY_TEXT,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE - 2)
-              }}
-            >
-              {text}
-            </Text>
-          </Fragment>
-        </NameContainer>
+              <Date>
+                {formatLatestMessageDate && latestMessageDate
+                  ? formatLatestMessageDate(latestMessageDate)
+                  : latestMessagePreview?.created_at}
+              </Date>
+            </DetailsTop>
+            <DetailsBottom>
+              <StyledMessage unread={unread}>
+                {latestMessagePreview?.text &&
+                  truncate(latestMessagePreview.text.replace(/\n/g, ' '), {
+                    length: latestMessageLength
+                  })}
+              </StyledMessage>
 
-        <TimeStamp>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE - 2),
-              marginVertical: 5
-            }}
-          >
-            {formatDate()}
-          </Text>
-
-          {showNotificationBadge ? <BadgeWrapper /> : null}
-        </TimeStamp>
-      </Fragment>
-    </TouchableRipple>
+              <NotificationContainer>
+                {muted && (
+                  <MuteIcon
+                    fillColor={colors.PRIMARY}
+                    style={{ marginRight: 8 }}
+                  />
+                )}
+                {Boolean(unread) && <Badge>{unread}</Badge>}
+              </NotificationContainer>
+            </DetailsBottom>
+          </Details>
+        </Fragment>
+      </TouchableRipple>
+    </Swipeable>
   );
 }
-
-export default React.memo(ChannelChatCard);

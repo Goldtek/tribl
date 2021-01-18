@@ -25,13 +25,13 @@ export type RootStackParamList = {
   ConnectionChatScreen: ChatScreenProps;
   MessageRequestChatScreen: ChatScreenProps;
   MessageRequestScreen?: Object;
-  ChannelChatScreen: ChatScreenProps;
   DirectChatScreen: ChatScreenProps;
   DirectMessageTab?: Object;
   SignupPassportScreen?: Object;
   ChannelsTab?: Object;
   DrawerScreen?: Object;
   PrivacyPolicyScreen?: Object;
+  ThreadChatScreen?: Object;
   MessageRequestTab?: Object;
   CommunityDetailScreen?: Object;
   ConnectionRequestScreen?: Object;
@@ -61,6 +61,7 @@ export type RootStackParamList = {
   SelectCountry?: Object;
   InboxScreen?: Object;
   TriblScreen?: Object;
+  ThreadScreen?: Object;
   TribeChannelScreen?: Object;
   TribeHighlightScreen?: Object;
   TribeMembersScreen?: Object;
@@ -92,6 +93,7 @@ export type RootStackParamScreensList =
   | 'AccountSettingScreen'
   | 'SelectCountry'
   | 'DrawerScreen'
+  | 'ThreadChatScreen'
   | 'SelectCountryScreen'
   | 'CreateAccountScreen'
   | 'MemberDetailScreen'
@@ -107,6 +109,7 @@ export type RootStackParamScreensList =
   | 'CommunityScreen'
   | 'PassportScreen'
   | 'ChannelsTab'
+  | 'ThreadScreen'
   | 'MyConnectionScreen'
   | 'MemberPassportScreen'
   | 'GetStartedScreen'

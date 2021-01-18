@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, Fragment } from 'react';
+import React, { useState, useCallback, Fragment } from 'react';
 import {
   createStackNavigator,
   TransitionPresets
@@ -17,27 +17,24 @@ import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../graphql/server/mutations';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { useThemeContext } from '../../theme';
 import InboxScreens from '../../screens/inbox';
 import AccountScreens from '../../screens/account';
 import CommunityScreens from '../../screens/community';
-import Firechat from '../../firebase';
 import MemberDetailScreen from '../../screens/community/memberPassport';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
 import CommunityDetailScreen from '../../screens/community/detail';
+import getStreamChannelMembers from '../../utils/getStreamChannelMembers';
 import { DEVICE_OS } from '../../utils/device';
+import { useStreamContext } from '../../stream';
+import { GET_SINGLE_COMMUNITY } from '../../graphql/server/query';
 
 import { Container, CountBadge } from './styles';
 
 const DrawerStack = createStackNavigator();
-
-type ParticipantType = {
-  avatar: string;
-  createdAt: Date;
-};
 
 export default function DrawerStackNavigator() {
   const { top: safeAreaTop } = useSafeAreaInsets();
@@ -45,19 +42,22 @@ export default function DrawerStackNavigator() {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
-  const [participants, setParticipants] = useState<ParticipantType[]>([]);
-  const [chatId, setChatId] = useState<string | null>(null);
+  const { channel } = useStreamContext();
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
 
   const [channelMenu, setChannelMenu] = useState(false);
   const showChannelMenu = () => setChannelMenu(!channelMenu);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
+  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
 
   const handleLeaveChannel = async () => {
-    await leaveChannel({ variables: { payload: { channelId: chatId } } });
+    await leaveChannel({ variables: { payload: { channelId: channel.id } } });
+    getChannelCommunity({ variables: { id: channel.data?.community.id } });
     navigation.goBack();
   };
+
+  const channelMembers = getStreamChannelMembers(channel);
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -75,23 +75,8 @@ export default function DrawerStackNavigator() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!chatId) return;
-
-    const channelParticipants = Firechat.getChannelParticipants(chatId);
-
-    const unsubscribe = channelParticipants.onSnapshot({
-      next: (snapshot) => {
-        const participants = snapshot.docs.map((doc) => doc.data());
-        setParticipants(participants as ParticipantType[]);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [chatId]);
-
   const handleChannelMembersNavigation = () => {
-    navigation.navigate('ChannelMembersScreen', { channelId: chatId });
+    navigation.navigate('ChannelMembersScreen', { channelId: channel.id });
     setChannelMenu(false);
   };
 
@@ -147,10 +132,48 @@ export default function DrawerStackNavigator() {
       />
 
       <DrawerStack.Screen
+        name="ThreadChatScreen"
+        component={InboxScreens.ThreadChatScreen}
+        options={({ route }: any) => ({
+          headerShown: true,
+          height: RFValue(90),
+          headerTitle: 'Thread',
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerTitleContainerStyle: {
+            flex: 1,
+            paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+          },
+          headerRight: () => (
+            <TouchableRipple
+              onPress={() => {}}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Entypo
+                name="dots-three-vertical"
+                color={colors.DISABLED}
+                size={RFValue(17)}
+              />
+            </TouchableRipple>
+          ),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY
+        })}
+      />
+
+      <DrawerStack.Screen
         name="ChannelChatScreen"
         component={InboxScreens.ChannelChatScreen}
         options={({ route }: any) => {
-          setChatId(route.params?.chatId);
           return {
             headerStyle: { height: RFValue(90) },
             height: RFValue(90),
@@ -188,12 +211,12 @@ export default function DrawerStackNavigator() {
                   </TouchableRipple>
                 }
                 contentStyle={{
-                  right: 10,
                   top: 10,
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
+                  right: 10,
                   paddingTop: 0,
                   paddingBottom: 0,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
                   overflow: Platform.select({ android: 'hidden' })
                 }}
                 style={{ top: RFValue(getMenuHeight()) }}
@@ -255,7 +278,7 @@ export default function DrawerStackNavigator() {
                   />
                 </TouchableRipple>
 
-                {participants.length === 1 ? (
+                {channelMembers && channelMembers?.length === 1 ? (
                   <Surface
                     style={{
                       width: RFValue(40),
@@ -270,7 +293,7 @@ export default function DrawerStackNavigator() {
                     <FastImage
                       resizeMode={FastImage.resizeMode.cover}
                       source={{
-                        uri: participants[0]?.avatar,
+                        uri: channelMembers[0]?.avatar,
                         priority: FastImage.priority.high
                       }}
                       style={{
@@ -288,13 +311,13 @@ export default function DrawerStackNavigator() {
                           color: colors.WHITE
                         }}
                       >
-                        {participants.length}
+                        {channelMembers.length}
                       </Paragraph>
                     </CountBadge>
                   </Surface>
                 ) : null}
 
-                {participants.length >= 2 ? (
+                {channelMembers && channelMembers?.length >= 2 ? (
                   <Fragment>
                     <Surface
                       style={{
@@ -307,7 +330,8 @@ export default function DrawerStackNavigator() {
                       <FastImage
                         resizeMode={FastImage.resizeMode.cover}
                         source={{
-                          uri: participants[participants.length - 2]?.avatar,
+                          uri:
+                            channelMembers[channelMembers?.length - 2]?.avatar,
                           priority: FastImage.priority.high
                         }}
                         style={{
@@ -331,7 +355,8 @@ export default function DrawerStackNavigator() {
                       <FastImage
                         resizeMode={FastImage.resizeMode.cover}
                         source={{
-                          uri: participants[participants.length - 1]?.avatar,
+                          uri:
+                            channelMembers[channelMembers?.length - 1]?.avatar,
                           priority: FastImage.priority.high
                         }}
                         style={{
@@ -349,7 +374,7 @@ export default function DrawerStackNavigator() {
                             color: colors.WHITE
                           }}
                         >
-                          {`${participants.length}+`}
+                          {`${channelMembers.length}+`}
                         </Paragraph>
                       </CountBadge>
                     </Surface>
