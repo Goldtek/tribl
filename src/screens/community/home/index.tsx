@@ -55,6 +55,7 @@ import {
   RecentActivitiesList,
   CommunityCover
 } from './styles';
+import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -256,7 +257,17 @@ export default function HomeScreen(props: ScreenProp) {
               {t(`community.recommended.members`)}
             </Title>
 
-            <Button
+            <GradientButton
+              gradientContainerstyle={{
+                height: RFValue(0),
+                paddingVertical: 15,
+                marginBottom: RFValue(20)
+              }}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize'
+              }}
               mode="text"
               onPress={() => {
                 Mixpanel.track('User Taps View More (Members)', {
@@ -266,15 +277,9 @@ export default function HomeScreen(props: ScreenProp) {
                 logEvent('view more members', { from: 'community' });
                 navigateToSearch(0);
               }}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize'
-              }}
             >
               {t(`community.recommended.view`)}
-            </Button>
+            </GradientButton>
           </RecommendedListHeader>
           <FlatList
             data={recommendedMembers}
@@ -307,7 +312,17 @@ export default function HomeScreen(props: ScreenProp) {
               {t(`community.recommended.community`)}
             </Title>
 
-            <Button
+            <GradientButton
+              gradientContainerstyle={{
+                height: RFValue(0),
+                paddingVertical: 15,
+                marginBottom: RFValue(20)
+              }}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize'
+              }}
               mode="text"
               onPress={() => {
                 Mixpanel.track('User Taps View More (Tribes)', {
@@ -317,15 +332,9 @@ export default function HomeScreen(props: ScreenProp) {
                 logEvent('view more tribes', { from: 'community' });
                 navigateToSearch(1);
               }}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize'
-              }}
             >
               {t(`community.recommended.view`)}
-            </Button>
+            </GradientButton>
           </RecommendedListHeader>
           <RecommendedCommunityContainer>
             {recommendedCommunityLoading ? (

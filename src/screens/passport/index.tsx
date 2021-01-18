@@ -15,7 +15,6 @@ import SingleImage from '../../libs/react-native-zoom-lightbox';
 import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
-// import { FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationInterface } from '../types';
 import { useThemeContext } from '../../theme';
@@ -51,7 +50,7 @@ import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
 } from '../../utils/cloudinaryUpload';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -69,9 +68,9 @@ import {
   ImageContainer,
   ImageTextContainer,
   ConnectionCover,
-  Cover
-  // ImageIconContainer,
-  // SocialMediaButton
+  Cover,
+  ImageIconContainer,
+  SocialMediaButton
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -502,8 +501,10 @@ export default function PassportScreen(props: ScreenProp) {
               </Title>
               {update ? (
                 <Button
+                  mode="contained"
+                  style={{ backgroundColor: colors.GREY }}
                   labelStyle={{
-                    color: colors.WHITE,
+                    color: colors.SECONDARY_TEXT,
                     fontSize: RFValue(14),
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     textTransform: 'capitalize'
@@ -678,28 +679,27 @@ export default function PassportScreen(props: ScreenProp) {
                   </TouchableRipple>
                 </ConnectionCover>
                 {/* <ImageIconContainer>
-                <SocialMediaButton
-                  onPress={() => console.log('Pressed')}
-                  underlayColor={colors.DISABLED}
-                >
-                  <FontAwesome
-                    name="spotify"
-                    size={RFValue(30)}
-                    color={colors.WHITE}
-                  />
-                </SocialMediaButton>
-                <SocialMediaButton
-                  onPress={() => console.log('Pressed')}
-                  underlayColor={colors.DISABLED}
-                >
-                  <FontAwesome
-                    name="instagram"
-                    size={RFValue(30)}
-                    color={colors.WHITE}
-                  />
-                </SocialMediaButton>
-              </ImageIconContainer>
-             */}
+                  <SocialMediaButton
+                    onPress={() => console.log('Pressed')}
+                    underlayColor={colors.DISABLED}
+                  >
+                    <FontAwesome
+                      name="spotify"
+                      size={RFValue(30)}
+                      color={colors.WHITE}
+                    />
+                  </SocialMediaButton>
+                  <SocialMediaButton
+                    onPress={() => console.log('Pressed')}
+                    underlayColor={colors.DISABLED}
+                  >
+                    <FontAwesome
+                      name="instagram"
+                      size={RFValue(30)}
+                      color={colors.WHITE}
+                    />
+                  </SocialMediaButton>
+                </ImageIconContainer> */}
               </ImageTextContainer>
             </ImageContainer>
 
