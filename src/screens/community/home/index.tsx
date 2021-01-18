@@ -45,6 +45,7 @@ import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../../constants';
+import GradientButton from '../../../components/gradientButton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -55,7 +56,6 @@ import {
   RecentActivitiesList,
   CommunityCover
 } from './styles';
-import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -80,9 +80,7 @@ export default function HomeScreen(props: ScreenProp) {
     loading: myCommunityLoading,
     data: myCommunityData,
     fetchMore
-  } = useQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
-    pollInterval: 1000
-  });
+  } = useQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES);
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
     variables: { offset: 0, first: PAGINATION_DEFAULT }
@@ -117,8 +115,7 @@ export default function HomeScreen(props: ScreenProp) {
     loading: recommendedCommunityLoading,
     data: communityData
   } = useQuery<RecommendedCommunitiesRequestInterface>(
-    GET_RECOMMENDED_COMMUNITIES,
-    { pollInterval: 100 }
+    GET_RECOMMENDED_COMMUNITIES
   );
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
