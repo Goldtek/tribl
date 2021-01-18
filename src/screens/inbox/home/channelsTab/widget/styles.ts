@@ -19,6 +19,7 @@ export const DetailsTop = styled.View`
   justify-content: space-between;
   ${({ theme }) => theme.channelPreview.detailsTop.css}
 `;
+
 export const DetailsBottom = styled(DetailsTop)`
   align-items: center;
   margin-top: 2px;
@@ -56,7 +57,7 @@ export const ListActionText = styled.Text`
 `;
 
 export const ListActionTextWrapper = styled.View<{ color?: string }>`
-  width: 70;
+  width: 70px;
   justify-content: center;
   align-items: center;
   height: 100%;
