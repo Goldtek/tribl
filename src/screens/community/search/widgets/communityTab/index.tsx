@@ -48,7 +48,6 @@ function CommunityTabScreen(props: ScreenProp) {
   const { data: popularData, fetchMore } = useQuery<
     PopularCommunitiesRequestInterface
   >(GET_POPULAR_COMMUNITIES, {
-    pollInterval: 1000,
     fetchPolicy: 'cache-and-network',
     variables: { offset: 0, first: PAGINATION_DEFAULT }
   });
