@@ -520,8 +520,10 @@ export default function PassportScreen(props: ScreenProp) {
                 </Button>
               ) : (
                 <Button
+                  mode="contained"
+                  style={{ backgroundColor: colors.GREY }}
                   labelStyle={{
-                    color: colors.WHITE,
+                    color: colors.SECONDARY_TEXT,
                     fontSize: RFValue(14),
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     textTransform: 'capitalize'
