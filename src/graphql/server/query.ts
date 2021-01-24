@@ -300,11 +300,6 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
       membersCount
       description
       isMember
-      channels {
-        id
-        name
-        isMember
-      }
       interests {
         id
         name
@@ -327,11 +322,6 @@ export const GET_POPULAR_COMMUNITIES = gql`
       avatar
       membersCount
       isMember
-      channels {
-        id
-        name
-        isMember
-      }
       interests {
         id
         name
@@ -354,11 +344,6 @@ export const GET_MY_COMMUNITIES = gql`
       name
       isMember
       membersCount
-      channels {
-        id
-        name
-        isMember
-      }
       interests {
         id
         name
@@ -591,11 +576,6 @@ export const GET_SINGLE_COMMUNITY = gql`
       isMember
       name
       description
-      channels {
-        id
-        name
-        isMember
-      }
       interests {
         id
         name
@@ -1056,11 +1036,16 @@ export const USER_ONLINE_SUBSCRIPTION = gql`
 `;
 
 // GET ALL USER CHANNELS
-export const USER_CHANNELS = gql`
-  query myChannels($offset: Int, $first: Int) {
-    myChannels(offset: $offset, first: $first) {
+export const GET_COMMUNITY_CHANNELS = gql`
+  query communityChannels($communityId: ID!, $offset: Int, $first: Int) {
+    communityChannels(
+      communityId: $communityId
+      offset: $offset
+      first: $first
+    ) {
       id
       name
+      isMember
     }
   }
 `;
