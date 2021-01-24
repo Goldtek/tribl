@@ -376,11 +376,6 @@ export type SinglePassportRequestInterface = {
   singlePassport: PassportInterface;
 };
 
-// COMMUNITY CHANNEL REQUEST (RESPONSE) TYPE
-export type CommunityChannelRequestInterface = {
-  Channel: ChannelInterface[];
-};
-
 // SHOW MESSAGE NOTIFICATION REQUEST (RESPONSE) TYPE
 export type ShowMessageNotificationBadge = {
   showMessageNotificationBadge: boolean;
@@ -401,9 +396,9 @@ export type ShowConnectionNotificationBadge = {
   showConnectionNotificationBadge: boolean;
 };
 
-// USER COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
-export type MyChannelRequestInterface = {
-  myChannels: { id: string; name: string }[];
+// COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
+export type CommunityChannelRequestInterface = {
+  communityChannels: ChannelInterface[];
 };
 
 // USER CONNECTIONS REQUESTS (RESPONSE) TYPE
