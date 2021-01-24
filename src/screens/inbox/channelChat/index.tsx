@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
-import { SafeAreaView, View } from 'react-native';
+import { Keyboard, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -10,6 +10,7 @@ import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { useStreamContext } from '../../../stream';
 import { useHeaderHeight } from '@react-navigation/stack';
 import StreamInputBox from '../../../components/streamInputBox';
+import CustomMessage from '../../../components/customMessage';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -29,25 +30,21 @@ export default function ChannelChatScreen(props: ScreenProp) {
     tagScreenName('ChannelChatScreen');
   }, []);
 
-  //     Mixpanel.track('User Sends Channel Message', {
-  //       info: `User sends message on ${channel?.name} channel in ${channel?.community} community`,
-  //       'Activity Screen': 'Channel Message Screen'
-  //     });
-  // );
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
-      <Chat
-        //@ts-ignore
-        client={chatClient}
-        style={chatStyles}
-      >
-        <Channel
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+        <Chat
           //@ts-ignore
-          channel={channel}
-          keyboardVerticalOffset={headerHeight}
+          client={chatClient}
+          style={chatStyles}
         >
-          <View style={{ flex: 1 }}>
+          <Channel
+            //@ts-ignore
+            channel={channel}
+            keyboardVerticalOffset={headerHeight}
+            //@ts-ignore
+            Message={CustomMessage}
+          >
             <MessageList
               onThreadSelect={(thread) => {
                 setThread(thread as ThreadType);
@@ -63,9 +60,9 @@ export default function ChannelChatScreen(props: ScreenProp) {
                 placeholder: 'Type your message here'
               }}
             />
-          </View>
-        </Channel>
-      </Chat>
-    </SafeAreaView>
+          </Channel>
+        </Chat>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
