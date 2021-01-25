@@ -14,15 +14,15 @@ export default function AppRouter() {
     <GlobalErrorBoundary>
       <ApolloProvider>
         <SafeAreaProvider>
-          <ThemeProvider>
-            <StreamProvider>
+          <StreamProvider>
+            <ThemeProvider>
               <StatusBar translucent animated style="dark" />
               <RootToaster />
               <PortalHost>
                 <Router />
               </PortalHost>
-            </StreamProvider>
-          </ThemeProvider>
+            </ThemeProvider>
+          </StreamProvider>
         </SafeAreaProvider>
       </ApolloProvider>
     </GlobalErrorBoundary>

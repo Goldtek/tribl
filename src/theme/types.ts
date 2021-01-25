@@ -15,26 +15,26 @@ enum COLORS {
   transparent = 'transparent',
   // END OF STREAM COLORS
 
-  WHITE = '#FFFFFF',
+  RED = '#FB4E4E',
   GREY = '#F8F8FB',
+  WHITE = '#FFFFFF',
+  BLACK = '#000000',
+  INPUT = '#E5E5E5',
   ONLINE = '#7ED321',
+  SHADOW = '#F5F5F5',
+  ACTION = '#F1F3FF',
   WARNING = '#F6A609',
   PRIMARY = '#718CFB',
-  PRIMARY_LIGHT = '#8DA4FF',
-  SECONDARY = '#A875FF',
-  PRIMARY_TEXT = '#535D7E',
-  SECONDARY_TEXT = '#A9AEBE',
   INACTIVE = '#DADAED',
   DISABLED = '#E8E8E8',
-  ACTION = '#F1F3FF',
-  TRANSPARENT = 'transparent',
   OFFWHITE = '#FBFCFF',
-  INPUT = '#E5E5E5',
+  SECONDARY = '#A875FF',
+  PRIMARY_TEXT = '#535D7E',
   SYSTEM_COLOR = '#F5F5F5',
-  STATUS_BAR_COLOR = '#424242',
-  SHADOW = '#F5F5F5',
-  BLACK = '#000000',
-  RED = '#FB4E4E'
+  PRIMARY_LIGHT = '#8DA4FF',
+  SECONDARY_TEXT = '#A9AEBE',
+  TRANSPARENT = 'transparent',
+  STATUS_BAR_COLOR = '#424242'
 }
 
 // All app font sizes
@@ -42,10 +42,10 @@ enum FONTS {
   SMALL_SIZE = 8,
   MEDIUM_SIZE = 12,
   LARGE_SIZE = 16,
-  WORK_SANS_REGULAR = 'workSansRegular',
+  WORK_SANS_BOLD = 'workSansBold',
   WORK_SANS_MEDIUM = 'workSansMedium',
-  WORK_SANS_SEMI_BOLD = 'workSansSemiBold',
-  WORK_SANS_BOLD = 'workSansBold'
+  WORK_SANS_REGULAR = 'workSansRegular',
+  WORK_SANS_SEMI_BOLD = 'workSansSemiBold'
 }
 
 declare module 'styled-components/native' {

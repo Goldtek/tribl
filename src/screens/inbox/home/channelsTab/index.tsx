@@ -11,8 +11,7 @@ import {
   LocalMessageType,
   LocalReactionType,
   LocalUserType,
-  chatClient,
-  ChannelType
+  chatClient
 } from '../../../../stream/types';
 import { ChannelSort } from 'stream-chat';
 import { useStreamContext } from '../../../../stream';
@@ -59,7 +58,7 @@ function ChannelsTab(props: ScreenProp) {
         >
           // @ts-ignore
           filters={filters}
-          onSelect={(channel) => setChannel(channel as ChannelType)}
+          onSelect={(channel) => setChannel(channel as any)}
           sort={sort}
           options={options}
           Preview={CustomChannelPreview}
