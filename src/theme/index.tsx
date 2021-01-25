@@ -11,6 +11,7 @@ import { styledComponentTheme, paperTheme } from './types';
 
 const ThemeProvider: FunctionComponent = ({ children }) => {
   changeNavigationBarColor(styledComponentTheme.colors.WHITE, true, true);
+
   return (
     <PaperProvider
       theme={paperTheme}
