@@ -26,7 +26,7 @@ export default function App() {
       const userURL = await RNUxcam.urlForCurrentUser();
       const sessionURL = await RNUxcam.urlForCurrentSession();
       if (sessionURL) {
-        Mixpanel.track('UXCam: Session Recording link', sessionURL);
+        Mixpanel.track('UXCam: Session Recording link', sessionURL as any);
       }
 
       if (userURL) {
