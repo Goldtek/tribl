@@ -10,11 +10,13 @@ import { useThemeContext } from '../../../../theme';
 import { ConversationInterface } from '../../types';
 import ChatCardSkeleton from '../../../../components/chatCardSkeleton';
 import { ROOM_TYPES } from '../../../../firebase/types';
+import { Chat } from 'stream-chat-expo';
 import {
   hideSensitiveView,
   tagScreenName
 } from '../../../../utils/uxcamHelper';
 import batchConversation from '../../../../utils/batchConversation';
+import { chatClient } from '../../../../stream/types';
 
 import {
   Container,
@@ -187,7 +189,10 @@ export default function DirectMessageTab(props: ScreenProp) {
   }
 
   return (
-    <Fragment>
+    <Chat
+      // @ts-ignore
+      client={chatClient}
+    >
       <RenderMessageRequests />
       <FlatList
         bounces={false}
@@ -203,6 +208,6 @@ export default function DirectMessageTab(props: ScreenProp) {
         renderItem={_renderItem}
         keyExtractor={(item) => item.id}
       />
-    </Fragment>
+    </Chat>
   );
 }

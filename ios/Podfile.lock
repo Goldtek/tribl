@@ -794,9 +794,9 @@ PODS:
     - React-Core
   - RNSVG (12.1.0):
     - React
-  - RNUxcam (5.2.0):
-    - React
-    - UXCam (~> 3.2.4)
+  - RNUxcam (5.3.1):
+    - React-Core
+    - UXCam (~> 3.3.1)
   - SDWebImage (5.10.3):
     - SDWebImage/Core (= 5.10.3)
   - SDWebImage/Core (5.10.3)
@@ -1281,21 +1281,21 @@ SPEC CHECKSUMS:
   RNCPushNotificationIOS: 61a7c72bd1ebad3568025957d001e0f0e7b32191
   RNDateTimePicker: 968ccf716b3b6aee07849641966005924de5c0f9
   RNDeviceInfo: c5f8f3a456adcbba405ace475254b08febc4c095
-  RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
+  RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFBApp: 43a062dc6a1a88edd934d2229d1ba64f25381598
   RNFBAuth: b5b1ba3df98f23b1f41829b762477ccb60b0e747
   RNFBCrashlytics: 63676c8cc2d8879ef50c203170e752195041f5a9
   RNFBDatabase: cd8b460f4facd63a22c71edfb46631effc72764a
   RNFBFirestore: b596de5f7cb73ec799cf0eb24db5be69540be25f
   RNFBMessaging: 7ca5248796434376c186b65029b1cec7d3e0990b
-  RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
-  RNImageCropPicker: 16951bc02411f50c4d197488ed6406a23dc3b5f1
-  RNLocalize: 452d4118e338dee1e5ca3fac4d5a11a4ab26a46a
+  RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
+  RNImageCropPicker: 9e0bf18cf4184a846fed55747c8e622208b39947
+  RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
   RNPermissions: 5df468064df661a4c8c017e2791ce90d7695eea5
   RNReanimated: e03f7425cb7a38dcf1b644d680d1bfc91c3337ad
   RNScreens: 3d682bcaba69a4f8e55543d90818704f34338db1
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
-  RNUxcam: 5fda8c568f9788b78eefc6637d5c95450086d077
+  RNUxcam: d7df434cd5ad1a777518d3fc46fa9383aa8f547d
   SDWebImage: e378178472b735e84b007bfb55514c97948a0598
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
