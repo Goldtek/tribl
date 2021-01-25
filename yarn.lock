@@ -2279,40 +2279,40 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-firebase/app@8.4.5":
-  version "8.4.5"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-8.4.5.tgz#a5194c34a1f75af8641153163700305ae578d31d"
-  integrity sha512-27qsFzX2Z1GPDyU8tUhYYCUkMlhYYCd/XJvteprTAjC8R6zPGdn/Y9Xxdrwkvhpj8Ply19lsxZ8UfvYIUbgOIQ==
+"@react-native-firebase/app@^10.5.0":
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-10.5.0.tgz#aa46cd3a62d2117914a6f81ffea0d1b3b9ef15c6"
+  integrity sha512-pEINud4A90RlwfTcE51m/5cOEGI4jiSi5Q4jsQ5UGGlsYqtbOw4Ja7b17x19o2OViJEQVjScpq4pH2bq9vie7Q==
   dependencies:
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/auth@^8.3.3":
-  version "8.3.3"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-8.3.3.tgz#a9c0778dbee0c8251a8cb406951bed5bd02aa9e4"
-  integrity sha512-EM73Q8VDh3n9rbdv9Z8nAoe9d+JfNvbU4iXlEBpmH7FZhCkDKQR9Q9isa4Q8vzhVCmyJTQbgi0sMCJIXbOFTug==
+"@react-native-firebase/auth@^10.5.1":
+  version "10.5.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-10.5.1.tgz#fb44d4aaa60e99aa782c0644ac291c5963f92d89"
+  integrity sha512-CPqTYQ0fMHGST663I9fW43Yj7uA7w0nNxXQtFxr4oBCs4ykWzy89mqLeiBSMtWufkrrPE0nFoTdJ1YJiQchOxg==
 
-"@react-native-firebase/crashlytics@^10.3.1":
-  version "10.3.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-10.3.1.tgz#76b574b1382c4233dd479c12ff2976b548ba3795"
-  integrity sha512-3LX+xXZX/J5zTn/Ywm21E3PUYkZ8fDt7qxxfYHiAAB8UAhhfLsz3hPOmPa5pxa/zgUdNM7oKFZ7RWRve8dlPWw==
+"@react-native-firebase/crashlytics@^10.5.1":
+  version "10.5.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-10.5.1.tgz#8911ce15a0ee9c658cec44233e731c423a2900bf"
+  integrity sha512-czH0p6KWf7gIJScqyPRUWSrRUbgYK4NpqESW0vc57V1KlkGSv+MivuFTEeDQNvH8Hwgi3W5m8L5dZ4r6pTRzSw==
   dependencies:
     stacktrace-js "^2.0.0"
 
-"@react-native-firebase/database@^10.1.1":
-  version "10.1.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/database/-/database-10.1.1.tgz#4cbddaa83cad792b59aafa61f3669771aa395ead"
-  integrity sha512-ux+7W+l4EP9u72JWUAJdTHNeplDXw6j87g/ux9HY3YAgx603kidifYwtvQS3c+TNyw2Rton4JpyjhAeosehG8Q==
+"@react-native-firebase/database@^10.5.1":
+  version "10.5.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/database/-/database-10.5.1.tgz#f5f9453c5c3db692f1d963766cd04645aad30a9a"
+  integrity sha512-jhBUbunCO2HoXPO1mom214A9wdtjLfhNgcaN9Z3x3TmObGZNm7xQ9FYINAXqKmb1iLMMZxlmR0CBD/2uUv3Chw==
 
-"@react-native-firebase/firestore@^7.5.3":
-  version "7.8.6"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-7.8.6.tgz#6b9cfeec006f5b5a07a8135ebe6cdf302570aa90"
-  integrity sha512-IoLsNyAmPJzoEGLrz4iGWBtGCxGWdZQuo5lmfpFyamF2HmMLM+ZkoEPpfEqwPZQi/Ddjz8UhRjWzcdVIRO/0qg==
+"@react-native-firebase/firestore@^10.5.1":
+  version "10.5.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-10.5.1.tgz#ecf047a38e20838297e2ab307b0769f1ca114c33"
+  integrity sha512-c51AynnkAm1ErnKKY5nIBFHUERkxD7nQE5G7zBo8t7T0P8YBofErxCjT7QTttILiyE/gFpAHsIsaX5a+CHCYDA==
 
-"@react-native-firebase/messaging@^7.8.11":
-  version "7.8.11"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.8.11.tgz#36a49d15887038a2985a9ed71d86a411ad9f6005"
-  integrity sha512-raajkw/fwotyg0g58TLHMqbMLvebLdO7c50sPaQWaB3rc1FxPwXr1vXTPsFQzlD4QR1vBjNOik80h8fjxvW4NQ==
+"@react-native-firebase/messaging@^10.5.1":
+  version "10.5.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-10.5.1.tgz#f4b833f6ff6a7c234e790bae1f01289ac08199d8"
+  integrity sha512-cpx87M3vaR34vUYEFdpsFQk0/A29225tD5lqqvKW+l/u8FHD9KHyjm+XoEenV2eCayF8IxkmO9PQKsufgg4FHQ==
 
 "@react-navigation/core@^5.12.4":
   version "5.12.4"
@@ -8548,11 +8548,6 @@ react-native-fast-image@^8.1.5:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.3.2.tgz#e9db271b70b9634b7be054760914d80954f9898c"
   integrity sha512-AJ0b4BEswRwa0bh4SibYUtXszEiaO88Lf4CZ1ib+t5ZfkAgsMk9Liv3L0LYnDblMJmSeGTr1+2ViIM8F2vamjg==
-
-react-native-fix-image@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-fix-image/-/react-native-fix-image-2.0.1.tgz#6a06ada37e2e409f436a11902a347ff147341d7c"
-  integrity sha512-vACqL9cDEnQCPw976RpOwy7GPaMDCjy+0wV1UbDY43jrRniZDeOygWf86HQnjY60Uf13NsnvT71LrOeTdCyr4Q==
 
 react-native-flipper@^0.34.0:
   version "0.34.0"
