@@ -179,11 +179,6 @@ export default function DrawerStackNavigator() {
             height: RFValue(90),
             headerShown: true,
             headerTitle: () => null,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD
-            },
             headerRight: () => (
               <Menu
                 visible={channelMenu}
@@ -337,7 +332,9 @@ export default function DrawerStackNavigator() {
                         style={{
                           width: RFValue(40),
                           height: RFValue(40),
-                          borderRadius: 4
+                          borderRadius: 4,
+                          borderColor: colors.PRIMARY,
+                          borderWidth: 1
                         }}
                       />
                     </Surface>
@@ -362,7 +359,9 @@ export default function DrawerStackNavigator() {
                         style={{
                           width: RFValue(40),
                           height: RFValue(40),
-                          borderRadius: 4
+                          borderRadius: 4,
+                          borderColor: colors.PRIMARY,
+                          borderWidth: 1
                         }}
                       />
                       <CountBadge style={{ elevation: 4 }}>
@@ -383,13 +382,14 @@ export default function DrawerStackNavigator() {
 
                 <Paragraph
                   style={{
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontWeight: 'bold',
+                    fontSize: fonts.MEDIUM_SIZE + 2,
+                    fontFamily: fonts.WORK_SANS_BOLD,
                     marginLeft: 10
                   }}
                 >
-                  {route.params?.title}
+                  {route.params?.title.length <= 20
+                    ? route.params?.title
+                    : `${route.params?.title.substr(0, 20)}...`}
                 </Paragraph>
               </Container>
             ),
