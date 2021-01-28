@@ -21,7 +21,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation } = props;
 
   const [text, setText] = useState('');
-  const { channel, setThread } = useStreamContext();
+  const { channel, setThread, setActivityScreen } = useStreamContext();
   const chatStyles = useStreamChatTheme();
   const { colors } = useThemeContext();
   const headerHeight = useHeaderHeight();
@@ -48,6 +48,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
             <MessageList
               onThreadSelect={(thread) => {
                 setThread(thread as ThreadType);
+                setActivityScreen('threadScreen');
                 navigation.navigate('ThreadChatScreen');
               }}
             />

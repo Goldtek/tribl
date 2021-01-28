@@ -191,9 +191,13 @@ export default function DrawerStackNavigator() {
                       padding: RFValue(3),
                       paddingTop: RFValue(6),
                       paddingBottom: RFValue(6),
-                      backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                      backgroundColor: channelMenu
+                        ? colors.PRIMARY
+                        : 'transparent',
                       borderRadius: 4,
-                      borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                      borderColor: channelMenu
+                        ? colors.PRIMARY
+                        : colors.INACTIVE,
                       borderWidth: 1,
                       marginRight: RFValue(10)
                     }}
@@ -276,8 +280,8 @@ export default function DrawerStackNavigator() {
                 {channelMembers && channelMembers?.length === 1 ? (
                   <Surface
                     style={{
-                      width: RFValue(40),
-                      height: RFValue(40),
+                      width: 40,
+                      height: 40,
                       justifyContent: 'center',
                       top: 1,
                       right: 10,
@@ -292,8 +296,8 @@ export default function DrawerStackNavigator() {
                         priority: FastImage.priority.high
                       }}
                       style={{
-                        width: RFValue(40),
-                        height: RFValue(40),
+                        width: 40,
+                        height: 40,
                         borderRadius: 4
                       }}
                     />
@@ -316,8 +320,8 @@ export default function DrawerStackNavigator() {
                   <Fragment>
                     <Surface
                       style={{
-                        width: RFValue(40),
-                        height: RFValue(40),
+                        width: 40,
+                        height: 40,
                         elevation: 4,
                         borderRadius: 4
                       }}
@@ -330,8 +334,8 @@ export default function DrawerStackNavigator() {
                           priority: FastImage.priority.high
                         }}
                         style={{
-                          width: RFValue(40),
-                          height: RFValue(40),
+                          width: 40,
+                          height: 40,
                           borderRadius: 4,
                           borderColor: colors.PRIMARY,
                           borderWidth: 1
@@ -340,8 +344,8 @@ export default function DrawerStackNavigator() {
                     </Surface>
                     <Surface
                       style={{
-                        width: RFValue(40),
-                        height: RFValue(40),
+                        width: 40,
+                        height: 40,
                         justifyContent: 'center',
                         top: 1,
                         right: 10,
@@ -357,8 +361,8 @@ export default function DrawerStackNavigator() {
                           priority: FastImage.priority.high
                         }}
                         style={{
-                          width: RFValue(40),
-                          height: RFValue(40),
+                          width: 40,
+                          height: 40,
                           borderRadius: 4,
                           borderColor: colors.PRIMARY,
                           borderWidth: 1
