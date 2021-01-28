@@ -54,11 +54,15 @@ export type ThreadType = ThreadContextValue<
   LocalUserType
 >['thread'];
 
+export type ActivityScreenType = 'channelScreen' | 'threadScreen';
+
 type ContextPropType = {
-  channel: ChannelType;
-  setChannel: Dispatch<SetStateAction<ChannelType>>;
-  setThread: Dispatch<SetStateAction<ThreadType>>;
   thread: ThreadType;
+  channel: ChannelType;
+  activityScreen: ActivityScreenType;
+  setThread: Dispatch<SetStateAction<ThreadType>>;
+  setChannel: Dispatch<SetStateAction<ChannelType>>;
+  setActivityScreen: Dispatch<SetStateAction<ActivityScreenType>>;
 };
 
 export interface GiphyInterface {
