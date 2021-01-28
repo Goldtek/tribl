@@ -16,7 +16,6 @@ import { GET_FIREBASE_TOKEN } from '../../graphql/server/mutations';
 import { NavigationInterface } from '../types';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
-import Notification from '../../libs/notification';
 import Firechat from '../../firebase';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -124,16 +123,14 @@ export default function SplashScreen(props: ScreenProp) {
   };
 
   return (
-    <Notification>
-      <Container>
-        <Image
-          source={require('../../../assets/images/splash.png')}
-          style={[
-            StyleSheet.absoluteFill,
-            { width: undefined, height: undefined, resizeMode: 'contain' }
-          ]}
-        />
-      </Container>
-    </Notification>
+    <Container>
+      <Image
+        source={require('../../../assets/images/splash.png')}
+        style={[
+          StyleSheet.absoluteFill,
+          { width: undefined, height: undefined, resizeMode: 'contain' }
+        ]}
+      />
+    </Container>
   );
 }
