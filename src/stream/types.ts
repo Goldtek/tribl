@@ -61,4 +61,18 @@ type ContextPropType = {
   thread: ThreadType;
 };
 
+export interface GiphyInterface {
+  data: any[];
+  pagination: {
+    count: number;
+    offset: number;
+    total_count: number;
+  };
+  meta?: {
+    msg: string;
+    status: number;
+    response_id: string;
+  };
+}
+
 export const StreamContext = createContext({} as ContextPropType);
