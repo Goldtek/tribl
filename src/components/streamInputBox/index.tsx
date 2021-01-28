@@ -2,6 +2,7 @@ import React, {
   useEffect,
   useCallback,
   useRef,
+  useMemo,
   useState,
   Fragment
 } from 'react';
@@ -123,19 +124,14 @@ function StreamInputBox(props: InputProps) {
 
   const { channel } = useStreamContext();
   const modalizeRef = useRef<Modalize>(null);
-  const [GIFs, setGIFs] = useState<any[]>([]);
-  const [GIFsMeta, setGIFsMeta] = useState<{
-    count: number;
-    offset: number;
-    total_count: number;
-  }>({ count: 0, offset: 0, total_count: 0 });
+  const [GIFs, setGIFs] = useState<GiphyInterface>(defaultGiphy);
   const [backupGif, setBackupGif] = useState<GiphyInterface>(defaultGiphy);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const onChangeSearch = (query: string) => {
-    if (!query) setGIFs({ ...GIFs, ...backupGif });
+    if (!query) setGIFs(backupGif);
     setSearchQuery(query);
   };
 
@@ -146,11 +142,7 @@ function StreamInputBox(props: InputProps) {
     const uniqueMap: { [key: string]: string } = {};
     const uniqueArray = [];
 
-    console.tron('ON FECTHING GIPHYS', { GIFs });
-
-    const possibleDuplicates = [...GIFs, ...data.data];
-
-    console.tron('possibleDuplicates', { possibleDuplicates });
+    const possibleDuplicates = [...GIFs.data, ...data.data];
 
     for (let index = 0; index < possibleDuplicates.length; index++) {
       const giphy = possibleDuplicates[index];
@@ -161,8 +153,7 @@ function StreamInputBox(props: InputProps) {
       }
     }
 
-    setGIFs(uniqueArray);
-    setGIFsMeta({ ...GIFsMeta, ...data.pagination });
+    setGIFs({ ...GIFs, ...data, data: uniqueArray });
 
     if (!searchQuery) {
       setBackupGif({ ...GIFs, ...data, data: uniqueArray });
@@ -190,19 +181,23 @@ function StreamInputBox(props: InputProps) {
 
     fetchGiphys(
       searchQuery
-        ? `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}&offset=${GIFs.length}`
-        : `${GIHPY_DEFAULT_URL}/gifs/trending?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&limit=${PAGINATION_DEFAULT}&offset=${GIFs.length}`
+        ? `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}&offset=${GIFs.data.length}`
+        : `${GIHPY_DEFAULT_URL}/gifs/trending?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&limit=${PAGINATION_DEFAULT}&offset=${GIFs.data.length}`
     );
   };
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!searchQuery) return;
-    setGIFs([]);
-
-    fetchGiphys(
-      `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}`
-    );
+    setGIFs(defaultGiphy);
   };
+
+  useEffect(() => {
+    if (!GIFs.data.length && searchQuery) {
+      fetchGiphys(
+        `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}`
+      );
+    }
+  }, [GIFs.data.length, searchQuery]);
 
   const openModal = () => {
     Keyboard.dismiss();
@@ -290,7 +285,7 @@ function StreamInputBox(props: InputProps) {
             />
           }
           flatListProps={{
-            data: GIFs,
+            data: GIFs.data,
             bounces: false,
             keyExtractor: (item: any) => `${item.id}_${item.url}`,
             numColumns: 2,
@@ -332,7 +327,7 @@ function StreamInputBox(props: InputProps) {
             onEndReachedThreshold: 0.01,
             ListFooterComponent: _renderFooter,
             onEndReached: () => {
-              if (GIFsMeta.total_count > GIFs.length) {
+              if (GIFs.pagination.total_count > GIFs.data.length) {
                 setCallOnScrollEnd(true);
               }
             },
