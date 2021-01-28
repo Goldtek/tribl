@@ -12,6 +12,7 @@ export const USER_FIRST_LAUNCH = '@FIRST_TIME_LAUNCH';
 export const USER_REG_INFO: string = '@USER_REG_INFO';
 export const USER_FCM_TOKEN: string = '@USER_FCM_TOKEN';
 export const USER_PASSPORT_INFO: string = '@USER_PASSPORT_INFO';
+export const LOCAL_GIPHY_CACHE: string = '@LOCAL_GIPHY_CACHE';
 export const SHOW_MODAL: string = '@SHOW_MODAL';
 
 // ALL PAGE LOGICAL CONSTANTS

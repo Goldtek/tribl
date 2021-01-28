@@ -2,7 +2,6 @@ import React, {
   useEffect,
   useCallback,
   useRef,
-  useMemo,
   useState,
   Fragment
 } from 'react';
@@ -39,6 +38,8 @@ import { GestureResponderEvent, View, Keyboard } from 'react-native';
 import { useThemeContext } from '../../theme';
 import ENVIRONMENT_VARIABLES from '../../config';
 import hexToRGB from '../../utils/hexToRGB';
+import { GiphyInterface } from '../../stream/types';
+import Storage from '../../libs/storage';
 
 import {
   Container,
@@ -88,20 +89,6 @@ type InputProps = AutoCompleteInputProps<
   }) => Promise<void>;
   uploadNewImage: (image: { uri?: string }) => Promise<void>;
 };
-
-interface GiphyInterface {
-  data: any[];
-  pagination: {
-    count: number;
-    offset: number;
-    total_count: number;
-  };
-  meta?: {
-    msg: string;
-    status: number;
-    response_id: string;
-  };
-}
 
 const defaultGiphy = {
   data: [],
@@ -163,9 +150,19 @@ function StreamInputBox(props: InputProps) {
   };
 
   useEffect(() => {
-    fetchGiphys(
-      `${GIHPY_DEFAULT_URL}/gifs/trending?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&limit=${PAGINATION_DEFAULT}`
-    );
+    const getGiphyCache = async () => {
+      const giphys = await Storage.getGiphys();
+
+      if (!giphys) {
+        return fetchGiphys(
+          `${GIHPY_DEFAULT_URL}/gifs/trending?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&limit=${PAGINATION_DEFAULT}`
+        );
+      }
+
+      setGIFs({ ...GIFs, ...JSON.parse(giphys) });
+    };
+
+    getGiphyCache();
   }, []);
 
   const _renderFooter = useCallback(
@@ -196,6 +193,10 @@ function StreamInputBox(props: InputProps) {
       fetchGiphys(
         `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}`
       );
+    }
+
+    if (GIFs.data.length === 20) {
+      Storage.setGiphys(GIFs);
     }
   }, [GIFs.data.length, searchQuery]);
 

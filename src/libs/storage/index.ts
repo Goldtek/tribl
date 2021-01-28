@@ -4,7 +4,8 @@ import {
   USER_FIRST_LAUNCH,
   USER_REG_INFO,
   USER_PASSPORT_INFO,
-  SHOW_MODAL
+  SHOW_MODAL,
+  LOCAL_GIPHY_CACHE
 } from '../../constants';
 import {
   VerifyOTPIT,
@@ -12,6 +13,7 @@ import {
   PassportInterface,
   ShowModal
 } from '../../graphql/types';
+import { GiphyInterface } from '../../stream/types';
 
 class Storage {
   async checkInitialLaunch() {
@@ -95,6 +97,17 @@ class Storage {
 
   async getTagModal() {
     return AsyncStorage.getItem(SHOW_MODAL);
+  }
+
+  async getGiphys() {
+    return AsyncStorage.getItem(LOCAL_GIPHY_CACHE);
+  }
+
+  async setGiphys(giphy: GiphyInterface) {
+    return AsyncStorage.setItem(
+      LOCAL_GIPHY_CACHE,
+      JSON.stringify({ ...giphy })
+    );
   }
 
   async setTagModal(id?: ShowModal) {
