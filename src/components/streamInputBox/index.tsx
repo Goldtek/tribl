@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useCallback,
+  useRef,
+  useState,
+  Fragment
+} from 'react';
 import {
   AutoCompleteInput,
   AutoCompleteInputProps,
@@ -22,14 +28,16 @@ import {
   MaterialCommunityIcons,
   MaterialIcons
 } from '@expo/vector-icons';
-import {
-  FlatList,
-  GestureResponderEvent,
-  View,
-  ActivityIndicator
-} from 'react-native';
-import { Text } from 'react-native';
+import { DEVICE_FULL_HEIGHT } from '../../utils/device';
+import FastImage from 'react-native-fast-image';
+import { Searchbar, ActivityIndicator } from 'react-native-paper';
+import { PAGINATION_DEFAULT, GIHPY_DEFAULT_URL } from '../../constants';
+import { useStreamContext } from '../../stream';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GestureResponderEvent, View, Keyboard } from 'react-native';
 import { useThemeContext } from '../../theme';
+import ENVIRONMENT_VARIABLES from '../../config';
+import hexToRGB from '../../utils/hexToRGB';
 
 import {
   Container,
@@ -38,17 +46,11 @@ import {
   OuterInputContainer,
   InnerInputContainer,
   SendButtonContainer,
-  InputWrapper,
-  GifContainer,
-  GifImageWrapper,
-  HeaderWrapper
+  LoadingWrapper,
+  LoadingGiphys,
+  GifImageWrapperPlaceholder,
+  GifImageWrapper
 } from './styles';
-import { StatusBar } from 'expo-status-bar';
-import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../utils/device';
-import { RFValue } from 'react-native-responsive-fontsize';
-import FastImage from 'react-native-fast-image';
-import { Searchbar } from 'react-native-paper';
-import { PAGINATION_DEFAULT } from '../../constants';
 
 export type SendButtonProps = {
   /** Disables the button */
@@ -86,8 +88,28 @@ type InputProps = AutoCompleteInputProps<
   uploadNewImage: (image: { uri?: string }) => Promise<void>;
 };
 
+interface GiphyInterface {
+  data: any[];
+  pagination: {
+    count: number;
+    offset: number;
+    total_count: number;
+  };
+  meta?: {
+    msg: string;
+    status: number;
+    response_id: string;
+  };
+}
+
+const defaultGiphy = {
+  data: [],
+  pagination: { count: 0, offset: 0, total_count: 0 }
+};
+
 function StreamInputBox(props: InputProps) {
-  const { colors, fonts } = useThemeContext();
+  const { bottom } = useSafeAreaInsets();
+  const { colors } = useThemeContext();
   const { disabled = false, sendMessage } = props;
   const { editing } = useMessagesContext<
     DefaultAttachmentType,
@@ -98,168 +120,233 @@ function StreamInputBox(props: InputProps) {
     DefaultReactionType,
     DefaultUserType
   >();
+
+  const { channel } = useStreamContext();
   const modalizeRef = useRef<Modalize>(null);
-  const [gif, setGif] = useState([] as any);
-  const [backupGif, setBackupGif] = useState([] as any);
-  const [loading, setLoading] = useState(true);
+  const [GIFs, setGIFs] = useState<any[]>([]);
+  const [GIFsMeta, setGIFsMeta] = useState<{
+    count: number;
+    offset: number;
+    total_count: number;
+  }>({ count: 0, offset: 0, total_count: 0 });
+  const [backupGif, setBackupGif] = useState<GiphyInterface>(defaultGiphy);
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const onChangeSearch = (query: string) => {
-    if (query === '') setGif(backupGif);
+    if (!query) setGIFs({ ...GIFs, ...backupGif });
     setSearchQuery(query);
   };
 
+  const fetchGiphys = async (url: string) => {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const uniqueMap: { [key: string]: string } = {};
+    const uniqueArray = [];
+
+    console.tron('ON FECTHING GIPHYS', { GIFs });
+
+    const possibleDuplicates = [...GIFs, ...data.data];
+
+    console.tron('possibleDuplicates', { possibleDuplicates });
+
+    for (let index = 0; index < possibleDuplicates.length; index++) {
+      const giphy = possibleDuplicates[index];
+
+      if (!uniqueMap[giphy.id]) {
+        uniqueMap[giphy.id] = giphy.id;
+        uniqueArray.push(giphy);
+      }
+    }
+
+    setGIFs(uniqueArray);
+    setGIFsMeta({ ...GIFsMeta, ...data.pagination });
+
+    if (!searchQuery) {
+      setBackupGif({ ...GIFs, ...data, data: uniqueArray });
+    }
+
+    setCallOnScrollEnd(false);
+  };
+
   useEffect(() => {
-    setLoading(true);
-    fetch(
-      `https://api.giphy.com/v1/gifs/trending?api_key=zx2JFMr82HSMvceaNeHZwgWFSr9jqioH&limit=${2}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setGif(data.data);
-        setBackupGif(data.data);
-        setLoading(false);
-      });
+    fetchGiphys(
+      `${GIHPY_DEFAULT_URL}/gifs/trending?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&limit=${PAGINATION_DEFAULT}`
+    );
   }, []);
 
-  const handleSearch = () => {
-    setLoading(true);
-    fetch(
-      `https://api.giphy.com/v1/gifs/search?api_key=zx2JFMr82HSMvceaNeHZwgWFSr9jqioH&q=${searchQuery}&limit=${2}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setGif(data.data);
-        setLoading(false);
-      });
+  const _renderFooter = useCallback(
+    () =>
+      callOnScrollEnd ? (
+        <ActivityIndicator size="small" color={colors.RED} />
+      ) : null,
+    [callOnScrollEnd]
+  );
+
+  const handleEndReach = async () => {
+    if (!callOnScrollEnd) return;
+
+    fetchGiphys(
+      searchQuery
+        ? `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}&offset=${GIFs.length}`
+        : `${GIHPY_DEFAULT_URL}/gifs/trending?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&limit=${PAGINATION_DEFAULT}&offset=${GIFs.length}`
+    );
   };
-  const openModal = () => modalizeRef.current?.open();
+
+  const handleSearch = async () => {
+    if (!searchQuery) return;
+    setGIFs([]);
+
+    fetchGiphys(
+      `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}`
+    );
+  };
+
+  const openModal = () => {
+    Keyboard.dismiss();
+    modalizeRef.current?.open();
+  };
 
   return (
-    <InputWrapper>
-      <Container>
-        <OuterInputContainer>
-          <InnerInputContainer>
-            <IconContainer
-              borderColor={colors.STATUS_BAR_COLOR}
-              onPress={openModal}
-            >
-              <MaterialIcons
-                name="gif"
-                size={25}
-                color={colors.STATUS_BAR_COLOR}
-              />
-            </IconContainer>
-
-            <AutoCompleteInput {...props} />
-            <IconContainer onPress={props._pickFile} style={{ marginRight: 0 }}>
-              <Entypo
-                name="attachment"
-                size={18}
-                color={colors.STATUS_BAR_COLOR}
-              />
-            </IconContainer>
-            <IconContainer
-              onPress={props._pickImage}
-              style={{ marginHorizontal: 5 }}
-            >
-              <FontAwesome
-                name="camera"
-                size={18}
-                color={colors.STATUS_BAR_COLOR}
-              />
-            </IconContainer>
-          </InnerInputContainer>
-        </OuterInputContainer>
-
-        <SendButtonContainer>
-          <ButtonContainer
-            disabled={disabled}
-            onPress={sendMessage}
-            testID="send-button"
+    <Container>
+      <OuterInputContainer>
+        <InnerInputContainer>
+          <IconContainer
+            borderColor={colors.STATUS_BAR_COLOR}
+            onPress={openModal}
           >
-            {editing ? (
-              <Entypo name="edit" size={20} color={colors.WHITE} />
-            ) : (
-              <MaterialCommunityIcons
-                name="send"
-                size={20}
-                color={colors.WHITE}
-              />
-            )}
-          </ButtonContainer>
-        </SendButtonContainer>
-      </Container>
+            <MaterialIcons
+              name="gif"
+              size={25}
+              color={colors.STATUS_BAR_COLOR}
+            />
+          </IconContainer>
+
+          <AutoCompleteInput {...props} />
+          <IconContainer onPress={props._pickFile} style={{ marginRight: 0 }}>
+            <Entypo
+              name="attachment"
+              size={18}
+              color={colors.STATUS_BAR_COLOR}
+            />
+          </IconContainer>
+          <IconContainer
+            onPress={props._pickImage}
+            style={{ marginHorizontal: 5 }}
+          >
+            <FontAwesome
+              name="camera"
+              size={18}
+              color={colors.STATUS_BAR_COLOR}
+            />
+          </IconContainer>
+        </InnerInputContainer>
+      </OuterInputContainer>
+
+      <SendButtonContainer>
+        <ButtonContainer
+          disabled={disabled}
+          onPress={sendMessage}
+          testID="send-button"
+        >
+          {editing ? (
+            <Entypo name="edit" size={20} color={colors.WHITE} />
+          ) : (
+            <MaterialCommunityIcons
+              name="send"
+              size={20}
+              color={colors.WHITE}
+            />
+          )}
+        </ButtonContainer>
+      </SendButtonContainer>
 
       <Portal>
-        <StatusBar translucent animated style="light" />
         <Modalize
           ref={modalizeRef}
+          modalHeight={DEVICE_FULL_HEIGHT / 1.4}
           modalStyle={{
-            height: DEVICE_FULL_HEIGHT / 2,
-            paddingTop: RFValue(30),
-            paddingBottom: RFValue(20),
-            marginTop: RFValue(90),
-            width: DEVICE_FULL_WIDTH
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0,
+            paddingTop: 20
           }}
+          overlayStyle={{ backgroundColor: hexToRGB(colors.BLACK, 0.4) }}
+          handlePosition="inside"
           HeaderComponent={
-            <HeaderWrapper>
-              <Text
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  lineHeight: 20,
-                  marginBottom: RFValue(10)
+            <Searchbar
+              placeholder="Search GIPHY"
+              onChangeText={onChangeSearch}
+              onSubmitEditing={handleSearch}
+              returnKeyType="search"
+              value={searchQuery}
+              style={{
+                borderRadius: 10,
+                shadowOpacity: 0,
+                marginHorizontal: 10,
+                backgroundColor: colors.INPUT
+              }}
+            />
+          }
+          flatListProps={{
+            data: GIFs,
+            bounces: false,
+            keyExtractor: (item: any) => `${item.id}_${item.url}`,
+            numColumns: 2,
+            ListFooterComponentStyle: { marginVertical: 20 },
+            ListEmptyComponent: () => (
+              <LoadingWrapper>
+                <ActivityIndicator size="small" color={colors.RED} />
+                <LoadingGiphys>Loading giphys...</LoadingGiphys>
+              </LoadingWrapper>
+            ),
+            renderItem: ({ item }: any) => (
+              <GifImageWrapper
+                onPress={() => {
+                  channel.sendMessage({
+                    attachments: [
+                      {
+                        thumb_url: item.images.fixed_height.url,
+                        type: 'giphy'
+                      }
+                    ]
+                  });
+                  Keyboard.dismiss();
+                  modalizeRef.current?.close();
                 }}
               >
-                Select a Gif
-              </Text>
-              <Searchbar
-                placeholder="Search"
-                onChangeText={onChangeSearch}
-                value={searchQuery}
-                onSubmitEditing={handleSearch}
-                // blurOnSubmit
-              />
-            </HeaderWrapper>
-          }
-        >
-          <ActivityIndicator
-            animating={loading}
-            size="large"
-            color={colors.RED}
-          />
-          <GifContainer>
-            <FlatList
-              data={gif || []}
-              keyExtractor={({ id }) => id}
-              numColumns={2}
-              horizontal={false}
-              // columnWrapperStyle={{ flexWrap: 'wrap', flex: 1, marginTop: 5 }}
-              renderItem={({ item }) => (
-                <GifImageWrapper
-                  onPress={(e) => console.tron('Stream Context', e)}
-                >
+                <Fragment>
+                  <GifImageWrapperPlaceholder />
                   <FastImage
-                    resizeMode={FastImage.resizeMode.cover}
+                    resizeMode={FastImage.resizeMode.stretch}
                     source={{
-                      uri: item.images.original.url,
+                      uri: item.images.preview_gif.url,
                       priority: FastImage.priority.high
                     }}
-                    style={{
-                      height: RFValue(150),
-                      borderRadius: RFValue(2)
-                    }}
+                    style={{ height: '100%' }}
                   />
-                </GifImageWrapper>
-              )}
-            />
-          </GifContainer>
-        </Modalize>
+                </Fragment>
+              </GifImageWrapper>
+            ),
+            onEndReachedThreshold: 0.01,
+            ListFooterComponent: _renderFooter,
+            onEndReached: () => {
+              if (GIFsMeta.total_count > GIFs.length) {
+                setCallOnScrollEnd(true);
+              }
+            },
+            onMomentumScrollEnd: handleEndReach,
+            style: { marginTop: 10 },
+            contentContainerStyle: {
+              justifyContent: 'center',
+              paddingHorizontal: 10,
+              paddingBottom: bottom + 20
+            }
+          }}
+        />
       </Portal>
-    </InputWrapper>
+    </Container>
   );
 }
 
