@@ -68,9 +68,9 @@ export default function CustomChannelPreview(
   const displayName = useChannelPreviewDisplayName(channel);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
-  const channelTitle = `#${channel.data?.community.name
-    .split(' ')
-    .join('')}-${displayName}`;
+  const channelTitle = channel.data?.community
+    ? `#${channel.data?.community.name.split(' ').join('')}-${displayName}`
+    : null;
 
   const handleDeleteAction = async () => {
     await leaveChannel({ variables: { payload: { channelId: channel.id } } });
