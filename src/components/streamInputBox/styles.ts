@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
 import { TouchableRipple } from 'react-native-paper';
+import { DEVICE_FULL_HEIGHT } from '../../utils/device';
 
 export const Container = styled.View`
   flex: 1;
@@ -56,21 +57,41 @@ export const ButtonContainer = styled.TouchableOpacity`
 
 export const GifContainer = styled.View`
   padding-horizontal: 13px;
-  /* flex-direction: row; */
-  /* flex-wrap: wrap; */
   align-items: center;
   width: 100%;
   padding-bottom: 50px;
 `;
 
-export const InputWrapper = styled.View``;
 export const GifImageWrapper = styled.TouchableOpacity`
-  margin-horizontal: 2.5px;
-  margin-vertical: 2.5px;
-  width: 50%;
+  height: 120px;
+  width: 49%;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-right: 6px;
+  margin-vertical: 3px;
 `;
 
-export const HeaderWrapper = styled.View`
-  margin-horizontal: 15px;
-  margin-bottom: 30px;
+export const GifImageWrapperPlaceholder = styled.View`
+  height: 120px;
+  width: 100%;
+  border-radius: 2px;
+  margin-right: 6px;
+  margin-vertical: 3px;
+  position: absolute;
+  background-color: ${({ theme }) => theme.colors.light};
+`;
+
+export const LoadingWrapper = styled.View`
+  flex: 1;
+  height: ${DEVICE_FULL_HEIGHT / 1.4}px;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const LoadingGiphys = styled.Text`
+  font-size: ${({ theme }) => theme.fonts.LARGE_SIZE}px;
+  color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_SEMI_BOLD};
+  margin-top: 20px;
+  text-transform: capitalize;
 `;
