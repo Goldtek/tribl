@@ -143,6 +143,7 @@ function StreamInputBox(props: InputProps) {
     setGIFs({ ...GIFs, ...data, data: uniqueArray });
 
     if (!searchQuery) {
+      Storage.setGiphys({ ...GIFs, ...data, data: uniqueArray.slice(0, 20) });
       setBackupGif({ ...GIFs, ...data, data: uniqueArray });
     }
 
@@ -193,10 +194,6 @@ function StreamInputBox(props: InputProps) {
       fetchGiphys(
         `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}`
       );
-    }
-
-    if (GIFs.data.length === 20) {
-      Storage.setGiphys(GIFs);
     }
   }, [GIFs.data.length, searchQuery]);
 
