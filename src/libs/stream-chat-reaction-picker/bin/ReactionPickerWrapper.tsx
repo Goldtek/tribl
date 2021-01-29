@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { Dimensions, TouchableOpacity } from 'react-native';
 
@@ -10,7 +11,7 @@ import type { ReactionPickerProps } from './ReactionPicker';
 
 import type {
   Alignment,
-  MessageWithDates,
+  MessageWithDates
 } from '../../contexts/messagesContext/MessagesContext';
 import type { Message } from '../../components/MessageList/utils/insertDates';
 import type {
@@ -21,7 +22,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
-  UnknownType,
+  UnknownType
 } from '../../types/types';
 
 export type ReactionPickerWrapperProps<
@@ -88,7 +89,7 @@ export const ReactionPickerWrapper = <
 >(
   props: PropsWithChildren<
     ReactionPickerWrapperProps<At, Ch, Co, Ev, Me, Re, Us>
-  >,
+  >
 ) => {
   const {
     alignment,
@@ -104,7 +105,7 @@ export const ReactionPickerWrapper = <
     openReactionPicker,
     ReactionPicker = ReactionPickerDefault,
     reactionPickerVisible,
-    supportedReactions = emojiDataDefault,
+    supportedReactions = emojiDataDefault
   } = props;
 
   const messageContainer = useRef<TouchableOpacity>(null);
@@ -129,13 +130,13 @@ export const ReactionPickerWrapper = <
               alignment === 'right'
                 ? Math.round(Dimensions.get('window').width) -
                     (x + width + offset.right)
-                : undefined,
+                : undefined
             );
             setRPTop(y - 60 + offset.top);
           });
         }
       },
-      customMessageContent ? 10 : 0,
+      customMessageContent ? 10 : 0
     );
   };
 
@@ -143,7 +144,7 @@ export const ReactionPickerWrapper = <
     <TouchableOpacity
       onPress={openReactionPicker}
       ref={messageContainer}
-      testID='reaction-picker-wrapper'
+      testID="reaction-picker-wrapper"
     >
       {children}
       <ReactionPicker<At, Ch, Co, Me, Re, Us>

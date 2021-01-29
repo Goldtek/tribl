@@ -10,6 +10,7 @@ import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { useStreamContext } from '../../../stream';
 import StreamInputBox from '../../../components/streamInputBox';
 import CustomMessage from '../../../components/customMessage';
+import CustomSystemMessage from '../../../components/customSystemMessage';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -39,8 +40,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
           <Channel
             //@ts-ignore
             channel={channel}
-            //@ts-ignore
-            Message={CustomMessage}
           >
             <MessageList
               onThreadSelect={(thread) => {
@@ -48,6 +47,9 @@ export default function ChannelChatScreen(props: ScreenProp) {
                 setActivityScreen('threadScreen');
                 navigation.navigate('ThreadChatScreen');
               }}
+              Message={CustomMessage}
+              //@ts-ignore
+              MessageSystem={CustomSystemMessage}
             />
             <MessageInput
               Input={StreamInputBox}
