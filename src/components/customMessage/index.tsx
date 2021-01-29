@@ -7,9 +7,12 @@ import {
   DefaultChannelType,
   MessageAvatar
 } from 'stream-chat-expo';
+import { logEvent } from '../../utils/uxcamHelper';
+import { Mixpanel } from '../../config';
 import { Alert } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
 import { chatClient } from '../../stream/types';
+import { useStreamContext } from '../../stream';
 import { useNavigation } from '@react-navigation/native';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
@@ -31,6 +34,7 @@ let lastTap = 0;
 
 function CustomMessage(props: MessageProps) {
   const navigation = useNavigation();
+  const { channel, activityScreen } = useStreamContext();
 
   const visible =
     props.groupStyles[0] === 'single' || props.groupStyles[0] === 'top';
@@ -49,7 +53,7 @@ function CustomMessage(props: MessageProps) {
     }
   };
 
-  const onDelete = async () => {
+  const handleDelete = async () => {
     setTimeout(
       () =>
         Alert.alert(
@@ -63,13 +67,66 @@ function CustomMessage(props: MessageProps) {
             },
             {
               text: 'OK',
-              onPress: () => props.handleDelete()
+              onPress: () => {
+                if (activityScreen === 'channelScreen') {
+                  logEvent('user deletes message on channel message screen', {
+                    from: 'chat'
+                  });
+
+                  Mixpanel.track(
+                    'User Deletes Message On Channel Message Screen',
+                    {
+                      info: `User deletes message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+                      'Activity Screen': 'Channel Message Screen'
+                    }
+                  );
+                }
+
+                if (activityScreen === 'threadScreen') {
+                  logEvent(
+                    'user deletes message on channel thread message screen',
+                    { from: 'chat' }
+                  );
+
+                  Mixpanel.track(
+                    'User Deletes Message On Channel Thread Message',
+                    {
+                      info: `User deletes message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+                      'Activity Screen': 'Channel Thread Message Screen'
+                    }
+                  );
+                }
+
+                props.handleDelete();
+              }
             }
           ],
           { cancelable: false }
         ),
       100
     );
+  };
+
+  const handleReaction = async (type: string) => {
+    if (activityScreen === 'channelScreen') {
+      logEvent('user reacts to channel message', { from: 'chat' });
+
+      Mixpanel.track('User Reacts to Channel Message', {
+        info: `User reacts to message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+        'Activity Screen': 'Channel Message Screen'
+      });
+    }
+
+    if (activityScreen === 'threadScreen') {
+      logEvent('user reacts to channel thread message', { from: 'chat' });
+
+      Mixpanel.track('User Reacts to Channel Thread Message', {
+        info: `User reacts to message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+        'Activity Screen': 'Channel Thread Message Screen'
+      });
+    }
+
+    props.handleReaction(type);
   };
 
   const MessageTextWithName = (props: any) => {
@@ -115,8 +172,9 @@ function CustomMessage(props: MessageProps) {
   return (
     <MessageSimple
       {...props}
-      handleDelete={onDelete}
       onPress={handleDoubleTap}
+      handleDelete={handleDelete}
+      handleReaction={handleReaction}
       MessageText={MessageTextWithName}
       MessageAvatar={CustomMessageAvatar}
     />

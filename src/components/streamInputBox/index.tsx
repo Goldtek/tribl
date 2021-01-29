@@ -19,6 +19,8 @@ import {
   DefaultCommandType,
   useMessagesContext
 } from 'stream-chat-expo';
+import { logEvent } from '../../utils/uxcamHelper';
+import { Mixpanel } from '../../config';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { UserResponse } from 'stream-chat';
@@ -98,7 +100,7 @@ const defaultGiphy = {
 function StreamInputBox(props: InputProps) {
   const { bottom } = useSafeAreaInsets();
   const { colors } = useThemeContext();
-  const { disabled = false, sendMessage } = props;
+  const { disabled = false } = props;
   const { editing } = useMessagesContext<
     DefaultAttachmentType,
     DefaultChannelType,
@@ -109,7 +111,7 @@ function StreamInputBox(props: InputProps) {
     DefaultUserType
   >();
 
-  const { channel } = useStreamContext();
+  const { channel, activityScreen } = useStreamContext();
   const modalizeRef = useRef<Modalize>(null);
   const [GIFs, setGIFs] = useState<GiphyInterface>(defaultGiphy);
   const [backupGif, setBackupGif] = useState<GiphyInterface>(defaultGiphy);
@@ -120,6 +122,41 @@ function StreamInputBox(props: InputProps) {
   const onChangeSearch = (query: string) => {
     if (!query) setGIFs(backupGif);
     setSearchQuery(query);
+  };
+
+  const sendMessage = () => {
+    if (activityScreen === 'channelScreen') {
+      logEvent('send channel message', { from: 'chat' });
+
+      if (editing) {
+        Mixpanel.track('User Edits Channel Message', {
+          info: `User edits message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Message Screen'
+        });
+      } else {
+        Mixpanel.track('User Sends Channel Message', {
+          info: `User sends message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Message Screen'
+        });
+      }
+    }
+
+    if (activityScreen === 'threadScreen') {
+      logEvent('send channel thread message', { from: 'chat' });
+
+      if (editing) {
+        Mixpanel.track('User Edits Channel Thread Message', {
+          info: `User edits message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Thread Message Screen'
+        });
+      } else
+        Mixpanel.track('User Sends Channel Thread Message', {
+          info: `User sends message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Thread Message Screen'
+        });
+    }
+
+    props.sendMessage();
   };
 
   const fetchGiphys = async (url: string) => {
@@ -143,6 +180,7 @@ function StreamInputBox(props: InputProps) {
     setGIFs({ ...GIFs, ...data, data: uniqueArray });
 
     if (!searchQuery) {
+      Storage.setGiphys({ ...GIFs, ...data, data: uniqueArray.slice(0, 20) });
       setBackupGif({ ...GIFs, ...data, data: uniqueArray });
     }
 
@@ -193,10 +231,6 @@ function StreamInputBox(props: InputProps) {
       fetchGiphys(
         `${GIHPY_DEFAULT_URL}/gifs/search?api_key=${ENVIRONMENT_VARIABLES.TRIBL_GIPHY_API_KEY}&q=${searchQuery}&limit=${PAGINATION_DEFAULT}`
       );
-    }
-
-    if (GIFs.data.length === 20) {
-      Storage.setGiphys(GIFs);
     }
   }, [GIFs.data.length, searchQuery]);
 

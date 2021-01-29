@@ -24,7 +24,7 @@ import { Container } from './styles';
 interface ScreenProp extends NavigationInterface {}
 
 function ChannelsTab(props: ScreenProp) {
-  const { setChannel } = useStreamContext();
+  const { setChannel, setActivityScreen } = useStreamContext();
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
@@ -58,7 +58,10 @@ function ChannelsTab(props: ScreenProp) {
         >
           // @ts-ignore
           filters={filters}
-          onSelect={(channel) => setChannel(channel as any)}
+          onSelect={(channel) => {
+            setChannel(channel as any);
+            setActivityScreen('channelScreen');
+          }}
           sort={sort}
           options={options}
           Preview={CustomChannelPreview}
