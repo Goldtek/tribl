@@ -128,19 +128,32 @@ function StreamInputBox(props: InputProps) {
     if (activityScreen === 'channelScreen') {
       logEvent('send channel message', { from: 'chat' });
 
-      Mixpanel.track('User Sends Channel Message', {
-        info: `User sends message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
-        'Activity Screen': 'Channel Message Screen'
-      });
+      if (editing) {
+        Mixpanel.track('User Edits Channel Message', {
+          info: `User edits message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Message Screen'
+        });
+      } else {
+        Mixpanel.track('User Sends Channel Message', {
+          info: `User sends message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Message Screen'
+        });
+      }
     }
 
     if (activityScreen === 'threadScreen') {
       logEvent('send channel thread message', { from: 'chat' });
 
-      Mixpanel.track('User Sends Channel Thread Message', {
-        info: `User sends message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
-        'Activity Screen': 'Channel Thread Message Screen'
-      });
+      if (editing) {
+        Mixpanel.track('User Edits Channel Thread Message', {
+          info: `User edits message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Thread Message Screen'
+        });
+      } else
+        Mixpanel.track('User Sends Channel Thread Message', {
+          info: `User sends message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Thread Message Screen'
+        });
     }
 
     props.sendMessage();

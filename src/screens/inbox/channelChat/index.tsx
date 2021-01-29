@@ -8,7 +8,6 @@ import { tagScreenName } from '../../../utils/uxcamHelper';
 import { chatClient, ThreadType } from '../../../stream/types';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { useStreamContext } from '../../../stream';
-import { useHeaderHeight } from '@react-navigation/stack';
 import StreamInputBox from '../../../components/streamInputBox';
 import CustomMessage from '../../../components/customMessage';
 
@@ -24,7 +23,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
   const { channel, setThread, setActivityScreen } = useStreamContext();
   const chatStyles = useStreamChatTheme();
   const { colors } = useThemeContext();
-  const headerHeight = useHeaderHeight();
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
@@ -41,7 +39,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
           <Channel
             //@ts-ignore
             channel={channel}
-            keyboardVerticalOffset={headerHeight}
             //@ts-ignore
             Message={CustomMessage}
           >
