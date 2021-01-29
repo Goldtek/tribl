@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Chat, Channel, Thread } from 'stream-chat-expo';
-import { useHeaderHeight } from '@react-navigation/stack';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import StreamInputBox from '../../../components/streamInputBox';
 import { tagScreenName } from '../../../utils/uxcamHelper';
@@ -21,16 +20,10 @@ function ThreadChatScreen(props: ScreenProp) {
   const { colors } = useThemeContext();
   const { thread, channel } = useStreamContext();
   const chatStyles = useStreamChatTheme();
-  const headerHeight = useHeaderHeight();
 
   useEffect(() => {
     tagScreenName('ThreadChatScreen');
   }, []);
-
-  //     Mixpanel.track('User Sends Thread Message', {
-  //       info: `User sends message on ${channel?.name} channel in ${channel?.community} community`,
-  //       'Activity Screen': 'Thread Message Screen'
-  //     });
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -44,7 +37,6 @@ function ThreadChatScreen(props: ScreenProp) {
             //@ts-ignore
             channel={channel}
             thread={thread}
-            keyboardVerticalOffset={headerHeight}
             //@ts-ignore
             Message={CustomMessage}
           >
