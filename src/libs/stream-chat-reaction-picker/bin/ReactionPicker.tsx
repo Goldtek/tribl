@@ -21,7 +21,6 @@ import type {
 
 const Container = styled.TouchableOpacity<{ leftAlign: boolean }>`
   align-items: ${({ leftAlign }) => (leftAlign ? 'flex-start' : 'flex-end')};
-  align-items: flex-start;
   flex: 1;
   ${({ theme }) => theme.message.reactionPicker.container.css}
 `;

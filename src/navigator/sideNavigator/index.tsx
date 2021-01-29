@@ -49,11 +49,9 @@ export default function DrawerStackNavigator() {
   const [channelMenu, setChannelMenu] = useState(false);
   const showChannelMenu = () => setChannelMenu(!channelMenu);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
-  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
 
   const handleLeaveChannel = async () => {
     await leaveChannel({ variables: { payload: { channelId: channel.id } } });
-    getChannelCommunity({ variables: { id: channel.data?.community.id } });
     navigation.goBack();
   };
 
