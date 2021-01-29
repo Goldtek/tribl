@@ -1,4 +1,4 @@
-//@ts-nocheck
+// @ts-nocheck
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { Dimensions, TouchableOpacity } from 'react-native';
 
@@ -129,7 +129,7 @@ export const ReactionPickerWrapper = <
             setRPRight(
               alignment === 'right'
                 ? Math.round(Dimensions.get('window').width) -
-                    (x + width + offset.right)
+                    (x + width + offset.right + 35)
                 : undefined
             );
             setRPTop(y - 60 + offset.top);
