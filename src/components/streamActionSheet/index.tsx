@@ -2,27 +2,17 @@ import React, { useEffect, useState } from 'react';
 
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
-import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
-
 import { StyleSheet, Text, View } from 'react-native';
 
 import styled from 'styled-components/native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-// import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-community/clipboard';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType
-} from './types';
 import { useThemeContext } from '../../theme';
+
+import type { MessageActionSheetProps } from 'stream-chat-react-native-core/lib/typescript/src/components/Message/MessageSimple/MessageActionSheet';
 
 const MESSAGE_ACTIONS = {
   delete: 'delete',
@@ -31,33 +21,6 @@ const MESSAGE_ACTIONS = {
   reply: 'reply',
   copy: 'copy'
 };
-
-export const emojiData = [
-  {
-    icon: '👍',
-    id: 'like'
-  },
-  {
-    icon: '❤️️',
-    id: 'love'
-  },
-  {
-    icon: '😂',
-    id: 'haha'
-  },
-  {
-    icon: '😮',
-    id: 'wow'
-  },
-  {
-    icon: '😔',
-    id: 'sad'
-  },
-  {
-    icon: '😠',
-    id: 'angry'
-  }
-];
 
 const ActionSheetButtonContainer = styled.View`
   align-items: center;
@@ -77,89 +40,6 @@ const ActionSheetButtonText = styled.Text`
   ${({ theme }) => theme.message.actionSheet.buttonText.css};
 `;
 
-export type ActionSheetStyles = {
-  body?: StyleProp<ViewStyle>;
-  buttonBox?: StyleProp<ViewStyle>;
-  buttonText?: StyleProp<TextStyle>;
-  cancelButtonBox?: StyleProp<ViewStyle>;
-  messageBox?: StyleProp<ViewStyle>;
-  messageText?: StyleProp<TextStyle>;
-  overlay?: StyleProp<TextStyle>;
-  titleBox?: StyleProp<ViewStyle>;
-  titleText?: StyleProp<TextStyle>;
-  wrapper?: StyleProp<ViewStyle>;
-};
-
-export type MessageActionSheetProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Handler to delete a current message
-   */
-  handleDelete: () => Promise<void>;
-  /**
-   * Handler to edit a current message. This function sets the current message as the `editing` property of channel context.
-   * The `editing` prop is used by the MessageInput component to switch to edit mode.
-   */
-  handleEdit: () => void;
-  handleReaction: (reactionType: string) => Promise<void>;
-  // message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>;
-  /**
-   * Function that opens the reaction picker
-   */
-  openReactionPicker: () => Promise<void>;
-  /**
-   * Function that opens a thread and gives the option to add a reply on a message
-   */
-  openThread: () => void;
-  /**
-   * Whether or not message reactions are enabled
-   */
-  reactionsEnabled: boolean;
-  /**
-   * The action sheet ref declared in MessageContent. To access the ref, ensure the ActionSheet custom
-   * component is wrapped in `React.forwardRef`.
-   */
-  ref: React.MutableRefObject<ActionSheet | undefined>;
-  /**
-   * Whether or not message replies are enabled
-   */
-  repliesEnabled: boolean;
-  /**
-   * React useState hook setter function that toggles action sheet visibility
-   */
-  setActionSheetVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  // supportedReactions: Reaction[];
-  /**
-   * Style object for action sheet (used to style message actions)
-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-   */
-  actionSheetStyles?: ActionSheetStyles;
-  /**
-   * Function that returns a boolean indicating whether or not the user can delete the message.
-   */
-  canDeleteMessage?: () => boolean | undefined;
-  /**
-   * Function that returns a boolean indicating whether or not the user can edit the message.
-   */
-  canEditMessage?: () => boolean | undefined;
-  /**
-   * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
-   * If all the actions need to be disabled, empty array or false should be provided as value of prop.
-   */
-  messageActions?: boolean | string[];
-  /**
-   * Whether or not the MessageList is part of a Thread
-   */
-  threadList?: boolean;
-};
-
 export const MessageActionSheet = React.forwardRef(
   (props: MessageActionSheetProps, actionSheetRef) => {
     const {
@@ -172,10 +52,13 @@ export const MessageActionSheet = React.forwardRef(
       openThread,
       handleReaction,
       repliesEnabled,
+      message,
       setActionSheetVisible,
-      threadList
+      threadList,
+      supportedReactions
     } = props;
 
+    console.tron('action sheet props', props);
     const { colors } = useThemeContext();
 
     const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
@@ -185,7 +68,6 @@ export const MessageActionSheet = React.forwardRef(
         id: string;
         title: string;
         icon?: string;
-        handler?: any;
       }[] = [];
 
       if (Array.isArray(messageActions)) {
@@ -223,16 +105,13 @@ export const MessageActionSheet = React.forwardRef(
           });
         }
 
-        // if (messageActions.indexOf(MESSAGE_ACTIONS.copy) > -1) {
-        //   newOptions.splice(1, 0, {
-        //     id: MESSAGE_ACTIONS.copy,
-        //     title: 'Copy Text',
-        //     handler: () => {
-        //       Clipboard.setString('message');
-        //     },
-        //     icon: 'content-copy'
-        //   });
-        // }
+        if (messageActions.indexOf(MESSAGE_ACTIONS.copy) > -1) {
+          newOptions.splice(1, 0, {
+            id: MESSAGE_ACTIONS.copy,
+            title: 'Copy Text',
+            icon: 'content-copy'
+          });
+        }
       }
 
       setOptions((prevOptions) => [...prevOptions, ...newOptions]);
@@ -251,6 +130,9 @@ export const MessageActionSheet = React.forwardRef(
           break;
         case MESSAGE_ACTIONS.reactions:
           openReactionPicker();
+          break;
+        case MESSAGE_ACTIONS.copy:
+          Clipboard.setString(message.text || '');
           break;
         default:
           break;
@@ -283,7 +165,7 @@ export const MessageActionSheet = React.forwardRef(
         title={renderReactions((type: any) => {
           handleReaction(type);
           setActionSheetVisible(false);
-        })}
+        }, supportedReactions)}
         styles={{
           body: {
             backgroundColor: colors.WHITE,
@@ -323,13 +205,15 @@ export const MessageActionSheet = React.forwardRef(
   }
 );
 
-export const renderReactions = (handleReaction: any) => {
+export const renderReactions = (
+  handleReaction: any,
+  supportedReactions: any
+) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-
-  const reactions = emojiData;
+  const reactions = supportedReactions;
   return (
     <View style={styles.reactionListContainer}>
-      {reactions.map((r, index) => (
+      {reactions.map((r: any, index: number) => (
         <ReactionItem
           key={index}
           type={r.id}
