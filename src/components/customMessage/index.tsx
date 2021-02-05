@@ -18,6 +18,7 @@ import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
 
 import { Container, UserName, Edited, AvatarContainer } from './styles';
+import { MessageActionSheet } from '../streamActionSheet/index';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -177,6 +178,8 @@ function CustomMessage(props: MessageProps) {
       handleReaction={handleReaction}
       MessageText={MessageTextWithName}
       MessageAvatar={CustomMessageAvatar}
+      //@ts-ignore
+      ActionSheet={MessageActionSheet}
     />
   );
 }
