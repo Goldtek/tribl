@@ -220,8 +220,8 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                     priority: FastImage.priority.high
                   }}
                   style={{
-                    width: RFValue(80),
-                    height: RFValue(50),
+                    width: RFValue(60),
+                    height: RFValue(60),
                     borderRadius: 4
                   }}
                 />
