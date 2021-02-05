@@ -1,8 +1,9 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
-import { Paragraph, TouchableRipple } from 'react-native-paper';
+import { Paragraph, TouchableRipple, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { AntDesign } from '@expo/vector-icons';
 import { NavigationInterface } from '../../../../../types';
@@ -113,6 +114,7 @@ export default function ChannelCard(props: ChannelCardProp) {
       style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         padding: RFValue(20),
         paddingTop: RFValue(25),
         paddingBottom: RFValue(25),
@@ -120,16 +122,27 @@ export default function ChannelCard(props: ChannelCardProp) {
       }}
     >
       <Fragment>
-        <Paragraph
-          style={{
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'capitalize'
-          }}
-        >
-          {name}
-        </Paragraph>
+        <View>
+          <Paragraph
+            style={{
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              color: colors.PRIMARY_TEXT
+            }}
+          >
+            #{name}
+          </Paragraph>
+          {/* <Text numberOfLines={1}>
+            <Text style={{ fontFamily: fonts.WORK_SANS_SEMI_BOLD }}>
+              3 connections
+            </Text>{' '}
+            and{' '}
+            <Text style={{ fontFamily: fonts.WORK_SANS_SEMI_BOLD }}>
+              70 other members
+            </Text>{' '}
+            chatting live
+          </Text> */}
+        </View>
         <AntDesign name="caretright" size={18} color={colors.PRIMARY_TEXT} />
       </Fragment>
     </TouchableRipple>
