@@ -19,15 +19,9 @@ interface HighlightProp {
 }
 
 const Highlight = (props: HighlightProp) => {
+  const { hit } = props;
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
-  const { attribute, hit, highlight } = props;
-
-  const highlights = highlight({
-    highlightProperty: '_highlightResult',
-    attribute,
-    hit
-  });
 
   const handleNavigation = () => {
     navigation.navigate('CommunityDetailScreen', {
