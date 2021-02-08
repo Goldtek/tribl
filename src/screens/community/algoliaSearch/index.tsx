@@ -69,9 +69,9 @@ function SearchScreen(props: ModalProp) {
   return (
     <Container>
       <InstantSearch
-        searchClient={searchClient}
         indexName={indexName}
         searchState={state.search}
+        searchClient={searchClient}
         onSearchStateChange={onSearchStateChange}
       >
         <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />

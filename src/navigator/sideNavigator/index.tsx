@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../graphql/server/mutations';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 import { useThemeContext } from '../../theme';
@@ -30,7 +30,6 @@ import CommunityDetailScreen from '../../screens/community/detail';
 import getStreamChannelMembers from '../../utils/getStreamChannelMembers';
 import { DEVICE_OS } from '../../utils/device';
 import { useStreamContext } from '../../stream';
-import { GET_SINGLE_COMMUNITY } from '../../graphql/server/query';
 
 import { Container, CountBadge } from './styles';
 
@@ -54,8 +53,6 @@ export default function DrawerStackNavigator() {
     await leaveChannel({ variables: { payload: { channelId: channel.id } } });
     navigation.goBack();
   };
-
-  const channelMembers = getStreamChannelMembers(channel);
 
   const getMenuHeight = useCallback(() => {
     switch (true) {
@@ -132,10 +129,10 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="ThreadChatScreen"
         component={InboxScreens.ThreadChatScreen}
-        options={({ route }: any) => ({
+        options={{
           headerShown: true,
-          height: RFValue(90),
           headerTitle: 'Thread',
+          headerStyle: { height: RFValue(90) },
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -165,13 +162,15 @@ export default function DrawerStackNavigator() {
           ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
-        })}
+        }}
       />
 
       <DrawerStack.Screen
         name="ChannelChatScreen"
         component={InboxScreens.ChannelChatScreen}
         options={({ route }: any) => {
+          const channelMembers = getStreamChannelMembers(channel);
+
           return {
             headerStyle: { height: RFValue(90) },
             height: RFValue(90),
