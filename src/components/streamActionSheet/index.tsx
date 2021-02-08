@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from 'react';
-
-import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
-
-import { StyleSheet, Text, View } from 'react-native';
-
 import styled from 'styled-components/native';
-
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+import { StyleSheet, View } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import { useThemeContext } from '../../theme';
-
 import type { MessageActionSheetProps } from 'stream-chat-react-native-core/lib/typescript/src/components/Message/MessageSimple/MessageActionSheet';
+
+import { ReactionItemContainer, ReactionItemText } from './styles';
 
 const MESSAGE_ACTIONS = {
   delete: 'delete',
@@ -23,18 +18,18 @@ const MESSAGE_ACTIONS = {
 };
 
 const ActionSheetButtonContainer = styled.View`
-  align-items: center;
-  background-color: ${({ theme }) => theme.colors.WHITE};
-  height: 50px;
   width: 100%;
+  height: 50px;
+  align-items: center;
   flex-direction: row;
   padding-horizontal: 20px;
+  background-color: ${({ theme }) => theme.colors.WHITE};
   ${({ theme }) => theme.message.actionSheet.buttonContainer.css};
 `;
 
 const ActionSheetButtonText = styled.Text`
-  color: #388cea;
   font-size: 16px;
+  color: #388cea;
   margin-left: 10px;
   color: ${({ theme }) => theme.colors.PRIMARY};
   ${({ theme }) => theme.message.actionSheet.buttonText.css};
@@ -43,22 +38,21 @@ const ActionSheetButtonText = styled.Text`
 export const MessageActionSheet = React.forwardRef(
   (props: MessageActionSheetProps, actionSheetRef) => {
     const {
-      canDeleteMessage,
-      canEditMessage,
-      handleDelete,
-      handleEdit,
-      messageActions = Object.keys(MESSAGE_ACTIONS),
-      openReactionPicker,
-      openThread,
-      handleReaction,
-      repliesEnabled,
       message,
-      setActionSheetVisible,
       threadList,
-      supportedReactions
+      handleEdit,
+      openThread,
+      handleDelete,
+      handleReaction,
+      canEditMessage,
+      repliesEnabled,
+      canDeleteMessage,
+      openReactionPicker,
+      supportedReactions,
+      setActionSheetVisible,
+      messageActions = Object.keys(MESSAGE_ACTIONS)
     } = props;
 
-    console.tron('action sheet props', props);
     const { colors } = useThemeContext();
 
     const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
@@ -178,13 +172,7 @@ export const MessageActionSheet = React.forwardRef(
             justifyContent: 'center',
             backgroundColor: colors.TRANSPARENT
           },
-          buttonText: {},
-          cancelButtonBox: {
-            display: 'none'
-          },
-          messageBox: {},
-          messageText: {},
-          overlay: {},
+          cancelButtonBox: { display: 'none' },
           titleBox: {
             height: 80,
             alignItems: 'center',
@@ -195,10 +183,7 @@ export const MessageActionSheet = React.forwardRef(
             padding: 15,
             borderTopLeftRadius: 10,
             borderTopRightRadius: 10
-          },
-
-          titleText: {},
-          wrapper: {}
+          }
         }}
       />
     );
@@ -226,32 +211,10 @@ export const renderReactions = (
 };
 
 const ReactionItem = ({ type, handleReaction, icon }: any) => {
-  const { colors } = useThemeContext();
   return (
-    <View
-      key={type}
-      style={[
-        styles.reactionItemContainer,
-        {
-          borderColor: 'transparent',
-          backgroundColor: colors.WHITE
-        }
-      ]}
-    >
-      <Text
-        onPress={() => {
-          handleReaction(type);
-        }}
-        style={[
-          styles.reactionItem,
-          {
-            color: colors.PRIMARY
-          }
-        ]}
-      >
-        {icon}
-      </Text>
-    </View>
+    <ReactionItemContainer onPress={() => handleReaction(type)}>
+      <ReactionItemText>{icon}</ReactionItemText>
+    </ReactionItemContainer>
   );
 };
 
@@ -259,30 +222,11 @@ MessageActionSheet.displayName = 'messageActionSheet';
 
 const styles = StyleSheet.create({
   reactionListContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    height: 30,
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  reactionItemContainer: {
-    borderWidth: 1,
-    padding: 3,
-    paddingLeft: 3,
-    paddingRight: 3,
-    borderRadius: 40,
-    marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  reactionItem: {
-    fontSize: 28
-  },
-  reactionPickerContainer: {
-    padding: 4,
-    paddingLeft: 8,
-    paddingRight: 6,
-    borderRadius: 10
+    height: 30,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   }
 });
