@@ -116,7 +116,7 @@ export default function CustomChannelPreview(
           setActiveChannel && setActiveChannel(channel);
           navigation.navigate('DrawerScreen', {
             screen: 'ChannelChatScreen',
-            params: { title: channelTitle }
+            params: { title: channelTitle, channelId: channel.id }
           });
         }}
         ref={hideSensitiveView}

@@ -4,9 +4,9 @@ import { StackActionHelpers } from '@react-navigation/native';
 import { PassportInterface } from '../graphql/types';
 
 interface ChatScreenProps extends PassportInterface {
-  channelId?: string;
   title: string;
   chatId: string;
+  channelId: string;
   receiverId: string;
   channel?: { community: string; name: string };
 }
