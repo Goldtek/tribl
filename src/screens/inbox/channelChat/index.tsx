@@ -18,12 +18,14 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function ChannelChatScreen(props: ScreenProp) {
-  const { navigation } = props;
+  const { navigation, route } = props;
 
   const [text, setText] = useState('');
-  const { channel, setThread, setActivityScreen } = useStreamContext();
-  const chatStyles = useStreamChatTheme();
   const { colors } = useThemeContext();
+  const chatStyles = useStreamChatTheme();
+  const { setThread, setActivityScreen } = useStreamContext();
+
+  const channel = chatClient.channel('team', route.params.channelId);
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
@@ -45,7 +47,9 @@ export default function ChannelChatScreen(props: ScreenProp) {
               onThreadSelect={(thread) => {
                 setThread(thread as ThreadType);
                 setActivityScreen('threadScreen');
-                navigation.navigate('ThreadChatScreen');
+                navigation.navigate('ThreadChatScreen', {
+                  channelId: thread?.id
+                });
               }}
               Message={CustomMessage}
               //@ts-ignore
