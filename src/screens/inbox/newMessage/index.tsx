@@ -56,10 +56,10 @@ export default function ChatScreen(props: ScreenProp) {
     tagScreenName('NewMessageScreen');
   }, []);
 
-  // const [pagination, setPagination] = useState({
-  //   refreshing: false,
-  //   callOnScrollEnd: false
-  // });
+  const [pagination, setPagination] = useState({
+    refreshing: false,
+    callOnScrollEnd: false
+  });
 
   const [refreshing, setRefreshing] = useState(false);
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
@@ -90,7 +90,9 @@ export default function ChatScreen(props: ScreenProp) {
     data: allMembersData,
     loading: allMembersLoading,
     fetchMore: fetchMoreAllMembers
-  } = useQuery<AllMembersRequestInterface>(GET_ALL_MEMBERS);
+  } = useQuery<AllMembersRequestInterface>(GET_ALL_MEMBERS, {
+    variables: { offset: 0, first: PAGINATION_DEFAULT }
+  });
 
   const allMembers = allMembersData?.Passport;
   const nearbyMembers = nearbyData?.nearbyMembers;
@@ -103,26 +105,35 @@ export default function ChatScreen(props: ScreenProp) {
     return 0;
   };
 
-  const filterMember = (member: PassportInterface) => {
-    return member.id !== userId && member.verified === true;
+  const removeDuplicateMembers = (members?: PassportInterface[]) => {
+    if (!members) return;
+
+    const uniqueMembers: PassportInterface[] = [];
+    const hashMap: { [key: string]: string } = {};
+    let index = 0;
+
+    for (index; index < members.length; index++) {
+      const member = members[index];
+      if (!hashMap[member.id]) {
+        hashMap[member.id] = member.id;
+        if (member.id !== userId && member.verified) {
+          uniqueMembers.push(member);
+        }
+      }
+    }
+
+    return uniqueMembers;
   };
 
-  const filterAll = allMembers?.slice().sort(sortName).filter(filterMember);
+  const filterAll = removeDuplicateMembers(allMembers?.slice());
 
-  const filterNearby = nearbyMembers
-    ?.slice()
-    .sort(sortName)
-    .filter(filterMember);
+  const filterNearby = removeDuplicateMembers(nearbyMembers?.slice());
 
-  const filterConnection = myConnection
-    ?.slice()
-    .sort(sortName)
-    .filter(filterMember);
+  const filterConnection = removeDuplicateMembers(myConnection?.slice());
 
-  const filterConnectionsNearby = nearbyConnections
-    ?.slice()
-    .sort(sortName)
-    .filter(filterMember);
+  const filterConnectionsNearby = removeDuplicateMembers(
+    nearbyConnections?.slice()
+  );
 
   const handleOptionClick = (type: string) => () => {
     const { all, connections, nearby } = state;
@@ -173,27 +184,20 @@ export default function ChatScreen(props: ScreenProp) {
       default:
         break;
     }
-  }, [state, allMembersLoading]);
+  }, [state, allMembersLoading, allMembersData?.Passport]);
 
   const handleEndReach = () => {
     if (!callOnScrollEnd) return;
 
     fetchMoreAllMembers({
       variables: {
-        offset: allMembersData?.Passport.length,
+        offset: filterAll?.length,
         first: PAGINATION_DEFAULT
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         setCallOnScrollEnd(false);
 
         if (!fetchMoreResult) return prev;
-        const filteredResult = fetchMoreResult.Passport?.slice()
-          .sort(sortName)
-          .filter(filterMember);
-
-        //@ts-ignore
-        setListData([...filterAll, ...filteredResult]);
-
         return Object.assign({}, prev, {
           Passport: [...prev.Passport, ...fetchMoreResult.Passport]
         });
@@ -396,10 +400,10 @@ export default function ChatScreen(props: ScreenProp) {
               paddingBottom: 20,
               paddingVertical: RFValue(20)
             }}
-            onEndReachedThreshold={0.5}
-            // onMomentumScrollEnd={handleEndReach}
+            onEndReachedThreshold={1}
             // ListFooterComponent={_renderFooter}
-            // onEndReached={() => setCallOnScrollEnd(true)}
+            onMomentumScrollEnd={handleEndReach}
+            onEndReached={() => setCallOnScrollEnd(true)}
           />
         ) : (
           <Skeleton />

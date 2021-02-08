@@ -103,6 +103,7 @@ export default function ChannelCard(props: ChannelCardProp) {
         isMember,
         chatId: id,
         title: `#${name}`,
+        channelId: channel?.id,
         channel: { name, community: communityDetails?.name }
       }
     });

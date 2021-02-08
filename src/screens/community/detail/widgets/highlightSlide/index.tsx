@@ -220,8 +220,8 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                     priority: FastImage.priority.high
                   }}
                   style={{
-                    width: RFValue(60),
-                    height: RFValue(60),
+                    width: RFValue(50),
+                    height: RFValue(50),
                     borderRadius: 4
                   }}
                 />
@@ -255,8 +255,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                       style={{
                         fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
                         fontFamily: fonts.WORK_SANS_REGULAR,
-                        textAlign: 'left',
-                        lineHeight: RFValue(13),
+                        lineHeight: 18,
                         color: colors.PRIMARY_TEXT
                       }}
                     >
@@ -273,7 +272,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                     alignSelf: 'flex-start'
                   }}
                   labelStyle={{
-                    fontSize: fonts.LARGE_SIZE,
+                    fontSize: fonts.MEDIUM_SIZE,
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     color: colors.WHITE,
                     textTransform: 'capitalize'

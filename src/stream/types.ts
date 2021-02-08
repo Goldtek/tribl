@@ -1,6 +1,7 @@
 import { createContext, SetStateAction, Dispatch } from 'react';
 import { Channel, StreamChat } from 'stream-chat';
 import ENVIRONMENT_VARIABLES from 'react-native-config';
+import { CommunityInterface, PassportInterface } from '../graphql/types';
 import {
   DefaultAttachmentType,
   DefaultReactionType,
@@ -11,12 +12,23 @@ import {
   DefaultEventType,
   DefaultUserType
 } from 'stream-chat-expo';
-import { CommunityInterface, PassportInterface } from '../graphql/types';
+
+interface MessageUserInterface extends PassportInterface {
+  readAt: Date;
+  senderId: string;
+  receiverId: string;
+}
 
 export interface LocalAttachmentType extends DefaultAttachmentType {}
 export interface LocalReactionType extends DefaultReactionType {}
 export interface LocalChannelType extends DefaultChannelType {
+  isDm: boolean;
+  channelId: string;
+  conversationId: string;
+  sender: MessageUserInterface;
   community: CommunityInterface;
+  receiver: MessageUserInterface;
+  messageRequest: { status: boolean };
 }
 export interface LocalMessageType extends DefaultMessageType {}
 export interface LocalEventType extends DefaultEventType {}

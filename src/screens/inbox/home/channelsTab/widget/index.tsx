@@ -17,6 +17,7 @@ import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import ChannelActions from './channelActions';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
+import { GET_SINGLE_COMMUNITY } from '../../../../../graphql/server/query';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -25,7 +26,6 @@ import {
   LocalReactionType,
   LocalUserType
 } from '../../../../../stream/types';
-import { GET_SINGLE_COMMUNITY } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -52,11 +52,13 @@ export default function CustomChannelPreview(
   const {
     unread,
     channel,
-    latestMessageLength = 30,
     setActiveChannel,
     latestMessagePreview,
-    formatLatestMessageDate
+    formatLatestMessageDate,
+    latestMessageLength = 40
   } = props;
+
+  if (channel.data?.isDm) return null;
 
   const { colors } = useThemeContext();
   const navigation = useNavigation();
@@ -114,7 +116,7 @@ export default function CustomChannelPreview(
           setActiveChannel && setActiveChannel(channel);
           navigation.navigate('DrawerScreen', {
             screen: 'ChannelChatScreen',
-            params: { title: channelTitle }
+            params: { title: channelTitle, channelId: channel.id }
           });
         }}
         ref={hideSensitiveView}
