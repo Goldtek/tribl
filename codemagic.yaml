@@ -50,7 +50,7 @@ workflows:
             events:
                 - push
             branch_patterns:
-                - pattern: develop # <<-- put the branch that the codemagic config file is
+                - pattern: staging # <<-- put the branch that the codemagic config file is
                   include: true
                   source: true
         scripts:
