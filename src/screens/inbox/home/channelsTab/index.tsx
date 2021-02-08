@@ -35,7 +35,7 @@ function ChannelsTab(props: ScreenProp) {
 
   const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 
-  const options = { state: true, watch: true };
+  const options = { presence: true, state: true, watch: true };
 
   useEffect(() => {
     tagScreenName('ChannelsTab');

@@ -52,7 +52,7 @@ PushNotification.configure({
   onRegistrationError: (error) => crashlytics.recordError(error),
 
   // IOS ONLY (optional): default: all - Permissions to register.
-  permissions: { alert: true, badge: false, sound: true },
+  permissions: { alert: true, badge: true, sound: true },
 
   requestPermissions: true
 });
