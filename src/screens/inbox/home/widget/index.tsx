@@ -63,8 +63,6 @@ export default function CustomChannelPreview(
     latestMessageLength = 40
   } = props;
 
-  console.tron(channel.data);
-
   const navigation = useNavigation();
   const { colors } = useThemeContext();
   const getMuteStatus = channel.muteStatus().muted;
