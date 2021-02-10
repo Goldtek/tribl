@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import { Keyboard, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
 import { Paragraph, Surface, TouchableRipple } from 'react-native-paper';
-import { useThemeContext } from '../../../theme';
+import { Ionicons } from '@expo/vector-icons';
+import FastImage from 'react-native-fast-image';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
 import hexToRGB from '../../../utils/hexToRGB';
+import { useThemeContext } from '../../../theme';
 import { tagScreenName } from '../../../utils/uxcamHelper';
 import { chatClient, ThreadType } from '../../../stream/types';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { useStreamContext } from '../../../stream';
 import StreamInputBox from '../../../components/streamInputBox';
-import CustomMessage from '../../../components/customMessage';
+import CustomDirectMessage from '../../../components/customDirectMessage';
 import CustomSystemMessage from '../../../components/customSystemMessage';
-import { Ionicons } from '@expo/vector-icons';
-import FastImage from 'react-native-fast-image';
 
-import { HeaderContainer } from './styles';
+import { HeaderContainer, MessageListContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -26,8 +26,8 @@ export default function DirectChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
 
   const [text, setText] = useState('');
-  const { colors, fonts } = useThemeContext();
   const chatStyles = useStreamChatTheme();
+  const { colors, fonts } = useThemeContext();
   const { setThread, setActivityScreen } = useStreamContext();
 
   const channel = chatClient.channel('team', route.params.channelId);
@@ -104,18 +104,20 @@ export default function DirectChatScreen(props: ScreenProp) {
             //@ts-ignore
             channel={channel}
           >
-            <MessageList
-              onThreadSelect={(thread) => {
-                setThread(thread as ThreadType);
-                setActivityScreen('threadScreen');
-                navigation.navigate('ThreadChatScreen', {
-                  channelId: thread?.id
-                });
-              }}
-              Message={CustomMessage}
-              //@ts-ignore
-              MessageSystem={CustomSystemMessage}
-            />
+            <MessageListContainer>
+              <MessageList
+                onThreadSelect={(thread) => {
+                  setThread(thread as ThreadType);
+                  setActivityScreen('threadScreen');
+                  navigation.navigate('ThreadChatScreen', {
+                    channelId: thread?.id
+                  });
+                }}
+                Message={CustomDirectMessage}
+                //@ts-ignore
+                MessageSystem={CustomSystemMessage}
+              />
+            </MessageListContainer>
             <MessageInput
               Input={StreamInputBox}
               initialValue={text}
