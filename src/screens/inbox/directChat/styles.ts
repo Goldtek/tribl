@@ -14,6 +14,11 @@ export const Container = styled.View`
   margin-bottom: 10px;
 `;
 
+export const MessageListContainer = styled.View`
+  flex: 1;
+  padding-left: 5px;
+`;
+
 export const HeaderContainer = styled.View`
   width: 100%;
   height: ${RFValue(70)}px;

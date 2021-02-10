@@ -46,14 +46,14 @@ import Storage from '../../libs/storage';
 import {
   Container,
   IconContainer,
+  LoadingGiphys,
+  LoadingWrapper,
+  GifImageWrapper,
   ButtonContainer,
   OuterInputContainer,
   InnerInputContainer,
   SendButtonContainer,
-  LoadingWrapper,
-  LoadingGiphys,
-  GifImageWrapperPlaceholder,
-  GifImageWrapper
+  GifImageWrapperPlaceholder
 } from './styles';
 
 export type SendButtonProps = {
