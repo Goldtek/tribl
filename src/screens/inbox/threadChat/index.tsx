@@ -4,7 +4,7 @@ import { Chat, Channel, Thread } from 'stream-chat-expo';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import StreamInputBox from '../../../components/streamInputBox';
 import { tagScreenName } from '../../../utils/uxcamHelper';
-import CustomMessage from '../../../components/customMessage';
+import CustomMessage from '../../../components/customChannelMessage';
 import { chatClient } from '../../../stream/types';
 import { useStreamContext } from '../../../stream';
 import { NavigationInterface } from '../../types';

@@ -1,24 +1,18 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import {
-  MessageSimpleProps,
-  DefaultAttachmentType,
-  DefaultUserType,
   MessageSimple,
+  DefaultUserType,
+  MessageSimpleProps,
   DefaultChannelType,
-  MessageAvatar
+  DefaultAttachmentType
 } from 'stream-chat-expo';
-import { logEvent } from '../../utils/uxcamHelper';
-import { Mixpanel } from '../../config';
 import { Alert } from 'react-native';
-import { useQuery } from '@apollo/react-hooks';
-import { chatClient } from '../../stream/types';
+import { Mixpanel } from '../../config';
 import { useStreamContext } from '../../stream';
-import { useNavigation } from '@react-navigation/native';
-import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
-import { SinglePassportRequestInterface } from '../../graphql/types';
+import { logEvent } from '../../utils/uxcamHelper';
 import { MessageActionSheet } from '../streamActionSheet';
 
-import { Container, UserName, Edited, AvatarContainer } from './styles';
+import { Container, Edited } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -33,26 +27,8 @@ type MessageProps = MessageSimpleProps<
 
 let lastTap = 0;
 
-function CustomMessage(props: MessageProps) {
-  const navigation = useNavigation();
+function CustomDirectMessage(props: MessageProps) {
   const { channel, activityScreen } = useStreamContext();
-
-  const visible =
-    props.groupStyles[0] === 'single' || props.groupStyles[0] === 'top';
-
-  const { data } = useQuery<SinglePassportRequestInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: props.message.user?.id } }
-  );
-
-  const handleNavigation = () => {
-    if (props.message.user?.id !== chatClient.user?.id) {
-      navigation.navigate('MemberDetailScreen', {
-        title: `${data?.singlePassport.firstName} ${data?.singlePassport.lastName}`,
-        details: { ...data?.singlePassport }
-      });
-    }
-  };
 
   const handleDelete = async () => {
     setTimeout(
@@ -141,11 +117,6 @@ function CustomMessage(props: MessageProps) {
 
     return (
       <Container>
-        {props.message.user?.id !== chatClient.user?.id && visible ? (
-          <UserName style={{ fontWeight: 'bold' }}>
-            {props.message.user.name}
-          </UserName>
-        ) : null}
         {props.renderText({ message: props.message, markdownStyles })}
         {updated && <Edited>(edited)</Edited>}
       </Container>
@@ -158,18 +129,6 @@ function CustomMessage(props: MessageProps) {
     doubleTapped ? props.openReactionPicker() : (lastTap = now);
   };
 
-  const CustomMessageAvatar = useCallback(
-    (avatarProps: any) => (
-      <AvatarContainer
-        onPress={handleNavigation}
-        alignment={avatarProps.alignment}
-      >
-        <MessageAvatar {...avatarProps} />
-      </AvatarContainer>
-    ),
-    [data]
-  );
-
   return (
     <MessageSimple
       {...props}
@@ -179,9 +138,9 @@ function CustomMessage(props: MessageProps) {
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
-      MessageAvatar={CustomMessageAvatar}
+      MessageAvatar={() => null}
     />
   );
 }
 
-export default React.memo(CustomMessage);
+export default React.memo(CustomDirectMessage);
