@@ -1,0 +1,25 @@
+import { RFValue } from 'react-native-responsive-fontsize';
+import styled from 'styled-components/native';
+import Constants from 'expo-constants';
+
+export const Container = styled.View`
+  width: 100%;
+  height: 50px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.colors.SYSTEM_COLOR};
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  margin-bottom: 10px;
+`;
+
+export const HeaderContainer = styled.View`
+  width: 100%;
+  height: ${RFValue(70)}px;
+  margin-top: ${Constants.statusBarHeight}px;
+  flex-direction: row;
+  align-items: center;
+  z-index: 999;
+  position: absolute;
+`;

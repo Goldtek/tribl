@@ -1,23 +1,18 @@
 import React, { Fragment, useState } from 'react';
 import { Badge, TouchableRipple } from 'react-native-paper';
 import truncate from 'lodash/truncate';
-import { useThemeContext } from '../../../../theme';
-import { hideSensitiveView } from '../../../../utils/uxcamHelper';
+import { useThemeContext } from '../../../../../theme';
+import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 import {
   Avatar,
   ChannelPreviewMessengerProps,
   DefaultCommandType
 } from 'stream-chat-expo';
-import { useChannelPreviewDisplayName } from 'stream-chat-react-native-core/src/components/ChannelPreview/hooks/useChannelPreviewDisplayName';
-import { useChannelPreviewDisplayAvatar } from 'stream-chat-react-native-core/src/components/ChannelPreview/hooks/useChannelPreviewDisplayAvatar';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useNavigation } from '@react-navigation/native';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import ChannelActions from './channelActions';
-import { LEAVE_COMMUNITY_CHANNEL } from '../../../../graphql/server/mutations';
-import MuteIcon from '../../../../../assets/icons/muteIcon';
-import { GET_SINGLE_COMMUNITY } from '../../../../graphql/server/query';
+import MuteIcon from '../../../../../../assets/icons/muteIcon';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -25,7 +20,7 @@ import {
   LocalMessageType,
   LocalReactionType,
   LocalUserType
-} from '../../../../stream/types';
+} from '../../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -37,11 +32,6 @@ import {
   StyledMessage,
   NotificationContainer
 } from './styles';
-
-type DisplayAvatarType = {
-  name?: string;
-  image?: string;
-};
 
 export default function CustomChannelPreview(
   props: ChannelPreviewMessengerProps<
@@ -67,33 +57,16 @@ export default function CustomChannelPreview(
   const { colors } = useThemeContext();
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
-  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
-  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
-  const displayName = useChannelPreviewDisplayName(channel);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
-  let displayAvatar = {} as DisplayAvatarType;
-  let channelTitle: string | null = null;
-
-  if (channel.data?.isDm) {
-    displayAvatar = {
-      name: channel.data.receiver.firstName,
-      image: channel.data.receiver.avatar
-    };
-
-    channelTitle = `${channel.data?.sender.firstName} ${channel.data?.sender.lastName}`;
-  } else {
-    displayAvatar = useChannelPreviewDisplayAvatar(channel);
-
-    channelTitle = channel.data?.community
-      ? `#${channel.data?.community.name.split(' ').join('')}-${displayName}`
-      : null;
-  }
-
-  const handleDeleteAction = async () => {
-    await leaveChannel({ variables: { payload: { channelId: channel.id } } });
-    getChannelCommunity();
+  const displayAvatar = {
+    name: channel.data?.receiver.firstName,
+    image: channel.data?.receiver.avatar
   };
+
+  const channelTitle = `${channel.data?.sender.firstName} ${channel.data?.sender.lastName}`;
+
+  const handleDeleteAction = async () => {};
 
   const toggleMuteAction = async () => {
     try {
@@ -131,7 +104,7 @@ export default function CustomChannelPreview(
         onPress={() => {
           setActiveChannel && setActiveChannel(channel);
           navigation.navigate('DrawerScreen', {
-            screen: 'ChannelChatScreen',
+            screen: 'DirectChatScreen',
             params: { title: channelTitle, channelId: channel.id }
           });
         }}

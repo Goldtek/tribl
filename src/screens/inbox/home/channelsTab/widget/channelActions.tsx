@@ -1,8 +1,8 @@
 import React from 'react';
 import { TouchableRipple } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import hexToRGB from '../../../../utils/hexToRGB';
-import { useThemeContext } from '../../../../theme';
+import hexToRGB from '../../../../../utils/hexToRGB';
+import { useThemeContext } from '../../../../../theme';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
