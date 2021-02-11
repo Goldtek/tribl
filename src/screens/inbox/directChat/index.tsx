@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
-import { Keyboard, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Paragraph, Surface, TouchableRipple } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import FastImage from 'react-native-fast-image';
@@ -14,8 +14,9 @@ import { useStreamContext } from '../../../stream';
 import StreamInputBox from '../../../components/streamInputBox';
 import CustomDirectMessage from '../../../components/customDirectMessage';
 import CustomSystemMessage from '../../../components/customSystemMessage';
+import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
 
-import { HeaderContainer, MessageListContainer } from './styles';
+import { HeaderContainer, Container, MessageListContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -38,7 +39,7 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+      <Container>
         <HeaderContainer>
           <TouchableRipple
             onPress={navigation.goBack}
@@ -96,6 +97,7 @@ export default function DirectChatScreen(props: ScreenProp) {
           <Channel
             //@ts-ignore
             channel={channel}
+            KeyboardCompatibleView={CustomKeyboardCompatibleView}
           >
             <MessageListContainer>
               <MessageList
@@ -122,7 +124,7 @@ export default function DirectChatScreen(props: ScreenProp) {
             </MessageListContainer>
           </Channel>
         </Chat>
-      </SafeAreaView>
+      </Container>
     </TouchableWithoutFeedback>
   );
 }

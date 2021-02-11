@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Keyboard, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
 import CustomChannelMessage from '../../../components/customChannelMessage';
 import CustomSystemMessage from '../../../components/customSystemMessage';
@@ -11,6 +11,8 @@ import { tagScreenName } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
 import { useThemeContext } from '../../../theme';
 import hexToRGB from '../../../utils/hexToRGB';
+
+import { ChatContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -33,7 +35,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+      <ChatContainer>
         <Chat
           //@ts-ignore
           client={chatClient}
@@ -66,7 +68,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
             />
           </Channel>
         </Chat>
-      </SafeAreaView>
+      </ChatContainer>
     </TouchableWithoutFeedback>
   );
 }
