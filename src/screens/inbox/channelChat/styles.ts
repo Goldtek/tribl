@@ -11,3 +11,8 @@ export const Container = styled.View`
   border-top-right-radius: 4px;
   margin-bottom: 10px;
 `;
+
+export const ChatContainer = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.WHITE};
+`;
