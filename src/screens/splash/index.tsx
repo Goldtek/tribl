@@ -66,6 +66,7 @@ export default function SplashScreen(props: ScreenProp) {
       if (!value) {
         return navigation.replace('WalkThroughScreen');
       }
+
       const userCredStorageData = await Storage.getUserCredentials();
       const userRegStorageData = await Storage.getUserRegistration();
 
@@ -74,9 +75,7 @@ export default function SplashScreen(props: ScreenProp) {
       }
 
       const credentials = JSON.parse(userCredStorageData) as VerifyOTPIT;
-      const userRegistration = JSON.parse(
-        userRegStorageData
-      ) as RegistrationInfo;
+      const userRegistration: RegistrationInfo = JSON.parse(userRegStorageData);
 
       if (!userRegistration.completed) {
         return navigation.replace('SignupScreen', {
@@ -105,22 +104,27 @@ export default function SplashScreen(props: ScreenProp) {
         const remoteMessage: FirebaseMessagingTypes.RemoteMessage | null = await messaging.getInitialNotification();
         const data = (remoteMessage?.data as unknown) as NotificationMessage;
 
-        if (remoteMessage === null) {
-          navigation.replace(userRegistration.route);
-        } else if (data.type === 'MESSAGE_RECEIVED') {
+        if (!remoteMessage) {
+          return navigation.replace(userRegistration.route);
+        }
+
+        if (data.type === 'MESSAGE_RECEIVED') {
           changeMessageNotification({
             variables: { showMessageNotificationBadge: true }
           });
-        } else if (data.type === 'CONNECTION_REQUEST_RECEIVED') {
+        }
+
+        if (data.type === 'CONNECTION_REQUEST_RECEIVED') {
           changeConnectionNotification({
             variables: { showConnectionNotificationBadge: true }
           });
-          navigation.replace('DrawerScreen', {
+
+          return navigation.replace('DrawerScreen', {
             screen: 'ConnectionRequest'
           });
-        } else {
-          navigation.replace(userRegistration.route);
         }
+
+        navigation.replace(userRegistration.route);
       });
     } catch (error) {
       return navigation.replace('SignupScreen');
