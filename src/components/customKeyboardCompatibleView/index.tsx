@@ -8,7 +8,7 @@ export default function CustomKeyboardCompatibleView({ children }: any) {
 
   return (
     <KeyboardCompatibleView
-      keyboardVerticalOffset={insets.bottom}
+      keyboardVerticalOffset={DEVICE_OS === 'ios' ? insets.bottom : undefined}
       behavior={DEVICE_OS === 'ios' ? 'padding' : 'position'}
     >
       {children}
