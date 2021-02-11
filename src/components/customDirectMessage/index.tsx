@@ -45,31 +45,30 @@ function CustomDirectMessage(props: MessageProps) {
             {
               text: 'OK',
               onPress: () => {
-                if (activityScreen === 'channelScreen') {
-                  logEvent('user deletes message on channel message screen', {
+                if (activityScreen === 'directMessage') {
+                  logEvent('user deletes message on direct message screen', {
                     from: 'chat'
                   });
 
                   Mixpanel.track(
-                    'User Deletes Message On Channel Message Screen',
+                    'User Deletes Message On Direct Message Screen',
                     {
-                      info: `User deletes message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
-                      'Activity Screen': 'Channel Message Screen'
+                      info: `${props.message.user?.name} deletes his message on a conversation with ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName}}`,
+                      'Activity Screen': 'Direct Message Screen'
                     }
                   );
                 }
 
-                if (activityScreen === 'threadScreen') {
-                  logEvent(
-                    'user deletes message on channel thread message screen',
-                    { from: 'chat' }
-                  );
+                if (activityScreen === 'directMessageThreadScreen') {
+                  logEvent('user deletes message on DM thread screen', {
+                    from: 'chat'
+                  });
 
                   Mixpanel.track(
-                    'User Deletes Message On Channel Thread Message',
+                    'User Deletes Message On Direct Message Thread Screen',
                     {
-                      info: `User deletes message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
-                      'Activity Screen': 'Channel Thread Message Screen'
+                      info: `${props.message.user?.name} deletes his message on a conversation with ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName}} in a DM thread screen`,
+                      'Activity Screen': 'Direct Message Thread Screen'
                     }
                   );
                 }
@@ -85,21 +84,21 @@ function CustomDirectMessage(props: MessageProps) {
   };
 
   const handleReaction = async (type: string) => {
-    if (activityScreen === 'channelScreen') {
-      logEvent('user reacts to channel message', { from: 'chat' });
+    if (activityScreen === 'directMessage') {
+      logEvent('user reacts to direct message', { from: 'chat' });
 
-      Mixpanel.track('User Reacts to Channel Message', {
-        info: `User reacts to message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+      Mixpanel.track('User Reacts to Direct Message', {
+        info: `User reacts to ${props.message.user?.name} message`,
         'Activity Screen': 'Channel Message Screen'
       });
     }
 
-    if (activityScreen === 'threadScreen') {
-      logEvent('user reacts to channel thread message', { from: 'chat' });
+    if (activityScreen === 'directMessageThreadScreen') {
+      logEvent('user reacts to DM thread message', { from: 'chat' });
 
-      Mixpanel.track('User Reacts to Channel Thread Message', {
-        info: `User reacts to message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
-        'Activity Screen': 'Channel Thread Message Screen'
+      Mixpanel.track('User Reacts to DM Thread Message', {
+        info: `User reacts to ${props.message.user?.name} DM thread message`,
+        'Activity Screen': 'Direct Message Thread Screen'
       });
     }
 

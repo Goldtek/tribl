@@ -141,7 +141,7 @@ function StreamInputBox(props: InputProps) {
       }
     }
 
-    if (activityScreen === 'threadScreen') {
+    if (activityScreen === 'channelThreadScreen') {
       logEvent('send channel thread message', { from: 'chat' });
 
       if (editing) {
@@ -153,6 +153,37 @@ function StreamInputBox(props: InputProps) {
         Mixpanel.track('User Sends Channel Thread Message', {
           info: `User sends message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
           'Activity Screen': 'Channel Thread Message Screen'
+        });
+    }
+
+    if (activityScreen === 'directMessage') {
+      logEvent('send direct message', { from: 'chat' });
+
+      if (editing) {
+        Mixpanel.track('User Edits Direct Message', {
+          info: `User edits direct message sent to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName}`,
+          'Activity Screen': 'Channel Message Screen'
+        });
+      } else {
+        Mixpanel.track('User Sends Channel Message', {
+          info: `User sends direct message to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName}`,
+          'Activity Screen': 'Direct Message Screen'
+        });
+      }
+    }
+
+    if (activityScreen === 'directMessageThreadScreen') {
+      logEvent('send message on DM thread screen', { from: 'chat' });
+
+      if (editing) {
+        Mixpanel.track('User Edits Message on DM Thread', {
+          info: `User edits direct message sent to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName} on DM thread`,
+          'Activity Screen': 'Direct Message Thread Screen'
+        });
+      } else
+        Mixpanel.track('User Sends Message on DM Thread', {
+          info: `User sends direct message to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName} on DM thread`,
+          'Activity Screen': 'Direct Message Thread Screen'
         });
     }
 
