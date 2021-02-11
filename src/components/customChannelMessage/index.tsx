@@ -83,7 +83,7 @@ function CustomChannelMessage(props: MessageProps) {
                   );
                 }
 
-                if (activityScreen === 'threadScreen') {
+                if (activityScreen === 'channelThreadScreen') {
                   logEvent(
                     'user deletes message on channel thread message screen',
                     { from: 'chat' }
@@ -118,7 +118,7 @@ function CustomChannelMessage(props: MessageProps) {
       });
     }
 
-    if (activityScreen === 'threadScreen') {
+    if (activityScreen === 'channelThreadScreen') {
       logEvent('user reacts to channel thread message', { from: 'chat' });
 
       Mixpanel.track('User Reacts to Channel Thread Message', {
