@@ -152,17 +152,37 @@ function ContactSlide(props: ScreenProp) {
     []
   );
 
-  const getIdentity = (identity: IdentityInterface) => {
+  const getIdentity = (identity: IdentityInterface, action: string) => {
+    if (action === 'addIdentity') {
+      return setState({
+        ...state,
+        selectedIdentity: [...state.selectedIdentity, identity]
+      });
+    }
+
+    let filteredIdentity = state.selectedIdentity.filter(
+      (value) => value !== identity
+    );
     setState({
       ...state,
-      selectedIdentity: [...state.selectedIdentity, identity]
+      selectedIdentity: filteredIdentity
     });
   };
 
-  const getInterest = (interest: InterestsInterface) => {
+  const getInterest = (interest: InterestsInterface, action: string) => {
+    if (action === 'addInterest') {
+      setState({
+        ...state,
+        selectedInterest: [...state.selectedInterest, interest]
+      });
+    }
+
+    let filteredInterest = state.selectedInterest.filter(
+      (value) => value !== interest
+    );
     setState({
       ...state,
-      selectedInterest: [...state.selectedInterest, interest]
+      selectedInterest: filteredInterest
     });
   };
 
