@@ -63,15 +63,17 @@ function IdentityModal(props: any) {
   }, [userDetails]);
 
   const handleSelect = (identity: IdentityInterface) => {
+    let action = 'removeIdentity';
     if (!selectedIdentities[identity.id]) {
-      props.identity(identity);
+      action = 'addIdentity';
+      props.identity(identity, action);
       return setSelectedIdentities({
         ...selectedIdentities,
         [identity.id]: identity
       });
     }
 
-    props.identity(identity);
+    props.identity(identity, action);
     const { [identity.id]: deletedIdentity, ...rest } = selectedIdentities;
     setSelectedIdentities({ ...rest });
   };
