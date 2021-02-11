@@ -66,7 +66,11 @@ export type ThreadType = ThreadContextValue<
   LocalUserType
 >['thread'];
 
-export type ActivityScreenType = 'channelScreen' | 'threadScreen';
+export type ActivityScreenType =
+  | 'channelScreen'
+  | 'directMessage'
+  | 'channelThreadScreen'
+  | 'directMessageThreadScreen';
 
 type ContextPropType = {
   thread: ThreadType;

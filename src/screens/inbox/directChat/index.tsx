@@ -101,7 +101,7 @@ export default function DirectChatScreen(props: ScreenProp) {
               <MessageList
                 onThreadSelect={(thread) => {
                   setThread(thread as ThreadType);
-                  setActivityScreen('threadScreen');
+                  setActivityScreen('directMessageThreadScreen');
                   navigation.navigate('ThreadChatScreen', {
                     channelId: thread?.id
                   });
