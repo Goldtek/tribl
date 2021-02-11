@@ -60,8 +60,8 @@ export default function CustomChannelPreview(
 
   if (channel.data?.isDm) return null;
 
-  const { colors } = useThemeContext();
   const navigation = useNavigation();
+  const { colors } = useThemeContext();
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);

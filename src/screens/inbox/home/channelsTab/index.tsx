@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { StatusBar } from 'expo-status-bar';
 import CustomChannelPreview from './widget';
 import { NavigationInterface } from '../../../types';
 import { tagScreenName } from '../../../../utils/uxcamHelper';
@@ -46,6 +47,7 @@ function ChannelsTab(props: ScreenProp) {
       // @ts-ignore
       client={chatClient}
     >
+      <StatusBar translucent animated style="dark" />
       <Container>
         <ChannelList<
           LocalAttachmentType,

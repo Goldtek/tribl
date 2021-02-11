@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import {
-  MessageSimpleProps,
-  DefaultAttachmentType,
-  DefaultUserType,
   MessageSimple,
+  MessageAvatar,
+  DefaultUserType,
+  MessageSimpleProps,
   DefaultChannelType,
-  MessageAvatar
+  DefaultAttachmentType
 } from 'stream-chat-expo';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
@@ -33,7 +33,7 @@ type MessageProps = MessageSimpleProps<
 
 let lastTap = 0;
 
-function CustomMessage(props: MessageProps) {
+function CustomChannelMessage(props: MessageProps) {
   const navigation = useNavigation();
   const { channel, activityScreen } = useStreamContext();
 
@@ -83,7 +83,7 @@ function CustomMessage(props: MessageProps) {
                   );
                 }
 
-                if (activityScreen === 'threadScreen') {
+                if (activityScreen === 'channelThreadScreen') {
                   logEvent(
                     'user deletes message on channel thread message screen',
                     { from: 'chat' }
@@ -118,7 +118,7 @@ function CustomMessage(props: MessageProps) {
       });
     }
 
-    if (activityScreen === 'threadScreen') {
+    if (activityScreen === 'channelThreadScreen') {
       logEvent('user reacts to channel thread message', { from: 'chat' });
 
       Mixpanel.track('User Reacts to Channel Thread Message', {
@@ -154,7 +154,7 @@ function CustomMessage(props: MessageProps) {
 
   const handleDoubleTap = () => {
     const now = Date.now();
-    const doubleTapped = lastTap && now - lastTap < 300;
+    const doubleTapped = lastTap && now - lastTap < 650;
     doubleTapped ? props.openReactionPicker() : (lastTap = now);
   };
 
@@ -184,4 +184,4 @@ function CustomMessage(props: MessageProps) {
   );
 }
 
-export default React.memo(CustomMessage);
+export default React.memo(CustomChannelMessage);
