@@ -46,7 +46,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
             <MessageList
               onThreadSelect={(thread) => {
                 setThread(thread as ThreadType);
-                setActivityScreen('threadScreen');
+                setActivityScreen('channelThreadScreen');
                 navigation.navigate('ThreadChatScreen', {
                   channelId: thread?.id
                 });
