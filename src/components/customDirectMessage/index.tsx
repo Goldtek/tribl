@@ -125,7 +125,7 @@ function CustomDirectMessage(props: MessageProps) {
 
   const handleDoubleTap = () => {
     const now = Date.now();
-    const doubleTapped = lastTap && now - lastTap < 300;
+    const doubleTapped = lastTap && now - lastTap < 650;
     doubleTapped ? props.openReactionPicker() : (lastTap = now);
   };
 
