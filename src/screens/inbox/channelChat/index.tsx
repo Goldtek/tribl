@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { ChatScreenProps, NavigationInterface } from '../../types';
-import { Keyboard, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
-import { useThemeContext } from '../../../theme';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
-import hexToRGB from '../../../utils/hexToRGB';
-import { tagScreenName } from '../../../utils/uxcamHelper';
-import { chatClient, ThreadType } from '../../../stream/types';
-import useStreamChatTheme from '../../../utils/useStreamChatTheme';
-import { useStreamContext } from '../../../stream';
-import StreamInputBox from '../../../components/streamInputBox';
-import CustomMessage from '../../../components/customMessage';
+import CustomChannelMessage from '../../../components/customChannelMessage';
 import CustomSystemMessage from '../../../components/customSystemMessage';
+import useStreamChatTheme from '../../../utils/useStreamChatTheme';
+import { ChatScreenProps, NavigationInterface } from '../../types';
+import StreamInputBox from '../../../components/streamInputBox';
+import { chatClient, ThreadType } from '../../../stream/types';
+import { tagScreenName } from '../../../utils/uxcamHelper';
+import { useStreamContext } from '../../../stream';
+import { useThemeContext } from '../../../theme';
+import hexToRGB from '../../../utils/hexToRGB';
+
+import { ChatContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -33,7 +35,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
+      <ChatContainer>
         <Chat
           //@ts-ignore
           client={chatClient}
@@ -46,12 +48,12 @@ export default function ChannelChatScreen(props: ScreenProp) {
             <MessageList
               onThreadSelect={(thread) => {
                 setThread(thread as ThreadType);
-                setActivityScreen('threadScreen');
+                setActivityScreen('channelThreadScreen');
                 navigation.navigate('ThreadChatScreen', {
                   channelId: thread?.id
                 });
               }}
-              Message={CustomMessage}
+              Message={CustomChannelMessage}
               //@ts-ignore
               MessageSystem={CustomSystemMessage}
             />
@@ -66,7 +68,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
             />
           </Channel>
         </Chat>
-      </SafeAreaView>
+      </ChatContainer>
     </TouchableWithoutFeedback>
   );
 }

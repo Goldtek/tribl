@@ -117,7 +117,7 @@ export const ReactionPicker = <
     reactionCounts,
     reactionPickerVisible,
     rpLeft,
-    rpRight,
+    // rpRight,
     rpTop = 40,
     supportedReactions = emojiData
   } = props;
@@ -136,11 +136,12 @@ export const ReactionPicker = <
         activeOpacity={1}
         leftAlign={Boolean(rpLeft)}
         onPress={handleDismiss}
+        style={{ alignItems: 'center' }}
       >
         <ContainerView
           style={{
-            marginLeft: rpLeft,
-            marginRight: rpRight,
+            // marginLeft: rpLeft,
+            // marginRight: rpRight,
             marginTop: rpTop
           }}
         >

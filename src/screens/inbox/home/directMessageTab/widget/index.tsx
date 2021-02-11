@@ -1,125 +1,153 @@
-import React, { Fragment } from 'react';
-import { Title, Text, TouchableRipple } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@apollo/react-hooks';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { Avatar } from 'stream-chat-expo';
-import { ConversationInterface } from '../../../types';
+import React, { Fragment, useState } from 'react';
+import { Badge, TouchableRipple } from 'react-native-paper';
+import truncate from 'lodash/truncate';
 import { useThemeContext } from '../../../../../theme';
-import formatMessageTime from '../../../../../utils/timesince';
-import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
-import { UserPassportInterface } from '../../../../../graphql/types';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
-import { fireAuth } from '../../../../../firebase/config';
+import {
+  Avatar,
+  ChannelPreviewMessengerProps,
+  DefaultCommandType
+} from 'stream-chat-expo';
+import { RFValue } from 'react-native-responsive-fontsize';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { useNavigation } from '@react-navigation/native';
+import ChannelActions from './channelActions';
+import MuteIcon from '../../../../../../assets/icons/muteIcon';
+import {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+} from '../../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { NameContainer, TimeStamp, BadgeWrapper } from './styles';
+import {
+  Date,
+  Title,
+  Details,
+  DetailsTop,
+  DetailsBottom,
+  StyledMessage,
+  NotificationContainer
+} from './styles';
 
-// DEFINE SCREEN PROP TYPES
-interface DirectChatProp extends ConversationInterface {}
+export default function CustomChannelPreview(
+  props: ChannelPreviewMessengerProps<
+    LocalAttachmentType,
+    LocalChannelType,
+    DefaultCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >
+) {
+  const {
+    unread,
+    channel,
+    setActiveChannel,
+    latestMessagePreview,
+    formatLatestMessageDate,
+    latestMessageLength = 40
+  } = props;
 
-function DirectChatCard(props: DirectChatProp) {
-  const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+  const { colors } = useThemeContext();
+  const getMuteStatus = channel.muteStatus().muted;
+  const [muted, setMuted] = useState(getMuteStatus);
+  const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
-  const { id: chatId, lastMessage, members } = props;
-
-  const userId = fireAuth.currentUser?.uid;
-
-  const [sender, receiver] = members.sort((a) => {
-    if (a.id !== userId) return -1;
-    return 0;
-  });
-
-  const { data: passportData } = useQuery<UserPassportInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: sender.id } }
-  );
-
-  const receiverPassport = passportData?.singlePassport;
-  const title = `${sender.firstName} ${sender.lastName}`;
-
-  const showNotificationBadge =
-    lastMessage.receiverId === userId &&
-    lastMessage.createdAt >= receiver.readAt;
-
-  const handleNavigation = () => {
-    navigation.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
-      params: {
-        title,
-        chatId,
-        receiverId: sender.id,
-        ...receiverPassport
-      }
-    });
+  const displayAvatar = {
+    name: channel.data?.receiver.firstName,
+    image: channel.data?.receiver.avatar
   };
 
-  const formatDate = () => {
-    if (!lastMessage.createdAt) return;
-    return formatMessageTime(lastMessage.createdAt);
+  const channelTitle = `${channel.data?.sender.firstName} ${channel.data?.sender.lastName}`;
+
+  const handleDeleteAction = async () => {};
+
+  const toggleMuteAction = async () => {
+    try {
+      if (muted) {
+        await channel.unmute();
+        setMuted(false);
+      } else {
+        await channel.mute();
+        setMuted(true);
+      }
+    } catch {
+      setMuted(getMuteStatus);
+    }
   };
 
   return (
-    <TouchableRipple
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 10,
-        borderBottomColor: colors.light,
-        borderBottomWidth: 1
-      }}
-      onPress={handleNavigation}
-      ref={hideSensitiveView}
+    <Swipeable
+      renderRightActions={() => (
+        <ChannelActions
+          handleDeleteAction={handleDeleteAction}
+          toggleMuteAction={toggleMuteAction}
+          muted={muted}
+        />
+      )}
     >
-      <Fragment>
-        <Avatar image={sender.avatar} name={title} size={RFValue(40)} />
+      <TouchableRipple
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderBottomColor: colors.light,
+          backgroundColor: colors.WHITE,
+          borderBottomWidth: 1,
+          padding: 10
+        }}
+        onPress={() => {
+          setActiveChannel && setActiveChannel(channel);
+          navigation.navigate('DrawerScreen', {
+            screen: 'DirectChatScreen',
+            params: { title: channelTitle, channelId: channel.id }
+          });
+        }}
+        ref={hideSensitiveView}
+      >
+        <Fragment>
+          <Avatar
+            image={displayAvatar.image}
+            name={displayAvatar.name}
+            size={RFValue(40)}
+          />
+          <Details ref={hideSensitiveView}>
+            <DetailsTop>
+              <Title ellipsizeMode="tail" numberOfLines={1}>
+                {channelTitle}
+              </Title>
+              <Date>
+                {formatLatestMessageDate && latestMessageDate
+                  ? formatLatestMessageDate(latestMessageDate)
+                  : latestMessagePreview?.created_at}
+              </Date>
+            </DetailsTop>
+            <DetailsBottom>
+              <StyledMessage unread={unread}>
+                {latestMessagePreview?.text &&
+                  truncate(latestMessagePreview.text.replace(/\n/g, ' '), {
+                    length: latestMessageLength
+                  })}
+              </StyledMessage>
 
-        <NameContainer ref={hideSensitiveView}>
-          <Fragment>
-            <Title
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE - 1)
-              }}
-            >
-              {title.length >= 30 ? `${title.substr(0, 30)}...` : title}
-            </Title>
-
-            <Text
-              ellipsizeMode="tail"
-              numberOfLines={1}
-              style={{
-                color: colors.SECONDARY_TEXT,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: fonts.MEDIUM_SIZE - 2
-              }}
-            >
-              {lastMessage.text.length >= 30
-                ? `${lastMessage.text.substr(0, 30)}...`
-                : lastMessage.text}
-            </Text>
-          </Fragment>
-        </NameContainer>
-
-        <TimeStamp>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: fonts.MEDIUM_SIZE - 2,
-              marginVertical: 5
-            }}
-          >
-            {formatDate()}
-          </Text>
-
-          {showNotificationBadge ? <BadgeWrapper /> : null}
-        </TimeStamp>
-      </Fragment>
-    </TouchableRipple>
+              <NotificationContainer>
+                {muted && (
+                  <MuteIcon
+                    fillColor={colors.PRIMARY}
+                    style={{ marginRight: 8 }}
+                  />
+                )}
+                {Boolean(unread) && <Badge>{unread}</Badge>}
+              </NotificationContainer>
+            </DetailsBottom>
+          </Details>
+        </Fragment>
+      </TouchableRipple>
+    </Swipeable>
   );
 }
-
-export default React.memo(DirectChatCard);
