@@ -17,6 +17,8 @@ export const Container = styled.View`
 export const MessageListContainer = styled.View`
   flex: 1;
   padding-left: 5px;
+  margin-top: 80px;
+  position: relative;
 `;
 
 export const HeaderContainer = styled.View`
@@ -27,4 +29,7 @@ export const HeaderContainer = styled.View`
   align-items: center;
   z-index: 999;
   position: absolute;
+  background-color: ${({ theme }) => theme.colors.WHITE};
+  border: 1px solid ${({ theme }) => theme.colors.DISABLED};
+  border-top-color: transparent;
 `;

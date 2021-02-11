@@ -39,14 +39,7 @@ export default function DirectChatScreen(props: ScreenProp) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
-        <HeaderContainer
-          style={{
-            shadowColor: '#000000',
-            shadowOpacity: 0.8,
-            shadowRadius: 2,
-            shadowOffset: { height: 1, width: 1 }
-          }}
-        >
+        <HeaderContainer>
           <TouchableRipple
             onPress={navigation.goBack}
             style={{
@@ -117,16 +110,16 @@ export default function DirectChatScreen(props: ScreenProp) {
                 //@ts-ignore
                 MessageSystem={CustomSystemMessage}
               />
+              <MessageInput
+                Input={StreamInputBox}
+                initialValue={text}
+                onChangeText={(text) => setText(text)}
+                additionalTextInputProps={{
+                  placeholderTextColor: hexToRGB(colors.STATUS_BAR_COLOR, 0.7),
+                  placeholder: 'Type your message here'
+                }}
+              />
             </MessageListContainer>
-            <MessageInput
-              Input={StreamInputBox}
-              initialValue={text}
-              onChangeText={(text) => setText(text)}
-              additionalTextInputProps={{
-                placeholderTextColor: hexToRGB(colors.STATUS_BAR_COLOR, 0.7),
-                placeholder: 'Type your message here'
-              }}
-            />
           </Channel>
         </Chat>
       </SafeAreaView>
