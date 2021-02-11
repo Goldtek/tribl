@@ -59,15 +59,17 @@ function InterestModal(props: any) {
   }, [userDetails]);
 
   const handleSelect = (interests: InterestsInterface) => {
+    let action = 'removeInterest';
     if (!selectedInterests[interests.id]) {
-      props.interest(interests);
+      action = 'addInterest';
+      props.interest(interests, action);
       return setSelectedInterests({
         ...selectedInterests,
         [interests.id]: interests
       });
     }
 
-    props.interest(interests);
+    props.interest(interests, action);
     const { [interests.id]: deletedInterests, ...rest } = selectedInterests;
     setSelectedInterests({ ...rest });
   };
