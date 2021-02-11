@@ -26,7 +26,6 @@ import {
   CHANGE_MESSAGE_NOTIFICATION_BADGE
 } from '../graphql/cache/mutations';
 import { DEVICE_OS } from '../utils/device';
-
 import {
   ThreadType,
   chatClient,
@@ -83,28 +82,11 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     // Register background handler
     messaging.setBackgroundMessageHandler(presentNotification);
 
-    // Assume a message-notification contains a "type" property in the data payload of the screen to open
-    messaging.onNotificationOpenedApp(presentNotification);
-
     // Check whether an initial notification is available
     messaging.getInitialNotification().then(presentNotification);
 
     return unsubscribe;
   }, []);
-
-  // const navigateNotification = (
-  //   remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
-  // ) => {
-  //   const { meta } = (remoteMessage?.data as unknown) as NotificationMessage;
-  //   const { route, data } = JSON.parse(meta) as NotificationMetaData;
-
-  //   // NAVIGATE USER TO DIRECT MESSAGE SCREEN ON DM NOTIFICATION CLICK
-
-  //   // navigation.replace('CommunityScreen', {
-  //   //   screen: 'CommunityScreen',
-  //   //   params: { screen: 'CommunityScreen', params: { screen: 'InboxScreen' } }
-  //   // });
-  // };
 
   const presentNotification = async (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
