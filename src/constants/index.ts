@@ -16,10 +16,10 @@ export const LOCAL_GIPHY_CACHE: string = '@LOCAL_GIPHY_CACHE';
 export const SHOW_MODAL: string = '@SHOW_MODAL';
 
 // EXPO RELEASE CHANNELS UPDATE CONSTANTS
-const DEVELOPMENT = '@DEVELOPMENT';
-const PRODUCTION: string = '@PRODUCTION';
-const STAGING_INTERNAL: string = '@STAGING_INTERNAL';
-const STAGING_EXTERNAL: string = '@STAGING_EXTERNAL';
+const DEVELOPMENT = 'development_channel';
+const PRODUCTION: string = 'production_channel';
+const STAGING_INTERNAL: string = 'staging_internal_channel';
+const STAGING_EXTERNAL: string = 'staging_external_channel';
 
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 20;
