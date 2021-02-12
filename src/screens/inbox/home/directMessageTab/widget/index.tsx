@@ -69,8 +69,6 @@ export default function CustomChannelPreview(
     image: receiver?.avatar
   };
 
-  const channelTitle = `${channel.data?.sender.firstName} ${channel.data?.sender.lastName}`;
-
   const handleDeleteAction = async () => {};
 
   const toggleMuteAction = async () => {
@@ -124,7 +122,7 @@ export default function CustomChannelPreview(
           <Details ref={hideSensitiveView}>
             <DetailsTop>
               <Title ellipsizeMode="tail" numberOfLines={1}>
-                {channelTitle}
+                {displayAvatar.name}
               </Title>
               <Date>
                 {formatLatestMessageDate && latestMessageDate
