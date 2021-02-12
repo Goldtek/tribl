@@ -58,16 +58,14 @@ export default function CustomChannelPreview(
     latestMessageLength = 40
   } = props;
 
-  if (channel.data?.isDm) return null;
-
   const navigation = useNavigation();
   const { colors } = useThemeContext();
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
-  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
-  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
-  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
+  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
+  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
+  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
   const channelTitle = channel.data?.community
