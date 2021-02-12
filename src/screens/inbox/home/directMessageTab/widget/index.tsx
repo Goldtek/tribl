@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import ChannelActions from './channelActions';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
 import {
+  chatClient,
   LocalAttachmentType,
   LocalChannelType,
   LocalEventType,
@@ -59,9 +60,13 @@ export default function CustomChannelPreview(
   const [muted, setMuted] = useState(getMuteStatus);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
+  const receiver = [channel.data?.receiver, channel.data?.sender].find(
+    (user) => user?.id !== chatClient.user?.id
+  );
+
   const displayAvatar = {
-    name: channel.data?.receiver.firstName,
-    image: channel.data?.receiver.avatar
+    name: `${receiver?.firstName} ${receiver?.lastName}`,
+    image: receiver?.avatar
   };
 
   const channelTitle = `${channel.data?.sender.firstName} ${channel.data?.sender.lastName}`;
@@ -86,9 +91,9 @@ export default function CustomChannelPreview(
     <Swipeable
       renderRightActions={() => (
         <ChannelActions
-          handleDeleteAction={handleDeleteAction}
-          toggleMuteAction={toggleMuteAction}
           muted={muted}
+          toggleMuteAction={toggleMuteAction}
+          handleDeleteAction={handleDeleteAction}
         />
       )}
     >
@@ -105,7 +110,7 @@ export default function CustomChannelPreview(
           setActiveChannel && setActiveChannel(channel);
           navigation.navigate('DrawerScreen', {
             screen: 'DirectChatScreen',
-            params: { title: channelTitle, channelId: channel.id }
+            params: { channelId: channel.id }
           });
         }}
         ref={hideSensitiveView}

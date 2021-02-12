@@ -33,6 +33,15 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   const channel = chatClient.channel('team', route.params.channelId);
 
+  const receiver = [channel.data?.receiver, channel.data?.sender].find(
+    (user) => user?.id !== chatClient.user?.id
+  );
+
+  const displayAvatar = {
+    name: `${receiver?.firstName} ${receiver?.lastName}`,
+    image: receiver?.avatar
+  };
+
   useEffect(() => {
     tagScreenName('DirectChatScreen');
   }, []);
@@ -66,7 +75,7 @@ export default function DirectChatScreen(props: ScreenProp) {
             <FastImage
               resizeMode={FastImage.resizeMode.cover}
               source={{
-                uri: channel.data?.receiver.avatar,
+                uri: displayAvatar.image,
                 priority: FastImage.priority.high
               }}
               style={{
@@ -83,9 +92,9 @@ export default function DirectChatScreen(props: ScreenProp) {
               marginHorizontal: 10
             }}
           >
-            {route.params?.title.length <= 20
-              ? route.params?.title
-              : `${route.params?.title.substr(0, 20)}...`}
+            {displayAvatar.name.length <= 20
+              ? displayAvatar.name
+              : `${displayAvatar.name.substr(0, 20)}...`}
           </Paragraph>
         </HeaderContainer>
 
