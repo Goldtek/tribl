@@ -40,7 +40,7 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <Container style={{ marginBottom: bottom }}>
+      <Container style={{ paddingBottom: bottom }}>
         <HeaderContainer>
           <TouchableRipple
             onPress={navigation.goBack}
