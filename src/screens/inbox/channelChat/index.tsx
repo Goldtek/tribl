@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomChannelMessage from '../../../components/customChannelMessage';
 import CustomSystemMessage from '../../../components/customSystemMessage';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
@@ -21,7 +22,7 @@ interface ScreenProp extends NavigationInterface {
 
 export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
-
+  const { bottom } = useSafeAreaInsets();
   const [text, setText] = useState('');
   const { colors } = useThemeContext();
   const chatStyles = useStreamChatTheme();
@@ -35,7 +36,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ChatContainer>
+      <ChatContainer style={{ paddingBottom: bottom }}>
         <Chat
           //@ts-ignore
           client={chatClient}
