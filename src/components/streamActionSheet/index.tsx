@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import type { MessageActionSheetProps } from 'stream-chat-react-native-core/lib/typescript/src/components/Message/MessageSimple/MessageActionSheet';
 
@@ -54,8 +55,10 @@ export const MessageActionSheet = React.forwardRef(
     } = props;
 
     const { colors } = useThemeContext();
-
+    const insets = useSafeAreaInsets();
     const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
+
+    const ActionSheetBottomMargin = insets.bottom > 0 ? insets.bottom : 10;
 
     useEffect(() => {
       const newOptions: {
@@ -163,7 +166,9 @@ export const MessageActionSheet = React.forwardRef(
         styles={{
           body: {
             backgroundColor: colors.WHITE,
-            borderRadius: 50
+            borderRadius: 50,
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0
           },
           buttonBox: {
             alignItems: 'flex-start',
@@ -172,7 +177,10 @@ export const MessageActionSheet = React.forwardRef(
             justifyContent: 'center',
             backgroundColor: colors.TRANSPARENT
           },
-          cancelButtonBox: { display: 'none' },
+          cancelButtonBox: {
+            display: 'none',
+            marginBottom: ActionSheetBottomMargin
+          },
           titleBox: {
             height: 80,
             alignItems: 'center',
