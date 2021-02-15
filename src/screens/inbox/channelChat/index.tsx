@@ -12,6 +12,7 @@ import { tagScreenName } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
 import { useThemeContext } from '../../../theme';
 import hexToRGB from '../../../utils/hexToRGB';
+import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
 
 import { ChatContainer } from './styles';
 
@@ -45,6 +46,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
           <Channel
             //@ts-ignore
             channel={channel}
+            KeyboardCompatibleView={CustomKeyboardCompatibleView}
           >
             <MessageList
               onThreadSelect={(thread) => {
