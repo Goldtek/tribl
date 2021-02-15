@@ -5,6 +5,7 @@ import { Paragraph, Surface, TouchableRipple } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import FastImage from 'react-native-fast-image';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import hexToRGB from '../../../utils/hexToRGB';
 import { useThemeContext } from '../../../theme';
 import { tagScreenName } from '../../../utils/uxcamHelper';
@@ -25,7 +26,7 @@ interface ScreenProp extends NavigationInterface {
 
 export default function DirectChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
-
+  const { bottom } = useSafeAreaInsets();
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
@@ -39,7 +40,7 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <Container>
+      <Container style={{ marginBottom: bottom }}>
         <HeaderContainer>
           <TouchableRipple
             onPress={navigation.goBack}
