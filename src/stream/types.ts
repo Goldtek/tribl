@@ -23,6 +23,7 @@ export interface LocalAttachmentType extends DefaultAttachmentType {}
 export interface LocalReactionType extends DefaultReactionType {}
 export interface LocalChannelType extends DefaultChannelType {
   isDm: boolean;
+  isNew: boolean;
   channelId: string;
   conversationId: string;
   sender: MessageUserInterface;

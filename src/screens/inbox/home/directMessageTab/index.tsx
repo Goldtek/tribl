@@ -31,6 +31,7 @@ function DirectMessageTab(props: ScreenProp) {
 
   const filters = {
     members: { $in: [userData?.myPassport.id] },
+    isNew: { $ne: true },
     type: 'team',
     isDm: true
   };
