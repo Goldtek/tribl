@@ -364,6 +364,7 @@ export default function ChatScreen(props: ScreenProp) {
             <Divider />
           </Fragment>
         </TouchableRipple> */}
+
         {!allMembersLoading ? (
           <FlatList
             ref={hideSensitiveView}
