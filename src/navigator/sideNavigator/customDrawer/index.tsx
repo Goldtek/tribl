@@ -121,6 +121,25 @@ export default function CustomDrawerComponent() {
       )
     },
     {
+      key: 'drawer_notification_key',
+      name: `community.sideNav.notification`,
+      onPress: () => {
+        changeSideMenu('drawer_notification_key');
+        navigation?.navigate('DrawerScreen', {
+          screen: 'MyNotifications'
+        });
+        toggleMenu();
+      },
+      drawerIcon: (
+        <Fragment>
+          <SimpleLineIcons name="bell" size={24} color={colors.PRIMARY_TEXT} />
+          {data?.showConnectionNotificationBadge ? (
+            <ConnectionBadgeWrapper />
+          ) : null}
+        </Fragment>
+      )
+    },
+    {
       key: 'drawer_policy_key',
       name: `community.sideNav.policy`,
       onPress: () => {
@@ -169,7 +188,8 @@ export default function CustomDrawerComponent() {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: fonts.LARGE_SIZE,
-              paddingTop: 10
+              paddingTop: 10,
+              textTransform: 'capitalize'
             }}
           >
             {`${userDetails?.firstName} ${userDetails?.lastName}`}
