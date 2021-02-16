@@ -124,7 +124,7 @@ function StreamInputBox(props: InputProps) {
     setSearchQuery(query);
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (activityScreen === 'channelScreen') {
       logEvent('send channel message', { from: 'chat' });
 
@@ -185,6 +185,10 @@ function StreamInputBox(props: InputProps) {
           info: `User sends direct message to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName} on DM thread`,
           'Activity Screen': 'Direct Message Thread Screen'
         });
+    }
+
+    if (channel.data?.isNew) {
+      channel.updatePartial({ set: { isNew: false } });
     }
 
     props.sendMessage();
