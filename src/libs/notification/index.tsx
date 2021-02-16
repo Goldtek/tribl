@@ -5,12 +5,12 @@ import PushNotification from 'react-native-push-notification';
 import fcmMessaging, {
   FirebaseMessagingTypes
 } from '@react-native-firebase/messaging';
-import { UPDATE_NOTIFICATION } from '../../graphql/server/mutations';
+import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
 import {
   CHANGE_MESSAGE_NOTIFICATION_BADGE,
   CHANGE_CONNECTION_NOTIFICATION_BADGE
 } from '../../graphql/cache/mutations';
-import { NotificationMessage, NotificationMetaData } from '../../graphql/types';
+import { NotificationMessage } from '../../graphql/types';
 import { crashlytics } from '../../firebase/config';
 
 type GlobalNotificationProps = {
@@ -20,7 +20,7 @@ type GlobalNotificationProps = {
 const messaging = fcmMessaging();
 
 export default function Notification(props: GlobalNotificationProps) {
-  const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
+  const [updatePassport] = useMutation(UPDATE_PASSPORT);
   const [changeMessageNotification] = useMutation(
     CHANGE_MESSAGE_NOTIFICATION_BADGE
   );
@@ -87,7 +87,7 @@ export default function Notification(props: GlobalNotificationProps) {
   const getToken = async () => {
     try {
       const token = await messaging.getToken();
-      updatePassportFCM({ variables: { payload: { token } } });
+      updatePassport({ variables: { payload: { fcm: token } } });
     } catch (error) {
       crashlytics.recordError(error);
     }
