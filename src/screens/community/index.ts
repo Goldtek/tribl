@@ -4,6 +4,11 @@ import CommunityDetailScreen from './detail';
 import AlgoliaScreen from './algoliaSearch';
 import MemberDetailScreen from './memberPassport';
 import BirthPlaceScreen from '../passport/birthplaceScreen';
+import CreateTribeScreen from './home/widget/createTribe';
+import AddAdminScreen from './home/widget/addAdmin';
+import TribeDetailScreen from './home/widget/tribeDetails';
+import NewTribeScreen from './home/widget/newTribe';
+import InviteToTribeScreen from './invitationToTribe';
 
 export default {
   HomeScreen,
@@ -11,5 +16,10 @@ export default {
   AlgoliaScreen,
   BirthPlaceScreen,
   MemberDetailScreen,
-  CommunityDetailScreen
+  CommunityDetailScreen,
+  CreateTribeScreen,
+  AddAdminScreen,
+  TribeDetailScreen,
+  NewTribeScreen,
+  InviteToTribeScreen
 };
