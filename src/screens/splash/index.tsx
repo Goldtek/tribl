@@ -11,8 +11,10 @@ import {
   VerifyOTPIT
 } from '../../graphql/types';
 import { REFRESH_TOKEN } from '../../graphql/server/mutations';
-import { GET_USER_PASSPORT } from '../../graphql/server/query';
-import { GET_FIREBASE_TOKEN } from '../../graphql/server/mutations';
+import {
+  GET_USER_PASSPORT,
+  GET_FIREBASE_TOKEN
+} from '../../graphql/server/query';
 import { NavigationInterface } from '../types';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
@@ -31,7 +33,7 @@ export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
   const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN);
-  const [authenticateFirebase, { data: firebase }] = useMutation<
+  const [authenticateFirebase, { data: firebase }] = useLazyQuery<
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 
@@ -84,6 +86,7 @@ export default function SplashScreen(props: ScreenProp) {
       }
       const userCredStorageData = await Storage.getUserCredentials();
       const userRegStorageData = await Storage.getUserRegistration();
+      console.tron('userCredStorageData', userCredStorageData);
 
       if (!userCredStorageData || !userRegStorageData) {
         return navigation.replace('SignupScreen');
