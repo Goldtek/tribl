@@ -1,28 +1,35 @@
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardCompatibleView } from 'stream-chat-expo';
 import { useStreamContext } from '../../stream';
 import { DEVICE_OS } from '../../utils/device';
 
-let insetsIos = 35;
-let noneInsets = 0;
+let iosWithInset = 34;
+let iosWithoutInset = 0;
+
+type Props = {
+  children: ReactNode;
+};
+
 export default function CustomKeyboardCompatibleView({ children }: any) {
   const insets = useSafeAreaInsets();
   const { activityScreen } = useStreamContext();
 
   useEffect(() => {
+    const delta = 3.5;
     if (
       activityScreen === 'directMessage' ||
       activityScreen === 'directMessageThreadScreen'
     ) {
-      insetsIos = insets.bottom / 2.5;
-      noneInsets = 8;
+      iosWithInset = insets.bottom / (delta + 1);
+      iosWithoutInset = 7;
     } else {
-      insetsIos = insets.bottom * 3.5;
-      noneInsets = 95;
+      iosWithInset = insets.bottom * delta;
+      iosWithoutInset = 95;
     }
   }, [activityScreen]);
-  const iosVerticalOffset = insets.bottom > 0 ? insetsIos : noneInsets;
+
+  const iosVerticalOffset = insets.bottom > 0 ? iosWithInset : iosWithoutInset;
 
   return (
     <KeyboardCompatibleView
