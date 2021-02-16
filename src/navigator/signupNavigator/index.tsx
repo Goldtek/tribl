@@ -37,7 +37,7 @@ export default function SignupNavigator() {
 
   const userDetails = data?.userDetails;
 
-  const currentLocation = userDetails?.currentLocation[0];
+  const currentLocation = userDetails?.currentLocation;
 
   const [updatePassport] = useMutation<UpdatePassportInterface>(
     UPDATE_USER_PASSPORT
@@ -67,24 +67,27 @@ export default function SignupNavigator() {
 
           const storageData = await Storage.getUserRegistration();
 
+          console.tron('userDetails', userDetails);
+
           if (storageData) {
             const userRegInfo = JSON.parse(storageData) as RegistrationInfo;
 
+            console.tron('dob', userDetails?.dob);
             const { data } = await updatePassport({
               variables: {
                 payload: {
                   bio: userDetails?.bio,
-                  dob: {
-                    day: userDetails?.dob.day,
-                    month: userDetails?.dob.month,
-                    year: userDetails?.dob.year
-                  },
+                  dob: userDetails?.dob,
                   avatar: userRegInfo.user?.avatar || userDetails?.avatar,
                   lastName: userRegInfo.user?.lastName || userDetails?.lastName,
                   firstName:
                     userRegInfo.user?.firstName || userDetails?.firstName,
-                  identity: userRegInfo.user?.identity || userDetails?.identity,
-                  interest: userDetails?.interest,
+                  identity: {
+                    add: userRegInfo.user?.identity || userDetails?.identity
+                  },
+                  interest: {
+                    add: userDetails?.interest
+                  },
                   currentLocation: {
                     lat:
                       currentLocation?.lat ||
