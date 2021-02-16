@@ -4,17 +4,34 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { Mixpanel } from '../../config';
 import { useTranslation } from 'react-i18next';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
+import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
 import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
-import { PassportInterface, UserPassportInterface } from '../../graphql/types';
-import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
+import {
+  MyPassportInterface,
+  PassportInterface,
+  UserPassportInterface
+} from '../../graphql/types';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../graphql/server/query';
 import AdminBadge from '../adminBadge';
 import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
+import {
+  chatClient,
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+} from '../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
@@ -28,23 +45,25 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const { t } = useTranslation();
   const [pending, setPending] = useState(false);
   const [member, setMember] = useState(props);
+  const [channelId, setChannelId] = useState('');
 
   const {
     id,
     avatar,
-    firstName,
     lastName,
-    currentLocation,
-    phoneNumber,
+    firstName,
     connected,
-    conversation,
-    moderatorOf
+    moderatorOf,
+    phoneNumber,
+    currentLocation
   } = member;
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
     { variables: { id } }
   );
+
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber: phoneNumber } }
@@ -74,19 +93,79 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     }
   };
 
-  const handleMessageNavigation = useCallback(
-    () =>
-      navigation.navigate('DrawerScreen', {
-        screen: conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
-        params: {
-          title: `${firstName} ${lastName}`,
-          chatId: conversation?.id,
-          receiverId: id,
-          ...member
-        }
-      }),
-    []
-  );
+  useEffect(() => {
+    const getConversation = async () => {
+      const filter = {
+        isDm: true,
+        type: 'team',
+        member_count: 2,
+        members: { $eq: [id, `${chatClient.user?.id}`] }
+      };
+
+      const options = { presence: true, state: true, watch: true };
+
+      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+      const [channel] = await chatClient.queryChannels(filter, sort, options);
+
+      if (!channel) return;
+
+      setChannelId(`${channel.id}`);
+    };
+
+    getConversation();
+  }, []);
+
+  const handleMessageNavigation = async () => {
+    let channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LiteralStringForUnion,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    > | null = null;
+
+    if (!channelId) {
+      // @ts-ignore
+      channel = chatClient.channel('team', {
+        conversationId: `${id}|${chatClient.user?.id}`,
+        channelId: `${id}|${chatClient.user?.id}`,
+        members: [id, `${chatClient.user?.id}`],
+        messageRequest: { status: false },
+        sender: {
+          readAt: Date.now(),
+          id: userData?.myPassport.id,
+          avatar: userData?.myPassport.avatar,
+          lastName: userData?.myPassport.lastName,
+          firstName: userData?.myPassport.firstName
+        },
+        receiver: {
+          id: id,
+          avatar,
+          lastName,
+          firstName,
+          readAt: Date.now()
+        },
+        name: Date.now(),
+        community: {},
+        isDm: true,
+        isNew: true
+      });
+
+      await channel.create();
+    }
+
+    navigation.navigate('DrawerScreen', {
+      screen: 'DirectChatScreen',
+      params: {
+        channelId: channelId ? channelId : channel?.id,
+        title: `${firstName} ${lastName}`,
+        ...member
+      }
+    });
+  };
 
   const handleNavigation = useCallback(() => {
     navigation.navigate('MemberDetailScreen', {
