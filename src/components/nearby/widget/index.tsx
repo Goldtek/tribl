@@ -34,23 +34,23 @@ function NearbyModal(props: NearbyUserProp) {
     avatar,
     firstName,
     lastName,
-    connected,
     currentLocation,
-    phoneNumber,
-    conversation
+    conversation,
+    connectionDetails,
+    pending
   } = member;
 
-  const [pending, setPending] = useState(false);
+  const [request, setRequest] = useState(false);
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber } }
+    variables: { payload: { id } }
   });
 
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
     try {
       await requestConnection();
-      setPending(true);
+      setRequest(true);
     } catch (error) {
       crashlytics.recordError(error);
     }
@@ -93,9 +93,9 @@ function NearbyModal(props: NearbyUserProp) {
     });
   };
 
-  const state = currentLocation[0]?.state;
-  const country = currentLocation[0]?.country;
-  const city = currentLocation[0]?.city;
+  const state = currentLocation?.state;
+  const country = currentLocation?.country;
+  const city = currentLocation?.city;
 
   return (
     <TouchableRipple
@@ -159,7 +159,10 @@ function NearbyModal(props: NearbyUserProp) {
             </Paragraph>
           )}
         </TextContainer>
-        {connected == 'PENDING' || pending ? (
+        {connectionDetails?.status == 'PENDING' ||
+        pending == 'PENDING' ||
+        pending == 'REQUESTED' ||
+        request ? (
           <Button
             mode="text"
             disabled={true}
@@ -180,7 +183,7 @@ function NearbyModal(props: NearbyUserProp) {
           >
             {t(`community.recommended.pending`)}
           </Button>
-        ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
+        ) : connectionDetails?.status === 'ACCEPTED' ? (
           <Button
             mode="text"
             uppercase={false}

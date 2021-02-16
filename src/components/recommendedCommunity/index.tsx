@@ -41,9 +41,11 @@ function RecommendedCommunity(props: CommunityInterface) {
 
   const [modal, setModal] = useState(false);
 
-  useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
+  useQuery(GET_COMMUNITY_MEMBERS, {
+    variables: { input: { filter: { communityId: id } } }
+  });
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
-    variables: { filter: { participantOf: { id } } }
+    variables: { input: { communityId: id } }
   });
 
   const clearTagModal = async () => {

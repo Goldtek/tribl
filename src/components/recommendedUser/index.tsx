@@ -26,7 +26,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const [pending, setPending] = useState(false);
+  const [request, setRequest] = useState(false);
   const [member, setMember] = useState(props);
 
   const {
@@ -35,10 +35,10 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     firstName,
     lastName,
     currentLocation,
-    phoneNumber,
-    connected,
     conversation,
-    moderatorOf
+    moderatorOf,
+    pending,
+    connectionDetails
   } = member;
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
@@ -47,11 +47,15 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   );
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber: phoneNumber } }
+    variables: { payload: { id } }
   });
 
   useEffect(() => {
-    if (connected == 'NOT_CONNECTED' || connected == 'PENDING') {
+    if (
+      connectionDetails?.status == 'PENDING' ||
+      pending == 'PENDING' ||
+      pending == 'REQUESTED'
+    ) {
       getUserPassport();
     }
 
@@ -68,7 +72,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
         'Activity Screen': 'Recommended member passport card'
       });
       await requestConnection();
-      setPending(true);
+      setRequest(true);
     } catch (error) {
       crashlytics.recordError(error);
     }
@@ -149,15 +153,15 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
               color: colors.PRIMARY_TEXT,
-              lineHeight: 20,
               marginTop: 0,
               marginBottom: 0,
-              paddingHorizontal: 10
+              paddingHorizontal: RFValue(10),
+              textTransform: 'capitalize'
             }}
           >
             {`${firstName} ${lastName}`}
           </Title>
-          {currentLocation[0]?.city ? (
+          {currentLocation?.city ? (
             <Paragraph
               numberOfLines={1}
               style={{
@@ -167,10 +171,10 @@ export default function RecommendedUser(props: RecommendedUserProp) {
                 textTransform: 'capitalize',
                 marginTop: 0,
                 marginBottom: 0,
-                paddingHorizontal: 10
+                paddingHorizontal: RFValue(10)
               }}
             >
-              {`${currentLocation[0]?.city}, ${currentLocation[0]?.state}`}
+              {`${currentLocation?.city}, ${currentLocation?.state}`}
             </Paragraph>
           ) : (
             <Paragraph
@@ -182,14 +186,17 @@ export default function RecommendedUser(props: RecommendedUserProp) {
                 textTransform: 'capitalize',
                 marginTop: 0,
                 marginBottom: 0,
-                paddingHorizontal: 10
+                paddingHorizontal: RFValue(10)
               }}
             >
-              {`${currentLocation[0]?.state}, ${currentLocation[0]?.country}`}
+              {`${currentLocation?.state}, ${currentLocation?.country}`}
             </Paragraph>
           )}
         </TextContainer>
-        {connected == 'PENDING' || pending ? (
+        {connectionDetails?.status == 'PENDING' ||
+        pending == 'PENDING' ||
+        pending == 'REQUESTED' ||
+        request ? (
           <Button
             disabled={true}
             mode="contained"
@@ -205,7 +212,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
           >
             {t(`community.recommended.pending`)}
           </Button>
-        ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
+        ) : connectionDetails?.status === 'ACCEPTED' ? (
           <Button
             mode="outlined"
             uppercase={false}

@@ -16,7 +16,6 @@ import { GET_COMMUNITY_MEMBER_PASSPORT } from '../../../../../../../graphql/serv
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
 import { OnlinePresence } from '../../../../../../inbox/types';
 import { fireAuth, crashlytics } from '../../../../../../../firebase/config';
-import formatMessageTime from '../../../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -28,12 +27,12 @@ function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, firstName, lastName, phoneNumber, id } = props;
+  const { avatar, firstName, lastName, id, currentLocation } = props;
 
   if (id === fireAuth.currentUser?.uid) return null;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber: phoneNumber } }
+    variables: { payload: { id } }
   });
 
   const { data: passportData } = useQuery<SinglePassportRequestInterface>(
@@ -130,9 +129,9 @@ function Member(props: MemberProp) {
               textTransform: 'lowercase'
             }}
           >
-            {onlinePresence.status === 'ONLINE'
-              ? onlinePresence.status
-              : formatMessageTime(Number(onlinePresence.lastSeen))}
+            {currentLocation?.city
+              ? `${currentLocation?.city}, ${currentLocation?.state}`
+              : `${currentLocation?.state}, ${currentLocation?.country}`}
           </Text>
         </NameContainer>
 

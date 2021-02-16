@@ -66,18 +66,20 @@ function MemberSTabScreen(props: ScreenProp) {
   const { data: membersData } = useQuery<RecommendedMembersRequestInterface>(
     GET_RECOMMENDED_MEMBERS,
     {
-      variables: { filter: { verified: true } }
+      variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
     }
   );
 
-  const recommendedMembers = membersData?.recommendedMembers;
+  const recommendedMembers = membersData?.recommendedMembers?.data;
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
     GET_NEARBY_MEMBERS,
-    { variables: { offset: 0, first: PAGINATION_DEFAULT / 2 } }
+    {
+      variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+    }
   );
 
-  const nearbyMembers = nearbyData?.nearbyMembers;
+  const nearbyMembers = nearbyData?.nearbyMembers?.data;
 
   const _renderNearbyMember = useMemo(
     () => ({ item }: { item: PassportInterface }) => (

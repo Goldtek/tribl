@@ -14,7 +14,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useNavigation } from '@react-navigation/native';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import ChannelActions from './channelActions';
+import ChannelActions from './ChannelActions';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
 import {

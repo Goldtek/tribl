@@ -53,23 +53,8 @@ function Tags(props: any) {
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
-        avatar: userDetails?.avatar,
-        firstName: userDetails?.firstName,
-        lastName: userDetails?.lastName,
-        bio: userDetails?.bio,
-        dob: {
-          day: userDetails?.dob.day,
-          month: userDetails?.dob.month,
-          year: userDetails?.dob.year
-        },
-        identity: identity,
-        interest: allInterest,
-        currentLocation: {
-          city: userDetails?.currentLocation[0]?.city,
-          state: userDetails?.currentLocation[0]?.state,
-          country: userDetails?.currentLocation[0]?.country,
-          long: userDetails?.currentLocation[0]?.long,
-          lat: userDetails?.currentLocation[0]?.lat
+        interest: {
+          add: allInterest
         }
       }
     }

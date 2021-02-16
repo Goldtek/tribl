@@ -84,30 +84,34 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     clearTagModal();
   };
 
-  const {
-    data: communityData,
-    refetch: communityRefetch
-  } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id } });
+  const { data: communityData, refetch: communityRefetch } = useQuery(
+    GET_SINGLE_COMMUNITY,
+    {
+      variables: { input: { filter: { id } } },
+      fetchPolicy: 'cache-and-network',
+      pollInterval: 1000
+    }
+  );
 
   const { data: communityMembersData } = useQuery(
     GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
     {
-      variables: { filter: { participantOf: { id } } }
+      variables: { input: { communityId: id } }
     }
   );
 
   const { data: communityMembers } = useQuery<CommunityMembersRequestInterface>(
     GET_COMMUNITY_MEMBERS,
-    { variables: { id: communityDetails?.id } }
+    { variables: { input: { filter: { communityId: id } } } }
   );
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
   const userId = userDetails?.id;
 
-  const singleCommunity = communityData?.Community[0];
-  const participants = communityMembers?.communityMembers;
-  const communityNearbyMembers = communityMembersData?.nearbyMembers;
+  const singleCommunity = communityData?.Community?.data[0];
+  const participants = communityMembers?.communityMembers?.data;
+  const communityNearbyMembers = communityMembersData?.nearbyMembers?.data;
   const filteredParticipants = participants?.filter(
     (member) => member.id !== userId
   );
@@ -158,6 +162,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
         'Activity Screen': 'Recommended Community Card'
       });
       await joinCommunity();
+      console.tron('join community');
 
       if (data.uniqueInterests.length) {
         setState({ ...state, tagModal: true });
@@ -166,6 +171,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       setData({ ...data, isMember: true });
       communityRefetch();
     } catch (error) {
+      console.tron('join community', error);
       crashlytics.recordError(error);
     }
   };

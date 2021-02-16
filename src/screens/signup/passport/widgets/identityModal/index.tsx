@@ -126,7 +126,7 @@ function IdentityModal(props: any) {
               marginTop: RFValue(20)
             }}
           >
-            {data?.Identity?.map((identity) => {
+            {data?.Identity?.data?.map((identity) => {
               return (
                 <IdentityButton
                   key={identity.id}
