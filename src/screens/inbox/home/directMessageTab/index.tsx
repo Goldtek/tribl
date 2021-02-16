@@ -63,7 +63,7 @@ function DirectMessageTab(props: ScreenProp) {
           filters={filters}
           onSelect={(channel) => {
             setChannel(channel as any);
-            setActivityScreen('channelScreen');
+            setActivityScreen('directMessage');
           }}
           sort={sort}
           options={options}
