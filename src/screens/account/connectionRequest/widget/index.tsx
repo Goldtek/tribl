@@ -26,14 +26,7 @@ interface ConnectionRequestProp {
 
 const ConnectionRequest = (props: ConnectionRequestProp) => {
   const { refetch, item } = props;
-  const {
-    phoneNumber,
-    firstName,
-    lastName,
-    avatar,
-    id,
-    currentLocation
-  } = item;
+  const { firstName, lastName, avatar, id, currentLocation } = item;
 
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
