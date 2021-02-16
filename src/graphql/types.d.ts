@@ -156,28 +156,37 @@ export interface PassportInterface {
   bio: string;
   email: string;
   avatar: string;
-  dob: _Neo4jDate;
+  dob: string;
   lastName: string;
   verified: boolean;
   firstName: string;
   __typename: string;
   countryCode: string;
   phoneNumber: string;
-  birthPlace: Location[];
+  birthPlace: Location;
   presence: UserPresence;
   communityCount: number;
   connectionCount: number;
   connected: Status | null;
   citizenShip: string | null;
-  currentLocation: Location[];
+  currentLocation: Location;
   connection: Connection | null;
   status: UserAvailability | null;
   conversation: Conversation | null;
   myConnections: PassportInterface[];
   moderatorOf?: CommunityInterface[];
   participantOf?: CommunityInterface[];
-  interest: { name: string; id: string }[];
-  identity: { name: string; id: string }[];
+  interest: string[];
+  identity: string[];
+  pendingConnections: ConnectionStatusInterface[];
+  connectionRequests: ConnectionStatusInterface[];
+  connectionDetails: ConnectionStatusInterface;
+  pending: string;
+}
+
+export interface ConnectionStatusInterface {
+  status: string;
+  id: string;
 }
 
 export interface StoreInterface {
@@ -243,7 +252,6 @@ export interface JwtTokenResult {
   id_token: string;
   verified: boolean;
   expires_in: number;
-  token_type: string;
   access_token: string;
   streams_token: string;
   refresh_token: string;
@@ -301,19 +309,25 @@ export type CreateAccountInterface = {
 export type MyPassportInterface = { myPassport: PassportInterface };
 
 // USER CONNECTIONS (RESPONSE) TYPE
-export type MyConnectionsInterface = { myConnections: PassportInterface[] };
+export type MyConnectionsInterface = {
+  myConnections: { data: PassportInterface[] };
+};
 
 // COMMUNITY USER SINGLE PASSPORT (RESPONSE) TYPE
 export type UserPassportInterface = { singlePassport: PassportInterface };
 
 // USER SELECTABLE IDENTITIES (RESPONSE) TYPE
 export type IdentitiesInterface = {
-  Identity: { name: string; id: string }[];
+  Identity: {
+    data: { name: string; id: string }[];
+  };
 };
 
 // USER SELECTABLE INTEREST (RESPONSE) TYPE
 export type InterestInterface = {
-  Interest: { name: string; id: string }[];
+  Interest: {
+    data: { name: string; id: string }[];
+  };
 };
 
 // SERVER UPDATE USER PASSPORT (RESPONSE) TYPE
@@ -338,37 +352,51 @@ export type BlockMessageRequestInterface = {
 
 // RECOMMENDED MEMBERS REQUEST (RESPONSE) TYPE
 export type RecommendedMembersRequestInterface = {
-  recommendedMembers: PassportInterface[];
+  recommendedMembers: {
+    data: PassportInterface[];
+  };
 };
 
 // CHANNEL MEMBERS REQUEST (RESPONSE) TYPE
 export type ChannelMembersRequestInterface = {
-  channelMembers: PassportInterface[];
+  channelMembers: {
+    data: PassportInterface[];
+  };
 };
 
 // RECOMMENDED COMMUNITIES REQUEST (RESPONSE) TYPE
 export type RecommendedCommunitiesRequestInterface = {
-  recommendedCommunities: CommunityInterface[];
+  recommendedCommunities: {
+    data: CommunityInterface[];
+  };
 };
 
 // MY COMMUNITIES REQUEST (RESPONSE) TYPE
 export type MyCommunitiesRequestInterface = {
-  myCommunities: CommunityInterface[];
+  myCommunities: {
+    data: CommunityInterface[];
+  };
 };
 
 // NEARBY MEMBERS REQUEST (RESPONSE) TYPE
 export type NearbyMembersRequestInterface = {
-  nearbyMembers: PassportInterface[];
+  nearbyMembers: {
+    data: PassportInterface[];
+  };
 };
 
 // COMMUNITY MEMBERS REQUEST (RESPONSE) TYPE
 export type CommunityMembersRequestInterface = {
-  communityMembers: PassportInterface[];
+  communityMembers: {
+    data: PassportInterface[];
+  };
 };
 
 // ALL MEMBERS REQUEST (RESPONSE) TYPE
 export type AllMembersRequestInterface = {
-  Passport: PassportInterface[];
+  Passport: {
+    data: PassportInterface[];
+  };
 };
 
 // ALL MEMBERS REQUEST (RESPONSE) TYPE
@@ -403,20 +431,22 @@ export type ShowConnectionNotificationBadge = {
 
 // USER COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
 export type MyChannelRequestInterface = {
-  myChannels: { id: string; name: string }[];
+  myChannels: { data: { id: string; name: string }[] };
 };
 
 // USER CONNECTIONS REQUESTS (RESPONSE) TYPE
 export type ConnectionRequestsInterface = {
-  connectionRequests: PassportInterface[];
+  connectionRequests: { data: PassportInterface[] };
 };
 
 // POPULAR COMMUNITIES REQUEST (RESPONSE) TYPE
 export type PopularCommunitiesRequestInterface = {
-  popularCommunities: CommunityInterface[];
+  popularCommunities: { data: CommunityInterface[] };
 };
 
 // MY CONNECTIONS NEARBY REQUEST (RESPONSE) TYPE
 export type MyConnectionNearbyRequestInterface = {
-  nearbyConnections: PassportInterface[];
+  nearbyConnections: {
+    data: PassportInterface[];
+  };
 };
