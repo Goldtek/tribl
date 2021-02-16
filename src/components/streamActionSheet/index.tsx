@@ -1,14 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components/native';
-import { StyleSheet, View } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import type { MessageActionSheetProps } from 'stream-chat-react-native-core/lib/typescript/src/components/Message/MessageSimple/MessageActionSheet';
+import { Reaction } from 'stream-chat-expo';
 
-import { ReactionItemContainer, ReactionItemText } from './styles';
+import {
+  ActionSheetButtonContainer,
+  ActionSheetButtonText,
+  ReactionItemContainer,
+  ReactionItemText,
+  ReactionListContainer
+} from './styles';
+
+type ReactionItemProps = {
+  type: string;
+  handleReaction: (type: string) => void;
+  icon: string;
+};
 
 const MESSAGE_ACTIONS = {
   delete: 'delete',
@@ -17,24 +28,6 @@ const MESSAGE_ACTIONS = {
   reply: 'reply',
   copy: 'copy'
 };
-
-const ActionSheetButtonContainer = styled.View`
-  width: 100%;
-  height: 50px;
-  align-items: center;
-  flex-direction: row;
-  padding-horizontal: 20px;
-  background-color: ${({ theme }) => theme.colors.WHITE};
-  ${({ theme }) => theme.message.actionSheet.buttonContainer.css};
-`;
-
-const ActionSheetButtonText = styled.Text`
-  font-size: 16px;
-  color: #388cea;
-  margin-left: 10px;
-  color: ${({ theme }) => theme.colors.PRIMARY};
-  ${({ theme }) => theme.message.actionSheet.buttonText.css};
-`;
 
 export const MessageActionSheet = React.forwardRef(
   (props: MessageActionSheetProps, actionSheetRef) => {
@@ -56,7 +49,9 @@ export const MessageActionSheet = React.forwardRef(
 
     const { colors } = useThemeContext();
     const insets = useSafeAreaInsets();
-    const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
+    const [options, setOptions] = useState([
+      { id: 'cancel', title: 'Cancel', icon: 'cancel' }
+    ]);
 
     const ActionSheetBottomMargin = insets.bottom > 0 ? insets.bottom : 10;
 
@@ -64,7 +59,7 @@ export const MessageActionSheet = React.forwardRef(
       const newOptions: {
         id: string;
         title: string;
-        icon?: string;
+        icon: string;
       }[] = [];
 
       if (Array.isArray(messageActions)) {
@@ -149,7 +144,6 @@ export const MessageActionSheet = React.forwardRef(
               testID={`action-sheet-item-${option.title}`}
             >
               <MaterialCommunityIcons
-                // @ts-ignore
                 name={option.icon}
                 size={20}
                 color={colors.PRIMARY}
@@ -159,7 +153,7 @@ export const MessageActionSheet = React.forwardRef(
           );
         })}
         ref={actionSheetRef as React.MutableRefObject<ActionSheet>}
-        title={renderReactions((type: any) => {
+        title={renderReactions((type) => {
           handleReaction(type);
           setActionSheetVisible(false);
         }, supportedReactions)}
@@ -199,14 +193,13 @@ export const MessageActionSheet = React.forwardRef(
 );
 
 export const renderReactions = (
-  handleReaction: any,
-  supportedReactions: any
+  handleReaction: (type: string) => void,
+  supportedReactions: Reaction[]
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const reactions = supportedReactions;
   return (
-    <View style={styles.reactionListContainer}>
-      {reactions.map((r: any, index: number) => (
+    <ReactionListContainer>
+      {supportedReactions.map((r, index) => (
         <ReactionItem
           key={index}
           type={r.id}
@@ -214,11 +207,11 @@ export const renderReactions = (
           handleReaction={handleReaction}
         />
       ))}
-    </View>
+    </ReactionListContainer>
   );
 };
 
-const ReactionItem = ({ type, handleReaction, icon }: any) => {
+const ReactionItem = ({ type, handleReaction, icon }: ReactionItemProps) => {
   return (
     <ReactionItemContainer onPress={() => handleReaction(type)}>
       <ReactionItemText>{icon}</ReactionItemText>
@@ -227,14 +220,3 @@ const ReactionItem = ({ type, handleReaction, icon }: any) => {
 };
 
 MessageActionSheet.displayName = 'messageActionSheet';
-
-const styles = StyleSheet.create({
-  reactionListContainer: {
-    flex: 1,
-    height: 30,
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-});
