@@ -12,7 +12,9 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { crashlytics } from '../../../firebase/config';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { logEvent } from '../../../utils/uxcamHelper';
+import { useStreamContext } from '../../../stream';
 import {
+  ChannelType,
   chatClient,
   LocalAttachmentType,
   LocalChannelType,
@@ -33,6 +35,8 @@ interface ActiveUserProp extends PassportInterface {
 
 function ActiveModal(props: ActiveUserProp) {
   const { colors, fonts } = useThemeContext();
+  const { setChannel, setActivityScreen } = useStreamContext();
+
   const { t } = useTranslation();
 
   const { closeActiveModal, ...member } = props;
@@ -139,6 +143,9 @@ function ActiveModal(props: ActiveUserProp) {
 
       await channel.create();
     }
+
+    setChannel(channel as ChannelType);
+    setActivityScreen('directMessage');
 
     rootNavigator.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',

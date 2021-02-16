@@ -16,7 +16,9 @@ import {
 } from '../../../../graphql/types';
 import formatMessageTime from '../../../../utils/timesince';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
+import { useStreamContext } from '../../../../stream';
 import {
+  ChannelType,
   chatClient,
   LocalAttachmentType,
   LocalChannelType,
@@ -33,6 +35,8 @@ interface ConnectionProp extends PassportInterface {}
 
 export default function Connection(props: ConnectionProp) {
   const { colors, fonts } = useThemeContext();
+  const { setChannel, setActivityScreen } = useStreamContext();
+
   const navigation = useNavigation();
 
   const { id, avatar, firstName, lastName } = props;
@@ -115,6 +119,9 @@ export default function Connection(props: ConnectionProp) {
 
       await channel.create();
     }
+
+    setChannel(channel as ChannelType);
+    setActivityScreen('directMessage');
 
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',

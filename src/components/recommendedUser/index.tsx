@@ -23,7 +23,9 @@ import {
 import AdminBadge from '../adminBadge';
 import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
+import { useStreamContext } from '../../stream';
 import {
+  ChannelType,
   chatClient,
   LocalAttachmentType,
   LocalChannelType,
@@ -41,6 +43,8 @@ interface RecommendedUserProp extends PassportInterface {}
 
 export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
+  const { setChannel, setActivityScreen } = useStreamContext();
+
   const navigation = useNavigation();
   const { t } = useTranslation();
   const [pending, setPending] = useState(false);
@@ -156,6 +160,9 @@ export default function RecommendedUser(props: RecommendedUserProp) {
 
       await channel.create();
     }
+
+    setChannel(channel as ChannelType);
+    setActivityScreen('directMessage');
 
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',

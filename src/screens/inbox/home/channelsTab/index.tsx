@@ -32,6 +32,7 @@ function ChannelsTab(props: ScreenProp) {
   const filters = {
     members: { $in: [userData?.myPassport.id] },
     isDm: { $ne: true },
+    isNew: { $ne: true },
     type: 'team'
   };
 
