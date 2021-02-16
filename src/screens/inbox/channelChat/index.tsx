@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomChannelMessage from '../../../components/customChannelMessage';
 import CustomSystemMessage from '../../../components/customSystemMessage';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
@@ -11,6 +12,7 @@ import { tagScreenName } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
 import { useThemeContext } from '../../../theme';
 import hexToRGB from '../../../utils/hexToRGB';
+import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
 
 import { ChatContainer } from './styles';
 
@@ -21,7 +23,7 @@ interface ScreenProp extends NavigationInterface {
 
 export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
-
+  const { bottom } = useSafeAreaInsets();
   const [text, setText] = useState('');
   const { colors } = useThemeContext();
   const chatStyles = useStreamChatTheme();
@@ -46,7 +48,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ChatContainer>
+      <ChatContainer style={{ paddingBottom: bottom }}>
         <Chat
           //@ts-ignore
           client={chatClient}
@@ -55,6 +57,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
           <Channel
             //@ts-ignore
             channel={channel}
+            KeyboardCompatibleView={CustomKeyboardCompatibleView}
           >
             <MessageList
               onThreadSelect={(thread) => {

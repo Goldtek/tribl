@@ -46,6 +46,8 @@ const Emoji = styled.Text`
   font-size: 30px; /* inital value 20px */
   margin-vertical: 0px; /* initial value 5px */
   margin-horizontal: 7px; /* nothing before */
+  color: white;
+  z-index: 999;
   ${({ theme }) => theme.message.reactionPicker.emoji.css}
 `;
 

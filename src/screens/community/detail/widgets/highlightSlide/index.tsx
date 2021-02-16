@@ -269,7 +269,10 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                   onPress={data.isMember || member ? handleLeave : handleJoin}
                   style={{
                     borderRadius: 4,
-                    alignSelf: 'flex-start'
+                    alignSelf: 'flex-start',
+                    position: 'absolute',
+                    right: RFValue(16),
+                    top: RFValue(16)
                   }}
                   labelStyle={{
                     fontSize: fonts.MEDIUM_SIZE,
