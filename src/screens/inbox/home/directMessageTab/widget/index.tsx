@@ -22,6 +22,7 @@ import {
   LocalReactionType,
   LocalUserType
 } from '../../../../../stream/types';
+import { USER_DEFAULT_AVATAR } from '../../../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -34,7 +35,7 @@ import {
   NotificationContainer
 } from './styles';
 
-export default function CustomChannelPreview(
+export default function CustomDirectMessagePreview(
   props: ChannelPreviewMessengerProps<
     LocalAttachmentType,
     LocalChannelType,
@@ -66,7 +67,7 @@ export default function CustomChannelPreview(
 
   const displayAvatar = {
     name: `${receiver?.firstName} ${receiver?.lastName}`,
-    image: receiver?.avatar
+    image: receiver?.avatar || USER_DEFAULT_AVATAR
   };
 
   const handleDeleteAction = async () => {};

@@ -25,12 +25,23 @@ export default function ChannelChatScreen(props: ScreenProp) {
   const [text, setText] = useState('');
   const { colors } = useThemeContext();
   const chatStyles = useStreamChatTheme();
-  const { setThread, setActivityScreen } = useStreamContext();
+  const {
+    setThread,
+    setChannel,
+    setActivityScreen,
+    channel: streamChannel
+  } = useStreamContext();
 
   const channel = chatClient.channel('team', route.params.channelId);
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
+  }, []);
+
+  useEffect(() => {
+    if (streamChannel.id !== channel.id) {
+      setChannel(channel);
+    }
   }, []);
 
   return (

@@ -13,8 +13,10 @@ import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { useStreamContext } from '../../../stream';
 import StreamInputBox from '../../../components/streamInputBox';
 import CustomDirectMessage from '../../../components/customDirectMessage';
-import CustomSystemMessage from '../../../components/customSystemMessage';
+import { USER_DEFAULT_AVATAR } from '../../../constants';
 import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
+import { ChannelSort } from 'stream-chat';
+import { LocalChannelType } from '../../../stream/types';
 
 import { HeaderContainer, Container, MessageListContainer } from './styles';
 
@@ -29,9 +31,41 @@ export default function DirectChatScreen(props: ScreenProp) {
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
-  const { setThread, setActivityScreen } = useStreamContext();
+  const {
+    setThread,
+    setActivityScreen,
+    channel: streamChannel,
+    setChannel: setStreamContextChannel
+  } = useStreamContext();
 
-  const channel = chatClient.channel('team', route.params.channelId);
+  const [channel, setChannel] = useState(
+    chatClient.channel('team', route.params.channelId)
+  );
+
+  useEffect(() => {
+    const getChannel = async () => {
+      const filter = {
+        type: 'team',
+        id: route.params.channelId
+      };
+
+      const options = { presence: true, state: true, watch: true };
+
+      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+      const [queryChannel] = await chatClient.queryChannels(
+        filter,
+        sort,
+        options
+      );
+
+      if (!queryChannel) return;
+
+      setChannel(queryChannel);
+    };
+
+    getChannel();
+  }, []);
 
   const receiver = [channel.data?.receiver, channel.data?.sender].find(
     (user) => user?.id !== chatClient.user?.id
@@ -39,11 +73,17 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   const displayAvatar = {
     name: `${receiver?.firstName} ${receiver?.lastName}`,
-    image: receiver?.avatar
+    image: receiver?.avatar || USER_DEFAULT_AVATAR
   };
 
   useEffect(() => {
     tagScreenName('DirectChatScreen');
+  }, []);
+
+  useEffect(() => {
+    if (streamChannel.id !== channel.id) {
+      setStreamContextChannel(channel);
+    }
   }, []);
 
   return (
@@ -118,8 +158,6 @@ export default function DirectChatScreen(props: ScreenProp) {
                   });
                 }}
                 Message={CustomDirectMessage}
-                //@ts-ignore
-                MessageSystem={CustomSystemMessage}
               />
               <MessageInput
                 Input={StreamInputBox}
