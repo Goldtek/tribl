@@ -21,6 +21,7 @@ import { useThemeContext } from '../../theme';
 import TabViewSlider from './widgets/tabs';
 import { userDetails as cacheData } from '../../graphql/cache';
 import {
+  GET_USER_PASSPORT,
   GET_ALL_MEMBERS,
   GET_CONNECTION_REQUEST,
   GET_MY_COMMUNITIES,
@@ -29,18 +30,15 @@ import {
   GET_POPULAR_COMMUNITIES,
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
-  GET_USER_PASSPORT,
-  USER_CHANNELS
+  USER_CHANNELS,
+  GET_FIREBASE_TOKEN
 } from '../../graphql/server/query';
 import {
   GenerateFirebaseTokenIT,
   MyPassportInterface,
   PassportInterface
 } from '../../graphql/types';
-import {
-  UPDATE_PASSPORT,
-  GET_FIREBASE_TOKEN
-} from '../../graphql/server/mutations';
+import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
 import CheckAppUpdates from '../../libs/updates';
@@ -102,7 +100,8 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [cache, setCache] = useState({
     ...cacheData,
-    details: { selectedIdentity: [], selectedInterest: [] }
+    details: { selectedIdentity: [], selectedInterest: [] },
+    timestamp: ''
   });
 
   const [OTAUpdate, setOTAUpdate] = useState(false);
@@ -122,10 +121,9 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [changeSideMenuState] = useMutation(CHANGE_ACTIVE_SIDE_MENU_STATE);
 
-  const [
-    authenticateFirebase,
-    { data: firebase, loading: firebaseLoading }
-  ] = useMutation<GenerateFirebaseTokenIT>(GET_FIREBASE_TOKEN);
+  const { data: firebase, loading: firebaseLoading } = useQuery<
+    GenerateFirebaseTokenIT
+  >(GET_FIREBASE_TOKEN);
 
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
@@ -136,37 +134,39 @@ export default function PassportScreen(props: ScreenProp) {
   const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
 
   const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
-    variables: { filter: { verified: true } }
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
   });
 
   const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
   const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
     GET_CONNECTION_REQUEST,
     {
-      variables: { offset: 0, first: PAGINATION_DEFAULT }
+      variables: { input: { limit: PAGINATION_DEFAULT } }
     }
   );
 
   const [getUserChannels] = useLazyQuery(USER_CHANNELS);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT / 2 }
+    variables: { input: { limit: 8 } }
   });
 
   const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { limit: PAGINATION_DEFAULT } }
   });
 
   const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { limit: PAGINATION_DEFAULT } }
   });
 
   const userDetails = userData?.myPassport;
   const dateOfBirth = userDetails?.dob;
-  const currentLocation = cache?.currentLocation[0];
+  const currentLocation = userDetails?.currentLocation?.country
+    ? userDetails?.currentLocation
+    : cache?.currentLocation;
 
   useEffect(() => {
     if (userDetails) {
@@ -218,9 +218,7 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   const dob = cache?.date?.split('/');
-  const day = dob?.length ? parseInt(dob[1]) : dateOfBirth?.day;
-  const month = dob?.length ? parseInt(dob[0]) : dateOfBirth?.month;
-  const year = dob?.length ? parseInt(dob[2]) : dateOfBirth?.year;
+  console.tron('dob', dob);
 
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
@@ -236,11 +234,11 @@ export default function PassportScreen(props: ScreenProp) {
 
     if (!location.city?.length) {
       setLocation({
-        city: userDetails?.currentLocation[0]?.city,
-        state: userDetails?.currentLocation[0]?.state,
-        country: userDetails?.currentLocation[0]?.country,
-        lat: userDetails?.currentLocation[0]?.lat,
-        long: userDetails?.currentLocation[0]?.long
+        city: userDetails?.currentLocation?.city,
+        state: userDetails?.currentLocation?.state,
+        country: userDetails?.currentLocation?.country,
+        lat: userDetails?.currentLocation?.lat,
+        long: userDetails?.currentLocation?.long
       });
     }
   }, [userDetails]);
@@ -254,7 +252,6 @@ export default function PassportScreen(props: ScreenProp) {
     getRecommendedMembers();
     getPopularCommunities();
     getConnectionRequest();
-    authenticateFirebase();
     getMyCommunities();
     getNearbyMembers();
     getMyConnections();
@@ -317,7 +314,7 @@ export default function PassportScreen(props: ScreenProp) {
       crashlytics.recordError(error);
     }
   };
-
+  console.tron('cache.detaisl', cache.details);
   useEffect(() => {
     if (userDetails?.interest || userDetails?.identity) {
       const interest = [
@@ -330,9 +327,16 @@ export default function PassportScreen(props: ScreenProp) {
         ...cache.details.selectedIdentity
       ].map(({ id }) => id);
 
-      setCache({ ...cache, identity, interest });
+      setCache({
+        ...cache,
+        identity,
+        interest,
+        timestamp: cache.details.timeStamp
+      });
     }
   }, [cache.details]);
+
+  console.tron('fghvj', `${cache.timestamp}`);
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -341,9 +345,13 @@ export default function PassportScreen(props: ScreenProp) {
         firstName: cache.firstName,
         lastName: cache.lastName,
         bio: cache.bio,
-        dob: { day: day, month: month, year: year },
-        identity: cache.identity,
-        interest: cache.interest,
+        dob: `${cache.timestamp}`,
+        identity: {
+          add: cache.identity
+        },
+        interest: {
+          add: cache.interest
+        },
         currentLocation: {
           city: location.city,
           state: location.state,
@@ -418,14 +426,18 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
+      console.tron('updated');
       refetch();
       setCacheData();
       setUpdate(true);
     } catch (error) {
+      console.tron('updated', error);
       crashlytics.recordError(error);
       setUpdate(true);
     }
   };
+
+  console.tron('trimesta,', cache.timestamp);
 
   const handleAvatar = async () => {
     try {

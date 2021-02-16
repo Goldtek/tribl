@@ -57,7 +57,7 @@ export default function PassportDetail(props: MemberDetailProps) {
   const { phoneNumber, firstName, lastName, id } = passport;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber: phoneNumber } }
+    variables: { payload: { id } }
   });
 
   const { data: passportData } = useQuery<SinglePassportRequestInterface>(
@@ -70,7 +70,7 @@ export default function PassportDetail(props: MemberDetailProps) {
   );
 
   const singlePassport = passportData?.singlePassport;
-
+  console.tron('singlePassport', passportData);
   const [data, setData] = useState({ ...passport });
 
   useEffect(() => {
@@ -123,6 +123,8 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
+
+  console.tron('state', community);
 
   const handleRequest = async () => {
     setState({ ...state, loading: true });
@@ -225,7 +227,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             </ConnectionCover>
           </Header>
 
-          {data?.connected == 'CONNECTED' || data?.connected == 'ACCEPTED' ? (
+          {data?.connectionDetails?.status === 'ACCEPTED' ? (
             <Button
               onPress={handleMessageNavigation}
               mode="outlined"
@@ -249,7 +251,10 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
-          ) : pending || data?.connected === 'PENDING' ? (
+          ) : pending ||
+            data?.connectionDetails?.status === 'PENDING' ||
+            data?.pending == 'PENDING' ||
+            data?.pending == 'REQUESTED' ? (
             <ButtonCover>
               <Button
                 disabled={true}
@@ -357,7 +362,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             </Cover>
           ) : null}
 
-          {data?.birthPlace ? (
+          {data?.birthPlace || data?.currentLocation ? (
             <LocationContainer>
               <Title
                 style={{
@@ -372,7 +377,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 {t(`signup.passportScreen.locality`)}
               </Title>
 
-              {data?.birthPlace[0]?.country ? (
+              {data?.birthPlace?.country ? (
                 <Location ref={hideSensitiveView}>
                   <AntDesign
                     name="home"
@@ -386,7 +391,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                       backgroundColor: colors.ACTION
                     }}
                   />
-                  {data?.birthPlace[0]?.city ? (
+                  {data?.birthPlace?.city ? (
                     <Paragraph
                       style={{
                         fontFamily: fonts.WORK_SANS_REGULAR,
@@ -396,7 +401,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                         marginBottom: 10
                       }}
                     >
-                      {`${data?.birthPlace[0]?.city}, ${data?.birthPlace[0]?.state}`}
+                      {`${data?.birthPlace?.city}, ${data?.birthPlace?.state}`}
                     </Paragraph>
                   ) : (
                     <Paragraph
@@ -408,13 +413,13 @@ export default function PassportDetail(props: MemberDetailProps) {
                         marginBottom: 10
                       }}
                     >
-                      {`${data?.birthPlace[0]?.state}, ${data?.birthPlace[0]?.country}`}
+                      {`${data?.birthPlace?.state}, ${data?.birthPlace?.country}`}
                     </Paragraph>
                   )}
                 </Location>
               ) : null}
 
-              {data?.currentLocation ? (
+              {data?.currentLocation.country ? (
                 <Location ref={hideSensitiveView}>
                   <SimpleLineIcons
                     name="location-pin"
@@ -428,7 +433,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                       backgroundColor: colors.ACTION
                     }}
                   />
-                  {data?.currentLocation[0]?.city ? (
+                  {data?.currentLocation?.city ? (
                     <Paragraph
                       style={{
                         fontFamily: fonts.WORK_SANS_REGULAR,
@@ -438,7 +443,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                         marginBottom: 10
                       }}
                     >
-                      {`${data?.currentLocation[0]?.city}, ${data?.currentLocation[0]?.state}`}
+                      {`${data?.currentLocation?.city}, ${data?.currentLocation?.state}`}
                     </Paragraph>
                   ) : (
                     <Paragraph
@@ -450,7 +455,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                         marginBottom: 10
                       }}
                     >
-                      {`${data?.currentLocation[0]?.state}, ${data?.currentLocation[0]?.country}`}
+                      {`${data?.currentLocation?.state}, ${data?.currentLocation?.country}`}
                     </Paragraph>
                   )}
                 </Location>

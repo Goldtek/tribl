@@ -64,6 +64,8 @@ export default function PassportScreen(props: ScreenProp) {
 
   const userDetails = data?.userDetails;
 
+  console.tron('userDetails1', userDetails);
+
   const onShare = async () => {
     try {
       const { action } = await Share.share(
@@ -163,10 +165,10 @@ export default function PassportScreen(props: ScreenProp) {
                 }}
               >
                 {`${
-                  userDetails?.currentLocation[0]?.city ||
+                  userDetails?.currentLocation?.city ||
                   userRegInfo?.user?.currentLocation?.city
                 }, ${
-                  userDetails?.currentLocation[0]?.state ||
+                  userDetails?.currentLocation?.state ||
                   userRegInfo?.user?.currentLocation?.state
                 }`}
               </Paragraph>

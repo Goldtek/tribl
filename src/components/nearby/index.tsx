@@ -35,13 +35,10 @@ function NearbyModal(props: ModalProp) {
   const { t } = useTranslation();
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
-    GET_NEARBY_MEMBERS,
-    {
-      variables: { offset: 0, first: PAGINATION_DEFAULT }
-    }
+    GET_NEARBY_MEMBERS
   );
 
-  const nearbyMember = nearbyData?.nearbyMembers;
+  const nearbyMember = nearbyData?.nearbyMembers?.data;
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;

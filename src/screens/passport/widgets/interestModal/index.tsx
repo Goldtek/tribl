@@ -72,7 +72,7 @@ function InterestModal(props: any) {
     setSelectedInterests({ ...rest });
   };
 
-  const interests = Array.from(new Set(data?.Interest));
+  const interests = Array.from(new Set(data?.Interest?.data));
 
   const modalizeRef = useRef<Modalize>(null);
 

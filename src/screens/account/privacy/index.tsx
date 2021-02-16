@@ -49,11 +49,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
-        dob: {
-          day: userDetails?.dob?.day,
-          month: userDetails?.dob?.month,
-          year: userDetails?.dob?.year
-        },
+        dob: userDetails?.dob,
         identity: identities,
         privacy: {
           visibility: privacy.visibility,

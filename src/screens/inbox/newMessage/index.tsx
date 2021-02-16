@@ -19,7 +19,8 @@ import {
   GET_NEARBY_MEMBERS,
   GET_MY_CONNECTIONS,
   GET_ALL_MEMBERS,
-  GET_MY_CONNECTIONS_NEARBY
+  GET_MY_CONNECTIONS_NEARBY,
+  GET_USER_PASSPORT
 } from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
 import ENVIRONMENT_VARIABLES from '../../../config';
@@ -72,14 +73,21 @@ export default function ChatScreen(props: ScreenProp) {
 
   const [listData, setListData] = useState<PassportInterface[]>([]);
 
+  const { data: userPassportData } = useQuery(GET_USER_PASSPORT);
+
+  const myId = userPassportData?.myPassport?.id;
+
   const { data: myConnectionNearbyData } = useQuery<
     MyConnectionNearbyRequestInterface
   >(GET_MY_CONNECTIONS_NEARBY, {
-    variables: { filter: { id: userId } }
+    variables: { input: { filter: { id: myId }, skip: 0 } }
   });
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
-    GET_NEARBY_MEMBERS
+    GET_NEARBY_MEMBERS,
+    {
+      variables: { input: { skip: 0 } }
+    }
   );
 
   const { data: connectionData } = useQuery<MyConnectionsInterface>(
@@ -92,10 +100,10 @@ export default function ChatScreen(props: ScreenProp) {
     fetchMore: fetchMoreAllMembers
   } = useQuery<AllMembersRequestInterface>(GET_ALL_MEMBERS);
 
-  const allMembers = allMembersData?.Passport;
-  const nearbyMembers = nearbyData?.nearbyMembers;
-  const myConnection = connectionData?.myConnections;
-  const nearbyConnections = myConnectionNearbyData?.nearbyConnections;
+  const allMembers = allMembersData?.Passport?.data;
+  const nearbyMembers = nearbyData?.nearbyMembers?.data;
+  const myConnection = connectionData?.myConnections?.data;
+  const nearbyConnections = myConnectionNearbyData?.nearbyConnections?.data;
 
   const sortName = (a: PassportInterface, b: PassportInterface) => {
     if (a.firstName < b.firstName) return -1;
@@ -104,7 +112,7 @@ export default function ChatScreen(props: ScreenProp) {
   };
 
   const filterMember = (member: PassportInterface) => {
-    return member.id !== userId && member.verified === true;
+    return member.id !== myId && member.verified === true;
   };
 
   const filterAll = allMembers?.slice().sort(sortName).filter(filterMember);
@@ -175,31 +183,32 @@ export default function ChatScreen(props: ScreenProp) {
     }
   }, [state, allMembersLoading]);
 
-  const handleEndReach = () => {
-    if (!callOnScrollEnd) return;
+  // const handleEndReach = () => {
+  //   if (!callOnScrollEnd) return;
 
-    fetchMoreAllMembers({
-      variables: {
-        offset: allMembersData?.Passport.length,
-        first: PAGINATION_DEFAULT
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        setCallOnScrollEnd(false);
+  //   fetchMoreAllMembers({
+  //     variables: {
+  //       offset: allMembersData?.Passport?.data.length,
+  //       first: PAGINATION_DEFAULT
+  //     },
+  //     updateQuery: (prev, { fetchMoreResult }) => {
+  //       setCallOnScrollEnd(false);
 
-        if (!fetchMoreResult) return prev;
-        const filteredResult = fetchMoreResult.Passport?.slice()
-          .sort(sortName)
-          .filter(filterMember);
+  //       if (!fetchMoreResult) return prev;
+  //       const filteredResult = fetchMoreResult.Passport?.data
+  //         ?.slice()
+  //         .sort(sortName)
+  //         .filter(filterMember);
 
-        //@ts-ignore
-        setListData([...filterAll, ...filteredResult]);
+  //       //@ts-ignore
+  //       setListData([...filterAll, ...filteredResult]);
 
-        return Object.assign({}, prev, {
-          Passport: [...prev.Passport, ...fetchMoreResult.Passport]
-        });
-      }
-    });
-  };
+  //       return Object.assign({}, prev, {
+  //         Passport: [...prev.Passport, ...fetchMoreResult.Passport]
+  //       });
+  //     }
+  //   });
+  // };
 
   const handleRefresh = () => {};
 

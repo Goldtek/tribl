@@ -9,7 +9,6 @@ import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import { PassportInterface } from '../../../graphql/types';
 import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { fireAuth, crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -34,23 +33,23 @@ function ActiveModal(props: ActiveUserProp) {
     avatar,
     firstName,
     lastName,
-    connected,
     currentLocation,
-    phoneNumber,
-    conversation
+    conversation,
+    pending,
+    connectionDetails
   } = member;
 
-  const [pending, setPending] = useState(false);
+  const [request, setRequest] = useState(false);
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber } }
+    variables: { payload: { id } }
   });
 
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
     try {
       await requestConnection();
-      setPending(true);
+      setRequest(true);
     } catch (error) {
       crashlytics.recordError(error);
     }
@@ -93,9 +92,9 @@ function ActiveModal(props: ActiveUserProp) {
     });
   };
 
-  const state = currentLocation[0]?.state;
-  const country = currentLocation[0]?.country;
-  const city = currentLocation[0]?.city;
+  const state = currentLocation?.state;
+  const country = currentLocation?.country;
+  const city = currentLocation?.city;
 
   return (
     <TouchableRipple
@@ -159,7 +158,10 @@ function ActiveModal(props: ActiveUserProp) {
             </Paragraph>
           )}
         </TextContainer>
-        {connected == 'PENDING' || pending ? (
+        {connectionDetails?.status == 'PENDING' ||
+        pending == 'PENDING' ||
+        pending == 'REQUESTED' ||
+        request ? (
           <Button
             mode="text"
             disabled={true}
@@ -180,7 +182,7 @@ function ActiveModal(props: ActiveUserProp) {
           >
             {t(`community.recommended.pending`)}
           </Button>
-        ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
+        ) : connectionDetails?.status === 'ACCEPTED' ? (
           <Button
             mode="text"
             uppercase={false}

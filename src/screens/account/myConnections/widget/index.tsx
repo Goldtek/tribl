@@ -21,7 +21,14 @@ export default function Connection(props: ConnectionProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { id, avatar, firstName, lastName, conversation } = props;
+  const {
+    id,
+    avatar,
+    firstName,
+    lastName,
+    conversation,
+    currentLocation
+  } = props;
 
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
     status: 'OFFLINE',
@@ -87,7 +94,8 @@ export default function Connection(props: ConnectionProp) {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE)
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
             }}
           >
             {`${firstName} ${lastName}`}
@@ -100,9 +108,9 @@ export default function Connection(props: ConnectionProp) {
               textTransform: 'lowercase'
             }}
           >
-            {onlinePresence.status === 'ONLINE'
-              ? onlinePresence.status
-              : formatMessageTime(Number(onlinePresence.lastSeen))}
+            {currentLocation?.city
+              ? `${currentLocation?.city}, ${currentLocation?.state}`
+              : `${currentLocation?.state}, ${currentLocation?.country}`}
           </Text>
         </NameContainer>
         <TouchableRipple
