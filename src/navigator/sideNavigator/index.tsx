@@ -93,6 +93,11 @@ export default function DrawerStackNavigator() {
       />
 
       <DrawerStack.Screen
+        name="MyNotifications"
+        component={AccountScreens.NotificationScreen}
+      />
+
+      <DrawerStack.Screen
         name="DirectChatScreen"
         component={InboxScreens.DirectChatScreen}
         options={({ route }: any) => ({
