@@ -28,7 +28,7 @@ export const ReactionItemContainer = styled.TouchableOpacity`
   background-color: ${({ theme }) => hexToRGB(theme.colors.light, 0.5)};
 `;
 
-export const ReactionReactionContainer = styled.View`
+export const ReactionListContainer = styled.View`
   flex: 1;
   width: 100%;
   height: 30px;
