@@ -78,6 +78,12 @@ export type RootStackParamList = {
   CommunityListScreen?: Object;
   UserConnectionListScreen?: Object;
   UserCommunityListScreen?: Object;
+  CreateTribeScreen?: Object;
+  AddAdminScreen?: Object;
+  TribeDetailScreen?: Object;
+  NewTribeScreen?: Object;
+  NotificationScreen?: Object;
+  InviteToTribeScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -137,7 +143,13 @@ export type RootStackParamScreensList =
   | 'ConnectionListScreen'
   | 'CommunityListScreen'
   | 'UserCommunityListScreen'
-  | 'UserConnectionListScreen';
+  | 'UserConnectionListScreen'
+  | 'CreateTribeScreen'
+  | 'AddAdminScreen'
+  | 'TribeDetailScreen'
+  | 'NewTribeScreen'
+  | 'NotificationScreen'
+  | 'InviteToTribeScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
