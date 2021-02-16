@@ -59,3 +59,9 @@ export const ConnectionCover = styled.View`
 export const Connection = styled.View`
   align-items: center;
 `;
+
+export const TribeCover = styled.View`
+  position: relative;
+  width: ${RFValue(65)}px;
+  height: ${RFValue(65)}px;
+`;
