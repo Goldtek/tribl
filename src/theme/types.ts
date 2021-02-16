@@ -34,7 +34,8 @@ enum COLORS {
   STATUS_BAR_COLOR = '#424242',
   SHADOW = '#F5F5F5',
   BLACK = '#000000',
-  RED = '#FB4E4E'
+  RED = '#FB4E4E',
+  GREY_LIGHT = '#F2F2F7'
 }
 
 // All app font sizes
@@ -83,6 +84,7 @@ declare module 'styled-components/native' {
       SHADOW: string;
       BLACK: string;
       RED: string;
+      GREY_LIGHT: string;
     };
 
     // All Global App Font Sizes
