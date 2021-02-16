@@ -7,10 +7,6 @@ import { DEVICE_OS } from '../../utils/device';
 let iosWithInset = 34;
 let iosWithoutInset = 0;
 
-type Props = {
-  children: ReactNode;
-};
-
 export default function CustomKeyboardCompatibleView({ children }: any) {
   const insets = useSafeAreaInsets();
   const { activityScreen } = useStreamContext();
