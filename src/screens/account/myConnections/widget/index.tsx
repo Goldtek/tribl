@@ -10,7 +10,6 @@ import { Entypo } from '@expo/vector-icons';
 import database from '@react-native-firebase/database';
 import { OnlinePresence } from '../../../inbox/types';
 import { PassportInterface } from '../../../../graphql/types';
-import formatMessageTime from '../../../../utils/timesince';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 
 import { NameContainer } from './styles';
