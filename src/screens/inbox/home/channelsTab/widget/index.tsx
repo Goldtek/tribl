@@ -58,7 +58,7 @@ export default function CustomChannelPreview(
     latestMessageLength = 40
   } = props;
 
-  if (channel.data?.isNew) return null;
+  if (channel.data?.isDm || channel.data?.isNew) return null;
 
   const navigation = useNavigation();
   const { colors } = useThemeContext();

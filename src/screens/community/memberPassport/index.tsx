@@ -33,7 +33,9 @@ import {
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
 import { crashlytics } from '../../../firebase/config';
+import { useStreamContext } from '../../../stream';
 import {
+  ChannelType,
   chatClient,
   LocalAttachmentType,
   LocalChannelType,
@@ -64,6 +66,7 @@ interface MemberDetailProps extends NavigationInterface {
 
 export default function PassportDetail(props: MemberDetailProps) {
   const { colors, fonts } = useThemeContext();
+  const { setChannel, setActivityScreen } = useStreamContext();
   const { t } = useTranslation();
   const { navigation } = props;
 
@@ -168,6 +171,9 @@ export default function PassportDetail(props: MemberDetailProps) {
 
       await channel.create();
     }
+
+    setChannel(channel as ChannelType);
+    setActivityScreen('directMessage');
 
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',

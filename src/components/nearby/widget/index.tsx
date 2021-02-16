@@ -12,7 +12,9 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { crashlytics } from '../../../firebase/config';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { logEvent } from '../../../utils/uxcamHelper';
+import { useStreamContext } from '../../../stream';
 import {
+  ChannelType,
   chatClient,
   LocalAttachmentType,
   LocalChannelType,
@@ -33,6 +35,8 @@ interface NearbyUserProp extends PassportInterface {
 
 function NearbyModal(props: NearbyUserProp) {
   const { colors, fonts } = useThemeContext();
+  const { setChannel, setActivityScreen } = useStreamContext();
+
   const { t } = useTranslation();
 
   const { NearbyUserModal, ...member } = props;
@@ -140,6 +144,9 @@ function NearbyModal(props: NearbyUserProp) {
 
       await channel.create();
     }
+
+    setChannel(channel as ChannelType);
+    setActivityScreen('directMessage');
 
     rootNavigator.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
