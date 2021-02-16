@@ -66,14 +66,19 @@ export default function DirectChatScreen(props: ScreenProp) {
     };
 
     getChannel();
-  }, []);
+  }, [channel]);
 
   const receiver = [channel.data?.receiver, channel.data?.sender].find(
     (user) => user?.id !== chatClient.user?.id
   );
 
+  console.tron('CHANNEL RENDER', channel);
+
   const displayAvatar = {
-    name: `${receiver?.firstName} ${receiver?.lastName}`,
+    name:
+      `${receiver?.firstName} ${receiver?.lastName}` ||
+      route.params.title ||
+      `${route.params?.firstName} ${route.params?.lastName}`,
     image: receiver?.avatar || USER_DEFAULT_AVATAR
   };
 
@@ -82,7 +87,7 @@ export default function DirectChatScreen(props: ScreenProp) {
   }, []);
 
   useEffect(() => {
-    if (streamChannel.id !== channel.id) {
+    if (streamChannel && streamChannel.id !== channel.id) {
       setStreamContextChannel(channel);
     }
   }, []);
