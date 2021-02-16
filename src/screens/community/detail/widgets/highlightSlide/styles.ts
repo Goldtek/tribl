@@ -7,6 +7,7 @@ export const Container = styled.View`
 `;
 
 export const CardContainer = styled.View`
+  position: relative;
   flex-direction: row;
   padding: 20px 10px;
 `;
