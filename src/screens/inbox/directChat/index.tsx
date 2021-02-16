@@ -72,8 +72,6 @@ export default function DirectChatScreen(props: ScreenProp) {
     (user) => user?.id !== chatClient.user?.id
   );
 
-  console.tron('CHANNEL RENDER', channel);
-
   const displayAvatar = {
     name:
       `${receiver?.firstName} ${receiver?.lastName}` ||
