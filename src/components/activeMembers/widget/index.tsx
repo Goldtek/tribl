@@ -1,20 +1,30 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
-import { PassportInterface } from '../../../graphql/types';
+import { MyPassportInterface, PassportInterface } from '../../../graphql/types';
 import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import { fireAuth, crashlytics } from '../../../firebase/config';
+import { crashlytics } from '../../../firebase/config';
+import { GET_USER_PASSPORT } from '../../../graphql/server/query';
+import { logEvent } from '../../../utils/uxcamHelper';
+import {
+  chatClient,
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+} from '../../../stream/types';
+import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
-import { logEvent } from '../../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface ActiveUserProp extends PassportInterface {
@@ -25,26 +35,26 @@ function ActiveModal(props: ActiveUserProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const userId = fireAuth.currentUser?.uid;
-
   const { closeActiveModal, ...member } = props;
 
   const {
     id,
     avatar,
-    firstName,
     lastName,
+    firstName,
     connected,
-    currentLocation,
     phoneNumber,
-    conversation
+    currentLocation
   } = member;
 
   const [pending, setPending] = useState(false);
+  const [channelId, setChannelId] = useState('');
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { phoneNumber } }
   });
+
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
@@ -64,38 +74,85 @@ function ActiveModal(props: ActiveUserProp) {
     });
   };
 
-  const handleMessageNavigation = () => {
+  useEffect(() => {
+    const getConversation = async () => {
+      const filter = {
+        isDm: true,
+        type: 'team',
+        member_count: 2,
+        members: { $eq: [id, `${chatClient.user?.id}`] }
+      };
+
+      const options = { presence: true, state: true, watch: true };
+
+      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+      const [channel] = await chatClient.queryChannels(filter, sort, options);
+
+      if (!channel) return;
+
+      setChannelId(`${channel.id}`);
+    };
+
+    getConversation();
+  }, []);
+
+  const handleMessageNavigation = async () => {
     closeActiveModal();
 
-    const senderId = conversation?.messageRequest.senderId;
-    const messageRequest = conversation?.messageRequest;
-    const isRequestApproved = conversation?.messageRequest?.approvedAt;
-    const approveRequest =
-      senderId !== userId && messageRequest && !isRequestApproved;
+    let channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LiteralStringForUnion,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    > | null = null;
 
-    if (approveRequest) {
-      return rootNavigator.navigate('MessageRequestChatScreen', {
-        title: `${firstName} ${lastName}`,
-        chatId: conversation?.id,
-        senderId: id,
-        ...member
+    if (!channelId) {
+      // @ts-ignore
+      channel = chatClient.channel('team', {
+        conversationId: `${id}|${chatClient.user?.id}`,
+        channelId: `${id}|${chatClient.user?.id}`,
+        members: [id, `${chatClient.user?.id}`],
+        messageRequest: { status: false },
+        sender: {
+          readAt: Date.now(),
+          id: userData?.myPassport.id,
+          avatar: userData?.myPassport.avatar,
+          lastName: userData?.myPassport.lastName,
+          firstName: userData?.myPassport.firstName
+        },
+        receiver: {
+          id: id,
+          avatar,
+          lastName,
+          firstName,
+          readAt: Date.now()
+        },
+        name: Date.now(),
+        community: {},
+        isDm: true,
+        isNew: true
       });
+
+      await channel.create();
     }
 
     rootNavigator.navigate('DrawerScreen', {
-      screen: conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      screen: 'DirectChatScreen',
       params: {
+        channelId: channelId ? channelId : channel?.id,
         title: `${firstName} ${lastName}`,
-        chatId: conversation?.id,
-        receiverId: id,
         ...member
       }
     });
   };
 
+  const city = currentLocation[0]?.city;
   const state = currentLocation[0]?.state;
   const country = currentLocation[0]?.country;
-  const city = currentLocation[0]?.city;
 
   return (
     <TouchableRipple

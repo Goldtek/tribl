@@ -4,14 +4,28 @@ import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
-import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
-import { useLazyQuery } from '@apollo/react-hooks';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../../../graphql/server/query';
+import { useQuery } from '@apollo/react-hooks';
 import { Entypo } from '@expo/vector-icons';
-import database from '@react-native-firebase/database';
-import { OnlinePresence } from '../../../inbox/types';
-import { PassportInterface } from '../../../../graphql/types';
+import {
+  MyPassportInterface,
+  PassportInterface
+} from '../../../../graphql/types';
 import formatMessageTime from '../../../../utils/timesince';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
+import {
+  chatClient,
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+} from '../../../../stream/types';
+import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 
 import { NameContainer } from './styles';
 
@@ -21,34 +35,94 @@ export default function Connection(props: ConnectionProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { id, avatar, firstName, lastName, conversation } = props;
+  const { id, avatar, firstName, lastName } = props;
 
-  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: 'OFFLINE',
-    lastSeen: new Date().setDate(5)
-  });
+  const [channelId, setChannelId] = useState('');
+  const [lastActive, setLastActive] = useState<Date | null>(null);
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
+  useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   useEffect(() => {
-    const reference = database().ref(`/presence/${id}`);
-    reference.on('value', (snapshot: any) => {
-      const presence = snapshot.val() as OnlinePresence;
+    const getConversation = async () => {
+      const filter = {
+        isDm: true,
+        type: 'team',
+        member_count: 2,
+        members: { $eq: [id, `${chatClient.user?.id}`] }
+      };
 
-      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
-    });
+      const options = { presence: true, state: true, watch: true };
 
-    getUserPassport();
+      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+      const [channel] = await chatClient.queryChannels(filter, sort, options);
+
+      const { users } = await chatClient.queryUsers(
+        { id },
+        { id: -1 },
+        { presence: true }
+      );
+
+      setLastActive(new Date(`${users[0].last_active}`));
+
+      if (!channel) return;
+
+      setChannelId(`${channel.id}`);
+    };
+
+    getConversation();
   }, []);
 
-  const handleMessageNavigation = () => {
-    navigation.navigate('DirectChatScreen', {
-      title: `${firstName} ${lastName}`,
-      chatId: conversation?.id,
-      receiverId: id,
-      ...props
+  const handleMessageNavigation = async () => {
+    let channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LiteralStringForUnion,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    > | null = null;
+
+    if (!channelId) {
+      // @ts-ignore
+      channel = chatClient.channel('team', {
+        conversationId: `${id}|${chatClient.user?.id}`,
+        channelId: `${id}|${chatClient.user?.id}`,
+        members: [id, `${chatClient.user?.id}`],
+        messageRequest: { status: false },
+        sender: {
+          readAt: Date.now(),
+          id: userData?.myPassport.id,
+          avatar: userData?.myPassport.avatar,
+          lastName: userData?.myPassport.lastName,
+          firstName: userData?.myPassport.firstName
+        },
+        receiver: {
+          id: id,
+          avatar,
+          lastName,
+          firstName,
+          readAt: Date.now()
+        },
+        name: Date.now(),
+        community: {},
+        isDm: true,
+        isNew: true
+      });
+
+      await channel.create();
+    }
+
+    navigation.navigate('DrawerScreen', {
+      screen: 'DirectChatScreen',
+      params: {
+        channelId: channelId ? channelId : channel?.id,
+        title: `${firstName} ${lastName}`,
+        ...props
+      }
     });
   };
 
@@ -92,18 +166,19 @@ export default function Connection(props: ConnectionProp) {
           >
             {`${firstName} ${lastName}`}
           </Title>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              textTransform: 'lowercase'
-            }}
-          >
-            {onlinePresence.status === 'ONLINE'
-              ? onlinePresence.status
-              : formatMessageTime(Number(onlinePresence.lastSeen))}
-          </Text>
+
+          {lastActive && (
+            <Text
+              style={{
+                color: colors.SECONDARY_TEXT,
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'lowercase'
+              }}
+            >
+              {formatMessageTime(lastActive)}
+            </Text>
+          )}
         </NameContainer>
         <TouchableRipple
           style={{

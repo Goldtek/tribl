@@ -134,7 +134,7 @@
     "update": "this update",
     "version": "found new version",
     "title": "limited update release",
-    "update_info": "Fix passport cache issue; Fix user location update calls; Fix app chat view navigation"
+    "update_info": "Fix direct message user image; Fix direct message user name"
   },
   "addTags": {
     "title": "Looks like you’re visiting for the first time.",

@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import ChannelActions from './channelActions';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
 import {
+  chatClient,
   LocalAttachmentType,
   LocalChannelType,
   LocalEventType,
@@ -21,6 +22,7 @@ import {
   LocalReactionType,
   LocalUserType
 } from '../../../../../stream/types';
+import { USER_DEFAULT_AVATAR } from '../../../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -33,7 +35,7 @@ import {
   NotificationContainer
 } from './styles';
 
-export default function CustomChannelPreview(
+export default function CustomDirectMessagePreview(
   props: ChannelPreviewMessengerProps<
     LocalAttachmentType,
     LocalChannelType,
@@ -59,12 +61,14 @@ export default function CustomChannelPreview(
   const [muted, setMuted] = useState(getMuteStatus);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
-  const displayAvatar = {
-    name: channel.data?.receiver.firstName,
-    image: channel.data?.receiver.avatar
-  };
+  const receiver = [channel.data?.receiver, channel.data?.sender].find(
+    (user) => user?.id !== chatClient.user?.id
+  );
 
-  const channelTitle = `${channel.data?.sender.firstName} ${channel.data?.sender.lastName}`;
+  const displayAvatar = {
+    name: `${receiver?.firstName} ${receiver?.lastName}`,
+    image: receiver?.avatar || USER_DEFAULT_AVATAR
+  };
 
   const handleDeleteAction = async () => {};
 
@@ -86,9 +90,9 @@ export default function CustomChannelPreview(
     <Swipeable
       renderRightActions={() => (
         <ChannelActions
-          handleDeleteAction={handleDeleteAction}
-          toggleMuteAction={toggleMuteAction}
           muted={muted}
+          toggleMuteAction={toggleMuteAction}
+          handleDeleteAction={handleDeleteAction}
         />
       )}
     >
@@ -105,7 +109,7 @@ export default function CustomChannelPreview(
           setActiveChannel && setActiveChannel(channel);
           navigation.navigate('DrawerScreen', {
             screen: 'DirectChatScreen',
-            params: { title: channelTitle, channelId: channel.id }
+            params: { channelId: channel.id }
           });
         }}
         ref={hideSensitiveView}
@@ -119,7 +123,7 @@ export default function CustomChannelPreview(
           <Details ref={hideSensitiveView}>
             <DetailsTop>
               <Title ellipsizeMode="tail" numberOfLines={1}>
-                {channelTitle}
+                {displayAvatar.name}
               </Title>
               <Date>
                 {formatLatestMessageDate && latestMessageDate
