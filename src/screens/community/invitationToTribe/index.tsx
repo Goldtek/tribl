@@ -9,7 +9,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useThemeContext } from '../../../theme';
 import hexToRGB from '../../../utils/hexToRGB';
 import { NavigationInterface } from '../../types';
-import { MyConnectionsInterface } from '../../../graphql/types';
+import {
+  MyConnectionsInterface,
+  PassportInterface
+} from '../../../graphql/types';
 import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -32,7 +35,12 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const { t } = useTranslation();
   const { navigation } = props;
   const communityId = props.route.params?.communityId?.details?.id;
-  const [state, setState] = useState({
+  const [state, setState] = useState<{
+    suggestions: PassportInterface[];
+    tagsSelected: PassportInterface[];
+    query: string;
+    receipientIds: string[];
+  }>({
     suggestions: [],
     tagsSelected: [],
     query: '',
@@ -86,7 +94,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   };
 
   useEffect(() => {
-    if (myConnection?.length) {
+    if (filterConnections?.length) {
       setState({
         ...state,
         suggestions: filterConnections
@@ -100,7 +108,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     }
 
     let suggestions = state.suggestions;
-    let queryResult = [];
+    let queryResult: PassportInterface[] = [];
 
     query = query.toUpperCase();
     suggestions.forEach((i) => {
@@ -122,7 +130,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     setState({ ...state, tagsSelected, receipientIds });
   };
 
-  const handleAddition = (suggestion: any) => {
+  const handleAddition = (suggestion: PassportInterface) => {
     setState({
       ...state,
       tagsSelected: state.tagsSelected.concat([suggestion]),
