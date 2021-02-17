@@ -71,7 +71,7 @@ function ChannelMembers(props: ModalProp) {
         if (!fetchMoreResult) return prev;
 
         return Object.assign({}, prev, {
-          channelMembers: [...fetchMoreResult.channelMembers]
+          channelMembers: [fetchMoreResult.channelMembers]
         });
       }
     });

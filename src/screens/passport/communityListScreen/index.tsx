@@ -75,25 +75,25 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
     }
   };
 
-  const handleEndReach = async () => {
-    if (!state.callOnScrollEnd) return;
+  // const handleEndReach = async () => {
+  //   if (!state.callOnScrollEnd) return;
 
-    fetchMore({
-      variables: {
-        offset: data?.myCommunities.length,
-        first: PAGINATION_DEFAULT
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        setState({ ...state, callOnScrollEnd: false });
+  //   fetchMore({
+  //     variables: {
+  //       offset: data?.myCommunities.length,
+  //       first: PAGINATION_DEFAULT
+  //     },
+  //     updateQuery: (prev, { fetchMoreResult }) => {
+  //       setState({ ...state, callOnScrollEnd: false });
 
-        if (!fetchMoreResult) return prev;
+  //       if (!fetchMoreResult) return prev;
 
-        return Object.assign({}, prev, {
-          myConnections: [...fetchMoreResult.myCommunities]
-        });
-      }
-    });
-  };
+  //       return Object.assign({}, prev, {
+  //         myConnections: [fetchMoreResult.myCommunities]
+  //       });
+  //     }
+  //   });
+  // };
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 

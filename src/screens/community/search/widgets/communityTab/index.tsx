@@ -71,8 +71,8 @@ function CommunityTabScreen(props: ScreenProp) {
 
         return Object.assign({}, prev, {
           popularCommunities: [
-            ...prev.popularCommunities,
-            ...fetchMoreResult.popularCommunities
+            prev.popularCommunities,
+            fetchMoreResult.popularCommunities
           ]
         });
       }

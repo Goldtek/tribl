@@ -178,10 +178,7 @@ export default function HomeScreen(props: ScreenProp) {
 
         setFetchingMore(false);
         return Object.assign({}, prev, {
-          myConnections: [
-            ...prev.myCommunities,
-            ...fetchMoreResult.myCommunities
-          ]
+          myConnections: [prev.myCommunities, fetchMoreResult.myCommunities]
         });
       }
     });
