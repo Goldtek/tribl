@@ -157,7 +157,7 @@ export default function contactSlide() {
 
   const userIdentities = IdentityData?.Identity.map(
     (item: { name: string; id: string }) => {
-      if (userDetails?.identity.includes(item.id)) {
+      if (userDetails?.identity.includes(item.id as any)) {
         return item.name;
       }
     }
