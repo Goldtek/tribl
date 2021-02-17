@@ -84,21 +84,15 @@ export default function HomeScreen(props: ScreenProp) {
   } = useQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES);
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
-    variables: { input: { limit: PAGINATION_DEFAULT } },
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 1000
+    variables: { input: { limit: PAGINATION_DEFAULT } }
   });
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } },
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 1000
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
   });
 
   const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS, {
-    variables: { input: { limit: PAGINATION_DEFAULT } },
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 1000
+    variables: { input: { limit: PAGINATION_DEFAULT } }
   });
 
   const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
