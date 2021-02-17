@@ -56,10 +56,8 @@ export default function Notification(props: NotificationProp) {
       });
       await acceptInvite();
       props.refetch();
-      console.tron('accepted');
     } catch (error) {
       crashlytics.recordError(error);
-      console.tron('accepted', error);
     }
   };
 
@@ -72,10 +70,8 @@ export default function Notification(props: NotificationProp) {
       });
       await declineInvite();
       props.refetch();
-      console.tron('declined');
     } catch (error) {
       crashlytics.recordError(error);
-      console.tron('declined', error);
     }
   };
 

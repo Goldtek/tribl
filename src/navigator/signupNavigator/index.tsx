@@ -67,12 +67,9 @@ export default function SignupNavigator() {
 
           const storageData = await Storage.getUserRegistration();
 
-          console.tron('userDetails', userDetails);
-
           if (storageData) {
             const userRegInfo = JSON.parse(storageData) as RegistrationInfo;
 
-            console.tron('dob', userDetails?.dob);
             const { data } = await updatePassport({
               variables: {
                 payload: {

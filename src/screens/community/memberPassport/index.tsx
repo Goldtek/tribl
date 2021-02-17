@@ -70,7 +70,6 @@ export default function PassportDetail(props: MemberDetailProps) {
   );
 
   const singlePassport = passportData?.singlePassport;
-  console.tron('singlePassport', passportData);
   const [data, setData] = useState({ ...passport });
 
   useEffect(() => {
@@ -123,8 +122,6 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
-
-  console.tron('state', community);
 
   const handleRequest = async () => {
     setState({ ...state, loading: true });

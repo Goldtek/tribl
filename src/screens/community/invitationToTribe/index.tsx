@@ -86,10 +86,8 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         ...state,
         tagsSelected: []
       });
-      console.tron('Accepted');
     } catch (error) {
       crashlytics.recordError(error);
-      console.tron('rejected', error);
     }
   };
 
@@ -137,8 +135,6 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
       receipientIds: state.receipientIds.concat([suggestion?.id])
     });
   };
-
-  console.tron('receipientIds', state.receipientIds);
 
   const _renderTags = () => {
     return (

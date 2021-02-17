@@ -64,8 +64,6 @@ export default function PassportScreen(props: ScreenProp) {
 
   const userDetails = data?.userDetails;
 
-  console.tron('userDetails1', userDetails);
-
   const onShare = async () => {
     try {
       const { action } = await Share.share(

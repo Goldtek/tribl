@@ -162,7 +162,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
         'Activity Screen': 'Recommended Community Card'
       });
       await joinCommunity();
-      console.tron('join community');
 
       if (data.uniqueInterests.length) {
         setState({ ...state, tagModal: true });
@@ -171,7 +170,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       setData({ ...data, isMember: true });
       communityRefetch();
     } catch (error) {
-      console.tron('join community', error);
       crashlytics.recordError(error);
     }
   };

@@ -86,7 +86,6 @@ export default function SplashScreen(props: ScreenProp) {
       }
       const userCredStorageData = await Storage.getUserCredentials();
       const userRegStorageData = await Storage.getUserRegistration();
-      console.tron('userCredStorageData', userCredStorageData);
 
       if (!userCredStorageData || !userRegStorageData) {
         return navigation.replace('SignupScreen');

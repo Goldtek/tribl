@@ -73,11 +73,9 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
     try {
       await declineConnection();
       refetch();
-      console.tron('Rejected');
       setRejectLoading(false);
     } catch (error) {
       crashlytics.recordError(error);
-      console.tron('Rejected', error);
       setRejectLoading(false);
     }
   };

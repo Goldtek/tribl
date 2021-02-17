@@ -218,7 +218,6 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   const dob = cache?.date?.split('/');
-  console.tron('dob', dob);
 
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
@@ -314,7 +313,7 @@ export default function PassportScreen(props: ScreenProp) {
       crashlytics.recordError(error);
     }
   };
-  console.tron('cache.detaisl', cache.details);
+
   useEffect(() => {
     if (userDetails?.interest || userDetails?.identity) {
       const interest = [
@@ -335,8 +334,6 @@ export default function PassportScreen(props: ScreenProp) {
       });
     }
   }, [cache.details]);
-
-  console.tron('fghvj', `${cache.timestamp}`);
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -426,18 +423,14 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
-      console.tron('updated');
       refetch();
       setCacheData();
       setUpdate(true);
     } catch (error) {
-      console.tron('updated', error);
       crashlytics.recordError(error);
       setUpdate(true);
     }
   };
-
-  console.tron('trimesta,', cache.timestamp);
 
   const handleAvatar = async () => {
     try {
