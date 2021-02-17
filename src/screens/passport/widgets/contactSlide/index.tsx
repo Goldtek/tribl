@@ -115,8 +115,6 @@ function ContactSlide(props: ScreenProp) {
     }
   }, [state.selectedIdentity || state.selectedInterest]);
 
-  console.tron('handleSelectIdentity', select.identity);
-
   const handleSelectIdentity = (selected: string) => {
     const filteredIdentity = select.identity.filter(
       (identity) => identity.name !== selected
@@ -176,7 +174,6 @@ function ContactSlide(props: ScreenProp) {
 
   const onChange = (selectedDate: Date) => {
     const newDate = formatMessageTime(selectedDate);
-    console.tron('newDate', newDate);
     const dob = newDate?.split('/');
     const day = parseInt(dob[0]);
     const month = parseInt(dob[1]);
@@ -226,8 +223,6 @@ function ContactSlide(props: ScreenProp) {
   useEffect(() => {
     props.getUserDetails(state);
   }, [state]);
-
-  console.tron('date formate', state.date !== 'Invalid Date');
 
   return (
     <ContactContainer>

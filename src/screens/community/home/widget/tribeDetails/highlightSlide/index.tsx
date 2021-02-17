@@ -44,8 +44,6 @@ export default function newTribe(props: newTribeDetailsScreenProp) {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  console.tron('details', detail);
-
   const [state, setState] = useState({
     description: '',
     click: false,
@@ -68,8 +66,6 @@ export default function newTribe(props: newTribeDetailsScreenProp) {
   useEffect(() => {
     avatarUpload();
   }, [detail?.details.image.uri]);
-
-  console.tron('c', avatar);
 
   const handleSelect = (selected: string) => {
     if (!state.tags.has(selected)) {
@@ -129,9 +125,7 @@ export default function newTribe(props: newTribeDetailsScreenProp) {
     }
     try {
       const { data } = await createTribe();
-      console.tron('data', data);
       if (data) {
-        console.tron('prrrreeessseeeddd', data);
         navigation.navigate('NewTribeScreen', {
           name: detail?.details?.name,
           image: avatar,

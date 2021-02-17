@@ -140,8 +140,6 @@ export default function HomeScreen(props: ScreenProp) {
       return 0;
     });
 
-  console.tron('recommendedMembers', recommendedMembers);
-
   const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };

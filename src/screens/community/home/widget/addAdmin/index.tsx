@@ -50,8 +50,6 @@ export default function AddAdmin(props: addAdminScreenProp) {
 
   const selectedAmins = [...Array.from(admin.selectedAdmin.values())];
 
-  console.tron('selectedAmins', selectedAmins);
-
   useEffect(() => {
     tagScreenName('AddAdminScreen');
   }, []);
