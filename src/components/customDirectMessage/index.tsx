@@ -17,6 +17,7 @@ import { MessageActionSheet } from '../streamActionSheet';
 import { chatClient } from '../../stream/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
+import CustomGiphy from '../customGiphy';
 
 import { AvatarContainer, Container, Edited } from './styles';
 
@@ -35,6 +36,7 @@ let lastTap = 0;
 
 function CustomDirectMessage(props: MessageProps) {
   const navigation = useNavigation();
+
   const { channel, activityScreen } = useStreamContext();
 
   const { data } = useQuery<SinglePassportRequestInterface>(
@@ -164,6 +166,7 @@ function CustomDirectMessage(props: MessageProps) {
   return (
     <MessageSimple
       {...props}
+      Giphy={CustomGiphy}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
