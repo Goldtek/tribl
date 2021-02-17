@@ -62,11 +62,19 @@ export default function DirectChatScreen(props: ScreenProp) {
 
       if (!queryChannel) return;
 
+      setStreamContextChannel(queryChannel);
+
       setChannel(queryChannel);
     };
 
+    setStreamContextChannel(channel);
+
+    if (streamChannel && streamChannel.id !== channel.id) {
+      setStreamContextChannel(channel);
+    }
+
     getChannel();
-  }, [channel]);
+  }, []);
 
   const receiver = [channel.data?.receiver, channel.data?.sender].find(
     (user) => user?.id !== chatClient.user?.id
@@ -82,12 +90,6 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('DirectChatScreen');
-  }, []);
-
-  useEffect(() => {
-    if (streamChannel && streamChannel.id !== channel.id) {
-      setStreamContextChannel(channel);
-    }
   }, []);
 
   return (

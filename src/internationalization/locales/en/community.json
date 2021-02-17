@@ -134,7 +134,7 @@
     "update": "this update",
     "version": "found new version",
     "title": "limited update release",
-    "update_info": "Fix direct message user image; Fix direct message user name"
+    "update_info": "Fix direct sending bug; Fix direct message context bug"
   },
   "addTags": {
     "title": "Looks like you’re visiting for the first time.",
