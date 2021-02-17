@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
 import { MessageActionSheet } from '../streamActionSheet';
+import CustomGiphy from '../customGiphy';
 
 import { Container, UserName, Edited, AvatarContainer } from './styles';
 
@@ -173,6 +174,7 @@ function CustomChannelMessage(props: MessageProps) {
   return (
     <MessageSimple
       {...props}
+      Giphy={CustomGiphy}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}

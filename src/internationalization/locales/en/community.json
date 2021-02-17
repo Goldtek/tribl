@@ -117,6 +117,7 @@
     "online": "online",
     "all": "all",
     "join": "has joined the channel!",
+    "giphyPlaceholder": "Posted using Giphy.com",
     "leave": "has left the channel!",
     "channelMembers": "view channel members",
     "leaveChannel": "leave channel",
