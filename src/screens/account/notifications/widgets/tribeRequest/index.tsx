@@ -46,7 +46,10 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
         firstName={item.sender.firstName}
         lastName={item.sender.lastName}
         avatar={item.sender.avatar}
-        refetch={refetch()}
+        refetch={refetch}
+        userId={item.sender.id}
+        tribeId={item.community.id}
+        createdAt={item.createdAt}
         {...item}
       />
     ),
@@ -96,7 +99,7 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
             paddingLeft: 5
           }}
         >
-          ({tribeInvites?.length})
+          ({tribeInvites?.length ? tribeInvites?.length : '0'})
         </Title>
       </TitleCover>
 
@@ -121,7 +124,7 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
               textAlign: 'center'
             }}
           >
-            You currently don't have any notification
+            {t(`community.notification.empty`)}
           </Text>
         }
         showsVerticalScrollIndicator={false}
