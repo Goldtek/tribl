@@ -34,7 +34,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
-  const communityId = props.route.params?.communityId?.details?.id;
+  const communityId = props.route.params?.communityId;
   const [state, setState] = useState<{
     suggestions: PassportInterface[];
     tagsSelected: PassportInterface[];
