@@ -9,6 +9,7 @@ import AddAdminScreen from './home/widget/addAdmin';
 import TribeDetailScreen from './home/widget/tribeDetails';
 import NewTribeScreen from './home/widget/newTribe';
 import InviteToTribeScreen from './invitationToTribe';
+import CommunityRequestScreen from './communityRequest';
 
 export default {
   HomeScreen,
@@ -21,5 +22,6 @@ export default {
   AddAdminScreen,
   TribeDetailScreen,
   NewTribeScreen,
-  InviteToTribeScreen
+  InviteToTribeScreen,
+  CommunityRequestScreen
 };
