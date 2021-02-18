@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Button, Card } from 'react-native-paper';
+import { Button, Card, Text } from 'react-native-paper';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
 import {
   JOIN_COMMUNITY,
+  JOIN_PRIVATE_COMMUNITY,
   LEAVE_COMMUNITY
 } from '../../graphql/server/mutations';
 import {
@@ -20,6 +21,7 @@ import { CommunityInterface } from '../../graphql/types';
 import { logEvent } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
 import { crashlytics } from '../../firebase/config';
+import hexToRGB from '../../utils/hexToRGB';
 
 function RecommendedCommunity(props: CommunityInterface) {
   const { colors, fonts } = useThemeContext();
@@ -27,6 +29,7 @@ function RecommendedCommunity(props: CommunityInterface) {
   const navigation = useNavigation();
 
   const [member, setMember] = useState(false);
+  const [request, setRequest] = useState(false);
 
   const { ...restProps } = props;
 
@@ -36,6 +39,7 @@ function RecommendedCommunity(props: CommunityInterface) {
     membersCount,
     isMember,
     id,
+    isPrivate,
     uniqueInterests
   } = restProps;
 
@@ -63,6 +67,13 @@ function RecommendedCommunity(props: CommunityInterface) {
     }
   );
 
+  const [joinPrivateCommunity, { loading: joinPrivateLoading }] = useMutation(
+    JOIN_PRIVATE_COMMUNITY,
+    {
+      variables: { payload: { communityId: id } }
+    }
+  );
+
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
     LEAVE_COMMUNITY,
     {
@@ -81,6 +92,20 @@ function RecommendedCommunity(props: CommunityInterface) {
       await Storage.setTagModal({ community: [id] });
       setMember(true);
       setModal(true);
+    } catch (error) {
+      crashlytics.recordError(error);
+    }
+  };
+
+  const handleJoinPrivateTribe = async () => {
+    logEvent('request to join private community', { from: 'community' });
+    try {
+      Mixpanel.track('User Requests To Join Tribe', {
+        info: `User Request To Join ${name} Tribe`,
+        'Activity Screen': 'Recommended Community Card'
+      });
+      await joinPrivateCommunity();
+      setRequest(true);
     } catch (error) {
       crashlytics.recordError(error);
     }
@@ -140,6 +165,23 @@ function RecommendedCommunity(props: CommunityInterface) {
           source={{ uri: avatar, priority: FastImage.priority.high }}
           style={{ width: '100%', height: '100%', borderRadius: 4 }}
         />
+        <Text
+          style={{
+            fontSize: RFValue(fonts.LARGE_SIZE - 1),
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            color: colors.BLACK,
+            backgroundColor: hexToRGB(colors.WHITE, 0.3),
+            position: 'absolute',
+            right: RFValue(15),
+            top: RFValue(1),
+            paddingHorizontal: RFValue(10),
+            paddingVertical: RFValue(5),
+            marginTop: RFValue(10),
+            textTransform: 'capitalize'
+          }}
+        >
+          {isPrivate ? 'Private' : 'Public'}
+        </Text>
       </Card.Content>
       <Card.Title
         title={name}
@@ -181,8 +223,20 @@ function RecommendedCommunity(props: CommunityInterface) {
         right={() => (
           <Button
             mode="text"
-            loading={isMember || member ? leaveLoading : joinLoading}
-            onPress={isMember || member ? handleLeave : handleJoin}
+            loading={
+              isMember || member
+                ? leaveLoading
+                : isPrivate
+                ? joinPrivateLoading
+                : joinLoading
+            }
+            onPress={
+              isMember || member
+                ? handleLeave
+                : isPrivate
+                ? handleJoinPrivateTribe
+                : handleJoin
+            }
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -192,6 +246,8 @@ function RecommendedCommunity(props: CommunityInterface) {
           >
             {isMember || member
               ? t(`community.recommended.leave`)
+              : request
+              ? t(`community.tabPanel.request`)
               : t(`community.recommended.join`)}
           </Button>
         )}
