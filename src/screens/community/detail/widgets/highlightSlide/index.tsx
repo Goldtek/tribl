@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useMemo, useEffect } from 'react';
 import { NavigationInterface } from '../../../../types';
-import { Card, Title, Paragraph, Button } from 'react-native-paper';
+import { Card, Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, FlatList } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -18,7 +18,8 @@ import RecommendedUserSkeleton from '../../../../../components/recommendedUserSk
 import JoinCommunity from '../../../../../components/joinCommunity';
 import {
   JOIN_COMMUNITY,
-  LEAVE_COMMUNITY
+  LEAVE_COMMUNITY,
+  JOIN_PRIVATE_COMMUNITY
 } from '../../../../../graphql/server/mutations';
 import {
   CommunityInterface,
@@ -39,6 +40,7 @@ import {
   Tags,
   TagText
 } from './styles';
+import hexToRGB from '../../../../../utils/hexToRGB';
 
 interface singleCommunityScreenProp extends NavigationInterface {
   route: { communityDetails: CommunityInterface };
@@ -56,6 +58,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   });
   const [data, setData] = useState(communityDetails);
   const [member, setMember] = useState(false);
+  const [request, setRequest] = useState(false);
 
   const clearTagModal = async () => {
     try {
@@ -147,6 +150,13 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     }
   );
 
+  const [joinPrivateCommunity, { loading: joinPrivateLoading }] = useMutation(
+    JOIN_PRIVATE_COMMUNITY,
+    {
+      variables: { payload: { communityId: id } }
+    }
+  );
+
   const [leaveCommunity, { loading: leaveLoading }] = useMutation(
     LEAVE_COMMUNITY,
     {
@@ -168,6 +178,21 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       }
       setMember(true);
       setData({ ...data, isMember: true });
+      communityRefetch();
+    } catch (error) {
+      crashlytics.recordError(error);
+    }
+  };
+
+  const handleJoinPrivateTribe = async () => {
+    logEvent('request to join private community', { from: 'community' });
+    try {
+      Mixpanel.track('User Requests To Join Tribe', {
+        info: `User Request To Join ${name} Tribe`,
+        'Activity Screen': 'HignlightScreen'
+      });
+      await joinPrivateCommunity();
+      setRequest(true);
       communityRefetch();
     } catch (error) {
       crashlytics.recordError(error);
@@ -213,6 +238,22 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                   }}
                   style={{ width: '100%', height: '100%', borderRadius: 4 }}
                 />
+                <Text
+                  style={{
+                    fontSize: RFValue(fonts.LARGE_SIZE - 1),
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.BLACK,
+                    backgroundColor: hexToRGB(colors.WHITE, 0.3),
+                    position: 'absolute',
+                    right: RFValue(15),
+                    paddingHorizontal: RFValue(10),
+                    paddingVertical: RFValue(5),
+                    marginTop: RFValue(10),
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {singleCommunity?.isPrivate ? 'Private' : 'Public'}
+                </Text>
               </Card.Content>
             </Card>
             <Card style={{ marginTop: RFValue(5) }}>
@@ -270,8 +311,21 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 </TextContainer>
                 <Button
                   mode="contained"
-                  loading={data.isMember || member ? leaveLoading : joinLoading}
-                  onPress={data.isMember || member ? handleLeave : handleJoin}
+                  disabled={request ? true : false}
+                  loading={
+                    data.isMember || member
+                      ? leaveLoading
+                      : data?.isPrivate
+                      ? joinPrivateLoading
+                      : joinLoading
+                  }
+                  onPress={
+                    data.isMember || member
+                      ? handleLeave
+                      : data?.isPrivate
+                      ? handleJoinPrivateTribe
+                      : handleJoin
+                  }
                   style={{
                     borderRadius: 4,
                     alignSelf: 'flex-start'
@@ -285,11 +339,13 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 >
                   {data.isMember || member
                     ? t(`community.tabPanel.leave`)
+                    : request
+                    ? t(`community.tabPanel.request`)
                     : t(`community.tabPanel.join`)}
                 </Button>
               </CardContainer>
 
-              {data.interests?.length ? (
+              {data.tags?.length ? (
                 <TagContainer>
                   <Title
                     style={{
@@ -303,7 +359,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                   </Title>
 
                   <Tags>
-                    {data?.interests.map((identity: any) => (
+                    {data?.tags.map((identity: any) => (
                       <TagText key={identity.id}>{identity.name}</TagText>
                     ))}
                   </Tags>
