@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Text, Paragraph, Button } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../../../theme';
 import { GET_SINGLE_PASSPORT } from '../../../../../../graphql/server/query';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
@@ -10,6 +12,7 @@ import GradientButton from '../../../../../../components/gradientButton';
 import { TRIBE_INVITE_ACTION } from '../../../../../../graphql/server/mutations';
 import { Mixpanel } from '../../../../../../config';
 import { crashlytics } from '../../../../../../firebase/config';
+import formatMessageTime from '../../../../../../utils/timesince';
 
 import { Container, RightCover, ButtonCover } from './styles';
 
@@ -20,17 +23,48 @@ interface NotificationProp {
   firstName: string;
   lastName: string;
   refetch: VoidFunction;
+  userId: string;
+  tribeId: string;
+  createdAt: string;
 }
 
 export default function Notification(props: NotificationProp) {
   const { colors, fonts } = useThemeContext();
-  const { id, avatar, firstName, lastName, name, refetch } = props;
+  const { t } = useTranslation();
+  const navigation = useNavigation();
+
+  const {
+    id,
+    avatar,
+    firstName,
+    lastName,
+    name,
+    refetch,
+    userId,
+    tribeId,
+    createdAt
+  } = props;
 
   enum InvitationStatus {
     ACCEPTED,
     PENDING,
     DECLINED
   }
+
+  let timeStamp = formatMessageTime(Number(createdAt));
+
+  const handleMemberNavigation = () => {
+    navigation.navigate('MemberDetailScreen', {
+      details: { id: userId, firstName, lastName },
+      title: `${firstName} ${lastName}`
+    });
+  };
+
+  const handleTribeNavigation = () => {
+    navigation.navigate('CommunityDetailScreen', {
+      details: { id: tribeId }
+    });
+  };
 
   const [acceptInvite, { loading }] = useMutation(TRIBE_INVITE_ACTION, {
     variables: {
@@ -116,6 +150,7 @@ export default function Notification(props: NotificationProp) {
               textTransform: 'capitalize',
               flexWrap: 'wrap'
             }}
+            onPress={handleMemberNavigation}
           >{`${firstName} ${lastName}`}</Text>{' '}
           invited you to join the tribe -{' '}
           <Text
@@ -126,6 +161,7 @@ export default function Notification(props: NotificationProp) {
               textTransform: 'capitalize',
               flexWrap: 'wrap'
             }}
+            onPress={handleTribeNavigation}
           >
             {name}
             {'  '}
@@ -138,7 +174,8 @@ export default function Notification(props: NotificationProp) {
               flexWrap: 'wrap'
             }}
           >
-            {'  '}2 mins ago
+            {'  '}
+            {timeStamp}
           </Text>
         </Paragraph>
         <ButtonCover>
@@ -163,7 +200,7 @@ export default function Notification(props: NotificationProp) {
             loading={declineLoading}
             onPress={handleDeclineInvitation}
           >
-            decline
+            {t(`community.invitation.decline`)}
           </Button>
           <GradientButton
             style={{ height: RFValue(30) }}
@@ -179,7 +216,7 @@ export default function Notification(props: NotificationProp) {
             loading={loading}
             onPress={handleAcceptInvitation}
           >
-            accept
+            {t(`community.invitation.accept`)}
           </GradientButton>
         </ButtonCover>
       </RightCover>
