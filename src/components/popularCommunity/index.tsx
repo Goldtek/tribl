@@ -35,6 +35,7 @@ interface PopularCommunityProp {
   description: string;
   uniqueInterests: any;
   isPrivate: boolean;
+  isRequested: boolean;
 }
 
 function PopularCommunity(props: PopularCommunityProp) {
@@ -49,7 +50,8 @@ function PopularCommunity(props: PopularCommunityProp) {
     isMember,
     id,
     uniqueInterests,
-    isPrivate
+    isPrivate,
+    isRequested
   } = props;
 
   const [modal, setModal] = useState(false);
@@ -195,6 +197,7 @@ function PopularCommunity(props: PopularCommunityProp) {
 
           <Button
             mode="text"
+            disabled={request || isRequested ? true : false}
             loading={
               member
                 ? leaveLoading
@@ -221,7 +224,7 @@ function PopularCommunity(props: PopularCommunityProp) {
           >
             {member
               ? t(`community.recommended.leave`)
-              : request
+              : request || isRequested
               ? t(`community.tabPanel.request`)
               : t(`community.recommended.join`)}
           </Button>
