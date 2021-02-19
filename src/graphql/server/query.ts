@@ -349,6 +349,8 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
         isMember
         isPrivate
         isModerator
+        isRequested
+        isInvited
         channels {
           id
           name
@@ -380,6 +382,8 @@ export const GET_POPULAR_COMMUNITIES = gql`
         isMember
         isPrivate
         isModerator
+        isRequested
+        isInvited
         channels {
           id
           name
@@ -411,6 +415,8 @@ export const GET_MY_COMMUNITIES = gql`
         isPrivate
         membersCount
         isModerator
+        isRequested
+        isInvited
         channels {
           id
           name
@@ -615,6 +621,8 @@ export const GET_SINGLE_COMMUNITY = gql`
         isPrivate
         isModerator
         description
+        isRequested
+        isInvited
         channels {
           id
           name
