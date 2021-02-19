@@ -2,21 +2,21 @@ import React, { useEffect } from 'react';
 import { Text, Paragraph, Button } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
-import { useThemeContext } from '../../../../../../theme';
-import { GET_SINGLE_PASSPORT } from '../../../../../../graphql/server/query';
+import { useThemeContext } from '../../../../theme';
+import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import { logEvent } from '../../../../../../utils/uxcamHelper';
-import GradientButton from '../../../../../../components/gradientButton';
-import { TRIBE_INVITE_ACTION } from '../../../../../../graphql/server/mutations';
-import { Mixpanel } from '../../../../../../config';
-import { crashlytics } from '../../../../../../firebase/config';
-import formatMessageTime from '../../../../../../utils/timesince';
+import { logEvent } from '../../../../utils/uxcamHelper';
+import GradientButton from '../../../../components/gradientButton';
+import { TRIBE_INVITE_ACTION } from '../../../../graphql/server/mutations';
+import formatMessageTime from '../../../../utils/timesince';
+import { Mixpanel } from '../../../../config';
+import { crashlytics } from '../../../../firebase/config';
 
 import { Container, RightCover, ButtonCover } from './styles';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
-interface NotificationProp {
+interface TribeRequestProp {
   name: string;
   id: string;
   avatar: string;
@@ -28,7 +28,7 @@ interface NotificationProp {
   createdAt: string;
 }
 
-export default function Notification(props: NotificationProp) {
+export default function TribeRequest(props: TribeRequestProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -39,17 +39,11 @@ export default function Notification(props: NotificationProp) {
     firstName,
     lastName,
     name,
-    refetch,
     userId,
     tribeId,
-    createdAt
+    createdAt,
+    refetch
   } = props;
-
-  enum InvitationStatus {
-    ACCEPTED,
-    PENDING,
-    DECLINED
-  }
 
   let timeStamp = formatMessageTime(Number(createdAt));
 
@@ -65,6 +59,12 @@ export default function Notification(props: NotificationProp) {
       details: { id: tribeId }
     });
   };
+
+  enum InvitationStatus {
+    ACCEPTED,
+    PENDING,
+    DECLINED
+  }
 
   const [acceptInvite, { loading }] = useMutation(TRIBE_INVITE_ACTION, {
     variables: {
@@ -82,9 +82,9 @@ export default function Notification(props: NotificationProp) {
   );
 
   const handleAcceptInvitation = async () => {
-    logEvent('accept tribe invite', { from: 'passport' });
+    logEvent('accept tribe request', { from: 'passport' });
     try {
-      Mixpanel.track('User Accepts Connection Request', {
+      Mixpanel.track('Moderator Accepts Tribe Request', {
         info: `User accepts tribe invite`,
         'Activity Screen': 'Tribe Request Screen'
       });
@@ -96,9 +96,9 @@ export default function Notification(props: NotificationProp) {
   };
 
   const handleDeclineInvitation = async () => {
-    logEvent('decline tribe invite', { from: 'passport' });
+    logEvent('decline tribe request', { from: 'passport' });
     try {
-      Mixpanel.track('User Declines Connection Request', {
+      Mixpanel.track('Moderator Declines Tribe Request', {
         info: `User declines tribe invite`,
         'Activity Screen': 'Tribe Request Screen'
       });
@@ -152,7 +152,7 @@ export default function Notification(props: NotificationProp) {
             }}
             onPress={handleMemberNavigation}
           >{`${firstName} ${lastName}`}</Text>{' '}
-          invited you to join the tribe -{' '}
+          {t(`community.invitation.request`)} -{' '}
           <Text
             style={{
               fontSize: RFValue(fonts.MEDIUM_SIZE),

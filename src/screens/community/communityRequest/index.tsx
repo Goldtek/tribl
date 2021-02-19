@@ -1,15 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { NavigationInterface } from '../../../../types';
+import { NavigationInterface } from '../../types';
 import { Title, Text, Divider } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlatList } from 'react-native';
 import SearchInput, { createFilter } from 'react-native-search-filter';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
-import { useThemeContext } from '../../../../../theme';
-import NotificationCard from './widget';
-import { GET_TRIBE_INVITES } from '../../../../../graphql/server/query';
-import hexToRGB from '../../../../../utils/hexToRGB';
+import { useThemeContext } from '../../../theme';
+import TribeRequestCard from './widget';
+import { GET_TRIBE_REQUESTS } from '../../../graphql/server/query';
+import hexToRGB from '../../../utils/hexToRGB';
 
 import { Container, TitleCover } from './styles';
 
@@ -18,12 +18,21 @@ interface tribeRequestScreenProp extends NavigationInterface {}
 export default function TribeRequestScreen(props: tribeRequestScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const communityId = props.route?.params?.communityId;
 
   const [search, setSearch] = useState({ searchTerm: '' });
 
-  const { data: inviteData, refetch } = useQuery(GET_TRIBE_INVITES);
+  const { data: requestData, refetch } = useQuery(GET_TRIBE_REQUESTS, {
+    variables: {
+      input: {
+        filter: {
+          communityId
+        }
+      }
+    }
+  });
 
-  const tribeInvites = inviteData?.communityInvites?.data;
+  const tribeRequest = requestData?.communityRequests?.data;
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
@@ -34,12 +43,12 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
   ];
 
   const filteredWords =
-    tribeInvites &&
-    tribeInvites?.filter(createFilter(search.searchTerm, KeysToFilter));
+    tribeRequest &&
+    tribeRequest?.filter(createFilter(search.searchTerm, KeysToFilter));
 
-  const _renderNotification = useMemo(
+  const _renderRequestTribe = useMemo(
     () => ({ item }: { item: any }) => (
-      <NotificationCard
+      <TribeRequestCard
         key={item.id}
         id={item.id}
         name={item.community.name}
@@ -99,13 +108,13 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
             paddingLeft: 5
           }}
         >
-          ({tribeInvites?.length ? tribeInvites?.length : '0'})
+          ({tribeRequest?.length ? tribeRequest?.length : '0'})
         </Title>
       </TitleCover>
 
       <FlatList
         data={filteredWords}
-        renderItem={_renderNotification}
+        renderItem={_renderRequestTribe}
         ItemSeparatorComponent={() => (
           <Divider
             style={{
@@ -124,7 +133,7 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
               textAlign: 'center'
             }}
           >
-            {t(`community.notification.empty`)}
+            {t(`community.invitation.empty`)}
           </Text>
         }
         showsVerticalScrollIndicator={false}

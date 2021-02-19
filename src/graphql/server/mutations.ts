@@ -68,6 +68,15 @@ export const JOIN_COMMUNITY = gql`
   }
 `;
 
+// REQUEST TO JOIN PRIVATE  COMMUNITY
+export const JOIN_PRIVATE_COMMUNITY = gql`
+  mutation requestToJoinCommunity($payload: JoinCommunityInput!) {
+    requestToJoinCommunity(input: $payload) {
+      success
+    }
+  }
+`;
+
 //LEAVE COMMUNITY
 export const LEAVE_COMMUNITY = gql`
   mutation leaveCommunity($payload: JoinCommunityInput!) {
@@ -238,6 +247,7 @@ export const CREATE_NEW_TRIBE = gql`
   mutation createCommunity($payload: CreateCommunityInput!) {
     createCommunity(input: $payload) {
       success
+      id
     }
   }
 `;

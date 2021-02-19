@@ -1,12 +1,13 @@
 import React, { useState, Fragment } from 'react';
 import { NavigationInterface } from '../../../../../types';
-import { Card, Title, Paragraph, Button } from 'react-native-paper';
+import { Card, Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../../theme';
 import GradientButton from '../../../../../../components/gradientButton';
+import hexToRGB from '../../../../../../utils/hexToRGB';
 
 import {
   CardContainer,
@@ -24,30 +25,22 @@ export default function newTribe(props: newTribeScreenProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const [state, setState] = useState({
-    description: '',
-    click: false,
-    tags: new Map(),
-    tagText: ''
-  });
-  const handleSelect = (selected: string) => {
-    if (!state.tags.has(selected)) {
-      return setState({
-        ...state,
-        tags: new Map(state.tags.set(selected, selected)),
-        click: false,
-        tagText: ''
-      });
-    }
 
-    state.tags.delete(selected);
-    setState({
-      ...state,
-      tags: new Map(state.tags)
+  enum privacyStatusOptions {
+    PRIVATE,
+    PUBLIC
+  }
+
+  const privacyStatus =
+    detail?.private === true
+      ? privacyStatusOptions[0]
+      : privacyStatusOptions[1];
+
+  const handleNavigation = () => {
+    navigation.navigate('InviteToTribeScreen', {
+      communityId: detail?.data?.createCommunity?.id
     });
   };
-
-  const selectedTag = [...Array.from(state.tags.values())];
 
   return (
     <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
@@ -70,6 +63,22 @@ export default function newTribe(props: newTribeScreenProp) {
               borderRadius: 2
             }}
           />
+          <Text
+            style={{
+              fontSize: RFValue(fonts.LARGE_SIZE - 1),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              color: colors.BLACK,
+              backgroundColor: hexToRGB(colors.WHITE, 0.3),
+              position: 'absolute',
+              right: RFValue(15),
+              paddingHorizontal: RFValue(10),
+              paddingVertical: RFValue(5),
+              marginTop: RFValue(10),
+              textTransform: 'capitalize'
+            }}
+          >
+            {privacyStatus}
+          </Text>
         </Card.Content>
       </Card>
       <Card style={{ marginTop: RFValue(5) }}>
@@ -140,7 +149,7 @@ export default function newTribe(props: newTribeScreenProp) {
                       <TagButtonCover>
                         <Button
                           key={tag}
-                          onPress={() => handleSelect(tag)}
+                          onPress={() => {}}
                           style={{
                             marginTop: RFValue(10),
                             marginRight: RFValue(10),
@@ -196,7 +205,7 @@ export default function newTribe(props: newTribeScreenProp) {
             {t(`community.createTribe.inviteText`)}
           </Paragraph>
           <GradientButton
-            onPress={() => navigation.navigate('InviteToTribeScreen')}
+            onPress={handleNavigation}
             style={{ height: RFValue(40) }}
             contentStyle={{ height: RFValue(40) }}
             gradientContainerstyle={{

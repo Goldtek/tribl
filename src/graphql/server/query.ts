@@ -347,6 +347,8 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
         membersCount
         description
         isMember
+        isPrivate
+        isModerator
         channels {
           id
           name
@@ -376,6 +378,8 @@ export const GET_POPULAR_COMMUNITIES = gql`
         avatar
         membersCount
         isMember
+        isPrivate
+        isModerator
         channels {
           id
           name
@@ -404,7 +408,9 @@ export const GET_MY_COMMUNITIES = gql`
         avatar
         name
         isMember
+        isPrivate
         membersCount
+        isModerator
         channels {
           id
           name
@@ -606,6 +612,8 @@ export const GET_SINGLE_COMMUNITY = gql`
         membersCount
         isMember
         name
+        isPrivate
+        isModerator
         description
         channels {
           id
@@ -896,6 +904,123 @@ export const GET_TRIBE_INVITES = gql`
         id
         status
         type
+        createdAt
+        community {
+          description
+          id
+          avatar
+          membersCount
+          isMember
+          name
+          description
+          channels {
+            id
+            name
+            isMember
+          }
+          tags {
+            id
+            name
+          }
+        }
+        sender {
+          id
+          email
+          firstName
+          lastName
+          phoneNumber
+          connected
+          avatar
+          bio
+          moderatorOf {
+            isModerator
+            id
+          }
+          pending
+          communityCount
+          connectionCount
+          currentLocation {
+            country
+            state
+            city
+          }
+          identity {
+            id
+            name
+          }
+          interest {
+            id
+            name
+          }
+          birthPlace {
+            state
+            country
+            city
+          }
+          presence {
+            status
+            lastSeen
+          }
+          connectionDetails {
+            status
+          }
+        }
+        receipient {
+          id
+          email
+          firstName
+          lastName
+          phoneNumber
+          connected
+          avatar
+          bio
+          moderatorOf {
+            isModerator
+            id
+          }
+          pending
+          communityCount
+          connectionCount
+          currentLocation {
+            country
+            state
+            city
+          }
+          identity {
+            id
+            name
+          }
+          interest {
+            id
+            name
+          }
+          birthPlace {
+            state
+            country
+            city
+          }
+          presence {
+            status
+            lastSeen
+          }
+          connectionDetails {
+            status
+          }
+        }
+      }
+    }
+  }
+`;
+
+//GET ALL TRIBE REQUESTS
+export const GET_TRIBE_REQUESTS = gql`
+  query communityRequests($input: CommunityRequestArgsInput!) {
+    communityRequests(input: $input) {
+      data {
+        id
+        status
+        type
+        createdAt
         community {
           description
           id
