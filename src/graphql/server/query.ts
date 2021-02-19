@@ -1014,7 +1014,7 @@ export const GET_TRIBE_INVITES = gql`
 
 //GET ALL TRIBE REQUESTS
 export const GET_TRIBE_REQUESTS = gql`
-  query communityRequests($input: CommunityRequestArgsInput) {
+  query communityRequests($input: CommunityRequestArgsInput!) {
     communityRequests(input: $input) {
       data {
         id
