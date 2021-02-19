@@ -54,8 +54,11 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   };
 
   const inviteNavigation = (id: string) => {
-    navigation.navigate('InviteToTribeScreen', {
-      communityId: id
+    navigation.navigate('DrawerScreen', {
+      screen: 'InviteToTribeScreen',
+      params: {
+        communityId: id
+      }
     });
     setCommunityMenu(false);
   };
@@ -483,39 +486,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
         })}
       />
       <CommunityStack.Screen
-        name="CreateTribeScreen"
-        component={Screens.CreateTribeScreen}
-        options={() => ({
-          headerTitle: () => null,
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        })}
-      />
-      <CommunityStack.Screen
-        name="AddAdminScreen"
-        component={Screens.AddAdminScreen}
-        options={() => ({
-          headerTitle: () => null,
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        })}
-      />
-      <CommunityStack.Screen
-        name="TribeDetailScreen"
-        component={Screens.TribeDetailScreen}
-        options={() => ({
-          headerTitle: () => null,
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        })}
-      />
-      <CommunityStack.Screen
         name="NewTribeScreen"
         component={Screens.NewTribeScreen}
         options={({ route }) => ({
@@ -529,18 +499,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_BOLD
           },
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        })}
-      />
-      <CommunityStack.Screen
-        name="InviteToTribeScreen"
-        component={Screens.InviteToTribeScreen}
-        options={() => ({
-          headerTitle: () => null,
-          headerLeft: () => null,
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}

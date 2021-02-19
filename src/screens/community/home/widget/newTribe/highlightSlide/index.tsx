@@ -37,8 +37,11 @@ export default function newTribe(props: newTribeScreenProp) {
       : privacyStatusOptions[1];
 
   const handleNavigation = () => {
-    navigation.navigate('InviteToTribeScreen', {
-      communityId: detail?.data?.createCommunity?.id
+    navigation.navigate('DrawerScreen', {
+      screen: 'InviteToTribeScreen',
+      params: {
+        communityId: detail?.data?.createCommunity?.id
+      }
     });
   };
 
