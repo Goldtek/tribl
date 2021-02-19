@@ -55,7 +55,7 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
         firstName={item.sender.firstName}
         lastName={item.sender.lastName}
         avatar={item.sender.avatar}
-        refetch={refetch()}
+        refetch={refetch}
         userId={item.sender.id}
         tribeId={item.community.id}
         createdAt={item.createdAt}
