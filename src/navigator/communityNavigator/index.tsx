@@ -60,6 +60,13 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
     setCommunityMenu(false);
   };
 
+  const requestNavigation = (id: string) => {
+    navigation.navigate('CommunityRequestScreen', {
+      communityId: id
+    });
+    setCommunityMenu(false);
+  };
+
   const getMenuHeight = useCallback(() => {
     switch (true) {
       case Math.ceil(safeAreaTop) <= 20:
@@ -285,7 +292,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               >
                 <Menu.Item
                   //@ts-ignore
-                  onPress={() => inviteNavigation(route.params)}
+                  onPress={() => inviteNavigation(route.params?.details?.id)}
                   title={t(`community.invitation.invite`)}
                   style={{
                     borderTopLeftRadius: 20,
@@ -304,26 +311,35 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                     textTransform: 'capitalize'
                   }}
                 />
-                <Divider />
-                {/* <Menu.Item
-                onPress={() => {}}
-                title={t(`community.recommended.communityRequests`)}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textAlign: 'center',
-                  textTransform: 'capitalize'
-                }}
-              />
-              <Divider /> */}
+                {
+                  //@ts-ignore
+                  route?.params?.details?.isModerator ? (
+                    <Fragment>
+                      <Divider />
+                      <Menu.Item
+                        onPress={() =>
+                          //@ts-ignore
+                          requestNavigation(route.params?.details?.id)
+                        }
+                        title={t(`community.recommended.communityRequests`)}
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                        titleStyle={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.PRIMARY_TEXT,
+                          textAlign: 'center',
+                          textTransform: 'capitalize'
+                        }}
+                      />
+                    </Fragment>
+                  ) : null
+                }
               </Menu>
             ) : null,
           headerBackTitleVisible: false,
@@ -527,6 +543,22 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTintColor: colors.PRIMARY,
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <CommunityStack.Screen
+        name="CommunityRequestScreen"
+        component={Screens.CommunityRequestScreen}
+        options={() => ({
+          headerTitle: t(`community.recommended.communityRequests`),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          }
         })}
       />
     </CommunityStack.Navigator>

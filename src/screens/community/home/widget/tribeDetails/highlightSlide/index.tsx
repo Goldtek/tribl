@@ -132,7 +132,8 @@ export default function newTribe(props: newTribeDetailsScreenProp) {
           memberCount: membersCount,
           tags: selectedTag,
           description: state.description,
-          private: detail?.details.private
+          private: detail?.details.private,
+          data: data
         });
       }
     } catch (error) {

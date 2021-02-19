@@ -224,10 +224,11 @@ export interface CommunityInterface {
   avatar: string;
   isMember: boolean;
   isModerator: boolean;
+  isPrivate: boolean;
   description: string;
   membersCount: number;
   channels: ChannelInterface[];
-  interests: Interest[];
+  tags: Interest[];
   uniqueInterests: {
     name;
     id;
