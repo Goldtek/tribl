@@ -225,6 +225,8 @@ export interface CommunityInterface {
   isMember: boolean;
   isModerator: boolean;
   isPrivate: boolean;
+  isRequested: boolean;
+  isInvited: boolean;
   description: string;
   membersCount: number;
   channels: ChannelInterface[];

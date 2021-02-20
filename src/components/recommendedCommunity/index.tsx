@@ -40,6 +40,7 @@ function RecommendedCommunity(props: CommunityInterface) {
     isMember,
     id,
     isPrivate,
+    isRequested,
     uniqueInterests
   } = restProps;
 
@@ -223,6 +224,7 @@ function RecommendedCommunity(props: CommunityInterface) {
         right={() => (
           <Button
             mode="text"
+            disabled={request || isRequested ? true : false}
             loading={
               isMember || member
                 ? leaveLoading
@@ -246,7 +248,7 @@ function RecommendedCommunity(props: CommunityInterface) {
           >
             {isMember || member
               ? t(`community.recommended.leave`)
-              : request
+              : request || isRequested == false
               ? t(`community.tabPanel.request`)
               : t(`community.recommended.join`)}
           </Button>

@@ -25,8 +25,12 @@ import InboxScreens from '../../screens/inbox';
 import AccountScreens from '../../screens/account';
 import CommunityScreens from '../../screens/community';
 import MemberDetailScreen from '../../screens/community/memberPassport';
+import InvitationScreen from '../../screens/community/invitationToTribe';
+import CreateNewTribeScreen from '../../screens/community/home/widget/createTribe';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
 import CommunityDetailScreen from '../../screens/community/detail';
+import AddAdminScreen from '../../screens/community/home/widget/addAdmin';
+import TribeDetailScreen from '../../screens/community/home/widget/tribeDetails';
 import getStreamChannelMembers from '../../utils/getStreamChannelMembers';
 import { DEVICE_OS } from '../../utils/device';
 import { useStreamContext } from '../../stream';
@@ -776,6 +780,55 @@ export default function DrawerStackNavigator() {
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 }
         }}
+      />
+
+      <DrawerStack.Screen
+        name="InviteToTribeScreen"
+        component={InvitationScreen}
+        options={() => ({
+          headerShown: true,
+          headerTitle: () => null,
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <DrawerStack.Screen
+        name="CreateTribeScreen"
+        component={CreateNewTribeScreen}
+        options={() => ({
+          headerShown: true,
+          headerTitle: () => null,
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <DrawerStack.Screen
+        name="AddAdminScreen"
+        component={AddAdminScreen}
+        options={() => ({
+          headerShown: true,
+          headerTitle: () => null,
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <DrawerStack.Screen
+        name="TribeDetailScreen"
+        component={TribeDetailScreen}
+        options={() => ({
+          headerShown: true,
+          headerTitle: () => null,
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
       />
     </DrawerStack.Navigator>
   );

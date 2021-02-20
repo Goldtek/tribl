@@ -138,6 +138,12 @@ export default function HomeScreen(props: ScreenProp) {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
 
+  const navigateToCreateNewTribeScreen = () => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'CreateTribeScreen'
+    });
+  };
+
   const handleJoinCommunity = () => {
     setState({
       ...state,
@@ -384,7 +390,7 @@ export default function HomeScreen(props: ScreenProp) {
       </ScrollView>
       <ButtonWrapper>
         <Button
-          onPress={() => navigation.navigate('CreateTribeScreen')}
+          onPress={navigateToCreateNewTribeScreen}
           mode="contained"
           labelStyle={{
             fontSize: RFValue(fonts.MEDIUM_SIZE),

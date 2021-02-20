@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Modal from 'react-native-modal';
