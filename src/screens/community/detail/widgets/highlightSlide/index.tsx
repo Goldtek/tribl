@@ -311,7 +311,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 </TextContainer>
                 <Button
                   mode="contained"
-                  disabled={request ? true : false}
+                  disabled={request || data?.isRequested ? true : false}
                   loading={
                     data.isMember || member
                       ? leaveLoading
@@ -333,13 +333,16 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                   labelStyle={{
                     fontSize: fonts.LARGE_SIZE,
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    color: colors.WHITE,
+                    color:
+                      request || data?.isRequested
+                        ? colors.PRIMARY_TEXT
+                        : colors.WHITE,
                     textTransform: 'capitalize'
                   }}
                 >
                   {data.isMember || member
                     ? t(`community.tabPanel.leave`)
-                    : request
+                    : request || data?.isRequested
                     ? t(`community.tabPanel.request`)
                     : t(`community.tabPanel.join`)}
                 </Button>
