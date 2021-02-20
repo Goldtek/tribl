@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { fromUnixTime } from 'date-fns';
 import { addMinutes } from 'date-fns/esm';
 import { Image, StyleSheet } from 'react-native';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import PushNotification from 'react-native-push-notification';
 import jsonwebtoken from 'jwt-decode';
 import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import {
@@ -21,16 +23,14 @@ import { NavigationInterface } from '../types';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
-import fcmMessaging, {
-  FirebaseMessagingTypes
-} from '@react-native-firebase/messaging';
-
-// IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
+import { crashlytics } from '../../firebase/config';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
   CHANGE_MESSAGE_NOTIFICATION_BADGE
 } from '../../graphql/cache/mutations';
+
+// IMPORT FOR ALL CUSTOM STYLES
+import { Container } from './styles';
 
 const RUN_TIME_INTERVAL = 10 * 60 * 1000;
 
@@ -39,7 +39,7 @@ interface ScreenProp extends NavigationInterface {
   route: { params: {} };
 }
 
-const messaging = fcmMessaging();
+// const messaging = fcmMessaging();
 
 export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
@@ -101,28 +101,47 @@ export default function SplashScreen(props: ScreenProp) {
       } else authenticateFirebase();
 
       setImmediate(async () => {
-        const remoteMessage: FirebaseMessagingTypes.RemoteMessage | null = await messaging.getInitialNotification();
-        const data = (remoteMessage?.data as unknown) as NotificationMessage;
+        // Must be outside of any component LifeCycle (such as `componentDidMount`).
+        PushNotification.configure({
+          // (optional) Called when Token is generated (iOS and Android)
+          onRegister: async () => {},
 
-        if (!remoteMessage) {
-          return navigation.replace(userRegistration.route);
-        }
+          // (required) Called when a remote is received or opened, or local notification is opened
+          onNotification: (notification) => {
+            const data = notification.data as NotificationMessage;
 
-        if (data.type === 'MESSAGE_RECEIVED') {
-          changeMessageNotification({
-            variables: { showMessageNotificationBadge: true }
-          });
-        }
+            if (!data) {
+              return navigation.replace(userRegistration.route);
+            }
 
-        if (data.type === 'CONNECTION_REQUEST_RECEIVED') {
-          changeConnectionNotification({
-            variables: { showConnectionNotificationBadge: true }
-          });
+            if (data.type === 'MESSAGE_RECEIVED') {
+              changeMessageNotification({
+                variables: { showMessageNotificationBadge: true }
+              });
+            }
 
-          return navigation.replace('DrawerScreen', {
-            screen: 'ConnectionRequest'
-          });
-        }
+            if (data.type === 'CONNECTION_REQUEST_RECEIVED') {
+              changeConnectionNotification({
+                variables: { showConnectionNotificationBadge: true }
+              });
+
+              return navigation.replace('DrawerScreen', {
+                screen: 'ConnectionRequest'
+              });
+            }
+
+            // (required) Called when a remote is received or opened, or local notification is opened
+            notification.finish(PushNotificationIOS.FetchResult.NoData);
+          },
+
+          // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
+          onRegistrationError: (error) => crashlytics.recordError(error),
+
+          // IOS ONLY (optional): default: all - Permissions to register.
+          permissions: { alert: true, badge: true, sound: true },
+
+          requestPermissions: true
+        });
 
         navigation.replace(userRegistration.route);
       });
