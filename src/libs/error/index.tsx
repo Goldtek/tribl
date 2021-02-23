@@ -35,7 +35,7 @@ export default function GlobalErrorBoundary(props: GlobalErrorProps) {
     // our exception handler code here
     // E.g. reporting error using crashlytics
     // @ts-ignore
-    crashlytics.recordError(nativeError);
+    crashlytics.recordError(new Error(nativeError));
   };
 
   setJSExceptionHandler(errorHandler);

@@ -13,14 +13,17 @@ import {
   RegistrationInfo,
   VerifyOTPIT
 } from '../../graphql/types';
-import { REFRESH_TOKEN } from '../../graphql/server/mutations';
+import {
+  REFRESH_TOKEN,
+  UPDATE_NOTIFICATION,
+  GET_FIREBASE_TOKEN
+} from '../../graphql/server/mutations';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
-import { GET_FIREBASE_TOKEN } from '../../graphql/server/mutations';
-import { NavigationInterface } from '../types';
 import { tagScreenName } from '../../utils/uxcamHelper';
+import { crashlytics } from '../../firebase/config';
+import { NavigationInterface } from '../types';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
-import { crashlytics } from '../../firebase/config';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
   CHANGE_MESSAGE_NOTIFICATION_BADGE
@@ -46,6 +49,8 @@ export default function SplashScreen(props: ScreenProp) {
   const [authenticateFirebase, { data: firebase }] = useMutation<
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
+
+  const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
 
   const [changeMessageNotification] = useMutation(
     CHANGE_MESSAGE_NOTIFICATION_BADGE
@@ -100,7 +105,9 @@ export default function SplashScreen(props: ScreenProp) {
         // Must be outside of any component LifeCycle (such as `componentDidMount`).
         PushNotification.configure({
           // (optional) Called when Token is generated (iOS and Android)
-          onRegister: async () => {},
+          onRegister: async ({ token }) => {
+            updatePassportFCM({ variables: { payload: { token } } });
+          },
 
           // (required) Called when a remote is received or opened, or local notification is opened
           onNotification: (notification) => {
@@ -131,7 +138,9 @@ export default function SplashScreen(props: ScreenProp) {
           },
 
           // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-          onRegistrationError: (error) => crashlytics.recordError(error),
+          onRegistrationError: (error) => {
+            return crashlytics.recordError(new Error(error));
+          },
 
           // IOS ONLY (optional): default: all - Permissions to register.
           permissions: { alert: true, badge: true, sound: true },

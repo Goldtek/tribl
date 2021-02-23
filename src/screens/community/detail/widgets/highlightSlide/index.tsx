@@ -61,7 +61,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     try {
       await storage.removeTagModal(id);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -166,7 +166,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       setData({ ...data, isMember: true });
       communityRefetch();
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -180,7 +180,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       setState({ ...state, tagModal: false });
       communityRefetch();
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

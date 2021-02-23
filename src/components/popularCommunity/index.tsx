@@ -64,7 +64,7 @@ function PopularCommunity(props: PopularCommunityProp) {
     try {
       await Storage.removeTagModal(id);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -94,7 +94,7 @@ function PopularCommunity(props: PopularCommunityProp) {
       setMember(!member);
       setModal(true);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -110,7 +110,7 @@ function PopularCommunity(props: PopularCommunityProp) {
       setMember(!member);
       setModal(false);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

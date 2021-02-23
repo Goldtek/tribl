@@ -62,7 +62,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
       refetch();
       setAcceptLoading(false);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
       setAcceptLoading(false);
     }
   };
@@ -75,7 +75,7 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
       refetch();
       setRejectLoading(false);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
       setRejectLoading(false);
     }
   };

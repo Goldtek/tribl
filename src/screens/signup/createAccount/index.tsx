@@ -127,7 +127,7 @@ export default function CreateAccountScreen(props: ScreenProp) {
       }
     } catch (error) {
       handleInputError('serverError');
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

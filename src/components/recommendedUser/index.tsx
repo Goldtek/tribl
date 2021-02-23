@@ -93,7 +93,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
       await requestConnection();
       setPending(true);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

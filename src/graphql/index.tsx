@@ -73,7 +73,7 @@ export const client = new ApolloClient<NormalizedCacheObject>({
     onError(({ graphQLErrors, networkError }) => {
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
       // @ts-ignore
-      if (graphQLErrors) crashlytics.recordError(graphQLErrors);
+      if (graphQLErrors) crashlytics.recordError(new Error(graphQLErrors));
 
       // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
       if (networkError) crashlytics.recordError(networkError);

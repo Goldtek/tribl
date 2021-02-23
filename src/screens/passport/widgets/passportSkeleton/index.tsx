@@ -45,7 +45,7 @@ export default function PassportSkeleton(props: ScreenProp) {
 
       // PROFILE SHARED HERE
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
   const [state, setState] = useState({ details: {}, loading: false });
