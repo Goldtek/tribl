@@ -121,7 +121,7 @@ function PrivacyModal(props: any) {
     try {
       const { data } = await updatePassport();
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

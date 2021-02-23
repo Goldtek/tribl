@@ -248,7 +248,7 @@ export default function MessageRequestChat(props: ScreenProp) {
         logEvent('delete message request', { from: 'chat' });
       }
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
 
     if (notificationData?.showMessageNotificationBadge) {

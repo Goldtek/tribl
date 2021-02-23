@@ -49,7 +49,7 @@ function ChannelMember(props: ChannelUserProp) {
       await requestConnection();
       setPending(true);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

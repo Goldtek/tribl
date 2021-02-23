@@ -78,7 +78,7 @@ export default function PassportScreen(props: ScreenProp) {
 
       // PROFILE SHARED HERE
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

@@ -66,7 +66,7 @@ function Member(props: MemberProp) {
     try {
       await requestConnection();
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

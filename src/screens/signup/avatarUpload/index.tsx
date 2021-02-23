@@ -87,7 +87,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
     } catch (error) {
       setAvatar({ ...avatar, loading: false });
       handleInputError('uploadError');
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -130,7 +130,7 @@ export default function AvatarUploadScreen(props: ScreenProp) {
       setAvatar({ ...avatar, uri, imageData });
       ImagePicker.clean();
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

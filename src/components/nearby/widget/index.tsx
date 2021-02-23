@@ -67,7 +67,7 @@ function NearbyModal(props: NearbyUserProp) {
       await requestConnection();
       setPending(true);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
