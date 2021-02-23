@@ -8,7 +8,10 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import { GET_USER_PASSPORT } from '../graphql/server/query';
-import { GENERATE_STREAMS_TOKEN } from '../graphql/server/mutations';
+import {
+  GENERATE_STREAMS_TOKEN,
+  UPDATE_NOTIFICATION
+} from '../graphql/server/mutations';
 import {
   GenerateStreamsTokenRequestInterface,
   MyPassportInterface
@@ -29,6 +32,8 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   const [activityScreen, setActivityScreen] = useState<ActivityScreenType>(
     'channelScreen'
   );
+
+  const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
@@ -63,6 +68,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
           PushNotification.configure({
             // (optional) Called when Token is generated (iOS and Android)
             onRegister: async ({ token, os }) => {
+              updatePassportFCM({ variables: { payload: { token } } });
               await chatClient.addDevice(
                 token,
                 os === 'ios' ? 'apn' : 'firebase',
