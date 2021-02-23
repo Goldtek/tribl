@@ -108,7 +108,7 @@ export default function OTPScreen(props: ScreenProp) {
         routes: [{ name: 'CommunityScreen' }]
       });
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
       handleInputError();
     }
   };

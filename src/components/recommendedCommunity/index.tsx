@@ -50,7 +50,7 @@ function RecommendedCommunity(props: CommunityInterface) {
     try {
       await Storage.removeTagModal(id);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -80,7 +80,7 @@ function RecommendedCommunity(props: CommunityInterface) {
       setMember(true);
       setModal(true);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -96,7 +96,7 @@ function RecommendedCommunity(props: CommunityInterface) {
       setMember(false);
       setModal(false);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

@@ -82,7 +82,7 @@ function Tags(props: any) {
         props.displayTagModal(false);
       }
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

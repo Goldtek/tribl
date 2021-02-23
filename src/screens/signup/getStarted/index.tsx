@@ -78,7 +78,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
       addPhoneNumber();
     } catch (error) {
       handleInputError();
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 

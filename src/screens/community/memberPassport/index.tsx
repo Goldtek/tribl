@@ -199,7 +199,7 @@ export default function PassportDetail(props: MemberDetailProps) {
       await requestConnection();
       setState({ ...state, loading: false, pending: true });
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
       setState({ ...state, loading: false });
     }
   };

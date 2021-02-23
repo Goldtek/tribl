@@ -66,7 +66,7 @@ function ActiveModal(props: ActiveUserProp) {
       await requestConnection();
       setPending(true);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
