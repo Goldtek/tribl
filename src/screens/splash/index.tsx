@@ -13,10 +13,7 @@ import {
   RegistrationInfo,
   VerifyOTPIT
 } from '../../graphql/types';
-import {
-  REFRESH_TOKEN,
-  UPDATE_NOTIFICATION
-} from '../../graphql/server/mutations';
+import { REFRESH_TOKEN } from '../../graphql/server/mutations';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
 import { GET_FIREBASE_TOKEN } from '../../graphql/server/mutations';
 import { NavigationInterface } from '../types';
@@ -50,7 +47,6 @@ export default function SplashScreen(props: ScreenProp) {
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 
-  const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
   const [changeMessageNotification] = useMutation(
     CHANGE_MESSAGE_NOTIFICATION_BADGE
   );
