@@ -83,7 +83,9 @@ const StreamProvider: FunctionComponent = ({ children }) => {
             },
 
             // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-            onRegistrationError: (error) => crashlytics.recordError(error),
+            onRegistrationError: (error) => {
+              return crashlytics.recordError(new Error(error));
+            },
 
             // IOS ONLY (optional): default: all - Permissions to register.
             permissions: { alert: true, badge: true, sound: true },
@@ -91,7 +93,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
             requestPermissions: true
           });
         } catch (error) {
-          crashlytics.recordError(Error(error.message));
+          crashlytics.recordError(new Error(error));
         }
       };
 

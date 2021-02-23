@@ -310,7 +310,7 @@ export default function PassportScreen(props: ScreenProp) {
         refetch();
       }
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -390,7 +390,7 @@ export default function PassportScreen(props: ScreenProp) {
 
       // PROFILE SHARED HERE
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
@@ -418,7 +418,7 @@ export default function PassportScreen(props: ScreenProp) {
       setCacheData();
       setUpdate(true);
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
       setUpdate(true);
     }
   };
@@ -463,7 +463,7 @@ export default function PassportScreen(props: ScreenProp) {
       setAvatar({ ...avatar, uri, imageData });
       ImagePicker.clean();
     } catch (error) {
-      crashlytics.recordError(error);
+      crashlytics.recordError(new Error(error));
     }
   };
 
