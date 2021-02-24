@@ -78,7 +78,7 @@ function IdentityModal(props: any) {
     setSelectedIdentities({ ...rest });
   };
 
-  const identities = Array.from(new Set(data?.Identity));
+  const identities = Array.from(new Set(data?.Identity?.data));
 
   const modalizeRef = useRef<Modalize>(null);
 

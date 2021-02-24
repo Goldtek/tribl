@@ -44,7 +44,7 @@ export default function ConnectionRequestScreen(
 
   const { data, refetch, fetchMore } = useQuery<ConnectionRequestsInterface>(
     GET_CONNECTION_REQUEST,
-    { variables: { offset: 0, first: PAGINATION_DEFAULT } }
+    { variables: { input: { limit: PAGINATION_DEFAULT * 2, skip: 0 } } }
   );
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
@@ -67,7 +67,7 @@ export default function ConnectionRequestScreen(
     tagScreenName('ConnectionRequestScreen');
   }, []);
 
-  const connectionRequest = data?.connectionRequests;
+  const connectionRequest = data?.connectionRequests?.data;
 
   const _renderFooter = useCallback(
     () => (state.callOnScrollEnd ? <ActivityIndicator /> : null),
@@ -84,22 +84,22 @@ export default function ConnectionRequestScreen(
     }
   };
 
-  const handleEndReach = () => {
-    if (!state.callOnScrollEnd) return;
+  // const handleEndReach = () => {
+  //   if (!state.callOnScrollEnd) return;
 
-    fetchMore({
-      variables: { offset: data?.connectionRequests.length },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        setState({ ...state, callOnScrollEnd: false });
+  //   fetchMore({
+  //     variables: { offset: data?.connectionRequests?.data?.length },
+  //     updateQuery: (prev, { fetchMoreResult }) => {
+  //       setState({ ...state, callOnScrollEnd: false });
 
-        if (!fetchMoreResult) return prev;
+  //       if (!fetchMoreResult) return prev;
 
-        return Object.assign({}, prev, {
-          myConnections: [...fetchMoreResult.connectionRequests]
-        });
-      }
-    });
-  };
+  //       return Object.assign({}, prev, {
+  //         myConnections: [...fetchMoreResult.connectionRequests]
+  //       });
+  //     }
+  //   });
+  // };
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <ConnectionRequest key={item.id} item={item} refetch={refetch} />
@@ -107,14 +107,14 @@ export default function ConnectionRequestScreen(
 
   useFocusEffect(
     useCallback(() => {
-      data?.connectionRequests.length
+      data?.connectionRequests?.data?.length
         ? changeConnectionNotification({
             variables: { showConnectionNotificationBadge: true }
           })
         : changeConnectionNotification({
             variables: { showConnectionNotificationBadge: false }
           }).then(refetch);
-    }, [data?.connectionRequests.length])
+    }, [data?.connectionRequests?.data?.length])
   );
 
   return (
@@ -155,7 +155,9 @@ export default function ConnectionRequestScreen(
                 size={RFValue(25)}
                 color={colors.PRIMARY_TEXT}
               />
-              {data?.connectionRequests.length ? <MenuBadgeWrapper /> : null}
+              {data?.connectionRequests?.data?.length ? (
+                <MenuBadgeWrapper />
+              ) : null}
             </Fragment>
           </TouchableHighlight>
         )}

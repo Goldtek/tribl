@@ -21,10 +21,8 @@ export const VALIDATE_USER_OTP = gql`
     validateOtp(input: $payload) {
       firebase_token
       refresh_token
-      streams_token
       access_token
       expires_in
-      token_type
       id_token
       verified
       passport {
@@ -70,9 +68,18 @@ export const JOIN_COMMUNITY = gql`
   }
 `;
 
+// REQUEST TO JOIN PRIVATE  COMMUNITY
+export const JOIN_PRIVATE_COMMUNITY = gql`
+  mutation requestToJoinCommunity($payload: JoinCommunityInput!) {
+    requestToJoinCommunity(input: $payload) {
+      success
+    }
+  }
+`;
+
 //LEAVE COMMUNITY
 export const LEAVE_COMMUNITY = gql`
-  mutation leaveCommunity($payload: CommunityInput!) {
+  mutation leaveCommunity($payload: JoinCommunityInput!) {
     leaveCommunity(input: $payload) {
       success
     }
@@ -81,7 +88,7 @@ export const LEAVE_COMMUNITY = gql`
 
 // REQUEST CONNECTION
 export const REQUEST_CONNECTION = gql`
-  mutation requestConnection($payload: ConnectionInput!) {
+  mutation requestConnection($payload: RequestConnectionInput!) {
     requestConnection(input: $payload) {
       success
     }
@@ -226,11 +233,39 @@ export const GENERATE_STREAMS_TOKEN = gql`
   }
 `;
 
-// GET FIREBASE TOKEN
-export const GET_FIREBASE_TOKEN = gql`
-  mutation generateFirebaseToken {
-    generateFirebaseToken {
-      firebase_token
+// // GET FIREBASE TOKEN
+// export const GET_FIREBASE_TOKEN = gql`
+//   mutation generateFirebaseToken {
+//     generateFirebaseToken {
+//       firebase_token
+//     }
+//   }
+// `;
+
+// CREATE A NEW TRIBE
+export const CREATE_NEW_TRIBE = gql`
+  mutation createCommunity($payload: CreateCommunityInput!) {
+    createCommunity(input: $payload) {
+      success
+      id
+    }
+  }
+`;
+
+// INVITE FRIENDS TO COMMUNITY
+export const INVITE_TO_TRIBE = gql`
+  mutation inviteToCommunity($payload: JoinCommunityInput!) {
+    inviteToCommunity(input: $payload) {
+      success
+    }
+  }
+`;
+
+// ACCEPT OR DECLINE TRIBE INVITE
+export const TRIBE_INVITE_ACTION = gql`
+  mutation communityInviteAction($payload: CommunityInviteActionInput!) {
+    communityInviteAction(input: $payload) {
+      success
     }
   }
 `;

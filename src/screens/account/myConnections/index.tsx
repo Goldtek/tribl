@@ -45,7 +45,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
   const { data, refetch, fetchMore } = useQuery<MyConnectionsInterface>(
     GET_MY_CONNECTIONS,
-    { variables: { offset: 0, first: PAGINATION_DEFAULT } }
+    { variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } } }
   );
 
   const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
@@ -58,7 +58,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     callOnScrollEnd: false
   });
 
-  const myConnection = data?.myConnections;
+  const myConnection = data?.myConnections?.data;
 
   const filterConnections = myConnection?.slice().sort(function (a, b) {
     if (a.firstName < b.firstName) return -1;
@@ -83,25 +83,25 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     }
   };
 
-  const handleEndReach = async () => {
-    if (!state.callOnScrollEnd) return;
+  // const handleEndReach = async () => {
+  //   if (!state.callOnScrollEnd) return;
 
-    fetchMore({
-      variables: {
-        offset: data?.myConnections.length,
-        first: PAGINATION_DEFAULT
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        setState({ ...state, callOnScrollEnd: false });
+  //   fetchMore({
+  //     variables: {
+  //       offset: data?.myConnections?.data?.length,
+  //       first: PAGINATION_DEFAULT
+  //     },
+  //     updateQuery: (prev, { fetchMoreResult }) => {
+  //       setState({ ...state, callOnScrollEnd: false });
 
-        if (!fetchMoreResult) return prev;
+  //       if (!fetchMoreResult) return prev;
 
-        return Object.assign({}, prev, {
-          myConnections: [...fetchMoreResult.myConnections]
-        });
-      }
-    });
-  };
+  //       return Object.assign({}, prev, {
+  //         myConnections: [...fetchMoreResult.myConnections]
+  //       });
+  //     }
+  //   });
+  // };
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 

@@ -48,14 +48,17 @@ function ActiveModal(props: ActiveUserProp) {
     firstName,
     connected,
     phoneNumber,
-    currentLocation
+    currentLocation,
+    connectionDetails
   } = member;
 
   const [pending, setPending] = useState(false);
   const [channelId, setChannelId] = useState('');
+  const [request, setRequest] = useState(false);
+
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber } }
+    variables: { payload: { id } }
   });
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
@@ -64,7 +67,7 @@ function ActiveModal(props: ActiveUserProp) {
     logEvent('request connection', { from: 'passport' });
     try {
       await requestConnection();
-      setPending(true);
+      setRequest(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
     }
@@ -157,9 +160,9 @@ function ActiveModal(props: ActiveUserProp) {
     });
   };
 
-  const city = currentLocation[0]?.city;
-  const state = currentLocation[0]?.state;
-  const country = currentLocation[0]?.country;
+  const city = currentLocation?.city;
+  const state = currentLocation?.state;
+  const country = currentLocation?.country;
 
   return (
     <TouchableRipple
@@ -223,7 +226,10 @@ function ActiveModal(props: ActiveUserProp) {
             </Paragraph>
           )}
         </TextContainer>
-        {connected == 'PENDING' || pending ? (
+        {connectionDetails?.status == 'PENDING' ||
+        pending == 'PENDING' ||
+        pending == 'REQUESTED' ||
+        request ? (
           <Button
             mode="text"
             disabled={true}
@@ -244,7 +250,7 @@ function ActiveModal(props: ActiveUserProp) {
           >
             {t(`community.recommended.pending`)}
           </Button>
-        ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
+        ) : connectionDetails?.status === 'ACCEPTED' ? (
           <Button
             mode="text"
             uppercase={false}

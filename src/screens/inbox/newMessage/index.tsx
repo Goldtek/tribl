@@ -19,7 +19,7 @@ import {
   GET_NEARBY_MEMBERS,
   GET_MY_CONNECTIONS,
   GET_ALL_MEMBERS,
-  GET_MY_CONNECTIONS_NEARBY
+  GET_MY_CONNECTIONS_NEARBY,
 } from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
 import ENVIRONMENT_VARIABLES from '../../../config';
@@ -75,11 +75,12 @@ export default function ChatScreen(props: ScreenProp) {
   const { data: myConnectionNearbyData } = useQuery<
     MyConnectionNearbyRequestInterface
   >(GET_MY_CONNECTIONS_NEARBY, {
-    variables: { filter: { id: userId } }
+    variables: { input: { filter: { id: userId }, skip: 0 } }
   });
 
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
-    GET_NEARBY_MEMBERS
+    GET_NEARBY_MEMBERS,
+    { variables: { input: { skip: 0 } }}
   );
 
   const { data: connectionData } = useQuery<MyConnectionsInterface>(
@@ -94,16 +95,16 @@ export default function ChatScreen(props: ScreenProp) {
     variables: { offset: 0, first: PAGINATION_DEFAULT }
   });
 
-  const allMembers = allMembersData?.Passport;
-  const nearbyMembers = nearbyData?.nearbyMembers;
-  const myConnection = connectionData?.myConnections;
-  const nearbyConnections = myConnectionNearbyData?.nearbyConnections;
+  const allMembers = allMembersData?.Passport?.data;
+  const nearbyMembers = nearbyData?.nearbyMembers?.data;
+  const myConnection = connectionData?.myConnections?.data;
+  const nearbyConnections = myConnectionNearbyData?.nearbyConnections?.data;
 
-  const sortName = (a: PassportInterface, b: PassportInterface) => {
-    if (a.firstName < b.firstName) return -1;
-    if (a.firstName > b.firstName) return 1;
-    return 0;
-  };
+  // const sortName = (a: PassportInterface, b: PassportInterface) => {
+  //   if (a.firstName < b.firstName) return -1;
+  //   if (a.firstName > b.firstName) return 1;
+  //   return 0;
+  // };
 
   const removeDuplicateMembers = (members?: PassportInterface[]) => {
     if (!members) return;
@@ -199,7 +200,7 @@ export default function ChatScreen(props: ScreenProp) {
 
         if (!fetchMoreResult) return prev;
         return Object.assign({}, prev, {
-          Passport: [...prev.Passport, ...fetchMoreResult.Passport]
+          Passport: [...prev.Passport.data, ...fetchMoreResult.Passport.data]
         });
       }
     });

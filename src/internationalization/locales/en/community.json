@@ -16,7 +16,9 @@
     "myCommunity": "my tribes",
     "leave": "leave",
     "message": "message",
-    "newCommunity": "new communities coming soon!"
+    "newCommunity": "new communities coming soon!",
+    "communityRequests": "Community Requests",
+    "leaveCommunity": "Leave Community"
   },
 
   "joinModal": {
@@ -62,6 +64,7 @@
     "featured": "featured tribe",
     "popular": "popular tribes",
     "join": "join",
+    "request": "requested",
     "tag": "tags",
     "view": "view all",
     "placeholder": "Search by name or tag",
@@ -76,6 +79,7 @@
     "request": "connection requests",
     "connection": "my connections",
     "userConnection": "connections",
+    "notification": "notifications",
     "wallet": "add wallet",
     "settings": "account settings",
     "invite": "invite friend",
@@ -141,5 +145,55 @@
     "title": "Looks like you’re visiting for the first time.",
     "text": "Let us know what interests you want added to your passport so we can help you find your tribe",
     "button": "add tags to passport"
+  },
+  "createTribe": {
+    "buttonText": "+ create a tribe",
+    "createTribe": "create tribe",
+    "change": "You can easily change this later",
+    "name": "community name",
+    "placeholder": "Enter name here",
+    "private": "private",
+    "privateText": "In private communities only admins and moderators can add/remove members and create channels",
+    "addPhoto": "add community photo",
+    "photoAdded": "community photo added",
+    "skip": "skip",
+    "next": "next",
+    "addAdmin": "add admins",
+    "adminText": "These members will have admin access",
+    "selectAdmin": "add admin",
+    "member": "member",
+    "members": "members",
+    "descriptionPlaceholder": "Every tribe has a story...",
+    "tagPlaceholder": "(up to 4) i.e. Technology, Hip Hop, Howard",
+    "interestPlaceholder": "Add tribe tag",
+    "create": "create",
+    "invite": "invite members",
+    "inviteText": "Add your first 3 members to unlock your channel",
+    "nameError": "Name field is required",
+    "avatarError": "Community photo is required",
+    "descrptionError": "Description field is required",
+    "tagError": "You need to add at least one tag",
+    "serverError": "Tribe already exits",
+    "inviteError": "You have to choose at least one friend to invite"
+  },
+  "notification": {
+    "invitation": "invitation request",
+    "general": "general",
+    "placeholder": "Type name of member",
+    "tribe": "tribe requests",
+    "empty": " You currently don't have any notification"
+  },
+  "invitation": {
+    "title": "Invite friends to community",
+    "text": "To invite your friends who don’t have an account on Tribl, please type email address",
+    "label": "Type name or email address",
+    "placeholder": "Start typing ...",
+    "invite": "Invite friends",
+    "cancel": "cancel",
+    "note": "* Your friends will require an approval before joining the community ",
+    "request": "asked to join your community",
+    "accept": "accept",
+    "decline": "decline",
+    "empty": " You currently don't have any community request"
   }
 }
