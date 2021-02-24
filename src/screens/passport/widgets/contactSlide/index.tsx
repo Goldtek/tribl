@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState, useCallback, Fragment, useEffect } from 'react';
-import { SimpleLineIcons } from '@expo/vector-icons';
+import { SimpleLineIcons, Feather } from '@expo/vector-icons';
 import {
   Button,
   Title,
@@ -65,7 +65,8 @@ function ContactSlide(props: ScreenProp) {
   const [interestVisible, setInterestVisible] = useState(false);
 
   const [state, setState] = useState<{
-    date?: string;
+    date?: string | Date | number;
+    timeStamp?: string;
     firstName?: string;
     lastName?: string;
     bio?: string;
@@ -80,6 +81,7 @@ function ContactSlide(props: ScreenProp) {
     ...cacheData,
     date: '',
     firstName: '',
+    timeStamp: '',
     lastName: '',
     bio: '',
     disableBio: true,
@@ -91,17 +93,63 @@ function ContactSlide(props: ScreenProp) {
     selectedInterest: []
   });
 
-  const currentLocation = state?.currentLocation[0];
+  const currentLocation = state?.currentLocation;
+
+  const [select, setSelect] = useState({
+    identity: [],
+    interest: []
+  });
+
+  useEffect(() => {
+    if (state.selectedIdentity) {
+      setSelect({
+        ...select,
+        identity: state?.selectedIdentity
+      });
+    }
+    if (state.selectedInterest) {
+      setSelect({
+        ...select,
+        interest: state?.selectedInterest
+      });
+    }
+  }, [state.selectedIdentity || state.selectedInterest]);
+
+  const handleSelectIdentity = (selected: string) => {
+    const filteredIdentity = select.identity.filter(
+      (identity) => identity.name !== selected
+    );
+    setSelect({
+      ...select,
+      identity: filteredIdentity
+    });
+  };
+
+  const handleSelectInterest = (selected: string) => {
+    const filteredInterest = select.interest.filter(
+      (interest) => interest.name !== selected
+    );
+    setSelect({
+      ...select,
+      interest: filteredInterest
+    });
+  };
 
   useEffect(() => {
     (async () => {
       if (userDetails) {
         await Storage.setUserPassport({ ...userDetails });
-
+        setSelect({
+          ...select,
+          identity: userDetails?.identity,
+          interest: userDetails?.interest
+        });
         setState({
           ...state,
           ...userDetails,
-          date: `${userDetails?.dob?.month}/${userDetails?.dob?.day}/${userDetails?.dob?.year}`
+          date: new Date(parseInt(userDetails?.dob))
+            .toLocaleString()
+            .split(',')[0]
         });
       }
     })();
@@ -116,7 +164,9 @@ function ContactSlide(props: ScreenProp) {
         setState({
           ...state,
           ...passportInfo,
-          date: `${passportInfo?.dob?.month}/${passportInfo?.dob?.day}/${passportInfo?.dob?.year}`
+          date: new Date(parseInt(passportInfo?.dob))
+            .toLocaleString()
+            .split(',')[0]
         });
       }
     })();
@@ -128,8 +178,10 @@ function ContactSlide(props: ScreenProp) {
     const day = parseInt(dob[0]);
     const month = parseInt(dob[1]);
     const year = parseInt(dob[2]);
+    const dobTimestamp = new Date(Date.UTC(year, month - 1, day));
+    const timeStamp = dobTimestamp / 1000;
     const date = month + '/' + day + '/' + year;
-    return setState({ ...state, date, showDatePicker: false });
+    return setState({ ...state, date, showDatePicker: false, timeStamp });
   };
 
   const handleDatePicker = () => {
@@ -341,7 +393,9 @@ function ContactSlide(props: ScreenProp) {
           contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
           onPress={handleDatePicker}
         >
-          {state.date ? state.date : t(`signup.passportScreen.dob`)}
+          {!state.date || state.date == 'Invalid Date'
+            ? t(`signup.passportScreen.dob`)
+            : state.date}
         </Button>
 
         <DateTimePicker
@@ -513,77 +567,104 @@ function ContactSlide(props: ScreenProp) {
           </Location>
         </LocationContainer>
       ) : null}
+      {state?.selectedIdentity?.length ||
+      userDetails?.identity?.length ||
+      !click ? (
+        <IdentityContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase',
+              marginBottom: 10
+            }}
+          >
+            {t(`signup.passportScreen.identity`)}
+          </Title>
 
-      <IdentityContainer>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'uppercase',
-            marginBottom: 10
-          }}
-        >
-          {t(`signup.passportScreen.identity`)}
-        </Title>
-
-        <Identities>
-          {state.selectedIdentity?.length ? (
+          <Identities>
             <Fragment>
-              {state.selectedIdentity.map((identity) => (
-                <IdentityText key={identity.id}>{identity.name}</IdentityText>
+              {select.identity.map((identity) => (
+                <IdentityText
+                  key={identity.id}
+                  onPress={() => handleSelectIdentity(identity.name)}
+                >
+                  {identity.name}
+                  {!click ? (
+                    <Fragment>
+                      {' '}
+                      <Feather
+                        onPress={() => handleSelectIdentity(identity.name)}
+                        name="x"
+                        size={RFValue(13)}
+                        color={colors.PRIMARY_TEXT}
+                        style={{
+                          paddingLeft: RFValue(30),
+                          paddingRight: RFValue(50)
+                        }}
+                      />
+                    </Fragment>
+                  ) : null}
+                </IdentityText>
               ))}
             </Fragment>
-          ) : (
+
+            {!click ? (
+              <TouchableRipple onPress={showIdentityModal(true)}>
+                <AddIdentity>+</AddIdentity>
+              </TouchableRipple>
+            ) : null}
+          </Identities>
+        </IdentityContainer>
+      ) : null}
+
+      {state.selectedIdentity?.length ||
+      userDetails?.interest?.length ||
+      !click ? (
+        <InterestContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase'
+            }}
+          >
+            {t(`signup.passportScreen.interest`)}
+          </Title>
+          <Identities>
             <Fragment>
-              {userDetails?.identity.map((identity: any) => (
-                <IdentityText key={identity.id}>{identity.name}</IdentityText>
+              {select?.interest.map((interest) => (
+                <IdentityText key={interest.id}>
+                  {interest.name}
+                  {!click ? (
+                    <Fragment>
+                      {' '}
+                      <Feather
+                        onPress={() => handleSelectInterest(interest.name)}
+                        name="x"
+                        size={RFValue(13)}
+                        color={colors.PRIMARY_TEXT}
+                        style={{
+                          paddingLeft: RFValue(30),
+                          paddingRight: RFValue(50)
+                        }}
+                      />
+                    </Fragment>
+                  ) : null}
+                </IdentityText>
               ))}
             </Fragment>
-          )}
 
-          {!click ? (
-            <TouchableRipple onPress={showIdentityModal(true)}>
-              <AddIdentity>+</AddIdentity>
-            </TouchableRipple>
-          ) : null}
-        </Identities>
-      </IdentityContainer>
-
-      <InterestContainer>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'uppercase'
-          }}
-        >
-          {t(`signup.passportScreen.interest`)}
-        </Title>
-        <Identities>
-          {state.selectedInterest?.length ? (
-            <Fragment>
-              {state.selectedInterest.map((interest) => (
-                <IdentityText key={interest.id}>{interest.name}</IdentityText>
-              ))}
-            </Fragment>
-          ) : (
-            <Fragment>
-              {userDetails?.interest.map((interest) => (
-                <IdentityText key={interest.id}>{interest.name}</IdentityText>
-              ))}
-            </Fragment>
-          )}
-
-          {!click ? (
-            <TouchableRipple onPress={showInterestModal(true)}>
-              <AddIdentity>+</AddIdentity>
-            </TouchableRipple>
-          ) : null}
-        </Identities>
-      </InterestContainer>
-
+            {!click ? (
+              <TouchableRipple onPress={showInterestModal(true)}>
+                <AddIdentity>+</AddIdentity>
+              </TouchableRipple>
+            ) : null}
+          </Identities>
+        </InterestContainer>
+      ) : null}
       {/* 
       <LinkAccountsContainer>
         <Title

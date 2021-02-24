@@ -37,6 +37,8 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
   const { t } = useTranslation();
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
+  const [communityMenu, setCommunityMenu] = useState(false);
+  const showCommunityMenu = () => setCommunityMenu(!communityMenu);
   const { top: safeAreaTop } = useSafeAreaInsets();
 
   const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
@@ -49,6 +51,23 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
 
   const toggleMenu = () => {
     toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
+  };
+
+  const inviteNavigation = (id: string) => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'InviteToTribeScreen',
+      params: {
+        communityId: id
+      }
+    });
+    setCommunityMenu(false);
+  };
+
+  const requestNavigation = (id: string) => {
+    navigation.navigate('CommunityRequestScreen', {
+      communityId: id
+    });
+    setCommunityMenu(false);
   };
 
   const getMenuHeight = useCallback(() => {
@@ -146,7 +165,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerRightContainerStyle: { marginRight: 10 }
         }}
       />
-
       <CommunityStack.Screen
         name="CommunitySearchScreen"
         component={Screens.SearchScreen}
@@ -223,7 +241,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerRightContainerStyle: { marginRight: 10 }
         }}
       />
-
       <CommunityStack.Screen
         name="CommunityDetailScreen"
         component={Screens.CommunityDetailScreen}
@@ -239,13 +256,101 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
             flex: 1,
             paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
           },
+          headerRight: () =>
+            //@ts-ignore
+            route?.params?.details?.isMember ? (
+              <Menu
+                visible={communityMenu}
+                onDismiss={showCommunityMenu}
+                anchor={
+                  <TouchableRipple
+                    rippleColor={colors.PRIMARY}
+                    onPress={showCommunityMenu}
+                    style={{
+                      padding: RFValue(3),
+                      paddingTop: RFValue(6),
+                      paddingBottom: RFValue(6),
+                      backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                      borderRadius: 4,
+                      borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                      borderWidth: 1
+                    }}
+                  >
+                    <Entypo
+                      name="dots-three-vertical"
+                      color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                      size={20}
+                    />
+                  </TouchableRipple>
+                }
+                contentStyle={{
+                  right: 10,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  overflow: Platform.select({ android: 'hidden' })
+                }}
+                style={{ top: RFValue(getMenuHeight()) }}
+              >
+                <Menu.Item
+                  //@ts-ignore
+                  onPress={() => inviteNavigation(route.params?.details?.id)}
+                  title={t(`community.invitation.invite`)}
+                  style={{
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textAlign: 'center',
+                    textTransform: 'capitalize'
+                  }}
+                />
+                {
+                  //@ts-ignore
+                  route?.params?.details?.isModerator ? (
+                    <Fragment>
+                      <Divider />
+                      <Menu.Item
+                        onPress={() =>
+                          //@ts-ignore
+                          requestNavigation(route.params?.details?.id)
+                        }
+                        title={t(`community.recommended.communityRequests`)}
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                        titleStyle={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.PRIMARY_TEXT,
+                          textAlign: 'center',
+                          textTransform: 'capitalize'
+                        }}
+                      />
+                    </Fragment>
+                  ) : null
+                }
+              </Menu>
+            ) : null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
-
       <CommunityStack.Screen
         name="MemberDetailScreen"
         component={Screens.MemberDetailScreen}
@@ -255,7 +360,8 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           },
           headerTitleContainerStyle: {
             flex: 1,
@@ -377,6 +483,40 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTintColor: colors.PRIMARY,
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <CommunityStack.Screen
+        name="NewTribeScreen"
+        component={Screens.NewTribeScreen}
+        options={({ route }) => ({
+          //@ts-ignore
+          headerTitle: route.params?.name,
+          headerLeft: () => null,
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+      <CommunityStack.Screen
+        name="CommunityRequestScreen"
+        component={Screens.CommunityRequestScreen}
+        options={() => ({
+          headerTitle: t(`community.recommended.communityRequests`),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          }
         })}
       />
     </CommunityStack.Navigator>

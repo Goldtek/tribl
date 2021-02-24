@@ -62,7 +62,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     setState({ ...state, showInstruction: false });
   };
 
-  const identities = Array.from(new Set(data?.Identity));
+  const identities = Array.from(new Set(data?.Identity?.data));
 
   const handleSubmit = async () => {
     if (!state.selectedIdentities.size) return handleInputError();

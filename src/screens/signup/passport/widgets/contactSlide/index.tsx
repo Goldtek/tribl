@@ -151,17 +151,14 @@ export default function contactSlide() {
 
   const newDate = state.date ? state.date : null;
   const dob = newDate?.split('/');
-  const month = dob?.length ? parseInt(dob[0]) : null;
-  const day = dob?.length ? parseInt(dob[1]) : null;
-  const year = dob?.length ? parseInt(dob[2]) : null;
 
-  const userIdentities = IdentityData?.Identity.map(
-    (item: { name: string; id: string }) => {
-      if (userDetails?.identity.includes(item.id as any)) {
+  const userIdentities = IdentityData?.Identity?.data
+    ?.map((item: { name: string; id: string }) => {
+      if (userDetails?.identity.includes(item.id)) {
         return item.name;
       }
-    }
-  ).filter((item) => item !== undefined);
+    })
+    .filter((item) => item !== undefined);
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
@@ -169,13 +166,7 @@ export default function contactSlide() {
         bio: state.bio,
         firstName: state.firstName,
         lastName: state.lastName,
-        dob: {
-          formatted: null,
-          day: day,
-          month: month,
-          year: year,
-          __typename: 'dateOfBirth'
-        }
+        dob: newDate
       }
     }
   });
@@ -452,7 +443,7 @@ export default function contactSlide() {
         </CitizenshipContainer>
       ) : null} */}
 
-      {userDetails?.currentLocation[0] || location.currentLocation.state ? (
+      {userDetails?.currentLocation || location.currentLocation.state ? (
         <LocationContainer ref={hideSensitiveView}>
           <Title
             style={{
@@ -519,10 +510,10 @@ export default function contactSlide() {
               }}
             >
               {`${
-                userDetails?.currentLocation[0].city ||
+                userDetails?.currentLocation.city ||
                 location.currentLocation.city
               }, ${
-                userDetails?.currentLocation[0].state ||
+                userDetails?.currentLocation.state ||
                 location.currentLocation.state
               }`}
             </Paragraph>

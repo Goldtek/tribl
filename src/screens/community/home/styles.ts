@@ -33,3 +33,10 @@ export const RecommendedCommunityContainer = styled.View`
 export const RecentActivitiesList = styled.View`
   margin-top: 25px;
 `;
+
+export const ButtonWrapper = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+  bottom: ${RFValue(20)}px;
+`;

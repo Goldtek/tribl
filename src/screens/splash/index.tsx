@@ -46,7 +46,7 @@ export default function SplashScreen(props: ScreenProp) {
 
   const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN);
-  const [authenticateFirebase, { data: firebase }] = useMutation<
+  const [authenticateFirebase, { data: firebase }] = useLazyQuery<
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 

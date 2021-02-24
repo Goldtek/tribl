@@ -30,7 +30,7 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
 
   const { colors, fonts } = useThemeContext();
 
-  const [fetchMyCommunities, { data, refetch, fetchMore }] = useLazyQuery<
+  const [fetchMyCommunities, { data, refetch }] = useLazyQuery<
     MyCommunitiesRequestInterface
   >(GET_MY_COMMUNITIES, {
     variables: { offset: 0, first: PAGINATION_DEFAULT * 2 }
@@ -52,7 +52,9 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
     callOnScrollEnd: false
   });
 
-  const myCommunities = params.userTribe ? data?.myCommunities : params.details;
+  const myCommunities = params.userTribe
+    ? data?.myCommunities?.data
+    : params.details;
 
   const filterCommunities = myCommunities?.slice().sort(function (a, b) {
     if (a.name < b.name) return -1;
@@ -75,25 +77,25 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
     }
   };
 
-  const handleEndReach = async () => {
-    if (!state.callOnScrollEnd) return;
+  // const handleEndReach = async () => {
+  //   if (!state.callOnScrollEnd) return;
 
-    fetchMore({
-      variables: {
-        offset: data?.myCommunities.length,
-        first: PAGINATION_DEFAULT
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        setState({ ...state, callOnScrollEnd: false });
+  //   fetchMore({
+  //     variables: {
+  //       offset: data?.myCommunities.length,
+  //       first: PAGINATION_DEFAULT
+  //     },
+  //     updateQuery: (prev, { fetchMoreResult }) => {
+  //       setState({ ...state, callOnScrollEnd: false });
 
-        if (!fetchMoreResult) return prev;
+  //       if (!fetchMoreResult) return prev;
 
-        return Object.assign({}, prev, {
-          myConnections: [...fetchMoreResult.myCommunities]
-        });
-      }
-    });
-  };
+  //       return Object.assign({}, prev, {
+  //         myConnections: [fetchMoreResult.myCommunities]
+  //       });
+  //     }
+  //   });
+  // };
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 

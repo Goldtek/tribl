@@ -29,6 +29,7 @@ enum COLORS {
   DISABLED = '#E8E8E8',
   OFFWHITE = '#FBFCFF',
   SECONDARY = '#A875FF',
+  GREY_LIGHT = '#F2F2F7',
   PRIMARY_TEXT = '#535D7E',
   SYSTEM_COLOR = '#F5F5F5',
   PRIMARY_LIGHT = '#8DA4FF',
@@ -83,6 +84,7 @@ declare module 'styled-components/native' {
       SHADOW: string;
       BLACK: string;
       RED: string;
+      GREY_LIGHT: string;
     };
 
     // All Global App Font Sizes
