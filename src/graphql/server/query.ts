@@ -973,7 +973,7 @@ export const GET_TRIBE_INVITES = gql`
             status
           }
         }
-        receipient {
+        recipient {
           id
           email
           firstName
@@ -1089,7 +1089,7 @@ export const GET_TRIBE_REQUESTS = gql`
             status
           }
         }
-        receipient {
+        recipient {
           id
           email
           firstName
