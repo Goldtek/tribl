@@ -103,6 +103,8 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     }
   );
 
+  const { data: NearbyMembers } = useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY);
+
   const { data: communityMembers } = useQuery<CommunityMembersRequestInterface>(
     GET_COMMUNITY_MEMBERS,
     { variables: { input: { filter: { communityId: id } } } }
@@ -115,13 +117,16 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const singleCommunity = communityData?.Community?.data[0];
   const participants = communityMembers?.communityMembers?.data;
   const communityNearbyMembers = communityMembersData?.nearbyMembers?.data;
+  const nearbyMembersData = NearbyMembers?.nearbyMembers?.data;
   const filteredParticipants = participants?.filter(
     (member) => member.id !== userId
   );
 
   const nearbyMembers = communityNearbyMembers?.length
     ? communityNearbyMembers
-    : filteredParticipants;
+    : filteredParticipants?.length
+    ? filteredParticipants
+    : nearbyMembersData;
 
   useEffect(() => {
     if (!singleCommunity?.id) return;
