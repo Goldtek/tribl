@@ -44,7 +44,7 @@ const Highlight = (props: HighlightProp) => {
     });
   };
 
-  const filteredList = hit.id !== fireAuth.currentUser?.uid ? hit : null;
+  const filteredList = hit.id !== userId ? hit : null;
   const state = hit?.currentLocation?.state;
   const city = hit?.currentLocation?.city;
   const country = hit?.currentLocation?.country;
