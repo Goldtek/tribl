@@ -99,8 +99,7 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [cache, setCache] = useState({
     ...cacheData,
-    details: { selectedIdentity: [], selectedInterest: [] },
-    timestamp: ''
+    details: { selectedIdentity: [], selectedInterest: [], date: '' }
   });
 
   const [OTAUpdate, setOTAUpdate] = useState(false);
@@ -160,7 +159,6 @@ export default function PassportScreen(props: ScreenProp) {
   });
 
   const userDetails = userData?.myPassport;
-  const dateOfBirth = userDetails?.dob;
   const currentLocation = userDetails?.currentLocation?.country
     ? userDetails?.currentLocation
     : cache?.currentLocation;
@@ -187,7 +185,13 @@ export default function PassportScreen(props: ScreenProp) {
 
     if (storageData) {
       const passportInfo = JSON.parse(storageData) as PassportInterface;
-      setCache({ ...cache, ...passportInfo });
+      setCache({
+        ...cache,
+        dob: new Date(parseInt(passportInfo?.dob))
+          .toLocaleString()
+          .split(',')[0],
+        ...passportInfo
+      });
       setAvatar({ ...avatar, uri: passportInfo.avatar });
       handleLocationPermission();
     }
@@ -213,8 +217,6 @@ export default function PassportScreen(props: ScreenProp) {
       variables: { activeSideMenu: 'drawer_connection_key' }
     });
   };
-
-  const dob = cache?.date?.split('/');
 
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
@@ -313,7 +315,7 @@ export default function PassportScreen(props: ScreenProp) {
   useEffect(() => {
     if (userDetails?.interest || userDetails?.identity) {
       const interest = [
-        ...userDetails.interest,
+        ...userDetails?.interest,
         ...cache.details.selectedInterest
       ].map(({ id }) => id);
 
@@ -325,11 +327,16 @@ export default function PassportScreen(props: ScreenProp) {
       setCache({
         ...cache,
         identity,
-        interest,
-        timestamp: cache.details.timeStamp
+        interest
       });
     }
   }, [cache.details]);
+
+  const dob = cache.details?.date?.split('/');
+  const day = parseInt(dob[1]);
+  const month = parseInt(dob[0]);
+  const year = parseInt(dob[2]);
+  const dateOfBirth = `${year + '-' + month + '-' + day}`;
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -338,12 +345,12 @@ export default function PassportScreen(props: ScreenProp) {
         firstName: cache.firstName,
         lastName: cache.lastName,
         bio: cache.bio,
-        dob: `${cache.timestamp}`,
+        dob: dateOfBirth,
         identity: {
           add: cache.identity
         },
         interest: {
-          add: cache.interest
+          add: cache.details.selectedInterest
         },
         currentLocation: {
           city: location.city,

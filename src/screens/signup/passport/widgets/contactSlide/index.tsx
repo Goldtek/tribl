@@ -150,8 +150,6 @@ export default function contactSlide() {
   const SelectedIdentitiesID = Array.from(state.selectedId.values());
 
   const newDate = state.date ? state.date : null;
-  const dob = newDate?.split('/');
-
   const userIdentities = IdentityData?.Identity?.data
     ?.map((item: { name: string; id: string }) => {
       if (userDetails?.identity.includes(item.id)) {
@@ -218,7 +216,7 @@ export default function contactSlide() {
     const day = parseInt(dob[0]);
     const month = parseInt(dob[1]);
     const year = parseInt(dob[2]);
-    const date = month + '/' + day + '/' + year;
+    const date = year + '-' + month + '-' + day;
     setState({ ...state, date, showDatePicker: false });
     setTimeout(() => addUserDetails(), 0);
   };

@@ -248,7 +248,7 @@ function RecommendedCommunity(props: CommunityInterface) {
           >
             {isMember || member
               ? t(`community.recommended.leave`)
-              : request || isRequested == false
+              : request || isRequested
               ? t(`community.tabPanel.request`)
               : t(`community.recommended.join`)}
           </Button>
