@@ -35,7 +35,11 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     showInstruction: true
   });
 
-  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
+  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES, {
+    variables: {
+      input: { filter: { isAdmin: true } }
+    }
+  });
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {

@@ -17,11 +17,12 @@ export const GET_FIREBASE_TOKEN = gql`
 
 //GET ALL IDENTITIES
 export const GET_ALL_IDENTITIES = gql`
-  query Identity {
-    Identity {
+  query Identity($input: IdentityArgsInput) {
+    Identity(input: $input) {
       data {
         id
         name
+        isAdmin
       }
     }
   }
