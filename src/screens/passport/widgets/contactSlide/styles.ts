@@ -44,7 +44,7 @@ export const BioContainer = styled.View`
 export const DOBContainer = styled.View``;
 
 export const IdentityContainer = styled.View`
-  margin: ${RFValue(30)}px 0px;
+  margin-top: ${RFValue(20)}px;
 `;
 
 export const Identities = styled.View`
@@ -82,7 +82,9 @@ export const AddIdentity = styled.Text`
   border-radius: 4px;
 `;
 
-export const InterestContainer = styled.View``;
+export const InterestContainer = styled.View`
+  margin-top: ${RFValue(20)}px;
+`;
 
 export const LocationContainer = styled.View``;
 
