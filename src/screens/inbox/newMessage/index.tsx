@@ -19,7 +19,7 @@ import {
   GET_NEARBY_MEMBERS,
   GET_MY_CONNECTIONS,
   GET_ALL_MEMBERS,
-  GET_MY_CONNECTIONS_NEARBY,
+  GET_MY_CONNECTIONS_NEARBY
 } from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
 import ENVIRONMENT_VARIABLES from '../../../config';
@@ -34,6 +34,7 @@ import { NavigationInterface } from '../../types';
 import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import { fireAuth } from '../../../firebase/config';
+import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -56,11 +57,6 @@ export default function ChatScreen(props: ScreenProp) {
     tagScreenName('NewMessageScreen');
   }, []);
 
-  const [pagination, setPagination] = useState({
-    refreshing: false,
-    callOnScrollEnd: false
-  });
-
   const [refreshing, setRefreshing] = useState(false);
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
@@ -72,68 +68,48 @@ export default function ChatScreen(props: ScreenProp) {
 
   const [listData, setListData] = useState<PassportInterface[]>([]);
 
-  const { data: myConnectionNearbyData } = useQuery<
-    MyConnectionNearbyRequestInterface
-  >(GET_MY_CONNECTIONS_NEARBY, {
-    variables: { input: { filter: { id: userId }, skip: 0 } }
+  const {
+    data: myConnectionNearbyData,
+    fetchMore: fetchMoreMyConnectionNearbyData
+  } = useQuery<MyConnectionNearbyRequestInterface>(GET_MY_CONNECTIONS_NEARBY, {
+    variables: {
+      input: { filter: { id: userId }, skip: 0, limit: PAGINATION_DEFAULT }
+    }
   });
 
-  const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
-    GET_NEARBY_MEMBERS,
-    { variables: { input: { skip: 0 } }}
-  );
+  const { data: nearbyData, fetchMore: fetchMoreNearbyData } = useQuery<
+    NearbyMembersRequestInterface
+  >(GET_NEARBY_MEMBERS, {
+    variables: { input: { skip: 0, limit: PAGINATION_DEFAULT } }
+  });
 
-  const { data: connectionData } = useQuery<MyConnectionsInterface>(
-    GET_MY_CONNECTIONS
-  );
+  const { data: connectionData, fetchMore: fetchMoreConnectionData } = useQuery<
+    MyConnectionsInterface
+  >(GET_MY_CONNECTIONS, {
+    variables: { input: { skip: 0, limit: PAGINATION_DEFAULT } }
+  });
 
   const {
     data: allMembersData,
     loading: allMembersLoading,
     fetchMore: fetchMoreAllMembers
   } = useQuery<AllMembersRequestInterface>(GET_ALL_MEMBERS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { skip: 0, limit: PAGINATION_DEFAULT } }
   });
 
-  const allMembers = allMembersData?.Passport?.data;
-  const nearbyMembers = nearbyData?.nearbyMembers?.data;
-  const myConnection = connectionData?.myConnections?.data;
-  const nearbyConnections = myConnectionNearbyData?.nearbyConnections?.data;
+  const allMembers = allMembersData?.Passport;
+  const nearbyMembers = nearbyData?.nearbyMembers;
+  const myConnection = connectionData?.myConnections;
+  const nearbyConnections = myConnectionNearbyData?.nearbyConnections;
 
-  // const sortName = (a: PassportInterface, b: PassportInterface) => {
-  //   if (a.firstName < b.firstName) return -1;
-  //   if (a.firstName > b.firstName) return 1;
-  //   return 0;
-  // };
+  const filterAll = removeDuplicateMembers(allMembers?.data?.slice());
 
-  const removeDuplicateMembers = (members?: PassportInterface[]) => {
-    if (!members) return;
+  const filterNearby = removeDuplicateMembers(nearbyMembers?.data?.slice());
 
-    const uniqueMembers: PassportInterface[] = [];
-    const hashMap: { [key: string]: string } = {};
-    let index = 0;
-
-    for (index; index < members.length; index++) {
-      const member = members[index];
-      if (!hashMap[member.id]) {
-        hashMap[member.id] = member.id;
-        if (member.id !== userId && member.verified) {
-          uniqueMembers.push(member);
-        }
-      }
-    }
-
-    return uniqueMembers;
-  };
-
-  const filterAll = removeDuplicateMembers(allMembers?.slice());
-
-  const filterNearby = removeDuplicateMembers(nearbyMembers?.slice());
-
-  const filterConnection = removeDuplicateMembers(myConnection?.slice());
+  const filterConnection = removeDuplicateMembers(myConnection?.data?.slice());
 
   const filterConnectionsNearby = removeDuplicateMembers(
-    nearbyConnections?.slice()
+    nearbyConnections?.data?.slice()
   );
 
   const handleOptionClick = (type: string) => () => {
@@ -190,23 +166,137 @@ export default function ChatScreen(props: ScreenProp) {
   const handleEndReach = () => {
     if (!callOnScrollEnd) return;
 
-    fetchMoreAllMembers({
-      variables: {
-        offset: filterAll?.length,
-        first: PAGINATION_DEFAULT
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        setCallOnScrollEnd(false);
+    switch (true) {
+      case state.connections && state.nearby:
+        fetchMoreMyConnectionNearbyData({
+          variables: {
+            input: {
+              skip: filterConnectionsNearby?.length,
+              limit: PAGINATION_DEFAULT
+            }
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            setCallOnScrollEnd(false);
 
-        if (!fetchMoreResult) return prev;
-        return Object.assign({}, prev, {
-          Passport: [...prev.Passport.data, ...fetchMoreResult.Passport.data]
+            if (!fetchMoreResult) return prev;
+
+            return Object.assign({}, prev, {
+              nearbyConnections: {
+                ...prev.nearbyConnections,
+                data: [
+                  ...prev.nearbyConnections.data,
+                  ...fetchMoreResult.nearbyConnections.data
+                ]
+              }
+            });
+          }
         });
-      }
-    });
+        break;
+
+      case state.all:
+        fetchMoreAllMembers({
+          variables: {
+            input: { skip: filterAll?.length, limit: PAGINATION_DEFAULT }
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            setCallOnScrollEnd(false);
+
+            if (!fetchMoreResult) return prev;
+
+            return Object.assign({}, prev, {
+              Passport: {
+                ...prev.Passport,
+                data: [...prev.Passport.data, ...fetchMoreResult.Passport.data]
+              }
+            });
+          }
+        });
+        break;
+
+      case state.connections:
+        fetchMoreConnectionData({
+          variables: {
+            input: { skip: filterConnection?.length, limit: PAGINATION_DEFAULT }
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            setCallOnScrollEnd(false);
+
+            if (!fetchMoreResult) return prev;
+
+            return Object.assign({}, prev, {
+              myConnections: {
+                ...prev.myConnections,
+                data: [
+                  ...prev.myConnections.data,
+                  ...fetchMoreResult.myConnections.data
+                ]
+              }
+            });
+          }
+        });
+        break;
+
+      case state.nearby:
+        fetchMoreNearbyData({
+          variables: {
+            input: { skip: filterNearby?.length, limit: PAGINATION_DEFAULT }
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            setCallOnScrollEnd(false);
+
+            if (!fetchMoreResult) return prev;
+
+            return Object.assign({}, prev, {
+              nearbyMembers: {
+                ...prev.nearbyMembers,
+                data: [
+                  ...prev.nearbyMembers.data,
+                  ...fetchMoreResult.nearbyMembers.data
+                ]
+              }
+            });
+          }
+        });
+        break;
+
+      default:
+        break;
+    }
   };
 
   const handleRefresh = () => {};
+
+  const onEndReachedScroll = () => {
+    switch (true) {
+      case state.connections &&
+        state.nearby &&
+        nearbyConnections &&
+        nearbyConnections?.metadata.totalCount > listData.length:
+        setCallOnScrollEnd(true);
+        break;
+
+      case state.all &&
+        allMembers &&
+        allMembers?.metadata.totalCount > listData.length:
+        setCallOnScrollEnd(true);
+        break;
+
+      case state.nearby &&
+        nearbyMembers &&
+        nearbyMembers?.metadata.totalCount > listData.length:
+        setCallOnScrollEnd(true);
+        break;
+
+      case state.connections &&
+        myConnection &&
+        myConnection?.metadata.totalCount > listData.length:
+        setCallOnScrollEnd(true);
+        break;
+
+      default:
+        break;
+    }
+  };
 
   const showSearchScreen = () => {
     navigation.navigate('CommunityAlgoliaScreen', {
@@ -403,9 +493,9 @@ export default function ChatScreen(props: ScreenProp) {
               paddingVertical: RFValue(20)
             }}
             onEndReachedThreshold={1}
-            // ListFooterComponent={_renderFooter}
+            ListFooterComponent={_renderFooter}
             onMomentumScrollEnd={handleEndReach}
-            onEndReached={() => setCallOnScrollEnd(true)}
+            onEndReached={onEndReachedScroll}
           />
         ) : (
           <Skeleton />

@@ -31,7 +31,7 @@ function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, firstName, lastName, id, currentLocation } = props;
+  const { avatar, firstName, lastName, id } = props;
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
@@ -43,10 +43,9 @@ function Member(props: MemberProp) {
     variables: { payload: { id } }
   });
 
-  const { data: passportData } = useQuery<SinglePassportRequestInterface>(
-    GET_COMMUNITY_MEMBER_PASSPORT,
-    { variables: { id } }
-  );
+  useQuery<SinglePassportRequestInterface>(GET_COMMUNITY_MEMBER_PASSPORT, {
+    variables: { id }
+  });
 
   const { data: singlePassportData } = useQuery<SinglePassportRequestInterface>(
     GET_SINGLE_PASSPORT,

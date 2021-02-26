@@ -196,7 +196,7 @@ export default function HomeScreen(props: ScreenProp) {
         bounces={false}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(80) }}
       >
         <StatusBar translucent animated style="dark" />
         {myCommunityLoading ? (

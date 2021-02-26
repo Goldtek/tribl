@@ -177,8 +177,8 @@ function ConnectionCard(props: ConnectionCardProp) {
             }}
           >
             {currentLocation?.city
-              ? `${currentLocation.city}, ${currentLocation.state}`
-              : `${currentLocation.state}, ${currentLocation.country}`}
+              ? `${currentLocation?.city}, ${currentLocation?.state}`
+              : `${currentLocation?.state}, ${currentLocation?.country}`}
           </Text>
         </NameContainer>
       </Fragment>
