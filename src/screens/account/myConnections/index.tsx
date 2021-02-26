@@ -27,6 +27,7 @@ import {
   GET_SIDE_MENU
 } from '../../../graphql/cache/query';
 import { PAGINATION_DEFAULT } from '../../../constants';
+import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, MenuBadgeWrapper } from './styles';
@@ -53,63 +54,60 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   );
 
   const [search, setSearch] = useState({ searchTerm: '' });
-  const [state, setState] = useState({
-    refreshing: false,
-    callOnScrollEnd: false
-  });
+  const [refreshing, setRefreshing] = useState(false);
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
-  const myConnection = data?.myConnections?.data;
+  const myConnection = data?.myConnections;
 
-  const filterConnections = myConnection?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
-  });
+  const filterConnections = removeDuplicateMembers(myConnection?.data?.slice());
 
   const _renderFooter = useCallback(
-    () => (state.callOnScrollEnd ? <ActivityIndicator /> : null),
-    [state.callOnScrollEnd]
+    () => (callOnScrollEnd ? <ActivityIndicator /> : null),
+    [callOnScrollEnd]
   );
 
-  const onRefresh = async () => {
+  const handleRefresh = async () => {
     try {
-      setState({ ...state, refreshing: true });
+      setRefreshing(true);
       await refetch();
-      setState({ ...state, refreshing: false });
+      setRefreshing(false);
     } catch (error) {
-      setState({ ...state, refreshing: false });
+      setRefreshing(false);
     }
   };
 
-  // const handleEndReach = async () => {
-  //   if (!state.callOnScrollEnd) return;
+  const handleEndReach = async () => {
+    if (!callOnScrollEnd) return;
 
-  //   fetchMore({
-  //     variables: {
-  //       offset: data?.myConnections?.data?.length,
-  //       first: PAGINATION_DEFAULT
-  //     },
-  //     updateQuery: (prev, { fetchMoreResult }) => {
-  //       setState({ ...state, callOnScrollEnd: false });
+    fetchMore({
+      variables: {
+        input: { skip: filterConnections?.length, limit: PAGINATION_DEFAULT }
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setCallOnScrollEnd(false);
 
-  //       if (!fetchMoreResult) return prev;
+        if (!fetchMoreResult) return prev;
 
-  //       return Object.assign({}, prev, {
-  //         myConnections: [...fetchMoreResult.myConnections]
-  //       });
-  //     }
-  //   });
-  // };
+        return Object.assign({}, prev, {
+          myConnections: {
+            ...prev.myConnections,
+            data: [
+              ...prev.myConnections.data,
+              ...fetchMoreResult.myConnections.data
+            ]
+          }
+        });
+      }
+    });
+  };
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
-  const KeysToFilter = ['firstName', 'lastName'];
+  const keysToFilter = ['firstName', 'lastName'];
 
   const filteredWords =
     filterConnections &&
-    filterConnections?.filter(createFilter(search.searchTerm, KeysToFilter));
+    filterConnections?.filter(createFilter(search.searchTerm, keysToFilter));
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <Connection key={item.id} {...item} />
@@ -188,7 +186,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           }}
         />
 
-        {myConnection?.length ? (
+        {filterConnections ? (
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
@@ -203,15 +201,22 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           </Title>
         ) : null}
 
-        {myConnection ? (
+        {filterConnections ? (
           <FlatList
             data={filteredWords}
-            refreshing={state.refreshing}
-            onRefresh={onRefresh}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
             ListFooterComponent={_renderFooter}
-            // onEndReachedThreshold={0.5}
-            // onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
-            // onMomentumScrollEnd={handleEndReach}
+            onEndReachedThreshold={0.5}
+            onEndReached={() => {
+              if (
+                myConnection &&
+                myConnection?.metadata.totalCount > filterConnections.length
+              ) {
+                setCallOnScrollEnd(true);
+              }
+            }}
+            onMomentumScrollEnd={handleEndReach}
             contentContainerStyle={{
               flexGrow: 1,
               marginTop: RFValue(10),
