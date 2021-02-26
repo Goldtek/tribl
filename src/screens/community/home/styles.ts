@@ -35,8 +35,11 @@ export const RecentActivitiesList = styled.View`
 `;
 
 export const ButtonWrapper = styled.View`
-  flex-direction: row;
   justify-content: center;
-  position: relative;
-  bottom: ${RFValue(20)}px;
+  align-items: center;
+  position: absolute;
+  background-color: ${({ theme }) => theme.colors.TRANSPARENT};
+  bottom: 10px;
+  left: 0;
+  right: 0;
 `;

@@ -44,31 +44,26 @@ export default function MemberSlide(props: MemberSlideProp) {
     tagScreenName('TribeMembersScreen');
   }, []);
 
-  const _separator = useMemo(
-    () => () => (
-      <Divider
-        style={{
-          height: 1.5,
-          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
-        }}
-      />
-    ),
-    []
-  );
+  const _renderItem = ({ item }: { item: PassportInterface }) => {
+    return <MemberCard key={item.id} {...item} />;
+  };
 
   const _memberList = (props: any) => {
     const { hits, hasMore, refineNext } = props;
 
-    const _renderItem = ({ item }: { item: PassportInterface }) => {
-      return <MemberCard key={item.id} {...item} />;
-    };
-
     return (
       <Results>
         <FlatList
-          data={hits}
+          data={[]}
           keyExtractor={(item) => item.id}
-          ItemSeparatorComponent={_separator}
+          ItemSeparatorComponent={() => (
+            <Divider
+              style={{
+                height: 1.5,
+                backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+              }}
+            />
+          )}
           onEndReached={() => hasMore && refineNext()}
           renderItem={_renderItem}
           showsVerticalScrollIndicator={false}

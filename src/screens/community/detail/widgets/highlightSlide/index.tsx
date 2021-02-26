@@ -23,24 +23,24 @@ import {
 } from '../../../../../graphql/server/mutations';
 import {
   CommunityInterface,
-  PassportInterface
+  PassportInterface,
+  CommunityMembersRequestInterface
 } from '../../../../../graphql/types';
-import { CommunityMembersRequestInterface } from '../../../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 import { Mixpanel } from '../../../../../config';
 import TagModal from '../../../../../components/tagModal';
 import storage from '../../../../../libs/storage';
 import { crashlytics } from '../../../../../firebase/config';
+import hexToRGB from '../../../../../utils/hexToRGB';
 
 import {
+  Tags,
+  TagText,
   Container,
   CardContainer,
   TextContainer,
-  TagContainer,
-  Tags,
-  TagText
+  TagContainer
 } from './styles';
-import hexToRGB from '../../../../../utils/hexToRGB';
 
 interface singleCommunityScreenProp extends NavigationInterface {
   route: { communityDetails: CommunityInterface };
@@ -90,9 +90,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const { data: communityData, refetch: communityRefetch } = useQuery(
     GET_SINGLE_COMMUNITY,
     {
-      variables: { input: { filter: { id } } },
-      fetchPolicy: 'cache-and-network',
-      pollInterval: 1000
+      variables: { input: { filter: { id } } }
     }
   );
 
