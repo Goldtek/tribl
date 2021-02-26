@@ -267,6 +267,10 @@ export type OTPInterface = {
   sendOtp: { __typename: string; success: boolean };
 };
 
+type QueryMetadata = {
+  totalCount: number;
+};
+
 // SERVER VERIFY OTP (RESPONSE) TYPE
 interface VerifyOTPIT extends JwtTokenResult {
   __typename: string;
@@ -313,7 +317,7 @@ export type MyPassportInterface = { myPassport: PassportInterface };
 
 // USER CONNECTIONS (RESPONSE) TYPE
 export type MyConnectionsInterface = {
-  myConnections: { data: PassportInterface[] };
+  myConnections: { data: PassportInterface[]; metadata: QueryMetadata };
 };
 
 // COMMUNITY USER SINGLE PASSPORT (RESPONSE) TYPE
@@ -385,6 +389,7 @@ export type MyCommunitiesRequestInterface = {
 export type NearbyMembersRequestInterface = {
   nearbyMembers: {
     data: PassportInterface[];
+    metadata: QueryMetadata;
   };
 };
 
@@ -399,6 +404,7 @@ export type CommunityMembersRequestInterface = {
 export type AllMembersRequestInterface = {
   Passport: {
     data: PassportInterface[];
+    metadata: QueryMetadata;
   };
 };
 
@@ -434,7 +440,7 @@ export type MyChannelRequestInterface = {
 
 // USER CONNECTIONS REQUESTS (RESPONSE) TYPE
 export type ConnectionRequestsInterface = {
-  connectionRequests: { data: PassportInterface[] };
+  connectionRequests: { data: PassportInterface[]; metadata: QueryMetadata };
 };
 
 // POPULAR COMMUNITIES REQUEST (RESPONSE) TYPE
@@ -446,5 +452,14 @@ export type PopularCommunitiesRequestInterface = {
 export type MyConnectionNearbyRequestInterface = {
   nearbyConnections: {
     data: PassportInterface[];
+    metadata: QueryMetadata;
+  };
+};
+
+// COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
+export type CommunityChannelRequestInterface = {
+  Channel: {
+    data: ChannelInterface[];
+    metadata: QueryMetadata;
   };
 };

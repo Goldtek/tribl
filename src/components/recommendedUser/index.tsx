@@ -54,11 +54,10 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   const {
     id,
     avatar,
+    pending,
     lastName,
     firstName,
-    connected,
     moderatorOf,
-    phoneNumber,
     currentLocation,
     connectionDetails
   } = member;

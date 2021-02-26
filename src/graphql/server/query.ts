@@ -112,15 +112,6 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         connectionDetails {
           status
         }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
-        }
         moderatorOf {
           isModerator
           id
@@ -155,6 +146,9 @@ export const GET_RECOMMENDED_MEMBERS = gql`
 export const GET_NEARBY_MEMBERS = gql`
   query nearbyMembers($input: RecommendationPassportArgsInput) {
     nearbyMembers(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         bio
@@ -197,15 +191,6 @@ export const GET_NEARBY_MEMBERS = gql`
         }
         connectionDetails {
           status
-        }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
         }
         presence {
           status
@@ -254,15 +239,6 @@ export const GET_CHANNEL_MEMBERS = gql`
         }
         connectionDetails {
           status
-        }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
         }
         presence {
           status
@@ -319,15 +295,6 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         connectionDetails {
           status
         }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
-        }
         presence {
           status
           lastSeen
@@ -352,11 +319,6 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
         isModerator
         isRequested
         isInvited
-        channels {
-          id
-          name
-          isMember
-        }
         tags {
           id
           name
@@ -385,11 +347,6 @@ export const GET_POPULAR_COMMUNITIES = gql`
         isModerator
         isRequested
         isInvited
-        channels {
-          id
-          name
-          isMember
-        }
         tags {
           id
           name
@@ -418,11 +375,6 @@ export const GET_MY_COMMUNITIES = gql`
         isModerator
         isRequested
         isInvited
-        channels {
-          id
-          name
-          isMember
-        }
         tags {
           id
           name
@@ -440,6 +392,9 @@ export const GET_MY_COMMUNITIES = gql`
 export const GET_MY_CONNECTIONS_NEARBY = gql`
   query nearbyConnections($input: ConnectionArgsInput) {
     nearbyConnections(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         bio
@@ -479,15 +434,6 @@ export const GET_MY_CONNECTIONS_NEARBY = gql`
         }
         connectionDetails {
           status
-        }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
         }
       }
     }
@@ -498,6 +444,9 @@ export const GET_MY_CONNECTIONS_NEARBY = gql`
 export const GET_MY_CONNECTIONS = gql`
   query myConnections($input: ConnectionArgsInput) {
     myConnections(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         bio
@@ -538,15 +487,6 @@ export const GET_MY_CONNECTIONS = gql`
         connectionDetails {
           status
         }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
-        }
       }
     }
   }
@@ -556,6 +496,9 @@ export const GET_MY_CONNECTIONS = gql`
 export const GET_CONNECTION_REQUEST = gql`
   query connectionRequests($input: ConnectionArgsInput) {
     connectionRequests(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         bio
@@ -593,15 +536,6 @@ export const GET_CONNECTION_REQUEST = gql`
         }
         connectionDetails {
           status
-        }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
         }
       }
     }
@@ -624,11 +558,6 @@ export const GET_SINGLE_COMMUNITY = gql`
         description
         isRequested
         isInvited
-        channels {
-          id
-          name
-          isMember
-        }
         tags {
           id
           name
@@ -667,15 +596,6 @@ export const GET_SINGLE_PASSPORT = gql`
       }
       connectionDetails {
         status
-      }
-      conversationDetails {
-        id
-        messageRequest {
-          id
-          senderId
-          approvedAt
-          createdAt
-        }
       }
       moderatorOf {
         isModerator
@@ -754,15 +674,6 @@ export const GET_COMMUNITY_MEMBERS = gql`
         connectionDetails {
           status
         }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
-        }
         presence {
           status
           lastSeen
@@ -815,15 +726,6 @@ export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
       connectionDetails {
         status
       }
-      conversationDetails {
-        id
-        messageRequest {
-          id
-          senderId
-          approvedAt
-          createdAt
-        }
-      }
     }
   }
 `;
@@ -832,6 +734,9 @@ export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
 export const GET_ALL_MEMBERS = gql`
   query Passport($input: PassportArgsInput) {
     Passport(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         avatar
@@ -859,15 +764,6 @@ export const GET_ALL_MEMBERS = gql`
         }
         connectionDetails {
           status
-        }
-        conversationDetails {
-          id
-          messageRequest {
-            id
-            senderId
-            approvedAt
-            createdAt
-          }
         }
         presence {
           status
@@ -974,7 +870,7 @@ export const GET_TRIBE_INVITES = gql`
             status
           }
         }
-        recipient {
+        receipient {
           id
           email
           firstName
@@ -1090,7 +986,7 @@ export const GET_TRIBE_REQUESTS = gql`
             status
           }
         }
-        recipient {
+        receipient {
           id
           email
           firstName
@@ -1132,6 +1028,22 @@ export const GET_TRIBE_REQUESTS = gql`
             status
           }
         }
+      }
+    }
+  }
+`;
+
+// GET ALL USER CHANNELS
+export const GET_COMMUNITY_CHANNELS = gql`
+  query communityChannels($input: ChannelArgsInput!) {
+    Channel(input: $input) {
+      metadata {
+        totalCount
+      }
+      data {
+        id
+        name
+        isMember
       }
     }
   }
