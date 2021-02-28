@@ -40,7 +40,7 @@ function ChannelMember(props: ChannelUserProp) {
   const [pending, setPending] = useState(false);
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber } }
+    variables: { payload: { id } }
   });
 
   const handleRequest = async () => {
@@ -87,9 +87,9 @@ function ChannelMember(props: ChannelUserProp) {
     });
   };
 
-  const state = currentLocation[0]?.state;
-  const country = currentLocation[0]?.country;
-  const city = currentLocation[0]?.city;
+  const state = currentLocation?.state;
+  const country = currentLocation?.country;
+  const city = currentLocation?.city;
 
   return (
     <TouchableRipple

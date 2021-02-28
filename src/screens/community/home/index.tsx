@@ -9,7 +9,7 @@ import debounce from 'lodash.debounce';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button, ActivityIndicator } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
+import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
@@ -54,7 +54,8 @@ import {
   RecommendedListHeader,
   RecommendedCommunityContainer,
   RecentActivitiesList,
-  CommunityCover
+  CommunityCover,
+  ButtonWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -83,23 +84,23 @@ export default function HomeScreen(props: ScreenProp) {
   } = useQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES);
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { limit: PAGINATION_DEFAULT } }
   });
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT / 2 }
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
   });
 
   const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { limit: PAGINATION_DEFAULT } }
   });
 
   const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { limit: PAGINATION_DEFAULT } }
   });
 
   const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
   useEffect(() => {
@@ -119,12 +120,14 @@ export default function HomeScreen(props: ScreenProp) {
   );
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
-    variables: { filter: { verified: true } }
+    variables: {
+      input: { limit: PAGINATION_DEFAULT / 2 }
+    }
   });
 
-  const myCommunity = myCommunityData?.myCommunities;
-  const recommendedMembers = membersData?.recommendedMembers;
-  const communities = communityData?.recommendedCommunities
+  const myCommunity = myCommunityData?.myCommunities?.data;
+  const recommendedMembers = membersData?.recommendedMembers?.data;
+  const communities = communityData?.recommendedCommunities?.data
     .slice()
     .sort((a) => {
       if (a.name.includes('REFitness Group')) return -1;
@@ -133,6 +136,12 @@ export default function HomeScreen(props: ScreenProp) {
 
   const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
+  };
+
+  const navigateToCreateNewTribeScreen = () => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'CreateTribeScreen'
+    });
   };
 
   const handleJoinCommunity = () => {
@@ -175,10 +184,7 @@ export default function HomeScreen(props: ScreenProp) {
 
         setFetchingMore(false);
         return Object.assign({}, prev, {
-          myConnections: [
-            ...prev.myCommunities,
-            ...fetchMoreResult.myCommunities
-          ]
+          myConnections: [prev.myCommunities, fetchMoreResult.myCommunities]
         });
       }
     });
@@ -190,7 +196,7 @@ export default function HomeScreen(props: ScreenProp) {
         bounces={false}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(20) }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(80) }}
       >
         <StatusBar translucent animated style="dark" />
         {myCommunityLoading ? (
@@ -382,6 +388,25 @@ export default function HomeScreen(props: ScreenProp) {
           </RecentActivitiesList>
         ) : null}
       </ScrollView>
+      <ButtonWrapper>
+        <Button
+          onPress={navigateToCreateNewTribeScreen}
+          mode="contained"
+          labelStyle={{
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            color: colors.WHITE,
+            textTransform: 'capitalize'
+          }}
+          style={{
+            backgroundColor: colors.PRIMARY_TEXT,
+            width: RFPercentage(25),
+            borderRadius: RFValue(50)
+          }}
+        >
+          {t(`community.createTribe.buttonText`)}
+        </Button>
+      </ButtonWrapper>
 
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />

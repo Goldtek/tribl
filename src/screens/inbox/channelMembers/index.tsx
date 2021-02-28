@@ -40,10 +40,10 @@ function ChannelMembers(props: ModalProp) {
     refetch,
     fetchMore
   } = useQuery<ChannelMembersRequestInterface>(GET_CHANNEL_MEMBERS, {
-    variables: { channelId }
+    variables: { input: { channelId: channelId } }
   });
 
-  const channelMembers = channelData?.channelMembers;
+  const channelMembers = channelData?.channelMembers?.data;
 
   const memberList = channelMembers?.slice().sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
@@ -71,7 +71,7 @@ function ChannelMembers(props: ModalProp) {
         if (!fetchMoreResult) return prev;
 
         return Object.assign({}, prev, {
-          channelMembers: [...fetchMoreResult.channelMembers]
+          channelMembers: [fetchMoreResult.channelMembers]
         });
       }
     });

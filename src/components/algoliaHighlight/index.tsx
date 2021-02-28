@@ -3,10 +3,11 @@ import { connectHighlight } from 'react-instantsearch-native';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
+import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
-import { fireAuth } from '../../firebase/config';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
@@ -22,6 +23,10 @@ const Highlight = (props: HighlightProp) => {
   const { hit } = props;
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
+
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userId = userDetails?.id;
 
   const handleNavigation = () => {
     navigation.navigate('CommunityDetailScreen', {
@@ -39,7 +44,7 @@ const Highlight = (props: HighlightProp) => {
     });
   };
 
-  const filteredList = hit.id !== fireAuth.currentUser?.uid ? hit : null;
+  const filteredList = hit.id !== userId ? hit : null;
   const state = hit?.currentLocation?.state;
   const city = hit?.currentLocation?.city;
   const country = hit?.currentLocation?.country;

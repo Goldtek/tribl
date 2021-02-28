@@ -5,14 +5,14 @@ import { ApolloProvider as Provider } from '@apollo/react-hooks';
 import { WebSocketLink } from 'apollo-link-ws';
 import { ApolloClient } from 'apollo-client';
 import { getMainDefinition } from 'apollo-utilities';
+import { crashlytics } from '../firebase/config';
+import ENVIRONMENT_VARIABLES from '../config';
 import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
-import cache from './cache';
 import resolvers from './cache/resolvers';
-import ENVIRONMENT_VARIABLES from '../config';
 import Storage from '../libs/storage';
-import { crashlytics } from '../firebase/config';
 import { VerifyOTPIT } from './types';
+import cache from './cache';
 
 // Create a Http link:
 const httpLink = new HttpLink({
