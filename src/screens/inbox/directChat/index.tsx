@@ -43,6 +43,8 @@ export default function DirectChatScreen(props: ScreenProp) {
     chatClient.channel('team', route.params.channelId)
   );
 
+  const [channelMembers, setChannelMembers] = useState(channel.state.members);
+
   useEffect(() => {
     const getChannel = async () => {
       const filter = {
@@ -62,9 +64,9 @@ export default function DirectChatScreen(props: ScreenProp) {
 
       if (!queryChannel) return;
 
-      setStreamContextChannel(queryChannel);
-
       setChannel(queryChannel);
+      setStreamContextChannel(queryChannel);
+      setChannelMembers(queryChannel.state.members);
     };
 
     setStreamContextChannel(channel);
@@ -76,17 +78,13 @@ export default function DirectChatScreen(props: ScreenProp) {
     getChannel();
   }, []);
 
-  const receiver = [channel.data?.receiver, channel.data?.sender].find(
-    (user) => user?.id !== chatClient.user?.id
+  const receiverId = Object.keys(channelMembers).find(
+    (userId: string) => userId !== chatClient.user?.id
   );
 
-  const displayAvatar = {
-    name:
-      `${receiver?.firstName} ${receiver?.lastName}` ||
-      route.params.title ||
-      `${route.params?.firstName} ${route.params?.lastName}`,
-    image: receiver?.avatar || USER_DEFAULT_AVATAR
-  };
+  const receiver = receiverId
+    ? channelMembers[`${receiverId}`].user
+    : { image: USER_DEFAULT_AVATAR, name: '' };
 
   useEffect(() => {
     tagScreenName('DirectChatScreen');
@@ -121,7 +119,7 @@ export default function DirectChatScreen(props: ScreenProp) {
             <FastImage
               resizeMode={FastImage.resizeMode.cover}
               source={{
-                uri: displayAvatar.image,
+                uri: receiver?.image,
                 priority: FastImage.priority.high
               }}
               style={{
@@ -138,9 +136,9 @@ export default function DirectChatScreen(props: ScreenProp) {
               marginHorizontal: 10
             }}
           >
-            {displayAvatar.name.length <= 20
-              ? displayAvatar.name
-              : `${displayAvatar.name.substr(0, 20)}...`}
+            {`${receiver?.name}`.length <= 20
+              ? `${receiver?.name}`
+              : `${receiver?.name}`.substr(0, 20).concat('...')}
           </Paragraph>
         </HeaderContainer>
 
