@@ -15,10 +15,12 @@ import {
 } from '../../graphql/types';
 import {
   REFRESH_TOKEN,
-  UPDATE_NOTIFICATION,
-  GET_FIREBASE_TOKEN
+  UPDATE_NOTIFICATION
 } from '../../graphql/server/mutations';
-import { GET_USER_PASSPORT } from '../../graphql/server/query';
+import {
+  GET_USER_PASSPORT,
+  GET_FIREBASE_TOKEN
+} from '../../graphql/server/query';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
 import { NavigationInterface } from '../types';
@@ -46,7 +48,7 @@ export default function SplashScreen(props: ScreenProp) {
 
   const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN);
-  const [authenticateFirebase, { data: firebase }] = useMutation<
+  const [authenticateFirebase, { data: firebase }] = useLazyQuery<
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 import { ActivityIndicator, Divider } from 'react-native-paper';
 import ChannelCard from './widget';
@@ -12,6 +12,7 @@ import {
 import { GET_COMMUNITY_CHANNELS } from '../../../../../graphql/server/query';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useIsFocused } from '@react-navigation/native';
+import { PAGINATION_DEFAULT } from '../../../../../constants';
 
 import { LoadingIndicatorContainer, LoadingChannels } from './styles';
 
@@ -26,19 +27,54 @@ export default function ChannelScreen(props: ScreenProp) {
 
   const isFocused = useIsFocused();
 
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
+
   useEffect(() => {
     tagScreenName('TribeChannelScreen');
   }, []);
 
-  const [getCommunityChannels, { data, refetch }] = useLazyQuery<
+  const [getCommunityChannels, { data, refetch, fetchMore }] = useLazyQuery<
     CommunityChannelRequestInterface
   >(GET_COMMUNITY_CHANNELS, {
-    variables: { communityId: communityDetails.id }
+    variables: {
+      input: {
+        filter: { community: { id: communityDetails.id } },
+        limit: PAGINATION_DEFAULT,
+        skip: 0
+      }
+    }
   });
 
+  const communityChannels = data?.Channel;
+
   useEffect(() => {
-    data ? refetch() : getCommunityChannels();
-  }, [isFocused, data]);
+    communityChannels ? refetch() : getCommunityChannels();
+  }, [isFocused, communityChannels]);
+
+  const handleEndReach = async () => {
+    if (!callOnScrollEnd) return;
+
+    fetchMore({
+      variables: {
+        input: {
+          skip: communityChannels?.data?.length,
+          limit: PAGINATION_DEFAULT
+        }
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setCallOnScrollEnd(false);
+
+        if (!fetchMoreResult) return prev;
+
+        return Object.assign({}, prev, {
+          communityChannels: {
+            ...prev.Channel,
+            data: [...prev.Channel.data, ...fetchMoreResult.Channel.data]
+          }
+        });
+      }
+    });
+  };
 
   const _renderItem = (props: any) => (
     <ChannelCard {...props} communityDetails={communityDetails} />
@@ -48,7 +84,7 @@ export default function ChannelScreen(props: ScreenProp) {
     <FlatList
       bounces={false}
       renderItem={_renderItem}
-      data={data?.communityChannels}
+      data={communityChannels?.data}
       contentContainerStyle={{ flex: 1 }}
       ItemSeparatorComponent={() => (
         <Divider style={{ borderWidth: 0.6, borderColor: colors.DISABLED }} />
@@ -60,6 +96,16 @@ export default function ChannelScreen(props: ScreenProp) {
         </LoadingIndicatorContainer>
       }
       keyExtractor={(item) => item.id}
+      onEndReachedThreshold={0.5}
+      onMomentumScrollEnd={handleEndReach}
+      onEndReached={() => {
+        if (
+          communityChannels &&
+          communityChannels?.metadata.totalCount > communityChannels.data.length
+        ) {
+          setCallOnScrollEnd(true);
+        }
+      }}
     />
   );
 }

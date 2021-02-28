@@ -49,12 +49,12 @@ function CommunityTabScreen(props: ScreenProp) {
     PopularCommunitiesRequestInterface
   >(GET_POPULAR_COMMUNITIES, {
     fetchPolicy: 'cache-and-network',
-    variables: { offset: 0, first: PAGINATION_DEFAULT }
+    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
-  const community = communityData?.recommendedCommunities;
-  const randomCommunity = communityData?.recommendedCommunities[0];
-  const popular = popularData?.popularCommunities;
+  const community = communityData?.recommendedCommunities?.data;
+  const randomCommunity = communityData?.recommendedCommunities?.data[0];
+  const popular = popularData?.popularCommunities?.data;
 
   const handleEndReach = async () => {
     if (!state.callOnScrollEnd) return;
@@ -71,8 +71,8 @@ function CommunityTabScreen(props: ScreenProp) {
 
         return Object.assign({}, prev, {
           popularCommunities: [
-            ...prev.popularCommunities,
-            ...fetchMoreResult.popularCommunities
+            prev.popularCommunities,
+            fetchMoreResult.popularCommunities
           ]
         });
       }
@@ -116,7 +116,7 @@ function CommunityTabScreen(props: ScreenProp) {
           )}
 
           <PopularContainer>
-            {popularData?.popularCommunities.length ? (
+            {popularData?.popularCommunities?.data?.length ? (
               <CommunityWrapper>
                 <Title
                   style={{

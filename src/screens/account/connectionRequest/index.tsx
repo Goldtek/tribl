@@ -28,6 +28,7 @@ import {
   ShowSideMenu
 } from '../../../graphql/types';
 import { PAGINATION_DEFAULT } from '../../../constants';
+import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, MenuBadgeWrapper } from './styles';
@@ -44,16 +45,15 @@ export default function ConnectionRequestScreen(
 
   const { data, refetch, fetchMore } = useQuery<ConnectionRequestsInterface>(
     GET_CONNECTION_REQUEST,
-    { variables: { offset: 0, first: PAGINATION_DEFAULT } }
+    { variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } } }
   );
+
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
   );
 
-  const [state, setState] = useState({
-    refreshing: false,
-    callOnScrollEnd: false
-  });
+  const [refreshing, setRefreshing] = useState(false);
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
@@ -67,35 +67,50 @@ export default function ConnectionRequestScreen(
     tagScreenName('ConnectionRequestScreen');
   }, []);
 
-  const connectionRequest = data?.connectionRequests;
+  const connectionRequests = data?.connectionRequests;
 
-  const _renderFooter = useCallback(
-    () => (state.callOnScrollEnd ? <ActivityIndicator /> : null),
-    [state.callOnScrollEnd]
+  const filterConnectionRequests = removeDuplicateMembers(
+    connectionRequests?.data?.slice()
   );
 
-  const onRefresh = async () => {
+  const _renderFooter = useCallback(
+    () => (callOnScrollEnd ? <ActivityIndicator /> : null),
+    [callOnScrollEnd]
+  );
+
+  const handleRefresh = async () => {
     try {
-      setState({ ...state, refreshing: true });
+      setRefreshing(true);
       await refetch();
-      setState({ ...state, refreshing: false });
+      setRefreshing(false);
     } catch (error) {
-      setState({ ...state, refreshing: false });
+      setRefreshing(false);
     }
   };
 
   const handleEndReach = () => {
-    if (!state.callOnScrollEnd) return;
+    if (!callOnScrollEnd) return;
 
     fetchMore({
-      variables: { offset: data?.connectionRequests.length },
+      variables: {
+        input: {
+          skip: filterConnectionRequests?.length,
+          limit: PAGINATION_DEFAULT
+        }
+      },
       updateQuery: (prev, { fetchMoreResult }) => {
-        setState({ ...state, callOnScrollEnd: false });
+        setCallOnScrollEnd(false);
 
         if (!fetchMoreResult) return prev;
 
         return Object.assign({}, prev, {
-          myConnections: [...fetchMoreResult.connectionRequests]
+          connectionRequests: {
+            ...prev.connectionRequests,
+            data: [
+              ...prev.connectionRequests.data,
+              ...fetchMoreResult.connectionRequests.data
+            ]
+          }
         });
       }
     });
@@ -107,14 +122,14 @@ export default function ConnectionRequestScreen(
 
   useFocusEffect(
     useCallback(() => {
-      data?.connectionRequests.length
+      filterConnectionRequests?.length
         ? changeConnectionNotification({
             variables: { showConnectionNotificationBadge: true }
           })
         : changeConnectionNotification({
             variables: { showConnectionNotificationBadge: false }
           }).then(refetch);
-    }, [data?.connectionRequests.length])
+    }, [filterConnectionRequests?.length])
   );
 
   return (
@@ -155,14 +170,14 @@ export default function ConnectionRequestScreen(
                 size={RFValue(25)}
                 color={colors.PRIMARY_TEXT}
               />
-              {data?.connectionRequests.length ? <MenuBadgeWrapper /> : null}
+              {filterConnectionRequests?.length ? <MenuBadgeWrapper /> : null}
             </Fragment>
           </TouchableHighlight>
         )}
         style={{ paddingTop: top }}
       />
       <Container>
-        {connectionRequest?.length ? (
+        {filterConnectionRequests?.length ? (
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
@@ -177,11 +192,11 @@ export default function ConnectionRequestScreen(
           </Title>
         ) : null}
 
-        {connectionRequest ? (
+        {filterConnectionRequests ? (
           <FlatList
-            data={connectionRequest}
-            refreshing={state.refreshing}
-            onRefresh={onRefresh}
+            refreshing={refreshing}
+            data={filterConnectionRequests}
+            onRefresh={handleRefresh}
             ListFooterComponent={_renderFooter}
             contentContainerStyle={{
               flexGrow: 1,
@@ -201,9 +216,17 @@ export default function ConnectionRequestScreen(
                 You don't have any connection request.
               </Text>
             }
-            // onEndReachedThreshold={0.5}
-            // onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
-            // onMomentumScrollEnd={handleEndReach}
+            onEndReachedThreshold={0.5}
+            onMomentumScrollEnd={handleEndReach}
+            onEndReached={() => {
+              if (
+                connectionRequests &&
+                connectionRequests?.metadata.totalCount >
+                  filterConnectionRequests.length
+              ) {
+                setCallOnScrollEnd(true);
+              }
+            }}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.id}
           />

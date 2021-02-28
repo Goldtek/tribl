@@ -17,10 +17,18 @@ export default function MyCommunity(props: CommunityInterface) {
 
   const { avatar, name, id } = props;
 
-  useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
+  useQuery(GET_COMMUNITY_MEMBERS, {
+    variables: {
+      input: {
+        filter: {
+          communityId: id
+        }
+      }
+    }
+  });
 
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
-    variables: { filter: { participantOf: { id } } }
+    variables: { input: { communityId: id } }
   });
 
   const handleNavigation = () => {

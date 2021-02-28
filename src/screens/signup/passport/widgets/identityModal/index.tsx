@@ -32,7 +32,11 @@ function IdentityModal(props: any) {
     selectedId: new Map()
   });
 
-  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
+  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES, {
+    variables: {
+      input: { filter: { isAdmin: true } }
+    }
+  });
 
   const handleSelect = (selected: string, id: string) => {
     if (!state.selectedIdentities.has(selected)) {
@@ -126,7 +130,7 @@ function IdentityModal(props: any) {
               marginTop: RFValue(20)
             }}
           >
-            {data?.Identity?.map((identity) => {
+            {data?.Identity?.data?.map((identity) => {
               return (
                 <IdentityButton
                   key={identity.id}
