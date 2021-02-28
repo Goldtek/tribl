@@ -756,7 +756,7 @@ PODS:
     - Firebase/Firestore (~> 7.6.0)
     - React-Core
     - RNFBApp
-  - RNGestureHandler (1.10.2):
+  - RNGestureHandler (1.10.3):
     - React-Core
   - RNImageCropPicker (0.35.3):
     - React-Core
@@ -773,7 +773,7 @@ PODS:
     - React-Core
   - RNReanimated (1.13.2):
     - React-Core
-  - RNScreens (2.17.1):
+  - RNScreens (2.18.0):
     - React-Core
   - RNSVG (12.1.0):
     - React
@@ -1267,12 +1267,12 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: 0e6347d4e2251c6656b43ce8544662d1bac7deff
   RNFBDatabase: 21ebccd262d7ab77db2b5c7fe4c6528c6ec259c3
   RNFBFirestore: 337b96bf5b1b2d32bb9fc4735afd47b16532dde8
-  RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
+  RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNImageCropPicker: 08ba3a2e2f4f8833d606f01906c371e382c4dea9
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
   RNPermissions: 5df468064df661a4c8c017e2791ce90d7695eea5
   RNReanimated: e03f7425cb7a38dcf1b644d680d1bfc91c3337ad
-  RNScreens: b6c9607e6fe47c1b6e2f1910d2acd46dd7ecea3a
+  RNScreens: f0d7a2a440a8ba9f4574ca1ddb3368f473891be4
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNUxcam: 469f0fa2d5e8b86e494e3098fcf7f12c8466c1f2
   SDWebImage: c666b97e1fa9c64b4909816a903322018f0a9c84
