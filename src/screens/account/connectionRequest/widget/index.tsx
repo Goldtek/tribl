@@ -26,7 +26,7 @@ interface ConnectionRequestProp {
 
 const ConnectionRequest = (props: ConnectionRequestProp) => {
   const { refetch, item } = props;
-  const { phoneNumber, firstName, lastName, avatar, id } = item;
+  const { firstName, lastName, avatar, id, currentLocation } = item;
 
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
@@ -35,11 +35,11 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
   const [rejectLoading, setRejectLoading] = useState(false);
 
   const [acceptConnection] = useMutation(ACCEPT_CONNECTION, {
-    variables: { payload: { phoneNumber: phoneNumber } }
+    variables: { payload: { id } }
   });
 
   const [declineConnection] = useMutation(REJECT_CONNECTION, {
-    variables: { payload: { phoneNumber: phoneNumber } }
+    variables: { payload: { id } }
   });
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
@@ -113,7 +113,8 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE)
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
             }}
           >
             {`${firstName} ${lastName}`}
@@ -125,7 +126,9 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
               fontSize: RFValue(fonts.MEDIUM_SIZE)
             }}
           >
-            {/* 3 min ago */}
+            {currentLocation?.city
+              ? `${currentLocation?.city}, ${currentLocation?.state}`
+              : `${currentLocation?.state}, ${currentLocation?.country}`}
           </Text>
         </NameContainer>
         {rejectLoading ? (

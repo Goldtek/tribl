@@ -14,7 +14,6 @@ import {
   MyPassportInterface,
   PassportInterface
 } from '../../../../graphql/types';
-import formatMessageTime from '../../../../utils/timesince';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../../stream';
 import {
@@ -39,10 +38,15 @@ export default function Connection(props: ConnectionProp) {
 
   const navigation = useNavigation();
 
-  const { id, avatar, firstName, lastName } = props;
+  const {
+    id,
+    avatar,
+    firstName,
+    lastName,
+    currentLocation
+  } = props;
 
   const [channelId, setChannelId] = useState('');
-  const [lastActive, setLastActive] = useState<Date | null>(null);
 
   useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
 
@@ -62,14 +66,6 @@ export default function Connection(props: ConnectionProp) {
       const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 
       const [channel] = await chatClient.queryChannels(filter, sort, options);
-
-      const { users } = await chatClient.queryUsers(
-        { id },
-        { id: -1 },
-        { presence: true }
-      );
-
-      setLastActive(new Date(`${users[0].last_active}`));
 
       if (!channel) return;
 
@@ -168,24 +164,24 @@ export default function Connection(props: ConnectionProp) {
             style={{
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE)
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
             }}
           >
             {`${firstName} ${lastName}`}
           </Title>
-
-          {lastActive && (
-            <Text
-              style={{
-                color: colors.SECONDARY_TEXT,
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textTransform: 'lowercase'
-              }}
-            >
-              {formatMessageTime(lastActive)}
-            </Text>
-          )}
+          <Text
+            style={{
+              color: colors.SECONDARY_TEXT,
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'lowercase'
+            }}
+          >
+            {currentLocation?.city
+              ? `${currentLocation?.city}, ${currentLocation?.state}`
+              : `${currentLocation?.state}, ${currentLocation?.country}`}
+          </Text>
         </NameContainer>
         <TouchableRipple
           style={{

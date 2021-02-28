@@ -10,7 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
 import {
   JOIN_COMMUNITY,
-  LEAVE_COMMUNITY
+  LEAVE_COMMUNITY,
+  JOIN_PRIVATE_COMMUNITY
 } from '../../graphql/server/mutations';
 import {
   GET_COMMUNITY_MEMBERS,
@@ -33,6 +34,8 @@ interface PopularCommunityProp {
   interests: [];
   description: string;
   uniqueInterests: any;
+  isPrivate: boolean;
+  isRequested: boolean;
 }
 
 function PopularCommunity(props: PopularCommunityProp) {
@@ -40,7 +43,16 @@ function PopularCommunity(props: PopularCommunityProp) {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
-  const { avatar, name, membersCount, isMember, id, uniqueInterests } = props;
+  const {
+    avatar,
+    name,
+    membersCount,
+    isMember,
+    id,
+    uniqueInterests,
+    isPrivate,
+    isRequested
+  } = props;
 
   const [modal, setModal] = useState(false);
 
@@ -54,10 +66,13 @@ function PopularCommunity(props: PopularCommunityProp) {
   }, [modal]);
 
   const [member, setMember] = useState(isMember);
+  const [request, setRequest] = useState(false);
 
-  useQuery(GET_COMMUNITY_MEMBERS, { variables: { id } });
+  useQuery(GET_COMMUNITY_MEMBERS, {
+    variables: { input: { filter: { communityId: id } } }
+  });
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
-    variables: { filter: { participantOf: { id } } }
+    variables: { input: { communityId: id } }
   });
 
   const clearTagModal = async () => {
@@ -67,6 +82,13 @@ function PopularCommunity(props: PopularCommunityProp) {
       crashlytics.recordError(new Error(error));
     }
   };
+
+  const [joinPrivateCommunity, { loading: joinPrivateLoading }] = useMutation(
+    JOIN_PRIVATE_COMMUNITY,
+    {
+      variables: { payload: { communityId: id } }
+    }
+  );
 
   const [joinCommunity, { loading: joinLoading }] = useMutation(
     JOIN_COMMUNITY,
@@ -95,6 +117,20 @@ function PopularCommunity(props: PopularCommunityProp) {
       setModal(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
+    }
+  };
+
+  const handleJoinPrivateTribe = async () => {
+    logEvent('request to join private community', { from: 'community' });
+    try {
+      Mixpanel.track('User Requests To Join Tribe', {
+        info: `User Request To Join ${name} Tribe`,
+        'Activity Screen': 'Popular Community Card'
+      });
+      await joinPrivateCommunity();
+      setRequest(true);
+    } catch (error) {
+      crashlytics.recordError(error);
     }
   };
 
@@ -161,8 +197,21 @@ function PopularCommunity(props: PopularCommunityProp) {
 
           <Button
             mode="text"
-            loading={member ? leaveLoading : joinLoading}
-            onPress={member ? handleLeave : handleJoin}
+            disabled={request || isRequested ? true : false}
+            loading={
+              member
+                ? leaveLoading
+                : isPrivate
+                ? joinPrivateLoading
+                : joinLoading
+            }
+            onPress={
+              member
+                ? handleLeave
+                : isPrivate
+                ? handleJoinPrivateTribe
+                : handleJoin
+            }
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -175,6 +224,8 @@ function PopularCommunity(props: PopularCommunityProp) {
           >
             {member
               ? t(`community.recommended.leave`)
+              : request || isRequested
+              ? t(`community.tabPanel.request`)
               : t(`community.recommended.join`)}
           </Button>
         </TextContainer>

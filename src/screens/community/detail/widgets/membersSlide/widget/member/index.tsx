@@ -12,11 +12,14 @@ import {
   PassportInterface,
   SinglePassportRequestInterface
 } from '../../../../../../../graphql/types';
-import { GET_COMMUNITY_MEMBER_PASSPORT } from '../../../../../../../graphql/server/query';
+import {
+  GET_COMMUNITY_MEMBER_PASSPORT,
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
 import { OnlinePresence } from '../../../../../../inbox/types';
 import { fireAuth, crashlytics } from '../../../../../../../firebase/config';
-import formatMessageTime from '../../../../../../../utils/timesince';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -28,16 +31,20 @@ function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, firstName, lastName, phoneNumber, id } = props;
+  const { avatar, firstName, lastName, id } = props;
 
-  if (id === fireAuth.currentUser?.uid) return null;
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userId = userDetails?.id;
+
+  if (id === userId) return null;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { phoneNumber: phoneNumber } }
+    variables: { payload: { id } }
   });
 
-  const { data: passportData } = useQuery<SinglePassportRequestInterface>(
-    GET_COMMUNITY_MEMBER_PASSPORT,
+  const { data: singlePassportData } = useQuery<SinglePassportRequestInterface>(
+    GET_SINGLE_PASSPORT,
     { variables: { id } }
   );
 
@@ -54,7 +61,9 @@ function Member(props: MemberProp) {
     });
   }, []);
 
-  const singlePassport = passportData?.singlePassport;
+  const singlePassport = singlePassportData?.singlePassport;
+
+  const location = singlePassport?.currentLocation;
 
   const connectedUsers =
     singlePassport?.connected === 'CONNECTED' ||
@@ -122,18 +131,21 @@ function Member(props: MemberProp) {
           >
             {`${firstName} ${lastName}`}
           </Title>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              textTransform: 'lowercase'
-            }}
-          >
-            {onlinePresence.status === 'ONLINE'
-              ? onlinePresence.status
-              : formatMessageTime(Number(onlinePresence.lastSeen))}
-          </Text>
+
+          {location && (
+            <Text
+              style={{
+                color: colors.SECONDARY_TEXT,
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'lowercase'
+              }}
+            >
+              {location?.city
+                ? `${location?.city}, ${location?.state}`
+                : `${location?.state}, ${location?.country}`}
+            </Text>
+          )}
         </NameContainer>
 
         <TouchableRipple
@@ -148,10 +160,14 @@ function Member(props: MemberProp) {
             justifyContent: 'center',
             alignItems: 'center'
           }}
-          onPress={connectedUsers ? handleNavigation : handleRequest}
+          onPress={
+            singlePassport?.connectionDetails?.status == 'ACCEPTED'
+              ? handleNavigation
+              : handleRequest
+          }
         >
-          {connectedUsers ? (
-            <Entypo name="new-message" size={20} color={colors.PRIMARY_TEXT} />
+          {singlePassport?.connectionDetails?.status == 'ACCEPTED' ? (
+            <Entypo name="new-message" size={20} color={colors.WHITE} />
           ) : (
             <Feather name="plus" size={20} color={colors.WHITE} />
           )}
