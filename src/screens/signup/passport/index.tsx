@@ -163,10 +163,10 @@ export default function PassportScreen(props: ScreenProp) {
                 }}
               >
                 {`${
-                  userDetails?.currentLocation[0]?.city ||
+                  userDetails?.currentLocation?.city ||
                   userRegInfo?.user?.currentLocation?.city
                 }, ${
-                  userDetails?.currentLocation[0]?.state ||
+                  userDetails?.currentLocation?.state ||
                   userRegInfo?.user?.currentLocation?.state
                 }`}
               </Paragraph>

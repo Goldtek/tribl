@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import { CommunityInterface } from '../../../../graphql/types';
 import AdminBadge from '../../../../components/adminBadge';
 
+import { TribeCover } from './styles';
+
 // DEFINE SCREEN PROP TYPES
 interface MyCommunityProp extends CommunityInterface {
   moderatorOf: any;
@@ -26,21 +28,21 @@ export default function MyCommunity(props: MyCommunityProp) {
   };
 
   return (
-    <TouchableRipple
-      onPress={handleNavigation}
-      rippleColor={colors.PRIMARY}
-      style={{
-        height: RFValue(60),
-        width: RFValue(60),
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: RFValue(10),
-        borderWidth: 1.3,
-        borderRadius: 5,
-        borderColor: colors.PRIMARY
-      }}
-    >
-      <Fragment>
+    <TribeCover>
+      <TouchableRipple
+        onPress={handleNavigation}
+        rippleColor={colors.PRIMARY}
+        style={{
+          height: RFValue(60),
+          width: RFValue(60),
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginRight: RFValue(10),
+          borderWidth: 1.3,
+          borderRadius: 5,
+          borderColor: colors.PRIMARY
+        }}
+      >
         <FastImage
           resizeMode={FastImage.resizeMode.stretch}
           source={{
@@ -49,17 +51,17 @@ export default function MyCommunity(props: MyCommunityProp) {
           }}
           style={{ width: '100%', height: '100%', borderRadius: 4 }}
         />
-        {moderatorOf?.length ? (
-          <AdminBadge
-            style={{
-              position: 'absolute',
-              bottom: RFValue(-15),
-              zIndex: 11099,
-              right: RFValue(-25)
-            }}
-          />
-        ) : null}
-      </Fragment>
-    </TouchableRipple>
+      </TouchableRipple>
+      {moderatorOf?.length ? (
+        <AdminBadge
+          style={{
+            position: 'absolute',
+            bottom: RFValue(0),
+            zIndex: 11099,
+            right: RFValue(-25)
+          }}
+        />
+      ) : null}
+    </TribeCover>
   );
 }

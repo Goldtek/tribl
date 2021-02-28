@@ -61,7 +61,7 @@ export default function ChannelCard(props: ChannelCardProp) {
     >
   >();
 
-  useQuery(GET_CHANNEL_MEMBERS, { variables: { channelId: id } });
+  useQuery(GET_CHANNEL_MEMBERS, { variables: { input: { channelId: id } } });
   const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
 

@@ -35,7 +35,11 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     showInstruction: true
   });
 
-  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
+  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES, {
+    variables: {
+      input: { filter: { isAdmin: true } }
+    }
+  });
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
@@ -62,7 +66,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     setState({ ...state, showInstruction: false });
   };
 
-  const identities = Array.from(new Set(data?.Identity));
+  const identities = Array.from(new Set(data?.Identity?.data));
 
   const handleSubmit = async () => {
     if (!state.selectedIdentities.size) return handleInputError();

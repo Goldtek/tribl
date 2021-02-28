@@ -13,20 +13,7 @@ const cache = new InMemoryCache({ freezeResults: true });
  */
 export const userDetails = {
   bio: '',
-  dob: {
-    formatted: null,
-    day: null,
-    month: null,
-    year: null,
-    hour: 0,
-    minute: 0,
-    second: 0,
-    timeZoneId: null,
-    nanosecond: null,
-    millisecond: null,
-    timeZoneOffsetSeconds: null,
-    __typename: 'dateOfBirth'
-  },
+  dob: '',
   email: '',
   phoneNumber: '',
   countryCode: DEVICE_DEFAULT_COUNTRY,
@@ -40,26 +27,22 @@ export const userDetails = {
   conversation: null,
   identity: [],
   interest: [],
-  currentLocation: [
-    {
-      lat: null,
-      long: null,
-      country: '',
-      city: '',
-      state: '',
-      __typename: 'currentLocation'
-    }
-  ],
-  birthPlace: [
-    {
-      lat: null,
-      long: null,
-      country: '',
-      city: '',
-      state: '',
-      __typename: 'birthPlace'
-    }
-  ],
+  currentLocation: {
+    lat: null,
+    long: null,
+    country: '',
+    city: '',
+    state: '',
+    __typename: 'currentLocation'
+  },
+  birthPlace: {
+    lat: null,
+    long: null,
+    country: '',
+    city: '',
+    state: '',
+    __typename: 'birthPlace'
+  },
   avatar: USER_DEFAULT_AVATAR,
   __typename: 'userDetails'
 };

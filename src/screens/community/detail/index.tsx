@@ -27,7 +27,11 @@ export default function SearchScreen(props: ScreenProp) {
   const [isMember, setIsMember] = useState(null);
   const id = details?.details?.id || details?.communityHit?.id;
 
-  const { data } = useQuery(GET_SINGLE_COMMUNITY, { variables: { id } });
+  const { data } = useQuery(GET_SINGLE_COMMUNITY, {
+    variables: { input: { filter: { id } } },
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 1000
+  });
 
   const singleCommunity = data?.Community[0];
 
