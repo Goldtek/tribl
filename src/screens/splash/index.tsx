@@ -23,6 +23,7 @@ import {
 } from '../../graphql/server/query';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
+import { APP_VERSION } from '../../utils/device';
 import { NavigationInterface } from '../types';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
@@ -79,6 +80,10 @@ export default function SplashScreen(props: ScreenProp) {
 
       const credentials = JSON.parse(userCredStorageData) as VerifyOTPIT;
       const userRegistration: RegistrationInfo = JSON.parse(userRegStorageData);
+
+      if (!credentials.appVersion || credentials.appVersion !== APP_VERSION) {
+        return navigation.replace('SignupScreen');
+      }
 
       if (!userRegistration.completed) {
         return navigation.replace('SignupScreen', {

@@ -1,16 +1,16 @@
 import React, { Fragment, useState } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
-import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
-import FastImage from 'react-native-fast-image';
+import { useMutation } from '@apollo/react-hooks';
 import { useTranslation } from 'react-i18next';
-import { useThemeContext } from '../../../../theme';
+import FastImage from 'react-native-fast-image';
 import { REQUEST_CONNECTION } from '../../../../graphql/server/mutations';
-import { PassportInterface } from '../../../../graphql/types';
-import { rootNavigator } from '../../../../constants';
-import hexToRGB from '../../../../utils/hexToRGB';
 import { crashlytics, fireAuth } from '../../../../firebase/config';
+import { PassportInterface } from '../../../../graphql/types';
 import { logEvent } from '../../../../utils/uxcamHelper';
+import { rootNavigator } from '../../../../constants';
+import { useThemeContext } from '../../../../theme';
+import hexToRGB from '../../../../utils/hexToRGB';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -29,12 +29,11 @@ function ChannelMember(props: ChannelUserProp) {
   const {
     id,
     avatar,
-    firstName,
     lastName,
+    firstName,
     connected,
-    currentLocation,
-    phoneNumber,
-    conversation
+    conversation,
+    currentLocation
   } = member;
 
   const [pending, setPending] = useState(false);
