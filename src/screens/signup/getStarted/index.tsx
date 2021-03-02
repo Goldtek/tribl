@@ -16,12 +16,17 @@ import { useTranslation } from 'react-i18next';
 import { Toast } from '../../../components/rootToaster';
 import { NavigationInterface } from '../../types';
 import Input from '../../../components/input';
+import Storage from '../../../libs/storage';
 import countriesDB from '../../../libs/countries';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { SEND_USER_OTP } from '../../../graphql/server/mutations';
-import { StoreInterface, OTPInterface } from '../../../graphql/types';
-import { DEVICE_OS, DEVICE_ID } from '../../../utils/device';
+import {
+  StoreInterface,
+  OTPInterface,
+  VerifyOTPIT
+} from '../../../graphql/types';
+import { DEVICE_OS, DEVICE_ID, APP_VERSION } from '../../../utils/device';
 import GradientButton from '../../../components/gradientButton';
 import {
   tagScreenName,
@@ -75,6 +80,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     try {
       await sendOtp();
       navigation.navigate('OTPScreen');
+      Storage.setUserCredentials({ appVersion: APP_VERSION } as VerifyOTPIT);
       addPhoneNumber();
     } catch (error) {
       handleInputError();
