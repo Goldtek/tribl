@@ -254,6 +254,7 @@ export interface JwtTokenResult {
   exists: boolean;
   id_token: string;
   verified: boolean;
+  appVersion: string;
   expires_in: number;
   access_token: string;
   streams_token: string;
@@ -368,6 +369,7 @@ export type RecommendedMembersRequestInterface = {
 export type ChannelMembersRequestInterface = {
   channelMembers: {
     data: PassportInterface[];
+    metadata: QueryMetadata;
   };
 };
 
@@ -382,6 +384,7 @@ export type RecommendedCommunitiesRequestInterface = {
 export type MyCommunitiesRequestInterface = {
   myCommunities: {
     data: CommunityInterface[];
+    metadata: QueryMetadata;
   };
 };
 
