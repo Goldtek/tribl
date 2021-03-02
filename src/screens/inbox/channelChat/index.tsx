@@ -38,9 +38,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
-  }, []);
 
-  useEffect(() => {
     if (streamChannel.id !== channel.id) {
       setChannel(channel);
     }
