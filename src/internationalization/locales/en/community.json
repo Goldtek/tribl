@@ -174,7 +174,8 @@
     "descrptionError": "Description field is required",
     "tagError": "You need to add at least one tag",
     "serverError": "Tribe already exits",
-    "inviteError": "You have to choose at least one friend to invite"
+    "inviteError": "You have to choose at least one friend to invite",
+    "public": "public"
   },
   "notification": {
     "invitation": "invitation request",
