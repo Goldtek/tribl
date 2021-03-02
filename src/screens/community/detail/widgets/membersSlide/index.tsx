@@ -54,7 +54,7 @@ export default function MemberSlide(props: MemberSlideProp) {
     return (
       <Results>
         <FlatList
-          data={[]}
+          data={hits}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={() => (
             <Divider
