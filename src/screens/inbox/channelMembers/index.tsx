@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { FlatList, RefreshControl, SafeAreaView } from 'react-native';
-import { Text } from 'react-native-paper';
+import { ActivityIndicator, Text } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import {
-  GET_CHANNEL_MEMBERS,
-  GET_USER_PASSPORT
-} from '../../../graphql/server/query';
+import { GET_CHANNEL_MEMBERS } from '../../../graphql/server/query';
 import ActiveMember from './widget';
 import Skeleton from './widget/skeleton';
 import {
@@ -16,6 +13,7 @@ import {
 } from '../../../graphql/types';
 import { ChatScreenProps } from '../../types';
 import { PAGINATION_DEFAULT } from '../../../constants';
+import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 // DEFINE SCREEN PROP TYPES
 interface ModalProp {
@@ -25,62 +23,63 @@ interface ModalProp {
 function ChannelMembers(props: ModalProp) {
   const { colors, fonts } = useThemeContext();
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
-  const [state, setState] = useState({
-    refreshing: false,
-    callOnScrollEnd: false
-  });
-  const userDetails = userData?.myPassport;
-  const channelId = props.route?.params?.channelId;
-  const userId = userDetails?.id;
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const {
-    loading: channelLoading,
-    data: channelData,
-    refetch,
-    fetchMore
-  } = useQuery<ChannelMembersRequestInterface>(GET_CHANNEL_MEMBERS, {
-    variables: { input: { channelId: channelId } }
+  const { channelId } = props.route?.params;
+
+  const { data: channelData, refetch, fetchMore } = useQuery<
+    ChannelMembersRequestInterface
+  >(GET_CHANNEL_MEMBERS, {
+    variables: { input: { channelId } }
   });
 
-  const channelMembers = channelData?.channelMembers?.data;
+  const channelMembers = channelData?.channelMembers;
 
-  const memberList = channelMembers?.slice().sort((a, b) => {
-    if (a.firstName < b.firstName) return -1;
-    if (a.firstName > b.firstName) return 1;
-    return 0;
-  });
+  const filterMembers = removeDuplicateMembers(channelMembers?.data?.slice());
 
-  const onRefresh = async () => {
-    setState({ ...state, refreshing: true });
+  const handleRefresh = async () => {
+    setRefreshing(true);
     await refetch();
-    setState({ ...state, refreshing: false });
+    setRefreshing(false);
   };
 
   const handleEndReach = async () => {
-    if (!state.callOnScrollEnd) return;
+    if (!callOnScrollEnd) return;
 
     fetchMore({
       variables: {
-        offset: channelMembers?.length,
-        first: PAGINATION_DEFAULT
+        input: {
+          channelId,
+          skip: filterMembers?.length,
+          limit: PAGINATION_DEFAULT
+        }
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        setState({ ...state, callOnScrollEnd: false });
+        setCallOnScrollEnd(false);
 
         if (!fetchMoreResult) return prev;
 
         return Object.assign({}, prev, {
-          channelMembers: [fetchMoreResult.channelMembers]
+          channelMembers: {
+            ...prev.channelMembers,
+            data: [
+              ...prev.channelMembers.data,
+              ...fetchMoreResult.channelMembers.data
+            ]
+          }
         });
       }
     });
   };
 
-  const filterMembers = memberList?.filter((member) => member.id !== userId);
-
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <ActiveMember key={item.id} {...item} />
+  );
+
+  const _renderFooter = useCallback(
+    () => (callOnScrollEnd ? <ActivityIndicator /> : null),
+    [callOnScrollEnd]
   );
 
   return (
@@ -103,19 +102,27 @@ function ChannelMembers(props: ModalProp) {
           keyExtractor={({ id }) => id}
           onMomentumScrollEnd={handleEndReach}
           scrollEventThrottle={16}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={1}
           removeClippedSubviews={true}
-          onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
+          onEndReached={() => {
+            if (
+              channelMembers &&
+              channelMembers?.metadata.totalCount > filterMembers.length
+            ) {
+              setCallOnScrollEnd(true);
+            }
+          }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: RFValue(20),
             paddingTop: RFValue(20)
           }}
           renderItem={_renderItem}
+          ListFooterComponent={_renderFooter}
           refreshControl={
             <RefreshControl
-              refreshing={state.refreshing}
-              onRefresh={onRefresh}
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
               tintColor={colors.BLACK}
               colors={[colors.BLACK]}
             />
