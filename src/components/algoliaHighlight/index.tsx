@@ -143,10 +143,11 @@ const Highlight = (props: HighlightProp) => {
                 style={{
                   color: colors.SECONDARY_TEXT,
                   fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE)
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  textTransform: 'capitalize'
                 }}
               >
-                {city ? `${city} ${state}` : `${state} ${country}`}
+                {city ? `${city}, ${state}` : `${state}, ${country}`}
               </Text>
             </NameContainer>
           </Fragment>
