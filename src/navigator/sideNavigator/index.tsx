@@ -612,6 +612,7 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
+
       <DrawerStack.Screen
         name="NewMessageScreen"
         component={InboxScreens.NewMessageScreen}
@@ -620,6 +621,7 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         }}
       />
+
       <DrawerStack.Screen
         name="MessageRequestScreen"
         component={InboxScreens.MessageRequestScreen}
@@ -657,36 +659,38 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="ChannelMembersScreen"
         component={InboxScreens.ChannelMembersScreen}
-        options={{
-          headerShown: true,
-          headerBackTitleVisible: false,
-          headerStyle: { height: RFValue(90) },
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerTitle: 'channel members',
-          headerTitleAlign: 'left',
-          headerLeft: () => (
-            <TouchableRipple
-              onPress={navigation.goBack}
-              style={{
-                height: RFValue(40),
-                width: RFValue(40),
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: RFValue(40 / 2)
-              }}
-            >
-              <Ionicons
-                name="md-arrow-back"
-                size={RFValue(24)}
-                color={colors.PRIMARY}
-              />
-            </TouchableRipple>
-          )
+        options={(props) => {
+          return {
+            headerShown: true,
+            headerBackTitleVisible: false,
+            headerStyle: { height: RFValue(90) },
+            headerTitleStyle: {
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              textTransform: 'capitalize'
+            },
+            headerTitle: 'channel members',
+            headerTitleAlign: 'left',
+            headerLeft: () => (
+              <TouchableRipple
+                onPress={() => props.navigation.goBack()}
+                style={{
+                  height: RFValue(40),
+                  width: RFValue(40),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: RFValue(40 / 2)
+                }}
+              >
+                <Ionicons
+                  name="md-arrow-back"
+                  size={RFValue(24)}
+                  color={colors.PRIMARY}
+                />
+              </TouchableRipple>
+            )
+          };
         }}
       />
 
@@ -761,6 +765,7 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
+
       <DrawerStack.Screen
         name="CreateTribeScreen"
         component={CreateNewTribeScreen}
@@ -773,6 +778,7 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
+
       <DrawerStack.Screen
         name="AddAdminScreen"
         component={AddAdminScreen}
@@ -785,6 +791,7 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
+
       <DrawerStack.Screen
         name="TribeDetailScreen"
         component={TribeDetailScreen}
