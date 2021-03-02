@@ -205,6 +205,9 @@ export const GET_NEARBY_MEMBERS = gql`
 export const GET_CHANNEL_MEMBERS = gql`
   query channelMembers($input: ChannelMemberInput!) {
     channelMembers(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         bio
@@ -214,6 +217,7 @@ export const GET_CHANNEL_MEMBERS = gql`
         phoneNumber
         connected
         avatar
+        verified
         communityCount
         connectionCount
         pending
@@ -364,6 +368,9 @@ export const GET_POPULAR_COMMUNITIES = gql`
 export const GET_MY_COMMUNITIES = gql`
   query myCommunities {
     myCommunities {
+      metadata {
+        totalCount
+      }
       data {
         id
         description
