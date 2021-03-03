@@ -94,7 +94,6 @@ export default function CreateTribeScreen(props: ScreenProp) {
       ImagePicker.clean();
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      console.error('eeeeeeeeee', error);
     }
   };
 
