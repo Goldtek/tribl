@@ -55,20 +55,20 @@ export default function CustomDirectMessagePreview(
     latestMessageLength = 40
   } = props;
 
+  if (channel.data?.isNew) return null;
+
   const navigation = useNavigation();
   const { colors } = useThemeContext();
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
-  const receiver = [channel.data?.receiver, channel.data?.sender].find(
-    (user) => user?.id !== chatClient.user?.id
+  const receiverId = Object.keys(channel.state.members).find(
+    (userId: string) => userId !== chatClient.user?.id
   );
 
-  const displayAvatar = {
-    name: `${receiver?.firstName} ${receiver?.lastName}`,
-    image: receiver?.avatar || USER_DEFAULT_AVATAR
-  };
+  const receiver = channel.state.members[`${receiverId}`].user;
+  const receiverAvatar = receiver?.image || USER_DEFAULT_AVATAR;
 
   const handleDeleteAction = async () => {};
 
@@ -109,21 +109,21 @@ export default function CustomDirectMessagePreview(
           setActiveChannel && setActiveChannel(channel);
           navigation.navigate('DrawerScreen', {
             screen: 'DirectChatScreen',
-            params: { channelId: channel.id }
+            params: { channelId: channel.id, title: receiver?.name }
           });
         }}
         ref={hideSensitiveView}
       >
         <Fragment>
           <Avatar
-            image={displayAvatar.image}
-            name={displayAvatar.name}
+            image={receiverAvatar}
+            name={receiver?.name}
             size={RFValue(40)}
           />
           <Details ref={hideSensitiveView}>
             <DetailsTop>
               <Title ellipsizeMode="tail" numberOfLines={1}>
-                {displayAvatar.name}
+                {receiver?.name}
               </Title>
               <Date>
                 {formatLatestMessageDate && latestMessageDate
