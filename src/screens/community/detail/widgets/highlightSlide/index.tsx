@@ -59,6 +59,30 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const [data, setData] = useState(communityDetails);
   const [member, setMember] = useState(false);
   const [request, setRequest] = useState(false);
+  const [buttonLabel, setButtonLabel] = useState(
+    t(`community.recommended.join`)
+  );
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (data.isMember || member) {
+      setButtonLabel(t(`community.recommended.leave`));
+    } else if (request || data?.isRequested) {
+      setButtonLabel(t(`community.tabPanel.request`));
+    } else {
+      setButtonLabel(t(`community.recommended.join`));
+    }
+  }, [data.isMember || member || request || data?.isRequested]);
+
+  useEffect(() => {
+    if (data.isMember || member) {
+      setLoading(leaveLoading);
+    } else if (data?.isPrivate) {
+      setLoading(joinPrivateLoading);
+    } else {
+      setLoading(joinLoading);
+    }
+  }, [data.isMember || member || data?.isPrivate]);
 
   const clearTagModal = async () => {
     try {
@@ -314,13 +338,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 <Button
                   mode="contained"
                   disabled={request || data?.isRequested ? true : false}
-                  loading={
-                    data.isMember || member
-                      ? leaveLoading
-                      : data?.isPrivate
-                      ? joinPrivateLoading
-                      : joinLoading
-                  }
+                  loading={loading}
                   onPress={
                     data.isMember || member
                       ? handleLeave
@@ -345,11 +363,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                     textTransform: 'capitalize'
                   }}
                 >
-                  {data.isMember || member
-                    ? t(`community.tabPanel.leave`)
-                    : request || data?.isRequested
-                    ? t(`community.tabPanel.request`)
-                    : t(`community.tabPanel.join`)}
+                  {buttonLabel}
                 </Button>
               </CardContainer>
 

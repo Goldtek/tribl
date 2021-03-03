@@ -15,6 +15,7 @@ import {
 } from '../../graphql/server/query';
 import ActiveMember from './widget';
 import Skeleton from './widget/skeleton';
+import { PAGINATION_DEFAULT } from '../../constants';
 
 import {
   PassportInterface,
@@ -36,7 +37,11 @@ function ActiveModal(props: ModalProp) {
 
   const { data: recommendedData } = useQuery<
     RecommendedMembersRequestInterface
-  >(GET_RECOMMENDED_MEMBERS);
+  >(GET_RECOMMENDED_MEMBERS, {
+    variables: {
+      input: { limit: PAGINATION_DEFAULT / 2 }
+    }
+  });
 
   const recommendedMembers = recommendedData?.recommendedMembers?.data;
 

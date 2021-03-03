@@ -14,6 +14,7 @@ import ImageResizer from 'react-native-image-resizer';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
 import GradientButton from '../../../../../components/gradientButton';
+import { crashlytics } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Cover, PrivateCover, Container, AvatarCover } from './styles';
@@ -92,7 +93,8 @@ export default function CreateTribeScreen(props: ScreenProp) {
 
       ImagePicker.clean();
     } catch (error) {
-      console.error(error);
+      crashlytics.recordError(new Error(error));
+      console.error('eeeeeeeeee', error);
     }
   };
 
@@ -176,7 +178,9 @@ export default function CreateTribeScreen(props: ScreenProp) {
               marginTop: RFValue(10)
             }}
           >
-            {t(`community.createTribe.private`)}
+            {isEnabled
+              ? t(`community.createTribe.private`)
+              : t(`community.createTribe.public`)}
           </Title>
           <Switch
             trackColor={{ false: colors.DISABLED, true: colors.ONLINE }}
@@ -221,7 +225,7 @@ export default function CreateTribeScreen(props: ScreenProp) {
               }}
               resizeMode={FastImage.resizeMode.cover}
               style={{
-                width: '100%%',
+                width: '100%',
                 height: '100%'
               }}
             />

@@ -67,11 +67,11 @@ export default function ConnectionRequestScreen(
     tagScreenName('ConnectionRequestScreen');
   }, []);
 
-  const connectionRequests = data?.connectionRequests;
-
-  const filterConnectionRequests = removeDuplicateMembers(
-    connectionRequests?.data?.slice()
-  );
+  const connectionRequests = data?.connectionRequests?.data;
+  const metaData = data?.connectionRequests;
+  // const filterConnectionRequests = removeDuplicateMembers(
+  //   connectionRequests?.data?.slice()
+  // );
 
   const _renderFooter = useCallback(
     () => (callOnScrollEnd ? <ActivityIndicator /> : null),
@@ -94,7 +94,7 @@ export default function ConnectionRequestScreen(
     fetchMore({
       variables: {
         input: {
-          skip: filterConnectionRequests?.length,
+          skip: connectionRequests?.length,
           limit: PAGINATION_DEFAULT
         }
       },
@@ -122,14 +122,14 @@ export default function ConnectionRequestScreen(
 
   useFocusEffect(
     useCallback(() => {
-      filterConnectionRequests?.length
+      connectionRequests?.length
         ? changeConnectionNotification({
             variables: { showConnectionNotificationBadge: true }
           })
         : changeConnectionNotification({
             variables: { showConnectionNotificationBadge: false }
           }).then(refetch);
-    }, [filterConnectionRequests?.length])
+    }, [connectionRequests?.length])
   );
 
   return (
@@ -170,14 +170,14 @@ export default function ConnectionRequestScreen(
                 size={RFValue(25)}
                 color={colors.PRIMARY_TEXT}
               />
-              {filterConnectionRequests?.length ? <MenuBadgeWrapper /> : null}
+              {connectionRequests?.length ? <MenuBadgeWrapper /> : null}
             </Fragment>
           </TouchableHighlight>
         )}
         style={{ paddingTop: top }}
       />
       <Container>
-        {filterConnectionRequests?.length ? (
+        {connectionRequests?.length ? (
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
@@ -192,10 +192,10 @@ export default function ConnectionRequestScreen(
           </Title>
         ) : null}
 
-        {filterConnectionRequests ? (
+        {connectionRequests ? (
           <FlatList
             refreshing={refreshing}
-            data={filterConnectionRequests}
+            data={connectionRequests}
             onRefresh={handleRefresh}
             ListFooterComponent={_renderFooter}
             contentContainerStyle={{
@@ -220,9 +220,8 @@ export default function ConnectionRequestScreen(
             onMomentumScrollEnd={handleEndReach}
             onEndReached={() => {
               if (
-                connectionRequests &&
-                connectionRequests?.metadata.totalCount >
-                  filterConnectionRequests.length
+                metaData?.metadata &&
+                metaData?.metadata?.totalCount > connectionRequests.length
               ) {
                 setCallOnScrollEnd(true);
               }
