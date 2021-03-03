@@ -1,7 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Text, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import debounce from 'lodash.debounce';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -45,7 +44,7 @@ export default function ConnectionRequestScreen(
 
   const { data, refetch, fetchMore } = useQuery<ConnectionRequestsInterface>(
     GET_CONNECTION_REQUEST,
-    { variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } } }
+    { variables: { input: { limit: PAGINATION_DEFAULT } } }
   );
 
   const [changeConnectionNotification] = useMutation(
@@ -53,11 +52,10 @@ export default function ConnectionRequestScreen(
   );
 
   const [refreshing, setRefreshing] = useState(false);
+  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
-
-  const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
 
   const toggleMenu = () => {
     toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
@@ -67,11 +65,11 @@ export default function ConnectionRequestScreen(
     tagScreenName('ConnectionRequestScreen');
   }, []);
 
-  const connectionRequests = data?.connectionRequests?.data;
-  const metaData = data?.connectionRequests;
-  // const filterConnectionRequests = removeDuplicateMembers(
-  //   connectionRequests?.data?.slice()
-  // );
+  const connectionRequests = data?.connectionRequests;
+
+  const filterConnectionRequests = removeDuplicateMembers(
+    connectionRequests?.data?.slice()
+  );
 
   const _renderFooter = useCallback(
     () => (callOnScrollEnd ? <ActivityIndicator /> : null),
@@ -94,7 +92,7 @@ export default function ConnectionRequestScreen(
     fetchMore({
       variables: {
         input: {
-          skip: connectionRequests?.length,
+          skip: filterConnectionRequests?.length,
           limit: PAGINATION_DEFAULT
         }
       },
@@ -122,14 +120,14 @@ export default function ConnectionRequestScreen(
 
   useFocusEffect(
     useCallback(() => {
-      connectionRequests?.length
+      filterConnectionRequests?.length
         ? changeConnectionNotification({
             variables: { showConnectionNotificationBadge: true }
           })
         : changeConnectionNotification({
             variables: { showConnectionNotificationBadge: false }
           }).then(refetch);
-    }, [connectionRequests?.length])
+    }, [filterConnectionRequests?.length])
   );
 
   return (
@@ -170,14 +168,14 @@ export default function ConnectionRequestScreen(
                 size={RFValue(25)}
                 color={colors.PRIMARY_TEXT}
               />
-              {connectionRequests?.length ? <MenuBadgeWrapper /> : null}
+              {filterConnectionRequests?.length ? <MenuBadgeWrapper /> : null}
             </Fragment>
           </TouchableHighlight>
         )}
         style={{ paddingTop: top }}
       />
       <Container>
-        {connectionRequests?.length ? (
+        {filterConnectionRequests?.length ? (
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
@@ -192,10 +190,10 @@ export default function ConnectionRequestScreen(
           </Title>
         ) : null}
 
-        {connectionRequests ? (
+        {filterConnectionRequests ? (
           <FlatList
             refreshing={refreshing}
-            data={connectionRequests}
+            data={filterConnectionRequests}
             onRefresh={handleRefresh}
             ListFooterComponent={_renderFooter}
             contentContainerStyle={{
@@ -220,8 +218,9 @@ export default function ConnectionRequestScreen(
             onMomentumScrollEnd={handleEndReach}
             onEndReached={() => {
               if (
-                metaData?.metadata &&
-                metaData?.metadata?.totalCount > connectionRequests.length
+                connectionRequests &&
+                connectionRequests?.metadata?.totalCount >
+                  filterConnectionRequests.length
               ) {
                 setCallOnScrollEnd(true);
               }
