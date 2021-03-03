@@ -67,7 +67,7 @@ import {
   ImageContainer,
   ImageTextContainer,
   ConnectionCover,
-  Cover,
+  Cover
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
@@ -182,7 +182,6 @@ export default function PassportScreen(props: ScreenProp) {
 
   const getCacheData = async () => {
     const storageData = await Storage.getUserPassport();
-
     if (storageData) {
       const passportInfo = JSON.parse(storageData) as PassportInterface;
       setCache({
@@ -337,6 +336,21 @@ export default function PassportScreen(props: ScreenProp) {
   const month = parseInt(dob[0]);
   const year = parseInt(dob[2]);
   const dateOfBirth = `${year + '-' + month + '-' + day}`;
+  const identity = cache.details.selectedIdentity.map(
+    (identity) => identity.name
+  );
+  const filterIdentity = userDetails?.identity?.map(
+    (identity) => identity.name
+  );
+  const removeIdentity = filterIdentity?.filter(
+    (tag) => !identity.includes(tag)
+  );
+  const filterInterest = userDetails?.interest?.map(
+    (interest) => interest.name
+  );
+  const removeInterest = filterInterest?.filter(
+    (tag) => !cache.details.selectedInterest.includes(tag)
+  );
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -347,10 +361,12 @@ export default function PassportScreen(props: ScreenProp) {
         bio: cache.bio,
         dob: dateOfBirth,
         identity: {
-          add: cache.identity
+          add: identity,
+          remove: removeIdentity
         },
         interest: {
-          add: cache.details.selectedInterest
+          add: cache.details.selectedInterest,
+          remove: removeInterest
         },
         currentLocation: {
           city: location.city,
