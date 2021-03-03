@@ -4,11 +4,7 @@
 
 "@algolia/cache-browser-local-storage@4.8.5":
   version "4.8.5"
-<<<<<<< HEAD
-  resolved "https://registry.yarnpkg.com/@algolia/cache-browser-local-storage/-/cache-browser-local-storage-4.8.5.tgz#3eb10758c794d3cc8fc4e9f09e339d5b9589dc9c"
-=======
   resolved "https://registry.yarnpkg.com/@algolia/cache-browser-local-storage/-/cache-browser-local-storage-4.8.5.tgz"
->>>>>>> 6e9d7cc30893ea830992e8bd5c29879196f3efa0
   integrity sha512-9rs/Yi82ilgifweJamOy4DlJ4xPGsCN/zg+RKy4vjytNhOrkEHLRQC8vPZ3OhD8KVlw9lRQIZTlgjgFl8iMeeA==
   dependencies:
     "@algolia/cache-common" "4.8.5"
@@ -19,11 +15,7 @@
   resolved "https://registry.yarnpkg.com/@algolia/cache-common/-/cache-common-4.8.5.tgz#86f8a6878bd2fc5c8d889e48d18d3033faa0bcd8"
 =======
   resolved "https://registry.yarnpkg.com/@algolia/cache-common/-/cache-common-4.8.5.tgz"
->>>>>>> 6e9d7cc30893ea830992e8bd5c29879196f3efa0
-  integrity sha512-4SvRWnagKtwBFAy8Rsfmv0/Uk53fZL+6dy2idwdx6SjMGKSs0y1Qv+thb4h/k/H5MONisAoT9C2rgZ/mqwh5yw==
-
 "@algolia/cache-in-memory@4.8.5":
-  version "4.8.5"
 <<<<<<< HEAD
   resolved "https://registry.yarnpkg.com/@algolia/cache-in-memory/-/cache-in-memory-4.8.5.tgz#13055d54775f99aa4e1ce051e73079d0f207a3e6"
 =======
