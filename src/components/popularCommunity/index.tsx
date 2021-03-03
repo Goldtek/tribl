@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState, useEffect } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -55,6 +55,10 @@ function PopularCommunity(props: PopularCommunityProp) {
   } = props;
 
   const [modal, setModal] = useState(false);
+  const [buttonLabel, setButtonLabel] = useState(
+    t(`community.recommended.join`)
+  );
+  const [loading, setLoading] = useState(false);
 
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
@@ -74,6 +78,26 @@ function PopularCommunity(props: PopularCommunityProp) {
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
     variables: { input: { communityId: id } }
   });
+
+  useEffect(() => {
+    if (isMember || member) {
+      setButtonLabel(t(`community.recommended.leave`));
+    } else if (request || isRequested) {
+      setButtonLabel(t(`community.tabPanel.request`));
+    } else {
+      setButtonLabel(t(`community.recommended.join`));
+    }
+  }, [isMember || member || request || isRequested]);
+
+  useEffect(() => {
+    if (isMember || member) {
+      setLoading(leaveLoading);
+    } else if (isPrivate) {
+      setLoading(joinPrivateLoading);
+    } else {
+      setLoading(joinLoading);
+    }
+  }, [isMember || member || isPrivate]);
 
   const clearTagModal = async () => {
     try {
@@ -198,13 +222,7 @@ function PopularCommunity(props: PopularCommunityProp) {
           <Button
             mode="text"
             disabled={request || isRequested ? true : false}
-            loading={
-              member
-                ? leaveLoading
-                : isPrivate
-                ? joinPrivateLoading
-                : joinLoading
-            }
+            loading={loading}
             onPress={
               member
                 ? handleLeave
@@ -222,11 +240,7 @@ function PopularCommunity(props: PopularCommunityProp) {
             contentStyle={{ justifyContent: 'flex-start' }}
             style={{ width: '40%' }}
           >
-            {member
-              ? t(`community.recommended.leave`)
-              : request || isRequested
-              ? t(`community.tabPanel.request`)
-              : t(`community.recommended.join`)}
+            {buttonLabel}
           </Button>
         </TextContainer>
       </Fragment>

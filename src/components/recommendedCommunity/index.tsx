@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Button, Card, Text } from 'react-native-paper';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -30,6 +30,10 @@ function RecommendedCommunity(props: CommunityInterface) {
 
   const [member, setMember] = useState(false);
   const [request, setRequest] = useState(false);
+  const [buttonLabel, setButtonLabel] = useState(
+    t(`community.recommended.join`)
+  );
+  const [loading, setLoading] = useState(false);
 
   const { ...restProps } = props;
 
@@ -137,6 +141,26 @@ function RecommendedCommunity(props: CommunityInterface) {
     });
   }, [modal]);
 
+  useEffect(() => {
+    if (isMember || member) {
+      setButtonLabel(t(`community.recommended.leave`));
+    } else if (request || isRequested) {
+      setButtonLabel(t(`community.tabPanel.request`));
+    } else {
+      setButtonLabel(t(`community.recommended.join`));
+    }
+  }, [isMember || member || request || isRequested]);
+
+  useEffect(() => {
+    if (isMember || member) {
+      setLoading(leaveLoading);
+    } else if (isPrivate) {
+      setLoading(joinPrivateLoading);
+    } else {
+      setLoading(joinLoading);
+    }
+  }, [isMember || member || isPrivate]);
+
   return (
     <Card
       onPress={handleNavigation}
@@ -225,13 +249,7 @@ function RecommendedCommunity(props: CommunityInterface) {
           <Button
             mode="text"
             disabled={request || isRequested ? true : false}
-            loading={
-              isMember || member
-                ? leaveLoading
-                : isPrivate
-                ? joinPrivateLoading
-                : joinLoading
-            }
+            loading={loading}
             onPress={
               isMember || member
                 ? handleLeave
@@ -246,11 +264,7 @@ function RecommendedCommunity(props: CommunityInterface) {
               marginLeft: 0
             }}
           >
-            {isMember || member
-              ? t(`community.recommended.leave`)
-              : request || isRequested
-              ? t(`community.tabPanel.request`)
-              : t(`community.recommended.join`)}
+            {buttonLabel}
           </Button>
         )}
         style={{ flex: 1, paddingLeft: 0 }}
