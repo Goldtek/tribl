@@ -43,15 +43,9 @@ function Member(props: MemberProp) {
     variables: { payload: { id } }
   });
 
-  useQuery<SinglePassportRequestInterface>(GET_COMMUNITY_MEMBER_PASSPORT, {
-    variables: { id }
-  });
-
   const { data: singlePassportData } = useQuery<SinglePassportRequestInterface>(
     GET_SINGLE_PASSPORT,
-    {
-      variables: { id }
-    }
+    { variables: { id } }
   );
 
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
@@ -137,18 +131,21 @@ function Member(props: MemberProp) {
           >
             {`${firstName} ${lastName}`}
           </Title>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              textTransform: 'lowercase'
-            }}
-          >
-            {location?.city
-              ? `${location?.city}, ${location?.state}`
-              : `${location?.state}, ${location?.country}`}
-          </Text>
+
+          {location && (
+            <Text
+              style={{
+                color: colors.SECONDARY_TEXT,
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'lowercase'
+              }}
+            >
+              {location?.city
+                ? `${location?.city}, ${location?.state}`
+                : `${location?.state}, ${location?.country}`}
+            </Text>
+          )}
         </NameContainer>
 
         <TouchableRipple
