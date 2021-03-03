@@ -41,7 +41,11 @@ function IdentityModal(props: any) {
     [key: string]: IdentityInterface;
   }>({});
 
-  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES);
+  const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES, {
+    variables: {
+      input: { filter: { isAdmin: true } }
+    }
+  });
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
