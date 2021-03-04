@@ -448,7 +448,7 @@ export type ConnectionRequestsInterface = {
 
 // POPULAR COMMUNITIES REQUEST (RESPONSE) TYPE
 export type PopularCommunitiesRequestInterface = {
-  popularCommunities: { data: CommunityInterface[] };
+  popularCommunities: { data: CommunityInterface[]; metadata: QueryMetadata };
 };
 
 // MY CONNECTIONS NEARBY REQUEST (RESPONSE) TYPE
@@ -464,5 +464,12 @@ export type CommunityChannelRequestInterface = {
   Channel: {
     data: ChannelInterface[];
     metadata: QueryMetadata;
+  };
+};
+
+// GET SINGLE COMMUNITY REQUEST (RESPONSE) TYPE
+export type SingleCommunityRequestInterface = {
+  Community: {
+    data: CommunityInterface[];
   };
 };

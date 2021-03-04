@@ -13,6 +13,10 @@ import memberSlide from './widgets/membersSlide';
 import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 import { GET_SINGLE_COMMUNITY } from '../../../graphql/server/query';
+import {
+  CommunityInterface,
+  SingleCommunityRequestInterface
+} from '../../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -21,65 +25,62 @@ import { Container } from './styles';
 interface ScreenProp extends NavigationInterface {}
 
 export default function SearchScreen(props: ScreenProp) {
-  const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
   const details = props.route.params;
-  const [isMember, setIsMember] = useState(null);
+
+  const { t } = useTranslation();
+  const { colors, fonts } = useThemeContext();
+  const [isMember, setIsMember] = useState(false);
+  const [tabIndex, setTabIndex] = React.useState(0);
+
   const id = details?.details?.id || details?.communityHit?.id;
 
-  const { data } = useQuery(GET_SINGLE_COMMUNITY, {
-    variables: { input: { filter: { id } } },
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 1000
-  });
-
-  const singleCommunity = data?.Community[0];
-
-  useEffect(() => {
-    if (details?.details?.isMember) {
-      setIsMember(details?.details?.isMember);
+  const { data, refetch } = useQuery<SingleCommunityRequestInterface>(
+    GET_SINGLE_COMMUNITY,
+    {
+      variables: { input: { filter: { id } } }
     }
-  }, [details?.details?.isMember]);
+  );
 
-  useEffect(() => {
-    if (details?.communityHit?.isMember) {
-      setIsMember(details?.communityHit?.isMember);
-    }
-  }, [details?.details?.isMember]);
+  const communityDetails: CommunityInterface = {
+    ...details?.details,
+    ...details?.communityHit
+  };
 
-  useEffect(() => {
-    if (singleCommunity?.isMember) {
-      setIsMember(singleCommunity?.isMember);
-    }
-  }, [singleCommunity?.isMember]);
-
-  const [tabIndex, setTabIndex] = React.useState(0);
-  const [routes] = React.useState([
+  const [routes, setRoutes] = React.useState([
     {
       key: 'highlightSlide',
-      title: `${t(`community.tabPanel.highlight`)}`,
-      communityDetails: { ...details.details, ...singleCommunity } || {
-        ...details.communityHit,
-        ...singleCommunity
-      }
+      communityDetails,
+      communityRefetch: refetch,
+      title: `${t(`community.tabPanel.highlight`)}`
     },
     {
       key: 'channelSlide',
-      title: `${t(`community.tabPanel.channel`)}`,
-      communityDetails: { ...details.details, ...singleCommunity } || {
-        ...details.communityHit,
-        ...singleCommunity
-      }
+      communityDetails,
+      title: `${t(`community.tabPanel.channel`)}`
     },
     {
       key: 'memberSlide',
-      title: `${t(`community.tabPanel.member`)}`,
-      communityDetails: { ...details.details, ...singleCommunity } || {
-        ...details.communityHit,
-        ...singleCommunity
-      }
+      communityDetails,
+      title: `${t(`community.tabPanel.member`)}`
     }
   ]);
+
+  useEffect(() => {
+    if (data) {
+      const [highlightScreenData, ...restScreenData] = routes;
+
+      const newHighlightScreenData = {
+        ...highlightScreenData,
+        communityDetails: {
+          ...highlightScreenData.communityDetails,
+          ...data?.Community.data[0]
+        }
+      };
+
+      setRoutes([newHighlightScreenData, ...restScreenData]);
+      setIsMember(newHighlightScreenData.communityDetails.isMember);
+    }
+  }, [data]);
 
   const renderScene = SceneMap({ highlightSlide, channelSlide, memberSlide });
 
