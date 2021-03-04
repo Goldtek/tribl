@@ -9,7 +9,6 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import MembersCard from '../../../../../components/recommendedUser';
 import {
-  GET_SINGLE_COMMUNITY,
   GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
   GET_COMMUNITY_MEMBERS,
   GET_USER_PASSPORT
@@ -43,60 +42,59 @@ import {
 } from './styles';
 
 interface singleCommunityScreenProp extends NavigationInterface {
-  route: { communityDetails: CommunityInterface };
+  route: {
+    communityDetails: CommunityInterface;
+    communityRefetch: () => Promise<void>;
+  };
 }
 
-export default function singleCommunity(props: singleCommunityScreenProp) {
-  const detail = props.route;
-  const { communityDetails } = detail;
-  const { id, name } = communityDetails;
-  const { colors, fonts } = useThemeContext();
+export default function SingleCommunity(props: singleCommunityScreenProp) {
+  const { communityDetails, communityRefetch } = props.route;
+
+  const {
+    id,
+    tags,
+    name,
+    avatar,
+    isMember,
+    isPrivate,
+    description,
+    isRequested,
+    membersCount,
+    uniqueInterests
+  } = communityDetails;
+
   const { t } = useTranslation();
+  const { colors, fonts } = useThemeContext();
+
   const [state, setState] = useState({
     showJoinCommunityModal: false,
     tagModal: false
   });
-  const [data, setData] = useState(communityDetails);
-  const [member, setMember] = useState(false);
-  const [request, setRequest] = useState(false);
+
   const [buttonLabel, setButtonLabel] = useState(
     t(`community.recommended.join`)
   );
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (data.isMember || member) {
+    if (isMember) {
       setButtonLabel(t(`community.recommended.leave`));
-    } else if (request || data?.isRequested) {
+    } else if (isRequested) {
       setButtonLabel(t(`community.tabPanel.request`));
     } else {
       setButtonLabel(t(`community.recommended.join`));
     }
-  }, [data.isMember || member || request || data?.isRequested]);
+  }, [isMember, isRequested]);
 
-  useEffect(() => {
-    if (data.isMember || member) {
-      setLoading(leaveLoading);
-    } else if (data?.isPrivate) {
-      setLoading(joinPrivateLoading);
-    } else {
-      setLoading(joinLoading);
-    }
-  }, [data.isMember || member || data?.isPrivate]);
-
-  const clearTagModal = async () => {
-    try {
-      await storage.removeTagModal(id);
-    } catch (error) {
-      crashlytics.recordError(new Error(error));
-    }
-  };
+  const clearTagModal = () => storage.removeTagModal(id);
 
   const getTagModal = async () => {
     // @ts-ignore
     const TagInfo = await storage.checkTagModal();
     const filteredTag = TagInfo?.community.filter((tag: any) => tag == id);
-    if (filteredTag.length && singleCommunity?.uniqueInterests.length > 0) {
+    if (filteredTag.length && uniqueInterests.length > 0) {
       setState({ ...state, tagModal: true });
     }
   };
@@ -110,13 +108,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     setState({ ...state, tagModal: childData });
     clearTagModal();
   };
-
-  const { data: communityData, refetch: communityRefetch } = useQuery(
-    GET_SINGLE_COMMUNITY,
-    {
-      variables: { input: { filter: { id } } }
-    }
-  );
 
   const { data: communityMembersData } = useQuery(
     GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
@@ -136,10 +127,10 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const userDetails = userData?.myPassport;
   const userId = userDetails?.id;
 
-  const singleCommunity = communityData?.Community?.data[0];
   const participants = communityMembers?.communityMembers?.data;
   const communityNearbyMembers = communityMembersData?.nearbyMembers?.data;
   const nearbyMembersData = NearbyMembers?.nearbyMembers?.data;
+
   const filteredParticipants = participants?.filter(
     (member) => member.id !== userId
   );
@@ -149,12 +140,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     : filteredParticipants?.length
     ? filteredParticipants
     : nearbyMembersData;
-
-  useEffect(() => {
-    if (!singleCommunity?.id) return;
-
-    setData({ ...data, ...singleCommunity });
-  }, [singleCommunity?.id]);
 
   const handleJoinCommunity = () => {
     setState({
@@ -170,26 +155,17 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     []
   );
 
-  const [joinCommunity, { loading: joinLoading }] = useMutation(
-    JOIN_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
+  const [joinCommunity] = useMutation(JOIN_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
-  const [joinPrivateCommunity, { loading: joinPrivateLoading }] = useMutation(
-    JOIN_PRIVATE_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
+  const [joinPrivateCommunity] = useMutation(JOIN_PRIVATE_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
-  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
-    LEAVE_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
+  const [leaveCommunity] = useMutation(LEAVE_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
   const handleJoin = async () => {
     logEvent('join community', { from: 'community' });
@@ -198,15 +174,15 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
         info: `User Joins ${name} Tribe`,
         'Activity Screen': 'Recommended Community Card'
       });
-      await joinCommunity();
 
-      if (data.uniqueInterests.length) {
+      setLoading(true);
+      await joinCommunity();
+      communityRefetch().then(() => setLoading(false));
+      if (uniqueInterests.length) {
         setState({ ...state, tagModal: true });
       }
-      setMember(true);
-      setData({ ...data, isMember: true });
-      communityRefetch();
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(new Error(error));
     }
   };
@@ -218,10 +194,12 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
         info: `User Request To Join ${name} Tribe`,
         'Activity Screen': 'HignlightScreen'
       });
+
+      setLoading(true);
       await joinPrivateCommunity();
-      setRequest(true);
-      communityRefetch();
+      communityRefetch().then(() => setLoading(false));
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(error);
     }
   };
@@ -229,13 +207,13 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const handleLeave = async () => {
     logEvent('leave community', { from: 'community' });
     try {
+      setLoading(true);
       await leaveCommunity();
-      setMember(false);
+      communityRefetch().then(() => setLoading(false));
       clearTagModal();
-      setData({ ...data, isMember: false });
       setState({ ...state, tagModal: false });
-      communityRefetch();
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(new Error(error));
     }
   };
@@ -260,7 +238,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 <FastImage
                   resizeMode={FastImage.resizeMode.stretch}
                   source={{
-                    uri: singleCommunity?.avatar,
+                    uri: avatar,
                     priority: FastImage.priority.high
                   }}
                   style={{ width: '100%', height: '100%', borderRadius: 4 }}
@@ -279,7 +257,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                     textTransform: 'capitalize'
                   }}
                 >
-                  {singleCommunity?.isPrivate ? 'Private' : 'Public'}
+                  {isPrivate ? 'Private' : 'Public'}
                 </Text>
               </Card.Content>
             </Card>
@@ -288,7 +266,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 <FastImage
                   resizeMode={FastImage.resizeMode.stretch}
                   source={{
-                    uri: data.avatar,
+                    uri: avatar,
                     priority: FastImage.priority.high
                   }}
                   style={{
@@ -306,7 +284,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                       lineHeight: RFValue(19)
                     }}
                   >
-                    {data.name}
+                    {name}
                   </Title>
                   <Paragraph
                     style={{
@@ -316,13 +294,11 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                       color: colors.SECONDARY_TEXT
                     }}
                   >
-                    {data.membersCount <= 1
-                      ? `${data.membersCount} ${t(`community.tabPanel.member`)}`
-                      : `${data.membersCount} ${t(
-                          `community.tabPanel.member`
-                        )}s`}
+                    {membersCount <= 1
+                      ? `${membersCount} ${t('community.tabPanel.member')}`
+                      : `${membersCount} ${t('community.tabPanel.member')}s`}
                   </Paragraph>
-                  {data.description ? (
+                  {description ? (
                     <Paragraph
                       style={{
                         fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
@@ -331,18 +307,18 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                         color: colors.PRIMARY_TEXT
                       }}
                     >
-                      {data?.description}
+                      {description}
                     </Paragraph>
                   ) : null}
                 </TextContainer>
                 <Button
                   mode="contained"
-                  disabled={request || data?.isRequested ? true : false}
+                  disabled={isRequested ? true : false}
                   loading={loading}
                   onPress={
-                    data.isMember || member
+                    isMember
                       ? handleLeave
-                      : data?.isPrivate
+                      : isPrivate
                       ? handleJoinPrivateTribe
                       : handleJoin
                   }
@@ -356,10 +332,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                   labelStyle={{
                     fontSize: fonts.MEDIUM_SIZE,
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    color:
-                      request || data?.isRequested
-                        ? colors.PRIMARY_TEXT
-                        : colors.WHITE,
+                    color: isRequested ? colors.PRIMARY_TEXT : colors.WHITE,
                     textTransform: 'capitalize'
                   }}
                 >
@@ -367,7 +340,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 </Button>
               </CardContainer>
 
-              {data.tags?.length ? (
+              {tags?.length ? (
                 <TagContainer>
                   <Title
                     style={{
@@ -381,7 +354,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                   </Title>
 
                   <Tags>
-                    {data?.tags.map((identity: any) => (
+                    {tags.map((identity: any) => (
                       <TagText key={identity.id}>{identity.name}</TagText>
                     ))}
                   </Tags>
@@ -427,7 +400,7 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
       {state.tagModal ? (
         <TagModal
           onPress={closeModal}
-          data={data?.uniqueInterests}
+          data={uniqueInterests}
           displayTagModal={displayTagModal}
         />
       ) : null}
