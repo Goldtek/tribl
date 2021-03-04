@@ -154,6 +154,7 @@
     "placeholder": "Enter name here",
     "private": "private",
     "privateText": "In private communities only admins and moderators can add/remove members and create channels",
+    "publicText": "In public communities anyone can join and add channels to the group",
     "addPhoto": "add community photo",
     "photoAdded": "community photo added",
     "skip": "skip",
