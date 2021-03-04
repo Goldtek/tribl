@@ -216,8 +216,8 @@ export const GET_CHANNEL_MEMBERS = gql`
         lastName
         phoneNumber
         connected
-        avatar
         verified
+        avatar
         communityCount
         connectionCount
         pending
@@ -268,6 +268,7 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         avatar
         communityCount
         connectionCount
+        verified
         pending
         moderatorOf {
           isModerator
@@ -517,6 +518,7 @@ export const GET_CONNECTION_REQUEST = gql`
         connected
         connectionCount
         communityCount
+        verified
         birthPlace {
           country
           state
