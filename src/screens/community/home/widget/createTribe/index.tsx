@@ -197,7 +197,9 @@ export default function CreateTribeScreen(props: ScreenProp) {
             color: colors.SECONDARY_TEXT
           }}
         >
-          {t(`community.createTribe.privateText`)}
+          {isEnabled
+            ? t(`community.createTribe.privateText`)
+            : t(`community.createTribe.publicText`)}
         </Text>
       </Cover>
       <Divider style={{ marginTop: RFValue(20) }} />
