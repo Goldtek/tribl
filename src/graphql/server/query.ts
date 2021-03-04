@@ -341,6 +341,9 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
 export const GET_POPULAR_COMMUNITIES = gql`
   query popularCommunities($input: CommunityArgsInput) {
     popularCommunities(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         name
@@ -556,17 +559,17 @@ export const GET_SINGLE_COMMUNITY = gql`
   query community($input: CommunityArgsInput!) {
     Community(input: $input) {
       data {
-        description
         id
-        avatar
-        membersCount
-        isMember
         name
+        avatar
+        isMember
         isPrivate
+        isInvited
+        description
         isModerator
         description
         isRequested
-        isInvited
+        membersCount
         tags {
           id
           name
