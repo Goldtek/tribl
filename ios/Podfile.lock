@@ -755,7 +755,7 @@ PODS:
     - React-Core
   - RNReanimated (1.13.2):
     - React-Core
-  - RNScreens (2.18.0):
+  - RNScreens (2.18.1):
     - React-Core
   - RNSVG (12.1.0):
     - React
@@ -1218,7 +1218,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: 08ba3a2e2f4f8833d606f01906c371e382c4dea9
   RNLocalize: 7c7aeda16c01db7a0918981c14875c0a53be9b79
   RNReanimated: e03f7425cb7a38dcf1b644d680d1bfc91c3337ad
-  RNScreens: f0d7a2a440a8ba9f4574ca1ddb3368f473891be4
+  RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNUxcam: 469f0fa2d5e8b86e494e3098fcf7f12c8466c1f2
   SDWebImage: c666b97e1fa9c64b4909816a903322018f0a9c84
@@ -1243,4 +1243,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 99a4291d4497d04aa97f3be735f69ca5cd83f08e
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.0.beta.1
