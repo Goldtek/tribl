@@ -254,6 +254,7 @@ export interface JwtTokenResult {
   exists: boolean;
   id_token: string;
   verified: boolean;
+  appVersion: string;
   expires_in: number;
   access_token: string;
   streams_token: string;
@@ -368,6 +369,7 @@ export type RecommendedMembersRequestInterface = {
 export type ChannelMembersRequestInterface = {
   channelMembers: {
     data: PassportInterface[];
+    metadata: QueryMetadata;
   };
 };
 
@@ -382,6 +384,7 @@ export type RecommendedCommunitiesRequestInterface = {
 export type MyCommunitiesRequestInterface = {
   myCommunities: {
     data: CommunityInterface[];
+    metadata: QueryMetadata;
   };
 };
 
@@ -445,7 +448,7 @@ export type ConnectionRequestsInterface = {
 
 // POPULAR COMMUNITIES REQUEST (RESPONSE) TYPE
 export type PopularCommunitiesRequestInterface = {
-  popularCommunities: { data: CommunityInterface[] };
+  popularCommunities: { data: CommunityInterface[]; metadata: QueryMetadata };
 };
 
 // MY CONNECTIONS NEARBY REQUEST (RESPONSE) TYPE
@@ -461,5 +464,12 @@ export type CommunityChannelRequestInterface = {
   Channel: {
     data: ChannelInterface[];
     metadata: QueryMetadata;
+  };
+};
+
+// GET SINGLE COMMUNITY REQUEST (RESPONSE) TYPE
+export type SingleCommunityRequestInterface = {
+  Community: {
+    data: CommunityInterface[];
   };
 };

@@ -12,6 +12,7 @@ import GradientButton from '../../../components/gradientButton';
 import { useThemeContext } from '../../../theme';
 import ENVIRONMENT_VARIABLES from '../../../config';
 import { hideSensitiveView } from '../../../utils/uxcamHelper';
+import { crashlytics } from '../../../firebase/config';
 
 function BirthplaceModal(props: any) {
   const { navigation } = props;
@@ -120,7 +121,7 @@ function BirthplaceModal(props: any) {
         enablePoweredByContainer={false}
         scrollEnabled={false}
         onPress={handleBirthLocation}
-        onFail={(error) => console.error(error)}
+        onFail={(error) => crashlytics.recordError(new Error(error))}
         GooglePlacesDetailsQuery={{ type: '(regions)' }}
         query={{
           key: ENVIRONMENT_VARIABLES.GOOGLE_PLACES_API,
