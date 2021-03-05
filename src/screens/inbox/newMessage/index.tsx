@@ -57,7 +57,6 @@ export default function ChatScreen(props: ScreenProp) {
     tagScreenName('NewMessageScreen');
   }, []);
 
-  const [refreshing, setRefreshing] = useState(false);
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const [state, setState] = useState({
@@ -264,8 +263,6 @@ export default function ChatScreen(props: ScreenProp) {
     }
   };
 
-  const handleRefresh = () => {};
-
   const onEndReachedScroll = () => {
     switch (true) {
       case state.connections &&
@@ -461,9 +458,7 @@ export default function ChatScreen(props: ScreenProp) {
             ref={hideSensitiveView}
             data={listData}
             bounces={false}
-            refreshing={refreshing}
             renderItem={_renderItem}
-            onRefresh={handleRefresh}
             keyExtractor={(item) => item.id}
             ItemSeparatorComponent={() => (
               <Divider

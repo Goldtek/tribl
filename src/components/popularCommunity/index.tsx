@@ -20,22 +20,14 @@ import {
 import { logEvent } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
 import { crashlytics } from '../../firebase/config';
+import { CommunityInterface } from '../../graphql/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface PopularCommunityProp {
-  avatar: string;
-  name: string;
-  id: string;
-  membersCount: number;
-  isMember: boolean;
-  interests: [];
-  description: string;
-  uniqueInterests: any;
-  isPrivate: boolean;
-  isRequested: boolean;
+interface PopularCommunityProp extends CommunityInterface {
+  refetchCommunity: () => Promise<void>;
 }
 
 function PopularCommunity(props: PopularCommunityProp) {
@@ -44,89 +36,60 @@ function PopularCommunity(props: PopularCommunityProp) {
   const { t } = useTranslation();
 
   const {
-    avatar,
-    name,
-    membersCount,
-    isMember,
     id,
-    uniqueInterests,
+    name,
+    avatar,
+    isMember,
     isPrivate,
-    isRequested
+    isRequested,
+    membersCount,
+    refetchCommunity
   } = props;
 
   const [modal, setModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [buttonLabel, setButtonLabel] = useState(
     t(`community.recommended.join`)
   );
-  const [loading, setLoading] = useState(false);
 
-  const handleNavigation = useCallback(() => {
+  const handleNavigation = () => {
     navigation.navigate('CommunityDetailScreen', {
       title: name,
       details: props,
       showModal: modal,
       showModalCount: 1
     });
-  }, [modal]);
-
-  const [member, setMember] = useState(isMember);
-  const [request, setRequest] = useState(false);
+  };
 
   useQuery(GET_COMMUNITY_MEMBERS, {
     variables: { input: { filter: { communityId: id } } }
   });
+
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
     variables: { input: { communityId: id } }
   });
 
   useEffect(() => {
-    if (isMember || member) {
+    if (isMember) {
       setButtonLabel(t(`community.recommended.leave`));
-    } else if (request || isRequested) {
+    } else if (isRequested) {
       setButtonLabel(t(`community.tabPanel.request`));
     } else {
       setButtonLabel(t(`community.recommended.join`));
     }
-  }, [isMember || member || request || isRequested]);
+  }, [isMember, isRequested]);
 
-  useEffect(() => {
-    if (isMember || member) {
-      setLoading(leaveLoading);
-    } else if (isPrivate) {
-      setLoading(joinPrivateLoading);
-    } else {
-      setLoading(joinLoading);
-    }
-  }, [isMember || member || isPrivate]);
+  const [joinPrivateCommunity] = useMutation(JOIN_PRIVATE_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
-  const clearTagModal = async () => {
-    try {
-      await Storage.removeTagModal(id);
-    } catch (error) {
-      crashlytics.recordError(new Error(error));
-    }
-  };
+  const [joinCommunity] = useMutation(JOIN_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
-  const [joinPrivateCommunity, { loading: joinPrivateLoading }] = useMutation(
-    JOIN_PRIVATE_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
-
-  const [joinCommunity, { loading: joinLoading }] = useMutation(
-    JOIN_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
-
-  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
-    LEAVE_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
+  const [leaveCommunity] = useMutation(LEAVE_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
   const handleJoin = async () => {
     logEvent('join community', { from: 'community' });
@@ -135,11 +98,13 @@ function PopularCommunity(props: PopularCommunityProp) {
         info: `User Joins ${name} Tribe`,
         'Activity Screen': 'Popular Community Card'
       });
+      setLoading(true);
       await joinCommunity();
-      await Storage.setTagModal({ community: [id] });
-      setMember(!member);
+      refetchCommunity().then(() => setLoading(false));
+      Storage.setTagModal({ community: [id] });
       setModal(true);
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(new Error(error));
     }
   };
@@ -151,9 +116,11 @@ function PopularCommunity(props: PopularCommunityProp) {
         info: `User Request To Join ${name} Tribe`,
         'Activity Screen': 'Popular Community Card'
       });
+      setLoading(true);
       await joinPrivateCommunity();
-      setRequest(true);
+      refetchCommunity().then(() => setLoading(false));
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(error);
     }
   };
@@ -165,11 +132,13 @@ function PopularCommunity(props: PopularCommunityProp) {
         info: `User Leaves ${name} Tribe`,
         'Activity Screen': 'Popular Community Card'
       });
+      setLoading(true);
       await leaveCommunity();
-      clearTagModal();
-      setMember(!member);
+      refetchCommunity().then(() => setLoading(false));
+      Storage.removeTagModal(id);
       setModal(false);
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(new Error(error));
     }
   };
@@ -221,10 +190,10 @@ function PopularCommunity(props: PopularCommunityProp) {
 
           <Button
             mode="text"
-            disabled={request || isRequested ? true : false}
+            disabled={isRequested ? true : false}
             loading={loading}
             onPress={
-              member
+              isMember
                 ? handleLeave
                 : isPrivate
                 ? handleJoinPrivateTribe
@@ -235,7 +204,7 @@ function PopularCommunity(props: PopularCommunityProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE),
               color: colors.PRIMARY,
               textTransform: 'uppercase',
-              marginHorizontal: leaveLoading || joinLoading ? 15 : 0
+              marginHorizontal: loading ? 15 : 0
             }}
             contentStyle={{ justifyContent: 'flex-start' }}
             style={{ width: '40%' }}

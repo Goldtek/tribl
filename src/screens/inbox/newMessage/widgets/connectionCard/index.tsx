@@ -173,7 +173,7 @@ function ConnectionCard(props: ConnectionCardProp) {
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
               fontSize: RFValue(fonts.MEDIUM_SIZE - 2),
-              textTransform: 'lowercase'
+              textTransform: 'capitalize'
             }}
           >
             {currentLocation?.city

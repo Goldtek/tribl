@@ -205,6 +205,9 @@ export const GET_NEARBY_MEMBERS = gql`
 export const GET_CHANNEL_MEMBERS = gql`
   query channelMembers($input: ChannelMemberInput!) {
     channelMembers(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         bio
@@ -213,6 +216,7 @@ export const GET_CHANNEL_MEMBERS = gql`
         lastName
         phoneNumber
         connected
+        verified
         avatar
         communityCount
         connectionCount
@@ -264,6 +268,7 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         avatar
         communityCount
         connectionCount
+        verified
         pending
         moderatorOf {
           isModerator
@@ -336,6 +341,9 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
 export const GET_POPULAR_COMMUNITIES = gql`
   query popularCommunities($input: CommunityArgsInput) {
     popularCommunities(input: $input) {
+      metadata {
+        totalCount
+      }
       data {
         id
         name
@@ -364,6 +372,9 @@ export const GET_POPULAR_COMMUNITIES = gql`
 export const GET_MY_COMMUNITIES = gql`
   query myCommunities {
     myCommunities {
+      metadata {
+        totalCount
+      }
       data {
         id
         description
@@ -510,6 +521,7 @@ export const GET_CONNECTION_REQUEST = gql`
         connected
         connectionCount
         communityCount
+        verified
         birthPlace {
           country
           state
@@ -547,17 +559,17 @@ export const GET_SINGLE_COMMUNITY = gql`
   query community($input: CommunityArgsInput!) {
     Community(input: $input) {
       data {
-        description
         id
-        avatar
-        membersCount
-        isMember
         name
+        avatar
+        isMember
         isPrivate
+        isInvited
+        description
         isModerator
         description
         isRequested
-        isInvited
+        membersCount
         tags {
           id
           name

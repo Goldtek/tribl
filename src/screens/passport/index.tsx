@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
 import * as Updates from 'expo-updates';
-import { check, PERMISSIONS, request } from 'react-native-permissions';
 import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
@@ -192,7 +191,7 @@ export default function PassportScreen(props: ScreenProp) {
         ...passportInfo
       });
       setAvatar({ ...avatar, uri: passportInfo.avatar });
-      handleLocationPermission();
+      handleLocation();
     }
   };
 
@@ -378,29 +377,6 @@ export default function PassportScreen(props: ScreenProp) {
       }
     }
   });
-
-  const handleLocationPermission = async () => {
-    const iosData = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-    const androidData = await check(
-      PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION
-    );
-    if (iosData === 'granted' || androidData === 'granted') {
-      handleLocation();
-    } else if (
-      iosData === 'denied' ||
-      androidData === 'denied' ||
-      iosData === 'blocked' ||
-      androidData === 'blocked'
-    ) {
-      const iosData = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-      const androidData = await request(
-        PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION
-      );
-      iosData === 'granted' || androidData === 'granted'
-        ? handleLocation()
-        : null;
-    }
-  };
 
   const onShare = async () => {
     try {

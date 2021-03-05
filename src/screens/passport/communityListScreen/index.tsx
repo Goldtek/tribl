@@ -30,11 +30,9 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
 
   const { colors, fonts } = useThemeContext();
 
-  const [fetchMyCommunities, { data, refetch }] = useLazyQuery<
+  const [fetchMyCommunities, { data, fetchMore, refetch }] = useLazyQuery<
     MyCommunitiesRequestInterface
-  >(GET_MY_COMMUNITIES, {
-    variables: { offset: 0, first: PAGINATION_DEFAULT * 2 }
-  });
+  >(GET_MY_COMMUNITIES);
 
   useEffect(() => {
     tagScreenName('UserCommunityListScreen');
@@ -46,64 +44,64 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
     }
   }, [params.userTribe]);
 
+  const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState({ searchTerm: '' });
-  const [state, setState] = useState({
-    refreshing: false,
-    callOnScrollEnd: false
-  });
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const myCommunities = params.userTribe
     ? data?.myCommunities?.data
     : params.details;
 
-  const filterCommunities = myCommunities?.slice().sort(function (a, b) {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
-  });
-
   const _renderFooter = useCallback(
-    () => (state.callOnScrollEnd ? <ActivityIndicator /> : null),
-    [state.callOnScrollEnd]
+    () => (callOnScrollEnd ? <ActivityIndicator /> : null),
+    [callOnScrollEnd]
   );
 
-  const onRefresh = async () => {
+  const handleRefresh = async () => {
     try {
-      setState({ ...state, refreshing: true });
+      setRefreshing(true);
       await refetch();
-      setState({ ...state, refreshing: false });
+      setRefreshing(false);
     } catch (error) {
-      setState({ ...state, refreshing: false });
+      setRefreshing(false);
     }
   };
 
-  // const handleEndReach = async () => {
-  //   if (!state.callOnScrollEnd) return;
+  const handleEndReach = async () => {
+    if (!callOnScrollEnd) return;
 
-  //   fetchMore({
-  //     variables: {
-  //       offset: data?.myCommunities.length,
-  //       first: PAGINATION_DEFAULT
-  //     },
-  //     updateQuery: (prev, { fetchMoreResult }) => {
-  //       setState({ ...state, callOnScrollEnd: false });
+    fetchMore({
+      variables: {
+        input: {
+          skip: data?.myCommunities?.data?.length,
+          limit: PAGINATION_DEFAULT
+        }
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setCallOnScrollEnd(false);
 
-  //       if (!fetchMoreResult) return prev;
+        if (!fetchMoreResult) return prev;
 
-  //       return Object.assign({}, prev, {
-  //         myConnections: [fetchMoreResult.myCommunities]
-  //       });
-  //     }
-  //   });
-  // };
+        return Object.assign({}, prev, {
+          myCommunities: {
+            ...prev.myCommunities,
+            data: [
+              ...prev.myCommunities.data,
+              ...fetchMoreResult.myCommunities.data
+            ]
+          }
+        });
+      }
+    });
+  };
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const keysToFilter = ['name'];
 
   const filteredWords =
-    filterCommunities &&
-    filterCommunities?.filter(createFilter(search.searchTerm, keysToFilter));
+    myCommunities &&
+    myCommunities?.filter(createFilter(search.searchTerm, keysToFilter));
 
   const _renderItem = ({ item }: { item: CommunityInterface }) => (
     <Community key={item.id} {...item} />
@@ -133,12 +131,14 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
       {myCommunities ? (
         <FlatList
           data={filteredWords}
-          refreshing={state.refreshing}
-          onRefresh={onRefresh}
+          refreshing={refreshing}
+          renderItem={_renderItem}
+          onRefresh={handleRefresh}
           onEndReachedThreshold={0.5}
-          // ListFooterComponent={_renderFooter}
-          // onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
-          // onMomentumScrollEnd={handleEndReach}
+          keyExtractor={({ id }) => id}
+          ListFooterComponent={_renderFooter}
+          onMomentumScrollEnd={handleEndReach}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexGrow: 1,
             marginTop: RFValue(10),
@@ -158,9 +158,14 @@ export default function CommunityListScreen(props: MyCommunityScreenProp) {
                 : `No tribes found`}
             </Text>
           }
-          showsVerticalScrollIndicator={false}
-          renderItem={_renderItem}
-          keyExtractor={({ id }) => id}
+          onEndReached={() => {
+            if (
+              data?.myCommunities?.data &&
+              data?.myCommunities?.metadata.totalCount > myCommunities.length
+            ) {
+              setCallOnScrollEnd(true);
+            }
+          }}
         />
       ) : (
         <Skeleton />
