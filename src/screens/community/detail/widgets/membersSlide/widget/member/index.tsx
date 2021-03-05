@@ -138,7 +138,7 @@ function Member(props: MemberProp) {
                 color: colors.SECONDARY_TEXT,
                 fontFamily: fonts.WORK_SANS_REGULAR,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textTransform: 'lowercase'
+                textTransform: 'capitalize'
               }}
             >
               {location?.city
