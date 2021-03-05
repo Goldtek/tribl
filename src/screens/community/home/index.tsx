@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useCallback
 } from 'react';
-import debounce from 'lodash.debounce';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button, ActivityIndicator } from 'react-native-paper';
