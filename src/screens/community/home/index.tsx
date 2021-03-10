@@ -7,8 +7,8 @@ import React, {
 } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
-import { Title, Button, ActivityIndicator } from 'react-native-paper';
-import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
+import { Title, ActivityIndicator } from 'react-native-paper';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
@@ -56,8 +56,8 @@ import {
   RecommendedListHeader,
   RecommendedCommunityContainer,
   RecentActivitiesList,
-  CommunityCover,
-  ButtonWrapper
+  CommunityCover
+  // ButtonWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -138,7 +138,7 @@ export default function HomeScreen(props: ScreenProp) {
     getMyCommunities,
     { refetch, fetchMore, data: myCommunityData, loading: myCommunityLoading }
   ] = useLazyQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
+    variables: { input: { limit: PAGINATION_DEFAULT * 2, skip: 0 } }
   });
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
@@ -200,11 +200,11 @@ export default function HomeScreen(props: ScreenProp) {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
 
-  const navigateToCreateNewTribeScreen = () => {
-    navigation.navigate('DrawerScreen', {
-      screen: 'CreateTribeScreen'
-    });
-  };
+  // const navigateToCreateNewTribeScreen = () => {
+  //   navigation.navigate('DrawerScreen', {
+  //     screen: 'CreateTribeScreen'
+  //   });
+  // };
 
   const handleJoinCommunity = () => {
     setState({
@@ -239,33 +239,33 @@ export default function HomeScreen(props: ScreenProp) {
     [callOnScrollEnd]
   );
 
-  const handleEndReach = () => {
-    if (!callOnScrollEnd) return;
+  // const handleEndReach = () => {
+  //   if (!callOnScrollEnd) return;
 
-    fetchMore({
-      variables: {
-        input: {
-          skip: myCommunities?.data.length,
-          limit: PAGINATION_DEFAULT / 2
-        }
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        setCallOnScrollEnd(false);
+  //   fetchMore({
+  //     variables: {
+  //       input: {
+  //         skip: myCommunities?.data.length,
+  //         limit: PAGINATION_DEFAULT / 2
+  //       }
+  //     },
+  //     updateQuery: (prev, { fetchMoreResult }) => {
+  //       setCallOnScrollEnd(false);
 
-        if (!fetchMoreResult) return prev;
+  //       if (!fetchMoreResult) return prev;
 
-        return Object.assign({}, prev, {
-          myCommunities: {
-            ...prev.myCommunities,
-            data: [
-              ...prev.myCommunities.data,
-              ...fetchMoreResult.myCommunities.data
-            ]
-          }
-        });
-      }
-    });
-  };
+  //       return Object.assign({}, prev, {
+  //         myCommunities: {
+  //           ...prev.myCommunities,
+  //           data: [
+  //             ...prev.myCommunities.data,
+  //             ...fetchMoreResult.myCommunities.data
+  //           ]
+  //         }
+  //       });
+  //     }
+  //   });
+  // };
 
   return (
     <Fragment>
@@ -273,7 +273,7 @@ export default function HomeScreen(props: ScreenProp) {
         bounces={false}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(80) }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(80 / 2) }}
       >
         <StatusBar translucent animated style="dark" />
         {myCommunityLoading ? (
@@ -302,18 +302,18 @@ export default function HomeScreen(props: ScreenProp) {
               horizontal={true}
               onEndReachedThreshold={0.5}
               ListEmptyComponent={<MyCommunitySkeleton skeletonSize={2} />}
-              onEndReached={() => {
-                if (
-                  myCommunities &&
-                  myCommunities?.metadata.totalCount >
-                    myCommunities?.data.length
-                ) {
-                  setCallOnScrollEnd(true);
-                }
-              }}
+              // onEndReached={() => {
+              //   if (
+              //     myCommunities &&
+              //     myCommunities?.metadata.totalCount >
+              //       myCommunities?.data.length
+              //   ) {
+              //     setCallOnScrollEnd(true);
+              //   }
+              // }}
               ListFooterComponent={_renderFooter}
               renderItem={_renderMyCommunityItem}
-              onMomentumScrollEnd={handleEndReach}
+              // onMomentumScrollEnd={handleEndReach}
               ListFooterComponentStyle={{ justifyContent: 'center' }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -525,7 +525,8 @@ export default function HomeScreen(props: ScreenProp) {
           </RecentActivitiesList>
         ) : null}
       </ScrollView>
-      <ButtonWrapper>
+
+      {/* <ButtonWrapper>
         <Button
           onPress={navigateToCreateNewTribeScreen}
           mode="contained"
@@ -543,7 +544,7 @@ export default function HomeScreen(props: ScreenProp) {
         >
           {t(`community.createTribe.buttonText`)}
         </Button>
-      </ButtonWrapper>
+      </ButtonWrapper> */}
 
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />

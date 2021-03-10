@@ -78,7 +78,7 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const passport = { ...props.route.params.details };
 
-  const { phoneNumber, firstName, lastName, avatar, id } = passport;
+  const { firstName, lastName, avatar, id } = passport;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
