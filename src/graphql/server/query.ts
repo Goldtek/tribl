@@ -693,6 +693,12 @@ export const GET_SINGLE_PASSPORT = gql`
         isPrivate
         membersCount
       }
+      channelParticipantOf {
+        id
+        name
+        isMember
+        isPrivate
+      }
       birthPlace {
         country
         state
