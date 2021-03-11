@@ -95,7 +95,7 @@ export const Location = styled.View`
 `;
 
 export const CitizenshipContainer = styled.View`
-  margin: 20px 0px;
+  margin-top: 20px;
 `;
 
 export const LinkAccountsContainer = styled.View`
@@ -131,3 +131,10 @@ export const ButtonDot = styled.View`
 `;
 
 export const Cover = styled.View``;
+
+export const TitleCover = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: ${RFValue(10)}px;
+  margin-top: ${RFValue(20)}px;
+`;

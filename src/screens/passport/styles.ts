@@ -36,13 +36,24 @@ export const SocialMediaButton = styled.TouchableHighlight`
 export const ConnectionCover = styled.View`
   flex: 1;
   flex-direction: row;
-  justify-content: space-between;
-  margin-top: ${RFValue(15)}px;
+  margin-top: ${RFValue(2)}px;
   margin-right: ${RFValue(15)}px;
 `;
 
 export const Cover = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  margin-top: ${RFValue(20)}px;
+`;
+
+export const TribeCover = styled.View`
+  position: relative;
+  width: ${RFValue(65)}px;
+  height: ${RFValue(65)}px;
+`;
+export const TabCover = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.WHITE};
+  position: relative;
+  top: ${RFValue(-20)}px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
 `;
