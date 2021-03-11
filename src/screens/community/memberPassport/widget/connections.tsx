@@ -12,7 +12,7 @@ import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionProp extends PassportInterface {}
 
-export default function MyCommunity(props: MyConnectionProp) {
+export default function MyConnection(props: MyConnectionProp) {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
 
