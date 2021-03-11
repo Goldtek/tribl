@@ -18,7 +18,8 @@
     "message": "message",
     "newCommunity": "new communities coming soon!",
     "communityRequests": "Community Requests",
-    "leaveCommunity": "Leave Community"
+    "leaveCommunity": "Leave Community",
+    "trendingChannel": "trending channels"
   },
 
   "joinModal": {
@@ -51,11 +52,13 @@
     "blocked": "blocked",
     "requested": "requested",
     "interestTitle": "what are you interested in?",
-    "interestParagraph": "Let us know what you have interest in. \n(Select all that apply)"
+    "interestParagraph": "Let us know what you have interest in. \n(Select all that apply)",
+    "channels": "recent channels"
   },
 
   "tabPanel": {
     "member": "member",
+    "members": "members",
     "community": "tribes",
     "highlight": "highlights",
     "channel": "channels",
@@ -70,7 +73,9 @@
     "placeholder": "Search by name or tag",
     "search": "Search",
     "memberTitle": "tribe members",
-    "leave": "leave"
+    "leave": "leave",
+    "tribeChannels": "tribe channels",
+    "connectedTribes": "connected tribes"
   },
 
   "sideNav": {
@@ -197,5 +202,12 @@
     "accept": "accept",
     "decline": "decline",
     "empty": " You currently don't have any community request"
+  },
+  "passport": {
+    "addCitizen": "add citizenship",
+    "add": "You may add up to 3",
+    "countryError": "You can only add three countries",
+    "selectError": "Select atleast one country",
+    "subTitle": "Use your passport to connect & engage."
   }
 }
