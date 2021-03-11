@@ -166,8 +166,6 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     (member) => member.id !== userId
   );
 
-  console.tron('communityChannels', communityChannels);
-
   const nearbyMembers = communityNearbyMembers?.length
     ? communityNearbyMembers
     : filteredParticipants?.length

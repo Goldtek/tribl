@@ -237,8 +237,6 @@ function ContactSlide(props: ScreenProp) {
     const timeStamp = dobTimestamp / 1000;
     const date = month + '/' + day + '/' + year;
     const newDOB = year + '-' + month + '-' + day;
-    console.tron('datae', date);
-
     if (date.includes('NaN')) {
       return setState({
         ...state,
@@ -341,7 +339,7 @@ function ContactSlide(props: ScreenProp) {
   };
 
   const { firstName, lastName, bio, citizenship } = state;
-  console.tron('citizenShip', citizenship);
+
   useEffect(() => {
     props.getUserDetails(state);
   }, [state]);

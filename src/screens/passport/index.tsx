@@ -103,8 +103,6 @@ export default function PassportScreen(props: ScreenProp) {
     details: { selectedIdentity: [], selectedInterest: [], date: '' }
   });
 
-  console.tron('cache', cache);
-
   const [OTAUpdate, setOTAUpdate] = useState(false);
   const [update, setUpdate] = useState(true);
 
@@ -176,8 +174,6 @@ export default function PassportScreen(props: ScreenProp) {
       logEvent('mixpanel', { 'mixpanel-user-ID': user });
     }
   }, [userDetails]);
-
-  console.tron('userDetails', userDetails);
 
   const setCacheData = async () => {
     if (userDetails) {
@@ -253,8 +249,6 @@ export default function PassportScreen(props: ScreenProp) {
       });
     }
   }, [selectedCountries]);
-
-  console.tron('selectedCountries', selectedCountries);
 
   useEffect(() => {
     if (!userDetails) getCacheData();
@@ -353,7 +347,6 @@ export default function PassportScreen(props: ScreenProp) {
   const year = parseInt(dob[2]);
   const dateOfBirth = `${year + '-' + month + '-' + day}`;
   const date = dateOfBirth == 'NaN-NaN-NaN' ? '' : dateOfBirth;
-  console.tron('dateOfBirth', date);
   const identity = cache.details.selectedIdentity.map(
     (identity) => identity.name
   );
@@ -451,14 +444,12 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
-      console.tron('updated');
       refetch();
       setCacheData();
       setUpdate(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
       setUpdate(true);
-      console.tron('error', error);
     }
   };
 
@@ -505,8 +496,6 @@ export default function PassportScreen(props: ScreenProp) {
       crashlytics.recordError(new Error(error));
     }
   };
-
-  console.tron('cache?.citizenship?', cache?.citizenship);
 
   return (
     <SafeAreaView
