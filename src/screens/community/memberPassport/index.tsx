@@ -12,7 +12,7 @@ import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
 import {
-  GET_SINGLE_PASSPORT,
+  GET_MEMBER_PASSPORT,
   GET_USER_PASSPORT
 } from '../../../graphql/server/query';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
@@ -80,19 +80,20 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const { firstName, lastName, avatar, id } = passport;
 
+  const [data, setData] = useState({ ...passport });
+
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
   });
 
   const { data: passportData } = useQuery<SinglePassportRequestInterface>(
-    GET_SINGLE_PASSPORT,
+    GET_MEMBER_PASSPORT,
     { variables: { id } }
   );
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const singlePassport = passportData?.singlePassport;
-  const [data, setData] = useState({ ...passport });
 
   useEffect(() => {
     if (singlePassport?.id) {
@@ -187,7 +188,10 @@ export default function PassportDetail(props: MemberDetailProps) {
     });
   };
 
-  const community = singlePassport?.participantOf;
+  const community = singlePassport?.participantOf?.concat([
+    { lastIndex: true, isModerator: false } as any
+  ]);
+
   const connections = singlePassport?.myConnections;
   const channels = singlePassport?.channelParticipantOf;
 
@@ -209,11 +213,9 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const { loading, pending } = state;
 
-  const moderator = singlePassport?.moderatorOf;
-
   const _renderMyCommunityItem = useMemo(
     () => ({ item }: { item: CommunityInterface }) => (
-      <MyCommunity key={item.id} {...item} moderatorOf={moderator} />
+      <MyCommunity key={item.id} {...item} singlePassport={singlePassport} />
     ),
     []
   );
@@ -693,28 +695,28 @@ export default function PassportDetail(props: MemberDetailProps) {
 
           {data?.participantOf?.length ? (
             <Fragment>
-              <TouchableHighlight
-                underlayColor={colors.TRANSPARENT}
-                style={{ marginTop: RFValue(20) }}
-                onPress={() => {
-                  navigation.navigate('CommunityListScreen', {
-                    details: data?.participantOf,
-                    title: `${data?.firstName} ${data?.lastName} Tribes`
-                  });
-                }}
-              >
+              <Cover style={{ flexDirection: 'row', marginBottom: 10 }}>
                 <Title
                   style={{
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase',
-                    marginBottom: 10
+                    textTransform: 'uppercase'
                   }}
                 >
                   {t(`community.memberPassport.tribe`)}
                 </Title>
-              </TouchableHighlight>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY,
+                    marginHorizontal: 2
+                  }}
+                >
+                  ({data?.participantOf?.length})
+                </Title>
+              </Cover>
               <FlatList
                 data={community}
                 horizontal={true}
@@ -762,7 +764,7 @@ export default function PassportDetail(props: MemberDetailProps) {
 
           {data?.myConnections?.length ? (
             <Cover ref={hideSensitiveView}>
-              <TouchableHighlight
+              {/* <TouchableHighlight
                 underlayColor={colors.TRANSPARENT}
                 style={{ marginTop: RFValue(20) }}
                 onPress={() => {
@@ -784,7 +786,29 @@ export default function PassportDetail(props: MemberDetailProps) {
                 >
                   {t(`community.memberPassport.connection`)}
                 </Title>
-              </TouchableHighlight>
+              </TouchableHighlight> */}
+              <Cover style={{ flexDirection: 'row', marginBottom: 10 }}>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {t(`community.memberPassport.connection`)}
+                </Title>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY,
+                    marginHorizontal: 2
+                  }}
+                >
+                  ({data?.participantOf?.length})
+                </Title>
+              </Cover>
               <FlatList
                 data={connections}
                 horizontal={true}

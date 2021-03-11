@@ -660,6 +660,51 @@ export const GET_SINGLE_PASSPORT = gql`
       #   name
       #   flag
       # }
+      connectionDetails {
+        status
+      }
+      moderatorOf {
+        isModerator
+        id
+      }
+      birthPlace {
+        country
+        state
+        city
+      }
+      currentLocation {
+        country
+        state
+        city
+        lat
+        long
+      }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+    }
+  }
+`;
+
+// GET MEMBER PASSPORT
+export const GET_MEMBER_PASSPORT = gql`
+  query singlePassport($id: String!) {
+    singlePassport(id: $id) {
+      id
+      bio
+      email
+      firstName
+      lastName
+      avatar
+      verified
+      phoneNumber
+      connected
+      connectionCount
+      communityCount
+      pending
       myConnections {
         id
         firstName
@@ -698,6 +743,9 @@ export const GET_SINGLE_PASSPORT = gql`
         name
         isMember
         isPrivate
+        community {
+          avatar
+        }
       }
       birthPlace {
         country
