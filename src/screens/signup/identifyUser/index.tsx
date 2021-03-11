@@ -67,14 +67,11 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   };
 
   const identities = Array.from(new Set(data?.Identity?.data));
-  console.tron('i', identities);
-
   const handleSubmit = async () => {
     if (!state.selectedIdentities.size) return handleInputError();
     const selectedIdentities = [
       ...Array.from(state.selectedIdentities.values())
     ];
-    console.tron('selectedIdentities', selectedIdentities);
 
     Mixpanel.people_union('User Selected Identities', [...selectedIdentities]);
 
