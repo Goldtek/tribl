@@ -31,6 +31,7 @@ import {
   GET_POPULAR_COMMUNITIES
 } from '../../../graphql/server/query';
 import MyCommunity from '../../../components/myCommunities';
+import MyChannel from '../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
 import RecommendedCommunitySkeleton from '../../../components/recommendedCommunitySkeleton';
@@ -39,7 +40,8 @@ import {
   PassportInterface,
   MyCommunitiesRequestInterface,
   RecommendedCommunitiesRequestInterface,
-  CommunityInterface
+  CommunityInterface,
+  ChannelInterface
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -68,6 +70,61 @@ export default function HomeScreen(props: ScreenProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const channelData = [
+    {
+      id: '1',
+      name: 'general',
+      isDefault: true,
+      isMember: true,
+      isPrivate: true,
+      community: {
+        id: '01',
+        name: 'tribl',
+        avatar:
+          'https://res.cloudinary.com/tribl-for-community/image/upload/v1615469854/TRiBL%20for%20Community/yakpv2er2qriknfxuz5a.jpg'
+      }
+    },
+    {
+      id: '2',
+      name: 'feedback',
+      isDefault: true,
+      isMember: true,
+      isPrivate: true,
+      community: {
+        id: '02',
+        name: 'tribl',
+        avatar:
+          'https://res.cloudinary.com/tribl-for-community/image/upload/v1615469854/TRiBL%20for%20Community/yakpv2er2qriknfxuz5a.jpg'
+      }
+    },
+    {
+      id: '3',
+      name: 'Testing',
+      isDefault: true,
+      isMember: true,
+      isPrivate: true,
+      community: {
+        id: '03',
+        name: 'tribl',
+        avatar:
+          'https://res.cloudinary.com/tribl-for-community/image/upload/v1615469854/TRiBL%20for%20Community/yakpv2er2qriknfxuz5a.jpg'
+      }
+    },
+    {
+      id: '4',
+      name: 'dancing',
+      isDefault: true,
+      isMember: true,
+      isPrivate: true,
+      community: {
+        id: '04',
+        name: 'tribl',
+        avatar:
+          'https://res.cloudinary.com/tribl-for-community/image/upload/v1615469854/TRiBL%20for%20Community/yakpv2er2qriknfxuz5a.jpg'
+      }
+    }
+  ];
 
   const [state, setState] = useState({
     showJoinCommunityModal: false,
@@ -134,6 +191,8 @@ export default function HomeScreen(props: ScreenProp) {
       return 0;
     });
 
+  console.tron('recommendedMembers', recommendedMembers);
+
   const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
@@ -154,6 +213,13 @@ export default function HomeScreen(props: ScreenProp) {
   const _renderMyCommunityItem = useMemo(
     () => ({ item }: { item: CommunityInterface }) => (
       <MyCommunity key={item.id} {...item} />
+    ),
+    []
+  );
+
+  const _renderMyChannelItem = useMemo(
+    () => ({ item }: { item: ChannelInterface }) => (
+      <MyChannel key={item.id} {...item} />
     ),
     []
   );
@@ -244,8 +310,9 @@ export default function HomeScreen(props: ScreenProp) {
             />
           </RecommendedList>
         ) : null}
+
         <RecommendedList>
-          <RecommendedListHeader>
+          <RecommendedListHeader style={{ paddingLeft: 15 }}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -257,14 +324,14 @@ export default function HomeScreen(props: ScreenProp) {
                 marginBottom: 0
               }}
             >
-              {t(`community.recommended.members`)}
+              {t(`community.recommended.trendingChannel`)}
             </Title>
 
             <GradientButton
               gradientContainerstyle={{
                 height: RFValue(0),
                 paddingVertical: 15,
-                marginBottom: RFValue(20)
+                marginBottom: RFValue(10)
               }}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -273,30 +340,31 @@ export default function HomeScreen(props: ScreenProp) {
               }}
               mode="text"
               onPress={() => {
-                Mixpanel.track('User Taps View More (Members)', {
-                  info: 'User taps view more recommended (Members)',
-                  'Activity Screen': 'View More Recommended Members Button'
+                Mixpanel.track('User Taps View More (Channels)', {
+                  info: 'User taps view more trending (Channels)',
+                  'Activity Screen': 'View More Trending Channels Button'
                 });
-                logEvent('view more members', { from: 'community' });
-                navigateToSearch(0);
+                logEvent('view more channels', { from: 'community' });
+                navigateToSearch(1);
               }}
             >
               {t(`community.recommended.view`)}
             </GradientButton>
           </RecommendedListHeader>
-          <FlatList
-            data={recommendedMembers}
-            horizontal={true}
-            renderItem={_renderRecommendedMember}
-            ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(member) => member.id}
-            contentContainerStyle={{
-              marginTop: 20,
-              paddingLeft: 15,
-              backgroundColor: colors.WHITE
-            }}
-          />
+          <RecommendedCommunityContainer>
+            <FlatList
+              data={channelData}
+              horizontal={true}
+              renderItem={_renderMyChannelItem}
+              ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(channel) => channel.id}
+              contentContainerStyle={{
+                paddingLeft: 15,
+                backgroundColor: colors.WHITE
+              }}
+            />
+          </RecommendedCommunityContainer>
         </RecommendedList>
 
         <RecommendedList>
@@ -319,7 +387,7 @@ export default function HomeScreen(props: ScreenProp) {
               gradientContainerstyle={{
                 height: RFValue(0),
                 paddingVertical: 15,
-                marginBottom: RFValue(20)
+                marginBottom: RFValue(10)
               }}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -362,6 +430,61 @@ export default function HomeScreen(props: ScreenProp) {
               <ComingSoonCommunities />
             )}
           </RecommendedCommunityContainer>
+        </RecommendedList>
+
+        <RecommendedList>
+          <RecommendedListHeader>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 0
+              }}
+            >
+              {t(`community.recommended.members`)}
+            </Title>
+
+            <GradientButton
+              gradientContainerstyle={{
+                height: RFValue(0),
+                paddingVertical: 15,
+                marginBottom: RFValue(10)
+              }}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize'
+              }}
+              mode="text"
+              onPress={() => {
+                Mixpanel.track('User Taps View More (Members)', {
+                  info: 'User taps view more recommended (Members)',
+                  'Activity Screen': 'View More Recommended Members Button'
+                });
+                logEvent('view more members', { from: 'community' });
+                navigateToSearch(0);
+              }}
+            >
+              {t(`community.recommended.view`)}
+            </GradientButton>
+          </RecommendedListHeader>
+          <FlatList
+            data={recommendedMembers}
+            horizontal={true}
+            renderItem={_renderRecommendedMember}
+            ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(member) => member.id}
+            contentContainerStyle={{
+              marginTop: 20,
+              paddingLeft: 15,
+              backgroundColor: colors.WHITE
+            }}
+          />
         </RecommendedList>
 
         {recentActivities.length ? (

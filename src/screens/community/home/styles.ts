@@ -27,7 +27,7 @@ export const RecommendedListHeader = styled.View`
 `;
 
 export const RecommendedCommunityContainer = styled.View`
-  margin-top: 20px;
+  margin-top: 10px;
 `;
 
 export const RecentActivitiesList = styled.View`
