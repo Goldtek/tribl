@@ -85,6 +85,7 @@ export type RootStackParamList = {
   NotificationScreen?: Object;
   InviteToTribeScreen?: Object;
   CommunityRequestScreen?: Object;
+  CitizenshipScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -151,7 +152,8 @@ export type RootStackParamScreensList =
   | 'NewTribeScreen'
   | 'NotificationScreen'
   | 'InviteToTribeScreen'
-  | 'CommunityRequestScreen';
+  | 'CommunityRequestScreen'
+  | 'CitizenshipScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
