@@ -80,7 +80,7 @@ export default function SignupNavigator() {
                   firstName:
                     userRegInfo.user?.firstName || userDetails?.firstName,
                   identity: {
-                    add: userRegInfo.user?.identity || userDetails?.identity
+                    add: userRegInfo.user?.identityName || userDetails?.identity
                   },
                   interest: {
                     add: userDetails?.interest
