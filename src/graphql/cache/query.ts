@@ -17,7 +17,7 @@ export const GET_USER_DETAILS = gql`
       countryCode
       firstName
       lastName
-      citizenShip
+      citizenship
       currentLocation {
         lat
         long
@@ -35,6 +35,8 @@ export const GET_USER_DETAILS = gql`
       identity
       interest
       avatar
+      participantOf
+      myConnections
     }
   }
 `;
