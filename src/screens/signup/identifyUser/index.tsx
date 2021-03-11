@@ -44,7 +44,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
       details: {
-        identity: [...Array.from(state.selectedId.values())]
+        identity: [...Array.from(state.selectedIdentities.values())]
       }
     }
   });
@@ -67,12 +67,14 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   };
 
   const identities = Array.from(new Set(data?.Identity?.data));
+  console.tron('i', identities);
 
   const handleSubmit = async () => {
     if (!state.selectedIdentities.size) return handleInputError();
     const selectedIdentities = [
       ...Array.from(state.selectedIdentities.values())
     ];
+    console.tron('selectedIdentities', selectedIdentities);
 
     Mixpanel.people_union('User Selected Identities', [...selectedIdentities]);
 
