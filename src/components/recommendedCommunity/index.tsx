@@ -15,10 +15,14 @@ import {
   LEAVE_COMMUNITY
 } from '../../graphql/server/mutations';
 import {
+  GET_SINGLE_COMMUNITY,
   GET_COMMUNITY_MEMBERS,
   GET_NEARBY_MEMBERS_OF_A_COMMUNITY
 } from '../../graphql/server/query';
-import { CommunityInterface } from '../../graphql/types';
+import {
+  CommunityInterface,
+  SingleCommunityRequestInterface
+} from '../../graphql/types';
 import { logEvent } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
 import { crashlytics } from '../../firebase/config';
@@ -27,67 +31,51 @@ import hexToRGB from '../../utils/hexToRGB';
 import { LeftCover, TitleCover } from './styles';
 
 function RecommendedCommunity(props: CommunityInterface) {
-  const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
-
-  const [member, setMember] = useState(false);
-  const [request, setRequest] = useState(false);
+  const { colors, fonts } = useThemeContext();
   const [buttonLabel, setButtonLabel] = useState(
     t(`community.recommended.join`)
   );
-  const [loading, setLoading] = useState(false);
-
-  const { ...restProps } = props;
-
-  const {
-    avatar,
-    name,
-    membersCount,
-    isMember,
-    id,
-    isPrivate,
-    isRequested,
-    uniqueInterests
-  } = restProps;
 
   const [modal, setModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [community, setCommunity] = useState({ ...props });
+
+  const {
+    id,
+    name,
+    avatar,
+    isMember,
+    isPrivate,
+    isRequested,
+    membersCount
+  } = community;
+
+  const { data, refetch } = useQuery<SingleCommunityRequestInterface>(
+    GET_SINGLE_COMMUNITY,
+    { variables: { input: { filter: { id } } } }
+  );
 
   useQuery(GET_COMMUNITY_MEMBERS, {
     variables: { input: { filter: { communityId: id } } }
   });
+
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
     variables: { input: { communityId: id } }
   });
 
-  const clearTagModal = async () => {
-    try {
-      await Storage.removeTagModal(id);
-    } catch (error) {
-      crashlytics.recordError(new Error(error));
-    }
-  };
+  const [joinCommunity] = useMutation(JOIN_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
-  const [joinCommunity, { loading: joinLoading }] = useMutation(
-    JOIN_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
+  const [joinPrivateCommunity] = useMutation(JOIN_PRIVATE_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
-  const [joinPrivateCommunity, { loading: joinPrivateLoading }] = useMutation(
-    JOIN_PRIVATE_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
-
-  const [leaveCommunity, { loading: leaveLoading }] = useMutation(
-    LEAVE_COMMUNITY,
-    {
-      variables: { payload: { communityId: id } }
-    }
-  );
+  const [leaveCommunity] = useMutation(LEAVE_COMMUNITY, {
+    variables: { payload: { communityId: id } }
+  });
 
   const handleJoin = async () => {
     logEvent('join community', { from: 'community' });
@@ -96,11 +84,13 @@ function RecommendedCommunity(props: CommunityInterface) {
         info: `User Joins ${name} Tribe`,
         'Activity Screen': 'Recommended Community Card'
       });
+      setLoading(true);
       await joinCommunity();
-      await Storage.setTagModal({ community: [id] });
-      setMember(true);
+      refetch().then(() => setLoading(false));
+      Storage.setTagModal({ community: [id] });
       setModal(true);
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(new Error(error));
     }
   };
@@ -112,9 +102,11 @@ function RecommendedCommunity(props: CommunityInterface) {
         info: `User Request To Join ${name} Tribe`,
         'Activity Screen': 'Recommended Community Card'
       });
+      setLoading(true);
       await joinPrivateCommunity();
-      setRequest(true);
+      refetch().then(() => setLoading(false));
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(error);
     }
   };
@@ -126,11 +118,13 @@ function RecommendedCommunity(props: CommunityInterface) {
         info: `User Leaves ${name} Tribe`,
         'Activity Screen': 'Recommended Community Card'
       });
+      setLoading(true);
       await leaveCommunity();
-      clearTagModal();
-      setMember(false);
+      refetch().then(() => setLoading(false));
+      Storage.removeTagModal(id);
       setModal(false);
     } catch (error) {
+      setLoading(false);
       crashlytics.recordError(new Error(error));
     }
   };
@@ -138,31 +132,27 @@ function RecommendedCommunity(props: CommunityInterface) {
   const handleNavigation = useCallback(() => {
     navigation.navigate('CommunityDetailScreen', {
       title: name,
-      details: restProps,
+      details: props,
       showModal: modal,
       showModalCount: 1
     });
   }, [modal]);
 
   useEffect(() => {
-    if (isMember || member) {
+    if (isMember) {
       setButtonLabel(t(`community.recommended.leave`));
-    } else if (request || isRequested) {
+    } else if (isRequested) {
       setButtonLabel(t(`community.tabPanel.request`));
     } else {
       setButtonLabel(t(`community.recommended.join`));
     }
-  }, [isMember || member || request || isRequested]);
+  }, [isMember, isRequested]);
 
   useEffect(() => {
-    if (isMember || member) {
-      setLoading(leaveLoading);
-    } else if (isPrivate) {
-      setLoading(joinPrivateLoading);
-    } else {
-      setLoading(joinLoading);
+    if (data?.Community.data || props) {
+      setCommunity({ ...community, ...props, ...data?.Community.data });
     }
-  }, [isMember || member || isPrivate]);
+  }, [props.isMember, data?.Community.data]);
 
   return (
     <Card
@@ -276,10 +266,10 @@ function RecommendedCommunity(props: CommunityInterface) {
         </LeftCover>
         <Button
           mode="text"
-          disabled={request || isRequested ? true : false}
+          disabled={isRequested ? true : false}
           loading={loading}
           onPress={
-            isMember || member
+            isMember
               ? handleLeave
               : isPrivate
               ? handleJoinPrivateTribe
