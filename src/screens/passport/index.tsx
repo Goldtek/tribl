@@ -66,7 +66,8 @@ import {
   ImageContainer,
   ImageTextContainer,
   ConnectionCover,
-  Cover
+  Cover,
+  TabCover
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
@@ -95,11 +96,14 @@ export default function PassportScreen(props: ScreenProp) {
   const { top: paddingTop } = useSafeAreaInsets();
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const selectedCountries = props?.route?.params?.selectedCountries;
 
   const [cache, setCache] = useState({
     ...cacheData,
     details: { selectedIdentity: [], selectedInterest: [], date: '' }
   });
+
+  console.tron('cache', cache);
 
   const [OTAUpdate, setOTAUpdate] = useState(false);
   const [update, setUpdate] = useState(true);
@@ -173,6 +177,8 @@ export default function PassportScreen(props: ScreenProp) {
     }
   }, [userDetails]);
 
+  console.tron('userDetails', userDetails);
+
   const setCacheData = async () => {
     if (userDetails) {
       await Storage.setUserPassport({ ...cache, ...userDetails });
@@ -238,6 +244,17 @@ export default function PassportScreen(props: ScreenProp) {
       });
     }
   }, [userDetails]);
+
+  useEffect(() => {
+    if (selectedCountries?.length) {
+      setCache({
+        ...cache,
+        citizenship: selectedCountries
+      });
+    }
+  }, [selectedCountries]);
+
+  console.tron('selectedCountries', selectedCountries);
 
   useEffect(() => {
     if (!userDetails) getCacheData();
@@ -335,6 +352,8 @@ export default function PassportScreen(props: ScreenProp) {
   const month = parseInt(dob[0]);
   const year = parseInt(dob[2]);
   const dateOfBirth = `${year + '-' + month + '-' + day}`;
+  const date = dateOfBirth == 'NaN-NaN-NaN' ? '' : dateOfBirth;
+  console.tron('dateOfBirth', date);
   const identity = cache.details.selectedIdentity.map(
     (identity) => identity.name
   );
@@ -350,6 +369,16 @@ export default function PassportScreen(props: ScreenProp) {
   const removeInterest = filterInterest?.filter(
     (tag) => !cache.details.selectedInterest.includes(tag)
   );
+  const citizenship = cache.citizenship?.map((country) => country.name);
+  const filtercitizenship = userDetails?.citizenship?.filter(
+    (country) => !citizenship?.includes(country)
+  );
+  const removecitizenship = filtercitizenship?.map(
+    ({ __typename, ...keepAttrs }) => keepAttrs
+  );
+  const removeTypename = cache.citizenship?.map(
+    ({ __typename, ...keepAttrs }) => keepAttrs
+  );
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
     variables: {
@@ -358,7 +387,7 @@ export default function PassportScreen(props: ScreenProp) {
         firstName: cache.firstName,
         lastName: cache.lastName,
         bio: cache.bio,
-        dob: dateOfBirth,
+        dob: date,
         identity: {
           add: identity,
           remove: removeIdentity
@@ -366,6 +395,10 @@ export default function PassportScreen(props: ScreenProp) {
         interest: {
           add: cache.details.selectedInterest,
           remove: removeInterest
+        },
+        citizenShip: {
+          add: removeTypename,
+          remove: removecitizenship
         },
         currentLocation: {
           city: location.city,
@@ -418,12 +451,14 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
+      console.tron('updated');
       refetch();
       setCacheData();
       setUpdate(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
       setUpdate(true);
+      console.tron('error', error);
     }
   };
 
@@ -471,6 +506,8 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
+  console.tron('cache?.citizenship?', cache?.citizenship);
+
   return (
     <SafeAreaView
       style={{
@@ -491,6 +528,49 @@ export default function PassportScreen(props: ScreenProp) {
       >
         <Fragment>
           <HeaderContainer>
+            {update ? (
+              <Button
+                mode="contained"
+                style={{
+                  backgroundColor: colors.GREY,
+                  width: RFValue(70),
+                  borderRadius: 4,
+                  marginLeft: 'auto'
+                }}
+                labelStyle={{
+                  color: colors.SECONDARY_TEXT,
+                  fontSize: RFValue(14),
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  textTransform: 'uppercase',
+                  textAlign: 'center'
+                }}
+                onPress={() => setUpdate(false)}
+                loading={loading}
+              >
+                {t(`signup.passportScreen.edit`)}
+              </Button>
+            ) : (
+              <Button
+                mode="contained"
+                style={{
+                  backgroundColor: colors.GREY,
+                  width: RFValue(90),
+                  borderRadius: 4,
+                  marginLeft: 'auto'
+                }}
+                labelStyle={{
+                  color: colors.SECONDARY_TEXT,
+                  fontSize: RFValue(14),
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  textTransform: 'uppercase',
+                  textAlign: 'center'
+                }}
+                onPress={handleRequest}
+                loading={loading}
+              >
+                {t(`signup.passportScreen.update`)}
+              </Button>
+            )}
             <Cover>
               <Title
                 style={{
@@ -503,37 +583,16 @@ export default function PassportScreen(props: ScreenProp) {
               >
                 {t(`signup.passportScreen.title`)}
               </Title>
-              {update ? (
-                <Button
-                  mode="contained"
-                  style={{ backgroundColor: colors.GREY }}
-                  labelStyle={{
-                    color: colors.SECONDARY_TEXT,
-                    fontSize: RFValue(14),
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    textTransform: 'capitalize'
-                  }}
-                  onPress={() => setUpdate(false)}
-                  loading={loading}
-                >
-                  {t(`signup.passportScreen.edit`)}
-                </Button>
-              ) : (
-                <Button
-                  mode="contained"
-                  style={{ backgroundColor: colors.GREY }}
-                  labelStyle={{
-                    color: colors.SECONDARY_TEXT,
-                    fontSize: RFValue(14),
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    textTransform: 'capitalize'
-                  }}
-                  onPress={handleRequest}
-                  loading={loading}
-                >
-                  {t(`signup.passportScreen.update`)}
-                </Button>
-              )}
+              <Paragraph
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE - 2)),
+                  color: colors.WHITE,
+                  marginTop: RFValue(5)
+                }}
+              >
+                {t(`community.passport.subTitle`)}
+              </Paragraph>
             </Cover>
             <ImageContainer>
               {update ? (
@@ -541,7 +600,7 @@ export default function PassportScreen(props: ScreenProp) {
                   uri={avatar.uri}
                   style={{
                     width: RFValue(120),
-                    height: RFValue(120),
+                    height: RFValue(100),
                     justifyContent: 'center',
                     borderRadius: 4
                   }}
@@ -559,7 +618,7 @@ export default function PassportScreen(props: ScreenProp) {
                     resizeMode={FastImage.resizeMode.stretch}
                     style={{
                       width: RFValue(120),
-                      height: RFValue(120),
+                      height: RFValue(100),
                       justifyContent: 'center',
                       borderRadius: 4
                     }}
@@ -618,9 +677,19 @@ export default function PassportScreen(props: ScreenProp) {
                     {`${currentLocation?.state}, ${currentLocation?.country}`}
                   </Paragraph>
                 )}
+                {cache?.citizenship?.length ? (
+                  <Title
+                    style={{
+                      fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.5)),
+                      marginTop: RFValue(2)
+                    }}
+                  >
+                    {cache?.citizenship?.map((country) => country.flag)}
+                  </Title>
+                ) : null}
                 <ConnectionCover>
                   <TouchableRipple
-                    style={{ alignItems: 'center' }}
+                    style={{ alignItems: 'center', marginRight: RFValue(15) }}
                     onPress={changeSideMenu}
                   >
                     <Fragment>
@@ -730,14 +799,21 @@ export default function PassportScreen(props: ScreenProp) {
               style={{
                 width: '100%',
                 height: RFValue(55),
-                marginTop: RFValue(10)
+                marginTop: RFValue(10),
+                marginBottom: RFValue(20)
               }}
               onPress={onShare}
             >
               {t(`signup.passportScreen.sharePassport`)}
             </Button>
           </HeaderContainer>
-          <TabViewSlider getUserDetails={getUserDetails} click={update} />
+          <TabCover>
+            <TabViewSlider
+              getUserDetails={getUserDetails}
+              click={update}
+              selectedCountries={selectedCountries}
+            />
+          </TabCover>
         </Fragment>
       </ScrollView>
 
