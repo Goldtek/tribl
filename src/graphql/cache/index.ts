@@ -19,7 +19,7 @@ export const userDetails = {
   countryCode: DEVICE_DEFAULT_COUNTRY,
   firstName: '',
   lastName: '',
-  citizenShip: '',
+  citizenship: [],
   connectionCount: 0,
   communityCount: 0,
   connected: null,
@@ -43,6 +43,8 @@ export const userDetails = {
     state: '',
     __typename: 'birthPlace'
   },
+  myConnections: [],
+  participantOf: [],
   avatar: USER_DEFAULT_AVATAR,
   __typename: 'userDetails'
 };
