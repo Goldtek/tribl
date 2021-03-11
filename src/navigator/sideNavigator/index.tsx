@@ -459,7 +459,7 @@ export default function DrawerStackNavigator() {
         component={MemberDetailScreen}
         options={({ route }: any) => ({
           headerShown: true,
-          headerTitle: route.params?.title,
+          headerTitle: () => null,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
