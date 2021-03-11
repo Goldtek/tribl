@@ -8,11 +8,14 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import MembersCard from '../../../../../components/recommendedUser';
+import ChannelCard from './widget/channelCard';
+import ConnectedTribeCard from '../../../../../components/connectedTribes';
 import {
   GET_SINGLE_COMMUNITY,
   GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
   GET_COMMUNITY_MEMBERS,
-  GET_USER_PASSPORT
+  GET_USER_PASSPORT,
+  GET_COMMUNITY_CHANNELS
 } from '../../../../../graphql/server/query';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
@@ -24,7 +27,9 @@ import {
 import {
   CommunityInterface,
   PassportInterface,
-  CommunityMembersRequestInterface
+  CommunityMembersRequestInterface,
+  CommunityChannelRequestInterface,
+  ChannelInterface
 } from '../../../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 import { Mixpanel } from '../../../../../config';
@@ -32,6 +37,8 @@ import TagModal from '../../../../../components/tagModal';
 import storage from '../../../../../libs/storage';
 import { crashlytics } from '../../../../../firebase/config';
 import hexToRGB from '../../../../../utils/hexToRGB';
+import ChannelSkeleton from '../../../../../components/channelSkeleton';
+import { PAGINATION_DEFAULT } from '../../../../../constants';
 
 import {
   Tags,
@@ -118,6 +125,19 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     }
   );
 
+  const { data: channelData } = useQuery<CommunityChannelRequestInterface>(
+    GET_COMMUNITY_CHANNELS,
+    {
+      variables: {
+        input: {
+          filter: { community: { id: id } },
+          limit: PAGINATION_DEFAULT,
+          skip: 0
+        }
+      }
+    }
+  );
+
   const { data: communityMembersData } = useQuery(
     GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
     {
@@ -135,7 +155,9 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
   const userId = userDetails?.id;
+  const myTribes = userDetails?.participantOf;
 
+  const communityChannels = channelData?.Channel?.data;
   const singleCommunity = communityData?.Community?.data[0];
   const participants = communityMembers?.communityMembers?.data;
   const communityNearbyMembers = communityMembersData?.nearbyMembers?.data;
@@ -143,6 +165,8 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
   const filteredParticipants = participants?.filter(
     (member) => member.id !== userId
   );
+
+  console.tron('communityChannels', communityChannels);
 
   const nearbyMembers = communityNearbyMembers?.length
     ? communityNearbyMembers
@@ -163,9 +187,23 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
     });
   };
 
+  const _renderMyTribeItem = useMemo(
+    () => ({ item }: { item: CommunityInterface }) => (
+      <ConnectedTribeCard key={item.id} {...item} />
+    ),
+    []
+  );
+
   const _renderRecommendedMember = useMemo(
     () => ({ item }: { item: PassportInterface }) => (
       <MembersCard key={item.id} {...item} />
+    ),
+    []
+  );
+
+  const _renderChannel = useMemo(
+    () => ({ item }: { item: ChannelInterface }) => (
+      <ChannelCard key={item.id} {...item} />
     ),
     []
   );
@@ -409,6 +447,61 @@ export default function singleCommunity(props: singleCommunityScreenProp) {
                 data={nearbyMembers}
                 horizontal={true}
                 renderItem={_renderRecommendedMember}
+                ListEmptyComponent={
+                  <RecommendedUserSkeleton skeletonSize={4} />
+                }
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  marginTop: 20,
+                  paddingHorizontal: 15,
+                  backgroundColor: colors.WHITE
+                }}
+              />
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  marginTop: 0,
+                  marginBottom: 0,
+                  paddingLeft: 15
+                }}
+              >
+                {t(`community.tabPanel.tribeChannels`)}
+              </Title>
+
+              <FlatList
+                data={communityChannels}
+                horizontal={true}
+                renderItem={_renderChannel}
+                ListEmptyComponent={<ChannelSkeleton skeletonSize={4} />}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  marginTop: 20,
+                  paddingHorizontal: 15,
+                  backgroundColor: colors.WHITE
+                }}
+              />
+
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  marginTop: RFValue(20),
+                  marginBottom: 0,
+                  paddingLeft: 15
+                }}
+              >
+                {t(`community.tabPanel.connectedTribes`)}
+              </Title>
+
+              <FlatList
+                data={myTribes}
+                horizontal={true}
+                renderItem={_renderMyTribeItem}
                 ListEmptyComponent={
                   <RecommendedUserSkeleton skeletonSize={4} />
                 }
