@@ -59,7 +59,8 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     firstName,
     moderatorOf,
     currentLocation,
-    connectionDetails
+    connectionDetails,
+    citizenship
   } = member;
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
@@ -278,6 +279,16 @@ export default function RecommendedUser(props: RecommendedUserProp) {
               {`${currentLocation?.state}, ${currentLocation?.country}`}
             </Paragraph>
           )}
+          {citizenship?.length ? (
+            <Title
+              style={{
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                marginTop: RFValue(1)
+              }}
+            >
+              {citizenship?.map((country) => country.flag)}
+            </Title>
+          ) : null}
         </TextContainer>
         {connectionDetails?.status == 'PENDING' ||
         pending == 'PENDING' ||
