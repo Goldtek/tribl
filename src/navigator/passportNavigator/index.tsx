@@ -5,6 +5,7 @@ import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import PassportScreen from '../../screens/passport/index';
 import BirthplaceScreen from '../../screens/passport/birthplaceScreen';
+import CitizenshipScreen from '../../screens/passport/widgets/citizenshipScreen';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
 
 const PassportStack = createStackNavigator();
@@ -34,6 +35,18 @@ export default function PassportNavigator() {
             fontFamily: fonts.WORK_SANS_BOLD,
             textTransform: 'capitalize'
           },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        }}
+      />
+      <PassportStack.Screen
+        name="CitizenshipScreen"
+        component={CitizenshipScreen}
+        options={{
+          headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerLeftContainerStyle: { paddingLeft: 10 },
