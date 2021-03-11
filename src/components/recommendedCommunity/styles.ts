@@ -16,3 +16,11 @@ export const OnlineNotifier = styled.View`
   border: 3px ${({ theme }) => theme.colors.WHITE} solid;
   right: 0px;
 `;
+
+export const LeftCover = styled.View`
+  flex-direction: row;
+`;
+
+export const TitleCover = styled.View`
+  margin-left: ${RFValue(10)}px;
+`;
