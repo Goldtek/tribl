@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useCallback
 } from 'react';
-import debounce from 'lodash.debounce';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import { Title, Button, ActivityIndicator } from 'react-native-paper';
@@ -48,6 +47,7 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import GradientButton from '../../../components/gradientButton';
+import { useIsFocused } from '@react-navigation/native';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -70,6 +70,7 @@ export default function HomeScreen(props: ScreenProp) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const isFocused = useIsFocused();
 
   const channelData = [
     {
@@ -131,29 +132,29 @@ export default function HomeScreen(props: ScreenProp) {
     update: false
   });
 
-  const [moreAction, setMoreAction] = useState(false);
-  const [fetchingMore, setFetchingMore] = useState(false);
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
-  const {
-    loading: myCommunityLoading,
-    data: myCommunityData,
-    fetchMore
-  } = useQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES);
+  const [
+    getMyCommunities,
+    { refetch, fetchMore, data: myCommunityData, loading: myCommunityLoading }
+  ] = useLazyQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
+  });
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
-    variables: { input: { limit: PAGINATION_DEFAULT } }
+    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
   const [getMyConnections] = useLazyQuery(GET_MY_CONNECTIONS, {
-    variables: { input: { limit: PAGINATION_DEFAULT } }
+    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
   const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT } }
+    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
   const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
@@ -182,7 +183,7 @@ export default function HomeScreen(props: ScreenProp) {
     }
   });
 
-  const myCommunity = myCommunityData?.myCommunities?.data;
+  const myCommunities = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers?.data;
   const communities = communityData?.recommendedCommunities?.data
     .slice()
@@ -190,6 +191,10 @@ export default function HomeScreen(props: ScreenProp) {
       if (a.name.includes('REFitness Group')) return -1;
       return 0;
     });
+
+  useEffect(() => {
+    myCommunities ? refetch() : getMyCommunities();
+  }, [isFocused, myCommunities]);
 
   const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
@@ -230,29 +235,37 @@ export default function HomeScreen(props: ScreenProp) {
   );
 
   const _renderFooter = useCallback(
-    () => (fetchingMore ? <ActivityIndicator /> : null),
-    [fetchingMore]
+    () => (callOnScrollEnd ? <ActivityIndicator /> : null),
+    [callOnScrollEnd]
   );
 
-  const _onEndReached = useCallback(() => {
-    if (!moreAction) return;
+  const handleEndReach = () => {
+    if (!callOnScrollEnd) return;
 
-    setFetchingMore(true);
     fetchMore({
-      variables: { offset: myCommunity?.length },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          setFetchingMore(false);
-          return prev;
+      variables: {
+        input: {
+          skip: myCommunities?.data.length,
+          limit: PAGINATION_DEFAULT / 2
         }
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setCallOnScrollEnd(false);
 
-        setFetchingMore(false);
+        if (!fetchMoreResult) return prev;
+
         return Object.assign({}, prev, {
-          myConnections: [prev.myCommunities, fetchMoreResult.myCommunities]
+          myCommunities: {
+            ...prev.myCommunities,
+            data: [
+              ...prev.myCommunities.data,
+              ...fetchMoreResult.myCommunities.data
+            ]
+          }
         });
       }
     });
-  }, [moreAction]);
+  };
 
   return (
     <Fragment>
@@ -267,7 +280,7 @@ export default function HomeScreen(props: ScreenProp) {
           <CommunityCover>
             <MyCommunitySkeleton skeletonSize={2} />
           </CommunityCover>
-        ) : myCommunity?.length ? (
+        ) : myCommunities?.data.length ? (
           <RecommendedList>
             <RecommendedListHeader>
               <Title
@@ -285,19 +298,22 @@ export default function HomeScreen(props: ScreenProp) {
               </Title>
             </RecommendedListHeader>
             <FlatList
-              data={myCommunity}
+              data={myCommunities?.data}
               horizontal={true}
-              onEndReachedThreshold={0.01}
+              onEndReachedThreshold={0.5}
               ListEmptyComponent={<MyCommunitySkeleton skeletonSize={2} />}
-              onEndReached={({ distanceFromEnd }) => {
-                if (distanceFromEnd > 0) debounce(_onEndReached, 500)();
+              onEndReached={() => {
+                if (
+                  myCommunities &&
+                  myCommunities?.metadata.totalCount >
+                    myCommunities?.data.length
+                ) {
+                  setCallOnScrollEnd(true);
+                }
               }}
               ListFooterComponent={_renderFooter}
               renderItem={_renderMyCommunityItem}
-              onScrollBeginDrag={() => setMoreAction(true)}
-              onScrollEndDrag={() => setMoreAction(false)}
-              onMomentumScrollBegin={() => setMoreAction(true)}
-              onMomentumScrollEnd={() => setMoreAction(false)}
+              onMomentumScrollEnd={handleEndReach}
               ListFooterComponentStyle={{ justifyContent: 'center' }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{

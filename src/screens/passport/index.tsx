@@ -291,6 +291,8 @@ export default function PassportScreen(props: ScreenProp) {
 
   const handleLocation = async () => {
     try {
+      await Location.requestPermissionsAsync();
+
       const { coords } = await Location.getCurrentPositionAsync({
         enableHighAccuracy: true,
         accuracy: Location.Accuracy.Highest
@@ -317,6 +319,8 @@ export default function PassportScreen(props: ScreenProp) {
         refetch();
       }
     } catch (error) {
+      console.tron({ error });
+
       crashlytics.recordError(new Error(error));
     }
   };
@@ -345,8 +349,10 @@ export default function PassportScreen(props: ScreenProp) {
   const day = parseInt(dob[1]);
   const month = parseInt(dob[0]);
   const year = parseInt(dob[2]);
-  const dateOfBirth = `${year + '-' + month + '-' + day}`;
+  const isValidDate = year || month || day;
+  const dateOfBirth = isValidDate ? `${year + '-' + month + '-' + day}` : null;
   const date = dateOfBirth == 'NaN-NaN-NaN' ? '' : dateOfBirth;
+
   const identity = cache.details.selectedIdentity.map(
     (identity) => identity.name
   );

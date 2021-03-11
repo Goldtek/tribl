@@ -1,6 +1,12 @@
-import React, { Fragment, useState, useMemo, useEffect } from 'react';
+import React, {
+  Fragment,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect
+} from 'react';
 import { NavigationInterface } from '../../../../types';
-import { Title } from 'react-native-paper';
+import { ActivityIndicator, Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { ScrollView, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -31,10 +37,7 @@ function CommunityTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
-  const [state, setState] = useState({
-    refreshing: false,
-    callOnScrollEnd: false
-  });
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   useEffect(() => {
     tagScreenName('ViewAllTribes');
@@ -45,43 +48,53 @@ function CommunityTabScreen(props: ScreenProp) {
     data: communityData
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
-  const { data: popularData, fetchMore } = useQuery<
+  const { data: popularData, fetchMore, refetch } = useQuery<
     PopularCommunitiesRequestInterface
   >(GET_POPULAR_COMMUNITIES, {
-    fetchPolicy: 'cache-and-network',
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
-  const community = communityData?.recommendedCommunities?.data;
   const randomCommunity = communityData?.recommendedCommunities?.data[0];
-  const popular = popularData?.popularCommunities?.data;
+  const popularCommunity = popularData?.popularCommunities;
 
   const handleEndReach = async () => {
-    if (!state.callOnScrollEnd) return;
+    if (!callOnScrollEnd) return;
 
     fetchMore({
       variables: {
-        offset: popular?.length,
-        first: PAGINATION_DEFAULT
+        input: {
+          skip: popularCommunity?.data.length,
+          limit: PAGINATION_DEFAULT
+        }
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        setState({ ...state, callOnScrollEnd: false });
+        setCallOnScrollEnd(false);
 
         if (!fetchMoreResult) return prev;
 
         return Object.assign({}, prev, {
-          popularCommunities: [
-            prev.popularCommunities,
-            fetchMoreResult.popularCommunities
-          ]
+          popularCommunities: {
+            ...prev.popularCommunities,
+            data: [
+              ...prev.popularCommunities.data,
+              ...fetchMoreResult.popularCommunities.data
+            ]
+          }
         });
       }
     });
   };
 
   const _renderPopularCommunityItem = useMemo(
-    () => ({ item }: any) => <PopularCommunity key={item.id} {...item} />,
+    () => ({ item }: any) => (
+      <PopularCommunity key={item.id} {...item} refetchCommunity={refetch} />
+    ),
     []
+  );
+
+  const _renderFooter = useCallback(
+    () => (callOnScrollEnd ? <ActivityIndicator /> : null),
+    [callOnScrollEnd]
   );
 
   const handleJoinCommunity = () => setShowModal(!showModal);
@@ -109,14 +122,14 @@ function CommunityTabScreen(props: ScreenProp) {
           </Title>
           {recommendedCommunityLoading ? (
             <RecommendedCommunitySkeleton />
-          ) : community.length ? (
+          ) : randomCommunity ? (
             <RecommendedCommunity {...randomCommunity} />
           ) : (
             <ComingSoonCommunities />
           )}
 
           <PopularContainer>
-            {popularData?.popularCommunities?.data?.length ? (
+            {popularCommunity?.data?.length ? (
               <CommunityWrapper>
                 <Title
                   style={{
@@ -135,16 +148,25 @@ function CommunityTabScreen(props: ScreenProp) {
             ) : null}
 
             <FlatList
-              data={popular}
+              data={popularCommunity?.data}
               renderItem={_renderPopularCommunityItem}
               ListEmptyComponent={<PopularCommunitySkeleton skeletonSize={3} />}
               showsVerticalScrollIndicator={false}
-              keyExtractor={(item: any) => item.id}
+              keyExtractor={(item) => item.id}
               scrollEventThrottle={16}
               onEndReachedThreshold={0.5}
               removeClippedSubviews={true}
+              ListFooterComponent={_renderFooter}
               onMomentumScrollEnd={handleEndReach}
-              onEndReached={() => setState({ ...state, callOnScrollEnd: true })}
+              onEndReached={() => {
+                if (
+                  popularCommunity &&
+                  popularCommunity?.metadata.totalCount >
+                    popularCommunity.data.length
+                ) {
+                  setCallOnScrollEnd(true);
+                }
+              }}
             />
           </PopularContainer>
         </Container>

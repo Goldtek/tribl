@@ -78,7 +78,7 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     await Storage.setUserRegistration({
       route: 'UserLocationScreen',
       user: {
-        identity: [...Array.from(state.selectedId.values())],
+        identity: [...Array.from(state.selectedIdentities.values())],
         identityName: selectedIdentities
       }
     });
@@ -86,6 +86,8 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     navigation.navigate('UserLocationScreen');
     addUserDetails();
   };
+
+  console.tron('state.selectedIdentities', state.selectedIdentities);
 
   const handleSelect = (selected: string, id: string) => {
     if (!state.selectedIdentities.has(selected)) {
