@@ -168,7 +168,7 @@ export interface PassportInterface {
   communityCount: number;
   connectionCount: number;
   connected: Status | null;
-  citizenShip: string | null;
+  citizenship: Citizenship[];
   currentLocation: Location;
   connection: Connection | null;
   status: UserAvailability | null;
@@ -176,6 +176,7 @@ export interface PassportInterface {
   myConnections: PassportInterface[];
   moderatorOf?: CommunityInterface[];
   participantOf?: CommunityInterface[];
+  channelParticipantOf?: ChannelInterface[];
   interest: string[];
   identity: string[];
   pendingConnections: ConnectionStatusInterface[];
@@ -204,6 +205,7 @@ export type ChannelInterface = {
   isDefault: boolean;
   isPrivate: boolean;
   participants: PassportInterface[];
+  community: CommunityInterface;
 };
 
 type Interest = {
@@ -216,6 +218,11 @@ type Interest = {
 type CommunityPrivacy = {
   id: string;
   visibility: PrivacyStatus;
+};
+
+type Citizenship = {
+  name: string;
+  flag: string;
 };
 
 export interface CommunityInterface {
