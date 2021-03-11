@@ -6,7 +6,7 @@ export const ContactContainer = styled.View`
 `;
 
 export const IdentityContainer = styled.View`
-  margin: ${RFValue(30)}px 0px;
+  margin-top: ${RFValue(20)}px;
 `;
 
 export const Identities = styled.View`
@@ -29,7 +29,6 @@ export const IdentityText = styled.Text`
 
 export const InterestContainer = styled.View`
   margin-top: ${RFValue(20)}px;
-  margin-bottom: ${RFValue(30)}px;
 `;
 
 export const LocationContainer = styled.View``;
@@ -51,9 +50,7 @@ export const Header = styled.View`
 
 export const ConnectionCover = styled.View`
   flex: 1;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: space-around;
+  padding-left: ${RFValue(10)}px;
 `;
 
 export const Connection = styled.View`
@@ -66,3 +63,7 @@ export const ButtonCover = styled.View`
 `;
 
 export const Cover = styled.View``;
+
+export const HeaderCover = styled.View`
+  flex-direction: row;
+`;
