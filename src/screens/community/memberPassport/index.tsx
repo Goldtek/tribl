@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Fragment, useEffect } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { Mixpanel } from '../../../config';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView, FlatList } from 'react-native';
@@ -188,10 +188,7 @@ export default function PassportDetail(props: MemberDetailProps) {
     });
   };
 
-  const community = singlePassport?.participantOf?.concat([
-    { lastIndex: true, isModerator: false } as any
-  ]);
-
+  const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
   const channels = singlePassport?.channelParticipantOf;
 
@@ -213,22 +210,16 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const { loading, pending } = state;
 
-  const _renderMyCommunityItem = useMemo(
-    () => ({ item }: { item: CommunityInterface }) => (
-      <MyCommunity key={item.id} {...item} singlePassport={singlePassport} />
-    ),
-    []
+  const _renderMyCommunityItem = ({ item }: { item: CommunityInterface }) => (
+    <MyCommunity key={item.id} {...item} singlePassport={data} />
   );
 
-  const _renderMyChannelItem = useMemo(
-    () => ({ item }: { item: ChannelInterface }) => (
-      <MyChannels key={item.id} {...item} />
-    ),
-    []
+  const _renderMyChannelItem = ({ item }: { item: ChannelInterface }) => (
+    <MyChannels key={item.id} {...item} />
   );
 
   const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
-    <MyConnections key={item.id} {...item} />
+    <MyConnections key={item.id} {...item} singlePassport={data} />
   );
 
   const [displayInterest, setDisplayInterest] = useState(false);
@@ -693,9 +684,9 @@ export default function PassportDetail(props: MemberDetailProps) {
             </InterestContainer>
           ) : null}
 
-          {data?.participantOf?.length ? (
+          {community?.length ? (
             <Fragment>
-              <Cover style={{ flexDirection: 'row', marginBottom: 10 }}>
+              <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
                 <Title
                   style={{
                     fontFamily: fonts.WORK_SANS_BOLD,
@@ -714,23 +705,23 @@ export default function PassportDetail(props: MemberDetailProps) {
                     marginHorizontal: 2
                   }}
                 >
-                  ({data?.participantOf?.length})
+                  ({community?.length})
                 </Title>
               </Cover>
               <FlatList
-                data={community}
+                data={community
+                  ?.slice(0, 10)
+                  ?.concat([{ lastIndex: true } as any])}
                 horizontal={true}
+                keyExtractor={(community) => community.id}
                 renderItem={_renderMyCommunityItem}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 5,
-                  backgroundColor: colors.WHITE
-                }}
+                contentContainerStyle={{ alignItems: 'center' }}
               />
             </Fragment>
           ) : null}
 
-          {data?.channelParticipantOf?.length ? (
+          {channels?.length ? (
             <Fragment>
               <TouchableHighlight
                 underlayColor={colors.TRANSPARENT}
@@ -762,32 +753,9 @@ export default function PassportDetail(props: MemberDetailProps) {
             </Fragment>
           ) : null}
 
-          {data?.myConnections?.length ? (
+          {connections?.length ? (
             <Cover ref={hideSensitiveView}>
-              {/* <TouchableHighlight
-                underlayColor={colors.TRANSPARENT}
-                style={{ marginTop: RFValue(20) }}
-                onPress={() => {
-                  // navigation.navigate('UserConnectionListScreen', {
-                  //   details: data?.myConnections,
-                  //   title: `${data?.firstName} ${data?.lastName}`
-                  // });
-                }}
-              >
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase',
-                    marginBottom: 10,
-                    marginTop: RFValue(15)
-                  }}
-                >
-                  {t(`community.memberPassport.connection`)}
-                </Title>
-              </TouchableHighlight> */}
-              <Cover style={{ flexDirection: 'row', marginBottom: 10 }}>
+              <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
                 <Title
                   style={{
                     fontFamily: fonts.WORK_SANS_BOLD,
@@ -806,19 +774,18 @@ export default function PassportDetail(props: MemberDetailProps) {
                     marginHorizontal: 2
                   }}
                 >
-                  ({data?.participantOf?.length})
+                  ({connections?.length})
                 </Title>
               </Cover>
               <FlatList
-                data={connections}
+                data={connections
+                  ?.slice(0, 10)
+                  ?.concat([{ lastIndex: true } as any])}
                 horizontal={true}
                 keyExtractor={(passport) => passport.id}
                 renderItem={_renderMyConnectionItem}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 5,
-                  backgroundColor: colors.WHITE
-                }}
+                contentContainerStyle={{ alignItems: 'center' }}
               />
             </Cover>
           ) : null}
