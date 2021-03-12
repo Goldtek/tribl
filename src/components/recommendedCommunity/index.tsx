@@ -252,7 +252,7 @@ function RecommendedCommunity(props: CommunityInterface) {
                 ? `${membersCount} ${t(`community.tabPanel.member`)}`
                 : `${membersCount} ${t(`community.tabPanel.member`)}s`}
             </Text>
-            <Text
+            {/* <Text
               style={{
                 fontFamily: fonts.WORK_SANS_REGULAR,
                 fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -261,7 +261,7 @@ function RecommendedCommunity(props: CommunityInterface) {
               }}
             >
               <Feather name="star" size={13} color={colors.ONLINE} /> Popular
-            </Text>
+            </Text> */}
           </TitleCover>
         </LeftCover>
         <Button
