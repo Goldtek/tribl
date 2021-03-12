@@ -44,9 +44,9 @@ export default function MemberSlide(props: MemberSlideProp) {
     tagScreenName('TribeMembersScreen');
   }, []);
 
-  const _renderItem = ({ item }: { item: PassportInterface }) => {
-    return <MemberCard key={item.id} {...item} />;
-  };
+  const _renderItem = ({ item }: { item: PassportInterface }) => (
+    <MemberCard key={item.id} {...item} />
+  );
 
   const _memberList = (props: any) => {
     const { hits, hasMore, refineNext } = props;

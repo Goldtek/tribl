@@ -108,8 +108,8 @@ function ContactSlide(props: ScreenProp) {
   });
 
   const participantOf = state?.participantOf;
-  const myConnections = state?.myConnections;
   const currentLocation = state?.currentLocation;
+  const myConnections = state?.myConnections?.slice(0, 10);
   const myChannels = state?.channelParticipantOf?.slice(0, 10);
 
   const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
