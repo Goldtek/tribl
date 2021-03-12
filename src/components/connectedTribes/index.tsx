@@ -48,20 +48,21 @@ export default function ConnectedTribe(props: ConnectedTribeProps) {
           width: RFValue(DEVICE_FULL_WIDTH / 3),
           height: '100%',
           alignItems: 'center',
-          paddingHorizontal: RFValue(10),
-          marginTop: 0
+          marginTop: 0,
+          paddingHorizontal: 10,
+          paddingVertical: 10
         }}
       >
         <FastImage
-          resizeMode={FastImage.resizeMode.cover}
+          resizeMode={FastImage.resizeMode.stretch}
           source={{
             uri: avatar,
             priority: FastImage.priority.high
           }}
           style={{
-            width: '90%',
+            width: '100%',
             height: RFValue(90),
-            borderRadius: RFValue(4)
+            borderRadius: 4
           }}
         />
         <TextContainer ref={hideSensitiveView}>

@@ -23,19 +23,19 @@ import {
   ChannelInterface
 } from '../../../graphql/types';
 import MyCommunity from './widget/tribes';
-import MyConnections from './widget/connections';
-import MyChannels from './widget/channelCard';
 import { NavigationInterface } from '../../types';
 import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import { SinglePassportRequestInterface } from '../../../graphql/types';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import {
-  tagScreenName,
   logEvent,
+  tagScreenName,
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
 import { crashlytics } from '../../../firebase/config';
 import { useStreamContext } from '../../../stream';
+import MyChannel from './widget/channelCard';
+import MyConnectionCard from '../../../components/MyConnectionCard';
 import {
   ChannelType,
   chatClient,
@@ -190,7 +190,7 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
-  const channels = singlePassport?.channelParticipantOf;
+  const channels = singlePassport?.channelParticipantOf?.slice(0, 10);
 
   const handleRequest = async () => {
     setState({ ...state, loading: true });
@@ -215,11 +215,11 @@ export default function PassportDetail(props: MemberDetailProps) {
   );
 
   const _renderMyChannelItem = ({ item }: { item: ChannelInterface }) => (
-    <MyChannels key={item.id} {...item} />
+    <MyChannel key={item.id} {...item} />
   );
 
   const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
-    <MyConnections key={item.id} {...item} singlePassport={data} />
+    <MyConnectionCard key={item.id} {...item} singlePassport={data} />
   );
 
   const [displayInterest, setDisplayInterest] = useState(false);
@@ -722,35 +722,25 @@ export default function PassportDetail(props: MemberDetailProps) {
           ) : null}
 
           {channels?.length ? (
-            <Fragment>
-              <TouchableHighlight
-                underlayColor={colors.TRANSPARENT}
-                onPress={() => {}}
-                style={{ marginTop: RFValue(20) }}
+            <Cover style={{ marginTop: 10 }}>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase'
+                }}
               >
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase',
-                    marginBottom: 10
-                  }}
-                >
-                  {t(`community.memberPassport.channels`)}
-                </Title>
-              </TouchableHighlight>
+                {t(`community.memberPassport.channels`)}
+              </Title>
               <FlatList
                 data={channels}
                 horizontal={true}
                 renderItem={_renderMyChannelItem}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 5,
-                  backgroundColor: colors.WHITE
-                }}
+                contentContainerStyle={{ alignItems: 'center' }}
               />
-            </Fragment>
+            </Cover>
           ) : null}
 
           {connections?.length ? (

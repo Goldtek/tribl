@@ -1,6 +1,5 @@
 import styled from 'styled-components/native';
-import { RFValue } from 'react-native-responsive-fontsize';
-import hexToRGB from '../../utils/hexToRGB';
+import hexToRGB from '../../../../../utils/hexToRGB';
 
 export const Cover = styled.View`
   flex-direction: row;
@@ -12,13 +11,13 @@ export const Cover = styled.View`
 export const LeftCover = styled.View`
   padding: 3px;
   border-radius: 4px;
-  background-color: ${({ theme }) => hexToRGB(theme.colors.WHITE, 0.3)};
+  background-color: ${({ theme }) => theme.colors.WHITE};
 `;
 
 export const RightCover = styled.View`
   flex-direction: row;
   align-items: center;
-  background-color: ${({ theme }) => theme.colors.OFFWHITE};
+  background-color: ${({ theme }) => hexToRGB(theme.colors.WHITE, 0.3)};
   padding: 3px;
   border-radius: 4px;
 `;
