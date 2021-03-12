@@ -8,16 +8,13 @@ import { useQuery } from '@apollo/react-hooks';
 import {
   GET_SINGLE_PASSPORT,
   GET_USER_PASSPORT
-} from '../../../../../graphql/server/query';
-import { useThemeContext } from '../../../../../theme';
-import hexToRGB from '../../../../../utils/hexToRGB';
-import {
-  MyPassportInterface,
-  PassportInterface
-} from '../../../../../graphql/types';
-import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
+} from '../../graphql/server/query';
+import { useThemeContext } from '../../theme';
+import hexToRGB from '../../utils/hexToRGB';
+import { MyPassportInterface, PassportInterface } from '../../graphql/types';
+import { hideSensitiveView } from '../../utils/uxcamHelper';
 import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
-import { useStreamContext } from '../../../../../stream';
+import { useStreamContext } from '../../stream';
 import {
   ChannelType,
   chatClient,
@@ -27,7 +24,7 @@ import {
   LocalMessageType,
   LocalReactionType,
   LocalUserType
-} from '../../../../../stream/types';
+} from '../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -148,7 +145,7 @@ function ConnectionCard(props: ConnectionCardProp) {
           />
         ) : (
           <Image
-            source={require('../../../../../../assets/images/profile.png')}
+            source={require('../../../assets/images/profile.png')}
             resizeMode="cover"
             style={{
               width: RFValue(60),

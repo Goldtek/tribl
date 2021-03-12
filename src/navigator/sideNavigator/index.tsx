@@ -28,6 +28,7 @@ import MemberDetailScreen from '../../screens/community/memberPassport';
 import InvitationScreen from '../../screens/community/invitationToTribe';
 import CreateNewTribeScreen from '../../screens/community/home/widget/createTribe';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
+import UserConnectionListScreen from '../../screens/passport/userConnectionListScreen';
 import CommunityDetailScreen from '../../screens/community/detail';
 import AddAdminScreen from '../../screens/community/home/widget/addAdmin';
 import TribeDetailScreen from '../../screens/community/home/widget/tribeDetails';
@@ -697,6 +698,42 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="CommunityListScreen"
         component={CommunityListScreen}
+        options={({ route }: any) => ({
+          ...TransitionPresets.ModalTransition,
+          headerShown: true,
+          headerTitleAlign: 'left',
+          headerTitle: route.params.title,
+          headerBackTitleVisible: false,
+          headerStyle: { height: RFValue(90) },
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD
+          },
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={navigation.goBack}
+              style={{
+                height: RFValue(40),
+                width: RFValue(40),
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: RFValue(40 / 2)
+              }}
+            >
+              <Ionicons
+                name="md-arrow-back"
+                size={RFValue(24)}
+                color={colors.PRIMARY}
+              />
+            </TouchableRipple>
+          )
+        })}
+      />
+
+      <DrawerStack.Screen
+        name="UserConnectionListScreen"
+        component={UserConnectionListScreen}
         options={({ route }: any) => ({
           ...TransitionPresets.ModalTransition,
           headerShown: true,
