@@ -17,7 +17,11 @@ export const GET_USER_DETAILS = gql`
       countryCode
       firstName
       lastName
-      citizenship
+      citizenship {
+        id
+        name
+        flag
+      }
       currentLocation {
         lat
         long

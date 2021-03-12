@@ -89,10 +89,11 @@ export const GET_USER_PASSPORT = gql`
       lastName
       firstName
       connected
-      # citizenship {
-      #   name
-      #   flag
-      # }
+      citizenship {
+        id
+        name
+        flag
+      }
       phoneNumber
       currentLocation {
         country
@@ -711,6 +712,13 @@ export const GET_MEMBER_PASSPORT = gql`
         lastName
         avatar
         phoneNumber
+        # currentLocation {
+        #   country
+        #   state
+        #   city
+        #   lat
+        #   long
+        # }
       }
       channelParticipantOf {
         id

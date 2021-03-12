@@ -151,6 +151,15 @@ type NotificationMetaData = {
   };
 };
 
+type Citizenship = {
+  id: string;
+  name: string;
+  flag: string;
+  createdAt: string;
+  updatedAt: string;
+  passports: PassportInterface[];
+};
+
 export interface PassportInterface {
   id: string;
   bio: string;
@@ -161,6 +170,8 @@ export interface PassportInterface {
   verified: boolean;
   firstName: string;
   __typename: string;
+  interest: string[];
+  identity: string[];
   countryCode: string;
   phoneNumber: string;
   birthPlace: Location;
@@ -177,8 +188,6 @@ export interface PassportInterface {
   moderatorOf?: CommunityInterface[];
   participantOf?: CommunityInterface[];
   channelParticipantOf?: ChannelInterface[];
-  interest: string[];
-  identity: string[];
   pendingConnections: ConnectionStatusInterface[];
   connectionRequests: ConnectionStatusInterface[];
   connectionDetails: ConnectionStatusInterface;
@@ -202,8 +211,11 @@ export type ChannelInterface = {
   id: string;
   name: string;
   isMember: boolean;
+  createdAt: string;
+  updatedAt: string;
   isDefault: boolean;
   isPrivate: boolean;
+  community: CommunityInterface;
   participants: PassportInterface[];
   community: CommunityInterface;
 };
