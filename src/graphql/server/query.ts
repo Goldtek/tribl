@@ -139,10 +139,10 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         connectionCount
         communityCount
         pending
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         connectionDetails {
           status
         }
@@ -196,10 +196,10 @@ export const GET_NEARBY_MEMBERS = gql`
         communityCount
         connectionCount
         pending
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         moderatorOf {
           isModerator
           id
@@ -259,10 +259,10 @@ export const GET_CHANNEL_MEMBERS = gql`
         communityCount
         connectionCount
         pending
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         birthPlace {
           country
           state
@@ -312,10 +312,10 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         connectionCount
         verified
         pending
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         moderatorOf {
           isModerator
           id
@@ -465,10 +465,10 @@ export const GET_MY_CONNECTIONS_NEARBY = gql`
         pending
         connectionCount
         communityCount
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         birthPlace {
           country
           state
@@ -521,10 +521,10 @@ export const GET_MY_CONNECTIONS = gql`
         connectionCount
         communityCount
         pending
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         birthPlace {
           country
           state
@@ -576,10 +576,10 @@ export const GET_CONNECTION_REQUEST = gql`
         connectionCount
         communityCount
         verified
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         birthPlace {
           country
           state
@@ -657,10 +657,10 @@ export const GET_SINGLE_PASSPORT = gql`
       connectionCount
       communityCount
       pending
-      # citizenship {
-      #   name
-      #   flag
-      # }
+      citizenship {
+        name
+        flag
+      }
       connectionDetails {
         status
       }
@@ -793,10 +793,10 @@ export const GET_COMMUNITY_MEMBERS = gql`
         connectionCount
         communityCount
         pending
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         moderatorOf {
           isModerator
           id
@@ -851,10 +851,10 @@ export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
       communityCount
       connectionCount
       pending
-      # citizenship {
-      #   name
-      #   flag
-      # }
+      citizenship {
+        name
+        flag
+      }
       moderatorOf {
         isModerator
         id
@@ -905,10 +905,10 @@ export const GET_ALL_MEMBERS = gql`
         connected
         bio
         pending
-        # citizenship {
-        #   name
-        #   flag
-        # }
+        citizenship {
+          name
+          flag
+        }
         currentLocation {
           state
           country
@@ -957,6 +957,13 @@ export const USER_CHANNELS = gql`
       data {
         id
         name
+        isMember
+        isPrivate
+        community {
+          id
+          name
+          avatar
+        }
       }
     }
   }

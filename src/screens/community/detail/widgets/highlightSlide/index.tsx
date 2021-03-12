@@ -8,7 +8,6 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import MembersCard from '../../../../../components/recommendedUser';
-import ChannelCard from './widget/channelCard';
 import ConnectedTribeCard from '../../../../../components/connectedTribes';
 import {
   GET_NEARBY_MEMBERS_OF_A_COMMUNITY,
@@ -48,6 +47,7 @@ import {
   TextContainer,
   TagContainer
 } from './styles';
+import MyChannel from '../../../memberPassport/widget/channelCard';
 
 interface singleCommunityScreenProp extends NavigationInterface {
   route: {
@@ -192,7 +192,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
 
   const _renderChannel = useMemo(
     () => ({ item }: { item: ChannelInterface }) => (
-      <ChannelCard key={item.id} {...item} />
+      <MyChannel key={item.id} {...item} />
     ),
     []
   );
@@ -428,11 +428,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                   <RecommendedUserSkeleton skeletonSize={4} />
                 }
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 20,
-                  paddingHorizontal: 15,
-                  backgroundColor: colors.WHITE
-                }}
+                contentContainerStyle={{ marginTop: 5, paddingHorizontal: 15 }}
               />
               <Title
                 style={{
@@ -447,18 +443,13 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
               >
                 {t(`community.tabPanel.tribeChannels`)}
               </Title>
-
               <FlatList
-                data={communityChannels}
                 horizontal={true}
+                data={communityChannels}
                 renderItem={_renderChannel}
                 ListEmptyComponent={<ChannelSkeleton skeletonSize={4} />}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 20,
-                  paddingHorizontal: 15,
-                  backgroundColor: colors.WHITE
-                }}
+                contentContainerStyle={{ marginTop: 5, paddingHorizontal: 15 }}
               />
 
               <Title
@@ -467,14 +458,13 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                   fontSize: RFValue(fonts.LARGE_SIZE),
                   color: colors.PRIMARY_TEXT,
                   textTransform: 'capitalize',
-                  marginTop: RFValue(20),
+                  marginTop: 20,
                   marginBottom: 0,
                   paddingLeft: 15
                 }}
               >
                 {t(`community.tabPanel.connectedTribes`)}
               </Title>
-
               <FlatList
                 data={myTribes}
                 horizontal={true}
@@ -483,11 +473,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                   <RecommendedUserSkeleton skeletonSize={4} />
                 }
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 20,
-                  paddingHorizontal: 15,
-                  backgroundColor: colors.WHITE
-                }}
+                contentContainerStyle={{ marginTop: 5, paddingHorizontal: 15 }}
               />
             </Card.Content>
           </Card>

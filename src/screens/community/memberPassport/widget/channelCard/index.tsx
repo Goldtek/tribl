@@ -1,11 +1,12 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { TouchableRipple, Title } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import FastImage from 'react-native-fast-image';
-import { Channel, LiteralStringForUnion } from 'stream-chat';
+import { ChannelInterface } from '../../../../../graphql/types';
 import { useThemeContext } from '../../../../../theme';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelInterface } from '../../../../../graphql/types';
 import {
   chatClient,
   LocalAttachmentType,
@@ -15,15 +16,17 @@ import {
   LocalReactionType,
   LocalUserType
 } from '../../../../../stream/types';
-import { useStreamContext } from '../../../../../stream';
+
+import { Cover, LeftCover, Text, RightCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface MyChannelProp extends ChannelInterface {}
 
 export default function MyChannel(props: MyChannelProp) {
-  const { colors, fonts } = useThemeContext();
-  const navigation = useNavigation();
   const { name, community, id, isMember } = props;
+
+  const navigation = useNavigation();
+  const { colors, fonts } = useThemeContext();
 
   const [channel, setChannel] = useState<
     Channel<
@@ -37,22 +40,35 @@ export default function MyChannel(props: MyChannelProp) {
     >
   >();
 
-  const { setChannel: activeChannel } = useStreamContext();
-
   useEffect(() => {
-    const channel = chatClient.channel('team', id);
-    setChannel(channel);
-  }, [channel]);
+    const getConversation = async () => {
+      const filter = { id: { $in: [id] } };
+
+      const options = { presence: true, state: true, watch: true };
+
+      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+      const [channel] = await chatClient.queryChannels(filter, sort, options);
+
+      if (!channel) return;
+
+      setChannel(channel);
+    };
+
+    if (chatClient.user) getConversation();
+  }, [chatClient.user]);
+
+  const messageCount =
+    channel?.state?.messages.length || channel?.data?.member_count || 0;
 
   const handleNavigation = () => {
-    if (channel) activeChannel(channel);
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
       params: {
         title: `#${name}`,
         chatId: id,
         isMember,
-        channelId: channel?.id,
+        channelId: id,
         details: { ...props },
         channel: { name, community: community?.name }
       }
@@ -63,45 +79,54 @@ export default function MyChannel(props: MyChannelProp) {
     <TouchableRipple
       onPress={handleNavigation}
       rippleColor={colors.PRIMARY}
-      style={{
-        height: RFValue(55),
-        width: RFValue(90),
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: RFValue(10),
-        borderWidth: 1.3,
-        borderRadius: 5,
-        borderColor: colors.PRIMARY
-      }}
+      style={{ marginRight: 10, borderRadius: 5 }}
     >
-      <Fragment>
-        <FastImage
-          resizeMode={FastImage.resizeMode.stretch}
-          source={{
-            uri: community.avatar,
-            priority: FastImage.priority.high
-          }}
-          style={{ width: '100%', height: '100%', borderRadius: 4 }}
-        />
-        <Title
-          style={{
-            position: 'absolute',
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.SMALL_SIZE),
-            backgroundColor: colors.WHITE,
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'lowercase',
-            textAlign: 'center',
-            lineHeight: 10,
-            paddingHorizontal: RFValue(5),
-            paddingVertical: RFValue(3),
-            top: RFValue(32),
-            left: RFValue(5)
-          }}
-        >
-          #{name}
-        </Title>
-      </Fragment>
+      <FastImage
+        resizeMode={FastImage.resizeMode.stretch}
+        source={{
+          uri: community.avatar,
+          priority: FastImage.priority.high
+        }}
+        style={{
+          width: RFValue(130),
+          height: RFValue(80),
+          borderRadius: 5,
+          justifyContent: 'flex-end'
+        }}
+      >
+        <Cover>
+          <LeftCover>
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.SMALL_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize'
+              }}
+            >
+              #{name.length < 10 ? name : `${name.substr(0, 10)}...`}
+            </Text>
+          </LeftCover>
+          <RightCover>
+            <MaterialIcons
+              name="chat-bubble-outline"
+              size={12}
+              color={colors.WHITE}
+            />
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: fonts.MEDIUM_SIZE,
+                color: colors.WHITE,
+                textTransform: 'capitalize',
+                marginHorizontal: 3
+              }}
+            >
+              {Number(messageCount)}
+            </Text>
+          </RightCover>
+        </Cover>
+      </FastImage>
     </TouchableRipple>
   );
 }

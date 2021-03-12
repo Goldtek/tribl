@@ -87,8 +87,6 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     addUserDetails();
   };
 
-  console.tron('state.selectedIdentities', state.selectedIdentities);
-
   const handleSelect = (selected: string, id: string) => {
     if (!state.selectedIdentities.has(selected)) {
       return setState({

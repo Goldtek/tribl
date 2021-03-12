@@ -18,13 +18,7 @@ export default function MyCommunity(props: CommunityInterface) {
   const { avatar, name, id } = props;
 
   useQuery(GET_COMMUNITY_MEMBERS, {
-    variables: {
-      input: {
-        filter: {
-          communityId: id
-        }
-      }
-    }
+    variables: { input: { filter: { communityId: id } } }
   });
 
   useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
@@ -43,15 +37,15 @@ export default function MyCommunity(props: CommunityInterface) {
       onPress={handleNavigation}
       rippleColor={colors.PRIMARY}
       style={{
-        height: RFValue(80),
-        width: RFValue(80),
+        height: 80,
+        width: 80,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 5,
-        borderWidth: RFValue(1.2),
-        borderRadius: RFValue(4),
+        borderWidth: 1.2,
+        borderRadius: 4,
         borderColor: colors.PRIMARY,
-        marginRight: RFValue(10)
+        marginRight: 10
       }}
     >
       <FastImage
@@ -60,7 +54,7 @@ export default function MyCommunity(props: CommunityInterface) {
           uri: avatar,
           priority: FastImage.priority.high
         }}
-        style={{ width: '100%', height: '100%', borderRadius: RFValue(4) }}
+        style={{ width: '100%', height: '100%', borderRadius: 4 }}
       />
     </TouchableRipple>
   );

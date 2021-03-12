@@ -27,7 +27,8 @@ import {
   GET_CONNECTION_REQUEST,
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
-  GET_POPULAR_COMMUNITIES
+  GET_POPULAR_COMMUNITIES,
+  USER_CHANNELS
 } from '../../../graphql/server/query';
 import MyCommunity from '../../../components/myCommunities';
 import MyChannel from '../../../components/channelCard';
@@ -40,7 +41,8 @@ import {
   MyCommunitiesRequestInterface,
   RecommendedCommunitiesRequestInterface,
   CommunityInterface,
-  ChannelInterface
+  ChannelInterface,
+  MyChannelRequestInterface
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -71,61 +73,6 @@ export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const isFocused = useIsFocused();
-
-  const channelData = [
-    {
-      id: '1',
-      name: 'general',
-      isDefault: true,
-      isMember: true,
-      isPrivate: true,
-      community: {
-        id: '01',
-        name: 'tribl',
-        avatar:
-          'https://res.cloudinary.com/tribl-for-community/image/upload/v1615469854/TRiBL%20for%20Community/yakpv2er2qriknfxuz5a.jpg'
-      }
-    },
-    {
-      id: '2',
-      name: 'feedback',
-      isDefault: true,
-      isMember: true,
-      isPrivate: true,
-      community: {
-        id: '02',
-        name: 'tribl',
-        avatar:
-          'https://res.cloudinary.com/tribl-for-community/image/upload/v1615469854/TRiBL%20for%20Community/yakpv2er2qriknfxuz5a.jpg'
-      }
-    },
-    {
-      id: '3',
-      name: 'Testing',
-      isDefault: true,
-      isMember: true,
-      isPrivate: true,
-      community: {
-        id: '03',
-        name: 'tribl',
-        avatar:
-          'https://res.cloudinary.com/tribl-for-community/image/upload/v1615469854/TRiBL%20for%20Community/yakpv2er2qriknfxuz5a.jpg'
-      }
-    },
-    {
-      id: '4',
-      name: 'dancing',
-      isDefault: true,
-      isMember: true,
-      isPrivate: true,
-      community: {
-        id: '04',
-        name: 'tribl',
-        avatar:
-          'https://res.cloudinary.com/tribl-for-community/image/upload/v1615469854/TRiBL%20for%20Community/yakpv2er2qriknfxuz5a.jpg'
-      }
-    }
-  ];
 
   const [state, setState] = useState({
     showJoinCommunityModal: false,
@@ -177,12 +124,17 @@ export default function HomeScreen(props: ScreenProp) {
     GET_RECOMMENDED_COMMUNITIES
   );
 
+  const { data: channelsData } = useQuery<MyChannelRequestInterface>(
+    USER_CHANNELS
+  );
+
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
     variables: {
       input: { limit: PAGINATION_DEFAULT / 2 }
     }
   });
 
+  const myChannels = channelsData?.myChannels;
   const myCommunities = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers?.data;
   const communities = communityData?.recommendedCommunities?.data
@@ -220,11 +172,8 @@ export default function HomeScreen(props: ScreenProp) {
     []
   );
 
-  const _renderMyChannelItem = useMemo(
-    () => ({ item }: { item: ChannelInterface }) => (
-      <MyChannel key={item.id} {...item} />
-    ),
-    []
+  const _renderMyChannelItem = ({ item }: { item: ChannelInterface }) => (
+    <MyChannel key={item.id} {...item} />
   );
 
   const _renderRecommendedMember = useMemo(
@@ -273,7 +222,7 @@ export default function HomeScreen(props: ScreenProp) {
         bounces={false}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(80 / 2) }}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <StatusBar translucent animated style="dark" />
         {myCommunityLoading ? (
@@ -338,62 +287,6 @@ export default function HomeScreen(props: ScreenProp) {
                 marginBottom: 0
               }}
             >
-              {t(`community.recommended.trendingChannel`)}
-            </Title>
-
-            <GradientButton
-              gradientContainerstyle={{
-                height: RFValue(0),
-                paddingVertical: 15,
-                marginBottom: RFValue(10)
-              }}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textTransform: 'capitalize'
-              }}
-              mode="text"
-              onPress={() => {
-                Mixpanel.track('User Taps View More (Channels)', {
-                  info: 'User taps view more trending (Channels)',
-                  'Activity Screen': 'View More Trending Channels Button'
-                });
-                logEvent('view more channels', { from: 'community' });
-                navigateToSearch(1);
-              }}
-            >
-              {t(`community.recommended.view`)}
-            </GradientButton>
-          </RecommendedListHeader>
-          <RecommendedCommunityContainer>
-            <FlatList
-              data={channelData}
-              horizontal={true}
-              renderItem={_renderMyChannelItem}
-              ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(channel) => channel.id}
-              contentContainerStyle={{
-                paddingLeft: 15,
-                backgroundColor: colors.WHITE
-              }}
-            />
-          </RecommendedCommunityContainer>
-        </RecommendedList>
-
-        <RecommendedList>
-          <RecommendedListHeader style={{ paddingLeft: 15 }}>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize',
-                lineHeight: 20,
-                marginTop: 0,
-                marginBottom: 0
-              }}
-            >
               {t(`community.recommended.community`)}
             </Title>
 
@@ -430,8 +323,9 @@ export default function HomeScreen(props: ScreenProp) {
                 scrollEnabled={true}
                 containerStyle={{ height: RFValue(300) }}
                 paginationStyle={{
-                  right: RFValue(-DEVICE_FULL_WIDTH / 1.5),
-                  bottom: RFValue(80)
+                  position: 'absolute',
+                  left: DEVICE_FULL_WIDTH / 2 + 60,
+                  bottom: 300 / 3
                 }}
                 activeDotColor={colors.WHITE}
                 dotColor={hexToRGB(colors.WHITE, 0.6)}
@@ -445,6 +339,63 @@ export default function HomeScreen(props: ScreenProp) {
             )}
           </RecommendedCommunityContainer>
         </RecommendedList>
+
+        {myChannels?.data.length ? (
+          <RecommendedList>
+            <RecommendedListHeader style={{ paddingLeft: 15 }}>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: 20,
+                  marginTop: 0,
+                  marginBottom: 0
+                }}
+              >
+                {t(`community.recommended.trendingChannel`)}
+              </Title>
+
+              {/* <GradientButton
+                gradientContainerstyle={{
+                  height: RFValue(0),
+                  paddingVertical: 15,
+                  marginBottom: RFValue(10)
+                }}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                mode="text"
+                onPress={() => {
+                  Mixpanel.track('User Taps View More (Channels)', {
+                    info: 'User taps view more trending (Channels)',
+                    'Activity Screen': 'View More Trending Channels Button'
+                  });
+                  logEvent('view more channels', { from: 'community' });
+                  navigateToSearch(1);
+                }}
+              >
+                {t(`community.recommended.view`)}
+              </GradientButton> */}
+            </RecommendedListHeader>
+            <RecommendedCommunityContainer>
+              <FlatList
+                data={myChannels?.data}
+                horizontal={true}
+                renderItem={_renderMyChannelItem}
+                ListEmptyComponent={
+                  <RecommendedUserSkeleton skeletonSize={4} />
+                }
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(channel) => channel.id}
+                contentContainerStyle={{ paddingLeft: 15 }}
+              />
+            </RecommendedCommunityContainer>
+          </RecommendedList>
+        ) : null}
 
         <RecommendedList>
           <RecommendedListHeader>
@@ -496,7 +447,7 @@ export default function HomeScreen(props: ScreenProp) {
             contentContainerStyle={{
               marginTop: 20,
               paddingLeft: 15,
-              backgroundColor: colors.WHITE
+              paddingBottom: 20
             }}
           />
         </RecommendedList>

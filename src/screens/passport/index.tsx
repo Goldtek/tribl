@@ -29,7 +29,8 @@ import {
   GET_POPULAR_COMMUNITIES,
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
-  GET_FIREBASE_TOKEN
+  GET_FIREBASE_TOKEN,
+  USER_CHANNELS
 } from '../../graphql/server/query';
 import {
   GenerateFirebaseTokenIT,
@@ -129,6 +130,8 @@ export default function PassportScreen(props: ScreenProp) {
   );
 
   const [getMyCommunities] = useLazyQuery(GET_MY_COMMUNITIES);
+
+  const [getMyChannels] = useLazyQuery(USER_CHANNELS);
 
   const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
 
@@ -263,6 +266,7 @@ export default function PassportScreen(props: ScreenProp) {
     getNearbyMembers();
     getMyConnections();
     getAllMembers();
+    getMyChannels();
   }, []);
 
   useEffect(() => {
@@ -319,8 +323,6 @@ export default function PassportScreen(props: ScreenProp) {
         refetch();
       }
     } catch (error) {
-      console.tron({ error });
-
       crashlytics.recordError(new Error(error));
     }
   };
@@ -395,7 +397,7 @@ export default function PassportScreen(props: ScreenProp) {
           add: cache.details.selectedInterest,
           remove: removeInterest
         },
-        citizenShip: {
+        citizenship: {
           add: removeTypename,
           remove: removecitizenship
         },
@@ -528,13 +530,12 @@ export default function PassportScreen(props: ScreenProp) {
                 mode="contained"
                 style={{
                   backgroundColor: colors.GREY,
-                  width: RFValue(70),
                   borderRadius: 4,
                   marginLeft: 'auto'
                 }}
                 labelStyle={{
                   color: colors.SECONDARY_TEXT,
-                  fontSize: RFValue(14),
+                  fontSize: RFValue(fonts.SMALL_SIZE + 1),
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                   textTransform: 'uppercase',
                   textAlign: 'center'
@@ -549,13 +550,12 @@ export default function PassportScreen(props: ScreenProp) {
                 mode="contained"
                 style={{
                   backgroundColor: colors.GREY,
-                  width: RFValue(90),
                   borderRadius: 4,
                   marginLeft: 'auto'
                 }}
                 labelStyle={{
                   color: colors.SECONDARY_TEXT,
-                  fontSize: RFValue(14),
+                  fontSize: RFValue(fonts.SMALL_SIZE + 1),
                   fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                   textTransform: 'uppercase',
                   textAlign: 'center'

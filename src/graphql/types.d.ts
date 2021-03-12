@@ -457,7 +457,7 @@ export type ShowConnectionNotificationBadge = {
 
 // USER COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
 export type MyChannelRequestInterface = {
-  myChannels: { data: ChannelInterface[] };
+  myChannels: { data: ChannelInterface[]; metadata: QueryMetadata };
 };
 
 // USER CONNECTIONS REQUESTS (RESPONSE) TYPE

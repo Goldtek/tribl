@@ -1,15 +1,12 @@
 import React, { Fragment } from 'react';
 import { TouchableRipple, Text, Paragraph } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
-import { useThemeContext } from '../../../../../theme';
+import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
-import hexToRGB from '../../../../../utils/hexToRGB';
-import { PassportInterface } from '../../../../../graphql/types';
-import {
-  PAGINATION_DEFAULT,
-  USER_DEFAULT_AVATAR
-} from '../../../../../constants';
-import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
+import hexToRGB from '../../utils/hexToRGB';
+import { PassportInterface } from '../../graphql/types';
+import { PAGINATION_DEFAULT, USER_DEFAULT_AVATAR } from '../../constants';
+import { hideSensitiveView } from '../../utils/uxcamHelper';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionProp extends PassportInterface {
@@ -17,16 +14,19 @@ interface MyConnectionProp extends PassportInterface {
   singlePassport?: PassportInterface;
 }
 
-export default function MyCommunity(props: MyConnectionProp) {
+export default function MyConnectionCard(props: MyConnectionProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
   const { avatar, firstName, lastName, singlePassport, lastIndex } = props;
 
   const handleNavigation = () => {
-    navigation.navigate('MemberDetailScreen', {
-      title: `${firstName} ${lastName}`,
-      details: { ...props }
+    navigation.navigate('CommunityScreen', {
+      screen: 'MemberDetailScreen',
+      params: {
+        title: `${firstName} ${lastName}`,
+        details: { ...props }
+      }
     });
   };
 

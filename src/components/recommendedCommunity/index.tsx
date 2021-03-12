@@ -185,16 +185,16 @@ function RecommendedCommunity(props: CommunityInterface) {
         />
         <Text
           style={{
-            fontSize: RFValue(fonts.LARGE_SIZE - 1),
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            color: colors.BLACK,
+            fontSize: fonts.LARGE_SIZE - 1,
+            fontFamily: fonts.WORK_SANS_BOLD,
+            color: colors.WHITE,
             backgroundColor: hexToRGB(colors.WHITE, 0.3),
             position: 'absolute',
-            left: RFValue(15),
-            top: RFValue(1),
-            paddingHorizontal: RFValue(10),
-            paddingVertical: RFValue(5),
-            marginTop: RFValue(10),
+            left: 15,
+            top: 1,
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            marginTop: 10,
             textTransform: 'capitalize'
           }}
         >

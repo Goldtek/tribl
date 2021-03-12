@@ -1,12 +1,6 @@
 // @ts-nocheck
-import React, {
-  useState,
-  useCallback,
-  Fragment,
-  useEffect,
-  useMemo
-} from 'react';
-import { SimpleLineIcons, Feather } from '@expo/vector-icons';
+import React, { useState, useCallback, Fragment, useEffect } from 'react';
+import { Feather } from '@expo/vector-icons';
 import { Button, Title, TextInput, TouchableRipple } from 'react-native-paper';
 import { FlatList } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -31,30 +25,31 @@ import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 import { NavigationInterface } from '../../../types';
 import { userDetails as cacheData } from '../../../../graphql/cache';
 import { InterestsInterface } from '../interestModal/interestButton';
-import ConnectionCard from '../connectionCard';
-import TribeCard from '../tribeCard';
-import ChannelCard from '../channelCard';
+import MyConnectionCard from '../../../../components/MyConnectionCard';
+import MyCommunity from '../../../../components/myCommunities';
+import MyChannel from '../../../community/memberPassport/widget/channelCard';
 
 import {
-  ContactContainer,
-  FirstNameContainer,
-  LastNameContainer,
-  DOBContainer,
+  Cover,
   Container,
-  InterestContainer,
-  IdentityContainer,
   Identities,
-  IdentityText,
-  LocationContainer,
-  Location,
   AddIdentity,
+  DOBContainer,
+  IdentityText,
   BioContainer,
-  CitizenshipContainer,
-  TitleCover
+  ContactContainer,
+  LastNameContainer,
+  IdentityContainer,
+  InterestContainer,
+  FirstNameContainer,
+  CitizenshipContainer
   // LinkAccountsContainer,
+  // LocationContainer,
   // InstagramButton,
   // SpotifyButton,
+  // TitleCover,
   // ButtonDot,
+  // Location,
 } from './styles';
 
 interface ScreenProp extends NavigationInterface {
@@ -91,12 +86,7 @@ function ContactSlide(props: ScreenProp) {
     tags: Map<string, unknown>;
     click: boolean;
     tagText: string;
-    citizenship: [
-      {
-        name: string;
-        flag: string;
-      }
-    ];
+    citizenship: [{ name: string; flag: string }];
   }>({
     ...cacheData,
     date: '',
@@ -117,27 +107,21 @@ function ContactSlide(props: ScreenProp) {
     citizenship: []
   });
 
-  const currentLocation = state?.currentLocation;
   const participantOf = state?.participantOf;
   const myConnections = state?.myConnections;
-  const myChannels = state?.channelParticipantOf;
+  const currentLocation = state?.currentLocation;
+  const myChannels = state?.channelParticipantOf?.slice(0, 10);
 
   const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
-    <ConnectionCard key={item.id} {...item} />
+    <MyConnectionCard key={item.id} {...item} singlePassport={state} />
   );
 
-  const _renderMyCommunityItem = useMemo(
-    () => ({ item }: { item: CommunityInterface }) => (
-      <TribeCard key={item.id} {...item} />
-    ),
-    []
+  const _renderMyCommunityItem = ({ item }: { item: CommunityInterface }) => (
+    <MyCommunity key={item.id} {...item} />
   );
 
-  const _renderMyChannelItem = useMemo(
-    () => ({ item }: { item: ChannelInterface }) => (
-      <ChannelCard key={item.id} {...item} />
-    ),
-    []
+  const _renderMyChannelItem = ({ item }: { item: ChannelInterface }) => (
+    <MyChannel key={item.id} {...item} singlePassport={state} />
   );
 
   const [select, setSelect] = useState({
@@ -724,7 +708,6 @@ function ContactSlide(props: ScreenProp) {
                   {identity.name}
                   {!click ? (
                     <Fragment>
-                      {' '}
                       <Feather
                         onPress={() => handleSelectIdentity(identity.name)}
                         name="x"
@@ -787,7 +770,6 @@ function ContactSlide(props: ScreenProp) {
                     {tag}
                     {!click ? (
                       <Fragment>
-                        {'   '}
                         <Feather
                           onPress={() => handleADeleteInterest(tag)}
                           name="x"
@@ -851,7 +833,7 @@ function ContactSlide(props: ScreenProp) {
 
       {participantOf?.length ? (
         <Fragment>
-          <TitleCover>
+          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -872,23 +854,20 @@ function ContactSlide(props: ScreenProp) {
             >
               ({participantOf?.length})
             </Title>
-          </TitleCover>
+          </Cover>
           <FlatList
             data={participantOf}
             horizontal={true}
             renderItem={_renderMyCommunityItem}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              marginTop: 5,
-              backgroundColor: colors.WHITE
-            }}
+            contentContainerStyle={{ alignItems: 'center' }}
           />
         </Fragment>
       ) : null}
 
       {myChannels?.length ? (
         <Fragment>
-          <TitleCover>
+          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -897,25 +876,22 @@ function ContactSlide(props: ScreenProp) {
                 textTransform: 'uppercase'
               }}
             >
-              {t(`community.memberPassport.channels`)}
+              {t(`community.memberPassport.recentChannels`)}
             </Title>
-          </TitleCover>
+          </Cover>
           <FlatList
             data={myChannels}
             horizontal={true}
             renderItem={_renderMyChannelItem}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              marginTop: 5,
-              backgroundColor: colors.WHITE
-            }}
+            contentContainerStyle={{ alignItems: 'center' }}
           />
         </Fragment>
       ) : null}
 
       {myConnections?.length ? (
         <Fragment>
-          <TitleCover>
+          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -936,17 +912,14 @@ function ContactSlide(props: ScreenProp) {
             >
               ({myConnections?.length})
             </Title>
-          </TitleCover>
+          </Cover>
           <FlatList
-            data={myConnections}
             horizontal={true}
-            keyExtractor={(passport) => passport.id}
+            data={myConnections}
+            keyExtractor={({ id }) => id}
             renderItem={_renderMyConnectionItem}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              marginTop: 5,
-              backgroundColor: colors.WHITE
-            }}
+            contentContainerStyle={{ alignItems: 'center' }}
           />
         </Fragment>
       ) : null}
