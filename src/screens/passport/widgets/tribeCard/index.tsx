@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CommunityInterface } from '../../../../graphql/types';
 import AdminBadge from '../../../../components/adminBadge';
 
-import { TribeCover } from './styles';
+import { TribeCover } from '../../styles';
 
 // DEFINE SCREEN PROP TYPES
 interface MyCommunityProp extends CommunityInterface {
@@ -18,12 +18,15 @@ export default function MyCommunity(props: MyCommunityProp) {
   const { colors } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, name, moderatorOf } = props;
+  const { avatar, name, isModerator } = props;
 
   const handleNavigation = () => {
-    navigation.navigate('CommunityDetailScreen', {
-      title: name,
-      details: { ...props }
+    navigation.navigate('CommunityScreen', {
+      screen: 'CommunityDetailScreen',
+      params: {
+        title: name,
+        details: { ...props }
+      }
     });
   };
 
@@ -52,7 +55,7 @@ export default function MyCommunity(props: MyCommunityProp) {
           style={{ width: '100%', height: '100%', borderRadius: 4 }}
         />
       </TouchableRipple>
-      {moderatorOf?.length ? (
+      {isModerator ? (
         <AdminBadge
           style={{
             position: 'absolute',

@@ -1,22 +1,19 @@
 // @ts-nocheck
 import React, { useState, useCallback, Fragment, useEffect } from 'react';
-import { SimpleLineIcons, Feather } from '@expo/vector-icons';
-import {
-  Button,
-  Title,
-  Paragraph,
-  TextInput,
-  TouchableRipple
-} from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
+import { Button, Title, TextInput, TouchableRipple } from 'react-native-paper';
+import { FlatList } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { KeyboardAvoidingView } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../theme';
 import {
   MyPassportInterface,
-  PassportInterface
+  PassportInterface,
+  CommunityInterface,
+  ChannelInterface
 } from '../../../../graphql/types';
 import { useQuery } from '@apollo/react-hooks';
 import formatMessageTime from '../../../../utils/timesince';
@@ -28,25 +25,31 @@ import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 import { NavigationInterface } from '../../../types';
 import { userDetails as cacheData } from '../../../../graphql/cache';
 import { InterestsInterface } from '../interestModal/interestButton';
+import MyConnectionCard from '../../../../components/MyConnectionCard';
+import MyCommunity from '../../../../components/myCommunities';
+import MyChannel from '../../../community/memberPassport/widget/channelCard';
 
 import {
-  ContactContainer,
-  FirstNameContainer,
-  LastNameContainer,
-  DOBContainer,
+  Cover,
   Container,
-  InterestContainer,
-  IdentityContainer,
   Identities,
-  IdentityText,
-  LocationContainer,
-  Location,
   AddIdentity,
-  BioContainer
+  DOBContainer,
+  IdentityText,
+  BioContainer,
+  ContactContainer,
+  LastNameContainer,
+  IdentityContainer,
+  InterestContainer,
+  FirstNameContainer,
+  CitizenshipContainer
   // LinkAccountsContainer,
+  // LocationContainer,
   // InstagramButton,
   // SpotifyButton,
+  // TitleCover,
   // ButtonDot,
+  // Location,
 } from './styles';
 
 interface ScreenProp extends NavigationInterface {
@@ -58,7 +61,8 @@ function ContactSlide(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const click = props.click;
-
+  const navigation = useNavigation();
+  const selectedCountry = props?.selectedCountries;
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const userDetails = userData?.myPassport;
@@ -82,6 +86,7 @@ function ContactSlide(props: ScreenProp) {
     tags: Map<string, unknown>;
     click: boolean;
     tagText: string;
+    citizenship: [{ name: string; flag: string }];
   }>({
     ...cacheData,
     date: '',
@@ -98,10 +103,26 @@ function ContactSlide(props: ScreenProp) {
     selectedInterest: [],
     tags: new Map(),
     click: false,
-    tagText: ''
+    tagText: '',
+    citizenship: []
   });
 
+  const participantOf = state?.participantOf;
+  const myConnections = state?.myConnections;
   const currentLocation = state?.currentLocation;
+  const myChannels = state?.channelParticipantOf?.slice(0, 10);
+
+  const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
+    <MyConnectionCard key={item.id} {...item} singlePassport={state} />
+  );
+
+  const _renderMyCommunityItem = ({ item }: { item: CommunityInterface }) => (
+    <MyCommunity key={item.id} {...item} />
+  );
+
+  const _renderMyChannelItem = ({ item }: { item: ChannelInterface }) => (
+    <MyChannel key={item.id} {...item} singlePassport={state} />
+  );
 
   const [select, setSelect] = useState({
     identity: [],
@@ -122,6 +143,15 @@ function ContactSlide(props: ScreenProp) {
       });
     }
   }, [state.selectedIdentity || state.tags]);
+
+  useEffect(() => {
+    if (selectedCountry?.length) {
+      setState({
+        ...state,
+        citizenship: selectedCountry
+      });
+    }
+  }, [selectedCountry]);
 
   const handleSelectIdentity = (selected: string) => {
     const filteredIdentity = select.identity.filter(
@@ -191,6 +221,12 @@ function ContactSlide(props: ScreenProp) {
     const timeStamp = dobTimestamp / 1000;
     const date = month + '/' + day + '/' + year;
     const newDOB = year + '-' + month + '-' + day;
+    if (date.includes('NaN')) {
+      return setState({
+        ...state,
+        showDatePicker: false
+      });
+    }
 
     return setState({
       ...state,
@@ -286,7 +322,7 @@ function ContactSlide(props: ScreenProp) {
     });
   };
 
-  const { firstName, lastName, bio } = state;
+  const { firstName, lastName, bio, citizenship } = state;
 
   useEffect(() => {
     props.getUserDetails(state);
@@ -294,92 +330,29 @@ function ContactSlide(props: ScreenProp) {
 
   return (
     <ContactContainer>
-      <Container>
-        <FirstNameContainer>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase'
-            }}
-          >
-            {t(`signup.passportScreen.firstName`)}
-          </Title>
-        </FirstNameContainer>
-        <TextInput
-          ref={hideSensitiveView}
-          value={firstName}
-          onChangeText={(firstName: string) =>
-            setState({ ...state, firstName })
-          }
-          disabled={click}
-          style={{
-            height: 30,
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-            color: colors.PRIMARY_TEXT,
-            backgroundColor: colors.WHITE,
-            borderBottomWidth: click ? 0 : 2,
-            borderColor: colors.PRIMARY,
-            textTransform: 'capitalize'
-          }}
-        />
-      </Container>
-
-      <Container>
-        <LastNameContainer>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase'
-            }}
-          >
-            {t(`signup.passportScreen.lastName`)}
-          </Title>
-        </LastNameContainer>
-        <TextInput
-          ref={hideSensitiveView}
-          value={lastName}
-          onChangeText={(lastName: string) => setState({ ...state, lastName })}
-          disabled={click}
-          style={{
-            height: 30,
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-            color: colors.PRIMARY_TEXT,
-            backgroundColor: colors.WHITE,
-            borderBottomWidth: click ? 0 : 2,
-            borderColor: colors.PRIMARY,
-            textTransform: 'capitalize'
-          }}
-        />
-      </Container>
-
-      <Container>
-        <BioContainer>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'uppercase'
-            }}
-          >
-            {t(`community.memberPassport.bio`)}
-          </Title>
-        </BioContainer>
-        {bio ? (
+      {!click ? (
+        <Container>
+          <FirstNameContainer>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`signup.passportScreen.firstName`)}
+            </Title>
+          </FirstNameContainer>
           <TextInput
             ref={hideSensitiveView}
-            value={bio}
-            multiline={true}
-            dense={true}
-            onChangeText={(bio: string) => setState({ ...state, bio })}
+            value={firstName}
+            onChangeText={(firstName: string) =>
+              setState({ ...state, firstName })
+            }
             disabled={click}
             style={{
+              height: 30,
               fontFamily: fonts.WORK_SANS_REGULAR,
               fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
               color: colors.PRIMARY_TEXT,
@@ -389,15 +362,31 @@ function ContactSlide(props: ScreenProp) {
               textTransform: 'capitalize'
             }}
           />
-        ) : (
+        </Container>
+      ) : null}
+      {!click ? (
+        <Container>
+          <LastNameContainer>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`signup.passportScreen.lastName`)}
+            </Title>
+          </LastNameContainer>
           <TextInput
             ref={hideSensitiveView}
-            placeholder={t(`community.memberPassport.bioInfo`)}
-            multiline={true}
-            dense={true}
-            onChangeText={(bio: string) => setState({ ...state, bio: bio })}
+            value={lastName}
+            onChangeText={(lastName: string) =>
+              setState({ ...state, lastName })
+            }
             disabled={click}
             style={{
+              height: 30,
               fontFamily: fonts.WORK_SANS_REGULAR,
               fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
               color: colors.PRIMARY_TEXT,
@@ -407,55 +396,123 @@ function ContactSlide(props: ScreenProp) {
               textTransform: 'capitalize'
             }}
           />
-        )}
-      </Container>
+        </Container>
+      ) : null}
+      {!click ? (
+        <Container>
+          <BioContainer>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`community.memberPassport.bio`)}
+            </Title>
+          </BioContainer>
+          {bio ? (
+            <TextInput
+              ref={hideSensitiveView}
+              value={bio}
+              multiline={true}
+              dense={true}
+              onChangeText={(bio: string) => setState({ ...state, bio })}
+              disabled={click}
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                backgroundColor: colors.WHITE,
+                borderBottomWidth: click ? 0 : 2,
+                borderColor: colors.PRIMARY,
+                textTransform: 'capitalize'
+              }}
+            />
+          ) : (
+            <TextInput
+              ref={hideSensitiveView}
+              placeholder={t(`community.memberPassport.bioInfo`)}
+              multiline={true}
+              dense={true}
+              onChangeText={(bio: string) => setState({ ...state, bio: bio })}
+              disabled={click}
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                backgroundColor: colors.WHITE,
+                borderBottomWidth: click ? 0 : 2,
+                borderColor: colors.PRIMARY,
+                textTransform: 'capitalize'
+              }}
+            />
+          )}
+        </Container>
+      ) : (
+        <Fragment>
+          {bio ? (
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize'
+              }}
+            >
+              {bio}
+            </Title>
+          ) : null}
+        </Fragment>
+      )}
+      {!click ? (
+        <DOBContainer>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'uppercase',
+              marginBottom: 0
+            }}
+          >
+            {t(`community.memberPassport.dob`)}
+          </Title>
 
-      <DOBContainer>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'uppercase',
-            marginBottom: 0
-          }}
-        >
-          {t(`community.memberPassport.dob`)}
-        </Title>
+          <Button
+            ref={hideSensitiveView}
+            mode="text"
+            uppercase={false}
+            disabled={click}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'capitalize',
+              paddingTop: 5,
+              paddingBottom: 5,
+              marginTop: 0,
+              marginLeft: 0
+            }}
+            contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
+            onPress={handleDatePicker}
+          >
+            {!state.date || state.date == 'Invalid Date'
+              ? t(`signup.passportScreen.dob`)
+              : state.date}
+          </Button>
 
-        <Button
-          ref={hideSensitiveView}
-          mode="text"
-          uppercase={false}
-          disabled={click}
-          labelStyle={{
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'capitalize',
-            paddingTop: 5,
-            paddingBottom: 5,
-            marginTop: 0,
-            marginLeft: 0
-          }}
-          contentStyle={{ justifyContent: 'flex-start', borderRadius: 4 }}
-          onPress={handleDatePicker}
-        >
-          {!state.date || state.date == 'Invalid Date'
-            ? t(`signup.passportScreen.dob`)
-            : state.date}
-        </Button>
-
-        <DateTimePicker
-          isVisible={state.showDatePicker}
-          mode="date"
-          onConfirm={onChange}
-          onCancel={handleDatePicker}
-          maximumDate={new Date()}
-        />
-      </DOBContainer>
-
-      {/* {birthPlace?.country ? (
+          <DateTimePicker
+            isVisible={state.showDatePicker}
+            mode="date"
+            onConfirm={onChange}
+            onCancel={handleDatePicker}
+            maximumDate={new Date()}
+          />
+        </DOBContainer>
+      ) : null}
+      {!click ? (
         <CitizenshipContainer ref={hideSensitiveView}>
           <Title
             style={{
@@ -467,21 +524,31 @@ function ContactSlide(props: ScreenProp) {
           >
             {t(`signup.passportScreen.citizenship`)}
           </Title>
-
-          <Paragraph
-            style={{
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize'
-            }}
-          >
-            {birthPlace?.country}
-          </Paragraph>
+          {citizenship?.length ? (
+            <Fragment>
+              {citizenship?.map((country) => (
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT
+                  }}
+                >
+                  {country.name}
+                </Title>
+              ))}
+            </Fragment>
+          ) : null}
+          {!click ? (
+            <TouchableRipple
+              onPress={() => navigation.navigate('CitizenshipScreen')}
+            >
+              <AddIdentity>+</AddIdentity>
+            </TouchableRipple>
+          ) : null}
         </CitizenshipContainer>
-      ) : null} */}
-
-      {currentLocation ? (
+      ) : null}
+      {/* {currentLocation ? (
         <LocationContainer>
           <Title
             style={{
@@ -495,7 +562,7 @@ function ContactSlide(props: ScreenProp) {
             {t(`signup.passportScreen.locality`)}
           </Title>
 
-          {/* <Location>
+          <Location>
             <AntDesign
               name="home"
               color="#CACEE5"
@@ -558,7 +625,7 @@ function ContactSlide(props: ScreenProp) {
                 )}
               </Fragment>
             ) : (
-              <Cover ref={hideSensitiveView}>
+              <Fragment ref={hideSensitiveView}>
                 {userDetails?.birthPlace[0]?.city ? (
                   <Paragraph
                     style={{
@@ -584,9 +651,9 @@ function ContactSlide(props: ScreenProp) {
                     {`${birthPlace?.state}, ${birthPlace?.country}`}
                   </Paragraph>
                 )}
-              </Cover>
+              </Fragment>
             )}
-          </Location> */}
+          </Location>
 
           <Location ref={hideSensitiveView}>
             <SimpleLineIcons
@@ -614,8 +681,7 @@ function ContactSlide(props: ScreenProp) {
             </Paragraph>
           </Location>
         </LocationContainer>
-      ) : null}
-
+      ) : null} */}
       {state?.selectedIdentity?.length ||
       userDetails?.identity?.length ||
       !click ? (
@@ -642,7 +708,6 @@ function ContactSlide(props: ScreenProp) {
                   {identity.name}
                   {!click ? (
                     <Fragment>
-                      {' '}
                       <Feather
                         onPress={() => handleSelectIdentity(identity.name)}
                         name="x"
@@ -667,7 +732,6 @@ function ContactSlide(props: ScreenProp) {
           </Identities>
         </IdentityContainer>
       ) : null}
-
       {select?.interest?.length || !click ? (
         <InterestContainer>
           <Title
@@ -706,7 +770,6 @@ function ContactSlide(props: ScreenProp) {
                     {tag}
                     {!click ? (
                       <Fragment>
-                        {'   '}
                         <Feather
                           onPress={() => handleADeleteInterest(tag)}
                           name="x"
@@ -768,6 +831,98 @@ function ContactSlide(props: ScreenProp) {
         </InterestContainer>
       ) : null}
 
+      {participantOf?.length ? (
+        <Fragment>
+          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`community.memberPassport.tribe`)}
+            </Title>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY,
+                marginLeft: RFValue(3)
+              }}
+            >
+              ({participantOf?.length})
+            </Title>
+          </Cover>
+          <FlatList
+            data={participantOf}
+            horizontal={true}
+            renderItem={_renderMyCommunityItem}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ alignItems: 'center' }}
+          />
+        </Fragment>
+      ) : null}
+
+      {myChannels?.length ? (
+        <Fragment>
+          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`community.memberPassport.recentChannels`)}
+            </Title>
+          </Cover>
+          <FlatList
+            data={myChannels}
+            horizontal={true}
+            renderItem={_renderMyChannelItem}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ alignItems: 'center' }}
+          />
+        </Fragment>
+      ) : null}
+
+      {myConnections?.length ? (
+        <Fragment>
+          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase'
+              }}
+            >
+              {t(`community.memberPassport.connection`)}
+            </Title>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY,
+                marginLeft: RFValue(3)
+              }}
+            >
+              ({myConnections?.length})
+            </Title>
+          </Cover>
+          <FlatList
+            horizontal={true}
+            data={myConnections}
+            keyExtractor={({ id }) => id}
+            renderItem={_renderMyConnectionItem}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ alignItems: 'center' }}
+          />
+        </Fragment>
+      ) : null}
       {/* 
       <LinkAccountsContainer>
         <Title
@@ -852,13 +1007,11 @@ function ContactSlide(props: ScreenProp) {
         </Paragraph>
       </LinkAccountsContainer>
      */}
-
       <IdentityModal
         isVisible={isVisible}
         closeIdentityModal={showIdentityModal(false)}
         identity={getIdentity}
       />
-
       <InterestModal
         isVisible={interestVisible}
         closeIdentityModal={showInterestModal(false)}

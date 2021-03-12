@@ -356,7 +356,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
         component={Screens.MemberDetailScreen}
         options={({ route }) => ({
           //@ts-ignore
-          headerTitle: route.params?.title,
+          headerTitle: () => null,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),

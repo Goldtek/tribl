@@ -67,7 +67,6 @@ export default function IdentifyUserScreen(props: ScreenProp) {
   };
 
   const identities = Array.from(new Set(data?.Identity?.data));
-
   const handleSubmit = async () => {
     if (!state.selectedIdentities.size) return handleInputError();
     const selectedIdentities = [
@@ -87,8 +86,6 @@ export default function IdentifyUserScreen(props: ScreenProp) {
     navigation.navigate('UserLocationScreen');
     addUserDetails();
   };
-
-  console.tron('state.selectedIdentities', state.selectedIdentities);
 
   const handleSelect = (selected: string, id: string) => {
     if (!state.selectedIdentities.has(selected)) {

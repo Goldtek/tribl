@@ -151,6 +151,15 @@ type NotificationMetaData = {
   };
 };
 
+type Citizenship = {
+  id: string;
+  name: string;
+  flag: string;
+  createdAt: string;
+  updatedAt: string;
+  passports: PassportInterface[];
+};
+
 export interface PassportInterface {
   id: string;
   bio: string;
@@ -161,6 +170,8 @@ export interface PassportInterface {
   verified: boolean;
   firstName: string;
   __typename: string;
+  interest: string[];
+  identity: string[];
   countryCode: string;
   phoneNumber: string;
   birthPlace: Location;
@@ -168,7 +179,7 @@ export interface PassportInterface {
   communityCount: number;
   connectionCount: number;
   connected: Status | null;
-  citizenShip: string | null;
+  citizenship: Citizenship[];
   currentLocation: Location;
   connection: Connection | null;
   status: UserAvailability | null;
@@ -176,8 +187,7 @@ export interface PassportInterface {
   myConnections: PassportInterface[];
   moderatorOf?: CommunityInterface[];
   participantOf?: CommunityInterface[];
-  interest: string[];
-  identity: string[];
+  channelParticipantOf?: ChannelInterface[];
   pendingConnections: ConnectionStatusInterface[];
   connectionRequests: ConnectionStatusInterface[];
   connectionDetails: ConnectionStatusInterface;
@@ -201,9 +211,13 @@ export type ChannelInterface = {
   id: string;
   name: string;
   isMember: boolean;
+  createdAt: string;
+  updatedAt: string;
   isDefault: boolean;
   isPrivate: boolean;
+  community: CommunityInterface;
   participants: PassportInterface[];
+  community: CommunityInterface;
 };
 
 type Interest = {
@@ -216,6 +230,11 @@ type Interest = {
 type CommunityPrivacy = {
   id: string;
   visibility: PrivacyStatus;
+};
+
+type Citizenship = {
+  name: string;
+  flag: string;
 };
 
 export interface CommunityInterface {
@@ -438,7 +457,7 @@ export type ShowConnectionNotificationBadge = {
 
 // USER COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
 export type MyChannelRequestInterface = {
-  myChannels: { data: ChannelInterface[] };
+  myChannels: { data: ChannelInterface[]; metadata: QueryMetadata };
 };
 
 // USER CONNECTIONS REQUESTS (RESPONSE) TYPE

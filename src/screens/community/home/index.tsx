@@ -7,8 +7,8 @@ import React, {
 } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
-import { Title, Button, ActivityIndicator } from 'react-native-paper';
-import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
+import { Title, ActivityIndicator } from 'react-native-paper';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
@@ -27,9 +27,11 @@ import {
   GET_CONNECTION_REQUEST,
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
-  GET_POPULAR_COMMUNITIES
+  GET_POPULAR_COMMUNITIES,
+  USER_CHANNELS
 } from '../../../graphql/server/query';
 import MyCommunity from '../../../components/myCommunities';
+import MyChannel from '../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
 import RecommendedCommunitySkeleton from '../../../components/recommendedCommunitySkeleton';
@@ -38,7 +40,9 @@ import {
   PassportInterface,
   MyCommunitiesRequestInterface,
   RecommendedCommunitiesRequestInterface,
-  CommunityInterface
+  CommunityInterface,
+  ChannelInterface,
+  MyChannelRequestInterface
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -54,8 +58,8 @@ import {
   RecommendedListHeader,
   RecommendedCommunityContainer,
   RecentActivitiesList,
-  CommunityCover,
-  ButtonWrapper
+  CommunityCover
+  // ButtonWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -81,7 +85,7 @@ export default function HomeScreen(props: ScreenProp) {
     getMyCommunities,
     { refetch, fetchMore, data: myCommunityData, loading: myCommunityLoading }
   ] = useLazyQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
+    variables: { input: { limit: PAGINATION_DEFAULT * 2, skip: 0 } }
   });
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
@@ -120,12 +124,17 @@ export default function HomeScreen(props: ScreenProp) {
     GET_RECOMMENDED_COMMUNITIES
   );
 
+  const { data: channelsData } = useQuery<MyChannelRequestInterface>(
+    USER_CHANNELS
+  );
+
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
     variables: {
       input: { limit: PAGINATION_DEFAULT / 2 }
     }
   });
 
+  const myChannels = channelsData?.myChannels;
   const myCommunities = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers?.data;
   const communities = communityData?.recommendedCommunities?.data
@@ -143,11 +152,11 @@ export default function HomeScreen(props: ScreenProp) {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
 
-  const navigateToCreateNewTribeScreen = () => {
-    navigation.navigate('DrawerScreen', {
-      screen: 'CreateTribeScreen'
-    });
-  };
+  // const navigateToCreateNewTribeScreen = () => {
+  //   navigation.navigate('DrawerScreen', {
+  //     screen: 'CreateTribeScreen'
+  //   });
+  // };
 
   const handleJoinCommunity = () => {
     setState({
@@ -163,6 +172,10 @@ export default function HomeScreen(props: ScreenProp) {
     []
   );
 
+  const _renderMyChannelItem = ({ item }: { item: ChannelInterface }) => (
+    <MyChannel key={item.id} {...item} />
+  );
+
   const _renderRecommendedMember = useMemo(
     () => ({ item }: { item: PassportInterface }) => (
       <RecommendedUser key={item.id} {...item} />
@@ -175,33 +188,33 @@ export default function HomeScreen(props: ScreenProp) {
     [callOnScrollEnd]
   );
 
-  const handleEndReach = () => {
-    if (!callOnScrollEnd) return;
+  // const handleEndReach = () => {
+  //   if (!callOnScrollEnd) return;
 
-    fetchMore({
-      variables: {
-        input: {
-          skip: myCommunities?.data.length,
-          limit: PAGINATION_DEFAULT / 2
-        }
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        setCallOnScrollEnd(false);
+  //   fetchMore({
+  //     variables: {
+  //       input: {
+  //         skip: myCommunities?.data.length,
+  //         limit: PAGINATION_DEFAULT / 2
+  //       }
+  //     },
+  //     updateQuery: (prev, { fetchMoreResult }) => {
+  //       setCallOnScrollEnd(false);
 
-        if (!fetchMoreResult) return prev;
+  //       if (!fetchMoreResult) return prev;
 
-        return Object.assign({}, prev, {
-          myCommunities: {
-            ...prev.myCommunities,
-            data: [
-              ...prev.myCommunities.data,
-              ...fetchMoreResult.myCommunities.data
-            ]
-          }
-        });
-      }
-    });
-  };
+  //       return Object.assign({}, prev, {
+  //         myCommunities: {
+  //           ...prev.myCommunities,
+  //           data: [
+  //             ...prev.myCommunities.data,
+  //             ...fetchMoreResult.myCommunities.data
+  //           ]
+  //         }
+  //       });
+  //     }
+  //   });
+  // };
 
   return (
     <Fragment>
@@ -209,7 +222,7 @@ export default function HomeScreen(props: ScreenProp) {
         bounces={false}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: RFValue(80) }}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <StatusBar translucent animated style="dark" />
         {myCommunityLoading ? (
@@ -238,18 +251,18 @@ export default function HomeScreen(props: ScreenProp) {
               horizontal={true}
               onEndReachedThreshold={0.5}
               ListEmptyComponent={<MyCommunitySkeleton skeletonSize={2} />}
-              onEndReached={() => {
-                if (
-                  myCommunities &&
-                  myCommunities?.metadata.totalCount >
-                    myCommunities?.data.length
-                ) {
-                  setCallOnScrollEnd(true);
-                }
-              }}
+              // onEndReached={() => {
+              //   if (
+              //     myCommunities &&
+              //     myCommunities?.metadata.totalCount >
+              //       myCommunities?.data.length
+              //   ) {
+              //     setCallOnScrollEnd(true);
+              //   }
+              // }}
               ListFooterComponent={_renderFooter}
               renderItem={_renderMyCommunityItem}
-              onMomentumScrollEnd={handleEndReach}
+              // onMomentumScrollEnd={handleEndReach}
               ListFooterComponentStyle={{ justifyContent: 'center' }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -260,6 +273,130 @@ export default function HomeScreen(props: ScreenProp) {
             />
           </RecommendedList>
         ) : null}
+
+        <RecommendedList>
+          <RecommendedListHeader style={{ paddingLeft: 15 }}>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 0
+              }}
+            >
+              {t(`community.recommended.community`)}
+            </Title>
+
+            <GradientButton
+              gradientContainerstyle={{
+                height: RFValue(0),
+                paddingVertical: 15,
+                marginBottom: RFValue(10)
+              }}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize'
+              }}
+              mode="text"
+              onPress={() => {
+                Mixpanel.track('User Taps View More (Tribes)', {
+                  info: 'User taps view more recommended (Tribes)',
+                  'Activity Screen': 'View More Recommended Tribes Button'
+                });
+                logEvent('view more tribes', { from: 'community' });
+                navigateToSearch(1);
+              }}
+            >
+              {t(`community.recommended.view`)}
+            </GradientButton>
+          </RecommendedListHeader>
+          <RecommendedCommunityContainer>
+            {recommendedCommunityLoading ? (
+              <RecommendedCommunitySkeleton />
+            ) : communities?.length ? (
+              <Swiper
+                loop={false}
+                scrollEnabled={true}
+                containerStyle={{ height: RFValue(300) }}
+                paginationStyle={{
+                  position: 'absolute',
+                  left: DEVICE_FULL_WIDTH / 2 + 60,
+                  bottom: 300 / 3
+                }}
+                activeDotColor={colors.WHITE}
+                dotColor={hexToRGB(colors.WHITE, 0.6)}
+              >
+                {communities.map((community) => (
+                  <RecommendedCommunity key={community.id} {...community} />
+                ))}
+              </Swiper>
+            ) : (
+              <ComingSoonCommunities />
+            )}
+          </RecommendedCommunityContainer>
+        </RecommendedList>
+
+        {myChannels?.data.length ? (
+          <RecommendedList>
+            <RecommendedListHeader style={{ paddingLeft: 15 }}>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: 20,
+                  marginTop: 0,
+                  marginBottom: 0
+                }}
+              >
+                {t(`community.recommended.trendingChannel`)}
+              </Title>
+
+              {/* <GradientButton
+                gradientContainerstyle={{
+                  height: RFValue(0),
+                  paddingVertical: 15,
+                  marginBottom: RFValue(10)
+                }}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                mode="text"
+                onPress={() => {
+                  Mixpanel.track('User Taps View More (Channels)', {
+                    info: 'User taps view more trending (Channels)',
+                    'Activity Screen': 'View More Trending Channels Button'
+                  });
+                  logEvent('view more channels', { from: 'community' });
+                  navigateToSearch(1);
+                }}
+              >
+                {t(`community.recommended.view`)}
+              </GradientButton> */}
+            </RecommendedListHeader>
+            <RecommendedCommunityContainer>
+              <FlatList
+                data={myChannels?.data}
+                horizontal={true}
+                renderItem={_renderMyChannelItem}
+                ListEmptyComponent={
+                  <RecommendedUserSkeleton skeletonSize={4} />
+                }
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(channel) => channel.id}
+                contentContainerStyle={{ paddingLeft: 15 }}
+              />
+            </RecommendedCommunityContainer>
+          </RecommendedList>
+        ) : null}
+
         <RecommendedList>
           <RecommendedListHeader>
             <Title
@@ -280,7 +417,7 @@ export default function HomeScreen(props: ScreenProp) {
               gradientContainerstyle={{
                 height: RFValue(0),
                 paddingVertical: 15,
-                marginBottom: RFValue(20)
+                marginBottom: RFValue(10)
               }}
               labelStyle={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -310,74 +447,9 @@ export default function HomeScreen(props: ScreenProp) {
             contentContainerStyle={{
               marginTop: 20,
               paddingLeft: 15,
-              backgroundColor: colors.WHITE
+              paddingBottom: 20
             }}
           />
-        </RecommendedList>
-
-        <RecommendedList>
-          <RecommendedListHeader style={{ paddingLeft: 15 }}>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize',
-                lineHeight: 20,
-                marginTop: 0,
-                marginBottom: 0
-              }}
-            >
-              {t(`community.recommended.community`)}
-            </Title>
-
-            <GradientButton
-              gradientContainerstyle={{
-                height: RFValue(0),
-                paddingVertical: 15,
-                marginBottom: RFValue(20)
-              }}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textTransform: 'capitalize'
-              }}
-              mode="text"
-              onPress={() => {
-                Mixpanel.track('User Taps View More (Tribes)', {
-                  info: 'User taps view more recommended (Tribes)',
-                  'Activity Screen': 'View More Recommended Tribes Button'
-                });
-                logEvent('view more tribes', { from: 'community' });
-                navigateToSearch(1);
-              }}
-            >
-              {t(`community.recommended.view`)}
-            </GradientButton>
-          </RecommendedListHeader>
-          <RecommendedCommunityContainer>
-            {recommendedCommunityLoading ? (
-              <RecommendedCommunitySkeleton />
-            ) : communities?.length ? (
-              <Swiper
-                loop={false}
-                scrollEnabled={true}
-                containerStyle={{ height: RFValue(300) }}
-                paginationStyle={{
-                  right: RFValue(-DEVICE_FULL_WIDTH / 1.5),
-                  bottom: RFValue(80)
-                }}
-                activeDotColor={colors.WHITE}
-                dotColor={hexToRGB(colors.WHITE, 0.6)}
-              >
-                {communities.map((community) => (
-                  <RecommendedCommunity key={community.id} {...community} />
-                ))}
-              </Swiper>
-            ) : (
-              <ComingSoonCommunities />
-            )}
-          </RecommendedCommunityContainer>
         </RecommendedList>
 
         {recentActivities.length ? (
@@ -404,7 +476,8 @@ export default function HomeScreen(props: ScreenProp) {
           </RecentActivitiesList>
         ) : null}
       </ScrollView>
-      <ButtonWrapper>
+
+      {/* <ButtonWrapper>
         <Button
           onPress={navigateToCreateNewTribeScreen}
           mode="contained"
@@ -422,7 +495,7 @@ export default function HomeScreen(props: ScreenProp) {
         >
           {t(`community.createTribe.buttonText`)}
         </Button>
-      </ButtonWrapper>
+      </ButtonWrapper> */}
 
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
