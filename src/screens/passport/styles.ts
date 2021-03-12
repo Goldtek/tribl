@@ -57,3 +57,8 @@ export const TabCover = styled.View`
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 `;
+
+export const ScreenCover = styled.View`
+  background-color: ${({ theme }) => theme.colors.WHITE};
+  flex: 1;
+`;

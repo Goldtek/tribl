@@ -68,7 +68,8 @@ import {
   ImageTextContainer,
   ConnectionCover,
   Cover,
-  TabCover
+  TabCover,
+  ScreenCover
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
@@ -506,250 +507,250 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: colors.PRIMARY,
-        paddingTop: RFValue(paddingTop)
-      }}
-    >
-      <StatusBar translucent animated style="light" />
-      <ScrollView
-        bounces={false}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          backgroundColor: colors.WHITE,
-          marginTop: RFValue(20),
-          paddingBottom: RFValue(20)
+    <ScreenCover>
+      <SafeAreaView
+        style={{
+          backgroundColor: colors.PRIMARY,
+          paddingTop: RFValue(paddingTop)
         }}
       >
-        <Fragment>
-          <HeaderContainer>
-            {update ? (
-              <Button
-                mode="contained"
-                style={{
-                  backgroundColor: colors.GREY,
-                  borderRadius: 4,
-                  marginLeft: 'auto'
-                }}
-                labelStyle={{
-                  color: colors.SECONDARY_TEXT,
-                  fontSize: RFValue(fonts.SMALL_SIZE + 1),
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  textTransform: 'uppercase',
-                  textAlign: 'center'
-                }}
-                onPress={() => setUpdate(false)}
-                loading={loading}
-              >
-                {t(`signup.passportScreen.edit`)}
-              </Button>
-            ) : (
-              <Button
-                mode="contained"
-                style={{
-                  backgroundColor: colors.GREY,
-                  borderRadius: 4,
-                  marginLeft: 'auto'
-                }}
-                labelStyle={{
-                  color: colors.SECONDARY_TEXT,
-                  fontSize: RFValue(fonts.SMALL_SIZE + 1),
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  textTransform: 'uppercase',
-                  textAlign: 'center'
-                }}
-                onPress={handleRequest}
-                loading={loading}
-              >
-                {t(`signup.passportScreen.update`)}
-              </Button>
-            )}
-            <Cover>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
-                  color: colors.WHITE,
-                  textTransform: 'capitalize',
-                  lineHeight: RFValue(30)
-                }}
-              >
-                {t(`signup.passportScreen.title`)}
-              </Title>
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE - 2)),
-                  color: colors.WHITE,
-                  marginTop: RFValue(5)
-                }}
-              >
-                {t(`community.passport.subTitle`)}
-              </Paragraph>
-            </Cover>
-            <ImageContainer>
+        <StatusBar translucent animated style="light" />
+        <ScrollView
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            backgroundColor: colors.WHITE,
+            marginTop: RFValue(20),
+            paddingBottom: RFValue(20)
+          }}
+        >
+          <Fragment>
+            <HeaderContainer>
               {update ? (
-                <SingleImage
-                  uri={avatar.uri}
+                <Button
+                  mode="contained"
                   style={{
-                    width: RFValue(120),
-                    height: RFValue(100),
-                    justifyContent: 'center',
-                    borderRadius: 4
+                    backgroundColor: colors.GREY,
+                    borderRadius: 4,
+                    marginLeft: 'auto'
                   }}
-                />
-              ) : (
-                <TouchableHighlight
-                  onPress={handleAvatar}
-                  ref={hideSensitiveView}
+                  labelStyle={{
+                    color: colors.SECONDARY_TEXT,
+                    fontSize: RFValue(fonts.SMALL_SIZE + 1),
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    textTransform: 'uppercase',
+                    textAlign: 'center'
+                  }}
+                  onPress={() => setUpdate(false)}
+                  loading={loading}
                 >
-                  <FastImage
-                    source={{
-                      uri: avatar.uri,
-                      priority: FastImage.priority.high
-                    }}
-                    resizeMode={FastImage.resizeMode.stretch}
+                  {t(`signup.passportScreen.edit`)}
+                </Button>
+              ) : (
+                <Button
+                  mode="contained"
+                  style={{
+                    backgroundColor: colors.GREY,
+                    borderRadius: 4,
+                    marginLeft: 'auto'
+                  }}
+                  labelStyle={{
+                    color: colors.SECONDARY_TEXT,
+                    fontSize: RFValue(fonts.SMALL_SIZE + 1),
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    textTransform: 'uppercase',
+                    textAlign: 'center'
+                  }}
+                  onPress={handleRequest}
+                  loading={loading}
+                >
+                  {t(`signup.passportScreen.update`)}
+                </Button>
+              )}
+              <Cover>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+                    color: colors.WHITE,
+                    textTransform: 'capitalize',
+                    lineHeight: RFValue(30)
+                  }}
+                >
+                  {t(`signup.passportScreen.title`)}
+                </Title>
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE - 2)),
+                    color: colors.WHITE,
+                    marginTop: RFValue(5)
+                  }}
+                >
+                  {t(`community.passport.subTitle`)}
+                </Paragraph>
+              </Cover>
+              <ImageContainer>
+                {update ? (
+                  <SingleImage
+                    uri={avatar.uri}
                     style={{
                       width: RFValue(120),
                       height: RFValue(100),
                       justifyContent: 'center',
                       borderRadius: 4
                     }}
-                  >
-                    <Feather
-                      name="camera"
-                      size={RFValue(30)}
-                      color={colors.WHITE}
-                      style={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        textAlign: 'center'
-                      }}
-                    />
-                  </FastImage>
-                </TouchableHighlight>
-              )}
-
-              <ImageTextContainer ref={hideSensitiveView}>
-                <Paragraph
-                  style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                    paddingRight: 20,
-                    lineHeight: 21,
-                    color: colors.WHITE,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {`${cache?.firstName} ${cache?.lastName}`}
-                </Paragraph>
-                {currentLocation?.city ? (
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      paddingRight: 20,
-                      lineHeight: 16,
-                      color: colors.WHITE,
-                      textTransform: 'capitalize'
-                    }}
-                  >
-                    {`${currentLocation?.city}, ${currentLocation?.state}`}
-                  </Paragraph>
+                  />
                 ) : (
+                  <TouchableHighlight
+                    onPress={handleAvatar}
+                    ref={hideSensitiveView}
+                  >
+                    <FastImage
+                      source={{
+                        uri: avatar.uri,
+                        priority: FastImage.priority.high
+                      }}
+                      resizeMode={FastImage.resizeMode.stretch}
+                      style={{
+                        width: RFValue(120),
+                        height: RFValue(100),
+                        justifyContent: 'center',
+                        borderRadius: 4
+                      }}
+                    >
+                      <Feather
+                        name="camera"
+                        size={RFValue(30)}
+                        color={colors.WHITE}
+                        style={{
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          textAlign: 'center'
+                        }}
+                      />
+                    </FastImage>
+                  </TouchableHighlight>
+                )}
+
+                <ImageTextContainer ref={hideSensitiveView}>
                   <Paragraph
                     style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.LARGE_SIZE - 2),
                       paddingRight: 20,
-                      lineHeight: 16,
+                      lineHeight: 21,
                       color: colors.WHITE,
                       textTransform: 'capitalize'
                     }}
                   >
-                    {`${currentLocation?.state}, ${currentLocation?.country}`}
+                    {`${cache?.firstName} ${cache?.lastName}`}
                   </Paragraph>
-                )}
-                {cache?.citizenship?.length ? (
-                  <Title
-                    style={{
-                      fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.5)),
-                      marginTop: RFValue(2)
-                    }}
-                  >
-                    {cache?.citizenship?.map((country) => country.flag)}
-                  </Title>
-                ) : null}
-                <ConnectionCover>
-                  <TouchableRipple
-                    style={{ alignItems: 'center', marginRight: RFValue(15) }}
-                    onPress={changeSideMenu}
-                  >
-                    <Fragment>
-                      <Paragraph
-                        style={{
-                          color: colors.WHITE,
-                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                          fontSize: fonts.LARGE_SIZE + 1,
-                          lineHeight: 20
-                        }}
-                      >
-                        {cache.connectionCount}
-                      </Paragraph>
+                  {currentLocation?.city ? (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        paddingRight: 20,
+                        lineHeight: 16,
+                        color: colors.WHITE,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {`${currentLocation?.city}, ${currentLocation?.state}`}
+                    </Paragraph>
+                  ) : (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        paddingRight: 20,
+                        lineHeight: 16,
+                        color: colors.WHITE,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {`${currentLocation?.state}, ${currentLocation?.country}`}
+                    </Paragraph>
+                  )}
+                  {cache?.citizenship?.length ? (
+                    <Title
+                      style={{
+                        fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.5)),
+                        marginTop: RFValue(2)
+                      }}
+                    >
+                      {cache?.citizenship?.map((country) => country.flag)}
+                    </Title>
+                  ) : null}
+                  <ConnectionCover>
+                    <TouchableRipple
+                      style={{ alignItems: 'center', marginRight: RFValue(15) }}
+                      onPress={changeSideMenu}
+                    >
+                      <Fragment>
+                        <Paragraph
+                          style={{
+                            color: colors.WHITE,
+                            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                            fontSize: fonts.LARGE_SIZE + 1,
+                            lineHeight: 20
+                          }}
+                        >
+                          {cache.connectionCount}
+                        </Paragraph>
 
-                      <Paragraph
-                        style={{
-                          fontSize: fonts.MEDIUM_SIZE - 1,
-                          fontFamily: fonts.WORK_SANS_REGULAR,
-                          color: colors.WHITE,
-                          textTransform: 'uppercase',
-                          lineHeight: 13
-                        }}
-                      >
-                        {t(`community.memberPassport.connection`)}
-                      </Paragraph>
-                    </Fragment>
-                  </TouchableRipple>
-                  <TouchableRipple
-                    style={{ alignItems: 'center' }}
-                    onPress={() => {
-                      navigation.navigate('DrawerScreen', {
-                        screen: 'CommunityListScreen',
-                        params: {
-                          userTribe: true,
-                          title: t(`community.memberPassport.myTribes`)
-                        }
-                      });
-                    }}
-                  >
-                    <Fragment>
-                      <Paragraph
-                        style={{
-                          color: colors.WHITE,
-                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                          fontSize: fonts.LARGE_SIZE + 1,
-                          lineHeight: 20
-                        }}
-                      >
-                        {cache?.communityCount}
-                      </Paragraph>
-                      <Paragraph
-                        style={{
-                          fontSize: fonts.MEDIUM_SIZE - 1,
-                          fontFamily: fonts.WORK_SANS_REGULAR,
-                          color: colors.WHITE,
-                          textTransform: 'uppercase',
-                          lineHeight: 13
-                        }}
-                      >
-                        {t(`community.memberPassport.community`)}
-                      </Paragraph>
-                    </Fragment>
-                  </TouchableRipple>
-                </ConnectionCover>
-                {/* <ImageIconContainer>
+                        <Paragraph
+                          style={{
+                            fontSize: fonts.MEDIUM_SIZE - 1,
+                            fontFamily: fonts.WORK_SANS_REGULAR,
+                            color: colors.WHITE,
+                            textTransform: 'uppercase',
+                            lineHeight: 13
+                          }}
+                        >
+                          {t(`community.memberPassport.connection`)}
+                        </Paragraph>
+                      </Fragment>
+                    </TouchableRipple>
+                    <TouchableRipple
+                      style={{ alignItems: 'center' }}
+                      onPress={() => {
+                        navigation.navigate('DrawerScreen', {
+                          screen: 'CommunityListScreen',
+                          params: {
+                            userTribe: true,
+                            title: t(`community.memberPassport.myTribes`)
+                          }
+                        });
+                      }}
+                    >
+                      <Fragment>
+                        <Paragraph
+                          style={{
+                            color: colors.WHITE,
+                            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                            fontSize: fonts.LARGE_SIZE + 1,
+                            lineHeight: 20
+                          }}
+                        >
+                          {cache?.communityCount}
+                        </Paragraph>
+                        <Paragraph
+                          style={{
+                            fontSize: fonts.MEDIUM_SIZE - 1,
+                            fontFamily: fonts.WORK_SANS_REGULAR,
+                            color: colors.WHITE,
+                            textTransform: 'uppercase',
+                            lineHeight: 13
+                          }}
+                        >
+                          {t(`community.memberPassport.community`)}
+                        </Paragraph>
+                      </Fragment>
+                    </TouchableRipple>
+                  </ConnectionCover>
+                  {/* <ImageIconContainer>
                   <SocialMediaButton
                     onPress={() => console.log('Pressed')}
                     underlayColor={colors.DISABLED}
@@ -771,50 +772,51 @@ export default function PassportScreen(props: ScreenProp) {
                     />
                   </SocialMediaButton>
                 </ImageIconContainer> */}
-              </ImageTextContainer>
-            </ImageContainer>
+                </ImageTextContainer>
+              </ImageContainer>
 
-            <Button
-              icon={{
-                uri: 'https://img.icons8.com/ios-filled/96/000000/share-3.png'
-              }}
-              mode="text"
-              color={colors.WHITE}
-              uppercase={false}
-              loading={false}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{
-                height: RFValue(55),
-                backgroundColor: colors.PRIMARY_LIGHT
-              }}
-              style={{
-                width: '100%',
-                height: RFValue(55),
-                marginTop: RFValue(10),
-                marginBottom: RFValue(20)
-              }}
-              onPress={onShare}
-            >
-              {t(`signup.passportScreen.sharePassport`)}
-            </Button>
-          </HeaderContainer>
-          <TabCover>
-            <TabViewSlider
-              getUserDetails={getUserDetails}
-              click={update}
-              selectedCountries={selectedCountries}
-            />
-          </TabCover>
-        </Fragment>
-      </ScrollView>
+              <Button
+                icon={{
+                  uri: 'https://img.icons8.com/ios-filled/96/000000/share-3.png'
+                }}
+                mode="text"
+                color={colors.WHITE}
+                uppercase={false}
+                loading={false}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{
+                  height: RFValue(55),
+                  backgroundColor: colors.PRIMARY_LIGHT
+                }}
+                style={{
+                  width: '100%',
+                  height: RFValue(55),
+                  marginTop: RFValue(10),
+                  marginBottom: RFValue(20)
+                }}
+                onPress={onShare}
+              >
+                {t(`signup.passportScreen.sharePassport`)}
+              </Button>
+            </HeaderContainer>
+            <TabCover>
+              <TabViewSlider
+                getUserDetails={getUserDetails}
+                click={update}
+                selectedCountries={selectedCountries}
+              />
+            </TabCover>
+          </Fragment>
+        </ScrollView>
 
-      {OTAUpdate ? (
-        <CheckAppUpdates cancelUpdate={() => setOTAUpdate(false)} />
-      ) : null}
-    </SafeAreaView>
+        {OTAUpdate ? (
+          <CheckAppUpdates cancelUpdate={() => setOTAUpdate(false)} />
+        ) : null}
+      </SafeAreaView>
+    </ScreenCover>
   );
 }
