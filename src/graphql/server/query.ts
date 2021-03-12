@@ -58,12 +58,42 @@ export const GET_USER_PASSPORT = gql`
         id
         name
       }
+      myConnections {
+        id
+        avatar
+        lastName
+        firstName
+        phoneNumber
+      }
+      participantOf {
+        id
+        name
+        avatar
+        isPrivate
+        isModerator
+        membersCount
+      }
+      channelParticipantOf {
+        id
+        name
+        isMember
+        isPrivate
+        community {
+          id
+          name
+          avatar
+        }
+      }
       connectionCount
       communityCount
       lastName
       firstName
       connected
-      citizenShip
+      citizenship {
+        id
+        name
+        flag
+      }
       phoneNumber
       currentLocation {
         country
@@ -109,6 +139,10 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         connectionCount
         communityCount
         pending
+        citizenship {
+          name
+          flag
+        }
         connectionDetails {
           status
         }
@@ -162,6 +196,10 @@ export const GET_NEARBY_MEMBERS = gql`
         communityCount
         connectionCount
         pending
+        citizenship {
+          name
+          flag
+        }
         moderatorOf {
           isModerator
           id
@@ -221,6 +259,10 @@ export const GET_CHANNEL_MEMBERS = gql`
         communityCount
         connectionCount
         pending
+        citizenship {
+          name
+          flag
+        }
         birthPlace {
           country
           state
@@ -270,6 +312,10 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         connectionCount
         verified
         pending
+        citizenship {
+          name
+          flag
+        }
         moderatorOf {
           isModerator
           id
@@ -419,6 +465,10 @@ export const GET_MY_CONNECTIONS_NEARBY = gql`
         pending
         connectionCount
         communityCount
+        citizenship {
+          name
+          flag
+        }
         birthPlace {
           country
           state
@@ -471,6 +521,10 @@ export const GET_MY_CONNECTIONS = gql`
         connectionCount
         communityCount
         pending
+        citizenship {
+          name
+          flag
+        }
         birthPlace {
           country
           state
@@ -522,6 +576,10 @@ export const GET_CONNECTION_REQUEST = gql`
         connectionCount
         communityCount
         verified
+        citizenship {
+          name
+          flag
+        }
         birthPlace {
           country
           state
@@ -556,7 +614,7 @@ export const GET_CONNECTION_REQUEST = gql`
 
 //GET ONE COMMUNITY
 export const GET_SINGLE_COMMUNITY = gql`
-  query community($input: CommunityArgsInput!) {
+  query community($input: CommunityArgsInput) {
     Community(input: $input) {
       data {
         id
@@ -599,12 +657,79 @@ export const GET_SINGLE_PASSPORT = gql`
       connectionCount
       communityCount
       pending
+      citizenship {
+        name
+        flag
+      }
+      connectionDetails {
+        status
+      }
+      moderatorOf {
+        isModerator
+        id
+      }
+      birthPlace {
+        country
+        state
+        city
+      }
+      currentLocation {
+        country
+        state
+        city
+        lat
+        long
+      }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+    }
+  }
+`;
+
+// GET MEMBER PASSPORT
+export const GET_MEMBER_PASSPORT = gql`
+  query singlePassport($id: String!) {
+    singlePassport(id: $id) {
+      id
+      bio
+      email
+      firstName
+      lastName
+      avatar
+      verified
+      phoneNumber
+      connected
+      connectionCount
+      communityCount
+      pending
       myConnections {
         id
         firstName
         lastName
         avatar
         phoneNumber
+        # currentLocation {
+        #   country
+        #   state
+        #   city
+        #   lat
+        #   long
+        # }
+      }
+      channelParticipantOf {
+        id
+        name
+        isMember
+        isPrivate
+        community {
+          id
+          name
+          avatar
+        }
       }
       connectionDetails {
         status
@@ -617,6 +742,18 @@ export const GET_SINGLE_PASSPORT = gql`
         isModerator
         name
         avatar
+        id
+        isPrivate
+        membersCount
+      }
+      channelParticipantOf {
+        id
+        name
+        isMember
+        isPrivate
+        community {
+          avatar
+        }
       }
       birthPlace {
         country
@@ -656,6 +793,10 @@ export const GET_COMMUNITY_MEMBERS = gql`
         connectionCount
         communityCount
         pending
+        citizenship {
+          name
+          flag
+        }
         moderatorOf {
           isModerator
           id
@@ -710,6 +851,10 @@ export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
       communityCount
       connectionCount
       pending
+      citizenship {
+        name
+        flag
+      }
       moderatorOf {
         isModerator
         id
@@ -760,6 +905,10 @@ export const GET_ALL_MEMBERS = gql`
         connected
         bio
         pending
+        citizenship {
+          name
+          flag
+        }
         currentLocation {
           state
           country
@@ -808,6 +957,13 @@ export const USER_CHANNELS = gql`
       data {
         id
         name
+        isMember
+        isPrivate
+        community {
+          id
+          name
+          avatar
+        }
       }
     }
   }
@@ -1056,6 +1212,11 @@ export const GET_COMMUNITY_CHANNELS = gql`
         id
         name
         isMember
+        community {
+          id
+          name
+          avatar
+        }
       }
     }
   }

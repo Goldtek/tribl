@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Button, Card, Text } from 'react-native-paper';
+import { Button, Card, Text, Title } from 'react-native-paper';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
@@ -26,6 +27,8 @@ import { logEvent } from '../../utils/uxcamHelper';
 import Storage from '../../libs/storage';
 import { crashlytics } from '../../firebase/config';
 import hexToRGB from '../../utils/hexToRGB';
+
+import { LeftCover, TitleCover } from './styles';
 
 function RecommendedCommunity(props: CommunityInterface) {
   const { t } = useTranslation();
@@ -158,7 +161,7 @@ function RecommendedCommunity(props: CommunityInterface) {
         width: '100%',
         height: RFValue(300),
         alignItems: 'center',
-        backgroundColor: colors.GREY,
+        backgroundColor: colors.WHITE,
         marginTop: 3,
         elevation: 0
       }}
@@ -182,83 +185,112 @@ function RecommendedCommunity(props: CommunityInterface) {
         />
         <Text
           style={{
-            fontSize: RFValue(fonts.LARGE_SIZE - 1),
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            color: colors.BLACK,
+            fontSize: fonts.LARGE_SIZE - 1,
+            fontFamily: fonts.WORK_SANS_BOLD,
+            color: colors.WHITE,
             backgroundColor: hexToRGB(colors.WHITE, 0.3),
             position: 'absolute',
-            right: RFValue(15),
-            top: RFValue(1),
-            paddingHorizontal: RFValue(10),
-            paddingVertical: RFValue(5),
-            marginTop: RFValue(10),
+            left: 15,
+            top: 1,
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            marginTop: 10,
             textTransform: 'capitalize'
           }}
         >
           {isPrivate ? 'Private' : 'Public'}
         </Text>
       </Card.Content>
-      <Card.Title
-        title={name}
-        subtitle={
-          membersCount <= 1
-            ? `${membersCount} ${t(`community.tabPanel.member`)}`
-            : `${membersCount} ${t(`community.tabPanel.member`)}s`
-        }
-        titleStyle={{
-          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-          fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-          color: colors.PRIMARY_TEXT,
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginTop: 0,
-          marginBottom: 0
+      <Card.Content
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 0,
+          marginTop: RFValue(10)
         }}
-        subtitleStyle={{
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(fonts.MEDIUM_SIZE),
-          textTransform: 'capitalize',
-          color: colors.SECONDARY_TEXT,
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginTop: 0,
-          marginBottom: 0
-        }}
-        left={({ size }) => (
+      >
+        <LeftCover>
           <FastImage
             resizeMode={FastImage.resizeMode.stretch}
             source={{ uri: avatar, priority: FastImage.priority.high }}
             style={{
-              width: RFValue(size + 2),
-              height: RFValue(size + 2),
+              width: RFValue(45),
+              height: RFValue(45),
               borderRadius: 5
             }}
           />
-        )}
-        right={() => (
-          <Button
-            mode="text"
-            disabled={isRequested ? true : false}
-            loading={loading}
-            onPress={
-              isMember
-                ? handleLeave
-                : isPrivate
-                ? handleJoinPrivateTribe
-                : handleJoin
-            }
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              left: 15,
-              marginLeft: 0
-            }}
-          >
-            {buttonLabel}
-          </Button>
-        )}
-        style={{ flex: 1, paddingLeft: 0 }}
-      />
+          <TitleCover>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                paddingTop: 0,
+                paddingBottom: 0,
+                marginTop: 0,
+                marginBottom: 0,
+                lineHeight: RFValue(15)
+              }}
+            >
+              {name}
+            </Title>
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize',
+                color: colors.SECONDARY_TEXT,
+                paddingTop: 0,
+                paddingBottom: 0,
+                marginTop: 0,
+                marginBottom: 0,
+                lineHeight: RFValue(13)
+              }}
+            >
+              {membersCount <= 1
+                ? `${membersCount} ${t(`community.tabPanel.member`)}`
+                : `${membersCount} ${t(`community.tabPanel.member`)}s`}
+            </Text>
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                textTransform: 'capitalize',
+                color: colors.ONLINE
+              }}
+            >
+              <Feather name="star" size={13} color={colors.ONLINE} /> Popular
+            </Text>
+          </TitleCover>
+        </LeftCover>
+        <Button
+          mode="text"
+          disabled={isRequested ? true : false}
+          loading={loading}
+          onPress={
+            isMember
+              ? handleLeave
+              : isPrivate
+              ? handleJoinPrivateTribe
+              : handleJoin
+          }
+          labelStyle={{
+            color: colors.PRIMARY,
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            textAlign: 'center'
+          }}
+          style={{
+            height: RFValue(35),
+            backgroundColor: hexToRGB(colors.PRIMARY, 0.3),
+            borderRadius: RFValue(5),
+            justifyContent: 'center'
+          }}
+        >
+          {buttonLabel}
+        </Button>
+      </Card.Content>
     </Card>
   );
 }

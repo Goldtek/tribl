@@ -5,7 +5,9 @@ export const TextContainer = styled.View`
   align-items: center;
 `;
 
-export const AvatarContainer = styled.View``;
+export const AvatarContainer = styled.View`
+  position: relative;
+`;
 
 export const OnlineNotifier = styled.View`
   width: ${RFValue(17)}px;
@@ -15,12 +17,4 @@ export const OnlineNotifier = styled.View`
   position: absolute;
   border: 3px ${({ theme }) => theme.colors.WHITE} solid;
   right: 0px;
-`;
-
-export const LeftCover = styled.View`
-  flex-direction: row;
-`;
-
-export const TitleCover = styled.View`
-  margin-left: ${RFValue(10)}px;
 `;

@@ -13,7 +13,7 @@ import { Ionicons, Octicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
-import MemberCard from './widgets/connectionCard';
+import MemberCard from '../../../components/connectionCard';
 import hexToRGB from '../../../utils/hexToRGB';
 import {
   GET_NEARBY_MEMBERS,
