@@ -10,7 +10,7 @@ import PushNotification from 'react-native-push-notification';
 import { GET_USER_PASSPORT } from '../graphql/server/query';
 import {
   GENERATE_STREAMS_TOKEN,
-  UPDATE_NOTIFICATION
+  UPDATE_USER_PASSPORT
 } from '../graphql/server/mutations';
 import {
   GenerateStreamsTokenRequestInterface,
@@ -33,7 +33,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     'channelScreen'
   );
 
-  const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
+  const [updatePassportFCM] = useMutation(UPDATE_USER_PASSPORT);
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
@@ -68,12 +68,24 @@ const StreamProvider: FunctionComponent = ({ children }) => {
           PushNotification.configure({
             // (optional) Called when Token is generated (iOS and Android)
             onRegister: async ({ token, os }) => {
-              updatePassportFCM({ variables: { payload: { token } } });
+              updatePassportFCM({ variables: { payload: { fcm: token } } });
+
+              const device = await chatClient.getDevices(
+                userData?.myPassport.id
+              );
+
+              device.devices?.forEach((device) => {
+                if ((device.provider = 'firebase')) {
+                  chatClient.removeDevice(device?.id, userData?.myPassport.id);
+                }
+              });
+
               await chatClient.addDevice(
                 token,
                 os === 'ios' ? 'apn' : 'firebase',
                 userData?.myPassport.id
               );
+              console.tron({ device });
             },
 
             // (required) Called when a remote is received or opened, or local notification is opened
@@ -97,7 +109,9 @@ const StreamProvider: FunctionComponent = ({ children }) => {
         }
       };
 
-      initChat();
+      if (!chatClient.user) {
+        initChat();
+      }
     }
   }, [userData?.myPassport]);
 

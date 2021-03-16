@@ -13,10 +13,7 @@ import {
   RegistrationInfo,
   VerifyOTPIT
 } from '../../graphql/types';
-import {
-  REFRESH_TOKEN,
-  UPDATE_NOTIFICATION
-} from '../../graphql/server/mutations';
+import { REFRESH_TOKEN, UPDATE_PASSPORT } from '../../graphql/server/mutations';
 import {
   GET_USER_PASSPORT,
   GET_FIREBASE_TOKEN
@@ -38,9 +35,7 @@ import { Container } from './styles';
 const RUN_TIME_INTERVAL = 10 * 60 * 1000;
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {
-  route: { params: {} };
-}
+interface ScreenProp extends NavigationInterface {}
 
 // const messaging = fcmMessaging();
 
@@ -53,7 +48,7 @@ export default function SplashScreen(props: ScreenProp) {
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 
-  const [updatePassportFCM] = useMutation(UPDATE_NOTIFICATION);
+  const [updatePassportFCM] = useMutation(UPDATE_PASSPORT);
 
   const [changeMessageNotification] = useMutation(
     CHANGE_MESSAGE_NOTIFICATION_BADGE
@@ -113,7 +108,7 @@ export default function SplashScreen(props: ScreenProp) {
         PushNotification.configure({
           // (optional) Called when Token is generated (iOS and Android)
           onRegister: async ({ token }) => {
-            updatePassportFCM({ variables: { payload: { token } } });
+            updatePassportFCM({ variables: { payload: { fcm: token } } });
           },
 
           // (required) Called when a remote is received or opened, or local notification is opened
