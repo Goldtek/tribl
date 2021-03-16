@@ -20,6 +20,7 @@ import { SinglePassportRequestInterface } from '../../graphql/types';
 import CustomGiphy from '../customGiphy';
 
 import { AvatarContainer, Container, Edited } from './styles';
+import { useThemeContext } from '../../theme';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -36,6 +37,7 @@ let lastTap = 0;
 
 function CustomDirectMessage(props: MessageProps) {
   const navigation = useNavigation();
+  const { colors } = useThemeContext();
 
   const { channel, activityScreen } = useStreamContext();
 
@@ -130,7 +132,7 @@ function CustomDirectMessage(props: MessageProps) {
 
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
-      ? props.theme.message.content.markdown
+      ? {...props.theme.message.content.markdown, mentions: { color: colors.PRIMARY}}
       : {};
 
     const createdAt = new Date(props.message.created_at);
