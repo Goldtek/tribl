@@ -18,6 +18,7 @@ import { chatClient } from '../../stream/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
 import CustomGiphy from '../customGiphy';
+import { CustomUrlPreview } from '../customUrlPreview';
 
 import { AvatarContainer, Container, Edited } from './styles';
 import { useThemeContext } from '../../theme';
@@ -169,6 +170,7 @@ function CustomDirectMessage(props: MessageProps) {
     <MessageSimple
       {...props}
       Giphy={CustomGiphy}
+      UrlPreview={CustomUrlPreview}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
