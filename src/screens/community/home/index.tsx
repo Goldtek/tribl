@@ -30,7 +30,6 @@ import {
   GET_POPULAR_COMMUNITIES,
   USER_CHANNELS
 } from '../../../graphql/server/query';
-import MyCommunity from '../../../components/myCommunities';
 import MyChannel from '../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
@@ -50,6 +49,7 @@ import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import GradientButton from '../../../components/gradientButton';
 import { useIsFocused } from '@react-navigation/native';
+import MyCommunity from '../../../components/myCommunities';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {

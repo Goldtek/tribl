@@ -22,7 +22,6 @@ import {
   PassportInterface,
   ChannelInterface
 } from '../../../graphql/types';
-import MyCommunity from './widget/tribes';
 import { NavigationInterface } from '../../types';
 import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import { SinglePassportRequestInterface } from '../../../graphql/types';
@@ -36,6 +35,7 @@ import { crashlytics } from '../../../firebase/config';
 import { useStreamContext } from '../../../stream';
 import MyChannel from './widget/channelCard';
 import MyConnectionCard from '../../../components/MyConnectionCard';
+import MyCommunity from '../../../components/myCommunities';
 import {
   ChannelType,
   chatClient,
