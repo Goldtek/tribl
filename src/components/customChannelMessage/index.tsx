@@ -18,6 +18,7 @@ import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
 import { MessageActionSheet } from '../streamActionSheet';
 import CustomGiphy from '../customGiphy';
+import { CustomUrlPreview } from '../customUrlPreview';
 
 import { Container, UserName, Edited, AvatarContainer } from './styles';
 import { useThemeContext } from '../../theme';
@@ -180,6 +181,8 @@ function CustomChannelMessage(props: MessageProps) {
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
+      //@ts-ignore
+      UrlPreview={CustomUrlPreview}
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
