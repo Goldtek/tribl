@@ -1,5 +1,7 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import { View } from 'react-native';
+
+import { Container, DetailsContainer, TitleUrl, Title, Description, Thumbnail } from './styles';
 
 export const CustomUrlPreview = (props: any )=> {
   const getDomain = (url: string )=> {
@@ -16,54 +18,21 @@ export const CustomUrlPreview = (props: any )=> {
     return domain.slice(0, indexOfSlash);
   };
   return (
-    <TouchableOpacity style={styles.container}>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.titleUrl}>{getDomain(props.title_link)}</Text>
-        <Text style={styles.title}>{props.title}</Text>
-        <Text style={styles.description}>{props.text}</Text>
-      </View>
-      <View style={styles.thumbnailContainer}>
-        <Image
+    <Container>
+      <DetailsContainer>
+        <TitleUrl>{getDomain(props.title_link)}</TitleUrl>
+        <Title>{props.title}</Title>
+        <Description>{props.text}</Description>
+      </DetailsContainer>
+      <View>
+        <Thumbnail
           source={{
             url: props.image_url || props.thumb_url,
           }}
-          style={styles.thumbnail}
           resizeMode="cover"
         />
       </View>
-    </TouchableOpacity>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    borderLeftWidth: 5,
-    borderLeftColor: '#E4E4E4',
-    paddingLeft: 10,
-    marginLeft: 10,
-    flexDirection: 'column',
-  },
-  detailsContainer: {
-    flexDirection: 'column',
-  },
-  thumbnailContainer: {},
-  thumbnail: {
-    width: '100%',
-    height: 150,
-  },
-  titleUrl: {
-    // fontFamily: 'Lato-Regular',
-    fontWeight: 'bold',
-    padding: 2,
-  },
-  title: {
-    // fontFamily: 'Lato-Regular',
-    fontWeight: 'bold',
-    color: '#1E75BE',
-    padding: 2,
-  },
-  description: {
-    // fontFamily: 'Lato-Regular',
-    padding: 2,
-  },
-});
