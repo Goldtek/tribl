@@ -170,10 +170,11 @@ function CustomDirectMessage(props: MessageProps) {
     <MessageSimple
       {...props}
       Giphy={CustomGiphy}
-      UrlPreview={CustomUrlPreview}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
+      //@ts-ignore
+      UrlPreview={CustomUrlPreview}
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
