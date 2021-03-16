@@ -29,7 +29,7 @@ const Description = styled.Text`
 
 const Thumbnail = styled.Image`
 	width: 100%;
-  height: 150;
+  height: 100;
 `
 
 export { Container, DetailsContainer, TitleUrl, Title, Description, Thumbnail }
