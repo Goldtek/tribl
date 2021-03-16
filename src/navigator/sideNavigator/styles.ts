@@ -7,10 +7,15 @@ export const Container = styled.View`
   align-items: center;
 `;
 
-export const CountBadge = styled(Surface)`
-  height: 30px;
-  padding-left: 7px;
-  padding-right: 7px;
+export const CountBadge = styled(Surface) <{ calculatedWidth: number }>`
+  max-height: 30px;
+  width: ${({ calculatedWidth }) =>
+    calculatedWidth >= 10 ? '35px'
+      : calculatedWidth >= 100 ? '45px'
+        : calculatedWidth >= 1000 ? '55px'
+          : 'auto'};
+  padding-left: 5px;
+  padding-right: 5px;
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.PRIMARY};
@@ -18,4 +23,5 @@ export const CountBadge = styled(Surface)`
   position: absolute;
   right: -10px;
   z-index: 99999;
+  overflow: hidden;
 `;
