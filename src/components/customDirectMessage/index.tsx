@@ -17,6 +17,7 @@ import { MessageActionSheet } from '../streamActionSheet';
 import { chatClient } from '../../stream/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
+import CustomMessageFooter from '../customMessageFooter';
 import CustomGiphy from '../customGiphy';
 
 import { AvatarContainer, Container, Edited } from './styles';
@@ -167,9 +168,11 @@ function CustomDirectMessage(props: MessageProps) {
     <MessageSimple
       {...props}
       Giphy={CustomGiphy}
+      ReactionList={() => null}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
+      MessageFooter={CustomMessageFooter}
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}

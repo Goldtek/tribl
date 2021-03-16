@@ -1,61 +1,101 @@
 import React from 'react';
-import { TouchableRipple } from 'react-native-paper';
+import { TouchableRipple, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
-import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../theme';
+import hexToRGB from '../../utils/hexToRGB';
+import AdminBadge from '../../components/adminBadge';
+import { PAGINATION_DEFAULT } from '../../constants';
 import { useNavigation } from '@react-navigation/native';
-import { CommunityInterface } from '../../graphql/types';
-import {
-  GET_COMMUNITY_MEMBERS,
-  GET_NEARBY_MEMBERS_OF_A_COMMUNITY
-} from '../../graphql/server/query';
+import { CommunityInterface, PassportInterface } from '../../graphql/types';
 
-export default function MyCommunity(props: CommunityInterface) {
-  const { colors } = useThemeContext();
+import { TribeCover } from './styles';
+
+// DEFINE SCREEN PROP TYPES
+interface MyCommunityProp extends CommunityInterface {
+  singlePassport?: PassportInterface;
+  lastIndex?: boolean;
+}
+
+export default function MyCommunity(props: MyCommunityProp) {
+  const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, name, id } = props;
-
-  useQuery(GET_COMMUNITY_MEMBERS, {
-    variables: { input: { filter: { communityId: id } } }
-  });
-
-  useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
-    variables: { input: { communityId: id } }
-  });
+  const { avatar, name, isModerator, lastIndex, singlePassport } = props;
 
   const handleNavigation = () => {
     navigation.navigate('CommunityDetailScreen', {
       title: name,
-      details: props
+      details: { ...props }
     });
   };
 
-  return (
+  if (!lastIndex) {
+    return (
+      <TribeCover>
+        <TouchableRipple
+          onPress={handleNavigation}
+          rippleColor={colors.PRIMARY}
+          style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: 4,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <FastImage
+            resizeMode={FastImage.resizeMode.stretch}
+            source={{
+              uri: avatar,
+              priority: FastImage.priority.high
+            }}
+            style={{ width: '100%', height: '100%', borderRadius: 4 }}
+          />
+        </TouchableRipple>
+        {isModerator ? (
+          <AdminBadge
+            style={{
+              bottom: 0,
+              zIndex: 11099,
+              right: RFValue(-25),
+              position: 'absolute'
+            }}
+          />
+        ) : null}
+      </TribeCover>
+    );
+  }
+
+  return lastIndex &&
+    Number(singlePassport?.participantOf?.length) > PAGINATION_DEFAULT / 2 ? (
     <TouchableRipple
-      onPress={handleNavigation}
-      rippleColor={colors.PRIMARY}
+      onPress={() => {
+        navigation.navigate('DrawerScreen', {
+          screen: 'CommunityListScreen',
+          params: {
+            details: singlePassport?.participantOf,
+            title: `${singlePassport?.firstName} ${singlePassport?.lastName} Tribes`
+          }
+        });
+      }}
       style={{
-        height: 80,
-        width: 80,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 5,
-        borderWidth: 1.2,
-        borderRadius: 4,
-        borderColor: colors.PRIMARY,
-        marginRight: 10
+        marginHorizontal: 5,
+        borderWidth: 1.3,
+        borderRadius: 5,
+        borderColor: hexToRGB(colors.PRIMARY, 0.5)
       }}
     >
-      <FastImage
-        resizeMode={FastImage.resizeMode.stretch}
-        source={{
-          uri: avatar,
-          priority: FastImage.priority.high
+      <Text
+        style={{
+          padding: 10,
+          color: colors.PRIMARY,
+          fontSize: fonts.LARGE_SIZE - 2,
+          fontFamily: fonts.WORK_SANS_BOLD
         }}
-        style={{ width: '100%', height: '100%', borderRadius: 4 }}
-      />
+      >
+        View all
+      </Text>
     </TouchableRipple>
-  );
+  ) : null;
 }
