@@ -6,13 +6,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import type { MessageActionSheetProps } from 'stream-chat-react-native-core/lib/typescript/src/components/Message/MessageSimple/MessageActionSheet';
 import { Reaction } from 'stream-chat-expo';
+import {
+  Entypo,
+} from '@expo/vector-icons';
 
 import {
   ActionSheetButtonContainer,
   ActionSheetButtonText,
   ReactionItemContainer,
   ReactionItemText,
-  ReactionListContainer
+  ReactionListContainer,
+  ReactionPickerContainer,
+  MoreEmoji,
 } from './styles';
 
 type ReactionItemProps = {
@@ -132,6 +137,13 @@ export const MessageActionSheet = React.forwardRef(
       setActionSheetVisible(false);
     };
 
+    const handleOpenReactionPicker = () => {
+      props.setActionSheetVisible(false);
+      setTimeout(() => {
+        props.openReactionPicker();
+      }, 100);
+    };
+
     return (
       <ActionSheet
         cancelButtonIndex={0}
@@ -156,7 +168,7 @@ export const MessageActionSheet = React.forwardRef(
         title={renderReactions((type) => {
           handleReaction(type);
           setActionSheetVisible(false);
-        }, supportedReactions)}
+        }, supportedReactions, handleOpenReactionPicker, colors)}
         styles={{
           body: {
             backgroundColor: colors.WHITE,
@@ -194,7 +206,9 @@ export const MessageActionSheet = React.forwardRef(
 
 export const renderReactions = (
   handleReaction: (type: string) => void,
-  supportedReactions: Reaction[]
+  supportedReactions: Reaction[],
+  handleOpenReactionPicker: () => void,
+  colors: any,
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return (
@@ -207,6 +221,14 @@ export const renderReactions = (
           handleReaction={handleReaction}
         />
       ))}
+      <ReactionPickerContainer
+        onPress={() => {
+          handleOpenReactionPicker();
+        }}
+      >
+        <MoreEmoji>+</MoreEmoji>
+        <Entypo name='emoji-happy' color={colors.BLACK} size={20} />
+      </ReactionPickerContainer>
     </ReactionListContainer>
   );
 };
@@ -220,3 +242,4 @@ const ReactionItem = ({ type, handleReaction, icon }: ReactionItemProps) => {
 };
 
 MessageActionSheet.displayName = 'messageActionSheet';
+
