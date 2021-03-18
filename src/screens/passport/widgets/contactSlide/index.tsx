@@ -82,7 +82,7 @@ function ContactSlide(props: ScreenProp) {
     showDatePicker: boolean;
     birthPlaceInput: string;
     selectedIdentity: IdentityInterface[];
-    selectedInterest: [];
+    selectedInterest: IdentityInterface[];
     tags: Map<string, unknown>;
     click: boolean;
     tagText: string;
@@ -191,12 +191,18 @@ function ContactSlide(props: ScreenProp) {
 
       if (storageData) {
         const passportInfo = JSON.parse(storageData) as PassportInterface;
+        const interest = passportInfo?.interest?.map((tag) => tag.name);
         setState({
           ...state,
           ...passportInfo,
           date: new Date(parseInt(passportInfo?.dob))
             .toLocaleString()
             .split(',')[0]
+        });
+        setSelect({
+          ...select,
+          identity: passportInfo?.identity,
+          interest: interest
         });
       }
     })();
@@ -682,9 +688,7 @@ function ContactSlide(props: ScreenProp) {
           </Location>
         </LocationContainer>
       ) : null} */}
-      {state?.selectedIdentity?.length ||
-      userDetails?.identity?.length ||
-      !click ? (
+      {select.identity?.length || !click ? (
         <IdentityContainer>
           <Title
             style={{
@@ -732,7 +736,7 @@ function ContactSlide(props: ScreenProp) {
           </Identities>
         </IdentityContainer>
       ) : null}
-      {select?.interest?.length || !click ? (
+      {select?.interest?.length || state?.interest?.length || !click ? (
         <InterestContainer>
           <Title
             style={{
@@ -785,7 +789,49 @@ function ContactSlide(props: ScreenProp) {
                   </IdentityText>
                 ))}
               </Fragment>
-            ) : null}
+            ) : (
+              <Fragment>
+                {state?.interest?.map((tag) => (
+                  <IdentityText
+                    key={tag.id}
+                    onPress={() =>
+                      !click ? handleADeleteInterest(tag.name) : {}
+                    }
+                    style={{
+                      marginRight: RFValue(10),
+                      marginTop: RFValue(10),
+                      borderColor: colors.INACTIVE,
+                      borderWidth: 1.2,
+                      borderRadius: 4,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between'
+                    }}
+                    labelStyle={{
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontSize: fonts.MEDIUM_SIZE,
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {tag.name}
+                    {!click ? (
+                      <Fragment>
+                        <Feather
+                          onPress={() => handleADeleteInterest(tag.name)}
+                          name="x"
+                          size={RFValue(13)}
+                          color={colors.PRIMARY_TEXT}
+                          style={{
+                            paddingLeft: RFValue(30),
+                            paddingRight: RFValue(50)
+                          }}
+                        />
+                      </Fragment>
+                    ) : null}
+                  </IdentityText>
+                ))}
+              </Fragment>
+            )}
             <KeyboardAwareScrollView
               style={{ flexGrow: 1 }}
               scrollEnabled={true}
