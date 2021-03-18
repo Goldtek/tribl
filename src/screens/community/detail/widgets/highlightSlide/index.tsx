@@ -100,16 +100,17 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
 
   const getTagModal = async () => {
     // @ts-ignore
-    const TagInfo = await storage.checkTagModal();
-    const filteredTag = TagInfo?.community.filter((tag: any) => tag == id);
+    const TagInfo = await storage.getTagModal();
+    const info = JSON.parse(TagInfo!);
+    const filteredTag = info?.community?.filter((tag: any) => tag == id);
     if (filteredTag.length && uniqueInterests.length > 0) {
       setState({ ...state, tagModal: true });
     }
   };
 
   useEffect(() => {
-    tagScreenName('TribeHighlightScreen');
     getTagModal();
+    tagScreenName('TribeHighlightScreen');
   }, []);
 
   const displayTagModal = (childData: boolean) => {
