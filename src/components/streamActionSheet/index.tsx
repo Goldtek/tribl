@@ -6,13 +6,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import type { MessageActionSheetProps } from 'stream-chat-react-native-core/lib/typescript/src/components/Message/MessageSimple/MessageActionSheet';
 import { Reaction } from 'stream-chat-expo';
+import { Entypo } from '@expo/vector-icons';
 
 import {
   ActionSheetButtonContainer,
   ActionSheetButtonText,
   ReactionItemContainer,
   ReactionItemText,
-  ReactionListContainer
+  ReactionListContainer,
+  ReactionPickerContainer,
+  MoreEmoji
 } from './styles';
 
 type ReactionItemProps = {
@@ -42,7 +45,6 @@ export const MessageActionSheet = React.forwardRef(
       repliesEnabled,
       canDeleteMessage,
       openReactionPicker,
-      supportedReactions,
       setActionSheetVisible,
       messageActions = Object.keys(MESSAGE_ACTIONS)
     } = props;
@@ -132,6 +134,13 @@ export const MessageActionSheet = React.forwardRef(
       setActionSheetVisible(false);
     };
 
+    const handleOpenReactionPicker = () => {
+      props.setActionSheetVisible(false);
+      setTimeout(() => {
+        props.openReactionPicker();
+      }, 100);
+    };
+
     return (
       <ActionSheet
         cancelButtonIndex={0}
@@ -153,10 +162,14 @@ export const MessageActionSheet = React.forwardRef(
           );
         })}
         ref={actionSheetRef as React.MutableRefObject<ActionSheet>}
-        title={renderReactions((type) => {
-          handleReaction(type);
-          setActionSheetVisible(false);
-        }, supportedReactions)}
+        title={renderReactions(
+          (type) => {
+            handleReaction(type);
+            setActionSheetVisible(false);
+          },
+          handleOpenReactionPicker,
+          colors
+        )}
         styles={{
           body: {
             backgroundColor: colors.WHITE,
@@ -194,8 +207,16 @@ export const MessageActionSheet = React.forwardRef(
 
 export const renderReactions = (
   handleReaction: (type: string) => void,
-  supportedReactions: Reaction[]
+  handleOpenReactionPicker: () => void,
+  colors: any
 ) => {
+  const supportedReactions: Reaction[] = [
+    { id: 'joy', icon: '😂' },
+    { id: 'astonished', icon: '😲' },
+    { id: 'heart', icon: '❤️' },
+    { id: '100', icon: '💯' },
+    { id: 'grinning', icon: '😀' }
+  ];
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return (
     <ReactionListContainer>
@@ -207,6 +228,14 @@ export const renderReactions = (
           handleReaction={handleReaction}
         />
       ))}
+      <ReactionPickerContainer
+        onPress={() => {
+          handleOpenReactionPicker();
+        }}
+      >
+        <MoreEmoji>+</MoreEmoji>
+        <Entypo name="emoji-happy" color={colors.BLACK} size={20} />
+      </ReactionPickerContainer>
     </ReactionListContainer>
   );
 };

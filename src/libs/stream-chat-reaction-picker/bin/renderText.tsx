@@ -1,0 +1,210 @@
+import React, { useRef } from 'react';
+import { Linking, Text } from 'react-native';
+import anchorme from 'anchorme';
+import truncate from 'lodash/truncate';
+// @ts-expect-error
+import Markdown from 'react-native-markdown-package';
+import { useNavigation } from '@react-navigation/native';
+import {
+  DefaultRules,
+  defaultRules,
+  MatchFunction,
+  ParseFunction,
+  parseInline,
+  ReactNodeOutput,
+} from 'simple-markdown';
+import { UserResponse } from 'stream-chat';
+import type { MarkdownStyle } from '../../../../styles/themeConstants';
+import type { Message } from '../../../MessageList/utils/insertDates';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../../../types/types';
+const defaultMarkdownStyles: MarkdownStyle = {
+  autolink: {
+    textDecorationLine: 'underline',
+  },
+  inlineCode: {
+    backgroundColor: '#F3F3F3',
+    borderColor: '#dddddd',
+    color: 'red',
+    fontSize: 13,
+    padding: 3,
+    paddingHorizontal: 5,
+  },
+  // unfortunately marginVertical doesn't override the defaults for these within the 3rd party lib
+  paragraph: {
+    marginBottom: 0,
+    marginTop: 0,
+  },
+  paragraphCenter: {
+    marginBottom: 0,
+    marginTop: 0,
+  },
+  paragraphWithImage: {
+    marginBottom: 0,
+    marginTop: 0,
+  },
+};
+const parse: ParseFunction = (capture, parser, state) => ({
+  content: parseInline(parser, capture[0], state),
+});
+export type MarkdownRules = Partial<DefaultRules>;
+export type RenderTextParams<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = {
+  markdownRules: MarkdownRules;
+  markdownStyles: MarkdownStyle;
+  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  onLink?: (url: string) => Promise<void>;
+};
+export const renderText = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const navigation = useNavigation()
+  const userMentionRef = useRef<Map<String, UserResponse<Us>>>(new Map()).current
+  const {
+    markdownRules,
+    markdownStyles,
+    message,
+    onLink: onLinkParams,
+  } = params;
+  const handleNavigation = (userName: string) => {
+    const user = userMentionRef.get(userName.trim())
+      navigation.navigate('MemberDetailScreen', {
+        title: user.name,
+        details: { ...user, ...user.user }
+      });
+  };
+  // take the @ mentions and turn them into markdown?
+  // translate links
+  const { mentioned_users = [], text } = message;
+  if (!text) return null;
+  let newText = text.trim();
+  const urls = anchorme(newText, {
+    list: true,
+  });
+  for (const urlInfo of urls) {
+    const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
+      length: 200,
+      omission: '...',
+    });
+    const markdown = `[${displayLink}](${urlInfo.protocol}${urlInfo.encoded})`;
+    newText = newText.replace(urlInfo.raw, markdown);
+  }
+  newText = newText.replace(/[<&"'>]/g, '\\$&');
+  const styles: MarkdownStyle = {
+    ...defaultMarkdownStyles,
+    ...markdownStyles,
+    autolink: {
+      ...defaultMarkdownStyles.autolink,
+      ...markdownStyles?.autolink,
+    },
+    inlineCode: {
+      ...defaultMarkdownStyles.inlineCode,
+      ...markdownStyles?.inlineCode,
+    },
+    mentions: {
+      ...defaultMarkdownStyles.mentions,
+      ...markdownStyles?.mentions,
+    },
+    text: {
+      ...defaultMarkdownStyles.text,
+      ...markdownStyles?.text,
+    },
+  };
+  const onLink = (url: string) =>
+    onLinkParams
+      ? onLinkParams(url)
+      : Linking.canOpenURL(url).then(
+          (canOpenUrl) => canOpenUrl && Linking.openURL(url),
+        );
+  const react: ReactNodeOutput = (node, output, { ...state }) => {
+    state.withinLink = true;
+    const link = React.createElement(
+      Text,
+      {
+        key: state.key,
+        onPress: () => onLink(node.target),
+        style: styles.autolink,
+        suppressHighlighting: true,
+      },
+      output(node.content, state),
+    );
+    state.withinLink = false;
+    return link;
+  };
+  const mentionedUsers = Array.isArray(mentioned_users)
+    ? mentioned_users.reduce((acc, cur) => {
+        const userName = cur.name || cur.id || '';
+        if (userName) {
+          if(!userMentionRef.has(userName)) {
+            userMentionRef.set(`@${userName.trim()}`, cur)
+          }
+          acc += `${acc.length ? '|' : ''}@${userName}`;
+        }
+        return acc;
+      }, '')
+    : '';
+  const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
+  const match: MatchFunction = (source) =>   regEx.exec(source);
+  const mentionsReact: ReactNodeOutput = (node, output, { ...state }) =>
+    React.createElement(
+      Text,
+      {
+        key: state.key,
+        style: styles.mentions,
+        onPress: () => handleNavigation(node.content[0].content)
+      },
+      Array.isArray(node.content)
+        ? node.content[0]?.content || ''
+        : output(node.content, state),
+    );
+    const customRules = {
+      link: { react },
+      // we have no react rendering support for reflinks
+      reflink: { match: () => null },
+      ...(mentionedUsers
+        ? {
+          mentions: {
+            match,
+            order: defaultRules.text.order - 0.5,
+            parse,
+            react: mentionsReact,
+          },
+        }
+        : {}),
+      };
+  return (
+    <Markdown
+      onLink={onLink}
+      rules={{
+        ...customRules,
+        ...markdownRules,
+      }}
+      styles={styles}
+    >
+      {newText}
+    </Markdown>
+  );
+};

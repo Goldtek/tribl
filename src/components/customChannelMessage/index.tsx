@@ -20,9 +20,11 @@ import { SinglePassportRequestInterface } from '../../graphql/types';
 import { MessageActionSheet } from '../streamActionSheet';
 import CustomMessageFooter from '../customMessageFooter';
 import CustomGiphy from '../customGiphy';
+import { useThemeContext } from '../../theme';
+import { CustomUrlPreview } from '../customUrlPreview';
+import { getSupportedReactions } from '../../utils/supportedReactions';
 
 import {
-  Time,
   Edited,
   UserName,
   Container,
@@ -45,6 +47,7 @@ let lastTap = 0;
 
 function CustomChannelMessage(props: MessageProps) {
   const navigation = useNavigation();
+  const { colors } = useThemeContext();
   const { channel, activityScreen } = useStreamContext();
 
   const visible =
@@ -142,7 +145,10 @@ function CustomChannelMessage(props: MessageProps) {
 
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
-      ? props.theme.message.content.markdown
+      ? {
+          ...props.theme.message.content.markdown,
+          mentions: { color: colors.SECONDARY }
+        }
       : {};
 
     const createdAt = new Date(props.message.created_at);
@@ -185,15 +191,19 @@ function CustomChannelMessage(props: MessageProps) {
     <MessageSimple
       {...props}
       Giphy={CustomGiphy}
+      textBeforeAttachments
       ReactionList={() => null}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
-      MessageFooter={CustomMessageFooter}
+      //@ts-ignore
+      UrlPreview={CustomUrlPreview}
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
       MessageAvatar={CustomMessageAvatar}
+      MessageFooter={CustomMessageFooter}
+      supportedReactions={getSupportedReactions}
     />
   );
 }

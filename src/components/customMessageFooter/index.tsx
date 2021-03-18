@@ -6,6 +6,7 @@ import {
   DefaultUserType,
   MessageSimpleProps
 } from 'stream-chat-react-native-core';
+import { ReactionPicker } from '../customReactionPicker';
 
 import { ReactionText, Container, MoreReaction, Reaction } from './styles';
 
@@ -29,7 +30,7 @@ export default function CustomMessageFooter(props: MessageProps) {
   return hasReactions ? (
     <Container>
       {renderReactions(props)}
-      {/* <ReactionPicker {... /> */}
+      <ReactionPicker {...props} />
       <MoreReaction onPress={openReactionPicker}>
         <EmojiIcon />
       </MoreReaction>

@@ -8,7 +8,6 @@ export const Container = styled.View`
   margin-top: 5px;
   align-items: center;
   align-self: flex-start;
-  margin-bottom: 10px;
 `;
 
 export const Reaction = styled.TouchableOpacity<{ isOwnReaction: boolean }>`
