@@ -9,6 +9,7 @@ import Screens from './screens';
 import BottomNavigator from './navigator/bottomNavigator';
 import CustomDrawer from './navigator/sideNavigator/customDrawer';
 import AccountNavigator from './navigator/accountNavigator';
+import linking from './linking';
 
 const RootStack = createStackNavigator();
 
@@ -16,9 +17,8 @@ export default function AppNavigator() {
   const { fonts, colors } = useThemeContext();
 
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer ref={navigationRef} linking={linking}>
       <RootStack.Navigator
-        initialRouteName="SplashScreen"
         screenOptions={{
           headerShown: false,
           headerBackTitleStyle: {
@@ -30,13 +30,13 @@ export default function AppNavigator() {
         }}
       >
         <RootStack.Screen
-          name="WalkThroughScreen"
-          component={Screens.WalkThroughScreen}
+          name="SplashScreen"
+          component={Screens.SplashScreen}
         />
 
         <RootStack.Screen
-          name="SplashScreen"
-          component={Screens.SplashScreen}
+          name="WalkThroughScreen"
+          component={Screens.WalkThroughScreen}
         />
 
         <RootStack.Screen name="SignupScreen" component={SignupNavigator} />
