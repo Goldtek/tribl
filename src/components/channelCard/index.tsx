@@ -87,7 +87,7 @@ export default function MyChannel(props: MyChannelProp) {
       <FastImage
         resizeMode={FastImage.resizeMode.cover}
         source={{
-          uri: community.avatar,
+          uri: community?.avatar,
           priority: FastImage.priority.high
         }}
         style={{ width: RFValue(130), height: RFValue(80), borderRadius: 5 }}
@@ -102,7 +102,7 @@ export default function MyChannel(props: MyChannelProp) {
                 textTransform: 'capitalize'
               }}
             >
-              #{name.length < 10 ? name : `${name.substr(0, 10)}...`}
+              #{name?.length < 10 ? name : `${name?.substr(0, 10)}...`}
             </Text>
           </LeftCover>
           <RightCover>
