@@ -80,6 +80,11 @@ export default function DrawerStackNavigator() {
     setChannelMenu(false);
   };
 
+  const handleInviteToChannelNavigation = () => {
+    navigation.navigate('InvitationToChannelScreen', { channelId: channel.id });
+    setChannelMenu(false);
+  };
+
   return (
     <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
       <DrawerStack.Screen
@@ -196,6 +201,24 @@ export default function DrawerStackNavigator() {
                 <Menu.Item
                   onPress={handleChannelMembersNavigation}
                   title={t(`community.chat.channelMembers`)}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize'
+                  }}
+                />
+                <Divider />
+                <Menu.Item
+                  onPress={handleInviteToChannelNavigation}
+                  title={t(`community.chat.invite`)}
                   style={{
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -370,6 +393,21 @@ export default function DrawerStackNavigator() {
                 </Paragraph>
               </Container>
             ),
+            headerBackTitleVisible: false,
+            headerTintColor: colors.PRIMARY
+          };
+        }}
+      />
+
+      <DrawerStack.Screen
+        name="InvitationToChannelScreen"
+        component={InboxScreens.InvitationToChannelScreen}
+        options={() => {
+          return {
+            headerShown: true,
+            headerTitle: () => null,
+            headerRight: () => null,
+            headerStyle: GLOBAL_HEADER_STYLE,
             headerBackTitleVisible: false,
             headerTintColor: colors.PRIMARY
           };
