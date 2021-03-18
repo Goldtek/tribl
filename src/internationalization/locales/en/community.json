@@ -135,7 +135,8 @@
     "leave_channel": "leave",
     "delete": "delete",
     "mute": "mute",
-    "unmute": "unmute"
+    "unmute": "unmute",
+    "invite": "Invite friends to channel"
   },
 
   "update": {
@@ -202,7 +203,8 @@
     "request": "asked to join your community",
     "accept": "accept",
     "decline": "decline",
-    "empty": " You currently don't have any community request"
+    "empty": " You currently don't have any community request",
+    "channelTitle": "Invite friends to channel"
   },
   "passport": {
     "addCitizen": "add citizenship",
