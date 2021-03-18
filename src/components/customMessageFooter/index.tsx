@@ -1,23 +1,23 @@
 // @ts-nocheck
 
 import React from 'react';
-import {StyleSheet, View, TouchableOpacity, Text} from 'react-native';
-// import {SVGIcon} from './SVGIcon';
-import {useTheme} from '@react-navigation/native';
 import {ReactionPicker} from '../customReactionPicker';
 import { useThemeContext } from '../../theme';
 import { Entypo } from '@expo/vector-icons';
 
 import {
+    ReactionListContainer,
+    ReactionItemContainer,
+    StyledReactionItem,
+    ReactionPickerContainer,
     MoreEmoji,
   } from './styles';
 
 export const MessageFooter = props => {
-  const {dark} = useTheme();
   const { colors } = useThemeContext();
   const {openReactionPicker} = props;
   return (
-    <View style={styles.reactionListContainer}>
+    <ReactionListContainer>
       {props.message.latest_reactions &&
         props.message.latest_reactions.length > 0 &&
         renderReactions(
@@ -32,19 +32,13 @@ export const MessageFooter = props => {
 
       {props.message.latest_reactions &&
         props.message.latest_reactions.length > 0 && (
-          <TouchableOpacity
-            onPress={openReactionPicker}
-            style={[
-              styles.reactionPickerContainer,
-              {
-                backgroundColor: dark ? '#313538' : '#F0F0F0',
-              },
-            ]}>
+          <ReactionPickerContainer
+            onPress={openReactionPicker}>
             <MoreEmoji>+</MoreEmoji>
             <Entypo name='emoji-happy' color={colors.BLACK} size={18} />
-          </TouchableOpacity>
+          </ReactionPickerContainer>
         )}
-    </View>
+    </ReactionListContainer>
   );
 };
 
@@ -94,76 +88,26 @@ const ReactionItem = ({
   emojiDataByType,
   ownReactionTypes,
 }) => {
-  const {dark} = useTheme();
   const isOwnReaction = ownReactionTypes.indexOf(type) > -1;
   return (
-    <TouchableOpacity
+    <ReactionItemContainer
       onPress={() => {
         handleReaction(type);
       }}
       key={type}
-      style={[
-        styles.reactionItemContainer,
+      style={
         {
-          borderColor: dark
-            ? isOwnReaction
-              ? '#313538'
-              : '#1E1D21'
-            : isOwnReaction
+          borderColor: isOwnReaction
             ? '#0064e2'
             : 'transparent',
-          backgroundColor: dark
-            ? isOwnReaction
-              ? '#194B8A'
-              : '#1E1D21'
-            : isOwnReaction
+          backgroundColor: isOwnReaction
             ? '#d6ebff'
             : '#F0F0F0',
-        },
-      ]}>
-      <Text
-        style={[
-          styles.reactionItem,
-          {
-            color: dark ? '#CFD4D2' : '#0064c2',
-          },
-        ]}>
+        }
+      }>
+      <StyledReactionItem>
         {emojiDataByType[type].icon} {reactionCounts[type]}
-      </Text>
-    </TouchableOpacity>
+      </StyledReactionItem>
+    </ReactionItemContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  reactionListContainer: {
-    flexDirection: 'row',
-    alignSelf: 'flex-start',
-    alignItems: 'center',
-    marginTop: 5,
-    marginBottom: 10,
-    marginLeft: 10,
-    flexWrap: 'wrap',
-  },
-  reactionItemContainer: {
-    borderWidth: 1,
-    padding: 4,
-    paddingLeft: 8,
-    paddingRight: 8,
-    borderRadius: 17,
-    marginRight: 6,
-    marginTop: 5,
-  },
-  reactionItem: {
-    fontSize: 16,
-  },
-  reactionPickerContainer: {
-    padding: 6,
-    paddingLeft: 8,
-    paddingRight: 8,
-    borderRadius: 10,
-  },
-  reactionPickerIcon: {
-    width: 19,
-    height: 19,
-  },
-});
