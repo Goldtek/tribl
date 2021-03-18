@@ -2,8 +2,8 @@ import emojiSource from 'emoji-datasource';
 import _ from 'lodash';
 require('string.fromcodepoint');
 
-export const toEmoji = code => {
-  return String.fromCodePoint(...code.split('-').map(u => '0x' + u));
+export const toEmoji = (code: any) => {
+  return String.fromCodePoint(...code.split('-').map((u: any) => '0x' + u));
 };
 
 export const IconType = {
@@ -64,8 +64,8 @@ export const defaultProps = {
 
 
 
-const handleDefaultEmoji = (data, blackList) => {
-  const filteredData = data.filter(e => !_.includes(blackList, e.short_name));
+const handleDefaultEmoji = (data: any[], blackList: _.Dictionary<any> | null | undefined) => {
+  const filteredData = data.filter((e: { short_name: any; }) => !_.includes(blackList, e.short_name));
   const sortedData = _.orderBy(filteredData, 'sort_order');
   const groupedData = _.groupBy(sortedData, 'category');
 
