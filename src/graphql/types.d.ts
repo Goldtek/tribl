@@ -196,6 +196,7 @@ export interface PassportInterface {
   moderatorOf?: CommunityInterface[];
   participantOf?: CommunityInterface[];
   channelParticipantOf?: ChannelInterface[];
+  recentChannels?: ChannelInterface[];
   pendingConnections: ConnectionStatusInterface[];
   connectionRequests: ConnectionStatusInterface[];
   connectionDetails: ConnectionStatusInterface;
@@ -225,7 +226,6 @@ export type ChannelInterface = {
   isPrivate: boolean;
   community: CommunityInterface;
   participants: PassportInterface[];
-  community: CommunityInterface;
 };
 
 type Interest = {
