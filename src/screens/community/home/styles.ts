@@ -24,6 +24,7 @@ export const RecommendedListHeader = styled.View`
   justify-content: space-between;
   padding-left: 15px;
   padding-right: 15px;
+  margin-bottom: ${RFValue(10)}px;
 `;
 
 export const RecommendedCommunityContainer = styled.View`
