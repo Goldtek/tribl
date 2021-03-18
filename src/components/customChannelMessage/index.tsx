@@ -8,6 +8,7 @@ import {
   DefaultAttachmentType
 } from 'stream-chat-expo';
 import { logEvent } from '../../utils/uxcamHelper';
+import Dayjs from 'dayjs';
 import { Mixpanel } from '../../config';
 import { Alert } from 'react-native';
 import { useQuery } from '@apollo/react-hooks';
@@ -17,9 +18,20 @@ import { useNavigation } from '@react-navigation/native';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
 import { MessageActionSheet } from '../streamActionSheet';
+import CustomMessageFooter from '../customMessageFooter';
 import CustomGiphy from '../customGiphy';
+import { useThemeContext } from '../../theme';
+import { CustomUrlPreview } from '../customUrlPreview';
+import { getSupportedReactions } from '../../utils/supportedReactions';
 
-import { Container, UserName, Edited, AvatarContainer } from './styles';
+import {
+  Time,
+  Edited,
+  UserName,
+  Container,
+  MessageHeader,
+  AvatarContainer
+} from './styles';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -36,6 +48,7 @@ let lastTap = 0;
 
 function CustomChannelMessage(props: MessageProps) {
   const navigation = useNavigation();
+  const { colors } = useThemeContext();
   const { channel, activityScreen } = useStreamContext();
 
   const visible =
@@ -133,7 +146,10 @@ function CustomChannelMessage(props: MessageProps) {
 
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
-      ? props.theme.message.content.markdown
+      ? {
+          ...props.theme.message.content.markdown,
+          mentions: { color: colors.SECONDARY }
+        }
       : {};
 
     const createdAt = new Date(props.message.created_at);
@@ -143,9 +159,10 @@ function CustomChannelMessage(props: MessageProps) {
     return (
       <Container>
         {props.message.user?.id !== chatClient.user?.id && visible ? (
-          <UserName style={{ fontWeight: 'bold' }}>
-            {props.message.user.name}
-          </UserName>
+          <MessageHeader>
+            <UserName>{props.message.user.name}</UserName>
+            <Time>{Dayjs(props.message.created_at).format('hh:ss A')}</Time>
+          </MessageHeader>
         ) : null}
         {props.renderText({ message: props.message, markdownStyles })}
         {updated && <Edited>(edited)</Edited>}
@@ -175,13 +192,20 @@ function CustomChannelMessage(props: MessageProps) {
     <MessageSimple
       {...props}
       Giphy={CustomGiphy}
+      textBeforeAttachments
+      //@ts-ignore
+      ReactionList={null}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
       //@ts-ignore
+      UrlPreview={CustomUrlPreview}
+      //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
       MessageAvatar={CustomMessageAvatar}
+      MessageFooter={CustomMessageFooter}
+      supportedReactions={getSupportedReactions}
     />
   );
 }

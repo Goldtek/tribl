@@ -55,7 +55,6 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
 
   return (
     <AccountStack.Navigator
-      initialRouteName="AccountSettingScreen"
       headerMode="screen"
       screenOptions={{ headerStyle: { height: RFValue(90) } }}
     >

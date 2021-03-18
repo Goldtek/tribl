@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Entypo, Feather } from '@expo/vector-icons';
@@ -7,19 +7,16 @@ import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../../../theme';
 import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
-import database from '@react-native-firebase/database';
 import {
   PassportInterface,
   SinglePassportRequestInterface
 } from '../../../../../../../graphql/types';
 import {
-  GET_COMMUNITY_MEMBER_PASSPORT,
   GET_SINGLE_PASSPORT,
   GET_USER_PASSPORT
 } from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
-import { OnlinePresence } from '../../../../../../inbox/types';
-import { fireAuth, crashlytics } from '../../../../../../../firebase/config';
+import { crashlytics } from '../../../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -47,19 +44,6 @@ function Member(props: MemberProp) {
     GET_SINGLE_PASSPORT,
     { variables: { id } }
   );
-
-  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: 'OFFLINE',
-    lastSeen: new Date().setDate(5)
-  });
-
-  useEffect(() => {
-    const reference = database().ref(`/presence/${id}`);
-    reference.on('value', (snapshot: any) => {
-      const presence = snapshot.val() as OnlinePresence;
-      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
-    });
-  }, []);
 
   const singlePassport = singlePassportData?.singlePassport;
 

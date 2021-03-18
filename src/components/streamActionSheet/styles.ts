@@ -6,7 +6,8 @@ export const ActionSheetButtonContainer = styled.View`
   height: 50px;
   width: 100%;
   flex-direction: row;
-  padding-horizontal: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
   background-color: ${({ theme }) => theme.colors.WHITE};
   ${({ theme }) => theme.message.actionSheet.buttonContainer.css};
 `;
@@ -40,4 +41,13 @@ export const ReactionListContainer = styled.View`
 export const ReactionItemText = styled.Text`
   font-size: ${({ theme }) => theme.fonts.MEDIUM_SIZE * 2}px;
   color: ${({ theme }) => theme.colors.PRIMARY};
+`;
+
+export const MoreEmoji = styled.Text`
+  position: absolute;
+  top: 3px;
+  right: 8px;
+  font-size: ${({ theme }) => theme.fonts.MEDIUM_SIZE * 1.5}px;
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_SEMI_BOLD};
+  z-index: 1;
 `;

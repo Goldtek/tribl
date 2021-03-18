@@ -108,16 +108,17 @@ function ContactSlide(props: ScreenProp) {
   });
 
   const participantOf = state?.participantOf;
+  const myConnections = state?.myConnections;
   const currentLocation = state?.currentLocation;
   const myConnections = state?.myConnections?.slice(0, 10);
-  const myChannels = state?.recentChannels?.slice(0, 10);
+  const myChannels = state?.recentChannels;
 
   const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
     <MyConnectionCard key={item.id} {...item} singlePassport={state} />
   );
 
   const _renderMyCommunityItem = ({ item }: { item: CommunityInterface }) => (
-    <MyCommunity key={item.id} {...item} />
+    <MyCommunity key={item.id} {...item} singlePassport={state} />
   );
 
   const _renderMyChannelItem = ({ item }: { item: ChannelInterface }) => (
@@ -902,8 +903,10 @@ function ContactSlide(props: ScreenProp) {
             </Title>
           </Cover>
           <FlatList
-            data={participantOf}
             horizontal={true}
+            data={participantOf
+              ?.slice(0, 10)
+              ?.concat([{ lastIndex: true } as any])}
             renderItem={_renderMyCommunityItem}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ alignItems: 'center' }}
@@ -961,7 +964,9 @@ function ContactSlide(props: ScreenProp) {
           </Cover>
           <FlatList
             horizontal={true}
-            data={myConnections}
+            data={myConnections
+              ?.slice(0, 10)
+              ?.concat([{ lastIndex: true } as any])}
             keyExtractor={({ id }) => id}
             renderItem={_renderMyConnectionItem}
             showsHorizontalScrollIndicator={false}

@@ -49,6 +49,7 @@ export const TribeCover = styled.View`
   width: ${RFValue(65)}px;
   height: ${RFValue(65)}px;
 `;
+
 export const TabCover = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.WHITE};

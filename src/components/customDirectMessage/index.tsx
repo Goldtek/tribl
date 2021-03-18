@@ -17,7 +17,11 @@ import { MessageActionSheet } from '../streamActionSheet';
 import { chatClient } from '../../stream/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
+import CustomMessageFooter from '../customMessageFooter';
 import CustomGiphy from '../customGiphy';
+import { CustomUrlPreview } from '../customUrlPreview';
+import { useThemeContext } from '../../theme';
+import { getSupportedReactions } from '../../utils/supportedReactions';
 
 import { AvatarContainer, Container, Edited } from './styles';
 
@@ -36,6 +40,7 @@ let lastTap = 0;
 
 function CustomDirectMessage(props: MessageProps) {
   const navigation = useNavigation();
+  const { colors } = useThemeContext();
 
   const { channel, activityScreen } = useStreamContext();
 
@@ -130,7 +135,10 @@ function CustomDirectMessage(props: MessageProps) {
 
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
-      ? props.theme.message.content.markdown
+      ? {
+          ...props.theme.message.content.markdown,
+          mentions: { color: colors.PRIMARY }
+        }
       : {};
 
     const createdAt = new Date(props.message.created_at);
@@ -166,14 +174,22 @@ function CustomDirectMessage(props: MessageProps) {
   return (
     <MessageSimple
       {...props}
+      // @ts-ignore
       Giphy={CustomGiphy}
+      // @ts-ignore
+      ReactionList={null}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
+      MessageFooter={CustomMessageFooter}
+      textBeforeAttachments
+      //@ts-ignore
+      UrlPreview={CustomUrlPreview}
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
       MessageAvatar={CustomMessageAvatar}
+      supportedReactions={getSupportedReactions}
     />
   );
 }
