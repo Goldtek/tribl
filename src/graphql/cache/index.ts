@@ -43,8 +43,42 @@ export const userDetails = {
     state: '',
     __typename: 'birthPlace'
   },
-  myConnections: [],
-  participantOf: [],
+  myConnections: [
+    {
+      id: '',
+      avatar: '',
+      lastName: '',
+      firstName: '',
+      phoneNumber: '',
+      __typename: 'myConnections'
+    }
+  ],
+  participantOf: [
+    {
+      id: '',
+      name: '',
+      avatar: '',
+      isPrivate: null,
+      isModerator: null,
+      membersCount: 0,
+      __typename: 'participantOf'
+    }
+  ],
+  myChannels: [
+    {
+      id: '',
+      name: '',
+      isMember: null,
+      isPrivate: null,
+      community: {
+        id: '',
+        name: '',
+        avatar: '',
+        __typename: 'community'
+      },
+      __typename: 'myChannels'
+    }
+  ],
   avatar: USER_DEFAULT_AVATAR,
   __typename: 'userDetails'
 };
