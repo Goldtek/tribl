@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, FlatList } from 'react-native';
 import { Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import SearchInput, { createFilter } from 'react-native-search-filter';
 import GradientButton from '../../../../components/gradientButton';
 import { useThemeContext } from '../../../../theme';
 import CountryCard from './widgets/country';
@@ -17,15 +18,26 @@ import Input from '../../../../components/input';
 import { Toast } from '../../../../components/rootToaster';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
+import { Container, SearchCover } from './styles';
 
 function CitizenshipScreen(props: any) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
+
+  const [countries, setCountries] = useState(countriesDB.getAllCountries());
+
   const [country, setCountry] = useState({
     selectedCountry: new Map()
   });
+
+  const [search, setSearch] = useState({ searchTerm: '' });
+  const searchUpdated = (text: string) => setSearch({ searchTerm: text });
+  const KeysToFilter = ['name'];
+
+  const filteredWords =
+    countries &&
+    countries.filter(createFilter(search.searchTerm, KeysToFilter));
 
   const handleInputError = (error: string) => {
     Toast.show(t(`community.passport.${error}`));
@@ -34,13 +46,23 @@ function CitizenshipScreen(props: any) {
   const selectedCountries = [...Array.from(country.selectedCountry.values())];
 
   const handleSelect = (selected: { name: string; flag: string }) => {
+    const selectedCountryIndex = countries.findIndex(
+      (country) => country.name === selected.name
+    );
     if (!country.selectedCountry.has(selected.name)) {
+      if (selectedCountryIndex) {
+        countries[selectedCountryIndex]['selected'] = true;
+      }
       return setCountry({
         ...country,
         selectedCountry: new Map(
           country.selectedCountry.set(selected.name, selected)
         )
       });
+    }
+
+    if (selectedCountryIndex) {
+      countries[selectedCountryIndex]['selected'] = false;
     }
 
     country.selectedCountry.delete(selected.name);
@@ -50,60 +72,22 @@ function CitizenshipScreen(props: any) {
     });
   };
 
-  const [state, setState] = useState({
-    dataProvider: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(
-      countriesDB.getAllCountries()
-    ),
-    layoutProvider: getCountryLayout()
-  });
-
   useEffect(() => {
     tagScreenName('SelectCountry');
-    logEvent('select country', { from: 'passport' });
+    logEvent('select country', {
+      from: 'passport'
+    });
   }, []);
 
-  const rowRenderer = (_type: React.ReactText, data: CountryInterface) => {
-    if (data?.isEmpty) {
-      return (
-        <Container style={{ marginLeft: 15, marginRight: 15 }}>
-          <Title
-            style={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE)),
-              color: colors.PRIMARY_TEXT,
-              lineHeight: RFValue(30)
-            }}
-          >
-            {t(`signup.selectCountry.emptyList`)}
-          </Title>
-        </Container>
-      );
-    }
-
+  const _renderItem = ({ item }: { item: CountryInterface }) => {
     return (
       <CountryCard
-        {...data}
+        {...item}
         {...props}
-        selected={country.selectedCountry.get(props.name)}
+        selected={item.selected}
         handleSelect={handleSelect}
       />
     );
-  };
-
-  const handleSearch = (value: string) => {
-    const result = countriesDB.searchCountry(value);
-
-    if (!result.length) {
-      return setState({
-        ...state,
-        dataProvider: state.dataProvider.cloneWithRows([{ isEmpty: true }])
-      });
-    }
-
-    setState({
-      ...state,
-      dataProvider: state.dataProvider.cloneWithRows(result)
-    });
   };
 
   const handleNavigation = () => {
@@ -153,48 +137,64 @@ function CitizenshipScreen(props: any) {
         >
           {t(`community.passport.add`)}
         </Paragraph>
-
-        <Input
-          placeholder={t(`signup.selectCountry.placeholder`)}
-          defaultValue=""
-          onChangeText={handleSearch}
-          textInputStyle={{ fontFamily: fonts.WORK_SANS_SEMI_BOLD }}
-          contanierStyle={{
-            height: RFValue(50),
-            width: '92%',
-            alignSelf: 'center'
-          }}
-        >
-          <Container style={{ paddingLeft: 15, paddingRight: 15 }}>
-            <AntDesign
-              name="search1"
-              color={colors.PRIMARY_TEXT}
-              size={RFValue(20)}
-            />
-          </Container>
-        </Input>
+        <SearchCover>
+          <AntDesign
+            name="search1"
+            color={colors.PRIMARY_TEXT}
+            size={RFValue(20)}
+            style={{
+              position: 'relative',
+              left: RFValue(30),
+              top: RFValue(31)
+            }}
+          />
+          <SearchInput
+            onChangeText={searchUpdated}
+            placeholder={t(`signup.selectCountry.placeholder`)}
+            placeholderTextColor={colors.SECONDARY_TEXT}
+            style={{
+              width: '94%',
+              height: RFValue(50),
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE - 2),
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              alignItems: 'center',
+              position: 'relative',
+              bottom: RFValue(20),
+              elevation: 0,
+              borderWidth: 1,
+              borderColor: colors.INACTIVE,
+              borderRadius: 4,
+              paddingLeft: RFValue(50),
+              marginVertical: RFValue(15),
+              marginLeft: 'auto',
+              marginRight: 'auto'
+            }}
+          />
+        </SearchCover>
       </Container>
 
       <Container
         style={{
           flex: 1,
-          marginTop: 20,
-          paddingLeft: 0,
+          paddingLeft: RFValue(10),
           paddingRight: 0,
           paddingTop: 0,
-          paddingBottom: 0
+          paddingBottom: 0,
+          marginTop: 0
         }}
       >
-        <RecyclerListView
+        <FlatList
           style={{ flex: 1 }}
-          dataProvider={state.dataProvider}
-          layoutProvider={state.layoutProvider}
-          rowRenderer={rowRenderer}
+          data={filteredWords}
+          renderItem={_renderItem}
         />
       </Container>
       <GradientButton
         onPress={handleNavigation}
-        style={{ marginHorizontal: RFValue(15) }}
+        style={{
+          marginHorizontal: RFValue(15)
+        }}
         gradientContainerstyle={{
           marginHorizontal: RFValue(15),
           marginBottom: RFValue(15),
