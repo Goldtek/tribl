@@ -9,75 +9,44 @@ import {
   SectionList,
   StyleSheet,
 } from 'react-native';
+// import {SCText} from './SCText';
+// import * as Haptics from 'expo-haptics';
+// import {groupedSupportedReactions} from '../utils/supportedReactions';
 
-import {groupedSupportedReactions} from '../../utils/supportedReactions';
+// import EmojiSelector, { Categories } from "react-native-emoji-selector";
+import EmojiBoard from 'react-native-emoji-board';
+
 
 export const ReactionPicker = (props) => {
   const {dismissReactionPicker, handleReaction, reactionPickerVisible} = props;
   const {colors} = useTheme();
-  const slide = useRef(new Animated.Value(-600)).current;
-  const reactionPickerExpanded = useRef(false);
   const _dismissReactionPicker = () => {
-    reactionPickerExpanded.current = false;
-    Animated.timing(slide, {
-      toValue: -600,
-      duration: 100,
-      useNativeDriver: false,
-    }).start(() => {
+
       dismissReactionPicker();
-    });
+
   };
 
-  const _handleReaction = (type) => {
-    reactionPickerExpanded.current = false;
-    Animated.timing(slide, {
-      toValue: -600,
-      duration: 100,
-      useNativeDriver: false,
-    }).start(() => {
-      handleReaction(type);
-    });
+  const _handleReaction = (type: any) => {
+    handleReaction(type.name);
+		_dismissReactionPicker();
   };
 
-  useEffect(() => {
-    if (reactionPickerVisible) {
-      setTimeout(() => {
-        Animated.timing(slide, {
-          toValue: -300,
-          duration: 100,
-          useNativeDriver: false,
-        }).start();
-      }, 200);
-    }
-  });
-  if (!reactionPickerVisible) {
-    return null;
-  }
+
 
   return (
     <Modal
       animationType="fade"
       onRequestClose={_dismissReactionPicker}
-      testID="reaction-picker"
       transparent
-      visible>
+      visible={reactionPickerVisible}>
       <TouchableOpacity
         style={styles.overlay}
         activeOpacity={1}
-        leftAlign
         onPress={() => {
           _dismissReactionPicker();
         }}
-      />
-      <Animated.View
-        style={[
-          {
-            bottom: slide,
-          },
-          styles.animatedContainer,
-        ]}
-        activeOpacity={1}
-        leftAlign>
+      >
+
         <View
           style={[
             {
@@ -86,87 +55,41 @@ export const ReactionPicker = (props) => {
             styles.pickerContainer,
           ]}>
           <View style={styles.listContainer}>
-            <SectionList
-              onScrollBeginDrag={() => {
-                reactionPickerExpanded.current = true;
-                Animated.timing(slide, {
-                  toValue: 0,
-                  duration: 300,
-                  useNativeDriver: false,
-                }).start();
-              }}
-              style={{height: 600, width: '100%'}}
-              onScroll={(event) => {
-                if (!reactionPickerExpanded.current) {
-                  return;
-                }
-
-                if (event.nativeEvent.contentOffset.y <= 0) {
-                  reactionPickerExpanded.current = false;
-                  Animated.timing(slide, {
-                    toValue: -300,
-                    duration: 300,
-                    useNativeDriver: false,
-                  }).start();
-                }
-              }}
-              sections={groupedSupportedReactions}
-              renderSectionHeader={({section: {title}}) => (
-                <Text
-                  style={[
-                    {
-                      backgroundColor: colors.background,
-                    },
-                    styles.groupTitle,
-                  ]}>
-                  {title}
-                </Text>
-              )}
-              renderItem={({item}) => {
-                return (
-                  <View style={styles.reactionsRow}>
-                    {item.map(({icon, id}) => {
-                      return (
-                        <View
-                          key={id}
-                          testID={id}
-                          style={styles.reactionsItemContainer}>
-                          <Text
-                            onPress={() => _handleReaction(id)}
-                            testID={`${id}-reaction`}
-                            style={styles.reactionsItem}>
-                            {icon}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                );
-              }}
-            />
+            <View style={{height: 300, minWidth: '100%', }}>
+                {/* <Text style={{height: 300, minWidth: '100%',}}> */}
+								<EmojiBoard showBoard={true} onClick={_handleReaction} />
+								{/* </Text> */}
+            </View>
           </View>
         </View>
-      </Animated.View>
+				</TouchableOpacity>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   overlay: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'flex-end',
-    alignItems: 'flex-start',
+    flex: 1,
+		width: '100%',
+    // alignSelf: 'flex-end',
+    // alignItems: 'flex-start',
+		alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.7)',
   },
   animatedContainer: {
     position: 'absolute',
     backgroundColor: 'transparent',
+		justifyContent:'center',
+		alignItems: 'center'
+
   },
   pickerContainer: {
     flexDirection: 'column',
     borderRadius: 15,
-    paddingHorizontal: 10,
+    padding: 10,
+		// marginBottom: 300, 
+		// overflow: 'scroll'
   },
   listContainer: {
     width: '100%',
