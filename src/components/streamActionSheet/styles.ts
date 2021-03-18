@@ -6,7 +6,8 @@ export const ActionSheetButtonContainer = styled.View`
   height: 50px;
   width: 100%;
   flex-direction: row;
-  padding-horizontal: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
   background-color: ${({ theme }) => theme.colors.WHITE};
   ${({ theme }) => theme.message.actionSheet.buttonContainer.css};
 `;
