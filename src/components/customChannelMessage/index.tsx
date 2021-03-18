@@ -18,8 +18,12 @@ import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
 import { MessageActionSheet } from '../streamActionSheet';
 import CustomGiphy from '../customGiphy';
+import { CustomUrlPreview } from '../customUrlPreview';
 
 import { Container, UserName, Edited, AvatarContainer } from './styles';
+import { useThemeContext } from '../../theme';
+import { MessageFooter } from '../customMessageFooter';
+import {getSupportedReactions} from '../../utils/supportedReactions';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -36,6 +40,7 @@ let lastTap = 0;
 
 function CustomChannelMessage(props: MessageProps) {
   const navigation = useNavigation();
+  const { colors } = useThemeContext();
   const { channel, activityScreen } = useStreamContext();
 
   const visible =
@@ -133,8 +138,8 @@ function CustomChannelMessage(props: MessageProps) {
 
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
-      ? props.theme.message.content.markdown
-      : {};
+    ? {...props.theme.message.content.markdown, mentions: {color: colors.SECONDARY}}
+    : {};
 
     const createdAt = new Date(props.message.created_at);
     const updatedAt = new Date(props.message.updated_at);
@@ -174,14 +179,21 @@ function CustomChannelMessage(props: MessageProps) {
   return (
     <MessageSimple
       {...props}
+      // @ts-ignore
+      ReactionList={null}
       Giphy={CustomGiphy}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
+      textBeforeAttachments
+      //@ts-ignore
+      UrlPreview={CustomUrlPreview}
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
       MessageAvatar={CustomMessageAvatar}
+      MessageFooter={MessageFooter}
+      supportedReactions={getSupportedReactions}
     />
   );
 }

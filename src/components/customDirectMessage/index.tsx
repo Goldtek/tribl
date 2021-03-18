@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   MessageSimple,
   MessageAvatar,
@@ -18,8 +18,12 @@ import { chatClient } from '../../stream/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { SinglePassportRequestInterface } from '../../graphql/types';
 import CustomGiphy from '../customGiphy';
+import { CustomUrlPreview } from '../customUrlPreview';
 
 import { AvatarContainer, Container, Edited } from './styles';
+import { useThemeContext } from '../../theme';
+import { MessageFooter } from '../customMessageFooter';
+import { getSupportedReactions } from '../../utils/supportedReactions';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -36,6 +40,7 @@ let lastTap = 0;
 
 function CustomDirectMessage(props: MessageProps) {
   const navigation = useNavigation();
+  const { colors } = useThemeContext();
 
   const { channel, activityScreen } = useStreamContext();
 
@@ -130,7 +135,10 @@ function CustomDirectMessage(props: MessageProps) {
 
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
-      ? props.theme.message.content.markdown
+      ? {
+          ...props.theme.message.content.markdown,
+          mentions: { color: colors.PRIMARY }
+        }
       : {};
 
     const createdAt = new Date(props.message.created_at);
@@ -166,14 +174,21 @@ function CustomDirectMessage(props: MessageProps) {
   return (
     <MessageSimple
       {...props}
+      // @ts-ignore
+      ReactionList={null}
       Giphy={CustomGiphy}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
+      textBeforeAttachments
+      //@ts-ignore
+      UrlPreview={CustomUrlPreview}
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
       MessageAvatar={CustomMessageAvatar}
+      MessageFooter={MessageFooter}
+      supportedReactions={getSupportedReactions}
     />
   );
 }
