@@ -3,16 +3,13 @@ import CheckBox from '@react-native-community/checkbox';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../../../theme';
 import { GET_SINGLE_PASSPORT } from '../../../../../../graphql/server/query';
+import { hideSensitiveView } from '../../../../../../utils/uxcamHelper';
 import { useLazyQuery } from '@apollo/react-hooks';
-import database from '@react-native-firebase/database';
-import { OnlinePresence } from '../../../../../inbox/types';
 import { PassportInterface } from '../../../../../../graphql/types';
 
 import { NameContainer, CheckboxCover } from './styles';
-import { hideSensitiveView } from '../../../../../../utils/uxcamHelper';
 
 interface AddAdminProp extends PassportInterface {
   handleSelect(T: string): void;
@@ -36,22 +33,11 @@ export default function AddAdmin(props: AddAdminProp) {
 
   const onPress = () => handleSelect(id);
 
-  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: 'OFFLINE',
-    lastSeen: new Date().setDate(5)
-  });
-
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
     variables: { id }
   });
 
   useEffect(() => {
-    const reference = database().ref(`/presence/${id}`);
-    reference.on('value', (snapshot: any) => {
-      const presence = snapshot.val() as OnlinePresence;
-
-      if (presence) setOnlinePresence({ ...onlinePresence, ...presence });
-    });
     getUserPassport();
   }, []);
 
