@@ -181,7 +181,11 @@ export default function PassportScreen(props: ScreenProp) {
 
   const setCacheData = async () => {
     if (userDetails) {
-      await Storage.setUserPassport({ ...cache, ...userDetails });
+      await Storage.setUserPassport({
+        ...cache,
+        citizenship: userDetails.citizenship,
+        ...userDetails
+      });
     }
   };
 
@@ -373,13 +377,13 @@ export default function PassportScreen(props: ScreenProp) {
   );
   const citizenship = cache.citizenship?.map((country) => country.name);
   const filtercitizenship = userDetails?.citizenship?.filter(
-    (country) => !citizenship?.includes(country)
+    (country) => citizenship == country
   );
   const removecitizenship = filtercitizenship?.map(
-    ({ __typename, ...keepAttrs }) => keepAttrs
+    ({ __typename, id, ...keepAttrs }) => keepAttrs
   );
   const removeTypename = cache.citizenship?.map(
-    ({ __typename, ...keepAttrs }) => keepAttrs
+    ({ __typename, id, ...keepAttrs }) => keepAttrs
   );
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
@@ -453,8 +457,8 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
-      refetch();
       setCacheData();
+      refetch();
       setUpdate(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
