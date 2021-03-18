@@ -33,7 +33,8 @@ function ChannelMember(props: ChannelUserProp) {
     firstName,
     connected,
     conversation,
-    currentLocation
+    currentLocation,
+    connectionDetails
   } = member;
 
   const [pending, setPending] = useState(false);
@@ -152,7 +153,7 @@ function ChannelMember(props: ChannelUserProp) {
             </Paragraph>
           )}
         </TextContainer>
-        {connected == 'PENDING' || pending ? (
+        {connectionDetails?.status == 'PENDING' || pending ? (
           <Button
             mode="text"
             disabled={true}
@@ -173,7 +174,7 @@ function ChannelMember(props: ChannelUserProp) {
           >
             {t(`community.recommended.pending`)}
           </Button>
-        ) : connected == 'CONNECTED' || connected == 'ACCEPTED' ? (
+        ) : connectionDetails?.status == 'ACCEPTED' ? (
           <Button
             mode="text"
             uppercase={false}

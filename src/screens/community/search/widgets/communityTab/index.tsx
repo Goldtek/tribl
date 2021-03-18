@@ -56,6 +56,10 @@ function CommunityTabScreen(props: ScreenProp) {
 
   const randomCommunity = communityData?.recommendedCommunities?.data[0];
   const popularCommunity = popularData?.popularCommunities;
+  const sort = popularCommunity?.data;
+  const sortPopularCommunity = sort?.slice().sort(function (a, b) {
+    return b.membersCount - a.membersCount;
+  });
 
   const handleEndReach = async () => {
     if (!callOnScrollEnd) return;
@@ -148,7 +152,7 @@ function CommunityTabScreen(props: ScreenProp) {
             ) : null}
 
             <FlatList
-              data={popularCommunity?.data}
+              data={sortPopularCommunity}
               renderItem={_renderPopularCommunityItem}
               ListEmptyComponent={<PopularCommunitySkeleton skeletonSize={3} />}
               showsVerticalScrollIndicator={false}

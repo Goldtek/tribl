@@ -18,7 +18,6 @@ export const GET_USER_DETAILS = gql`
       firstName
       lastName
       citizenship {
-        id
         name
         flag
       }
@@ -36,11 +35,41 @@ export const GET_USER_DETAILS = gql`
         state
         city
       }
-      identity
-      interest
+      identity {
+        id
+        name
+      }
+      interest {
+        id
+        name
+      }
       avatar
-      participantOf
-      myConnections
+      participantOf {
+        id
+        name
+        avatar
+        isPrivate
+        isModerator
+        membersCount
+      }
+      myConnections {
+        id
+        avatar
+        lastName
+        firstName
+        phoneNumber
+      }
+      myChannels {
+        id
+        name
+        isMember
+        isPrivate
+        community {
+          id
+          name
+          avatar
+        }
+      }
     }
   }
 `;

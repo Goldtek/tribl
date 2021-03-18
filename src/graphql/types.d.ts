@@ -160,6 +160,14 @@ type Citizenship = {
   passports: PassportInterface[];
 };
 
+type Tags = {
+  id: string;
+  name: string;
+  isAdmin: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export interface PassportInterface {
   id: string;
   bio: string;
@@ -170,8 +178,8 @@ export interface PassportInterface {
   verified: boolean;
   firstName: string;
   __typename: string;
-  interest: string[];
-  identity: string[];
+  interest: Tags[];
+  identity: Tags[];
   countryCode: string;
   phoneNumber: string;
   birthPlace: Location;
@@ -188,6 +196,7 @@ export interface PassportInterface {
   moderatorOf?: CommunityInterface[];
   participantOf?: CommunityInterface[];
   channelParticipantOf?: ChannelInterface[];
+  recentChannels?: ChannelInterface[];
   pendingConnections: ConnectionStatusInterface[];
   connectionRequests: ConnectionStatusInterface[];
   connectionDetails: ConnectionStatusInterface;
@@ -217,7 +226,6 @@ export type ChannelInterface = {
   isPrivate: boolean;
   community: CommunityInterface;
   participants: PassportInterface[];
-  community: CommunityInterface;
 };
 
 type Interest = {

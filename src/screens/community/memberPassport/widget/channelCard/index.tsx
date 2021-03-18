@@ -84,7 +84,7 @@ export default function MyChannel(props: MyChannelProp) {
       <FastImage
         resizeMode={FastImage.resizeMode.stretch}
         source={{
-          uri: community.avatar,
+          uri: community?.avatar,
           priority: FastImage.priority.high
         }}
         style={{

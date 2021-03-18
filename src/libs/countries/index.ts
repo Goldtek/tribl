@@ -87,4 +87,5 @@ export interface CountryInterface {
   neighborCountryIds: string[];
   languages: string[];
   locales: string[];
+  selected?: boolean;
 }

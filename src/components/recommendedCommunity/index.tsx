@@ -86,8 +86,9 @@ function RecommendedCommunity(props: CommunityInterface) {
       });
       setLoading(true);
       await joinCommunity();
-      refetch().then(() => setLoading(false));
+      setButtonLabel(t(`community.recommended.leave`));
       Storage.setTagModal({ community: [id] });
+      refetch().then(() => setLoading(false));
       setModal(true);
     } catch (error) {
       setLoading(false);
@@ -104,6 +105,7 @@ function RecommendedCommunity(props: CommunityInterface) {
       });
       setLoading(true);
       await joinPrivateCommunity();
+      setButtonLabel(t(`community.tabPanel.request`));
       refetch().then(() => setLoading(false));
     } catch (error) {
       setLoading(false);
@@ -120,8 +122,9 @@ function RecommendedCommunity(props: CommunityInterface) {
       });
       setLoading(true);
       await leaveCommunity();
-      refetch().then(() => setLoading(false));
+      setButtonLabel(t(`community.recommended.join`));
       Storage.removeTagModal(id);
+      refetch().then(() => setLoading(false));
       setModal(false);
     } catch (error) {
       setLoading(false);
