@@ -47,7 +47,6 @@ export const MessageActionSheet = React.forwardRef(
       repliesEnabled,
       canDeleteMessage,
       openReactionPicker,
-      supportedReactions,
       setActionSheetVisible,
       messageActions = Object.keys(MESSAGE_ACTIONS)
     } = props;
@@ -168,7 +167,7 @@ export const MessageActionSheet = React.forwardRef(
         title={renderReactions((type) => {
           handleReaction(type);
           setActionSheetVisible(false);
-        }, supportedReactions, handleOpenReactionPicker, colors)}
+        }, handleOpenReactionPicker, colors)}
         styles={{
           body: {
             backgroundColor: colors.WHITE,
@@ -206,10 +205,17 @@ export const MessageActionSheet = React.forwardRef(
 
 export const renderReactions = (
   handleReaction: (type: string) => void,
-  supportedReactions: Reaction[],
   handleOpenReactionPicker: () => void,
   colors: any,
 ) => {
+  const supportedReactions: Reaction[]=[
+    {id: 'joy', icon: '😂'},
+    {id: 'rage', icon: '😡'},
+    {id: 'astonished', icon: '😲'},
+    {id: 'heart', icon: '❤️'},
+    {id: '100', icon: '💯'},
+    {id: 'grinning', icon: '😀'},
+  ]
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return (
     <ReactionListContainer>
