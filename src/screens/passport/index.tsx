@@ -377,7 +377,7 @@ export default function PassportScreen(props: ScreenProp) {
   );
   const citizenship = cache.citizenship?.map((country) => country.name);
   const filtercitizenship = userDetails?.citizenship?.filter(
-    (country) => citizenship == country
+    (country) => !citizenship?.includes(country.name)
   );
   const removecitizenship = filtercitizenship?.map(
     ({ __typename, id, ...keepAttrs }) => keepAttrs
