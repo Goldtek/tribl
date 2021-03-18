@@ -107,9 +107,7 @@ export default function SplashScreen(props: ScreenProp) {
         // Must be outside of any component LifeCycle (such as `componentDidMount`).
         PushNotification.configure({
           // (optional) Called when Token is generated (iOS and Android)
-          onRegister: async ({ token }) => {
-            updatePassportFCM({ variables: { payload: { fcm: token } } });
-          },
+          onRegister: async () => {},
 
           // (required) Called when a remote is received or opened, or local notification is opened
           onNotification: (notification) => {
@@ -117,12 +115,6 @@ export default function SplashScreen(props: ScreenProp) {
 
             if (!data) {
               return navigation.replace(userRegistration.route);
-            }
-
-            if (data.type === 'MESSAGE_RECEIVED') {
-              changeMessageNotification({
-                variables: { showMessageNotificationBadge: true }
-              });
             }
 
             if (data.type === 'CONNECTION_REQUEST_RECEIVED') {

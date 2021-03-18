@@ -1,9 +1,9 @@
-import MyConnectionScreen from './myConnections';
-import ConnectionRequestScreen from './connectionRequest';
-import AccountSettingScreen from './accountSettings';
-import PrivacyPolicyScreen from './privacyPolicy';
 import PrivacyScreen from './privacy';
+import MyConnectionScreen from './myConnections';
 import NotificationScreen from './notifications';
+import PrivacyPolicyScreen from './privacyPolicy';
+import AccountSettingScreen from './accountSettings';
+import ConnectionRequestScreen from './connectionRequest';
 
 export default {
   MyConnectionScreen,
