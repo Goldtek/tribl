@@ -88,7 +88,6 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
 
   return (
     <CommunityStack.Navigator
-      initialRouteName="CommunityScreen"
       headerMode="screen"
       screenOptions={{ headerStyle: { height: RFValue(90) } }}
     >
