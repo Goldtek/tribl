@@ -15,10 +15,7 @@ export default function PassportNavigator() {
   const { t } = useTranslation();
 
   return (
-    <PassportStack.Navigator
-      initialRouteName="PassportScreen"
-      headerMode="screen"
-    >
+    <PassportStack.Navigator headerMode="screen">
       <PassportStack.Screen
         name="PassportScreen"
         component={PassportScreen}
