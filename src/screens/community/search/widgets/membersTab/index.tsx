@@ -116,7 +116,7 @@ function MemberSTabScreen(props: ScreenProp) {
                 marginBottom: 0
               }}
             >
-              {t(`community.tabPanel.active`)}
+              {t(`community.recommended.members`)}
             </Title>
             <TouchableRipple
               rippleColor={colors.PRIMARY}
