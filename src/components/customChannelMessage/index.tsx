@@ -22,6 +22,8 @@ import { CustomUrlPreview } from '../customUrlPreview';
 
 import { Container, UserName, Edited, AvatarContainer } from './styles';
 import { useThemeContext } from '../../theme';
+import { MessageFooter } from '../customMessageFooter';
+import {getSupportedReactions} from '../../utils/supportedReactions';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -177,16 +179,21 @@ function CustomChannelMessage(props: MessageProps) {
   return (
     <MessageSimple
       {...props}
+      // @ts-ignore
+      ReactionList={null}
       Giphy={CustomGiphy}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}
+      textBeforeAttachments
       //@ts-ignore
       UrlPreview={CustomUrlPreview}
       //@ts-ignore
       ActionSheet={MessageActionSheet}
       MessageText={MessageTextWithName}
       MessageAvatar={CustomMessageAvatar}
+      MessageFooter={MessageFooter}
+      supportedReactions={getSupportedReactions}
     />
   );
 }
