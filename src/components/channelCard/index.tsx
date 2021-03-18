@@ -4,7 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import FastImage from 'react-native-fast-image';
-import { ChannelInterface } from '../../graphql/types';
+import { TrendingChannelInterface } from '../../graphql/types';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -20,10 +20,10 @@ import {
 import { Cover, LeftCover, Text, RightCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MyChannelProp extends ChannelInterface {}
+interface MyChannelProp extends TrendingChannelInterface {}
 
 export default function MyChannel(props: MyChannelProp) {
-  const { name, community, id, isMember } = props;
+  const { channel: channelData } = props;
 
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
@@ -42,7 +42,7 @@ export default function MyChannel(props: MyChannelProp) {
 
   useEffect(() => {
     const getConversation = async () => {
-      const filter = { id: { $in: [id] } };
+      const filter = { id: { $in: [channelData?.id] } };
 
       const options = { presence: true, state: true, watch: true };
 
@@ -65,12 +65,15 @@ export default function MyChannel(props: MyChannelProp) {
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
       params: {
-        title: `#${name}`,
-        chatId: id,
-        isMember,
-        channelId: id,
+        title: `#${channelData?.name}`,
+        chatId: channelData?.id,
+        isMember: channelData?.isMember,
+        channelId: channelData?.id,
         details: { ...props },
-        channel: { name, community: community?.name }
+        channel: {
+          name: channelData?.name,
+          community: channelData?.community?.name
+        }
       }
     });
   };
@@ -87,7 +90,7 @@ export default function MyChannel(props: MyChannelProp) {
       <FastImage
         resizeMode={FastImage.resizeMode.cover}
         source={{
-          uri: community?.avatar,
+          uri: channelData?.community?.avatar,
           priority: FastImage.priority.high
         }}
         style={{ width: RFValue(130), height: RFValue(80), borderRadius: 5 }}
@@ -102,7 +105,10 @@ export default function MyChannel(props: MyChannelProp) {
                 textTransform: 'capitalize'
               }}
             >
-              #{name?.length < 10 ? name : `${name?.substr(0, 10)}...`}
+              #
+              {channelData?.name?.length < 10
+                ? channelData?.name
+                : `${channelData?.name?.substr(0, 10)}...`}
             </Text>
           </LeftCover>
           <RightCover>
