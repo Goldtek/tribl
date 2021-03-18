@@ -32,8 +32,6 @@ export default function AddAdmin(props: AddAdminProp) {
     selected
   } = props;
 
-  const [toggleCheckBox, setToggleCheckBox] = useState(false);
-
   const onPress = () => handleSelect(id);
 
   const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
