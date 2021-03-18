@@ -84,6 +84,17 @@ export const GET_USER_PASSPORT = gql`
           avatar
         }
       }
+      # recentChannels {
+      #   id
+      #   name
+      #   isMember
+      #   isPrivate
+      #   community {
+      #     id
+      #     name
+      #     avatar
+      #   }
+      # }
       connectionCount
       communityCount
       lastName
@@ -720,17 +731,17 @@ export const GET_MEMBER_PASSPORT = gql`
         #   long
         # }
       }
-      channelParticipantOf {
-        id
-        name
-        isMember
-        isPrivate
-        community {
-          id
-          name
-          avatar
-        }
-      }
+      # recentChannels {
+      #   id
+      #   name
+      #   isMember
+      #   isPrivate
+      #   community {
+      #     id
+      #     name
+      #     avatar
+      #   }
+      # }
       connectionDetails {
         status
       }
