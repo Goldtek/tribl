@@ -79,10 +79,13 @@ export default function MyChannel(props: MyChannelProp) {
     <TouchableRipple
       onPress={handleNavigation}
       rippleColor={colors.PRIMARY}
-      style={{ marginRight: 10, borderRadius: 5 }}
+      style={{
+        marginRight: 10,
+        borderRadius: 5
+      }}
     >
       <FastImage
-        resizeMode={FastImage.resizeMode.contain}
+        resizeMode={FastImage.resizeMode.cover}
         source={{
           uri: community.avatar,
           priority: FastImage.priority.high
