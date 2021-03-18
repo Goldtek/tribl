@@ -20,9 +20,10 @@ import { SinglePassportRequestInterface } from '../../graphql/types';
 import CustomMessageFooter from '../customMessageFooter';
 import CustomGiphy from '../customGiphy';
 import { CustomUrlPreview } from '../customUrlPreview';
-import { AvatarContainer, Container, Edited } from './styles';
 import { useThemeContext } from '../../theme';
 import { getSupportedReactions } from '../../utils/supportedReactions';
+
+import { AvatarContainer, Container, Edited } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
