@@ -112,13 +112,10 @@ class Storage {
 
   async setTagModal(id?: ShowModal) {
     const storageData = await this.getTagModal();
-
     if (!storageData) {
       return await AsyncStorage.setItem(SHOW_MODAL, JSON.stringify({ ...id! }));
     }
-
     const tagModal = JSON.parse(storageData) as ShowModal;
-
     const data = { community: [...tagModal.community, ...id?.community!] };
     await AsyncStorage.setItem(SHOW_MODAL, JSON.stringify(data));
   }
@@ -131,12 +128,14 @@ class Storage {
     const currentTagModal = JSON.parse(storageData) as ShowModal;
 
     if (currentTagModal.community?.length === 0) {
-      await this.setTagModal({ community: [] });
+      const data = { community: [] };
+      await AsyncStorage.setItem(SHOW_MODAL, JSON.stringify(data));
     }
 
     if (currentTagModal.community.length === 1) {
       currentTagModal.community.pop();
-      await this.setTagModal({ community: [] });
+      const data = { community: [] };
+      await AsyncStorage.setItem(SHOW_MODAL, JSON.stringify(data));
     }
 
     if (currentTagModal.community.length) {
@@ -145,7 +144,8 @@ class Storage {
         (id) => id !== community
       );
       //Set tag modal to updated version
-      await this.setTagModal({ community: filteredId });
+      const data = { community: filteredId };
+      await AsyncStorage.setItem(SHOW_MODAL, JSON.stringify(data));
     }
   }
 }
