@@ -160,6 +160,14 @@ type Citizenship = {
   passports: PassportInterface[];
 };
 
+type Tags = {
+  id: string;
+  name: string;
+  isAdmin: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export interface PassportInterface {
   id: string;
   bio: string;
@@ -170,8 +178,8 @@ export interface PassportInterface {
   verified: boolean;
   firstName: string;
   __typename: string;
-  interest: string[];
-  identity: string[];
+  interest: Tags[];
+  identity: Tags[];
   countryCode: string;
   phoneNumber: string;
   birthPlace: Location;
