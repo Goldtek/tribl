@@ -12,11 +12,19 @@ import {
   GENERATE_STREAMS_TOKEN,
   UPDATE_USER_PASSPORT
 } from '../graphql/server/mutations';
+import { crashlytics } from '../firebase/config';
 import {
   GenerateStreamsTokenRequestInterface,
-  MyPassportInterface
+  MyPassportInterface,
+  NotificationMessage
 } from '../graphql/types';
-import { crashlytics } from '../firebase/config';
+import {
+  CHANGE_CONNECTION_NOTIFICATION_BADGE,
+  CHANGE_MESSAGE_NOTIFICATION_BADGE
+} from '../graphql/cache/mutations';
+import fcmMessaging, {
+  FirebaseMessagingTypes
+} from '@react-native-firebase/messaging';
 
 import {
   ThreadType,
@@ -26,6 +34,8 @@ import {
   ActivityScreenType
 } from './types';
 
+const messaging = fcmMessaging();
+
 const StreamProvider: FunctionComponent = ({ children }) => {
   const [channel, setChannel] = useState<ChannelType>({} as ChannelType);
   const [thread, setThread] = useState<ThreadType>({} as ThreadType);
@@ -33,9 +43,40 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     'channelScreen'
   );
 
-  const [updatePassportFCM] = useMutation(UPDATE_USER_PASSPORT);
-
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const [updatePassportFCM] = useMutation(UPDATE_USER_PASSPORT);
+  const [changeMessageNotification] = useMutation(
+    CHANGE_MESSAGE_NOTIFICATION_BADGE
+  );
+
+  const [changeConnectionNotification] = useMutation(
+    CHANGE_CONNECTION_NOTIFICATION_BADGE
+  );
+
+  useEffect(() => {
+    // Register foreground handler
+    const unsubscribe = messaging.onMessage(presentNotification);
+
+    // Register background handler
+    messaging.setBackgroundMessageHandler(presentNotification);
+
+    // Check whether an initial notification is available
+    messaging.getInitialNotification().then(presentNotification);
+
+    return unsubscribe;
+  }, []);
+
+  const presentNotification = async (
+    remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
+  ) => {
+    const data = (remoteMessage?.data as unknown) as NotificationMessage;
+
+    if (data.type === 'CONNECTION_REQUEST_RECEIVED') {
+      changeConnectionNotification({
+        variables: { showConnectionNotificationBadge: true }
+      });
+    }
+  };
 
   const [authenticateStream] = useMutation<
     GenerateStreamsTokenRequestInterface
@@ -54,7 +95,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
       const initChat = async () => {
         try {
-          await chatClient.connectUser(
+          const streamUser = await chatClient.connectUser(
             //@ts-ignore
             user,
             //@ts-ignore
@@ -64,28 +105,51 @@ const StreamProvider: FunctionComponent = ({ children }) => {
             }
           );
 
+          if (streamUser && streamUser.me?.total_unread_count) {
+            changeMessageNotification({
+              variables: { showMessageNotificationBadge: true }
+            });
+          }
+
+          chatClient.on((event) => {
+            if (
+              event.total_unread_count !== undefined &&
+              event.total_unread_count >= 1
+            ) {
+              changeMessageNotification({
+                variables: { showMessageNotificationBadge: true }
+              });
+            } else if (
+              event.total_unread_count !== undefined &&
+              event.total_unread_count === 0
+            ) {
+              changeMessageNotification({
+                variables: { showMessageNotificationBadge: false }
+              });
+            }
+          });
+
           // Must be outside of any component LifeCycle (such as `componentDidMount`).
           PushNotification.configure({
             // (optional) Called when Token is generated (iOS and Android)
             onRegister: async ({ token, os }) => {
               updatePassportFCM({ variables: { payload: { fcm: token } } });
 
-              const device = await chatClient.getDevices(
-                userData?.myPassport.id
-              );
-
-              device.devices?.forEach((device) => {
-                if ((device.provider = 'firebase')) {
-                  chatClient.removeDevice(device?.id, userData?.myPassport.id);
-                }
-              });
+              const fcmToken = await messaging.getToken();
 
               await chatClient.addDevice(
-                token,
+                os === 'ios' ? token : fcmToken,
                 os === 'ios' ? 'apn' : 'firebase',
                 userData?.myPassport.id
               );
-              console.tron({ device });
+
+              const { devices } = await chatClient.getDevices();
+
+              devices?.forEach((device) => {
+                if (device.disabled) {
+                  chatClient.removeDevice(`${device?.id}`);
+                }
+              });
             },
 
             // (required) Called when a remote is received or opened, or local notification is opened
