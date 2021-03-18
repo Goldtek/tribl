@@ -7,6 +7,7 @@ import ConnectionChatScreen from './connectionChat';
 import MessageRequestScreen from './messageRequest';
 import ChannelMembersScreen from './channelMembers';
 import MessageRequestChatScreen from './requestChat';
+import InvitationToChannelScreen from './invitationToChannel';
 
 export default {
   InboxScreen,
@@ -17,5 +18,6 @@ export default {
   MessageRequestScreen,
   ConnectionChatScreen,
   ChannelMembersScreen,
-  MessageRequestChatScreen
+  MessageRequestChatScreen,
+  InvitationToChannelScreen
 };
