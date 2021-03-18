@@ -42,12 +42,10 @@ function Tags(props: any) {
     props.data;
   }, []);
 
-  const identity = userDetails?.identity.map((item: any) => item.id);
-
-  const interest = userDetails?.interest.map((item: any) => item.id);
+  const interest = userDetails?.interest.map((item: any) => item.name);
 
   const allInterest = interest?.concat([
-    ...Array.from(state.selectedId.values())
+    ...Array.from(state.selectedTags.values())
   ]);
 
   const [updatePassport, { loading }] = useMutation(UPDATE_PASSPORT, {
