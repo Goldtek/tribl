@@ -25,6 +25,7 @@ import { CustomUrlPreview } from '../customUrlPreview';
 import { getSupportedReactions } from '../../utils/supportedReactions';
 
 import {
+  Time,
   Edited,
   UserName,
   Container,
@@ -192,7 +193,8 @@ function CustomChannelMessage(props: MessageProps) {
       {...props}
       Giphy={CustomGiphy}
       textBeforeAttachments
-      ReactionList={() => null}
+      //@ts-ignore
+      ReactionList={null}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}

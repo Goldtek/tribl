@@ -175,9 +175,9 @@ function CustomDirectMessage(props: MessageProps) {
     <MessageSimple
       {...props}
       // @ts-ignore
-      ReactionList={null}
       Giphy={CustomGiphy}
-      ReactionList={() => null}
+      // @ts-ignore
+      ReactionList={null}
       onPress={handleDoubleTap}
       handleDelete={handleDelete}
       handleReaction={handleReaction}

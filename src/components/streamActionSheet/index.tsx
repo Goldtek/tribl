@@ -5,17 +5,15 @@ import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import type { MessageActionSheetProps } from 'stream-chat-react-native-core/lib/typescript/src/components/Message/MessageSimple/MessageActionSheet';
+import EmojiIcon from '../../../assets/icons/emoji';
 import { Reaction } from 'stream-chat-expo';
-import { Entypo } from '@expo/vector-icons';
 
 import {
   ActionSheetButtonContainer,
   ActionSheetButtonText,
   ReactionItemContainer,
   ReactionItemText,
-  ReactionListContainer,
-  ReactionPickerContainer,
-  MoreEmoji
+  ReactionListContainer
 } from './styles';
 
 type ReactionItemProps = {
@@ -228,14 +226,9 @@ export const renderReactions = (
           handleReaction={handleReaction}
         />
       ))}
-      <ReactionPickerContainer
-        onPress={() => {
-          handleOpenReactionPicker();
-        }}
-      >
-        <MoreEmoji>+</MoreEmoji>
-        <Entypo name="emoji-happy" color={colors.BLACK} size={20} />
-      </ReactionPickerContainer>
+      <ReactionItemContainer onPress={() => handleOpenReactionPicker()}>
+        <EmojiIcon height="25" width="25" />
+      </ReactionItemContainer>
     </ReactionListContainer>
   );
 };

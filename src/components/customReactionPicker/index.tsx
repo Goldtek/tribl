@@ -1,20 +1,14 @@
 import React from 'react';
 import { Modal } from 'react-native';
-
+import { useThemeContext } from '../../theme';
 import EmojiBoard from 'react-native-emoji-board';
 
-import { useThemeContext } from '../../theme';
-import {
-  Overlay,
-  PickerContainer,
-  BoardContainer,
-  InnerWrapper
-} from './styles';
+import { Overlay, PickerContainer } from './styles';
 
 export const ReactionPicker = (props: any) => {
   const {
-    dismissReactionPicker,
     handleReaction,
+    dismissReactionPicker,
     reactionPickerVisible
   } = props;
 

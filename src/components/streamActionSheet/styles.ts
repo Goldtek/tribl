@@ -43,9 +43,6 @@ export const ReactionItemText = styled.Text`
   color: ${({ theme }) => theme.colors.PRIMARY};
 `;
 
-export const ReactionPickerContainer = styled(ReactionItemContainer)`
-    
-`
 export const MoreEmoji = styled.Text`
   position: absolute;
   top: 3px;
@@ -53,4 +50,4 @@ export const MoreEmoji = styled.Text`
   font-size: ${({ theme }) => theme.fonts.MEDIUM_SIZE * 1.5}px;
   font-family: ${({ theme }) => theme.fonts.WORK_SANS_SEMI_BOLD};
   z-index: 1;
-`
+`;
