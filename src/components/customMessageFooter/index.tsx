@@ -1,21 +1,21 @@
 // @ts-nocheck
 
 import React from 'react';
-import {ReactionPicker} from '../customReactionPicker';
+import { ReactionPicker } from '../customReactionPicker';
 import { useThemeContext } from '../../theme';
 import { Entypo } from '@expo/vector-icons';
 
 import {
-    ReactionListContainer,
-    ReactionItemContainer,
-    StyledReactionItem,
-    ReactionPickerContainer,
-    MoreEmoji,
-  } from './styles';
+  ReactionListContainer,
+  ReactionItemContainer,
+  StyledReactionItem,
+  ReactionPickerContainer,
+  MoreEmoji
+} from './styles';
 
-export const MessageFooter = props => {
+export const MessageFooter = (props) => {
   const { colors } = useThemeContext();
-  const {openReactionPicker} = props;
+  const { openReactionPicker } = props;
   return (
     <ReactionListContainer>
       {props.message.latest_reactions &&
@@ -25,17 +25,16 @@ export const MessageFooter = props => {
           props.message.own_reactions,
           props.supportedReactions,
           props.message.reaction_counts,
-          props.handleReaction,
+          props.handleReaction
         )}
 
       <ReactionPicker {...props} />
 
       {props.message.latest_reactions &&
         props.message.latest_reactions.length > 0 && (
-          <ReactionPickerContainer
-            onPress={openReactionPicker}>
+          <ReactionPickerContainer onPress={openReactionPicker}>
             <MoreEmoji>+</MoreEmoji>
-            <Entypo name='emoji-happy' color={colors.BLACK} size={18} />
+            <Entypo name="emoji-happy" color={colors.BLACK} size={18} />
           </ReactionPickerContainer>
         )}
     </ReactionListContainer>
@@ -47,26 +46,26 @@ export const renderReactions = (
   ownReactions = [],
   supportedReactions,
   reactionCounts,
-  handleReaction,
+  handleReaction
 ) => {
   const reactionsByType = {};
-  const ownReactionTypes = ownReactions.map(or => or.type);
+  const ownReactionTypes = ownReactions.map((or) => or.type);
   reactions &&
-    reactions.forEach(item => {
+    reactions.forEach((item) => {
       if (reactions[item.type] === undefined) {
         return (reactionsByType[item.type] = [item]);
       } else {
         return (reactionsByType[item.type] = [
           ...(reactionsByType[item.type] || []),
-          item,
+          item
         ]);
       }
     });
 
   const emojiDataByType = {};
-  supportedReactions.forEach(e => (emojiDataByType[e.id] = e));
+  supportedReactions.forEach((e) => (emojiDataByType[e.id] = e));
 
-  const reactionTypes = supportedReactions.map(e => e.id);
+  const reactionTypes = supportedReactions.map((e) => e.id);
   return Object.keys(reactionsByType).map((type, index) =>
     reactionTypes.indexOf(type) > -1 ? (
       <ReactionItem
@@ -77,7 +76,7 @@ export const renderReactions = (
         emojiDataByType={emojiDataByType}
         ownReactionTypes={ownReactionTypes}
       />
-    ) : null,
+    ) : null
   );
 };
 
@@ -86,7 +85,7 @@ const ReactionItem = ({
   handleReaction,
   reactionCounts,
   emojiDataByType,
-  ownReactionTypes,
+  ownReactionTypes
 }) => {
   const isOwnReaction = ownReactionTypes.indexOf(type) > -1;
   return (
@@ -95,16 +94,11 @@ const ReactionItem = ({
         handleReaction(type);
       }}
       key={type}
-      style={
-        {
-          borderColor: isOwnReaction
-            ? '#0064e2'
-            : 'transparent',
-          backgroundColor: isOwnReaction
-            ? '#d6ebff'
-            : '#F0F0F0',
-        }
-      }>
+      style={{
+        borderColor: isOwnReaction ? '#0064e2' : 'transparent',
+        backgroundColor: isOwnReaction ? '#d6ebff' : '#F0F0F0'
+      }}
+    >
       <StyledReactionItem>
         {emojiDataByType[type].icon} {reactionCounts[type]}
       </StyledReactionItem>

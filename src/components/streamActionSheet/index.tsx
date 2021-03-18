@@ -6,9 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../theme';
 import type { MessageActionSheetProps } from 'stream-chat-react-native-core/lib/typescript/src/components/Message/MessageSimple/MessageActionSheet';
 import { Reaction } from 'stream-chat-expo';
-import {
-  Entypo,
-} from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 import {
   ActionSheetButtonContainer,
@@ -17,7 +15,7 @@ import {
   ReactionItemText,
   ReactionListContainer,
   ReactionPickerContainer,
-  MoreEmoji,
+  MoreEmoji
 } from './styles';
 
 type ReactionItemProps = {
@@ -164,10 +162,14 @@ export const MessageActionSheet = React.forwardRef(
           );
         })}
         ref={actionSheetRef as React.MutableRefObject<ActionSheet>}
-        title={renderReactions((type) => {
-          handleReaction(type);
-          setActionSheetVisible(false);
-        }, handleOpenReactionPicker, colors)}
+        title={renderReactions(
+          (type) => {
+            handleReaction(type);
+            setActionSheetVisible(false);
+          },
+          handleOpenReactionPicker,
+          colors
+        )}
         styles={{
           body: {
             backgroundColor: colors.WHITE,
@@ -206,16 +208,15 @@ export const MessageActionSheet = React.forwardRef(
 export const renderReactions = (
   handleReaction: (type: string) => void,
   handleOpenReactionPicker: () => void,
-  colors: any,
+  colors: any
 ) => {
-  const supportedReactions: Reaction[]=[
-    {id: 'joy', icon: '😂'},
-    {id: 'rage', icon: '😡'},
-    {id: 'astonished', icon: '😲'},
-    {id: 'heart', icon: '❤️'},
-    {id: '100', icon: '💯'},
-    {id: 'grinning', icon: '😀'},
-  ]
+  const supportedReactions: Reaction[] = [
+    { id: 'joy', icon: '😂' },
+    { id: 'astonished', icon: '😲' },
+    { id: 'heart', icon: '❤️' },
+    { id: '100', icon: '💯' },
+    { id: 'grinning', icon: '😀' }
+  ];
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return (
     <ReactionListContainer>
@@ -233,7 +234,7 @@ export const renderReactions = (
         }}
       >
         <MoreEmoji>+</MoreEmoji>
-        <Entypo name='emoji-happy' color={colors.BLACK} size={20} />
+        <Entypo name="emoji-happy" color={colors.BLACK} size={20} />
       </ReactionPickerContainer>
     </ReactionListContainer>
   );
@@ -248,4 +249,3 @@ const ReactionItem = ({ type, handleReaction, icon }: ReactionItemProps) => {
 };
 
 MessageActionSheet.displayName = 'messageActionSheet';
-

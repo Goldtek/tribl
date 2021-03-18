@@ -23,7 +23,7 @@ import { CustomUrlPreview } from '../customUrlPreview';
 import { AvatarContainer, Container, Edited } from './styles';
 import { useThemeContext } from '../../theme';
 import { MessageFooter } from '../customMessageFooter';
-import {getSupportedReactions} from '../../utils/supportedReactions';
+import { getSupportedReactions } from '../../utils/supportedReactions';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -135,7 +135,10 @@ function CustomDirectMessage(props: MessageProps) {
 
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
-      ? {...props.theme.message.content.markdown, mentions: { color: colors.PRIMARY}}
+      ? {
+          ...props.theme.message.content.markdown,
+          mentions: { color: colors.PRIMARY }
+        }
       : {};
 
     const createdAt = new Date(props.message.created_at);

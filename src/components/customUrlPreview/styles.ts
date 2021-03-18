@@ -1,7 +1,6 @@
 import styled from 'styled-components/native';
 
-const Container = styled.TouchableOpacity`
-  margin-left: 10px;
+export const Container = styled.TouchableOpacity`
   padding-left: 10px;
   margin-bottom: 10px;
   border-left-width: 5px;
@@ -9,27 +8,27 @@ const Container = styled.TouchableOpacity`
   border-left-color: #e4e4e4;
 `;
 
-const DetailsContainer = styled.View`
-	flex-direction: column;
-`
+export const DetailsContainer = styled.View`
+  flex-direction: column;
+`;
 
-const TitleUrl = styled.Text`
-	padding: 2px;
-  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
-`
-const Title = styled.Text`
-	color: #1E75BE;
+export const TitleUrl = styled.Text`
   padding: 2px;
-	font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
-`
-const Description = styled.Text`
-	padding: 2px;
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+`;
+
+export const Title = styled.Text`
+  color: #1e75be;
+  padding: 2px;
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+`;
+
+export const Description = styled.Text`
+  padding: 2px;
   font-family: ${({ theme }) => theme.fonts.WORK_SANS_REGULAR};
-`
+`;
 
-const Thumbnail = styled.Image`
-	width: 100%;
-  height: 100;
-`
-
-export { Container, DetailsContainer, TitleUrl, Title, Description, Thumbnail }
+export const Thumbnail = styled.Image`
+  width: 100%;
+  height: 100px;
+`;
