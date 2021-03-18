@@ -252,6 +252,15 @@ export const INVITE_TO_TRIBE = gql`
   }
 `;
 
+// INVITE FRIENDS TO CHANNEL
+export const INVITE_TO_CHANNEL = gql`
+  mutation inviteToChannel($payload: JoinChannelInput!) {
+    inviteToChannel(input: $payload) {
+      success
+    }
+  }
+`;
+
 // ACCEPT OR DECLINE TRIBE INVITE
 export const TRIBE_INVITE_ACTION = gql`
   mutation communityInviteAction($payload: CommunityInviteActionInput!) {
