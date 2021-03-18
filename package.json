@@ -9,7 +9,7 @@
     "start": "react-native start",
     "publish-ota-updates": "expo publish",
     "clean-project": "react-native clean-project-auto",
-    "preinstall": "npm link",
+    "preinstall": "npm link src/libs/react-native-fix-image && npm link src/libs/stream-chat-reaction-picker",
     "postinstall": "npx react-native-fix-image && npx stream-chat-reaction-picker"
   },
   "dependencies": {
