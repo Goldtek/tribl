@@ -299,7 +299,7 @@ export default function HomeScreen(props: ScreenProp) {
                   textTransform: 'capitalize'
                 }}
               >
-                {t(`community.recommended.trendingChannel`)}
+                {t(`community.recommended.myChannel`)}
               </Title>
 
               {/* <GradientButton
