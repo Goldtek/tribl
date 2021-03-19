@@ -19,7 +19,8 @@
     "newCommunity": "new communities coming soon!",
     "communityRequests": "Community Requests",
     "leaveCommunity": "Leave Community",
-    "trendingChannel": "trending channels"
+    "trendingChannel": "trending channels",
+    "myChannel": "my channels"
   },
 
   "joinModal": {
