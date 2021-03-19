@@ -688,7 +688,7 @@ function ContactSlide(props: ScreenProp) {
           </Location>
         </LocationContainer>
       ) : null} */}
-      {select.identity?.length || !click ? (
+      {select.identity?.length || state?.selectedIdentity?.length || !click ? (
         <IdentityContainer>
           <Title
             style={{
