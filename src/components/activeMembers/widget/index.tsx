@@ -1,29 +1,17 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
 import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
-import { MyPassportInterface, PassportInterface } from '../../../graphql/types';
+import { PassportInterface } from '../../../graphql/types';
 import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
 import { crashlytics } from '../../../firebase/config';
-import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { logEvent } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
-import {
-  ChannelType,
-  chatClient,
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType
-} from '../../../stream/types';
-import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -35,7 +23,7 @@ interface ActiveUserProp extends PassportInterface {
 
 function ActiveModal(props: ActiveUserProp) {
   const { colors, fonts } = useThemeContext();
-  const { setChannel, setActivityScreen } = useStreamContext();
+  const { setActivityScreen } = useStreamContext();
 
   const { t } = useTranslation();
 
@@ -44,24 +32,18 @@ function ActiveModal(props: ActiveUserProp) {
   const {
     id,
     avatar,
+    pending,
     lastName,
     firstName,
-    connected,
-    phoneNumber,
     currentLocation,
     connectionDetails
   } = member;
 
-  const [pending, setPending] = useState(false);
-  const [channelId, setChannelId] = useState('');
   const [request, setRequest] = useState(false);
-
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
   });
-
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
@@ -81,81 +63,17 @@ function ActiveModal(props: ActiveUserProp) {
     });
   };
 
-  useEffect(() => {
-    const getConversation = async () => {
-      const filter = {
-        isDm: true,
-        type: 'team',
-        member_count: 2,
-        members: { $eq: [id, `${chatClient.user?.id}`] }
-      };
-
-      const options = { presence: true, state: true, watch: true };
-
-      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
-
-      const [channel] = await chatClient.queryChannels(filter, sort, options);
-
-      if (!channel) return;
-
-      setChannelId(`${channel.id}`);
-    };
-
-    getConversation();
-  }, []);
-
   const handleMessageNavigation = async () => {
     closeActiveModal();
-
-    let channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LiteralStringForUnion,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    > | null = null;
-
-    if (!channelId) {
-      // @ts-ignore
-      channel = chatClient.channel('team', {
-        conversationId: `${id}|${chatClient.user?.id}`,
-        channelId: `${id}|${chatClient.user?.id}`,
-        members: [id, `${chatClient.user?.id}`],
-        messageRequest: { status: false },
-        sender: {
-          readAt: Date.now(),
-          id: userData?.myPassport.id,
-          avatar: userData?.myPassport.avatar,
-          lastName: userData?.myPassport.lastName,
-          firstName: userData?.myPassport.firstName
-        },
-        receiver: {
-          id: id,
-          avatar,
-          lastName,
-          firstName,
-          readAt: Date.now()
-        },
-        name: Date.now(),
-        community: {},
-        isDm: true,
-        isNew: true
-      });
-
-      await channel.create();
-    }
-
-    setChannel(channel as ChannelType);
     setActivityScreen('directMessage');
-
     rootNavigator.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {
-        channelId: channelId ? channelId : channel?.id,
-        title: `${firstName} ${lastName}`,
-        ...member
+        id,
+        avatar,
+        lastName,
+        firstName,
+        title: `${firstName} ${lastName}`
       }
     });
   };
