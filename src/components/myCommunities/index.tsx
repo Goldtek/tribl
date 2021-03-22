@@ -21,12 +21,16 @@ export default function MyCommunity(props: MyCommunityProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, name, isModerator, lastIndex, singlePassport } = props;
+  const { lastIndex, singlePassport, ...community } = props;
+  const { avatar, name, isModerator } = community;
 
   const handleNavigation = () => {
-    navigation.navigate('CommunityDetailScreen', {
-      title: name,
-      details: { ...props }
+    navigation.navigate('DrawerScreen', {
+      screen: 'CommunityDetailScreen',
+      params: {
+        title: name,
+        details: { ...community }
+      }
     });
   };
 

@@ -36,25 +36,11 @@ const Highlight = (props: HighlightProp) => {
 
   const { colors, fonts } = useThemeContext();
 
-  const [onlinePresence, setOnlinePresence] = useState<OnlinePresence>({
-    status: 'OFFLINE',
-    lastSeen: new Date().getTime()
-  });
-
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
     variables: { id: hit.id }
   });
 
   useEffect(() => {
-    Firechat.getOnlineStatus(hit.id).onSnapshot({
-      next: (snapshot) => {
-        if (snapshot.exists) {
-          const { presence } = snapshot.data() as { presence: OnlinePresence };
-          setOnlinePresence({ ...onlinePresence, ...presence });
-        }
-      }
-    });
-
     getUserPassport();
   }, []);
 
@@ -134,9 +120,9 @@ const Highlight = (props: HighlightProp) => {
                     textTransform: 'lowercase'
                   }}
                 >
-                  {onlinePresence.status === 'ONLINE'
-                    ? onlinePresence.status
-                    : formatMessageTime(Number(onlinePresence.lastSeen))}
+                  {hit.currentLocation?.city
+                    ? `${hit.currentLocation?.city}, ${hit.currentLocation?.state}`
+                    : `${hit.currentLocation?.state}, ${hit.currentLocation?.country}`}
                 </Text>
               </NameContainer>
             </Fragment>
