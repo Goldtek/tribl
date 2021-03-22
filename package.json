@@ -9,8 +9,7 @@
     "start": "react-native start",
     "publish-ota-updates": "expo publish",
     "clean-project": "react-native clean-project-auto",
-    "preinstall": "npm link src/libs/react-native-fix-image && npm link src/libs/stream-chat-reaction-picker",
-    "postinstall": "npx react-native-fix-image && npx stream-chat-reaction-picker"
+    "postinstall": "yarn patch-package"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -62,6 +61,8 @@
     "jwt-decode": "^3.1.1",
     "lottie-ios": "3.1.8",
     "lottie-react-native": "^3.5.0",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
     "react": "16.13.1",
     "react-dom": "~16.11.0",
     "react-i18next": "^11.7.0",
