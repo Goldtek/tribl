@@ -60,10 +60,22 @@ export const GET_USER_PASSPORT = gql`
       }
       myConnections {
         id
+        bio
+        email
         avatar
+        pending
+        verified
         lastName
+        connected
         firstName
         phoneNumber
+        communityCount
+        connectionCount
+        currentLocation {
+          country
+          state
+          city
+        }
       }
       participantOf {
         id
@@ -124,10 +136,6 @@ export const GET_USER_PASSPORT = gql`
         interest
         locality
         visibility
-      }
-      presence {
-        status
-        lastSeen
       }
     }
   }
@@ -241,10 +249,6 @@ export const GET_NEARBY_MEMBERS = gql`
         connectionDetails {
           status
         }
-        presence {
-          status
-          lastSeen
-        }
       }
     }
   }
@@ -296,10 +300,6 @@ export const GET_CHANNEL_MEMBERS = gql`
         }
         connectionDetails {
           status
-        }
-        presence {
-          status
-          lastSeen
         }
       }
     }
@@ -356,10 +356,6 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         }
         connectionDetails {
           status
-        }
-        presence {
-          status
-          lastSeen
         }
       }
     }
@@ -500,10 +496,7 @@ export const GET_MY_CONNECTIONS_NEARBY = gql`
         interest {
           name
         }
-        presence {
-          status
-          lastSeen
-        }
+
         connectionDetails {
           status
         }
@@ -556,10 +549,7 @@ export const GET_MY_CONNECTIONS = gql`
         interest {
           name
         }
-        presence {
-          status
-          lastSeen
-        }
+
         connectionDetails {
           status
         }
@@ -611,10 +601,7 @@ export const GET_CONNECTION_REQUEST = gql`
         interest {
           name
         }
-        presence {
-          status
-          lastSeen
-        }
+
         connectionDetails {
           status
         }
@@ -717,12 +704,9 @@ export const GET_MEMBER_PASSPORT = gql`
       connectionCount
       communityCount
       pending
-      myConnections {
-        id
-        firstName
-        lastName
-        avatar
-        phoneNumber
+      citizenship {
+        name
+        flag
       }
       connectionDetails {
         status
@@ -730,23 +714,6 @@ export const GET_MEMBER_PASSPORT = gql`
       moderatorOf {
         isModerator
         id
-      }
-      participantOf {
-        isModerator
-        name
-        avatar
-        id
-        isPrivate
-        membersCount
-      }
-      channelParticipantOf {
-        id
-        name
-        isMember
-        isPrivate
-        community {
-          avatar
-        }
       }
       birthPlace {
         country
@@ -765,6 +732,36 @@ export const GET_MEMBER_PASSPORT = gql`
       }
       interest {
         name
+      }
+      myConnections {
+        id
+        firstName
+        lastName
+        avatar
+        phoneNumber
+        currentLocation {
+          country
+          state
+          city
+        }
+      }
+      participantOf {
+        id
+        name
+        avatar
+        isPrivate
+        isModerator
+        membersCount
+      }
+      channelParticipantOf {
+        id
+        name
+        isMember
+        isPrivate
+        community {
+          id
+          avatar
+        }
       }
     }
   }
@@ -819,10 +816,6 @@ export const GET_COMMUNITY_MEMBERS = gql`
         }
         connectionDetails {
           status
-        }
-        presence {
-          status
-          lastSeen
         }
       }
     }
@@ -918,10 +911,6 @@ export const GET_ALL_MEMBERS = gql`
         }
         connectionDetails {
           status
-        }
-        presence {
-          status
-          lastSeen
         }
       }
     }
@@ -1023,10 +1012,6 @@ export const GET_TRIBE_INVITES = gql`
             country
             city
           }
-          presence {
-            status
-            lastSeen
-          }
           connectionDetails {
             status
           }
@@ -1064,10 +1049,6 @@ export const GET_TRIBE_INVITES = gql`
             state
             country
             city
-          }
-          presence {
-            status
-            lastSeen
           }
           connectionDetails {
             status
@@ -1139,10 +1120,6 @@ export const GET_TRIBE_REQUESTS = gql`
             country
             city
           }
-          presence {
-            status
-            lastSeen
-          }
           connectionDetails {
             status
           }
@@ -1180,10 +1157,6 @@ export const GET_TRIBE_REQUESTS = gql`
             state
             country
             city
-          }
-          presence {
-            status
-            lastSeen
           }
           connectionDetails {
             status
@@ -1229,11 +1202,6 @@ export const GET_TRENDING_CHANNELS = gql`
             id
             name
             avatar
-          }
-          participants {
-            id
-            firstName
-            lastName
           }
         }
       }

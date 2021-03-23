@@ -28,7 +28,6 @@ import {
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
-  USER_CHANNELS,
   GET_TRENDING_CHANNELS
 } from '../../../graphql/server/query';
 import MyChannel from '../../../components/channelCard';
@@ -41,8 +40,6 @@ import {
   MyCommunitiesRequestInterface,
   RecommendedCommunitiesRequestInterface,
   CommunityInterface,
-  ChannelInterface,
-  MyChannelRequestInterface,
   TrendingChannelInterface
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
@@ -126,10 +123,6 @@ export default function HomeScreen(props: ScreenProp) {
     GET_RECOMMENDED_COMMUNITIES
   );
 
-  const { data: channelsData } = useQuery<MyChannelRequestInterface>(
-    USER_CHANNELS
-  );
-
   const { data: trendingChannelsData } = useQuery(GET_TRENDING_CHANNELS, {
     variables: {
       input: { limit: PAGINATION_DEFAULT / 2 }
@@ -142,9 +135,8 @@ export default function HomeScreen(props: ScreenProp) {
     }
   });
 
-  const myChannels = channelsData?.myChannels;
-  const trendingChannels = trendingChannelsData?.trendingChannels?.data;
   const myCommunities = myCommunityData?.myCommunities;
+  const trendingChannels = trendingChannelsData?.trendingChannels?.data;
   const recommendedMembers = membersData?.recommendedMembers?.data;
   const communities = communityData?.recommendedCommunities?.data
     .slice()
@@ -160,12 +152,6 @@ export default function HomeScreen(props: ScreenProp) {
   const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
-
-  // const navigateToCreateNewTribeScreen = () => {
-  //   navigation.navigate('DrawerScreen', {
-  //     screen: 'CreateTribeScreen'
-  //   });
-  // };
 
   const handleJoinCommunity = () => {
     setState({
@@ -185,7 +171,7 @@ export default function HomeScreen(props: ScreenProp) {
     item
   }: {
     item: TrendingChannelInterface;
-  }) => <MyChannel key={item.channel.id} {...item} />;
+  }) => <MyChannel key={item.channel.id} {...item.channel} />;
 
   const _renderRecommendedMember = useMemo(
     () => ({ item }: { item: PassportInterface }) => (

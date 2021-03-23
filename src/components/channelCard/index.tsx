@@ -4,7 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import FastImage from 'react-native-fast-image';
-import { TrendingChannelInterface } from '../../graphql/types';
+import { ChannelInterface } from '../../graphql/types';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -20,10 +20,10 @@ import {
 import { Cover, LeftCover, Text, RightCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface MyChannelProp extends TrendingChannelInterface {}
+interface MyChannelProp extends ChannelInterface {}
 
 export default function MyChannel(props: MyChannelProp) {
-  const { channel: channelData } = props;
+  const { id, name, isMember, community } = props;
 
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
@@ -42,7 +42,7 @@ export default function MyChannel(props: MyChannelProp) {
 
   useEffect(() => {
     const getConversation = async () => {
-      const filter = { id: { $in: [channelData?.id] } };
+      const filter = { id: { $in: [id] } };
 
       const options = { presence: true, state: true, watch: true };
 
@@ -65,15 +65,12 @@ export default function MyChannel(props: MyChannelProp) {
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
       params: {
-        title: `#${channelData?.name}`,
-        chatId: channelData?.id,
-        isMember: channelData?.isMember,
-        channelId: channelData?.id,
+        chatId: id,
+        channelId: id,
+        title: `#${name}`,
+        isMember: isMember,
         details: { ...props },
-        channel: {
-          name: channelData?.name,
-          community: channelData?.community?.name
-        }
+        channel: { name: name, community: community?.name }
       }
     });
   };
@@ -82,15 +79,12 @@ export default function MyChannel(props: MyChannelProp) {
     <TouchableRipple
       onPress={handleNavigation}
       rippleColor={colors.PRIMARY}
-      style={{
-        marginRight: 10,
-        borderRadius: 5
-      }}
+      style={{ marginRight: 10, borderRadius: 5 }}
     >
       <FastImage
         resizeMode={FastImage.resizeMode.cover}
         source={{
-          uri: channelData?.community?.avatar,
+          uri: community?.avatar,
           priority: FastImage.priority.high
         }}
         style={{ width: RFValue(130), height: RFValue(80), borderRadius: 5 }}
@@ -105,10 +99,7 @@ export default function MyChannel(props: MyChannelProp) {
                 textTransform: 'capitalize'
               }}
             >
-              #
-              {channelData?.name?.length < 10
-                ? channelData?.name
-                : `${channelData?.name?.substr(0, 10)}...`}
+              #{name?.length < 10 ? name : `${name?.substr(0, 10)}...`}
             </Text>
           </LeftCover>
           <RightCover>

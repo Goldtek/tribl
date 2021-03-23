@@ -4,9 +4,11 @@ import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
-import { PassportInterface } from '../../graphql/types';
+import { PassportInterface, UserPassportInterface } from '../../graphql/types';
 import { PAGINATION_DEFAULT, USER_DEFAULT_AVATAR } from '../../constants';
 import { hideSensitiveView } from '../../utils/uxcamHelper';
+import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
+import { useQuery } from '@apollo/react-hooks';
 
 // DEFINE SCREEN PROP TYPES
 interface MyConnectionProp extends PassportInterface {
@@ -18,14 +20,19 @@ export default function MyConnectionCard(props: MyConnectionProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
 
-  const { avatar, firstName, lastName, singlePassport, lastIndex } = props;
+  const { singlePassport, lastIndex, ...user } = props;
+  const { avatar, firstName, lastName, id } = user;
+
+  const { data } = useQuery<UserPassportInterface>(GET_SINGLE_PASSPORT, {
+    variables: { id }
+  });
 
   const handleNavigation = () => {
-    navigation.navigate('CommunityScreen', {
+    navigation.navigate('DrawerScreen', {
       screen: 'MemberDetailScreen',
       params: {
         title: `${firstName} ${lastName}`,
-        details: { ...props }
+        details: { ...user, ...data?.singlePassport }
       }
     });
   };

@@ -148,7 +148,7 @@ function CustomChannelMessage(props: MessageProps) {
     const markdownStyles = props.theme
       ? {
           ...props.theme.message.content.markdown,
-          mentions: { color: colors.SECONDARY }
+          mentions: { color: colors.PRIMARY }
         }
       : {};
 

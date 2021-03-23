@@ -1,0 +1,352 @@
+diff --git a/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx b/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx
+index 33319a7..9fc949e 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx
++++ b/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx
+@@ -280,6 +280,8 @@ export const Channel = <
+     };
+   }, [channel]);
+ 
++
++
+   useEffect(() => {
+     if (threadProps) {
+       setThread(threadProps);
+@@ -849,25 +851,25 @@ export const Channel = <
+     threadMessages,
+   };
+ 
+-  if (!channel || error) {
+-    return (
+-      <LoadingErrorIndicator
+-        error={error}
+-        listType='message'
+-        retry={() => {
+-          loadMoreThrottled();
+-        }}
+-      />
+-    );
+-  }
+-
+-  if (!channel?.cid || !channel.watch) {
+-    return (
+-      <Text style={{ fontWeight: 'bold', padding: 16 }} testID='no-channel'>
+-        {t('Please select a channel first')}
+-      </Text>
+-    );
+-  }
++  // if (!channel || error) {
++  //   return (
++  //     <LoadingErrorIndicator
++  //       error={error}
++  //       listType='message'
++  //       retry={() => {
++  //         loadMoreThrottled();
++  //       }}
++  //     />
++  //   );
++  // }
++
++  // if (!channel?.cid || !channel.watch) {
++  //   return (
++  //     <Text style={{ fontWeight: 'bold', padding: 16 }} testID='no-channel'>
++  //       {t('Please select a channel first')}
++  //     </Text>
++  //   );
++  // }
+ 
+   return (
+     <KeyboardCompatibleView
+diff --git a/node_modules/stream-chat-react-native-core/src/components/Message/MessageSimple/utils/renderText.tsx b/node_modules/stream-chat-react-native-core/src/components/Message/MessageSimple/utils/renderText.tsx
+index 03eff3b..e625b44 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/Message/MessageSimple/utils/renderText.tsx
++++ b/node_modules/stream-chat-react-native-core/src/components/Message/MessageSimple/utils/renderText.tsx
+@@ -1,9 +1,9 @@
+-import React from 'react';
++import React, { useRef } from 'react';
+ import { Linking, Text } from 'react-native';
+ import anchorme from 'anchorme';
+ import truncate from 'lodash/truncate';
+-// @ts-expect-error
+ import Markdown from 'react-native-markdown-package';
++import { useNavigation } from '@react-navigation/native';
+ import {
+   DefaultRules,
+   defaultRules,
+@@ -12,7 +12,7 @@ import {
+   parseInline,
+   ReactNodeOutput,
+ } from 'simple-markdown';
+-
++import { UserResponse } from 'stream-chat';
+ import type { MarkdownStyle } from '../../../../styles/themeConstants';
+ import type { Message } from '../../../MessageList/utils/insertDates';
+ import type {
+@@ -25,7 +25,6 @@ import type {
+   DefaultUserType,
+   UnknownType,
+ } from '../../../../types/types';
+-
+ const defaultMarkdownStyles: MarkdownStyle = {
+   autolink: {
+     textDecorationLine: 'underline',
+@@ -52,13 +51,10 @@ const defaultMarkdownStyles: MarkdownStyle = {
+     marginTop: 0,
+   },
+ };
+-
+ const parse: ParseFunction = (capture, parser, state) => ({
+   content: parseInline(parser, capture[0], state),
+ });
+-
+ export type MarkdownRules = Partial<DefaultRules>;
+-
+ export type RenderTextParams<
+   At extends UnknownType = DefaultAttachmentType,
+   Ch extends UnknownType = DefaultChannelType,
+@@ -73,7 +69,6 @@ export type RenderTextParams<
+   message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+   onLink?: (url: string) => Promise<void>;
+ };
+-
+ export const renderText = <
+   At extends UnknownType = DefaultAttachmentType,
+   Ch extends UnknownType = DefaultChannelType,
+@@ -85,24 +80,29 @@ export const renderText = <
+ >(
+   params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
+ ) => {
++  const navigation = useNavigation()
++  const userMentionRef = useRef<Map<String, UserResponse<Us>>>(new Map()).current
+   const {
+     markdownRules,
+     markdownStyles,
+     message,
+     onLink: onLinkParams,
+   } = params;
+-
++  const handleNavigation = (userName: string) => {
++    const user = userMentionRef.get(userName.trim())
++      navigation.navigate('MemberDetailScreen', {
++        title: user.name,
++        details: { ...user, ...user.user }
++      });
++  };
+   // take the @ mentions and turn them into markdown?
+   // translate links
+   const { mentioned_users = [], text } = message;
+-
+   if (!text) return null;
+-
+   let newText = text.trim();
+   const urls = anchorme(newText, {
+     list: true,
+   });
+-
+   for (const urlInfo of urls) {
+     const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
+       length: 200,
+@@ -111,7 +111,6 @@ export const renderText = <
+     const markdown = `[${displayLink}](${urlInfo.protocol}${urlInfo.encoded})`;
+     newText = newText.replace(urlInfo.raw, markdown);
+   }
+-
+   newText = newText.replace(/[<&"'>]/g, '\\$&');
+   const styles: MarkdownStyle = {
+     ...defaultMarkdownStyles,
+@@ -133,14 +132,12 @@ export const renderText = <
+       ...markdownStyles?.text,
+     },
+   };
+-
+   const onLink = (url: string) =>
+     onLinkParams
+       ? onLinkParams(url)
+       : Linking.canOpenURL(url).then(
+           (canOpenUrl) => canOpenUrl && Linking.openURL(url),
+         );
+-
+   const react: ReactNodeOutput = (node, output, { ...state }) => {
+     state.withinLink = true;
+     const link = React.createElement(
+@@ -156,37 +153,38 @@ export const renderText = <
+     state.withinLink = false;
+     return link;
+   };
+-
+   const mentionedUsers = Array.isArray(mentioned_users)
+     ? mentioned_users.reduce((acc, cur) => {
+         const userName = cur.name || cur.id || '';
+         if (userName) {
++          if(!userMentionRef.has(userName)) {
++            userMentionRef.set(`@${userName.trim()}`, cur)
++          }
+           acc += `${acc.length ? '|' : ''}@${userName}`;
+         }
+         return acc;
+       }, '')
+     : '';
+-
+   const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
+-  const match: MatchFunction = (source) => regEx.exec(source);
++  const match: MatchFunction = (source) =>   regEx.exec(source);
+   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) =>
+     React.createElement(
+       Text,
+       {
+         key: state.key,
+         style: styles.mentions,
++        onPress: () => handleNavigation(node.content[0].content)
+       },
+       Array.isArray(node.content)
+         ? node.content[0]?.content || ''
+         : output(node.content, state),
+     );
+-
+-  const customRules = {
+-    link: { react },
+-    // we have no react rendering support for reflinks
+-    reflink: { match: () => null },
+-    ...(mentionedUsers
+-      ? {
++    const customRules = {
++      link: { react },
++      // we have no react rendering support for reflinks
++      reflink: { match: () => null },
++      ...(mentionedUsers
++        ? {
+           mentions: {
+             match,
+             order: defaultRules.text.order - 0.5,
+@@ -194,9 +192,8 @@ export const renderText = <
+             react: mentionsReact,
+           },
+         }
+-      : {}),
+-  };
+-
++        : {}),
++      };
+   return (
+     <Markdown
+       onLink={onLink}
+diff --git a/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx b/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
+index aafb6ee..25397e5 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
++++ b/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
+@@ -397,7 +397,9 @@ export const MessageList = <
+   // https://github.com/facebook/react-native/issues/21196
+   if (messageList.length === 0 && !threadList) {
+     return messagesLoading ? (
+-      <LoadingIndicator listType='message' />
++      <View style={{ flex: 1 }} testID='loading-state'>
++        <LoadingIndicator listType='message' />
++      </View>
+     ) : (
+       <View style={{ flex: 1 }} testID='empty-state'>
+         <EmptyStateIndicator listType='message' />
+diff --git a/node_modules/stream-chat-react-native-core/src/components/Reaction/ReactionPicker.tsx b/node_modules/stream-chat-react-native-core/src/components/Reaction/ReactionPicker.tsx
+index 4981e30..daa2d3d 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/Reaction/ReactionPicker.tsx
++++ b/node_modules/stream-chat-react-native-core/src/components/Reaction/ReactionPicker.tsx
+@@ -1,3 +1,4 @@
++// @ts-nocheck
+ import React from 'react';
+ import { Modal, View } from 'react-native';
+ 
+@@ -15,7 +16,7 @@ import type {
+   DefaultMessageType,
+   DefaultReactionType,
+   DefaultUserType,
+-  UnknownType,
++  UnknownType
+ } from '../../types/types';
+ 
+ const Container = styled.TouchableOpacity<{ leftAlign: boolean }>`
+@@ -28,20 +29,25 @@ const ContainerView = styled.View`
+   background-color: black;
+   border-radius: 30px;
+   flex-direction: row;
+-  height: 60px;
++  /* height: 60px; */
++  height: 65px;
+   padding-horizontal: 20px;
+   ${({ theme }) => theme.message.reactionPicker.containerView.css}
+ `;
+ 
+ const Column = styled.View`
+   align-items: center;
+-  margin-top: -5px;
++  /* margin-top: -5px; */
++  margin-top: -7px;
+   ${({ theme }) => theme.message.reactionPicker.column.css}
+ `;
+ 
+ const Emoji = styled.Text`
+-  font-size: 20px;
+-  margin-vertical: 5px;
++  font-size: 30px; /* inital value 20px */
++  margin-vertical: 0px; /* initial value 5px */
++  margin-horizontal: 7px; /* nothing before */
++  color: white;
++  z-index: 999;
+   ${({ theme }) => theme.message.reactionPicker.emoji.css}
+ `;
+ 
+@@ -61,7 +67,7 @@ const getLatestUser = <
+   Us extends UnknownType = DefaultUserType
+ >(
+   type: string,
+-  reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
++  reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>
+ ) => {
+   const filtered = reactions?.filter((item) => item.type === type);
+   if (filtered?.[0]?.user) {
+@@ -102,7 +108,7 @@ export const ReactionPicker = <
+   Re extends UnknownType = DefaultReactionType,
+   Us extends DefaultUserType = DefaultUserType
+ >(
+-  props: ReactionPickerProps<At, Ch, Co, Me, Re, Us>,
++  props: ReactionPickerProps<At, Ch, Co, Me, Re, Us>
+ ) => {
+   const {
+     handleDismiss,
+@@ -113,18 +119,18 @@ export const ReactionPicker = <
+     reactionCounts,
+     reactionPickerVisible,
+     rpLeft,
+-    rpRight,
++    // rpRight,
+     rpTop = 40,
+-    supportedReactions = emojiData,
++    supportedReactions = emojiData
+   } = props;
+ 
+   if (!reactionPickerVisible) return null;
+ 
+   return (
+     <Modal
+-      animationType='fade'
++      animationType="fade"
+       onRequestClose={handleDismiss}
+-      testID='reaction-picker'
++      testID="reaction-picker"
+       transparent
+       visible
+     >
+@@ -132,12 +138,13 @@ export const ReactionPicker = <
+         activeOpacity={1}
+         leftAlign={Boolean(rpLeft)}
+         onPress={handleDismiss}
++        style={{ alignItems: 'center' }}
+       >
+         <ContainerView
+           style={{
+-            marginLeft: rpLeft,
+-            marginRight: rpRight,
+-            marginTop: rpTop,
++            // marginLeft: rpLeft,
++            // marginRight: rpRight,
++            marginTop: rpTop
+           }}
+         >
+           {supportedReactions.map(({ icon, id }) => {
