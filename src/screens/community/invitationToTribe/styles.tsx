@@ -22,7 +22,7 @@ export const ButtonCover = styled.View`
 export const AutoTagCover = styled.View`
   flex: 1;
   left: 0;
-  position: absolute;
+  position: relative;
   right: 0;
   top: 0;
   z-index: 1;
