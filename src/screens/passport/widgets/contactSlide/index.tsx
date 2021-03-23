@@ -907,6 +907,7 @@ function ContactSlide(props: ScreenProp) {
               ?.slice(0, 10)
               ?.concat([{ lastIndex: true } as any])}
             renderItem={_renderMyCommunityItem}
+            keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ alignItems: 'center' }}
           />
@@ -931,6 +932,7 @@ function ContactSlide(props: ScreenProp) {
             data={myChannels}
             horizontal={true}
             renderItem={_renderMyChannelItem}
+            keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ alignItems: 'center' }}
           />
@@ -966,7 +968,7 @@ function ContactSlide(props: ScreenProp) {
             data={myConnections
               ?.slice(0, 10)
               ?.concat([{ lastIndex: true } as any])}
-            keyExtractor={({ id }) => id}
+            keyExtractor={(item) => item.id}
             renderItem={_renderMyConnectionItem}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ alignItems: 'center' }}

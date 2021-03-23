@@ -11,6 +11,7 @@ import hexToRGB from '../../utils/hexToRGB';
 import { PassportInterface } from '../../graphql/types';
 import { hideSensitiveView } from '../../utils/uxcamHelper';
 import { useStreamContext } from '../../stream';
+import { chatClient } from '../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -24,6 +25,10 @@ function ConnectionCard(props: ConnectionCardProp) {
   const { colors, fonts } = useThemeContext();
 
   const { id, avatar, firstName, lastName, currentLocation } = props;
+
+  if (id === chatClient.user?.id) {
+    return null;
+  }
 
   useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
 

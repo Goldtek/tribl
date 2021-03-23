@@ -73,19 +73,18 @@ export default function PassportDetail(props: MemberDetailProps) {
     currentLocation,
     connectionCount,
     citizenship,
-    avatar,
-    id
+    avatar
   } = data;
 
   const [displayInterest, setDisplayInterest] = useState(false);
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { id } }
+    variables: { payload: { id: passport.id } }
   });
 
   const { data: passportData } = useQuery<SinglePassportRequestInterface>(
     GET_MEMBER_PASSPORT,
-    { variables: { id } }
+    { variables: { id: passport.id } }
   );
 
   const singlePassport = passportData?.singlePassport;
@@ -102,7 +101,11 @@ export default function PassportDetail(props: MemberDetailProps) {
 
       setData({ ...data, ...singlePassport });
     }
-  }, [singlePassport]);
+
+    if (passport.id !== singlePassport?.id) {
+      setData({ ...data, ...passport });
+    }
+  }, [passport.id, singlePassport]);
 
   useEffect(() => {
     tagScreenName('MemberPassportScreen');
@@ -114,10 +117,10 @@ export default function PassportDetail(props: MemberDetailProps) {
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {
-        id,
         avatar,
         lastName,
         firstName,
+        id: passport.id,
         title: `${firstName} ${lastName}`
       }
     });

@@ -1193,11 +1193,6 @@ export const GET_TRENDING_CHANNELS = gql`
             name
             avatar
           }
-          participants {
-            id
-            firstName
-            lastName
-          }
         }
       }
     }
