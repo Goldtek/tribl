@@ -9,15 +9,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import hexToRGB from '../../../utils/hexToRGB';
 import { useThemeContext } from '../../../theme';
 import { tagScreenName } from '../../../utils/uxcamHelper';
-import { chatClient, ThreadType } from '../../../stream/types';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { useStreamContext } from '../../../stream';
 import StreamInputBox from '../../../components/streamInputBox';
 import CustomDirectMessage from '../../../components/customDirectMessage';
 import { USER_DEFAULT_AVATAR } from '../../../constants';
 import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
-import { ChannelSort } from 'stream-chat';
-import { LocalChannelType } from '../../../stream/types';
+import { ChannelSort, LiteralStringForUnion } from 'stream-chat';
+import { crashlytics } from '../../../firebase/config';
+import { Channel as ChannelType } from 'stream-chat';
+import {
+  chatClient,
+  ThreadType,
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+} from '../../../stream/types';
 
 import { HeaderContainer, Container, MessageListContainer } from './styles';
 
@@ -28,55 +38,100 @@ interface ScreenProp extends NavigationInterface {
 
 export default function DirectChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
-  const { bottom } = useSafeAreaInsets();
+
+  const user = route.params;
   const [text, setText] = useState('');
+  const { bottom } = useSafeAreaInsets();
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
   const {
     setThread,
     setActivityScreen,
-    channel: streamChannel,
     setChannel: setStreamContextChannel
   } = useStreamContext();
 
   const [channel, setChannel] = useState(
-    chatClient.channel('team', route.params.channelId)
+    chatClient.channel('team', user.channelId)
   );
 
-  const [channelMembers, setChannelMembers] = useState(channel.state.members);
+  const [channelMembers, setChannelMembers] = useState(channel?.state.members);
 
   useEffect(() => {
-    const getChannel = async () => {
-      const filter = {
-        type: 'team',
-        id: route.params.channelId
-      };
+    if (!user.channelId && user.id && !channel?.id) {
+      getConversation();
+    }
 
-      const options = { presence: true, state: true, watch: true };
+    setStreamContextChannel(channel);
+  }, [channel?.id]);
 
-      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+  const getConversation = async () => {
+    const filter = {
+      isDm: true,
+      type: 'team',
+      member_count: 2,
+      members: { $eq: [user.id, `${chatClient.user?.id}`] }
+    };
 
-      const [queryChannel] = await chatClient.queryChannels(
+    const options = { presence: true, state: true, watch: true };
+    const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+    try {
+      const [channelExists] = await chatClient.queryChannels(
         filter,
         sort,
         options
       );
 
-      if (!queryChannel) return;
-
-      setChannel(queryChannel);
-      setStreamContextChannel(queryChannel);
-      setChannelMembers(queryChannel.state.members);
-    };
-
-    setStreamContextChannel(channel);
-
-    if (streamChannel && streamChannel.id !== channel.id) {
-      setStreamContextChannel(channel);
+      if (channelExists) {
+        setChannel(channelExists);
+        setChannelMembers(channelExists.state.members);
+      } else {
+        createDmConversation();
+      }
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
     }
+  };
 
-    getChannel();
-  }, []);
+  const createDmConversation = async () => {
+    let newChannel: ChannelType<
+      LocalAttachmentType,
+      LocalChannelType,
+      LiteralStringForUnion,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
+
+    try {
+      if (!channel?.id) {
+        // @ts-ignore
+        newChannel = chatClient.channel('team', {
+          conversationId: `${user.id}|${chatClient.user?.id}`,
+          channelId: `${user.id}|${chatClient.user?.id}`,
+          members: [user.id, `${chatClient.user?.id}`],
+          messageRequest: { status: false },
+          sender: {
+            readAt: Date.now(),
+            id: chatClient.user?.id,
+            ...chatClient.user?.user
+          },
+          receiver: { ...user, readAt: Date.now() },
+          name: Date.now(),
+          community: {},
+          isDm: true,
+          isNew: true
+        });
+
+        await newChannel.create();
+        setChannel(newChannel);
+        setChannelMembers(newChannel.state.members);
+      }
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
 
   const receiverId = Object.keys(channelMembers).find(
     (userId: string) => userId !== chatClient.user?.id
@@ -84,7 +139,12 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   const receiver = receiverId
     ? channelMembers[`${receiverId}`].user
-    : { image: USER_DEFAULT_AVATAR, name: '' };
+    : {
+        image: route.params.avatar || USER_DEFAULT_AVATAR,
+        name:
+          route.params.title ||
+          `${route.params.firstName} ${route.params.lastName}`
+      };
 
   useEffect(() => {
     tagScreenName('DirectChatScreen');
