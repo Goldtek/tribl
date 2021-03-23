@@ -111,13 +111,12 @@ function StreamInputBox(props: InputProps) {
     DefaultUserType
   >();
 
-  const { channel, activityScreen } = useStreamContext();
   const modalizeRef = useRef<Modalize>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const { channel, activityScreen } = useStreamContext();
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
   const [GIFs, setGIFs] = useState<GiphyInterface>(defaultGiphy);
   const [backupGif, setBackupGif] = useState<GiphyInterface>(defaultGiphy);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const onChangeSearch = (query: string) => {
     if (!query) setGIFs(backupGif);
@@ -125,6 +124,18 @@ function StreamInputBox(props: InputProps) {
   };
 
   const sendMessage = async () => {
+    if (channel?.id) {
+      trackMessages();
+    }
+
+    if (channel.data?.isNew) {
+      channel.updatePartial({ set: { isNew: false } });
+    }
+
+    props.sendMessage();
+  };
+
+  const trackMessages = () => {
     if (activityScreen === 'channelScreen') {
       logEvent('send channel message', { from: 'chat' });
 
@@ -186,12 +197,6 @@ function StreamInputBox(props: InputProps) {
           'Activity Screen': 'Direct Message Thread Screen'
         });
     }
-
-    if (channel.data?.isNew) {
-      channel.updatePartial({ set: { isNew: false } });
-    }
-
-    props.sendMessage();
   };
 
   const fetchGiphys = async (url: string) => {
@@ -357,8 +362,9 @@ function StreamInputBox(props: InputProps) {
           flatListProps={{
             data: GIFs.data,
             bounces: false,
-            keyExtractor: (item: any) => `${item.id}_${item.url}`,
             numColumns: 2,
+            keyExtractor: (item: any) => `${item.id}_${item.url}`,
+            onEndReachedThreshold: 0.01,
             ListFooterComponentStyle: { marginVertical: 20 },
             ListEmptyComponent: () => (
               <LoadingWrapper>
@@ -394,7 +400,6 @@ function StreamInputBox(props: InputProps) {
                 </Fragment>
               </GifImageWrapper>
             ),
-            onEndReachedThreshold: 0.01,
             ListFooterComponent: _renderFooter,
             onEndReached: () => {
               if (GIFs.pagination.total_count > GIFs.data.length) {
