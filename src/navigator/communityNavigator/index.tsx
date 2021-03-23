@@ -350,11 +350,10 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
-      <CommunityStack.Screen
+      {/* <CommunityStack.Screen
         name="MemberDetailScreen"
         component={Screens.MemberDetailScreen}
-        options={({ route }) => ({
-          //@ts-ignore
+        options={{
           headerTitle: () => null,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
@@ -482,8 +481,8 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTintColor: colors.PRIMARY,
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
-        })}
-      />
+        }}
+      /> */}
       <CommunityStack.Screen
         name="NewTribeScreen"
         component={Screens.NewTribeScreen}
