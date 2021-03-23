@@ -1,6 +1,6 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { LinearGradient } from 'expo-linear-gradient';
+import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 export const Container = styled.View`
   flex: 1;
@@ -11,7 +11,7 @@ export const Container = styled.View`
 export const TagCover = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
-  width: 100%;
+  width: ${RFValue(DEVICE_FULL_WIDTH)}px;
   border: 1px solid ${({ theme }) => theme.colors.INPUT};
 `;
 
