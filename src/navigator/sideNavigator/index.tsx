@@ -296,10 +296,7 @@ export default function DrawerStackNavigator() {
                         borderRadius: 4
                       }}
                     />
-                    <CountBadge
-                      style={{ elevation: 4 }}
-                      calculatedWidth={channelMembers.length}
-                    >
+                    <CountBadge style={{ elevation: 4 }}>
                       <Paragraph
                         style={{
                           fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -308,7 +305,7 @@ export default function DrawerStackNavigator() {
                           color: colors.WHITE
                         }}
                       >
-                        {channelMembers.length}
+                        {channelMembers.length * 2}
                       </Paragraph>
                     </CountBadge>
                   </Surface>
@@ -366,10 +363,7 @@ export default function DrawerStackNavigator() {
                           borderWidth: 1
                         }}
                       />
-                      <CountBadge
-                        style={{ elevation: 4 }}
-                        calculatedWidth={channelMembers.length}
-                      >
+                      <CountBadge style={{ elevation: 4 }}>
                         <Paragraph
                           style={{
                             fontSize: RFValue(fonts.MEDIUM_SIZE),
