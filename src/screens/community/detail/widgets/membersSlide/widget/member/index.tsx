@@ -11,12 +11,11 @@ import {
   PassportInterface,
   SinglePassportRequestInterface
 } from '../../../../../../../graphql/types';
-import {
-  GET_SINGLE_PASSPORT,
-  GET_USER_PASSPORT
-} from '../../../../../../../graphql/server/query';
+import { GET_SINGLE_PASSPORT } from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
 import { crashlytics } from '../../../../../../../firebase/config';
+import { useStreamContext } from '../../../../../../../stream';
+import { chatClient } from '../../../../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -27,14 +26,11 @@ interface MemberProp extends PassportInterface {}
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+  const { setActivityScreen } = useStreamContext();
 
   const { avatar, firstName, lastName, id } = props;
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
-  const userDetails = userData?.myPassport;
-  const userId = userDetails?.id;
-
-  if (id === userId) return null;
+  if (id === chatClient.user?.id) return null;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
@@ -46,7 +42,6 @@ function Member(props: MemberProp) {
   );
 
   const singlePassport = singlePassportData?.singlePassport;
-
   const location = singlePassport?.currentLocation;
 
   const connectedUsers =
@@ -54,6 +49,20 @@ function Member(props: MemberProp) {
     singlePassport?.connected === 'ACCEPTED'
       ? true
       : false;
+
+  const handleMessageNavigation = async () => {
+    setActivityScreen('directMessage');
+    navigation.navigate('DrawerScreen', {
+      screen: 'DirectChatScreen',
+      params: {
+        id,
+        avatar,
+        lastName,
+        firstName,
+        title: `${firstName} ${lastName}`
+      }
+    });
+  };
 
   const handleRequest = async () => {
     try {
@@ -63,29 +72,12 @@ function Member(props: MemberProp) {
     }
   };
 
-  const handleNavigation = () => {
-    navigation.navigate('DrawerScreen', {
-      screen: singlePassport?.conversation?.id
-        ? 'DirectChatScreen'
-        : 'ConnectionChatScreen',
-      params: {
-        receiverId: id,
-        chatId: singlePassport?.conversation?.id,
-        title: `${firstName} ${lastName}`,
-        ...{ ...props, ...singlePassport }
-      }
-    });
-  };
-
   return (
     <TouchableRipple
       style={{
-        height: RFValue(60),
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: RFValue(10),
-        paddingLeft: RFValue(10),
-        paddingRight: RFValue(10)
+        padding: 10
       }}
       onPress={() =>
         navigation.navigate('MemberDetailScreen', {
@@ -146,7 +138,7 @@ function Member(props: MemberProp) {
           }}
           onPress={
             singlePassport?.connectionDetails?.status == 'ACCEPTED'
-              ? handleNavigation
+              ? handleMessageNavigation
               : handleRequest
           }
         >
