@@ -723,25 +723,7 @@ export const GET_MEMBER_PASSPORT = gql`
         lastName
         avatar
         phoneNumber
-        # currentLocation {
-        #   country
-        #   state
-        #   city
-        #   lat
-        #   long
-        # }
       }
-      # recentChannels {
-      #   id
-      #   name
-      #   isMember
-      #   isPrivate
-      #   community {
-      #     id
-      #     name
-      #     avatar
-      #   }
-      # }
       connectionDetails {
         status
       }

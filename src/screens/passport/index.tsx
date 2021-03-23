@@ -324,7 +324,9 @@ export default function PassportScreen(props: ScreenProp) {
           long: coords.longitude
         });
 
-        await updatePassport();
+        if (userDetails) {
+          await updatePassport();
+        }
         refetch();
       }
     } catch (error) {
@@ -337,12 +339,12 @@ export default function PassportScreen(props: ScreenProp) {
       const interest = [
         ...userDetails?.interest,
         ...cache.details.selectedInterest
-      ].map(({ id }) => id);
+      ].map(({ name }) => name);
 
       const identity = [
         ...userDetails?.identity,
         ...cache.details.selectedIdentity
-      ].map(({ id }) => id);
+      ].map(({ name }) => name);
 
       setCache({
         ...cache,
@@ -372,6 +374,7 @@ export default function PassportScreen(props: ScreenProp) {
   const filterInterest = userDetails?.interest?.map(
     (interest) => interest.name
   );
+
   const removeInterest = filterInterest?.filter(
     (tag) => !cache.details.selectedInterest.includes(tag)
   );
@@ -437,11 +440,16 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  const getUserDetails = (details: any) => {
+  const getUserDetails = (details: any, select: any) => {
     setCache({
       ...cache,
       ...details,
-      details: { ...cache.details, ...details }
+      details: {
+        ...cache.details,
+        selectedIdentity: select.identity,
+        selectedInterest: select.interest,
+        ...details
+      }
     });
   };
 
