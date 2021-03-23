@@ -110,7 +110,7 @@ function ContactSlide(props: ScreenProp) {
   const participantOf = state?.participantOf;
   const myConnections = state?.myConnections;
   const currentLocation = state?.currentLocation;
-  const myChannels = state?.channelParticipantOf;
+  const myChannels = state?.recentChannels;
 
   const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
     <MyConnectionCard key={item.id} {...item} singlePassport={state} />
@@ -688,7 +688,7 @@ function ContactSlide(props: ScreenProp) {
           </Location>
         </LocationContainer>
       ) : null} */}
-      {select.identity?.length || !click ? (
+      {select.identity?.length || state?.selectedIdentity?.length || !click ? (
         <IdentityContainer>
           <Title
             style={{

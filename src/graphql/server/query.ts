@@ -84,17 +84,17 @@ export const GET_USER_PASSPORT = gql`
           avatar
         }
       }
-      # recentChannels {
-      #   id
-      #   name
-      #   isMember
-      #   isPrivate
-      #   community {
-      #     id
-      #     name
-      #     avatar
-      #   }
-      # }
+      recentChannels {
+        id
+        name
+        isMember
+        isPrivate
+        community {
+          id
+          name
+          avatar
+        }
+      }
       connectionCount
       communityCount
       lastName
@@ -1227,6 +1227,32 @@ export const GET_COMMUNITY_CHANNELS = gql`
           id
           name
           avatar
+        }
+      }
+    }
+  }
+`;
+
+//GET TRENDING CHANNELS
+export const GET_TRENDING_CHANNELS = gql`
+  query trendingChannels($input: ChannelArgsInput!) {
+    trendingChannels(input: $input) {
+      data {
+        channel {
+          id
+          name
+          isDefault
+          isPrivate
+          community {
+            id
+            name
+            avatar
+          }
+          participants {
+            id
+            firstName
+            lastName
+          }
         }
       }
     }
