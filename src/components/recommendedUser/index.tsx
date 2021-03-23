@@ -110,7 +110,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
       onPress={handleNavigation}
       style={{
         width: RFValue(DEVICE_FULL_WIDTH / 3),
-        height: RFValue(200),
+        height: RFValue(215),
         alignItems: 'center',
         borderRadius: 5,
         marginBottom: 20,
@@ -134,7 +134,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             resizeMode={FastImage.resizeMode.contain}
             source={{
               uri: avatar,
-              priority: FastImage.priority.high
+              priority: FastImage.priority.h
             }}
             style={{
               width: RFValue(70),
