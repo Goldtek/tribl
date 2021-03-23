@@ -54,7 +54,7 @@ import {
 
 interface ScreenProp extends NavigationInterface {
   click: boolean;
-  getUserDetails(state: any): void;
+  getUserDetails(state: any, select: any): void;
 }
 
 function ContactSlide(props: ScreenProp) {
@@ -331,8 +331,8 @@ function ContactSlide(props: ScreenProp) {
   const { firstName, lastName, bio, citizenship } = state;
 
   useEffect(() => {
-    props.getUserDetails(state);
-  }, [state]);
+    props.getUserDetails(state, select);
+  }, [state || select]);
 
   return (
     <ContactContainer>
@@ -688,7 +688,7 @@ function ContactSlide(props: ScreenProp) {
           </Location>
         </LocationContainer>
       ) : null} */}
-      {select.identity?.length || state?.selectedIdentity?.length || !click ? (
+      {select.identity?.length || !click ? (
         <IdentityContainer>
           <Title
             style={{
