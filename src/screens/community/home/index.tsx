@@ -161,12 +161,6 @@ export default function HomeScreen(props: ScreenProp) {
     navigation.navigate('CommunitySearchScreen', { index: index });
   };
 
-  // const navigateToCreateNewTribeScreen = () => {
-  //   navigation.navigate('DrawerScreen', {
-  //     screen: 'CreateTribeScreen'
-  //   });
-  // };
-
   const handleJoinCommunity = () => {
     setState({
       ...state,
