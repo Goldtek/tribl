@@ -66,4 +66,9 @@ export const Cover = styled.View``;
 
 export const HeaderCover = styled.View`
   flex-direction: row;
+  flex-wrap: wrap;
+`;
+
+export const HeaderBottomWrapper = styled.View`
+  flex-direction: row;
 `;
