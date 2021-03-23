@@ -5,12 +5,13 @@ import { useMutation } from '@apollo/react-hooks';
 import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
 import { REQUEST_CONNECTION } from '../../../../graphql/server/mutations';
-import { crashlytics, fireAuth } from '../../../../firebase/config';
+import { crashlytics } from '../../../../firebase/config';
 import { PassportInterface } from '../../../../graphql/types';
 import { logEvent } from '../../../../utils/uxcamHelper';
 import { rootNavigator } from '../../../../constants';
 import { useThemeContext } from '../../../../theme';
 import hexToRGB from '../../../../utils/hexToRGB';
+import { chatClient } from '../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -22,20 +23,18 @@ function ChannelMember(props: ChannelUserProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const userId = fireAuth.currentUser?.uid;
-
-  const { ...member } = props;
-
   const {
     id,
     avatar,
     lastName,
     firstName,
-    connected,
-    conversation,
     currentLocation,
     connectionDetails
-  } = member;
+  } = props;
+
+  if (id === chatClient.user?.id) {
+    return null;
+  }
 
   const [pending, setPending] = useState(false);
 
@@ -56,33 +55,19 @@ function ChannelMember(props: ChannelUserProp) {
   const handleNavigation = () => {
     rootNavigator.navigate('MemberDetailScreen', {
       title: `${firstName} ${lastName}`,
-      details: member
+      details: { ...props }
     });
   };
 
   const handleMessageNavigation = () => {
-    const senderId = conversation?.messageRequest.senderId;
-    const messageRequest = conversation?.messageRequest;
-    const isRequestApproved = conversation?.messageRequest?.approvedAt;
-    const approveRequest =
-      senderId !== userId && messageRequest && !isRequestApproved;
-
-    if (approveRequest) {
-      return rootNavigator.navigate('MessageRequestChatScreen', {
-        title: `${firstName} ${lastName}`,
-        chatId: conversation?.id,
-        senderId: id,
-        ...member
-      });
-    }
-
     rootNavigator.navigate('DrawerScreen', {
-      screen: conversation?.id ? 'DirectChatScreen' : 'ConnectionChatScreen',
+      screen: 'DirectChatScreen',
       params: {
-        title: `${firstName} ${lastName}`,
-        chatId: conversation?.id,
-        receiverId: id,
-        ...member
+        id,
+        avatar,
+        lastName,
+        firstName,
+        title: `${firstName} ${lastName}`
       }
     });
   };
