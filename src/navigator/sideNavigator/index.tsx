@@ -305,7 +305,7 @@ export default function DrawerStackNavigator() {
                           color: colors.WHITE
                         }}
                       >
-                        {channelMembers.length * 2}
+                        {channelMembers.length}
                       </Paragraph>
                     </CountBadge>
                   </Surface>
