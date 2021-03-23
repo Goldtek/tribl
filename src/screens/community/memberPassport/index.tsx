@@ -46,7 +46,8 @@ import {
   ConnectionCover,
   ButtonCover,
   Cover,
-  HeaderCover
+  HeaderCover,
+  HeaderBottomWrapper
 } from './styles';
 
 interface MemberDetailProps extends NavigationInterface {
@@ -216,60 +217,67 @@ export default function PassportDetail(props: MemberDetailProps) {
                 {`${currentLocation?.state}, ${currentLocation?.country}`}
               </Paragraph>
             )}
-            <HeaderCover>
+            <HeaderCover
+              style={{
+                flexDirection: citizenship?.length > 3 ? 'column' : 'row',
+                flexWrap: citizenship?.length > 3 ? 'wrap' : 'nowrap'
+              }}
+            >
               {citizenship?.length ? (
                 <Title
                   style={{
                     fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.5)),
                     marginTop: RFValue(2),
-                    marginRight: RFValue(15)
+                    marginRight: RFValue(5)
                   }}
                 >
                   {citizenship?.map((country) => country.flag)}
                 </Title>
               ) : null}
-              <Connection style={{ marginRight: RFValue(10) }}>
-                <Paragraph
-                  style={{
-                    color: colors.PRIMARY_TEXT,
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: fonts.LARGE_SIZE
-                  }}
-                >
-                  {connectionCount}
-                </Paragraph>
-                <Paragraph
-                  style={{
-                    fontSize: fonts.MEDIUM_SIZE,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {t(`community.memberPassport.connection`)}
-                </Paragraph>
-              </Connection>
-              <Connection>
-                <Paragraph
-                  style={{
-                    color: colors.PRIMARY_TEXT,
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: fonts.LARGE_SIZE
-                  }}
-                >
-                  {communityCount}
-                </Paragraph>
-                <Paragraph
-                  style={{
-                    fontSize: fonts.MEDIUM_SIZE,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {t(`community.memberPassport.community`)}
-                </Paragraph>
-              </Connection>
+              <HeaderBottomWrapper>
+                <Connection style={{ marginRight: RFValue(10) }}>
+                  <Paragraph
+                    style={{
+                      color: colors.PRIMARY_TEXT,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: fonts.LARGE_SIZE
+                    }}
+                  >
+                    {connectionCount}
+                  </Paragraph>
+                  <Paragraph
+                    style={{
+                      fontSize: fonts.MEDIUM_SIZE,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    {t(`community.memberPassport.connection`)}
+                  </Paragraph>
+                </Connection>
+                <Connection>
+                  <Paragraph
+                    style={{
+                      color: colors.PRIMARY_TEXT,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: fonts.LARGE_SIZE
+                    }}
+                  >
+                    {communityCount}
+                  </Paragraph>
+                  <Paragraph
+                    style={{
+                      fontSize: fonts.MEDIUM_SIZE,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    {t(`community.memberPassport.community`)}
+                  </Paragraph>
+                </Connection>
+              </HeaderBottomWrapper>
             </HeaderCover>
           </ConnectionCover>
         </Header>
