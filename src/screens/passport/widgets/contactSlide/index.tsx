@@ -2,7 +2,7 @@
 import React, { useState, useCallback, Fragment, useEffect } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { Button, Title, TextInput, TouchableRipple } from 'react-native-paper';
-import { FlatList } from 'react-native';
+import { FlatList, TouchableHighlight, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -107,6 +107,8 @@ function ContactSlide(props: ScreenProp) {
     citizenship: []
   });
 
+  const [displayInterest, setDisplayInterest] = useState(false);
+
   const participantOf = state?.participantOf;
   const myConnections = state?.myConnections;
   const currentLocation = state?.currentLocation;
@@ -168,7 +170,7 @@ function ContactSlide(props: ScreenProp) {
   useEffect(() => {
     (async () => {
       if (userDetails) {
-        await Storage.setUserPassport({ ...userDetails });
+        Storage.setUserPassport({ ...userDetails });
         setSelect({
           ...select,
           identity: userDetails?.identity,
@@ -179,7 +181,10 @@ function ContactSlide(props: ScreenProp) {
           ...userDetails,
           date: new Date(parseInt(userDetails?.dob))
             .toLocaleString()
-            .split(',')[0]
+            .split(',')[0],
+          participantOf: userDetails?.participantOf,
+          myConnections: userDetails?.myConnections,
+          myChannels: userDetails?.recentChannels
         });
       }
     })();
@@ -749,87 +754,270 @@ function ContactSlide(props: ScreenProp) {
             {t(`signup.passportScreen.interest`)}
           </Title>
           <Identities>
-            {select?.interest?.length ? (
+            {select?.interest?.length > 8 ||
+            (state?.interest?.length > 8 && click) ? (
               <Fragment>
-                {select?.interest?.map((tag) => (
-                  <IdentityText
-                    key={tag}
-                    onPress={() => (!click ? handleADeleteInterest(tag) : {})}
+                {select?.interest?.length ? (
+                  <Fragment>
+                    {select?.interest?.slice(0, 8)?.map((tag) => (
+                      <IdentityText
+                        key={tag}
+                        onPress={() =>
+                          !click ? handleADeleteInterest(tag) : {}
+                        }
+                        style={{
+                          marginRight: RFValue(10),
+                          marginTop: RFValue(10),
+                          borderColor: colors.INACTIVE,
+                          borderWidth: 1.2,
+                          borderRadius: 4,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between'
+                        }}
+                        labelStyle={{
+                          fontFamily: fonts.WORK_SANS_BOLD,
+                          fontSize: fonts.MEDIUM_SIZE,
+                          color: colors.PRIMARY_TEXT,
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {tag}
+                        {!click ? (
+                          <Fragment>
+                            <Feather
+                              onPress={() => handleADeleteInterest(tag)}
+                              name="x"
+                              size={RFValue(13)}
+                              color={colors.PRIMARY_TEXT}
+                              style={{
+                                paddingLeft: RFValue(30),
+                                paddingRight: RFValue(50)
+                              }}
+                            />
+                          </Fragment>
+                        ) : null}
+                      </IdentityText>
+                    ))}
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {state?.interest?.slice(0, 8)?.map((tag) => (
+                      <IdentityText
+                        key={tag.name}
+                        onPress={() =>
+                          !click ? handleADeleteInterest(tag.name) : {}
+                        }
+                        style={{
+                          marginRight: RFValue(10),
+                          marginTop: RFValue(10),
+                          borderColor: colors.INACTIVE,
+                          borderWidth: 1.2,
+                          borderRadius: 4,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between'
+                        }}
+                        labelStyle={{
+                          fontFamily: fonts.WORK_SANS_BOLD,
+                          fontSize: fonts.MEDIUM_SIZE,
+                          color: colors.PRIMARY_TEXT,
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {tag.name}
+                        {!click ? (
+                          <Fragment>
+                            <Feather
+                              onPress={() => handleADeleteInterest(tag.name)}
+                              name="x"
+                              size={RFValue(13)}
+                              color={colors.PRIMARY_TEXT}
+                              style={{
+                                paddingLeft: RFValue(30),
+                                paddingRight: RFValue(50)
+                              }}
+                            />
+                          </Fragment>
+                        ) : null}
+                      </IdentityText>
+                    ))}
+                  </Fragment>
+                )}
+                <TouchableHighlight
+                  onPress={() => setDisplayInterest(true)}
+                  underlayColor={colors.TRANSPARENT}
+                  style={{
+                    position: 'relative',
+                    top: RFValue(20)
+                  }}
+                >
+                  <Text
                     style={{
-                      marginRight: RFValue(10),
-                      marginTop: RFValue(10),
-                      borderColor: colors.INACTIVE,
-                      borderWidth: 1.2,
-                      borderRadius: 4,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between'
-                    }}
-                    labelStyle={{
+                      display: displayInterest ? 'none' : 'flex',
+                      color: colors.PRIMARY,
+                      fontSize: fonts.LARGE_SIZE - 2,
                       fontFamily: fonts.WORK_SANS_BOLD,
-                      fontSize: fonts.MEDIUM_SIZE,
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize'
+                      position: 'relative',
+                      top: RFValue(20)
                     }}
                   >
-                    {tag}
-                    {!click ? (
-                      <Fragment>
-                        <Feather
-                          onPress={() => handleADeleteInterest(tag)}
-                          name="x"
-                          size={RFValue(13)}
-                          color={colors.PRIMARY_TEXT}
+                    View more
+                  </Text>
+                </TouchableHighlight>
+                {displayInterest ? (
+                  <Fragment>
+                    {select?.interest
+                      ?.slice(1, select?.interest?.length - 1)
+                      ?.map((tag) => (
+                        <IdentityText
+                          key={tag}
+                          onPress={() =>
+                            !click ? handleADeleteInterest(tag) : {}
+                          }
                           style={{
-                            paddingLeft: RFValue(30),
-                            paddingRight: RFValue(50)
+                            marginRight: RFValue(10),
+                            marginTop: RFValue(10),
+                            borderColor: colors.INACTIVE,
+                            borderWidth: 1.2,
+                            borderRadius: 4,
+                            flexDirection: 'row',
+                            justifyContent: 'space-between'
                           }}
-                        />
-                      </Fragment>
-                    ) : null}
-                  </IdentityText>
-                ))}
+                          labelStyle={{
+                            fontFamily: fonts.WORK_SANS_BOLD,
+                            fontSize: fonts.MEDIUM_SIZE,
+                            color: colors.PRIMARY_TEXT,
+                            textTransform: 'capitalize'
+                          }}
+                        >
+                          {tag}
+                          {!click ? (
+                            <Fragment>
+                              <Feather
+                                onPress={() => handleADeleteInterest(tag)}
+                                name="x"
+                                size={RFValue(13)}
+                                color={colors.PRIMARY_TEXT}
+                                style={{
+                                  paddingLeft: RFValue(30),
+                                  paddingRight: RFValue(50)
+                                }}
+                              />
+                            </Fragment>
+                          ) : null}
+                        </IdentityText>
+                      ))}
+                    <TouchableHighlight
+                      onPress={() => setDisplayInterest(false)}
+                      underlayColor={colors.TRANSPARENT}
+                      style={{
+                        marginTop: RFValue(10),
+                        position: 'relative',
+                        top: RFValue(10)
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: colors.PRIMARY,
+                          fontSize: fonts.LARGE_SIZE - 2,
+                          fontFamily: fonts.WORK_SANS_BOLD,
+                          position: 'relative',
+                          top: RFValue(10)
+                        }}
+                      >
+                        View less
+                      </Text>
+                    </TouchableHighlight>
+                  </Fragment>
+                ) : null}
               </Fragment>
             ) : (
               <Fragment>
-                {state?.interest?.map((tag) => (
-                  <IdentityText
-                    key={tag.id}
-                    onPress={() =>
-                      !click ? handleADeleteInterest(tag.name) : {}
-                    }
-                    style={{
-                      marginRight: RFValue(10),
-                      marginTop: RFValue(10),
-                      borderColor: colors.INACTIVE,
-                      borderWidth: 1.2,
-                      borderRadius: 4,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between'
-                    }}
-                    labelStyle={{
-                      fontFamily: fonts.WORK_SANS_BOLD,
-                      fontSize: fonts.MEDIUM_SIZE,
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize'
-                    }}
-                  >
-                    {tag.name}
-                    {!click ? (
-                      <Fragment>
-                        <Feather
-                          onPress={() => handleADeleteInterest(tag.name)}
-                          name="x"
-                          size={RFValue(13)}
-                          color={colors.PRIMARY_TEXT}
-                          style={{
-                            paddingLeft: RFValue(30),
-                            paddingRight: RFValue(50)
-                          }}
-                        />
-                      </Fragment>
-                    ) : null}
-                  </IdentityText>
-                ))}
+                {select?.interest?.length ? (
+                  <Fragment>
+                    {select?.interest?.map((tag) => (
+                      <IdentityText
+                        key={tag}
+                        onPress={() =>
+                          !click ? handleADeleteInterest(tag) : {}
+                        }
+                        style={{
+                          marginRight: RFValue(10),
+                          marginTop: RFValue(10),
+                          borderColor: colors.INACTIVE,
+                          borderWidth: 1.2,
+                          borderRadius: 4,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between'
+                        }}
+                        labelStyle={{
+                          fontFamily: fonts.WORK_SANS_BOLD,
+                          fontSize: fonts.MEDIUM_SIZE,
+                          color: colors.PRIMARY_TEXT,
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {tag}
+                        {!click ? (
+                          <Fragment>
+                            <Feather
+                              onPress={() => handleADeleteInterest(tag)}
+                              name="x"
+                              size={RFValue(13)}
+                              color={colors.PRIMARY_TEXT}
+                              style={{
+                                paddingLeft: RFValue(30),
+                                paddingRight: RFValue(50)
+                              }}
+                            />
+                          </Fragment>
+                        ) : null}
+                      </IdentityText>
+                    ))}
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {state?.interest?.map((tag) => (
+                      <IdentityText
+                        key={tag.name}
+                        onPress={() =>
+                          !click ? handleADeleteInterest(tag.name) : {}
+                        }
+                        style={{
+                          marginRight: RFValue(10),
+                          marginTop: RFValue(10),
+                          borderColor: colors.INACTIVE,
+                          borderWidth: 1.2,
+                          borderRadius: 4,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between'
+                        }}
+                        labelStyle={{
+                          fontFamily: fonts.WORK_SANS_BOLD,
+                          fontSize: fonts.MEDIUM_SIZE,
+                          color: colors.PRIMARY_TEXT,
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {tag.name}
+                        {!click ? (
+                          <Fragment>
+                            <Feather
+                              onPress={() => handleADeleteInterest(tag.name)}
+                              name="x"
+                              size={RFValue(13)}
+                              color={colors.PRIMARY_TEXT}
+                              style={{
+                                paddingLeft: RFValue(30),
+                                paddingRight: RFValue(50)
+                              }}
+                            />
+                            //{' '}
+                          </Fragment>
+                        ) : null}
+                      </IdentityText>
+                    ))}
+                  </Fragment>
+                )}
               </Fragment>
             )}
             <KeyboardAwareScrollView
