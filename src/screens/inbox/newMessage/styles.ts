@@ -1,5 +1,7 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import hexToRGB from '../../../utils/hexToRGB';
+import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 export const Container = styled.View`
   flex: 1;
@@ -7,13 +9,46 @@ export const Container = styled.View`
 `;
 
 export const FilterContainer = styled.View`
-  height: ${RFValue(45)}px;
+  height: ${RFValue(110)}px;
   margin: 25px 0px 10px 0px;
 `;
 
-export const HeaderContainer = styled.View`
-  flex-direction: row;
+export const IconContainer = styled.View`
+  height: ${RFValue(48)}px;
+  width: ${RFValue(48)}px;
+  border-radius: 4px;
+  justify-content: center;
+  align-items: center;
+  background-color: ${({ theme }) => hexToRGB(theme.colors.PRIMARY, 0.3)};
+`
+
+export const NameContainer = styled.View`
+  margin-left: ${RFValue(10)}px;
 `;
+
+export const HeaderContainer = styled.View`
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  padding-right: 50px;
+`;
+
+export const SearchInputContainer = styled.View`
+justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+`
+
+export const HeaderTitle = styled.Text`
+  font-size: 28px;
+  font-family:${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
+  text-transform: capitalize;
+`
+
+export const HeaderAction = styled.TouchableOpacity`
+
+`
 
 export const GroupContainer = styled.View`
   flex-direction: row;

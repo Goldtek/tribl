@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { FlatList, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback, Fragment } from 'react';
+import { FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import {
   Divider,
-  Button,
   Text,
   TouchableRipple,
-  ActivityIndicator
+  ActivityIndicator,
+  Title
 } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Ionicons, Octicons } from '@expo/vector-icons';
+import { Ionicons, Octicons, FontAwesome } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
@@ -41,7 +42,12 @@ import {
   Container,
   FilterContainer,
   HeaderContainer,
-  SearchInput
+  NameContainer,
+  SearchInput,
+  IconContainer,
+  HeaderTitle,
+  SearchInputContainer,
+  HeaderAction
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -111,36 +117,11 @@ export default function ChatScreen(props: ScreenProp) {
     nearbyConnections?.data?.slice()
   );
 
-  const handleOptionClick = (type: string) => () => {
-    const { all, connections, nearby } = state;
-
-    if (type === 'all' && all && !connections && !nearby) return;
-
-    if (type === 'connections' && connections && !all && !nearby) return;
-
-    if (type === 'nearby' && nearby && !all && !connections) return;
-
-    let option = {};
-
-    if (state.all && (type === 'connections' || 'nearby')) {
-      //@ts-ignore
-      option = { ...option, ...state, all: false, [type]: !state[type] };
-    } else {
-      //@ts-ignore
-      option = { ...option, ...state, [type]: !state[type] };
-    }
-
-    if (type === 'all') {
-      option = {
-        ...option,
-        ...state,
-        nearby: false,
-        connections: false,
-        [type]: !state[type]
-      };
-    }
-
-    setState({ ...state, ...option });
+  const handleMessageNavigation = () => {
+    navigation.navigate('InboxScreen', {
+      screen: 'GroupMessage',
+      params: {}
+    });
   };
 
   useEffect(() => {
@@ -331,127 +312,57 @@ export default function ChatScreen(props: ScreenProp) {
               color={colors.PRIMARY}
             />
           </TouchableRipple>
-
-          <SearchInput onStartShouldSetResponder={showSearchScreen}>
-            <Octicons name="search" color={colors.PRIMARY_TEXT} size={20} />
-            <Text
-              style={{
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.PRIMARY_TEXT,
-                paddingHorizontal: RFValue(18)
-              }}
-            >
-              {t(`community.chat.search`)}
-            </Text>
-          </SearchInput>
+          <HeaderTitle>New Chat</HeaderTitle>
+          <HeaderAction></HeaderAction>
         </HeaderContainer>
+
         <FilterContainer>
-          <ScrollView
-            horizontal
-            contentContainerStyle={{
-              height: RFValue(45),
-              paddingHorizontal: RFValue(15)
-            }}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-          >
-            <Button
-              mode="contained"
-              onPress={handleOptionClick('all')}
-              labelStyle={{
-                color: state.all ? colors.WHITE : colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{ height: '100%' }}
-              style={{
-                borderRadius: 4,
-                marginRight: 15,
-                marginBottom: 5,
-                borderWidth: 1,
-                borderColor: state.all ? colors.PRIMARY : colors.DISABLED,
-                backgroundColor: state.all ? colors.PRIMARY : colors.WHITE
-              }}
-            >
-              {t(`community.chat.all`)}
-            </Button>
-
-            <Button
-              mode="contained"
-              onPress={handleOptionClick('connections')}
-              labelStyle={{
-                color: state.connections ? colors.WHITE : colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{ height: '100%' }}
-              style={{
-                borderRadius: 4,
-                marginRight: 15,
-                marginBottom: 5,
-                borderWidth: 1,
-                borderColor: state.connections
-                  ? colors.PRIMARY
-                  : colors.DISABLED,
-                backgroundColor: state.connections
-                  ? colors.PRIMARY
-                  : colors.WHITE
-              }}
-            >
-              {t(`community.chat.connection`)}
-            </Button>
-            <Button
-              mode="contained"
-              onPress={handleOptionClick('nearby')}
-              labelStyle={{
-                color: state.nearby ? colors.WHITE : colors.PRIMARY_TEXT,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{ height: '100%' }}
-              style={{
-                borderRadius: 4,
-                marginBottom: 5,
-                borderWidth: 1,
-                borderColor: state.nearby ? colors.PRIMARY : colors.DISABLED,
-                backgroundColor: state.nearby ? colors.PRIMARY : colors.WHITE
-              }}
-            >
-              {t(`community.chat.nearby`)}
-            </Button>
-          </ScrollView>
-        </FilterContainer>
-
-        {/* <TouchableRipple
-          style={{
-            backgroundColor: colors.WHITE,
-            paddingHorizontal: RFValue(20),
-            paddingBottom: RFValue(5)
-          }}
-          rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
-          onPress={() => {}}
-        >
-          <Fragment>
-            <GroupContainer>
-              <GroupWrapper>
-                <FontAwesome name="group" size={30} color={colors.PRIMARY} />
-              </GroupWrapper>
+          <SearchInputContainer>
+            <SearchInput onStartShouldSetResponder={showSearchScreen}>
+              <Octicons name="search" color={colors.PRIMARY_TEXT} size={20} />
               <Text
                 style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontFamily: fonts.WORK_SANS_REGULAR,
                   fontSize: RFValue(fonts.LARGE_SIZE),
-                  paddingLeft: RFValue(15),
-                  textTransform: 'capitalize'
+                  color: colors.PRIMARY_TEXT,
+                  paddingHorizontal: RFValue(18)
                 }}
               >
-                {t(`community.chat.new`)}
+                {t(`community.chat.search`)}
               </Text>
-            </GroupContainer>
-            <Divider />
-          </Fragment>
-        </TouchableRipple> */}
+            </SearchInput>
+          </SearchInputContainer>
+          <TouchableRipple
+            ref={hideSensitiveView}
+            style={{
+              height: RFValue(80),
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: RFValue(20)
+            }}
+            rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
+            onPress={handleMessageNavigation}
+          >
+            <Fragment>
+              <IconContainer>
+                <FontAwesome name="users" size={30} color={colors.PRIMARY} />
+              </IconContainer>
+
+              <NameContainer ref={hideSensitiveView}>
+                <Title
+                  style={{
+                    color: colors.PRIMARY_TEXT,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  New Group
+                </Title>
+              </NameContainer>
+            </Fragment>
+          </TouchableRipple>
+        </FilterContainer>
 
         {!allMembersLoading ? (
           <FlatList
