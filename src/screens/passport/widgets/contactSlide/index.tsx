@@ -170,7 +170,7 @@ function ContactSlide(props: ScreenProp) {
   useEffect(() => {
     (async () => {
       if (userDetails) {
-        await Storage.setUserPassport({ ...userDetails });
+        Storage.setUserPassport({ ...userDetails });
         setSelect({
           ...select,
           identity: userDetails?.identity,
@@ -181,7 +181,10 @@ function ContactSlide(props: ScreenProp) {
           ...userDetails,
           date: new Date(parseInt(userDetails?.dob))
             .toLocaleString()
-            .split(',')[0]
+            .split(',')[0],
+          participantOf: userDetails?.participantOf,
+          myConnections: userDetails?.myConnections,
+          myChannels: userDetails?.recentChannels
         });
       }
     })();
