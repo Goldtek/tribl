@@ -83,7 +83,11 @@ export default function getStartedScreenScreen(props: ScreenProp) {
       Storage.setUserCredentials({ appVersion: APP_VERSION } as VerifyOTPIT);
       addPhoneNumber();
     } catch (error) {
-      handleInputError();
+      if (error.message.includes('read ECONNRESET')) {
+        handleSubmit();
+      } else {
+        handleInputError();
+      }
       crashlytics.recordError(new Error(error));
     }
   };
