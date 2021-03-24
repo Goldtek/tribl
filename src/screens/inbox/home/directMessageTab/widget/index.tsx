@@ -67,6 +67,8 @@ export default function CustomDirectMessagePreview(
     (userId: string) => userId !== chatClient.user?.id
   );
 
+  if (!receiverId) return null;
+
   const receiver = channel.state.members[`${receiverId}`].user;
   const receiverAvatar = receiver?.image || USER_DEFAULT_AVATAR;
 
