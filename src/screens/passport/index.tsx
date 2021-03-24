@@ -181,18 +181,14 @@ export default function PassportScreen(props: ScreenProp) {
       //Log mixpanel user id to UXCam
       const user = Mixpanel.identify(userDetails?.id);
       logEvent('mixpanel', { 'mixpanel-user-ID': user });
-    }
-  }, [userDetails]);
-
-  const setCacheData = async () => {
-    if (userDetails) {
-      await Storage.setUserPassport({
+      Storage.setUserPassport({
         ...cache,
         citizenship: userDetails.citizenship,
         ...userDetails
       });
+      handleLocation();
     }
-  };
+  }, [userDetails]);
 
   const getCacheData = async () => {
     const storageData = await Storage.getUserPassport();
@@ -296,7 +292,7 @@ export default function PassportScreen(props: ScreenProp) {
           setAvatar({ ...avatar, uri: data.myPassport.avatar });
         });
       }
-    }, 2000);
+    }, 1000);
   }, [userDetails]);
 
   const checkUpdate = async () => {
@@ -329,11 +325,10 @@ export default function PassportScreen(props: ScreenProp) {
           lat: coords.latitude,
           long: coords.longitude
         });
-
+        refetch();
         if (userDetails) {
           await updatePassport();
         }
-        refetch();
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
@@ -459,7 +454,7 @@ export default function PassportScreen(props: ScreenProp) {
     });
   };
 
-  const handleRequest = async () => {
+  const handleUpdatePassport = async () => {
     try {
       if (avatar.imageData) {
         const formData = await cloudinaryUpload(avatar.imageData);
@@ -471,7 +466,6 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
-      setCacheData();
       refetch();
       setUpdate(true);
     } catch (error) {
@@ -579,7 +573,7 @@ export default function PassportScreen(props: ScreenProp) {
                     textTransform: 'uppercase',
                     textAlign: 'center'
                   }}
-                  onPress={handleRequest}
+                  onPress={handleUpdatePassport}
                   loading={loading}
                 >
                   {t(`signup.passportScreen.update`)}
