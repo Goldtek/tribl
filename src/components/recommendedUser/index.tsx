@@ -134,7 +134,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             resizeMode={FastImage.resizeMode.contain}
             source={{
               uri: avatar,
-              priority: FastImage.priority.h
+              priority: FastImage.priority.high
             }}
             style={{
               width: RFValue(70),
