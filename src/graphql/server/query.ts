@@ -71,6 +71,11 @@ export const GET_USER_PASSPORT = gql`
         phoneNumber
         communityCount
         connectionCount
+        currentLocation {
+          country
+          state
+          city
+        }
       }
       participantOf {
         id
@@ -734,6 +739,11 @@ export const GET_MEMBER_PASSPORT = gql`
         lastName
         avatar
         phoneNumber
+        currentLocation {
+          country
+          state
+          city
+        }
       }
       participantOf {
         id
@@ -1192,11 +1202,6 @@ export const GET_TRENDING_CHANNELS = gql`
             id
             name
             avatar
-          }
-          participants {
-            id
-            firstName
-            lastName
           }
         }
       }

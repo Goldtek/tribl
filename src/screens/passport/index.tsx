@@ -50,7 +50,7 @@ import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
 } from '../../utils/cloudinaryUpload';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import {

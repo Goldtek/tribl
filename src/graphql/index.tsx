@@ -5,6 +5,7 @@ import { ApolloProvider as Provider } from '@apollo/react-hooks';
 import { WebSocketLink } from 'apollo-link-ws';
 import { ApolloClient } from 'apollo-client';
 import { getMainDefinition } from 'apollo-utilities';
+import { RetryLink } from 'apollo-link-retry';
 import { crashlytics } from '../firebase/config';
 import ENVIRONMENT_VARIABLES from '../config';
 import { HttpLink } from 'apollo-link-http';
@@ -23,6 +24,15 @@ const httpLink = new HttpLink({
 const wsLink = new WebSocketLink({
   uri: ENVIRONMENT_VARIABLES.TRIBL_WSS_SERVER_BASE_URI,
   options: { reconnect: true }
+});
+
+const retryLink = new RetryLink({
+  delay: {
+    max: 2000,
+    initial: 100,
+    jitter: true
+  },
+  attempts: { max: 3, retryIf: (error, _operation) => !!error }
 });
 
 // using the ability to split links, you can send data to each link
@@ -68,19 +78,27 @@ const requestLink = new ApolloLink(
     })
 );
 
-export const client = new ApolloClient<NormalizedCacheObject>({
-  link: ApolloLink.from([
-    onError(({ graphQLErrors, networkError }) => {
-      // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
-      // @ts-ignore
-      if (graphQLErrors) crashlytics.recordError(new Error(graphQLErrors));
+const handleErrors = onError(({ graphQLErrors, networkError }) => {
+  // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
+  // @ts-ignore
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      crashlytics.recordError(
+        new Error(
+          `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        )
+      )
+    );
+  }
 
-      // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
-      if (networkError) crashlytics.recordError(networkError);
-    }),
-    requestLink,
-    link
-  ]),
+  // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
+  if (networkError) {
+    crashlytics.recordError(new Error(`[Network error]: ${networkError}`));
+  }
+});
+
+export const client = new ApolloClient<NormalizedCacheObject>({
+  link: ApolloLink.from([handleErrors, requestLink, retryLink, link]),
   cache,
   resolvers
 });
