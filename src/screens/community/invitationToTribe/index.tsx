@@ -257,7 +257,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
             tagsSelected={state.tagsSelected}
             handleAddition={handleAddition}
             handleDelete={handleDelete}
-            blurOnSubmit={'true'}
+            blurOnSubmit={true}
             placeholder={t(`community.invitation.placeholder`)}
             autoFocus={false}
             tagStyles={{
@@ -270,6 +270,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
             }}
             inputContainerStyle={{
               backgroundColor: colors.WHITE,
+              width: '100%',
               margin: 0,
               padding: RFValue(10)
             }}
@@ -331,29 +332,29 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
             )}
           />
         </AutoTagCover>
+        <ButtonCover>
+          <GradientButton
+            onPress={sendTribeInvite}
+            loading={loading}
+            style={{ height: 50 }}
+            gradientContainerstyle={{ height: 50 }}
+            contentStyle={{ height: 50 }}
+          >
+            {t(`community.invitation.invite`)}
+          </GradientButton>
+          <Button
+            labelStyle={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
+            }}
+            onPress={() => navigation.goBack()}
+          >
+            {t(`community.invitation.cancel`)}
+          </Button>
+        </ButtonCover>
       </KeyboardAwareScrollView>
-      <ButtonCover>
-        <GradientButton
-          onPress={sendTribeInvite}
-          loading={loading}
-          style={{ height: 50 }}
-          gradientContainerstyle={{ height: 50 }}
-          contentStyle={{ height: 50 }}
-        >
-          {t(`community.invitation.invite`)}
-        </GradientButton>
-        <Button
-          labelStyle={{
-            color: colors.PRIMARY_TEXT,
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            textTransform: 'capitalize'
-          }}
-          onPress={() => navigation.goBack()}
-        >
-          {t(`community.invitation.cancel`)}
-        </Button>
-      </ButtonCover>
     </Container>
   );
 }

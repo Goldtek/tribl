@@ -13,7 +13,7 @@ import {
   RegistrationInfo,
   VerifyOTPIT
 } from '../../graphql/types';
-import { REFRESH_TOKEN, UPDATE_PASSPORT } from '../../graphql/server/mutations';
+import { REFRESH_TOKEN } from '../../graphql/server/mutations';
 import {
   GET_USER_PASSPORT,
   GET_FIREBASE_TOKEN
@@ -24,10 +24,7 @@ import { APP_VERSION } from '../../utils/device';
 import { NavigationInterface } from '../types';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
-import {
-  CHANGE_CONNECTION_NOTIFICATION_BADGE,
-  CHANGE_MESSAGE_NOTIFICATION_BADGE
-} from '../../graphql/cache/mutations';
+import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -47,12 +44,6 @@ export default function SplashScreen(props: ScreenProp) {
   const [authenticateFirebase, { data: firebase }] = useLazyQuery<
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
-
-  const [updatePassportFCM] = useMutation(UPDATE_PASSPORT);
-
-  const [changeMessageNotification] = useMutation(
-    CHANGE_MESSAGE_NOTIFICATION_BADGE
-  );
 
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE

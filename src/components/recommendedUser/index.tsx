@@ -1,39 +1,21 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { Mixpanel } from '../../config';
 import { useTranslation } from 'react-i18next';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
-import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
 import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
-import {
-  MyPassportInterface,
-  PassportInterface,
-  UserPassportInterface
-} from '../../graphql/types';
-import {
-  GET_SINGLE_PASSPORT,
-  GET_USER_PASSPORT
-} from '../../graphql/server/query';
+import { PassportInterface, UserPassportInterface } from '../../graphql/types';
+import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import AdminBadge from '../adminBadge';
 import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
 import { useStreamContext } from '../../stream';
-import {
-  ChannelType,
-  chatClient,
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType
-} from '../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
@@ -43,13 +25,12 @@ interface RecommendedUserProp extends PassportInterface {}
 
 export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
-  const { setChannel, setActivityScreen } = useStreamContext();
+  const { setActivityScreen } = useStreamContext();
 
   const navigation = useNavigation();
   const { t } = useTranslation();
   const [request, setRequest] = useState(false);
   const [member, setMember] = useState(props);
-  const [channelId, setChannelId] = useState('');
 
   const {
     id,
@@ -57,18 +38,16 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     pending,
     lastName,
     firstName,
+    citizenship,
     moderatorOf,
     currentLocation,
-    connectionDetails,
-    citizenship
+    connectionDetails
   } = member;
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
     { variables: { id } }
   );
-
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
@@ -102,96 +81,36 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     }
   };
 
-  useEffect(() => {
-    const getConversation = async () => {
-      const filter = {
-        isDm: true,
-        type: 'team',
-        member_count: 2,
-        members: { $eq: [id, `${chatClient.user?.id}`] }
-      };
-
-      const options = { presence: true, state: true, watch: true };
-
-      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
-
-      const [channel] = await chatClient.queryChannels(filter, sort, options);
-
-      if (!channel) return;
-
-      setChannelId(`${channel.id}`);
-    };
-
-    getConversation();
-  }, []);
-
   const handleMessageNavigation = async () => {
-    let channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LiteralStringForUnion,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    > | null = null;
-
-    if (!channelId) {
-      // @ts-ignore
-      channel = chatClient.channel('team', {
-        conversationId: `${id}|${chatClient.user?.id}`,
-        channelId: `${id}|${chatClient.user?.id}`,
-        members: [id, `${chatClient.user?.id}`],
-        messageRequest: { status: false },
-        sender: {
-          readAt: Date.now(),
-          id: userData?.myPassport.id,
-          avatar: userData?.myPassport.avatar,
-          lastName: userData?.myPassport.lastName,
-          firstName: userData?.myPassport.firstName
-        },
-        receiver: {
-          id: id,
-          avatar,
-          lastName,
-          firstName,
-          readAt: Date.now()
-        },
-        name: Date.now(),
-        community: {},
-        isDm: true,
-        isNew: true
-      });
-
-      await channel.create();
-    }
-
-    setChannel(channel as ChannelType);
     setActivityScreen('directMessage');
-
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {
-        channelId: channelId ? channelId : channel?.id,
-        title: `${firstName} ${lastName}`,
-        ...member
+        id,
+        avatar,
+        lastName,
+        firstName,
+        title: `${firstName} ${lastName}`
       }
     });
   };
 
-  const handleNavigation = useCallback(() => {
-    navigation.navigate('MemberDetailScreen', {
-      title: `${firstName} ${lastName}`,
-      details: { ...member }
+  const handleNavigation = () => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'MemberDetailScreen',
+      params: {
+        title: `${firstName} ${lastName}`,
+        details: { ...member }
+      }
     });
-  }, []);
+  };
 
   return (
     <Card
       onPress={handleNavigation}
       style={{
         width: RFValue(DEVICE_FULL_WIDTH / 3),
-        height: RFValue(200),
+        height: RFValue(215),
         alignItems: 'center',
         borderRadius: 5,
         marginBottom: 20,

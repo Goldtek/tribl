@@ -49,7 +49,6 @@ export default function DrawerStackNavigator() {
   const { channel } = useStreamContext();
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
-
   const [channelMenu, setChannelMenu] = useState(false);
   const showChannelMenu = () => setChannelMenu(!channelMenu);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
@@ -297,7 +296,7 @@ export default function DrawerStackNavigator() {
                         borderRadius: 4
                       }}
                     />
-                    <CountBadge style={{ elevation: 4 }} calculatedWidth={channelMembers.length}>
+                    <CountBadge style={{ elevation: 4 }}>
                       <Paragraph
                         style={{
                           fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -364,7 +363,7 @@ export default function DrawerStackNavigator() {
                           borderWidth: 1
                         }}
                       />
-                      <CountBadge style={{ elevation: 4 }} calculatedWidth={channelMembers.length}>
+                      <CountBadge style={{ elevation: 4 }}>
                         <Paragraph
                           style={{
                             fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -414,7 +413,7 @@ export default function DrawerStackNavigator() {
         }}
       />
 
-      <DrawerStack.Screen
+      {/* <DrawerStack.Screen
         name="ConnectionChatScreen"
         component={InboxScreens.ConnectionChatScreen}
         options={({ route }) => ({
@@ -452,9 +451,9 @@ export default function DrawerStackNavigator() {
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
         })}
-      />
+      /> */}
 
-      <DrawerStack.Screen
+      {/* <DrawerStack.Screen
         name="MessageRequestChatScreen"
         component={InboxScreens.MessageRequestChatScreen}
         options={({ route }: any) => ({
@@ -491,7 +490,7 @@ export default function DrawerStackNavigator() {
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY
         })}
-      />
+      /> */}
 
       <DrawerStack.Screen
         name="MemberDetailScreen"
@@ -661,7 +660,7 @@ export default function DrawerStackNavigator() {
         }}
       />
 
-      <DrawerStack.Screen
+      {/* <DrawerStack.Screen
         name="MessageRequestScreen"
         component={InboxScreens.MessageRequestScreen}
         options={{
@@ -693,7 +692,7 @@ export default function DrawerStackNavigator() {
             </TouchableRipple>
           )
         }}
-      />
+      /> */}
 
       <DrawerStack.Screen
         name="ChannelMembersScreen"

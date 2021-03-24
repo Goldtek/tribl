@@ -23,7 +23,7 @@ import { Cover, LeftCover, Text, RightCover } from './styles';
 interface MyChannelProp extends ChannelInterface {}
 
 export default function MyChannel(props: MyChannelProp) {
-  const { name, community, id, isMember } = props;
+  const { id, name, isMember, community } = props;
 
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
@@ -65,12 +65,12 @@ export default function MyChannel(props: MyChannelProp) {
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
       params: {
-        title: `#${name}`,
         chatId: id,
-        isMember,
         channelId: id,
+        title: `#${name}`,
+        isMember: isMember,
         details: { ...props },
-        channel: { name, community: community?.name }
+        channel: { name: name, community: community?.name }
       }
     });
   };
@@ -79,10 +79,7 @@ export default function MyChannel(props: MyChannelProp) {
     <TouchableRipple
       onPress={handleNavigation}
       rippleColor={colors.PRIMARY}
-      style={{
-        marginRight: 10,
-        borderRadius: 5
-      }}
+      style={{ marginRight: 10, borderRadius: 5 }}
     >
       <FastImage
         resizeMode={FastImage.resizeMode.cover}

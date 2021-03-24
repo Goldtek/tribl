@@ -30,7 +30,8 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   GET_FIREBASE_TOKEN,
-  USER_CHANNELS
+  USER_CHANNELS,
+  GET_TRENDING_CHANNELS
 } from '../../graphql/server/query';
 import {
   GenerateFirebaseTokenIT,
@@ -49,7 +50,7 @@ import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
 } from '../../utils/cloudinaryUpload';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -136,6 +137,10 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
 
+  const [getTrendingChannels] = useLazyQuery(GET_TRENDING_CHANNELS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
+
   const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
   });
@@ -176,18 +181,14 @@ export default function PassportScreen(props: ScreenProp) {
       //Log mixpanel user id to UXCam
       const user = Mixpanel.identify(userDetails?.id);
       logEvent('mixpanel', { 'mixpanel-user-ID': user });
-    }
-  }, [userDetails]);
-
-  const setCacheData = async () => {
-    if (userDetails) {
-      await Storage.setUserPassport({
+      Storage.setUserPassport({
         ...cache,
         citizenship: userDetails.citizenship,
         ...userDetails
       });
+      handleLocation();
     }
-  };
+  }, [userDetails]);
 
   const getCacheData = async () => {
     const storageData = await Storage.getUserPassport();
@@ -267,6 +268,7 @@ export default function PassportScreen(props: ScreenProp) {
     getRecommendedMembers();
     getPopularCommunities();
     getConnectionRequest();
+    getTrendingChannels();
     getMyCommunities();
     getNearbyMembers();
     getMyConnections();
@@ -290,7 +292,7 @@ export default function PassportScreen(props: ScreenProp) {
           setAvatar({ ...avatar, uri: data.myPassport.avatar });
         });
       }
-    }, 2000);
+    }, 1000);
   }, [userDetails]);
 
   const checkUpdate = async () => {
@@ -323,9 +325,10 @@ export default function PassportScreen(props: ScreenProp) {
           lat: coords.latitude,
           long: coords.longitude
         });
-
-        await updatePassport();
         refetch();
+        if (userDetails) {
+          await updatePassport();
+        }
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
@@ -337,12 +340,12 @@ export default function PassportScreen(props: ScreenProp) {
       const interest = [
         ...userDetails?.interest,
         ...cache.details.selectedInterest
-      ].map(({ id }) => id);
+      ].map(({ name }) => name);
 
       const identity = [
         ...userDetails?.identity,
         ...cache.details.selectedIdentity
-      ].map(({ id }) => id);
+      ].map(({ name }) => name);
 
       setCache({
         ...cache,
@@ -372,6 +375,7 @@ export default function PassportScreen(props: ScreenProp) {
   const filterInterest = userDetails?.interest?.map(
     (interest) => interest.name
   );
+
   const removeInterest = filterInterest?.filter(
     (tag) => !cache.details.selectedInterest.includes(tag)
   );
@@ -437,15 +441,20 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  const getUserDetails = (details: any) => {
+  const getUserDetails = (details: any, select: any) => {
     setCache({
       ...cache,
       ...details,
-      details: { ...cache.details, ...details }
+      details: {
+        ...cache.details,
+        selectedIdentity: select.identity,
+        selectedInterest: select.interest,
+        ...details
+      }
     });
   };
 
-  const handleRequest = async () => {
+  const handleUpdatePassport = async () => {
     try {
       if (avatar.imageData) {
         const formData = await cloudinaryUpload(avatar.imageData);
@@ -457,7 +466,6 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
-      setCacheData();
       refetch();
       setUpdate(true);
     } catch (error) {
@@ -565,7 +573,7 @@ export default function PassportScreen(props: ScreenProp) {
                     textTransform: 'uppercase',
                     textAlign: 'center'
                   }}
-                  onPress={handleRequest}
+                  onPress={handleUpdatePassport}
                   loading={loading}
                 >
                   {t(`signup.passportScreen.update`)}
