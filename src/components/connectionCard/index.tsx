@@ -148,8 +148,8 @@ function ConnectionCard(props: ConnectionCardProp) {
             source={require('../../../assets/images/profile.png')}
             resizeMode="cover"
             style={{
-              width: RFValue(60),
-              height: RFValue(60),
+              width: RFValue(50),
+              height: RFValue(50),
               borderRadius: RFValue(4)
             }}
           />
