@@ -92,23 +92,22 @@ function AlgoliaList(props: AlgoliaListProps) {
   );
 
   return (
-    <Results>
-      <FlatList
-        data={hits}
-        renderItem={_renderItem}
-        keyExtractor={(item) => item.id}
-        ItemSeparatorComponent={_separator}
-        showsVerticalScrollIndicator={false}
-        onEndReachedThreshold={0.5}
-        removeClippedSubviews={true}
-        scrollEventThrottle={16}
-        onEndReached={() => hasMore && refineNext()}
-        contentContainerStyle={{
-          paddingTop: RFValue(10),
-          paddingBottom: RFValue(60)
-        }}
-      />
-    </Results>
+    <FlatList
+      data={hits}
+      renderItem={_renderItem}
+      keyExtractor={(item) => item.id}
+      ItemSeparatorComponent={_separator}
+      showsVerticalScrollIndicator={false}
+      onEndReachedThreshold={0.5}
+      removeClippedSubviews={true}
+      scrollEventThrottle={16}
+      ListEmptyComponent={<Results />}
+      onEndReached={() => hasMore && refineNext()}
+      contentContainerStyle={{
+        paddingTop: RFValue(10),
+        paddingBottom: RFValue(60)
+      }}
+    />
   );
 }
 
