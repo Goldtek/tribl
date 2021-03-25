@@ -65,6 +65,11 @@ export default function ChatScreen(props: ScreenProp) {
 
   const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
+  const handleGroupNavigation = () => {
+    // @ts-ignore
+    navigation.navigate('CreateGroupScreen', { participants: group });
+  };
+
   const _renderItem = ({ item }: any) => (
     <MemberCard
       {...item}
@@ -184,7 +189,7 @@ export default function ChatScreen(props: ScreenProp) {
             />
           </TouchableRipple>
           <HeaderTitle>Add Participants</HeaderTitle>
-          <HeaderAction>
+          <HeaderAction onPress={handleGroupNavigation}>
             <HeaderActionText>Create</HeaderActionText>
           </HeaderAction>
         </HeaderContainer>
