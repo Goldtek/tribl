@@ -17,6 +17,7 @@ export const SelectedMemberWrapper = styled.View`
   padding-vertical: 10px;
   width: ${RFValue(50)}px;
   padding-horizontal: 10px;
+  margin-right: 10px;
 `;
 
 export const SelectedMemberContainer = styled.View`
@@ -90,11 +91,29 @@ export const SearchInput = styled.View`
 `;
 
 export const InputContainer = styled.View`
-	padding: 10px 20px;
+	padding: 10px 0;
 
 `
 export const SubjectInput = styled(TextInput)`
 	background-color: transparent;
 	border-bottom-width: 1px;
 	border-bottom-color: ${({ theme }) => theme.colors.PRIMARY};
+`
+
+export const ContentWrapper = styled.View`
+  padding-horizontal: 20px;
+`
+
+export const Overlay = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding-horizontal: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+`;
+
+export const LoaderMessage = styled.Text`
+  color: ${({ theme }) => theme.colors.WHITE};
+  margin-top: 10px;
+  font-size: 14px;
 `
