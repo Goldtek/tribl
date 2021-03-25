@@ -107,6 +107,11 @@ export default function DrawerStackNavigator() {
       />
 
       <DrawerStack.Screen
+        name="CreateGroupScreen"
+        component={InboxScreens.CreateGroupScreen}
+      />
+
+      <DrawerStack.Screen
         name="DirectChatScreen"
         component={InboxScreens.DirectChatScreen}
       />
