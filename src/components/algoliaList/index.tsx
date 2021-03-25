@@ -12,7 +12,7 @@ import { useThemeContext } from '../../theme';
 import Highlight from '../algoliaHighlight';
 import { PassportInterface } from '../../graphql/types';
 
-type AlgoliaListProps = {
+export type AlgoliaListProps = {
   hits: PassportInterface[];
   hasMore: boolean;
   refineNext: () => void;
@@ -111,5 +111,57 @@ function AlgoliaList(props: AlgoliaListProps) {
     </Results>
   );
 }
+
+export const Results = connectStateResults(
+  ({ searchState, searchResults, children }: any) => {
+    const { fonts } = useThemeContext();
+
+    return searchResults && searchResults.nbHits !== 0 ? (
+      children
+    ) : searchState && !searchState.query ? (
+      <Fragment>
+        {[...Array(5)].map((_, index) => (
+          <SkeletonPlaceholder key={`skeleton${index.toString()}`}>
+            <SkeletonPlaceholder.Item
+              flexDirection="row"
+              alignItems="center"
+              margin={10}
+            >
+              <SkeletonPlaceholder.Item
+                width={60}
+                height={60}
+                borderRadius={4}
+              />
+              <SkeletonPlaceholder.Item marginLeft={20}>
+                <SkeletonPlaceholder.Item
+                  width={150}
+                  height={20}
+                  borderRadius={4}
+                />
+                <SkeletonPlaceholder.Item
+                  marginTop={6}
+                  width={80}
+                  height={20}
+                  borderRadius={4}
+                />
+              </SkeletonPlaceholder.Item>
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder>
+        ))}
+      </Fragment>
+    ) : (
+      <Text
+        style={{
+          fontSize: RFValue(fonts.LARGE_SIZE),
+          fontFamily: fonts.WORK_SANS_BOLD,
+          margin: RFValue(20),
+          textAlign: 'center'
+        }}
+      >
+        No results have been found for {searchState.query}.
+      </Text>
+    );
+  }
+);
 
 export default connectInfiniteHits(AlgoliaList);

@@ -1,321 +1,168 @@
-import React, { useState, useEffect, useCallback, Fragment } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FlatList } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { Searchbar } from 'react-native-paper';
+import { connectInfiniteHits } from 'react-instantsearch-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Divider, TouchableRipple, Title } from 'react-native-paper';
 import {
-  Divider,
-  Text,
-  TouchableRipple,
-  ActivityIndicator,
-  Title
-} from 'react-native-paper';
+  InstantSearch,
+  connectSearchBox,
+  Configure
+} from 'react-instantsearch-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Ionicons, Octicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
-import MemberCard from './widgets';
+import MemberCard from './widgets/member';
 import hexToRGB from '../../../utils/hexToRGB';
-import {
-  GET_NEARBY_MEMBERS,
-  GET_MY_CONNECTIONS,
-  GET_ALL_MEMBERS,
-  GET_MY_CONNECTIONS_NEARBY
-} from '../../../graphql/server/query';
-import Skeleton from './widgets/groupMessageSkeleton';
-import ENVIRONMENT_VARIABLES from '../../../config';
-import {
-  MyConnectionNearbyRequestInterface,
-  NearbyMembersRequestInterface,
-  AllMembersRequestInterface,
-  MyConnectionsInterface,
-  PassportInterface
-} from '../../../graphql/types';
+import ENVIRONMENT_VARIABLES, { searchClient } from '../../../config';
+import { PassportInterface } from '../../../graphql/types';
 import { NavigationInterface } from '../../types';
 import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
-import { PAGINATION_DEFAULT } from '../../../constants';
-import { fireAuth } from '../../../firebase/config';
-import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
+import { PAGINATION_DEFAULT, USER_DEFAULT_AVATAR } from '../../../constants';
+import { Results, AlgoliaListProps } from '../../../components/algoliaList';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   Container,
-  FilterContainer,
   HeaderContainer,
-  SearchInput,
-  IconContainer,
-  SearchInputContainer,
   HeaderTitle,
   HeaderAction,
   HeaderActionText,
+  SelectedMemberWrapper,
   SelectedMemberContainer,
   CloseIcon
 } from './styles';
-import { Image } from 'react-native';
-
-import { FontAwesome } from '@expo/vector-icons';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function ChatScreen(props: ScreenProp) {
   const { navigation } = props;
-  const userId = fireAuth.currentUser?.uid;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const [member, setMember] = useState({
-    selectedMember: new Map()
-  });
+  const [group, setGroup] = useState<{ [key: string]: PassportInterface }>({});
+  const [state, setState] = useState({ search: {} });
 
-  const handleSelect = (selected: string) => {
-    if (!member.selectedMember.has(selected)) {
-      return setMember({
-        ...member,
-        selectedMember: new Map(member.selectedMember.set(selected, selected))
-      });
+  const handleSelect = (user: PassportInterface) => {
+    if (!group[user.id]) {
+      return setGroup({ ...group, [user.id]: user });
     }
 
-    member.selectedMember.delete(selected);
-    setMember({
-      ...member,
-      selectedMember: new Map(member.selectedMember)
-    });
+    const { [user.id]: _, ...restUsers } = { ...group };
+    setGroup(restUsers);
   };
-
-  const selectedMembers = [...Array.from(member.selectedMember.values())];
 
   useEffect(() => {
     tagScreenName('NewMessageScreen');
   }, []);
 
-  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
-
-  const [state, setState] = useState({
-    all: true,
-    connections: false,
-    nearby: false
-  });
-
-  const [listData, setListData] = useState<PassportInterface[]>([]);
-
-  const {
-    data: myConnectionNearbyData,
-    fetchMore: fetchMoreMyConnectionNearbyData
-  } = useQuery<MyConnectionNearbyRequestInterface>(GET_MY_CONNECTIONS_NEARBY, {
-    variables: {
-      input: { filter: { id: userId }, skip: 0, limit: PAGINATION_DEFAULT }
-    }
-  });
-
-  const { data: nearbyData, fetchMore: fetchMoreNearbyData } = useQuery<
-    NearbyMembersRequestInterface
-  >(GET_NEARBY_MEMBERS, {
-    variables: { input: { skip: 0, limit: PAGINATION_DEFAULT } }
-  });
-
-  const { data: connectionData, fetchMore: fetchMoreConnectionData } = useQuery<
-    MyConnectionsInterface
-  >(GET_MY_CONNECTIONS, {
-    variables: { input: { skip: 0, limit: PAGINATION_DEFAULT } }
-  });
-
-  const {
-    data: allMembersData,
-    loading: allMembersLoading,
-    fetchMore: fetchMoreAllMembers
-  } = useQuery<AllMembersRequestInterface>(GET_ALL_MEMBERS, {
-    variables: { input: { skip: 0, limit: PAGINATION_DEFAULT } }
-  });
-
-  const allMembers = allMembersData?.Passport;
-  const nearbyMembers = nearbyData?.nearbyMembers;
-  const myConnection = connectionData?.myConnections;
-  const nearbyConnections = myConnectionNearbyData?.nearbyConnections;
-
-  const filterAll = removeDuplicateMembers(allMembers?.data?.slice());
-
-  const filterNearby = removeDuplicateMembers(nearbyMembers?.data?.slice());
-
-  const filterConnection = removeDuplicateMembers(myConnection?.data?.slice());
-
-  const filterConnectionsNearby = removeDuplicateMembers(
-    nearbyConnections?.data?.slice()
-  );
-
-  useEffect(() => {
-    switch (true) {
-      case state.all:
-        setListData(filterAll ? filterAll : []);
-        break;
-      case state.connections && state.nearby:
-        setListData(filterConnectionsNearby ? filterConnectionsNearby : []);
-        break;
-      case state.connections:
-        setListData(filterConnection ? filterConnection : []);
-        break;
-      case state.nearby:
-        setListData(filterNearby ? filterNearby : []);
-        break;
-      default:
-        break;
-    }
-  }, [state, allMembersLoading, allMembersData?.Passport]);
-
-  const handleEndReach = () => {
-    if (!callOnScrollEnd) return;
-
-    switch (true) {
-      case state.connections && state.nearby:
-        fetchMoreMyConnectionNearbyData({
-          variables: {
-            input: {
-              skip: filterConnectionsNearby?.length,
-              limit: PAGINATION_DEFAULT
-            }
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            setCallOnScrollEnd(false);
-
-            if (!fetchMoreResult) return prev;
-
-            return Object.assign({}, prev, {
-              nearbyConnections: {
-                ...prev.nearbyConnections,
-                data: [
-                  ...prev.nearbyConnections.data,
-                  ...fetchMoreResult.nearbyConnections.data
-                ]
-              }
-            });
-          }
-        });
-        break;
-
-      case state.all:
-        fetchMoreAllMembers({
-          variables: {
-            input: { skip: filterAll?.length, limit: PAGINATION_DEFAULT }
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            setCallOnScrollEnd(false);
-
-            if (!fetchMoreResult) return prev;
-
-            return Object.assign({}, prev, {
-              Passport: {
-                ...prev.Passport,
-                data: [...prev.Passport.data, ...fetchMoreResult.Passport.data]
-              }
-            });
-          }
-        });
-        break;
-
-      case state.connections:
-        fetchMoreConnectionData({
-          variables: {
-            input: { skip: filterConnection?.length, limit: PAGINATION_DEFAULT }
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            setCallOnScrollEnd(false);
-
-            if (!fetchMoreResult) return prev;
-
-            return Object.assign({}, prev, {
-              myConnections: {
-                ...prev.myConnections,
-                data: [
-                  ...prev.myConnections.data,
-                  ...fetchMoreResult.myConnections.data
-                ]
-              }
-            });
-          }
-        });
-        break;
-
-      case state.nearby:
-        fetchMoreNearbyData({
-          variables: {
-            input: { skip: filterNearby?.length, limit: PAGINATION_DEFAULT }
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            setCallOnScrollEnd(false);
-
-            if (!fetchMoreResult) return prev;
-
-            return Object.assign({}, prev, {
-              nearbyMembers: {
-                ...prev.nearbyMembers,
-                data: [
-                  ...prev.nearbyMembers.data,
-                  ...fetchMoreResult.nearbyMembers.data
-                ]
-              }
-            });
-          }
-        });
-        break;
-
-      default:
-        break;
-    }
+  const onSearchStateChange = (search: string) => {
+    setState({ ...state, search });
   };
 
-  const onEndReachedScroll = () => {
-    switch (true) {
-      case state.connections &&
-        state.nearby &&
-        nearbyConnections &&
-        nearbyConnections?.metadata.totalCount > listData.length:
-        setCallOnScrollEnd(true);
-        break;
+  const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
-      case state.all &&
-        allMembers &&
-        allMembers?.metadata.totalCount > listData.length:
-        setCallOnScrollEnd(true);
-        break;
-
-      case state.nearby &&
-        nearbyMembers &&
-        nearbyMembers?.metadata.totalCount > listData.length:
-        setCallOnScrollEnd(true);
-        break;
-
-      case state.connections &&
-        myConnection &&
-        myConnection?.metadata.totalCount > listData.length:
-        setCallOnScrollEnd(true);
-        break;
-
-      default:
-        break;
-    }
-  };
-
-  const showSearchScreen = () => {
-    navigation.navigate('CommunityAlgoliaScreen', {
-      indexName: ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME
-    });
-    return true;
-  };
-
-  const _renderItem = ({ item }: { item: PassportInterface }) => (
+  const _renderItem = ({ item }: any) => (
     <MemberCard
-      key={item.id}
       {...item}
-      id={item.id}
-      selected={member.selectedMember.get(item.id)}
+      attribute="id"
+      key={item.id}
       handleSelect={handleSelect}
-      member={item.firstName}
+      selected={Boolean(group[item.id])}
     />
   );
 
-  const _renderFooter = useCallback(
-    () => (callOnScrollEnd ? <ActivityIndicator /> : null),
-    [callOnScrollEnd]
+  const _renderSelectedItem = ({ item }: { item: PassportInterface }) => (
+    <SelectedMemberWrapper>
+      <SelectedMemberContainer ref={hideSensitiveView}>
+        <CloseIcon onPress={() => handleSelect(item)}>
+          <Ionicons name="md-close" size={15} color={colors.GREY} />
+        </CloseIcon>
+        <FastImage
+          resizeMode={FastImage.resizeMode.stretch}
+          source={{
+            uri: item.avatar || USER_DEFAULT_AVATAR,
+            priority: FastImage.priority.high
+          }}
+          style={{
+            width: RFValue(40),
+            height: RFValue(40),
+            borderRadius: 4
+          }}
+        />
+        <Title
+          numberOfLines={1}
+          style={{
+            color: colors.BLACK,
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(10)
+          }}
+        >
+          {item.firstName} {item.lastName} {item.lastName}
+        </Title>
+      </SelectedMemberContainer>
+    </SelectedMemberWrapper>
   );
+
+  const _searchBox = ({ currentRefinement, refine }: any) => (
+    <Searchbar
+      value={currentRefinement}
+      iconColor={colors.PRIMARY_TEXT}
+      onChangeText={(value) => refine(value)}
+      placeholder={t(`community.chat.search`)}
+      style={{
+        height: RFValue(50),
+        fontFamily: fonts.WORK_SANS_REGULAR,
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        color: colors.SECONDARY_TEXT,
+        marginHorizontal: 15,
+        marginVertical: 10,
+        elevation: 0,
+        borderColor: colors.INACTIVE,
+        borderRadius: 4,
+        borderWidth: 1
+      }}
+    />
+  );
+
+  const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), [
+    indexName
+  ]);
+
+  const AlgoliaList = connectInfiniteHits((props: AlgoliaListProps) => {
+    const { hits, hasMore, refineNext } = props;
+
+    return (
+      <Results>
+        <FlatList
+          data={hits}
+          renderItem={_renderItem}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          onEndReachedThreshold={0.5}
+          removeClippedSubviews={true}
+          ItemSeparatorComponent={() => (
+            <Divider
+              style={{
+                height: 1.5,
+                backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
+                marginHorizontal: RFValue(20)
+              }}
+            />
+          )}
+          scrollEventThrottle={16}
+          onEndReached={() => hasMore && refineNext()}
+          contentContainerStyle={{
+            paddingTop: RFValue(10),
+            paddingBottom: RFValue(60)
+          }}
+        />
+      </Results>
+    );
+  });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
@@ -342,107 +189,26 @@ export default function ChatScreen(props: ScreenProp) {
             <HeaderActionText>Create</HeaderActionText>
           </HeaderAction>
         </HeaderContainer>
-
-        <FilterContainer>
-          <SearchInputContainer>
-            <SearchInput onStartShouldSetResponder={showSearchScreen}>
-              <Octicons name="search" color={colors.PRIMARY_TEXT} size={20} />
-              <Text
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  paddingHorizontal: RFValue(18)
-                }}
-              >
-                {t(`community.chat.search`)}
-              </Text>
-            </SearchInput>
-          </SearchInputContainer>
-          <TouchableRipple
-            ref={hideSensitiveView}
-            style={{
-              height: RFValue(80),
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: RFValue(20)
-            }}
-            rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
-            // onPress={handleMessageNavigation}
-          >
-            <Fragment>
-              <SelectedMemberContainer ref={hideSensitiveView}>
-                <CloseIcon>
-                  <Ionicons name="md-close" size={15} color={colors.GREY} />
-                </CloseIcon>
-                <IconContainer>
-                  {/* <Image
-                    source={require('../../../../assets/images/sliderTwoImage2.png')}
-                    resizeMode="cover"
-                    style={{
-                      width: RFValue(40),
-                      height: RFValue(40),
-                      borderRadius: RFValue(4)
-                    }}
-                  /> */}
-                </IconContainer>
-
-                <Title
-                  style={{
-                    color: colors.BLACK,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(10)
-                  }}
-                >
-                  Sundiata
-                </Title>
-              </SelectedMemberContainer>
-            </Fragment>
-          </TouchableRipple>
-        </FilterContainer>
-
-        {!allMembersLoading ? (
+        <InstantSearch
+          indexName={indexName}
+          searchState={state.search}
+          searchClient={searchClient}
+          onSearchStateChange={onSearchStateChange}
+        >
+          <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
+          <AlgoliaSearchBox />
           <FlatList
-            ref={hideSensitiveView}
-            data={listData}
+            horizontal
             bounces={false}
-            renderItem={_renderItem}
+            ref={hideSensitiveView}
+            data={Object.values(group)}
+            renderItem={_renderSelectedItem}
             keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={() => (
-              <Divider
-                style={{
-                  height: 1.5,
-                  backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
-                  marginHorizontal: RFValue(20)
-                }}
-              />
-            )}
-            ListEmptyComponent={
-              <Text
-                style={{
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  margin: RFValue(20),
-                  textAlign: 'center'
-                }}
-              >
-                There are no members at this time
-              </Text>
-            }
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              flexGrow: 1,
-              paddingBottom: 20,
-              paddingVertical: RFValue(20)
-            }}
-            onEndReachedThreshold={1}
-            ListFooterComponent={_renderFooter}
-            onMomentumScrollEnd={handleEndReach}
-            onEndReached={onEndReachedScroll}
+            contentContainerStyle={{ flex: 1 }}
           />
-        ) : (
-          <Skeleton />
-        )}
+          <AlgoliaList />
+        </InstantSearch>
       </Container>
     </SafeAreaView>
   );

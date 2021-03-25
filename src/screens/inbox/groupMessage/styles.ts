@@ -1,6 +1,5 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import hexToRGB from '../../../utils/hexToRGB';
 
 export const Container = styled.View`
   flex: 1;
@@ -8,21 +7,16 @@ export const Container = styled.View`
 `;
 
 export const FilterContainer = styled.View`
-  height: ${RFValue(110)}px;
-  margin: 25px 0px 10px 0px;
+  margin: 10px;
 `;
 
-export const IconContainer = styled.View`
-  height: ${RFValue(40)}px;
-  width: ${RFValue(40)}px;
-  border-radius: 4px;
-  justify-content: center;
-  align-items: center;
-  background-color: ${({ theme }) => hexToRGB(theme.colors.PRIMARY, 0.3)};
-`
+export const SelectedMemberWrapper = styled.View`
+  padding-top: 10px;
+  width: ${RFValue(50)}px;
+  padding-horizontal: 10px;
+`;
 
 export const SelectedMemberContainer = styled.View`
-  /* margin-left: ${RFValue(10)}px; */
   align-items: center;
 `;
 
@@ -38,23 +32,22 @@ export const SearchInputContainer = styled.View`
   align-items: center;
   flex-direction: row;
   margin-bottom: 10px;
-`
+`;
 
 export const HeaderTitle = styled.Text`
   font-size: 24px;
-  font-family:${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   text-transform: capitalize;
-`
+`;
 
-export const HeaderAction = styled.TouchableOpacity`
+export const HeaderAction = styled.TouchableOpacity``;
 
-`
 export const HeaderActionText = styled.Text`
   font-size: 14px;
-  font-family:${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
   color: ${({ theme }) => theme.colors.SECONDARY_TEXT};
-`
+`;
 
 export const GroupContainer = styled.View`
   flex-direction: row;
@@ -96,4 +89,4 @@ export const CloseIcon = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-`
+`;

@@ -120,13 +120,6 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
           }
         }}
       />
-      <ChatStack.Screen
-        name="GroupMessage"
-        component={Screens.GroupMessage}
-        options={{
-          headerShown: false
-        }}
-      />
     </ChatStack.Navigator>
   );
 }

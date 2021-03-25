@@ -52,6 +52,7 @@ export type RootStackParamList = {
   NewMessageScreen?: Object;
   MessageRequestChatScreen?: Object;
   NewChatSearch?: Object;
+  GroupMessageScreen?: Object;
   PassportScreen?: Object;
   PrivacyScreen?: Object;
   ProfileScreen?: Object;
@@ -118,6 +119,7 @@ export type RootStackParamScreensList =
   | 'CommunityScreen'
   | 'PassportScreen'
   | 'ChannelsTab'
+  | 'GroupMessageScreen'
   | 'ThreadScreen'
   | 'MyConnectionScreen'
   | 'MemberPassportScreen'

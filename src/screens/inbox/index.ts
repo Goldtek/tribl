@@ -5,7 +5,7 @@ import ChannelChatScreen from './channelChat';
 import ThreadChatScreen from './threadChat';
 import ChannelMembersScreen from './channelMembers';
 import InvitationToChannelScreen from './invitationToChannel';
-import GroupMessage from './groupMessage';
+import GroupMessageScreen from './groupMessage';
 
 export default {
   InboxScreen,
@@ -13,7 +13,7 @@ export default {
   DirectChatScreen,
   NewMessageScreen,
   ChannelChatScreen,
+  GroupMessageScreen,
   ChannelMembersScreen,
-  InvitationToChannelScreen,
-  GroupMessage
+  InvitationToChannelScreen
 };
