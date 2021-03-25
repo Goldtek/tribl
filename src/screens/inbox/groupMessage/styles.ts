@@ -11,7 +11,7 @@ export const FilterContainer = styled.View`
 `;
 
 export const SelectedMemberWrapper = styled.View`
-  padding-top: 10px;
+  padding-vertical: 10px;
   width: ${RFValue(50)}px;
   padding-horizontal: 10px;
 `;
