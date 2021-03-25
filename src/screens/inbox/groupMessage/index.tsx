@@ -136,31 +136,30 @@ export default function ChatScreen(props: ScreenProp) {
     const { hits, hasMore, refineNext } = props;
 
     return (
-      <Results>
-        <FlatList
-          data={hits}
-          renderItem={_renderItem}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          onEndReachedThreshold={0.5}
-          removeClippedSubviews={true}
-          ItemSeparatorComponent={() => (
-            <Divider
-              style={{
-                height: 1.5,
-                backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
-                marginHorizontal: RFValue(20)
-              }}
-            />
-          )}
-          scrollEventThrottle={16}
-          onEndReached={() => hasMore && refineNext()}
-          contentContainerStyle={{
-            paddingTop: RFValue(10),
-            paddingBottom: RFValue(60)
-          }}
-        />
-      </Results>
+      <FlatList
+        data={hits}
+        renderItem={_renderItem}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        onEndReachedThreshold={0.5}
+        removeClippedSubviews={true}
+        ListEmptyComponent={() => <Results />}
+        ItemSeparatorComponent={() => (
+          <Divider
+            style={{
+              height: 1.5,
+              backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
+              marginHorizontal: RFValue(20)
+            }}
+          />
+        )}
+        scrollEventThrottle={16}
+        onEndReached={() => hasMore && refineNext()}
+        contentContainerStyle={{
+          paddingTop: RFValue(10),
+          paddingBottom: RFValue(60)
+        }}
+      />
     );
   });
 
