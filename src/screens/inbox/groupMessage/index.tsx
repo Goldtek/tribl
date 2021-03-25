@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Searchbar } from 'react-native-paper';
 import { connectInfiniteHits } from 'react-instantsearch-native';
@@ -189,26 +189,28 @@ export default function ChatScreen(props: ScreenProp) {
             <HeaderActionText>Create</HeaderActionText>
           </HeaderAction>
         </HeaderContainer>
-        <InstantSearch
-          indexName={indexName}
-          searchState={state.search}
-          searchClient={searchClient}
-          onSearchStateChange={onSearchStateChange}
-        >
-          <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
-          <AlgoliaSearchBox />
-          <FlatList
-            horizontal
-            bounces={false}
-            ref={hideSensitiveView}
-            data={Object.values(group)}
-            renderItem={_renderSelectedItem}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flex: 1 }}
-          />
-          <AlgoliaList />
-        </InstantSearch>
+        <View>
+          <InstantSearch
+            indexName={indexName}
+            searchState={state.search}
+            searchClient={searchClient}
+            onSearchStateChange={onSearchStateChange}
+          >
+            <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
+            <AlgoliaSearchBox />
+            <FlatList
+              horizontal
+              bounces={false}
+              ref={hideSensitiveView}
+              data={Object.values(group)}
+              renderItem={_renderSelectedItem}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ flex: 1 }}
+            />
+            <AlgoliaList />
+          </InstantSearch>
+        </View>
       </Container>
     </SafeAreaView>
   );
