@@ -330,6 +330,10 @@ export default function PassportScreen(props: ScreenProp) {
         refetch();
         if (userDetails) {
           await updatePassport();
+          Mixpanel.track('User Update passport', {
+            info: `User ${cache.firstName} ${cache.lastName} updates passport`,
+            'Activity Screen': 'Passport screen'
+          });
         }
       }
     } catch (error) {
@@ -468,6 +472,10 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
+      Mixpanel.track('User Update passport', {
+        info: `User ${cache.firstName} ${cache.lastName} updates passport`,
+        'Activity Screen': 'Passport screen'
+      });
       refetch();
       setUpdate(true);
     } catch (error) {
