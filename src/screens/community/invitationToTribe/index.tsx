@@ -86,6 +86,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         ...state,
         tagsSelected: []
       });
+      navigation.goBack();
     } catch (error) {
       crashlytics.recordError(error);
     }
