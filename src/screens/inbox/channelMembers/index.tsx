@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, RefreshControl, SafeAreaView } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
@@ -14,6 +14,7 @@ import {
 import { ChatScreenProps } from '../../types';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
+import { Mixpanel } from '../../../config';
 
 // DEFINE SCREEN PROP TYPES
 interface ModalProp {
@@ -33,6 +34,13 @@ function ChannelMembers(props: ModalProp) {
   >(GET_CHANNEL_MEMBERS, {
     variables: { input: { channelId } }
   });
+
+  useEffect(() => {
+    Mixpanel.track('User Views Channel Members', {
+      info: `User Views Channel Members`,
+      'Activity Screen': 'Channel Screen'
+    });
+  }, []);
 
   const channelMembers = channelData?.channelMembers;
 
