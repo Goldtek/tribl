@@ -137,7 +137,9 @@
     "delete": "delete",
     "mute": "mute",
     "unmute": "unmute",
-    "invite": "Invite friends to channel"
+    "invite": "Invite friends to channel",
+    "channelInformation": "channel information",
+    "edit": "edit"
   },
 
   "update": {
