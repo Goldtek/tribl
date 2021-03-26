@@ -8,6 +8,8 @@ import FastImage from 'react-native-fast-image';
 import { Share, ScrollView, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import { useTranslation } from 'react-i18next';
 // @ts-ignore
 import SingleImage from '../../libs/react-native-zoom-lightbox';
@@ -328,6 +330,10 @@ export default function PassportScreen(props: ScreenProp) {
         refetch();
         if (userDetails) {
           await updatePassport();
+          Mixpanel.track('User Update passport', {
+            info: `User ${cache.firstName} ${cache.lastName} updates passport`,
+            'Activity Screen': 'Passport screen'
+          });
         }
       }
     } catch (error) {
@@ -466,6 +472,10 @@ export default function PassportScreen(props: ScreenProp) {
       }
 
       await updatePassport();
+      Mixpanel.track('User Update passport', {
+        info: `User ${cache.firstName} ${cache.lastName} updates passport`,
+        'Activity Screen': 'Passport screen'
+      });
       refetch();
       setUpdate(true);
     } catch (error) {
@@ -527,9 +537,12 @@ export default function PassportScreen(props: ScreenProp) {
         }}
       >
         <StatusBar translucent animated style="light" />
-        <ScrollView
+        <KeyboardAwareScrollView
           bounces={false}
           showsVerticalScrollIndicator={false}
+          scrollEnabled={true}
+          keyboardShouldPersistTaps={'always'}
+          enableOnAndroid={true}
           contentContainerStyle={{
             backgroundColor: colors.WHITE,
             marginTop: RFValue(20),
@@ -823,7 +836,7 @@ export default function PassportScreen(props: ScreenProp) {
               />
             </TabCover>
           </Fragment>
-        </ScrollView>
+        </KeyboardAwareScrollView>
 
         {OTAUpdate ? (
           <CheckAppUpdates cancelUpdate={() => setOTAUpdate(false)} />

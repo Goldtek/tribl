@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import hexToRGB from '../../../utils/hexToRGB';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import hexToRGB from '../../../../../utils/hexToRGB';
+import { TextInput } from 'react-native-paper';
 
 export const Container = styled.View`
   flex: 1;
@@ -11,6 +11,17 @@ export const Container = styled.View`
 export const FilterContainer = styled.View`
   height: ${RFValue(110)}px;
   margin: 25px 0px 10px 0px;
+`;
+
+export const SelectedMemberWrapper = styled.View`
+  padding-vertical: 10px;
+  width: ${RFValue(50)}px;
+  padding-horizontal: 10px;
+  margin-right: 10px;
+`;
+
+export const SelectedMemberContainer = styled.View`
+  align-items: center;
 `;
 
 export const IconContainer = styled.View`
@@ -40,7 +51,7 @@ justify-content: space-between;
 `
 
 export const HeaderTitle = styled.Text`
-  font-size: 28px;
+  font-size: 20px;
   font-family:${({ theme }) => theme.fonts.WORK_SANS_BOLD};
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   text-transform: capitalize;
@@ -78,3 +89,31 @@ export const SearchInput = styled.View`
   margin: 0px 10px;
   padding: 0px 10px;
 `;
+
+export const InputContainer = styled.View`
+	padding: 10px 0;
+
+`
+export const SubjectInput = styled(TextInput)`
+	background-color: transparent;
+	border-bottom-width: 1px;
+	border-bottom-color: ${({ theme }) => theme.colors.PRIMARY};
+`
+
+export const ContentWrapper = styled.View`
+  padding-horizontal: 20px;
+`
+
+export const Overlay = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding-horizontal: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+`;
+
+export const LoaderMessage = styled.Text`
+  color: ${({ theme }) => theme.colors.WHITE};
+  margin-top: 10px;
+  font-size: 14px;
+`
