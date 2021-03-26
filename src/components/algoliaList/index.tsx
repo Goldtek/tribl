@@ -1,4 +1,4 @@
-import React, { useMemo, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import {
   connectInfiniteHits,
   connectStateResults
@@ -13,33 +13,40 @@ import Highlight from '../algoliaHighlight';
 import { PassportInterface } from '../../graphql/types';
 
 export type AlgoliaListProps = {
-  hits: PassportInterface[];
   hasMore: boolean;
   refineNext: () => void;
+  hits: PassportInterface[];
+  _separator?: () => JSX.Element;
+  _renderItem?: (props: any) => JSX.Element;
 };
 
+const _defaultSeparator = () => {
+  const { colors } = useThemeContext();
+
+  return (
+    <Divider
+      style={{
+        height: 1.5,
+        backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+      }}
+    />
+  );
+};
+
+const _defaultRenderItem = ({ item }: { item: PassportInterface }) => (
+  <Highlight attribute="id" hit={item} key={item.id} />
+);
+
 function AlgoliaList(props: AlgoliaListProps) {
-  const { colors, fonts } = useThemeContext();
-  const { hits, hasMore, refineNext } = props;
+  const { fonts } = useThemeContext();
 
-  const _separator = useMemo(
-    () => () => (
-      <Divider
-        style={{
-          height: 1.5,
-          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
-        }}
-      />
-    ),
-    []
-  );
-
-  const _renderItem = useMemo(
-    () => ({ item }: { item: PassportInterface }) => (
-      <Highlight attribute="id" hit={item} key={item.id} />
-    ),
-    []
-  );
+  const {
+    hits,
+    hasMore,
+    refineNext,
+    _renderItem = _defaultRenderItem,
+    _separator = _defaultSeparator
+  } = props;
 
   const Results = connectStateResults(
     ({ searchState, searchResults, children }: any) => {
@@ -110,57 +117,5 @@ function AlgoliaList(props: AlgoliaListProps) {
     />
   );
 }
-
-export const Results = connectStateResults(
-  ({ searchState, searchResults, children }: any) => {
-    const { fonts } = useThemeContext();
-
-    return searchResults && searchResults.nbHits !== 0 ? (
-      children
-    ) : searchState && !searchState.query ? (
-      <Fragment>
-        {[...Array(5)].map((_, index) => (
-          <SkeletonPlaceholder key={`skeleton${index.toString()}`}>
-            <SkeletonPlaceholder.Item
-              flexDirection="row"
-              alignItems="center"
-              margin={10}
-            >
-              <SkeletonPlaceholder.Item
-                width={60}
-                height={60}
-                borderRadius={4}
-              />
-              <SkeletonPlaceholder.Item marginLeft={20}>
-                <SkeletonPlaceholder.Item
-                  width={150}
-                  height={20}
-                  borderRadius={4}
-                />
-                <SkeletonPlaceholder.Item
-                  marginTop={6}
-                  width={80}
-                  height={20}
-                  borderRadius={4}
-                />
-              </SkeletonPlaceholder.Item>
-            </SkeletonPlaceholder.Item>
-          </SkeletonPlaceholder>
-        ))}
-      </Fragment>
-    ) : (
-      <Text
-        style={{
-          fontSize: RFValue(fonts.LARGE_SIZE),
-          fontFamily: fonts.WORK_SANS_BOLD,
-          margin: RFValue(20),
-          textAlign: 'center'
-        }}
-      >
-        No results have been found for {searchState.query}.
-      </Text>
-    );
-  }
-);
 
 export default connectInfiniteHits(AlgoliaList);

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Searchbar } from 'react-native-paper';
-import { connectInfiniteHits } from 'react-instantsearch-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Divider, TouchableRipple, Title } from 'react-native-paper';
 import {
@@ -21,18 +20,18 @@ import { PassportInterface } from '../../../graphql/types';
 import { NavigationInterface } from '../../types';
 import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT, USER_DEFAULT_AVATAR } from '../../../constants';
-import { Results, AlgoliaListProps } from '../../../components/algoliaList';
+import AlgoliaList from '../../../components/algoliaList';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   Container,
-  HeaderContainer,
+  CloseIcon,
   HeaderTitle,
   HeaderAction,
+  HeaderContainer,
   HeaderActionText,
   SelectedMemberWrapper,
-  SelectedMemberContainer,
-  CloseIcon
+  SelectedMemberContainer
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -47,17 +46,26 @@ export default function ChatScreen(props: ScreenProp) {
   const [state, setState] = useState({ search: {} });
 
   const handleSelect = (user: PassportInterface) => {
-    if (!group[user.id]) {
-      return setGroup({ ...group, [user.id]: user });
+    const { firstName, lastName, id, avatar } = user;
+
+    const payload = {
+      id,
+      avatar,
+      lastName,
+      firstName
+    } as PassportInterface;
+
+    if (!group[id]) {
+      return setGroup({ ...group, [id]: payload });
     }
 
-    const { [user.id]: _, ...restUsers } = { ...group };
+    const { [id]: _, ...restUsers } = { ...group };
     setGroup(restUsers);
   };
 
   useEffect(() => {
     tagScreenName('NewMessageScreen');
-  }, []);
+  }, [group]);
 
   const onSearchStateChange = (search: string) => {
     setState({ ...state, search });
@@ -66,7 +74,6 @@ export default function ChatScreen(props: ScreenProp) {
   const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
   const handleGroupNavigation = () => {
-    // @ts-ignore
     navigation.navigate('CreateGroupScreen', { participants: group });
   };
 
@@ -137,37 +144,6 @@ export default function ChatScreen(props: ScreenProp) {
     indexName
   ]);
 
-  const AlgoliaList = connectInfiniteHits((props: AlgoliaListProps) => {
-    const { hits, hasMore, refineNext } = props;
-
-    return (
-      <FlatList
-        data={hits}
-        renderItem={_renderItem}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        onEndReachedThreshold={0.5}
-        removeClippedSubviews={true}
-        ListEmptyComponent={() => <Results />}
-        ItemSeparatorComponent={() => (
-          <Divider
-            style={{
-              height: 1.5,
-              backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
-              marginHorizontal: RFValue(20)
-            }}
-          />
-        )}
-        scrollEventThrottle={16}
-        onEndReached={() => hasMore && refineNext()}
-        contentContainerStyle={{
-          paddingTop: RFValue(10),
-          paddingBottom: RFValue(60)
-        }}
-      />
-    );
-  });
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <Container>
@@ -209,10 +185,27 @@ export default function ChatScreen(props: ScreenProp) {
               data={Object.values(group)}
               renderItem={_renderSelectedItem}
               keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ flex: 1 }}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingBottom: 10,
+                paddingHorizontal: 10
+              }}
             />
-            <AlgoliaList />
+
+            <AlgoliaList
+              //@ts-ignore
+              _separator={() => (
+                <Divider
+                  style={{
+                    height: 1.5,
+                    backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
+                    marginHorizontal: RFValue(20)
+                  }}
+                />
+              )}
+              //@ts-ignore
+              _renderItem={_renderItem}
+            />
           </InstantSearch>
         </View>
       </Container>

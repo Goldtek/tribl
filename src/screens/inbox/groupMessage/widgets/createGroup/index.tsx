@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import FastImage from 'react-native-fast-image';
 import { TouchableRipple, Title, ActivityIndicator } from 'react-native-paper';
-import { ScrollView, Modal, Text } from 'react-native';
+import { ScrollView, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
-
 import { useThemeContext } from '../../../../../theme';
 import { NavigationInterface } from '../../../../types';
 import { HeaderActionText } from '../../styles';
@@ -13,7 +12,6 @@ import { USER_DEFAULT_AVATAR } from '../../../../../constants';
 import { PassportInterface } from '../../../../../graphql/types';
 import { crashlytics } from '../../../../../firebase/config';
 import { chatClient } from '../../../../../stream/types';
-
 import { useStreamContext } from '../../../../../stream';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -80,13 +78,10 @@ export default function CreateGroup(props: ScreenProp) {
       await channel.create();
       setChannel(channel);
       setLoader(false);
-      console.log('yes yes yes');
+
       navigation.navigate('DrawerScreen', {
         screen: 'DirectChatScreen',
-        params: {
-          id: channel.id,
-          title: subject
-        }
+        params: { id: channel.id, title: subject }
       });
     } catch (error) {
       crashlytics.recordError(new Error(error));

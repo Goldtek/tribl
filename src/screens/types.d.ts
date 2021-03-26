@@ -63,6 +63,7 @@ export type RootStackParamList = {
   InboxScreen?: Object;
   TriblScreen?: Object;
   ThreadScreen?: Object;
+  CreateGroupScreen?: Object;
   TribeChannelScreen?: Object;
   TribeHighlightScreen?: Object;
   TribeMembersScreen?: Object;
@@ -109,6 +110,7 @@ export type RootStackParamScreensList =
   | 'MemberDetailScreen'
   | 'MessageRequestChatScreen'
   | 'MessageRequestScreen'
+  | 'CreateGroupScreen'
   | 'AvatarUploadScreen'
   | 'IdentifyUserScreen'
   | 'UserLocationScreen'
