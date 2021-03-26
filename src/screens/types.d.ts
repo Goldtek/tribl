@@ -52,6 +52,7 @@ export type RootStackParamList = {
   NewMessageScreen?: Object;
   MessageRequestChatScreen?: Object;
   NewChatSearch?: Object;
+  GroupMessageScreen?: Object;
   PassportScreen?: Object;
   PrivacyScreen?: Object;
   ProfileScreen?: Object;
@@ -62,6 +63,7 @@ export type RootStackParamList = {
   InboxScreen?: Object;
   TriblScreen?: Object;
   ThreadScreen?: Object;
+  CreateGroupScreen?: Object;
   TribeChannelScreen?: Object;
   TribeHighlightScreen?: Object;
   TribeMembersScreen?: Object;
@@ -108,6 +110,7 @@ export type RootStackParamScreensList =
   | 'MemberDetailScreen'
   | 'MessageRequestChatScreen'
   | 'MessageRequestScreen'
+  | 'CreateGroupScreen'
   | 'AvatarUploadScreen'
   | 'IdentifyUserScreen'
   | 'UserLocationScreen'
@@ -118,6 +121,7 @@ export type RootStackParamScreensList =
   | 'CommunityScreen'
   | 'PassportScreen'
   | 'ChannelsTab'
+  | 'GroupMessageScreen'
   | 'ThreadScreen'
   | 'MyConnectionScreen'
   | 'MemberPassportScreen'

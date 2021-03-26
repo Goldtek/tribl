@@ -1,7 +1,5 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import hexToRGB from '../../../utils/hexToRGB';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 export const Container = styled.View`
   flex: 1;
@@ -9,46 +7,47 @@ export const Container = styled.View`
 `;
 
 export const FilterContainer = styled.View`
-  height: ${RFValue(110)}px;
-  margin: 25px 0px 10px 0px;
+  margin: 10px;
 `;
 
-export const IconContainer = styled.View`
-  height: ${RFValue(48)}px;
-  width: ${RFValue(48)}px;
-  border-radius: 4px;
-  justify-content: center;
-  align-items: center;
-  background-color: ${({ theme }) => hexToRGB(theme.colors.PRIMARY, 0.3)};
-`
+export const SelectedMemberWrapper = styled.View`
+  padding-vertical: 10px;
+  width: ${RFValue(50)}px;
+  padding-horizontal: 10px;
+`;
 
-export const NameContainer = styled.View`
-  margin-left: ${RFValue(10)}px;
+export const SelectedMemberContainer = styled.View`
+  align-items: center;
 `;
 
 export const HeaderContainer = styled.View`
   justify-content: space-between;
   align-items: center;
   flex-direction: row;
-  padding-right: 50px;
+  padding-right: 20px;
 `;
 
 export const SearchInputContainer = styled.View`
-justify-content: space-between;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
-`
+  margin-bottom: 10px;
+`;
 
 export const HeaderTitle = styled.Text`
-  font-size: 28px;
-  font-family:${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  font-size: 24px;
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   text-transform: capitalize;
-`
+`;
 
-export const HeaderAction = styled.TouchableOpacity`
+export const HeaderAction = styled.TouchableOpacity``;
 
-`
+export const HeaderActionText = styled.Text`
+  font-size: 14px;
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  color: ${({ theme }) => theme.colors.SECONDARY_TEXT};
+`;
 
 export const GroupContainer = styled.View`
   flex-direction: row;
@@ -77,4 +76,17 @@ export const SearchInput = styled.View`
   border-width: 1px;
   margin: 0px 10px;
   padding: 0px 10px;
+`;
+
+export const CloseIcon = styled.TouchableOpacity`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background-color: #979797;
+  z-index: 1;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
 `;

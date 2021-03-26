@@ -1,4 +1,4 @@
-import React, { useMemo, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import {
   connectInfiniteHits,
   connectStateResults
@@ -12,34 +12,41 @@ import { useThemeContext } from '../../theme';
 import Highlight from '../algoliaHighlight';
 import { PassportInterface } from '../../graphql/types';
 
-type AlgoliaListProps = {
-  hits: PassportInterface[];
+export type AlgoliaListProps = {
   hasMore: boolean;
   refineNext: () => void;
+  hits: PassportInterface[];
+  _separator?: () => JSX.Element;
+  _renderItem?: (props: any) => JSX.Element;
 };
 
+const _defaultSeparator = () => {
+  const { colors } = useThemeContext();
+
+  return (
+    <Divider
+      style={{
+        height: 1.5,
+        backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+      }}
+    />
+  );
+};
+
+const _defaultRenderItem = ({ item }: { item: PassportInterface }) => (
+  <Highlight attribute="id" hit={item} key={item.id} />
+);
+
 function AlgoliaList(props: AlgoliaListProps) {
-  const { colors, fonts } = useThemeContext();
-  const { hits, hasMore, refineNext } = props;
+  const { fonts } = useThemeContext();
 
-  const _separator = useMemo(
-    () => () => (
-      <Divider
-        style={{
-          height: 1.5,
-          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
-        }}
-      />
-    ),
-    []
-  );
-
-  const _renderItem = useMemo(
-    () => ({ item }: { item: PassportInterface }) => (
-      <Highlight attribute="id" hit={item} key={item.id} />
-    ),
-    []
-  );
+  const {
+    hits,
+    hasMore,
+    refineNext,
+    _renderItem = _defaultRenderItem,
+    _separator = _defaultSeparator
+  } = props;
 
   const Results = connectStateResults(
     ({ searchState, searchResults, children }: any) => {
@@ -92,23 +99,22 @@ function AlgoliaList(props: AlgoliaListProps) {
   );
 
   return (
-    <Results>
-      <FlatList
-        data={hits}
-        renderItem={_renderItem}
-        keyExtractor={(item) => item.id}
-        ItemSeparatorComponent={_separator}
-        showsVerticalScrollIndicator={false}
-        onEndReachedThreshold={0.5}
-        removeClippedSubviews={true}
-        scrollEventThrottle={16}
-        onEndReached={() => hasMore && refineNext()}
-        contentContainerStyle={{
-          paddingTop: RFValue(10),
-          paddingBottom: RFValue(60)
-        }}
-      />
-    </Results>
+    <FlatList
+      data={hits}
+      renderItem={_renderItem}
+      keyExtractor={(item) => item.id}
+      ItemSeparatorComponent={_separator}
+      showsVerticalScrollIndicator={false}
+      onEndReachedThreshold={0.5}
+      removeClippedSubviews={true}
+      scrollEventThrottle={16}
+      ListEmptyComponent={<Results />}
+      onEndReached={() => hasMore && refineNext()}
+      contentContainerStyle={{
+        paddingTop: RFValue(10),
+        paddingBottom: RFValue(60)
+      }}
+    />
   );
 }
 

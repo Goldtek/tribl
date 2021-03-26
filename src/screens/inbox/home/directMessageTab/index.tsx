@@ -31,9 +31,9 @@ function DirectMessageTab(props: ScreenProp) {
 
   const filters = {
     members: { $in: [userData?.myPassport.id] },
+    $or: [{ isDm: true }, { isGroup: true }],
     isNew: { $ne: true },
-    type: 'team',
-    isDm: true
+    type: 'team'
   };
 
   const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
