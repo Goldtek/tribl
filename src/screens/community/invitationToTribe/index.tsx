@@ -77,8 +77,8 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     }
     logEvent('send tribe invite', { from: 'passport' });
     try {
-      Mixpanel.track('Sendx tribe invites', {
-        info: `Send tribe invite`,
+      Mixpanel.track('Send Tribe Invite', {
+        info: `Invite friends to ${communityId.name}`,
         'Activity Screen': 'Tribe invitation screen'
       });
       await inviteToTribe();
