@@ -17,7 +17,10 @@ import {
   CommunityInterface,
   PassportInterface
 } from '../../../../../graphql/types';
-import ENVIRONMENT_VARIABLES, { searchClient } from '../../../../../config';
+import ENVIRONMENT_VARIABLES, {
+  searchClient,
+  Mixpanel
+} from '../../../../../config';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
 import hexToRGB from '../../../../../utils/hexToRGB';
 
@@ -42,6 +45,10 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   useEffect(() => {
     tagScreenName('TribeMembersScreen');
+    Mixpanel.track('User Views Community Members', {
+      info: `User Views ${communityDetails.name} Community Members`,
+      'Activity Screen': 'Community Member Screen'
+    });
   }, []);
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
