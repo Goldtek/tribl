@@ -212,6 +212,7 @@
     "add": "You may add up to 3",
     "countryError": "You can only add three countries",
     "selectError": "Select atleast one country",
-    "subTitle": "Use your passport to connect & engage."
+    "subTitle": "Use your passport to connect & engage.",
+    "addInterest": "Add interest"
   }
 }
