@@ -175,7 +175,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             uri={avatar}
             style={{
               width: RFValue(100),
-              height: RFValue(80),
+              height: citizenship?.length > 2 ? RFValue(110) : RFValue(80),
               borderRadius: 4
             }}
           />
@@ -186,7 +186,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
                 paddingRight: 20,
-                lineHeight: 21,
+                lineHeight: 19,
                 color: colors.PRIMARY_TEXT,
                 textTransform: 'capitalize'
               }}
@@ -199,7 +199,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                   fontFamily: fonts.WORK_SANS_REGULAR,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
                   paddingRight: 20,
-                  lineHeight: 16,
+                  lineHeight: 15,
                   color: colors.PRIMARY_TEXT,
                   textTransform: 'capitalize'
                 }}
@@ -212,7 +212,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                   fontFamily: fonts.WORK_SANS_REGULAR,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
                   paddingRight: 20,
-                  lineHeight: 16,
+                  lineHeight: 15,
                   color: colors.PRIMARY_TEXT,
                   textTransform: 'capitalize'
                 }}
@@ -222,8 +222,8 @@ export default function PassportDetail(props: MemberDetailProps) {
             )}
             <HeaderCover
               style={{
-                flexDirection: citizenship?.length > 3 ? 'column' : 'row',
-                flexWrap: citizenship?.length > 3 ? 'wrap' : 'nowrap'
+                flexDirection: citizenship?.length > 2 ? 'column' : 'row',
+                flexWrap: citizenship?.length > 2 ? 'wrap' : 'nowrap'
               }}
             >
               {citizenship?.length ? (

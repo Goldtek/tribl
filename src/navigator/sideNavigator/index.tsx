@@ -8,7 +8,8 @@ import {
   Menu,
   Divider,
   Paragraph,
-  Surface
+  Surface,
+  Text
 } from 'react-native-paper';
 import { Image, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -76,6 +77,11 @@ export default function DrawerStackNavigator() {
 
   const handleChannelMembersNavigation = () => {
     navigation.navigate('ChannelMembersScreen', { channelId: channel.id });
+    setChannelMenu(false);
+  };
+
+  const handleChannelInformationNavigation = () => {
+    navigation.navigate('ChannelInformationScreen', { channelId: channel.id });
     setChannelMenu(false);
   };
 
@@ -388,22 +394,61 @@ export default function DrawerStackNavigator() {
                     </Surface>
                   </Fragment>
                 ) : null}
-
-                <Paragraph
-                  style={{
-                    fontSize: fonts.MEDIUM_SIZE + 2,
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    marginLeft: 10
-                  }}
-                >
-                  {route.params?.title.length <= 20
-                    ? route.params?.title
-                    : `${route.params?.title.substr(0, 20)}...`}
-                </Paragraph>
+                <TouchableRipple onPress={handleChannelInformationNavigation}>
+                  <Paragraph
+                    style={{
+                      fontSize: fonts.MEDIUM_SIZE + 2,
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      marginLeft: 10
+                    }}
+                  >
+                    {route.params?.title.length <= 20
+                      ? route.params?.title
+                      : `${route.params?.title.substr(0, 20)}...`}
+                  </Paragraph>
+                </TouchableRipple>
               </Container>
             ),
             headerBackTitleVisible: false,
             headerTintColor: colors.PRIMARY
+          };
+        }}
+      />
+
+      <DrawerStack.Screen
+        name="ChannelInformationScreen"
+        component={InboxScreens.ChannelInformationScreen}
+        options={() => {
+          return {
+            headerShown: true,
+            headerTitle: t(`community.chat.channelInformation`),
+            headerRight: () => (
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: fonts.LARGE_SIZE,
+                  color: colors.PRIMARY,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {t(`community.chat.edit`)}
+              </Text>
+            ),
+            headerBackTitleVisible: false,
+            headerTintColor: colors.PRIMARY,
+            headerTitleStyle: {
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              textTransform: 'capitalize'
+            },
+            headerTitleContainerStyle: {
+              flex: 1,
+              paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
+            },
+
+            headerRightContainerStyle: { marginRight: 20 },
+            headerStyle: GLOBAL_HEADER_STYLE
           };
         }}
       />

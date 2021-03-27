@@ -939,20 +939,23 @@ function ContactSlide(props: ScreenProp) {
             {state?.click ? (
               <Fragment>
                 <TextInput
-                  placeholder={t(`community.createTribe.interestPlaceholder`)}
+                  placeholder={t(`community.passport.addInterest`)}
                   onChangeText={(tagText: string) =>
                     setState({ ...state, tagText: tagText })
                   }
+                  mode="flat"
                   value={state.tagText}
                   onBlur={() => handleSelectInterest(state.tagText)}
+                  underlineColor={colors.PRIMARY}
                   style={{
                     fontFamily: fonts.WORK_SANS_REGULAR,
                     fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                     color: colors.PRIMARY_TEXT,
                     backgroundColor: colors.WHITE,
-                    height: RFValue(30),
-                    borderBottomWidth: 2,
-                    borderColor: colors.PRIMARY,
+                    width: '100%',
+                    borderWidth: 2,
+                    borderColor: colors.WHITE,
+                    borderBottomColor: colors.PRIMARY,
                     textTransform: 'capitalize'
                   }}
                 />
