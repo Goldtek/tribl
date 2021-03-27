@@ -28,7 +28,8 @@ import {
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
-  GET_TRENDING_CHANNELS
+  GET_TRENDING_CHANNELS,
+  USER_CHANNELS
 } from '../../../graphql/server/query';
 import MyChannel from '../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
@@ -40,7 +41,8 @@ import {
   MyCommunitiesRequestInterface,
   RecommendedCommunitiesRequestInterface,
   CommunityInterface,
-  TrendingChannelInterface
+  ChannelInterface,
+  MyChannelRequestInterface
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -123,11 +125,14 @@ export default function HomeScreen(props: ScreenProp) {
     GET_RECOMMENDED_COMMUNITIES
   );
 
-  const { data: trendingChannelsData } = useQuery(GET_TRENDING_CHANNELS, {
-    variables: {
-      input: { limit: PAGINATION_DEFAULT / 2 }
+  const { data: myChannelsData } = useQuery<MyChannelRequestInterface>(
+    USER_CHANNELS,
+    {
+      variables: {
+        input: { limit: PAGINATION_DEFAULT / 2 }
+      }
     }
-  });
+  );
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
     variables: {
@@ -136,7 +141,7 @@ export default function HomeScreen(props: ScreenProp) {
   });
 
   const myCommunities = myCommunityData?.myCommunities;
-  const trendingChannels = trendingChannelsData?.trendingChannels?.data;
+  const myChannels = myChannelsData?.myChannels.data;
   const recommendedMembers = membersData?.recommendedMembers?.data;
   const communities = communityData?.recommendedCommunities?.data
     .slice()
@@ -167,11 +172,9 @@ export default function HomeScreen(props: ScreenProp) {
     []
   );
 
-  const _renderMyChannelItem = ({
-    item
-  }: {
-    item: TrendingChannelInterface;
-  }) => <MyChannel key={item.channel.id} {...item.channel} />;
+  const _renderMyChannelItem = ({ item }: { item: ChannelInterface }) => (
+    <MyChannel key={item.id} {...item} />
+  );
 
   const _renderRecommendedMember = useMemo(
     () => ({ item }: { item: PassportInterface }) => (
@@ -270,7 +273,7 @@ export default function HomeScreen(props: ScreenProp) {
             />
           </RecommendedList>
         ) : null}
-        {trendingChannels?.length ? (
+        {myChannels?.length ? (
           <RecommendedList
             style={{
               paddingBottom: RFValue(15)
@@ -314,7 +317,7 @@ export default function HomeScreen(props: ScreenProp) {
             </RecommendedListHeader>
             <RecommendedCommunityContainer>
               <FlatList
-                data={trendingChannels}
+                data={myChannels}
                 horizontal={true}
                 renderItem={_renderMyChannelItem}
                 ListEmptyComponent={

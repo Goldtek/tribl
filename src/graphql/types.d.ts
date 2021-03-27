@@ -228,10 +228,6 @@ export type ChannelInterface = {
   participants: PassportInterface[];
 };
 
-export type TrendingChannelInterface = {
-  channel: ChannelInterface;
-};
-
 type Interest = {
   id: string;
   name: string;
