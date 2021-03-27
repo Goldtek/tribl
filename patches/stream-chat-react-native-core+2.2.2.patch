@@ -230,10 +230,20 @@ index 03eff3b..e625b44 100644
      <Markdown
        onLink={onLink}
 diff --git a/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx b/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
-index aafb6ee..25397e5 100644
+index aafb6ee..b68c5ea 100644
 --- a/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
 +++ b/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
-@@ -397,7 +397,9 @@ export const MessageList = <
+@@ -342,6 +342,9 @@ export const MessageList = <
+     if (message.type === 'system') {
+       return <MessageSystem message={message} />;
+     }
++    if (Boolean(message.group_system)) {
++      return <MessageSystem message={message} />;
++    }
+     if (message.type !== 'message.read') {
+       return (
+         <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
+@@ -397,7 +400,9 @@ export const MessageList = <
    // https://github.com/facebook/react-native/issues/21196
    if (messageList.length === 0 && !threadList) {
      return messagesLoading ? (
