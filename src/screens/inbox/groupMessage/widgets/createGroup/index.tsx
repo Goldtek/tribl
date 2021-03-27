@@ -8,6 +8,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import { NavigationInterface } from '../../../../types';
 import { HeaderActionText } from '../../styles';
+import { v4 as uuid } from 'uuid';
 import { USER_DEFAULT_AVATAR } from '../../../../../constants';
 import { PassportInterface } from '../../../../../graphql/types';
 import { crashlytics } from '../../../../../firebase/config';
@@ -30,7 +31,9 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: { params: { participants: { [key: string]: PassportInterface } } };
+}
 
 export default function CreateGroup(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
@@ -41,35 +44,37 @@ export default function CreateGroup(props: ScreenProp) {
   const [subject, setSubject] = useState('');
   const [loader, setLoader] = useState(false);
 
-  const selectedItem: PassportInterface[] = Object.values(participants);
+  const selectedItem = Object.values(participants);
 
   const createGroup = async () => {
     if (!subject) return;
 
     setLoader(true);
 
+    const channelId = uuid();
+
     try {
-      // @ts-ignore
-      const channel = chatClient.channel('team', {
-        conversationId: `${Date.now()}|${chatClient.user?.id}`,
-        channelId: `${Date.now()}|${chatClient.user?.id}`,
+      const channel = chatClient.channel('team', channelId, {
+        conversationId: channelId,
+        channelId: channelId,
         members: [
           ...selectedItem.map(({ id }) => id),
           `${chatClient.user?.id}`
         ],
         messageRequest: { status: false },
+        // @ts-ignore
         sender: {
-          readAt: Date.now(),
-          id: chatClient.user?.id,
-          ...chatClient.user?.user
-        },
-        receiver: {
-          id: chatClient.user?.id,
+          id: `${chatClient.user?.id}`,
           ...chatClient.user?.user,
-          readAt: Date.now()
+          readAt: new Date()
+        },
+        // @ts-ignore
+        receiver: {
+          id: `${chatClient.user?.id}`,
+          ...chatClient.user?.user,
+          readAt: new Date()
         },
         name: subject,
-        community: {},
         isDm: false,
         isNew: false,
         isGroup: true
@@ -77,11 +82,21 @@ export default function CreateGroup(props: ScreenProp) {
 
       await channel.create();
       setChannel(channel);
+
+      const channelMessages = selectedItem.map(({ firstName }) =>
+        channel.sendMessage({
+          text: `${firstName} was added by ${chatClient.user?.user.firstName}`,
+          group_system: true
+        })
+      );
+
+      await Promise.all(channelMessages);
       setLoader(false);
 
-      navigation.navigate('DrawerScreen', {
-        screen: 'DirectChatScreen',
-        params: { id: channel.id, title: subject }
+      //@ts-ignore
+      navigation.navigate('DirectChatScreen', {
+        channelId: `${channel?.id}`,
+        title: subject
       });
     } catch (error) {
       crashlytics.recordError(new Error(error));

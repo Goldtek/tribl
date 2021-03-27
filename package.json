@@ -133,6 +133,7 @@
     "@types/react-native-push-notification": "^5.0.4",
     "@types/styled-components": "5.1.0",
     "@types/unique-push-id": "^1.0.0",
+    "@types/uuid": "^8.3.0",
     "babel-preset-expo": "~8.2.0",
     "husky": "4.2.5",
     "jest-expo": "38.0.2",

@@ -26,3 +26,14 @@ export const HeaderContainer = styled.View`
   border: 1px solid ${({ theme }) => theme.colors.DISABLED};
   border-top-color: transparent;
 `;
+
+export const GroupImageContainer = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  overflow: hidden;
+  background-color: ${({ theme }) => theme.colors.INACTIVE};
+`;

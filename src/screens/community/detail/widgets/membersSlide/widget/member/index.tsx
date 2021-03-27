@@ -14,7 +14,6 @@ import {
 import { GET_SINGLE_PASSPORT } from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
 import { crashlytics } from '../../../../../../../firebase/config';
-import { useStreamContext } from '../../../../../../../stream';
 import { chatClient } from '../../../../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -26,7 +25,6 @@ interface MemberProp extends PassportInterface {}
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
-  const { setActivityScreen } = useStreamContext();
 
   const { avatar, firstName, lastName, id } = props;
 
@@ -51,7 +49,6 @@ function Member(props: MemberProp) {
       : false;
 
   const handleMessageNavigation = async () => {
-    setActivityScreen('directMessage');
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {

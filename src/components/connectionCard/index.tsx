@@ -10,7 +10,6 @@ import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
 import { PassportInterface } from '../../graphql/types';
 import { hideSensitiveView } from '../../utils/uxcamHelper';
-import { useStreamContext } from '../../stream';
 import { chatClient } from '../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -21,7 +20,6 @@ interface ConnectionCardProp extends PassportInterface {}
 
 function ConnectionCard(props: ConnectionCardProp) {
   const navigation = useNavigation();
-  const { setActivityScreen } = useStreamContext();
   const { colors, fonts } = useThemeContext();
 
   const { id, avatar, firstName, lastName, currentLocation } = props;
@@ -33,7 +31,6 @@ function ConnectionCard(props: ConnectionCardProp) {
   useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
 
   const handleMessageNavigation = async () => {
-    setActivityScreen('directMessage');
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {

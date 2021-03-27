@@ -73,10 +73,9 @@ export const GroupImageContainer = styled.View`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
+  width: ${RFValue(43)}px;
+  height: ${RFValue(43)}px;
+  border-radius: ${RFValue(43 / 2)}px;
   overflow: hidden;
   background-color: ${({ theme }) => theme.colors.INACTIVE};
-  /* border: 1px black solid; */
 `;

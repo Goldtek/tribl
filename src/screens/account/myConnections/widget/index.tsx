@@ -9,7 +9,6 @@ import { useQuery } from '@apollo/react-hooks';
 import { Entypo } from '@expo/vector-icons';
 import { PassportInterface } from '../../../../graphql/types';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
-import { useStreamContext } from '../../../../stream';
 
 import { NameContainer } from './styles';
 
@@ -17,7 +16,6 @@ interface ConnectionProp extends PassportInterface {}
 
 export default function Connection(props: ConnectionProp) {
   const { colors, fonts } = useThemeContext();
-  const { setActivityScreen } = useStreamContext();
 
   const navigation = useNavigation();
 
@@ -26,8 +24,6 @@ export default function Connection(props: ConnectionProp) {
   useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
 
   const handleMessageNavigation = async () => {
-    setActivityScreen('directMessage');
-
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {

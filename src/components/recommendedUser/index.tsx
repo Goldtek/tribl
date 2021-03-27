@@ -15,7 +15,6 @@ import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import AdminBadge from '../adminBadge';
 import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
-import { useStreamContext } from '../../stream';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer, AvatarContainer } from './styles';
@@ -25,7 +24,6 @@ interface RecommendedUserProp extends PassportInterface {}
 
 export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
-  const { setActivityScreen } = useStreamContext();
 
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -82,7 +80,6 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   };
 
   const handleMessageNavigation = async () => {
-    setActivityScreen('directMessage');
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {

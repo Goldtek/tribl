@@ -25,15 +25,18 @@ import { Container } from './styles';
 interface ScreenProp extends NavigationInterface {}
 
 function ChannelsTab(props: ScreenProp) {
-  const { setChannel, setActivityScreen } = useStreamContext();
+  const { setChannel } = useStreamContext();
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const filters = {
+    type: 'team',
     members: { $in: [userData?.myPassport.id] },
-    $or: [{ isDm: { $ne: true } }, { isGroup: { $ne: true } }],
-    isNew: { $ne: true },
-    type: 'team'
+    $and: [
+      { isDm: { $ne: true } },
+      { isNew: { $ne: true } },
+      { isGroup: { $ne: true } }
+    ]
   };
 
   const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
@@ -62,10 +65,7 @@ function ChannelsTab(props: ScreenProp) {
         >
           // @ts-ignore
           filters={filters}
-          onSelect={(channel) => {
-            setChannel(channel as any);
-            setActivityScreen('channelScreen');
-          }}
+          onSelect={(channel) => setChannel(channel as any)}
           sort={sort}
           options={options}
           Preview={CustomChannelPreview}

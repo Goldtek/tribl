@@ -57,7 +57,7 @@ export default function CustomDirectMessagePreview(
     latestMessageLength = 40
   } = props;
 
-  if (channel.data?.isNew) return null;
+  if (Boolean(channel.data?.isNew)) return null;
 
   const navigation = useNavigation();
   const { colors } = useThemeContext();
@@ -70,35 +70,45 @@ export default function CustomDirectMessagePreview(
   let receiverAvatar: any = null;
   const groupAvatar: string[] = [];
 
-  if (channel.data?.isDm) {
+  if (Boolean(channel.data?.isDm)) {
     receiverId = Object.keys(channel.state.members).find(
       (userId: string) => userId !== chatClient.user?.id
     );
-  } else if (channel.data?.isGroup) {
+  }
+
+  if (Boolean(channel.data?.isGroup)) {
     const members = Object.values(channel.state.members);
 
     for (let index = 0; index < members.length; index++) {
       const member = members[index];
 
-      if (chatClient.user?.id !== member.user?.id && groupAvatar.length !== 3) {
+      if (groupAvatar.length === 3) break;
+
+      if (chatClient.user?.id !== member.user?.id) {
         const avatar = member.user?.user.avatar || USER_DEFAULT_AVATAR;
         groupAvatar.push(avatar);
-      } else continue;
+      }
 
-      if (groupAvatar.length === 3) break;
+      if (members.length === 2 && groupAvatar.length < 2) {
+        groupAvatar.push(`${chatClient.user?.user.avatar}`);
+      }
     }
   }
 
-  if (!receiverId && channel.data?.isDm) return null;
+  if (!receiverId && Boolean(channel.data?.isDm)) return null;
 
-  if (channel.data?.isDm) {
+  if (Boolean(channel.data?.isDm)) {
     channelDetails = channel.state.members[`${receiverId}`].user;
     receiverAvatar = channelDetails?.image || USER_DEFAULT_AVATAR;
-  } else if (channel.data?.isGroup) {
+  }
+
+  if (Boolean(channel.data?.isGroup)) {
     channelDetails = channel.data;
   }
 
-  const handleDeleteAction = async () => {};
+  const handleDeleteAction = async () => {
+    channel.removeMembers([`${chatClient.user?.id}`]);
+  };
 
   const toggleMuteAction = async () => {
     try {
@@ -143,7 +153,7 @@ export default function CustomDirectMessagePreview(
         ref={hideSensitiveView}
       >
         <Fragment>
-          {channel.data?.isDm && (
+          {Boolean(channel.data?.isDm) && (
             <Avatar
               image={receiverAvatar}
               name={channelDetails?.name}
@@ -151,7 +161,7 @@ export default function CustomDirectMessagePreview(
             />
           )}
 
-          {channel.data?.isGroup && groupAvatar.length < 3 && (
+          {Boolean(channel.data?.isGroup) && groupAvatar.length < 3 && (
             <GroupImageContainer>
               <FastImage
                 resizeMode={FastImage.resizeMode.cover}
@@ -160,9 +170,9 @@ export default function CustomDirectMessagePreview(
                   priority: FastImage.priority.high
                 }}
                 style={{
-                  width: 35,
-                  height: 35,
-                  borderRadius: 35 / 2,
+                  width: RFValue(28),
+                  height: RFValue(28),
+                  borderRadius: RFValue(28 / 2),
                   zIndex: 2,
                   borderWidth: 2,
                   right: 1,
@@ -179,11 +189,11 @@ export default function CustomDirectMessagePreview(
                   priority: FastImage.priority.high
                 }}
                 style={{
-                  width: 30,
-                  height: 30,
+                  width: RFValue(25),
+                  height: RFValue(25),
                   left: 1,
                   top: 5,
-                  borderRadius: 30 / 2,
+                  borderRadius: RFValue(25 / 2),
                   position: 'absolute',
                   borderColor: colors.WHITE,
                   borderWidth: 2
@@ -192,7 +202,7 @@ export default function CustomDirectMessagePreview(
             </GroupImageContainer>
           )}
 
-          {channel.data?.isGroup && groupAvatar.length > 3 && (
+          {Boolean(channel.data?.isGroup) && groupAvatar.length > 3 && (
             <GroupImageContainer>
               <FastImage
                 resizeMode={FastImage.resizeMode.cover}
@@ -201,9 +211,9 @@ export default function CustomDirectMessagePreview(
                   priority: FastImage.priority.high
                 }}
                 style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 28 / 2,
+                  width: RFValue(22),
+                  height: RFValue(22),
+                  borderRadius: RFValue(22 / 2),
                   borderColor: colors.WHITE,
                   bottom: 5,
                   borderWidth: 2
@@ -217,9 +227,9 @@ export default function CustomDirectMessagePreview(
                   priority: FastImage.priority.high
                 }}
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 32 / 2,
+                  width: RFValue(25),
+                  height: RFValue(25),
+                  borderRadius: RFValue(25 / 2),
                   top: 20,
                   zIndex: 2,
                   borderWidth: 2,
@@ -231,16 +241,16 @@ export default function CustomDirectMessagePreview(
               <FastImage
                 resizeMode={FastImage.resizeMode.cover}
                 source={{
-                  uri: groupAvatar[0],
+                  uri: groupAvatar[2],
                   priority: FastImage.priority.high
                 }}
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: RFValue(22),
+                  height: RFValue(22),
                   bottom: 5,
                   borderWidth: 2,
                   borderColor: colors.WHITE,
-                  borderRadius: 28 / 2
+                  borderRadius: RFValue(22 / 2)
                 }}
               />
             </GroupImageContainer>

@@ -48,57 +48,20 @@ function AlgoliaList(props: AlgoliaListProps) {
     _separator = _defaultSeparator
   } = props;
 
-  const Results = connectStateResults(
-    ({ searchState, searchResults, children }: any) => {
-      return searchResults && searchResults.nbHits !== 0 ? (
-        children
-      ) : searchState && !searchState.query ? (
-        <Fragment>
-          {[...Array(5)].map((_, index) => (
-            <SkeletonPlaceholder key={`skeleton${index.toString()}`}>
-              <SkeletonPlaceholder.Item
-                flexDirection="row"
-                alignItems="center"
-                margin={10}
-              >
-                <SkeletonPlaceholder.Item
-                  width={60}
-                  height={60}
-                  borderRadius={4}
-                />
-                <SkeletonPlaceholder.Item marginLeft={20}>
-                  <SkeletonPlaceholder.Item
-                    width={150}
-                    height={20}
-                    borderRadius={4}
-                  />
-                  <SkeletonPlaceholder.Item
-                    marginTop={6}
-                    width={80}
-                    height={20}
-                    borderRadius={4}
-                  />
-                </SkeletonPlaceholder.Item>
-              </SkeletonPlaceholder.Item>
-            </SkeletonPlaceholder>
-          ))}
-        </Fragment>
-      ) : (
-        <Text
-          style={{
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            margin: RFValue(20),
-            textAlign: 'center'
-          }}
-        >
-          No results have been found for {searchState.query}.
-        </Text>
-      );
-    }
-  );
+  const Results = connectStateResults(({ searchState }: any) => (
+    <Text
+      style={{
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        fontFamily: fonts.WORK_SANS_MEDIUM,
+        margin: RFValue(20),
+        textAlign: 'center'
+      }}
+    >
+      No results have been found for {searchState.query}.
+    </Text>
+  ));
 
-  return (
+  return hits.length ? (
     <FlatList
       data={hits}
       renderItem={_renderItem}
@@ -115,6 +78,33 @@ function AlgoliaList(props: AlgoliaListProps) {
         paddingBottom: RFValue(60)
       }}
     />
+  ) : (
+    <Fragment>
+      {[...Array(5)].map((_, index) => (
+        <SkeletonPlaceholder key={`skeleton${index.toString()}`}>
+          <SkeletonPlaceholder.Item
+            flexDirection="row"
+            alignItems="center"
+            margin={10}
+          >
+            <SkeletonPlaceholder.Item width={60} height={60} borderRadius={4} />
+            <SkeletonPlaceholder.Item marginLeft={20}>
+              <SkeletonPlaceholder.Item
+                width={150}
+                height={20}
+                borderRadius={4}
+              />
+              <SkeletonPlaceholder.Item
+                marginTop={6}
+                width={80}
+                height={20}
+                borderRadius={4}
+              />
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+      ))}
+    </Fragment>
   );
 }
 
