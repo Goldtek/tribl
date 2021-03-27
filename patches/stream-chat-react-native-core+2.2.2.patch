@@ -254,6 +254,65 @@ index aafb6ee..b68c5ea 100644
      ) : (
        <View style={{ flex: 1 }} testID='empty-state'>
          <EmptyStateIndicator listType='message' />
+diff --git a/node_modules/stream-chat-react-native-core/src/components/MessageList/hooks/useMessageList.ts b/node_modules/stream-chat-react-native-core/src/components/MessageList/hooks/useMessageList.ts
+index 16b4a42..dc8895d 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/MessageList/hooks/useMessageList.ts
++++ b/node_modules/stream-chat-react-native-core/src/components/MessageList/hooks/useMessageList.ts
+@@ -30,6 +30,7 @@ export type UseMessageListParams = {
+   threadList?: boolean;
+ };
+ 
++
+ export const useMessageList = <
+   At extends UnknownType = DefaultAttachmentType,
+   Ch extends UnknownType = DefaultChannelType,
+@@ -41,6 +42,7 @@ export const useMessageList = <
+ >(
+   params: UseMessageListParams,
+ ): InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us> => {
++  const uniqueMessages = {}
+   const { inverted, noGroupByUser, threadList } = params;
+   const { read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+   const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+@@ -63,16 +65,27 @@ export const useMessageList = <
+     readList,
+   );
+ 
+-  const messagesWithDatesList = messagesWithDates.map((msg) => ({
+-    ...msg,
+-    groupStyles:
+-      !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
+-        ? messageGroupStyles[msg.id] || []
+-        : [],
+-    readBy:
+-      !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
+-        ? readData[msg.id] || []
+-        : [],
+-  }));
++  const messagesWithDatesList = []
++
++  for (let index = 0; index < messagesWithDates.length; index++) {
++    const msg = messagesWithDates[index];    
++
++    if (!Boolean(uniqueMessages[msg.id])) {
++      messagesWithDatesList.push({
++        ...msg,
++        groupStyles:
++          !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
++            ? messageGroupStyles[msg.id] || []
++            : [],
++        readBy:
++          !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
++            ? readData[msg.id] || []
++            : []
++      })
++
++      uniqueMessages[msg.id] = msg.id
++    }
++  }
++
+   return inverted ? messagesWithDatesList.reverse() : messagesWithDatesList;
+ };
 diff --git a/node_modules/stream-chat-react-native-core/src/components/Reaction/ReactionPicker.tsx b/node_modules/stream-chat-react-native-core/src/components/Reaction/ReactionPicker.tsx
 index 4981e30..daa2d3d 100644
 --- a/node_modules/stream-chat-react-native-core/src/components/Reaction/ReactionPicker.tsx

@@ -25,6 +25,7 @@ import { ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import { crashlytics } from '../../../firebase/config';
 import { Channel as ChannelType } from 'stream-chat';
 import CustomSystemMessage from '../../../components/customSystemMessage';
+import { RFValue } from 'react-native-responsive-fontsize';
 import {
   chatClient,
   ThreadType,
@@ -236,12 +237,12 @@ export default function DirectChatScreen(props: ScreenProp) {
                 <Avatar
                   image={receiver?.image}
                   name={receiver?.name}
-                  size={40}
+                  size={RFValue(40)}
                 />
               </Chat>
             )}
 
-            {channel.data?.isGroup && groupAvatar.length < 3 && (
+            {channel.data?.isGroup && groupAvatar.length === 2 && (
               <GroupImageContainer>
                 <FastImage
                   resizeMode={FastImage.resizeMode.cover}
@@ -250,9 +251,9 @@ export default function DirectChatScreen(props: ScreenProp) {
                     priority: FastImage.priority.high
                   }}
                   style={{
-                    width: 35,
-                    height: 35,
-                    borderRadius: 35 / 2,
+                    width: RFValue(28),
+                    height: RFValue(28),
+                    borderRadius: RFValue(28 / 2),
                     zIndex: 2,
                     borderWidth: 2,
                     right: 1,
@@ -269,11 +270,11 @@ export default function DirectChatScreen(props: ScreenProp) {
                     priority: FastImage.priority.high
                   }}
                   style={{
-                    width: 30,
-                    height: 30,
+                    width: RFValue(25),
+                    height: RFValue(25),
                     left: 1,
                     top: 5,
-                    borderRadius: 30 / 2,
+                    borderRadius: RFValue(25 / 2),
                     position: 'absolute',
                     borderColor: colors.WHITE,
                     borderWidth: 2
@@ -282,7 +283,7 @@ export default function DirectChatScreen(props: ScreenProp) {
               </GroupImageContainer>
             )}
 
-            {channel.data?.isGroup && groupAvatar.length > 3 && (
+            {channel.data?.isGroup && groupAvatar.length === 3 && (
               <GroupImageContainer>
                 <FastImage
                   resizeMode={FastImage.resizeMode.cover}
@@ -291,9 +292,9 @@ export default function DirectChatScreen(props: ScreenProp) {
                     priority: FastImage.priority.high
                   }}
                   style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 28 / 2,
+                    width: RFValue(22),
+                    height: RFValue(22),
+                    borderRadius: RFValue(22 / 2),
                     borderColor: colors.WHITE,
                     bottom: 5,
                     borderWidth: 2
@@ -307,9 +308,9 @@ export default function DirectChatScreen(props: ScreenProp) {
                     priority: FastImage.priority.high
                   }}
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 32 / 2,
+                    width: RFValue(25),
+                    height: RFValue(25),
+                    borderRadius: RFValue(25 / 2),
                     top: 20,
                     zIndex: 2,
                     borderWidth: 2,
@@ -321,16 +322,16 @@ export default function DirectChatScreen(props: ScreenProp) {
                 <FastImage
                   resizeMode={FastImage.resizeMode.cover}
                   source={{
-                    uri: groupAvatar[0],
+                    uri: groupAvatar[2],
                     priority: FastImage.priority.high
                   }}
                   style={{
-                    width: 28,
-                    height: 28,
+                    width: RFValue(22),
+                    height: RFValue(22),
                     bottom: 5,
                     borderWidth: 2,
                     borderColor: colors.WHITE,
-                    borderRadius: 28 / 2
+                    borderRadius: RFValue(22 / 2)
                   }}
                 />
               </GroupImageContainer>
@@ -340,7 +341,7 @@ export default function DirectChatScreen(props: ScreenProp) {
             style={{
               fontSize: fonts.MEDIUM_SIZE + 2,
               fontFamily: fonts.WORK_SANS_BOLD,
-              marginHorizontal: 10
+              marginHorizontal: 5
             }}
           >
             {`${receiver?.name}`.length <= 20

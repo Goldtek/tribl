@@ -161,7 +161,7 @@ export default function CustomDirectMessagePreview(
             />
           )}
 
-          {Boolean(channel.data?.isGroup) && groupAvatar.length < 3 && (
+          {Boolean(channel.data?.isGroup) && groupAvatar.length === 2 && (
             <GroupImageContainer>
               <FastImage
                 resizeMode={FastImage.resizeMode.cover}
@@ -202,7 +202,7 @@ export default function CustomDirectMessagePreview(
             </GroupImageContainer>
           )}
 
-          {Boolean(channel.data?.isGroup) && groupAvatar.length > 3 && (
+          {Boolean(channel.data?.isGroup) && groupAvatar.length === 3 && (
             <GroupImageContainer>
               <FastImage
                 resizeMode={FastImage.resizeMode.cover}
