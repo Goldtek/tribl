@@ -2572,6 +2572,11 @@
   resolved "https://registry.yarnpkg.com/@types/unique-push-id/-/unique-push-id-1.0.0.tgz#8230bb5a911af95fe691deb30712b60a4dc02698"
   integrity sha512-SW68C+FXlkIHBe6UUAudd6s6tmRzCZptb2I5qbfycYJbaPx8jlI6e+/R2/LEgk5X/oekfx20SMzIEGsemecGvQ==
 
+"@types/uuid@^8.3.0":
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.0.tgz#215c231dff736d5ba92410e6d602050cce7e273f"
+  integrity sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==
+
 "@types/ws@^7.2.7", "@types/ws@^7.4.0":
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.0.tgz#499690ea08736e05a8186113dac37769ab251a0e"
