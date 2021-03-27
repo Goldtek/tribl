@@ -27,6 +27,7 @@ export interface LocalChannelType extends DefaultChannelType {
   isGroup: boolean;
   channelId: string;
   conversationId: string;
+  created_by: LocalUserType;
   sender: MessageUserInterface;
   community: CommunityInterface;
   receiver: MessageUserInterface;
