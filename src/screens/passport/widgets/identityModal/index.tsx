@@ -43,7 +43,7 @@ function IdentityModal(props: any) {
 
   const { data } = useQuery<IdentitiesInterface>(GET_ALL_IDENTITIES, {
     variables: {
-      input: { filter: { isAdmin: true } }
+      input: { filter: { isAdmin: true }, limit: 50 }
     }
   });
 

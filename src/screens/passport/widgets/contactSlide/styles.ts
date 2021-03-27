@@ -50,6 +50,7 @@ export const IdentityContainer = styled.View`
 export const Identities = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
+  width: 100%;
 `;
 
 export const IdentityText = styled.Text`
