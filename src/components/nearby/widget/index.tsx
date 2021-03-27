@@ -11,7 +11,6 @@ import { rootNavigator } from '../../../constants';
 import hexToRGB from '../../../utils/hexToRGB';
 import { crashlytics } from '../../../firebase/config';
 import { logEvent } from '../../../utils/uxcamHelper';
-import { useStreamContext } from '../../../stream';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
@@ -23,7 +22,6 @@ interface NearbyUserProp extends PassportInterface {
 
 function NearbyModal(props: NearbyUserProp) {
   const { colors, fonts } = useThemeContext();
-  const { setActivityScreen } = useStreamContext();
 
   const { t } = useTranslation();
 
@@ -65,7 +63,6 @@ function NearbyModal(props: NearbyUserProp) {
 
   const handleMessageNavigation = async () => {
     NearbyUserModal();
-    setActivityScreen('directMessage');
     rootNavigator.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {

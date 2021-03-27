@@ -27,7 +27,6 @@ import {
   hideSensitiveView
 } from '../../../utils/uxcamHelper';
 import { crashlytics } from '../../../firebase/config';
-import { useStreamContext } from '../../../stream';
 import MyChannel from './widget/channelCard';
 import { StatusBar } from 'expo-status-bar';
 import MyConnectionCard from '../../../components/MyConnectionCard';
@@ -58,7 +57,6 @@ export default function PassportDetail(props: MemberDetailProps) {
   const { navigation } = props;
 
   const { colors, fonts } = useThemeContext();
-  const { setActivityScreen } = useStreamContext();
   const { t } = useTranslation();
 
   const [state, setState] = useState({ loading: false, pending: false });
@@ -114,7 +112,6 @@ export default function PassportDetail(props: MemberDetailProps) {
   }, []);
 
   const handleMessageNavigation = async () => {
-    setActivityScreen('directMessage');
     navigation.navigate('DrawerScreen', {
       screen: 'DirectChatScreen',
       params: {
