@@ -8,6 +8,7 @@ import InvitationToChannelScreen from './invitationToChannel';
 import GroupMessageScreen from './groupMessage';
 import CreateGroupScreen from './groupMessage/widgets/createGroup';
 import ChannelInformationScreen from './channelInformation';
+import InviteToChannelFromProfileScreen from './inviteToChannelFromProfile';
 
 export default {
   InboxScreen,
@@ -19,5 +20,6 @@ export default {
   ChannelMembersScreen,
   InvitationToChannelScreen,
   CreateGroupScreen,
-  ChannelInformationScreen
+  ChannelInformationScreen,
+  InviteToChannelFromProfileScreen
 };
