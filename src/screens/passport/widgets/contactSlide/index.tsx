@@ -127,7 +127,8 @@ function ContactSlide(props: ScreenProp) {
 
   const [select, setSelect] = useState({
     identity: [],
-    interest: []
+    interest: [],
+    deleteInterest: []
   });
 
   useEffect(() => {
@@ -294,12 +295,15 @@ function ContactSlide(props: ScreenProp) {
     const filteredInterest = select.interest.filter(
       (interest) => interest !== selected
     );
+    const deleteInterest = select.interest.filter(
+      (interest) => interest == selected
+    );
     setSelect({
       ...select,
-      interest: filteredInterest
+      interest: filteredInterest,
+      deleteInterest: [...select.deleteInterest, ...deleteInterest]
     });
   };
-
   const showIdentityModal = useCallback(
     (isVisible: boolean) => () => {
       setIsVisible(isVisible);
@@ -977,7 +981,7 @@ function ContactSlide(props: ScreenProp) {
 
       {participantOf?.length ? (
         <Fragment>
-          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+          <Cover style={{ flexDirection: 'row', marginTop: RFValue(20) }}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -1014,7 +1018,7 @@ function ContactSlide(props: ScreenProp) {
 
       {myChannels?.length ? (
         <Fragment>
-          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+          <Cover style={{ flexDirection: 'row', marginTop: RFValue(10) }}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
@@ -1039,7 +1043,7 @@ function ContactSlide(props: ScreenProp) {
 
       {myConnections?.length ? (
         <Fragment>
-          <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+          <Cover style={{ flexDirection: 'row', marginTop: RFValue(10) }}>
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
