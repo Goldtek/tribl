@@ -20,6 +20,7 @@ export const HeaderContainer = styled.View`
   margin-top: ${Constants.statusBarHeight}px;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   z-index: 999;
   position: absolute;
   background-color: ${({ theme }) => theme.colors.WHITE};
@@ -36,4 +37,13 @@ export const GroupImageContainer = styled.View`
   border-radius: ${RFValue(43 / 2)}px;
   overflow: hidden;
   background-color: ${({ theme }) => theme.colors.INACTIVE};
+`;
+
+export const HeaderLeftCover = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const HeaderRightCover = styled.View`
+  margin-right: ${RFValue(10)}px;
 `;
