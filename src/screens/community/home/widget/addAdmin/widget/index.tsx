@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import CheckBox from '@react-native-community/checkbox';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
