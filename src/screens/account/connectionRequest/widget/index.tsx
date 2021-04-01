@@ -26,7 +26,14 @@ interface ConnectionRequestProp {
 
 const ConnectionRequest = (props: ConnectionRequestProp) => {
   const { refetch, item } = props;
-  const { firstName, lastName, avatar, id, currentLocation } = item;
+  const {
+    firstName,
+    lastName,
+    avatar,
+    id,
+    currentLocation,
+    citizenship
+  } = item;
 
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
@@ -103,8 +110,8 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             priority: FastImage.priority.high
           }}
           style={{
-            width: RFValue(35),
-            height: RFValue(35),
+            width: RFValue(50),
+            height: RFValue(50),
             borderRadius: RFValue(4)
           }}
         />
@@ -114,7 +121,8 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+              lineHeight: RFValue(16)
             }}
           >
             {`${firstName} ${lastName}`}
@@ -123,13 +131,24 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             style={{
               color: colors.SECONDARY_TEXT,
               fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE)
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              lineHeight: RFValue(13)
             }}
           >
             {currentLocation?.city
               ? `${currentLocation?.city}, ${currentLocation?.state}`
               : `${currentLocation?.state}, ${currentLocation?.country}`}
           </Text>
+          {citizenship?.length ? (
+            <Title
+              style={{
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                lineHeight: RFValue(18)
+              }}
+            >
+              {citizenship?.map((country) => country.flag)}
+            </Title>
+          ) : null}
         </NameContainer>
         {rejectLoading ? (
           <ActivityIndicator

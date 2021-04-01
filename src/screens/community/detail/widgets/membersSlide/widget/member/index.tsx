@@ -41,6 +41,7 @@ function Member(props: MemberProp) {
 
   const singlePassport = singlePassportData?.singlePassport;
   const location = singlePassport?.currentLocation;
+  const citizenship = singlePassport?.citizenship;
 
   const connectedUsers =
     singlePassport?.connected === 'CONNECTED' ||
@@ -99,7 +100,8 @@ function Member(props: MemberProp) {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+              lineHeight: RFValue(15)
             }}
           >
             {`${firstName} ${lastName}`}
@@ -119,6 +121,16 @@ function Member(props: MemberProp) {
                 : `${location?.state}, ${location?.country}`}
             </Text>
           )}
+          {citizenship?.length ? (
+            <Title
+              style={{
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                lineHeight: RFValue(17)
+              }}
+            >
+              {citizenship?.map((country) => country.flag)}
+            </Title>
+          ) : null}
         </NameContainer>
 
         <TouchableRipple
