@@ -107,53 +107,61 @@ const ReactionItem = ({
 
   const _renderItem = ({ item }: any) => {
     return (
-      <View
-        style={{
-          marginVertical: 5,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '100%'
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center'
-          }}
-        >
-          <Text style={{ fontSize: 25 }}>
-            {emojiDataByType[item.type].icon}
-          </Text>
+      <Fragment>
+        {emojiDataByType[item.type] && (
           <View
             style={{
-              marginLeft: 15,
+              marginVertical: 5,
               flexDirection: 'row',
-              alignItems: 'center'
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%'
             }}
           >
-            <Image
-              style={{ height: 30, width: 30, borderRadius: 20 }}
-              source={{
-                uri: item.user.image
-              }}
-            />
-            <Text
+            <View
               style={{
-                marginHorizontal: 5,
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD
+                flexDirection: 'row',
+                alignItems: 'center'
               }}
             >
-              {item ? item.user.user.firstName : null}{' '}
-              {item ? item.user.user.lastName : null}
-            </Text>
-          </View>
-        </View>
+              <Text style={{ fontSize: 25 }}>
+                {emojiDataByType[item.type] !== undefined
+                  ? emojiDataByType[item.type].icon
+                  : null}
+              </Text>
+              <View
+                style={{
+                  marginLeft: 15,
+                  flexDirection: 'row',
+                  alignItems: 'center'
+                }}
+              >
+                <Image
+                  style={{ height: 30, width: 30, borderRadius: 20 }}
+                  source={{
+                    uri: item.user.image
+                  }}
+                />
+                <Text
+                  style={{
+                    marginHorizontal: 5,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD
+                  }}
+                >
+                  {item ? item.user.user.firstName : null}{' '}
+                  {item ? item.user.user.lastName : null}
+                </Text>
+              </View>
+            </View>
 
-        {isOwnReaction && (
-          <Button onPress={() => handleReaction(item.type)}>Undo</Button>
+            {/* {isOwnReaction && (
+              <Button onPress={() => (item ? handleReaction(item.type) : null)}>
+                Undo
+              </Button>
+            )} */}
+          </View>
         )}
-      </View>
+      </Fragment>
     );
   };
 
