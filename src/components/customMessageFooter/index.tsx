@@ -103,11 +103,7 @@ const ReactionItem = ({
 
   const openModal = () => modalizeRef.current?.open();
 
-  // const closeModal = () => modalizeRef.current?.close();
-
   const { colors, fonts } = useThemeContext();
-
-  console.tron('tron', latestReactions);
 
   const _renderItem = ({ item }: any) => {
     return (
@@ -115,36 +111,48 @@ const ReactionItem = ({
         style={{
           marginVertical: 5,
           flexDirection: 'row',
-          alignItems: 'center'
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%'
         }}
       >
-        <Text style={{ fontSize: 25 }}>{emojiDataByType[item.type].icon}</Text>
-
         <View
           style={{
-            marginLeft: 15,
             flexDirection: 'row',
             alignItems: 'center'
           }}
         >
-          <Image
-            style={{ height: 30, width: 30, borderRadius: 20 }}
-            source={{
-              uri: item.user.image
-            }}
-          />
-          <Text
+          <Text style={{ fontSize: 25 }}>
+            {emojiDataByType[item.type].icon}
+          </Text>
+          <View
             style={{
-              marginHorizontal: 5,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD
+              marginLeft: 15,
+              flexDirection: 'row',
+              alignItems: 'center'
             }}
           >
-            {item ? item.user.user.firstName : null}{' '}
-            {item ? item.user.user.lastName : null}
-          </Text>
+            <Image
+              style={{ height: 30, width: 30, borderRadius: 20 }}
+              source={{
+                uri: item.user.image
+              }}
+            />
+            <Text
+              style={{
+                marginHorizontal: 5,
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD
+              }}
+            >
+              {item ? item.user.user.firstName : null}{' '}
+              {item ? item.user.user.lastName : null}
+            </Text>
+          </View>
         </View>
 
-        {/* {isOwnReaction && <Button>Undo</Button>} */}
+        {isOwnReaction && (
+          <Button onPress={() => handleReaction(item.type)}>Undo</Button>
+        )}
       </View>
     );
   };
@@ -167,7 +175,6 @@ const ReactionItem = ({
 
         <Modalize
           ref={modalizeRef}
-          // onClose={closeModal}
           modalHeight={DEVICE_FULL_HEIGHT / 2.5}
           modalStyle={{
             paddingTop: RFValue(30),
@@ -185,7 +192,6 @@ const ReactionItem = ({
                   color: colors.PRIMARY_TEXT,
                   textTransform: 'capitalize',
                   lineHeight: 20,
-                  // marginLeft: RFValue(15),
                   marginBottom: RFValue(10),
                   textAlign: 'center'
                 }}
@@ -200,7 +206,6 @@ const ReactionItem = ({
             renderItem: _renderItem,
             showsVerticalScrollIndicator: true,
             keyExtractor: ({ id }: any) => id,
-            // contentContainerStyle: { flexGrow: 1, paddingBottom: 120 },
             contentContainerStyle: {
               marginTop: 20,
               marginBottom: 100,
@@ -213,17 +218,11 @@ const ReactionItem = ({
                 style={{
                   height: 1.5,
                   backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
-                  // marginHorizontal: RFValue(20)
                 }}
               />
             ),
             ListFooterComponentStyle: { justifyContent: 'center' }
           }}
-          // ListFooterComponent={_renderFooter}
-          // renderItem={_renderMyCommunityItem}
-          // onMomentumScrollEnd={handleEndReach}
-          // ListFooterComponentStyle={{ justifyContent: 'center' }}
-          // showsHorizontalScrollIndicator={false}
         />
       </Portal>
     </>
