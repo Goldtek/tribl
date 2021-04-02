@@ -36,7 +36,7 @@ import {
   LocalAttachmentType
 } from '../../../stream/types';
 
-import { Container, HeaderContainer, GroupImageContainer } from './styles';
+import { Container, HeaderContainer, MessageListContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
