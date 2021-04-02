@@ -814,10 +814,6 @@ function ContactSlide(props: ScreenProp) {
                 <TouchableHighlight
                   onPress={() => setDisplayInterest(true)}
                   underlayColor={colors.TRANSPARENT}
-                  style={{
-                    position: 'relative',
-                    top: RFValue(20)
-                  }}
                 >
                   <Text
                     style={{
@@ -826,7 +822,7 @@ function ContactSlide(props: ScreenProp) {
                       fontSize: fonts.LARGE_SIZE - 2,
                       fontFamily: fonts.WORK_SANS_BOLD,
                       position: 'relative',
-                      top: RFValue(20)
+                      top: RFValue(10)
                     }}
                   >
                     View more
