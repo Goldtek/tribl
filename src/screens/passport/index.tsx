@@ -5,7 +5,7 @@ import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
 import * as Updates from 'expo-updates';
 import FastImage from 'react-native-fast-image';
-import { Share, ScrollView, SafeAreaView } from 'react-native';
+import { Share, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -32,8 +32,7 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   GET_FIREBASE_TOKEN,
-  USER_CHANNELS,
-  GET_TRENDING_CHANNELS
+  USER_CHANNELS
 } from '../../graphql/server/query';
 import {
   GenerateFirebaseTokenIT,
@@ -138,10 +137,6 @@ export default function PassportScreen(props: ScreenProp) {
   const [getMyChannels] = useLazyQuery(USER_CHANNELS);
 
   const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
-
-  const [getTrendingChannels] = useLazyQuery(GET_TRENDING_CHANNELS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
 
   const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
@@ -270,7 +265,6 @@ export default function PassportScreen(props: ScreenProp) {
     getRecommendedMembers();
     getPopularCommunities();
     getConnectionRequest();
-    getTrendingChannels();
     getMyCommunities();
     getNearbyMembers();
     getMyConnections();
