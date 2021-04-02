@@ -3,7 +3,6 @@ import { ChatScreenProps, NavigationInterface } from '../../types';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Paragraph, Surface, TouchableRipple } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import FastImage from 'react-native-fast-image';
 import {
   Chat,
   Avatar,
@@ -37,12 +36,7 @@ import {
   LocalAttachmentType
 } from '../../../stream/types';
 
-import {
-  Container,
-  HeaderContainer,
-  GroupImageContainer,
-  MessageListContainer
-} from './styles';
+import { Container, HeaderContainer, GroupImageContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -147,49 +141,18 @@ export default function DirectChatScreen(props: ScreenProp) {
     }
   };
 
-  let receiver: any = null;
-  let receiverId: any = null;
-  const groupAvatar: string[] = [];
+  const receiverId = Object.keys(channelMembers).find(
+    (userId: string) => userId !== chatClient.user?.id
+  );
 
-  if (Boolean(channel.data?.isDm)) {
-    receiverId = Object.keys(channelMembers).find(
-      (userId: string) => userId !== chatClient.user?.id
-    );
-  }
-
-  if (Boolean(channel.data?.isGroup)) {
-    const members = Object.values(channel.state.members);
-
-    for (let index = 0; index < members.length; index++) {
-      const member = members[index];
-
-      if (groupAvatar.length === 3) break;
-
-      if (chatClient.user?.id !== member.user?.id) {
-        const avatar = member.user?.user.avatar || USER_DEFAULT_AVATAR;
-        groupAvatar.push(avatar);
-      }
-
-      if (members.length === 2 && groupAvatar.length < 2) {
-        groupAvatar.push(`${chatClient.user?.user.avatar}`);
-      }
-    }
-  }
-
-  if (Boolean(channel.data?.isDm)) {
-    receiver = receiverId
-      ? channelMembers[`${receiverId}`].user
-      : {
-          image: route.params.avatar || USER_DEFAULT_AVATAR,
-          name:
-            route.params.title ||
-            `${route.params.firstName} ${route.params.lastName}`
-        };
-  }
-
-  if (Boolean(channel.data?.isGroup)) {
-    receiver = channel.data;
-  }
+  const receiver = receiverId
+    ? channelMembers[`${receiverId}`].user
+    : {
+        image: route.params.avatar || USER_DEFAULT_AVATAR,
+        name:
+          route.params.title ||
+          `${route.params.firstName} ${route.params.lastName}`
+      };
 
   useEffect(() => {
     tagScreenName('DirectChatScreen');
@@ -228,114 +191,17 @@ export default function DirectChatScreen(props: ScreenProp) {
               justifyContent: 'center'
             }}
           >
-            {Boolean(channel.data?.isDm) && (
-              <Chat
-                //@ts-ignore
-                client={chatClient}
-                style={chatStyles}
-              >
-                <Avatar
-                  image={receiver?.image}
-                  name={receiver?.name}
-                  size={RFValue(40)}
-                />
-              </Chat>
-            )}
-
-            {channel.data?.isGroup && groupAvatar.length === 2 && (
-              <GroupImageContainer>
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri: groupAvatar[1],
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(28),
-                    height: RFValue(28),
-                    borderRadius: RFValue(28 / 2),
-                    zIndex: 2,
-                    borderWidth: 2,
-                    right: 1,
-                    bottom: 1,
-                    position: 'absolute',
-                    borderColor: colors.WHITE
-                  }}
-                />
-
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri: groupAvatar[0],
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(25),
-                    height: RFValue(25),
-                    left: 1,
-                    top: 5,
-                    borderRadius: RFValue(25 / 2),
-                    position: 'absolute',
-                    borderColor: colors.WHITE,
-                    borderWidth: 2
-                  }}
-                />
-              </GroupImageContainer>
-            )}
-
-            {channel.data?.isGroup && groupAvatar.length === 3 && (
-              <GroupImageContainer>
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri: groupAvatar[0],
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(22),
-                    height: RFValue(22),
-                    borderRadius: RFValue(22 / 2),
-                    borderColor: colors.WHITE,
-                    bottom: 5,
-                    borderWidth: 2
-                  }}
-                />
-
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri: groupAvatar[1],
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(25),
-                    height: RFValue(25),
-                    borderRadius: RFValue(25 / 2),
-                    top: 20,
-                    zIndex: 2,
-                    borderWidth: 2,
-                    borderColor: colors.WHITE,
-                    position: 'absolute'
-                  }}
-                />
-
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri: groupAvatar[2],
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(22),
-                    height: RFValue(22),
-                    bottom: 5,
-                    borderWidth: 2,
-                    borderColor: colors.WHITE,
-                    borderRadius: RFValue(22 / 2)
-                  }}
-                />
-              </GroupImageContainer>
-            )}
+            <Chat
+              //@ts-ignore
+              client={chatClient}
+              style={chatStyles}
+            >
+              <Avatar
+                image={receiver?.image}
+                name={receiver?.name}
+                size={RFValue(40)}
+              />
+            </Chat>
           </Surface>
           <Paragraph
             style={{
@@ -359,6 +225,12 @@ export default function DirectChatScreen(props: ScreenProp) {
             //@ts-ignore
             channel={channel}
             KeyboardCompatibleView={CustomKeyboardCompatibleView}
+            doSendMessageRequest={(_cid, message) =>
+              channel.sendMessage({
+                ...message,
+                link_url: 'direct_chats_screen'
+              })
+            }
           >
             <MessageListContainer>
               <MessageList
@@ -369,6 +241,7 @@ export default function DirectChatScreen(props: ScreenProp) {
                     channelId: thread?.id
                   });
                 }}
+                //@ts-ignore
                 Message={CustomDirectMessage}
                 //@ts-ignore
                 MessageSystem={CustomSystemMessage}

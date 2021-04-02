@@ -70,7 +70,15 @@ export default function CustomChannelPreview(
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
-  const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
+  const message = latestMessagePreview?.messageObject?.asMutable();
+  const latestMessageDate = message?.created_at.asMutable();
+  let messageText: string = `${message?.text}`;
+
+  if (message?.type === 'system') {
+    messageText = `${message?.text}`;
+  } else {
+    messageText = `${message?.user?.name}: ${message?.text}`;
+  }
 
   const channelTitle = channel.data?.community
     ? `#${channel.data?.community.name.split(' ').join('')}-${displayName}`
@@ -143,7 +151,7 @@ export default function CustomChannelPreview(
             <DetailsBottom>
               <StyledMessage unread={unread}>
                 {latestMessagePreview?.text &&
-                  truncate(latestMessagePreview.text.replace(/\n/g, ' '), {
+                  truncate(messageText.replace(/\n/g, ' '), {
                     length: latestMessageLength
                   })}
               </StyledMessage>

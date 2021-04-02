@@ -31,35 +31,39 @@ export const IconContainer = styled.View`
   justify-content: center;
   align-items: center;
   background-color: ${({ theme }) => hexToRGB(theme.colors.PRIMARY, 0.3)};
-`
+`;
 
 export const NameContainer = styled.View`
   margin-left: ${RFValue(10)}px;
 `;
 
 export const HeaderContainer = styled.View`
-  justify-content: space-between;
+  height: ${RFValue(40)}px;
   align-items: center;
   flex-direction: row;
-  padding-right: 50px;
 `;
 
 export const SearchInputContainer = styled.View`
-justify-content: space-between;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
-`
+`;
 
 export const HeaderTitle = styled.Text`
   font-size: 20px;
-  font-family:${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   text-transform: capitalize;
-`
+  margin-horizontal: 10px;
+`;
 
 export const HeaderAction = styled.TouchableOpacity`
-
-`
+  height: 100%;
+  justify-content: center;
+  padding-horizontal: 10px;
+  align-items: center;
+  align-self: flex-end;
+`;
 
 export const GroupContainer = styled.View`
   flex-direction: row;
@@ -91,18 +95,17 @@ export const SearchInput = styled.View`
 `;
 
 export const InputContainer = styled.View`
-	padding: 10px 0;
-
-`
+  padding: 10px 0;
+`;
 export const SubjectInput = styled(TextInput)`
-	background-color: transparent;
-	border-bottom-width: 1px;
-	border-bottom-color: ${({ theme }) => theme.colors.PRIMARY};
-`
+  background-color: transparent;
+  border-bottom-width: 1px;
+  border-bottom-color: ${({ theme }) => theme.colors.PRIMARY};
+`;
 
 export const ContentWrapper = styled.View`
   padding-horizontal: 20px;
-`
+`;
 
 export const Overlay = styled.View`
   flex: 1;
@@ -116,4 +119,4 @@ export const LoaderMessage = styled.Text`
   color: ${({ theme }) => theme.colors.WHITE};
   margin-top: 10px;
   font-size: 14px;
-`
+`;

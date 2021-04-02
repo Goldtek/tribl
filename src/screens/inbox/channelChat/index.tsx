@@ -23,9 +23,9 @@ interface ScreenProp extends NavigationInterface {
 
 export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
-  const { bottom } = useSafeAreaInsets();
   const [text, setText] = useState('');
   const { colors } = useThemeContext();
+  const { bottom } = useSafeAreaInsets();
   const chatStyles = useStreamChatTheme();
   const {
     setThread,
@@ -57,6 +57,12 @@ export default function ChannelChatScreen(props: ScreenProp) {
             //@ts-ignore
             channel={channel}
             KeyboardCompatibleView={CustomKeyboardCompatibleView}
+            doSendMessageRequest={(_cid, message) =>
+              channel.sendMessage({
+                ...message,
+                link_url: 'channel_chat_screen'
+              })
+            }
           >
             <MessageList
               onThreadSelect={(thread) => {
@@ -66,13 +72,14 @@ export default function ChannelChatScreen(props: ScreenProp) {
                   channelId: thread?.id
                 });
               }}
+              //@ts-ignore
               Message={CustomChannelMessage}
               //@ts-ignore
               MessageSystem={CustomSystemMessage}
             />
             <MessageInput
-              Input={StreamInputBox}
               initialValue={text}
+              Input={StreamInputBox}
               onChangeText={(text) => setText(text)}
               additionalTextInputProps={{
                 placeholderTextColor: hexToRGB(colors.STATUS_BAR_COLOR, 0.7),

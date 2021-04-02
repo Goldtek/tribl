@@ -1,30 +1,60 @@
 import React from 'react';
-import { RootToaster } from './components/rootToaster';
-import { Host as PortalHost } from 'react-native-portalize';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import GlobalErrorBoundary from './libs/error';
-import { StatusBar } from 'expo-status-bar';
-import ApolloProvider from './graphql';
-import StreamProvider from './stream';
-import ThemeProvider from './theme';
-import Router from './router';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import DrawerStackNavigator from './navigator/sideNavigator';
+import SignupNavigator from './navigator/signupNavigator';
+import { navigationRef } from './constants';
+import { useThemeContext } from './theme';
+import Screens from './screens';
+import linking from './linking';
+import BottomNavigator from './navigator/bottomNavigator';
+import CustomDrawer from './navigator/sideNavigator/customDrawer';
+import AccountNavigator from './navigator/accountNavigator';
 
-export default function AppRouter() {
+const RootStack = createStackNavigator();
+
+export default function AppNavigator() {
+  const { fonts, colors } = useThemeContext();
+
   return (
-    <GlobalErrorBoundary>
-      <ApolloProvider>
-        <SafeAreaProvider>
-          <StreamProvider>
-            <ThemeProvider>
-              <StatusBar translucent animated style="dark" />
-              <RootToaster />
-              <PortalHost>
-                <Router />
-              </PortalHost>
-            </ThemeProvider>
-          </StreamProvider>
-        </SafeAreaProvider>
-      </ApolloProvider>
-    </GlobalErrorBoundary>
+    <NavigationContainer ref={navigationRef} linking={linking}>
+      <RootStack.Navigator
+        screenOptions={{
+          headerShown: false,
+          headerBackTitleStyle: {
+            fontFamily: fonts.WORK_SANS_MEDIUM,
+            color: colors.PRIMARY_TEXT,
+            fontSize: fonts.MEDIUM_SIZE,
+            textTransform: 'capitalize'
+          }
+        }}
+      >
+        <RootStack.Screen
+          name="SplashScreen"
+          component={Screens.SplashScreen}
+        />
+
+        <RootStack.Screen
+          name="WalkThroughScreen"
+          component={Screens.WalkThroughScreen}
+        />
+
+        <RootStack.Screen name="SignupScreen" component={SignupNavigator} />
+
+        <RootStack.Screen
+          name="DrawerScreen"
+          component={DrawerStackNavigator}
+        />
+
+        <RootStack.Screen
+          name="AccountSettingScreen"
+          component={AccountNavigator}
+        />
+
+        <RootStack.Screen name="CommunityScreen" component={BottomNavigator} />
+      </RootStack.Navigator>
+
+      <CustomDrawer />
+    </NavigationContainer>
   );
 }

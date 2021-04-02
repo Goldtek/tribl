@@ -185,6 +185,7 @@ export default function ChatScreen(props: ScreenProp) {
               data={Object.values(group)}
               renderItem={_renderSelectedItem}
               keyExtractor={(item) => item.id}
+              keyboardShouldPersistTaps="always"
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
                 paddingBottom: 10,

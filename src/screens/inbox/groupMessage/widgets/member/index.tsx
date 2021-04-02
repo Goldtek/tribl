@@ -84,7 +84,7 @@ function GroupMembersCard(props: ConnectionCardProp) {
             </Text>
           </NameContainer>
           <CheckBox
-            disabled={false}
+            disabled={true}
             value={selected}
             tintColors={{
               true: colors.PRIMARY,
