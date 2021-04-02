@@ -8,6 +8,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
 import { GET_USER_PASSPORT } from '../../graphql/server/query';
+import { chatClient } from '../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
@@ -48,6 +49,22 @@ const Highlight = (props: HighlightProp) => {
   const state = hit?.currentLocation?.state;
   const city = hit?.currentLocation?.city;
   const country = hit?.currentLocation?.country;
+
+  if (hit.id === chatClient.user?.id) {
+    return null;
+  }
+
+  if (hit.name) {
+    if (
+      !hit.verified ||
+      hit.lastName == null ||
+      hit.firstName == null ||
+      hit.currentLocation?.city == null ||
+      hit.currentLocation?.state == null
+    ) {
+      return null;
+    }
+  }
 
   return (
     <Container>

@@ -87,7 +87,7 @@ export default function CustomDirectMessagePreview(
       if (groupAvatar.length === 3) break;
 
       if (chatClient.user?.id !== member.user?.id) {
-        const avatar = member.user?.user.avatar || USER_DEFAULT_AVATAR;
+        const avatar = member.user?.user?.avatar || USER_DEFAULT_AVATAR;
         groupAvatar.push(avatar);
       }
 

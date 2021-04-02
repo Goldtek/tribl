@@ -27,9 +27,16 @@ function GroupMembersCard(props: ConnectionCardProp) {
   const { colors, fonts } = useThemeContext();
 
   const { selected, handleSelect, ...user } = props;
-  const { id, avatar, lastName, firstName, currentLocation } = user;
+  const { id, avatar, lastName, firstName, verified, currentLocation } = user;
 
-  if (id === chatClient.user?.id) {
+  if (
+    (id === chatClient.user?.id ||
+      !user.verified ||
+      lastName == null ||
+      firstName == null ||
+      currentLocation?.city == null,
+    currentLocation?.state == null)
+  ) {
     return null;
   }
 

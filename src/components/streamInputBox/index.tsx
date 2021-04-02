@@ -123,9 +123,11 @@ function StreamInputBox(props: InputProps) {
     setSearchQuery(query);
   };
 
-  const sendMessage = async () => {
-    if (channel?.id) {
-      trackMessages();
+  const sendMessage = () => {
+    if (channel?.id && !Boolean(channel.data?.isGroup)) {
+      trackChannelMessages();
+    } else {
+      trackGroupMessages();
     }
 
     if (channel.data?.isNew) {
@@ -135,18 +137,18 @@ function StreamInputBox(props: InputProps) {
     props.sendMessage();
   };
 
-  const trackMessages = () => {
+  const trackChannelMessages = () => {
     if (activityScreen === 'channelScreen') {
       logEvent('send channel message', { from: 'chat' });
 
       if (editing) {
         Mixpanel.track('User Edits Channel Message', {
-          info: `User edits message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+          info: `User edits message on ${channel.data?.name} channel in ${channel.data?.community?.name} community`,
           'Activity Screen': 'Channel Message Screen'
         });
       } else {
         Mixpanel.track('User Sends Channel Message', {
-          info: `User sends message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+          info: `User sends message on ${channel.data?.name} channel in ${channel.data?.community?.name} community`,
           'Activity Screen': 'Channel Message Screen'
         });
       }
@@ -157,12 +159,12 @@ function StreamInputBox(props: InputProps) {
 
       if (editing) {
         Mixpanel.track('User Edits Channel Thread Message', {
-          info: `User edits message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+          info: `User edits message on ${channel.data?.name} channel thread in ${channel.data?.community?.name} community`,
           'Activity Screen': 'Channel Thread Message Screen'
         });
       } else
         Mixpanel.track('User Sends Channel Thread Message', {
-          info: `User sends message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+          info: `User sends message on ${channel.data?.name} channel thread in ${channel.data?.community?.name} community`,
           'Activity Screen': 'Channel Thread Message Screen'
         });
     }
@@ -172,12 +174,12 @@ function StreamInputBox(props: InputProps) {
 
       if (editing) {
         Mixpanel.track('User Edits Direct Message', {
-          info: `User edits direct message sent to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName}`,
+          info: `User edits direct message sent to ${channel.data?.receiver?.firstName} ${channel.data?.receiver?.lastName}`,
           'Activity Screen': 'Channel Message Screen'
         });
       } else {
         Mixpanel.track('User Sends Channel Message', {
-          info: `User sends direct message to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName}`,
+          info: `User sends direct message to ${channel.data?.receiver.firstName} ${channel.data?.receiver?.lastName}`,
           'Activity Screen': 'Direct Message Screen'
         });
       }
@@ -188,13 +190,46 @@ function StreamInputBox(props: InputProps) {
 
       if (editing) {
         Mixpanel.track('User Edits Message on DM Thread', {
-          info: `User edits direct message sent to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName} on DM thread`,
+          info: `User edits direct message sent to ${channel.data?.receiver.firstName} ${channel.data?.receiver?.lastName} on DM thread`,
           'Activity Screen': 'Direct Message Thread Screen'
         });
       } else
         Mixpanel.track('User Sends Message on DM Thread', {
-          info: `User sends direct message to ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName} on DM thread`,
+          info: `User sends direct message to ${channel.data?.receiver?.firstName} ${channel.data?.receiver?.lastName} on DM thread`,
           'Activity Screen': 'Direct Message Thread Screen'
+        });
+    }
+  };
+
+  const trackGroupMessages = () => {
+    if (activityScreen === 'channelScreen') {
+      logEvent('send group message', { from: 'chat' });
+
+      if (editing) {
+        Mixpanel.track('User Edits Group Message', {
+          info: `User edits message on ${channel.data?.name} group`,
+          'Activity Screen': 'Group Message Screen'
+        });
+      } else {
+        Mixpanel.track('User Sends Channel Message', {
+          info: `User sends message on ${channel.data?.name} group`,
+          'Activity Screen': 'Group Message Screen'
+        });
+      }
+    }
+
+    if (activityScreen === 'channelThreadScreen') {
+      logEvent('send group thread message', { from: 'chat' });
+
+      if (editing) {
+        Mixpanel.track('User Edits Group Thread Message', {
+          info: `User edits message on ${channel.data?.name} group thread`,
+          'Activity Screen': 'Group Thread Message Screen'
+        });
+      } else
+        Mixpanel.track('User Sends Group Thread Message', {
+          info: `User sends message on ${channel.data?.name} group thread`,
+          'Activity Screen': 'Group Thread Message Screen'
         });
     }
   };

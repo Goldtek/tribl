@@ -3,6 +3,7 @@ import { FlatList, RefreshControl, SafeAreaView } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import SearchInput, { createFilter } from 'react-native-search-filter';
 import { useThemeContext } from '../../../theme';
 import { GET_CHANNEL_MEMBERS } from '../../../graphql/server/query';
 import ActiveMember from './widget';
@@ -26,6 +27,7 @@ function ChannelMembers(props: ModalProp) {
 
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState({ searchTerm: '' });
 
   const { channelId } = props.route?.params;
 
@@ -81,6 +83,8 @@ function ChannelMembers(props: ModalProp) {
     });
   };
 
+  const searchUpdated = (text: string) => setSearch({ searchTerm: text });
+
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <ActiveMember key={item.id} {...item} />
   );
@@ -90,11 +94,33 @@ function ChannelMembers(props: ModalProp) {
     [callOnScrollEnd]
   );
 
+  const keysToFilter = ['firstName', 'lastName'];
+
+  const filteredWords =
+    filterMembers &&
+    filterMembers?.filter(createFilter(search.searchTerm, keysToFilter));
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <SearchInput
+        onChangeText={searchUpdated}
+        placeholder="Search"
+        placeholderTextColor={colors.PRIMARY_TEXT}
+        style={{
+          height: RFValue(40),
+          color: colors.PRIMARY_TEXT,
+          alignItems: 'center',
+          elevation: 0,
+          borderWidth: 1,
+          borderColor: colors.INACTIVE,
+          borderRadius: 4,
+          paddingHorizontal: 10,
+          marginHorizontal: 15
+        }}
+      />
       {filterMembers ? (
         <FlatList
-          data={filterMembers}
+          data={filteredWords}
           ListEmptyComponent={
             <Text
               style={{
