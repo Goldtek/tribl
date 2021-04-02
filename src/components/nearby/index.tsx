@@ -38,7 +38,7 @@ function NearbyModal(props: ModalProp) {
     GET_NEARBY_MEMBERS,
     {
       variables: {
-        input: { limit: PAGINATION_DEFAULT / 2 }
+        input: { limit: PAGINATION_DEFAULT * 3 }
       }
     }
   );

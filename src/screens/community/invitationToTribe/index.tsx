@@ -11,9 +11,13 @@ import hexToRGB from '../../../utils/hexToRGB';
 import { NavigationInterface } from '../../types';
 import {
   MyConnectionsInterface,
-  PassportInterface
+  PassportInterface,
+  AllMembersRequestInterface
 } from '../../../graphql/types';
-import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
+import {
+  GET_MY_CONNECTIONS,
+  GET_ALL_MEMBERS
+} from '../../../graphql/server/query';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
@@ -24,6 +28,7 @@ import { logEvent } from '../../../utils/uxcamHelper';
 import { Mixpanel } from '../../../config';
 import { crashlytics } from '../../../firebase/config';
 import { Toast } from '../../../components/rootToaster';
+import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 import { Container, TagCover, ButtonCover, AutoTagCover } from './styles';
 
@@ -51,9 +56,26 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
+  const { data: allMembersData } = useQuery<AllMembersRequestInterface>(
+    GET_ALL_MEMBERS,
+    {
+      variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
+    }
+  );
+
   const myConnection = data?.myConnections?.data;
+  const allMembers = allMembersData?.Passport;
+  const filteredMembers = removeDuplicateMembers(allMembers?.data.slice());
 
   const filterConnections = myConnection?.slice().sort(function (a, b) {
+    if (a.firstName < b.firstName) return -1;
+
+    if (a.firstName > b.firstName) return 1;
+
+    return 0;
+  });
+
+  const filterAllMembers = filteredMembers?.slice().sort(function (a, b) {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
@@ -93,10 +115,10 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   };
 
   useEffect(() => {
-    if (filterConnections?.length) {
+    if (filterAllMembers?.length) {
       setState({
         ...state,
-        suggestions: filterConnections
+        suggestions: filterAllMembers
       });
     }
   }, []);

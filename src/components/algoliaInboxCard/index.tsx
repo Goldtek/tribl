@@ -107,7 +107,8 @@ const Highlight = (props: HighlightProp) => {
                     color: colors.PRIMARY_TEXT,
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.LARGE_SIZE),
-                    textTransform: 'capitalize'
+                    textTransform: 'capitalize',
+                    lineHeight: RFValue(16)
                   }}
                 >
                   {`${hit.firstName} ${hit.lastName}`}
@@ -124,6 +125,16 @@ const Highlight = (props: HighlightProp) => {
                     ? `${hit.currentLocation?.city}, ${hit.currentLocation?.state}`
                     : `${hit.currentLocation?.state}, ${hit.currentLocation?.country}`}
                 </Text>
+                {hit?.citizenship?.length ? (
+                  <Title
+                    style={{
+                      fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                      lineHeight: RFValue(18)
+                    }}
+                  >
+                    {hit?.citizenship?.map((country: any) => country.flag)}
+                  </Title>
+                ) : null}
               </NameContainer>
             </Fragment>
           </TouchableRipple>

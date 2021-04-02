@@ -16,7 +16,14 @@ import {
 import { REFRESH_TOKEN } from '../../graphql/server/mutations';
 import {
   GET_USER_PASSPORT,
-  GET_FIREBASE_TOKEN
+  GET_FIREBASE_TOKEN,
+  GET_ALL_MEMBERS,
+  GET_NEARBY_MEMBERS,
+  GET_POPULAR_COMMUNITIES,
+  GET_RECOMMENDED_COMMUNITIES,
+  GET_RECOMMENDED_MEMBERS,
+  GET_MY_COMMUNITIES,
+  USER_CHANNELS
 } from '../../graphql/server/query';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
@@ -28,6 +35,7 @@ import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../graphql/cache/mutati
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { PAGINATION_DEFAULT } from '../../constants';
 
 const RUN_TIME_INTERVAL = 10 * 60 * 1000;
 
@@ -40,6 +48,29 @@ export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
 
   const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
+
+  const [getMyCommunities] = useLazyQuery(GET_MY_COMMUNITIES);
+
+  const [getMyChannels] = useLazyQuery(USER_CHANNELS);
+
+  const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
+
+  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
+
+  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
+  });
+
+  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT } }
+  });
+
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
+    variables: { input: { limit: 8 } }
+  });
+
   const [refreshToken] = useMutation<RefreshTokenInterface>(REFRESH_TOKEN);
   const [authenticateFirebase, { data: firebase }] = useLazyQuery<
     GenerateFirebaseTokenIT
@@ -178,6 +209,13 @@ export default function SplashScreen(props: ScreenProp) {
     handleAuthentication();
     authenticateFirebase();
     getUserPassport();
+    getMyCommunities();
+    getMyChannels();
+    getRecommendedCommunities();
+    getRecommendedMembers();
+    getPopularCommunities();
+    getAllMembers();
+    getNearbyMembers();
   }, []);
 
   return (

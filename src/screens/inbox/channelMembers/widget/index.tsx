@@ -29,7 +29,8 @@ function ChannelMember(props: ChannelUserProp) {
     lastName,
     firstName,
     currentLocation,
-    connectionDetails
+    connectionDetails,
+    citizenship
   } = props;
 
   if (id === chatClient.user?.id) {
@@ -107,7 +108,8 @@ function ChannelMember(props: ChannelUserProp) {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+              lineHeight: RFValue(15)
             }}
           >
             {`${firstName} ${lastName}`}
@@ -117,7 +119,7 @@ function ChannelMember(props: ChannelUserProp) {
               style={{
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
                 fontFamily: fonts.WORK_SANS_REGULAR,
-                lineHeight: RFValue(15),
+                lineHeight: RFValue(14),
                 color: colors.SECONDARY_TEXT,
                 textTransform: 'capitalize'
               }}
@@ -129,7 +131,7 @@ function ChannelMember(props: ChannelUserProp) {
               style={{
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
                 fontFamily: fonts.WORK_SANS_REGULAR,
-                lineHeight: RFValue(15),
+                lineHeight: RFValue(14),
                 color: colors.SECONDARY_TEXT,
                 textTransform: 'capitalize'
               }}
@@ -137,6 +139,16 @@ function ChannelMember(props: ChannelUserProp) {
               {`${city}, ${state}`}
             </Paragraph>
           )}
+          {citizenship?.length ? (
+            <Title
+              style={{
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                lineHeight: RFValue(18)
+              }}
+            >
+              {citizenship?.map((country) => country.flag)}
+            </Title>
+          ) : null}
         </TextContainer>
         {connectionDetails?.status == 'PENDING' || pending ? (
           <Button

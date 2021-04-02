@@ -39,7 +39,7 @@ function ActiveModal(props: ModalProp) {
     RecommendedMembersRequestInterface
   >(GET_RECOMMENDED_MEMBERS, {
     variables: {
-      input: { limit: PAGINATION_DEFAULT / 2 }
+      input: { limit: PAGINATION_DEFAULT * 3 }
     }
   });
 
