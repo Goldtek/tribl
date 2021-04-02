@@ -90,11 +90,6 @@ const linking: LinkingOptions = {
     // Listen to firebase push notifications
     const unsubscribeNotification = messaging().onNotificationOpenedApp(
       (message) => {
-        console.log(
-          'LinkingOptions LinkingOptions LinkingOptions LinkingOptions LinkingOptions LinkingOptions LinkingOptions LinkingOptions',
-          message
-        );
-
         const url = JSON.stringify(message?.data);
 
         if (url) {
