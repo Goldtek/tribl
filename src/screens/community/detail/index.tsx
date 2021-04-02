@@ -36,9 +36,7 @@ export default function SearchScreen(props: ScreenProp) {
 
   const { data, refetch } = useQuery<SingleCommunityRequestInterface>(
     GET_SINGLE_COMMUNITY,
-    {
-      variables: { input: { filter: { id } } }
-    }
+    { variables: { input: { filter: { id } } } }
   );
 
   const communityDetails: CommunityInterface = {
