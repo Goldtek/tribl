@@ -1,14 +1,15 @@
 import React from 'react';
-import EmojiIcon from '../../../assets/icons/emoji';
 import {
   DefaultAttachmentType,
   DefaultChannelType,
   DefaultUserType,
   MessageSimpleProps
 } from 'stream-chat-react-native-core';
-import { ReactionPicker } from '../customReactionPicker';
 
-import { ReactionText, Container, MoreReaction, Reaction } from './styles';
+import { ReactionPicker } from '../customReactionPicker';
+import EmojiIcon from '../../../assets/icons/emoji';
+import { Container, MoreReaction } from './styles';
+import { ReactionItem } from './widgets/reactionList';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -73,29 +74,8 @@ export const renderReactions = (props: MessageProps) => {
         reactionCounts={reaction_counts}
         emojiDataByType={emojiDataByType}
         ownReactionTypes={ownReactionTypes}
+        latestReactions={latest_reactions}
       />
     ) : null
-  );
-};
-
-const ReactionItem = ({
-  type,
-  handleReaction,
-  reactionCounts,
-  emojiDataByType,
-  ownReactionTypes
-}: any) => {
-  const isOwnReaction = ownReactionTypes.indexOf(type) > -1;
-
-  return (
-    <Reaction
-      isOwnReaction={isOwnReaction}
-      onPress={() => handleReaction(type)}
-      key={type}
-    >
-      <ReactionText>
-        {emojiDataByType[type].icon} {reactionCounts[type]}
-      </ReactionText>
-    </Reaction>
   );
 };
