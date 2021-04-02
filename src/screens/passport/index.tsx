@@ -25,14 +25,15 @@ import {
   GET_USER_PASSPORT,
   GET_ALL_MEMBERS,
   GET_CONNECTION_REQUEST,
-  GET_MY_COMMUNITIES,
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
+  GET_MY_COMMUNITIES,
   GET_POPULAR_COMMUNITIES,
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
-  GET_FIREBASE_TOKEN,
-  USER_CHANNELS
+  USER_CHANNELS,
+  GET_TRENDING_CHANNELS,
+  GET_FIREBASE_TOKEN
 } from '../../graphql/server/query';
 import {
   GenerateFirebaseTokenIT,
@@ -104,7 +105,12 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [cache, setCache] = useState({
     ...cacheData,
-    details: { selectedIdentity: [], selectedInterest: [], date: '' }
+    details: {
+      selectedIdentity: [],
+      selectedInterest: [],
+      deleteInterest: [],
+      date: ''
+    }
   });
 
   const [OTAUpdate, setOTAUpdate] = useState(false);
@@ -353,7 +359,7 @@ export default function PassportScreen(props: ScreenProp) {
         interest
       });
     }
-  }, [cache.details]);
+  }, [cache.details || userDetails]);
 
   const dob = cache.details?.date?.split('/');
   const day = parseInt(dob[1]);
@@ -404,7 +410,7 @@ export default function PassportScreen(props: ScreenProp) {
         },
         interest: {
           add: cache.details.selectedInterest,
-          remove: removeInterest
+          remove: cache.details.deleteInterest
         },
         citizenship: {
           add: removeTypename,
@@ -449,6 +455,7 @@ export default function PassportScreen(props: ScreenProp) {
         ...cache.details,
         selectedIdentity: select.identity,
         selectedInterest: select.interest,
+        deleteInterest: select.deleteInterest,
         ...details
       }
     });

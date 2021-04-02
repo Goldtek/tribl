@@ -1,8 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
-import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Paragraph, Surface, TouchableRipple } from 'react-native-paper';
-import { Ionicons } from '@expo/vector-icons';
+import { Keyboard, TouchableWithoutFeedback, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
+import {
+  Paragraph,
+  Surface,
+  TouchableRipple,
+  Menu,
+  Divider
+} from 'react-native-paper';
+import { Ionicons, Entypo } from '@expo/vector-icons';
+import FastImage from 'react-native-fast-image';
 import {
   Chat,
   Avatar,
@@ -10,7 +19,6 @@ import {
   MessageList,
   MessageInput
 } from 'stream-chat-expo';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import hexToRGB from '../../../utils/hexToRGB';
 import { useThemeContext } from '../../../theme';
 import { tagScreenName } from '../../../utils/uxcamHelper';
@@ -36,7 +44,14 @@ import {
   LocalAttachmentType
 } from '../../../stream/types';
 
-import { Container, HeaderContainer, MessageListContainer } from './styles';
+import {
+  Container,
+  HeaderContainer,
+  GroupImageContainer,
+  MessageListContainer,
+  HeaderLeftCover,
+  HeaderRightCover
+} from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -45,10 +60,10 @@ interface ScreenProp extends NavigationInterface {
 
 export default function DirectChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
-
   const user = route.params;
+  const { t } = useTranslation();
+  const { bottom, top: safeAreaTop } = useSafeAreaInsets();
   const [text, setText] = useState('');
-  const { bottom } = useSafeAreaInsets();
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
   const {
@@ -56,6 +71,9 @@ export default function DirectChatScreen(props: ScreenProp) {
     setActivityScreen,
     setChannel: setStreamContextChannel
   } = useStreamContext();
+
+  const [menu, setMenu] = useState(false);
+  const showMenu = () => setMenu(!menu);
 
   const [channel, setChannel] = useState(
     chatClient.channel('team', user.channelId)
@@ -71,6 +89,22 @@ export default function DirectChatScreen(props: ScreenProp) {
     setActivityScreen('directMessage');
     setStreamContextChannel(channel);
   }, [channel?.id]);
+
+  const getMenuHeight = useCallback(() => {
+    switch (true) {
+      case Math.ceil(safeAreaTop) <= 20:
+        return Math.ceil(safeAreaTop + 50);
+
+      case Math.ceil(safeAreaTop) <= 36:
+        return Math.ceil(safeAreaTop + 50);
+
+      case Math.ceil(safeAreaTop) <= 44:
+        return Math.ceil(safeAreaTop + 35);
+
+      default:
+        return Math.ceil(safeAreaTop);
+    }
+  }, []);
 
   const getConversation = async () => {
     const filter = {
@@ -154,6 +188,20 @@ export default function DirectChatScreen(props: ScreenProp) {
           `${route.params.firstName} ${route.params.lastName}`
       };
 
+  const inviteTribeNavigation = () => {
+    navigation.navigate('InviteToTribeFromProfileScreen', {
+      memberId: user?.id
+    });
+    setMenu(false);
+  };
+
+  const inviteChannelNavigation = () => {
+    navigation.navigate('InviteToChannelFromProfileScreen', {
+      memberId: user?.id
+    });
+    setMenu(false);
+  };
+
   useEffect(() => {
     tagScreenName('DirectChatScreen');
   }, []);
@@ -162,58 +210,137 @@ export default function DirectChatScreen(props: ScreenProp) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Container style={{ paddingBottom: bottom }}>
         <HeaderContainer>
-          <TouchableRipple
-            onPress={() => {
-              if (Boolean(channel.data?.isDm)) {
-                navigation.goBack();
-              } else {
-                navigation.navigate('InboxScreen');
-              }
-            }}
-            style={{
-              height: 40,
-              width: 40,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 40 / 2,
-              marginRight: 10
-            }}
-          >
-            <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
-          </TouchableRipple>
-          <Surface
-            style={{
-              width: 40,
-              height: 40,
-              elevation: 4,
-              borderRadius: 40 / 2,
-              marginRight: channel.data?.isGroup ? 10 : 0,
-              justifyContent: 'center'
-            }}
-          >
-            <Chat
-              //@ts-ignore
-              client={chatClient}
-              style={chatStyles}
+          <HeaderLeftCover>
+            <TouchableRipple
+              onPress={() => {
+                if (Boolean(channel.data?.isDm)) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('InboxScreen');
+                }
+              }}
+              style={{
+                height: 40,
+                width: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 40 / 2,
+                marginRight: 10
+              }}
             >
-              <Avatar
-                image={receiver?.image}
-                name={receiver?.name}
-                size={RFValue(40)}
-              />
-            </Chat>
-          </Surface>
-          <Paragraph
-            style={{
-              fontSize: fonts.MEDIUM_SIZE + 2,
-              fontFamily: fonts.WORK_SANS_BOLD,
-              marginHorizontal: 5
-            }}
-          >
-            {`${receiver?.name}`.length <= 20
-              ? `${receiver?.name}`
-              : `${receiver?.name}`.substr(0, 20).concat('...')}
-          </Paragraph>
+              <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
+            </TouchableRipple>
+            <Surface
+              style={{
+                width: 40,
+                height: 40,
+                elevation: 4,
+                borderRadius: 40 / 2,
+                marginRight: channel.data?.isGroup ? 10 : 0,
+                justifyContent: 'center'
+              }}
+            >
+              <Chat
+                //@ts-ignore
+                client={chatClient}
+                style={chatStyles}
+              >
+                <Avatar
+                  image={receiver?.image}
+                  name={receiver?.name}
+                  size={RFValue(40)}
+                />
+              </Chat>
+            </Surface>
+            <Paragraph
+              style={{
+                fontSize: fonts.MEDIUM_SIZE + 2,
+                fontFamily: fonts.WORK_SANS_BOLD,
+                marginHorizontal: 5
+              }}
+            >
+              {`${receiver?.name}`.length <= 20
+                ? `${receiver?.name}`
+                : `${receiver?.name}`.substr(0, 20).concat('...')}
+            </Paragraph>
+          </HeaderLeftCover>
+          {Boolean(channel.data?.isDm) && (
+            <HeaderRightCover>
+              <Menu
+                visible={menu}
+                onDismiss={showMenu}
+                anchor={
+                  <TouchableRipple
+                    rippleColor={colors.PRIMARY}
+                    onPress={showMenu}
+                    style={{
+                      padding: RFValue(3),
+                      paddingTop: RFValue(6),
+                      paddingBottom: RFValue(6),
+                      backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                      borderRadius: 4,
+                      borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                      borderWidth: 1
+                    }}
+                  >
+                    <Entypo
+                      name="dots-three-vertical"
+                      color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                      size={20}
+                    />
+                  </TouchableRipple>
+                }
+                contentStyle={{
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  overflow: Platform.select({ android: 'hidden' })
+                }}
+                style={{ top: RFValue(getMenuHeight()) }}
+              >
+                <Menu.Item
+                  onPress={inviteTribeNavigation}
+                  title={t(`community.invitation.tribeInvite`)}
+                  style={{
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textAlign: 'center',
+                    textTransform: 'capitalize'
+                  }}
+                />
+                <Divider />
+                <Menu.Item
+                  onPress={inviteChannelNavigation}
+                  title={t(`community.invitation.channelTitle`)}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textAlign: 'center',
+                    textTransform: 'capitalize'
+                  }}
+                />
+              </Menu>
+            </HeaderRightCover>
+          )}
         </HeaderContainer>
 
         <Chat

@@ -1,53 +1,53 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import CheckBox from '@react-native-community/checkbox';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../../../../theme';
-import { GET_SINGLE_PASSPORT } from '../../../../../../graphql/server/query';
-import { hideSensitiveView } from '../../../../../../utils/uxcamHelper';
+import { useThemeContext } from '../../../../theme';
+import { USER_CHANNELS } from '../../../../graphql/server/query';
+import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { PassportInterface } from '../../../../../../graphql/types';
+import { ChannelInterface } from '../../../../graphql/types';
 
 import { NameContainer, CheckboxCover } from './styles';
+import { PAGINATION_DEFAULT } from '../../../../constants';
 
-interface AddAdminProp extends PassportInterface {
+interface InviteToTribeProp extends ChannelInterface {
   handleSelect(T: string): void;
-  selected: boolean;
-  admin: string;
+  selected: string;
+  channel: string;
 }
 
-export default function AddAdmin(props: AddAdminProp) {
+export default function InviteToTribe(props: InviteToTribeProp) {
   const { colors, fonts } = useThemeContext();
-  const {
-    id,
-    avatar,
-    firstName,
-    lastName,
-    currentLocation,
-    handleSelect,
-    selected
-  } = props;
+  const { id, community, name, handleSelect, selected } = props;
+  const [toggle, setToggle] = useState(false);
+
+  useEffect(() => {
+    if (selected !== id) {
+      setToggle(false);
+    } else {
+      setToggle(true);
+    }
+  }, [selected]);
 
   const onPress = () => handleSelect(id);
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
+  const [getUserChannels] = useLazyQuery(USER_CHANNELS, {
+    variables: { input: { limit: PAGINATION_DEFAULT * 2, skip: 0 } }
   });
 
   useEffect(() => {
-    getUserPassport();
+    getUserChannels();
   }, []);
 
   return (
     <TouchableRipple
       style={{
-        height: RFValue(60),
+        height: RFValue(45),
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: RFValue(10),
-        paddingLeft: RFValue(10),
-        paddingRight: RFValue(10)
+        marginBottom: RFValue(10)
       }}
       onPress={() => {}}
     >
@@ -55,13 +55,13 @@ export default function AddAdmin(props: AddAdminProp) {
         <FastImage
           resizeMode={FastImage.resizeMode.contain}
           source={{
-            uri: avatar,
+            uri: community?.avatar,
             priority: FastImage.priority.high
           }}
           style={{
             width: RFValue(50),
-            height: RFValue(50),
-            borderRadius: RFValue(4)
+            height: RFValue(40),
+            borderRadius: RFValue(5)
           }}
         />
         <NameContainer ref={hideSensitiveView}>
@@ -73,25 +73,13 @@ export default function AddAdmin(props: AddAdminProp) {
               textTransform: 'capitalize'
             }}
           >
-            {`${firstName} ${lastName}`}
+            #{name}
           </Title>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              textTransform: 'lowercase'
-            }}
-          >
-            {currentLocation?.city
-              ? `${currentLocation?.city}, ${currentLocation?.state}`
-              : `${currentLocation?.state}, ${currentLocation?.country}`}
-          </Text>
         </NameContainer>
         <CheckboxCover>
           <CheckBox
             disabled={false}
-            value={selected}
+            value={toggle}
             onValueChange={onPress}
             boxType="square"
             tintColors={{

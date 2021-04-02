@@ -8,7 +8,14 @@ import {
 } from '../../graphql/types';
 import {
   GET_USER_PASSPORT,
-  GET_FIREBASE_TOKEN
+  GET_FIREBASE_TOKEN,
+  GET_ALL_MEMBERS,
+  GET_NEARBY_MEMBERS,
+  GET_POPULAR_COMMUNITIES,
+  GET_RECOMMENDED_COMMUNITIES,
+  GET_RECOMMENDED_MEMBERS,
+  GET_MY_COMMUNITIES,
+  USER_CHANNELS
 } from '../../graphql/server/query';
 import * as ExpoSplashScreen from 'expo-splash-screen';
 import loadResources from '../../libs/loadResources';
@@ -22,6 +29,7 @@ import Firechat from '../../firebase';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import { PAGINATION_DEFAULT } from '../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -30,6 +38,29 @@ export default function SplashScreen(props: ScreenProp) {
   const { navigation } = props;
 
   const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
+
+  const [getMyCommunities] = useLazyQuery(GET_MY_COMMUNITIES);
+
+  const [getMyChannels] = useLazyQuery(USER_CHANNELS);
+
+  const [getRecommendedCommunities] = useLazyQuery(GET_RECOMMENDED_COMMUNITIES);
+
+  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
+
+  const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
+  });
+
+  const [getAllMembers] = useLazyQuery(GET_ALL_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT } }
+  });
+
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
+    variables: { input: { limit: 8 } }
+  });
+
   const [authenticateFirebase, { data: firebase }] = useLazyQuery<
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
@@ -85,6 +116,13 @@ export default function SplashScreen(props: ScreenProp) {
     handleAuthentication();
     authenticateFirebase();
     getUserPassport();
+    getMyCommunities();
+    getMyChannels();
+    getRecommendedCommunities();
+    getRecommendedMembers();
+    getPopularCommunities();
+    getAllMembers();
+    getNearbyMembers();
   }, []);
 
   return (

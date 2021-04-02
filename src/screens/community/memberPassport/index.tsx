@@ -565,7 +565,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                     underlayColor={colors.TRANSPARENT}
                     style={{
                       position: 'relative',
-                      top: RFValue(10)
+                      top: RFValue(20)
                     }}
                   >
                     <Text
@@ -573,9 +573,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                         display: displayInterest ? 'none' : 'flex',
                         color: colors.PRIMARY,
                         fontSize: fonts.LARGE_SIZE - 2,
-                        fontFamily: fonts.WORK_SANS_BOLD,
-                        position: 'relative',
-                        top: RFValue(10)
+                        fontFamily: fonts.WORK_SANS_BOLD
                       }}
                     >
                       View more
@@ -596,16 +594,14 @@ export default function PassportDetail(props: MemberDetailProps) {
                         style={{
                           marginTop: RFValue(10),
                           position: 'relative',
-                          top: RFValue(5)
+                          top: RFValue(10)
                         }}
                       >
                         <Text
                           style={{
                             color: colors.PRIMARY,
                             fontSize: fonts.LARGE_SIZE - 2,
-                            fontFamily: fonts.WORK_SANS_BOLD,
-                            position: 'relative',
-                            top: RFValue(5)
+                            fontFamily: fonts.WORK_SANS_BOLD
                           }}
                         >
                           View less
