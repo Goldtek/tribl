@@ -1,19 +1,22 @@
 import React, { FunctionComponent } from 'react';
-import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { ApolloLink, Observable, Operation, split } from 'apollo-link';
 import { ApolloProvider as Provider } from '@apollo/react-hooks';
-import { WebSocketLink } from 'apollo-link-ws';
-import { ApolloClient } from 'apollo-client';
+import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { getMainDefinition } from 'apollo-utilities';
-import { RetryLink } from 'apollo-link-retry';
 import { crashlytics } from '../firebase/config';
+import { refreshToken } from '../network/query';
+import { WebSocketLink } from 'apollo-link-ws';
+import { RetryLink } from 'apollo-link-retry';
 import ENVIRONMENT_VARIABLES from '../config';
+import jsonwebtoken from 'jwt-decode';
+import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import resolvers from './cache/resolvers';
 import Storage from '../libs/storage';
 import { VerifyOTPIT } from './types';
 import cache from './cache';
+import { addMinutes, fromUnixTime } from 'date-fns';
 
 // Create a Http link:
 const httpLink = new HttpLink({
@@ -32,7 +35,7 @@ const retryLink = new RetryLink({
     initial: 100,
     jitter: true
   },
-  attempts: { max: 3, retryIf: (error, _operation) => !!error }
+  attempts: { max: 5, retryIf: (error, _operation) => !!error }
 });
 
 // using the ability to split links, you can send data to each link
@@ -50,13 +53,35 @@ const link = split(
   httpLink
 );
 
+const checkRefreshToken = async (credentials: VerifyOTPIT) => {
+  const payload: null | { [key: string]: any } | any = jsonwebtoken(
+    credentials.id_token
+  );
+
+  const tokenExpiryTime = fromUnixTime(payload?.exp);
+  const tokenExpiryMinute = addMinutes(new Date(), 30);
+  const expiryHour = tokenExpiryTime.getTime() <= tokenExpiryMinute.getTime();
+
+  if (!expiryHour) return;
+
+  try {
+    const { data } = await refreshToken(credentials.refresh_token);
+    await Storage.setUserCredentials(data?.refreshToken);
+  } catch (error) {
+    crashlytics.recordError(new Error(`[GraphQL error]: Message: ${error}`));
+  }
+};
+
 const request = async (operation: Operation) => {
   const storageData = await Storage.getUserCredentials();
+
   if (!storageData) {
-    return operation.setContext({ headers: { authorization: undefined } });
+    return operation.setContext({ headers: { authorization: {} } });
   }
+
   const credentials = JSON.parse(storageData) as VerifyOTPIT;
   operation.setContext({ headers: { authorization: credentials?.id_token } });
+  checkRefreshToken(credentials);
 };
 
 const requestLink = new ApolloLink(
@@ -80,7 +105,7 @@ const requestLink = new ApolloLink(
 
 const handleErrors = onError(({ graphQLErrors, networkError }) => {
   // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
-  // @ts-ignore
+
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) =>
       crashlytics.recordError(

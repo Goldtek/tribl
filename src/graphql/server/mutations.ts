@@ -51,7 +51,7 @@ export const UPDATE_USER_PASSPORT = gql`
 `;
 
 // REFRESH TOKEN
-export const REFRESH_TOKEN = gql`
+export const REFRESH_TOKEN = `
   mutation refreshToken($payload: RefreshTokenInput!) {
     refreshToken(input: $payload) {
       id_token
