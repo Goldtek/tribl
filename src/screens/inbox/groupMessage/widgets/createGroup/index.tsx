@@ -83,10 +83,11 @@ export default function CreateGroup(props: ScreenProp) {
       await channel.create();
       setChannel(channel);
 
-      const channelMessages = selectedItem.map(({ firstName }) =>
+      const channelMessages = selectedItem.map(({ firstName, lastName, id }) =>
         channel.sendMessage({
           text: `${firstName} was added by ${chatClient.user?.user.firstName}`,
-          group_system: true
+          group_system: true,
+          receiver: { firstName, lastName, id }
         })
       );
 
@@ -125,9 +126,11 @@ export default function CreateGroup(props: ScreenProp) {
             />
           </TouchableRipple>
           <HeaderTitle>New Group</HeaderTitle>
-          <HeaderAction onPress={createGroup}>
-            <HeaderActionText>Done</HeaderActionText>
-          </HeaderAction>
+          <ContentWrapper style={{ flex: 1, paddingHorizontal: 0 }}>
+            <HeaderAction onPress={createGroup}>
+              <HeaderActionText>Done</HeaderActionText>
+            </HeaderAction>
+          </ContentWrapper>
         </HeaderContainer>
 
         <ContentWrapper>

@@ -72,6 +72,7 @@ function AlgoliaList(props: AlgoliaListProps) {
       removeClippedSubviews={true}
       scrollEventThrottle={16}
       ListEmptyComponent={<Results />}
+      keyboardShouldPersistTaps="always"
       onEndReached={() => hasMore && refineNext()}
       contentContainerStyle={{
         paddingTop: RFValue(10),

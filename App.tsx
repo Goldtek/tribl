@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   NativeModules,
   NativeEventEmitter,
@@ -7,17 +7,40 @@ import {
 //@ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 import { enableScreens } from 'react-native-screens';
-import loadResources from './src/libs/loadResources';
 import './src/internationalization';
-import AppRouter from './src';
 import { Mixpanel } from './src/config';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { QueryClientProvider, QueryClient, onlineManager } from 'react-query';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  persistQueryClient,
+  createLocalStoragePersistor
+} from './src/libs/rn-react-query-offline-persist';
+import { RootToaster } from './src/components/rootToaster';
+import { Host as PortalHost } from 'react-native-portalize';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import GlobalErrorBoundary from './src/libs/error';
+import ApolloProvider from './src/graphql';
+import StreamProvider from './src/stream';
+import ThemeProvider from './src/theme';
+import Router from './src';
 
 enableScreens();
 
 export default function App() {
-  const [isAppReady, setIsAppReady] = useState(false);
-
   let uxcamEvent: EventSubscription;
+  const { isConnected } = useNetInfo();
+
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { cacheTime: 1000 * 60 * 60 * 24 } }
+  });
+
+  const localStoragePersistor = createLocalStoragePersistor();
+
+  persistQueryClient({
+    queryClient,
+    persistor: localStoragePersistor
+  });
 
   //Setup listener
   function _uxcamSessionStartListener() {
@@ -35,19 +58,32 @@ export default function App() {
     });
   }
 
-  const loadApp = async () => {
-    await loadResources();
-    setIsAppReady(true);
-  };
+  useEffect(() => {
+    onlineManager.setOnline(isConnected);
+  }, [isConnected]);
 
   useEffect(() => {
+    SplashScreen.preventAutoHideAsync();
     _uxcamSessionStartListener();
     return () => uxcamEvent.remove();
   }, []);
 
-  useEffect(() => {
-    loadApp();
-  }, []);
-
-  return isAppReady ? <AppRouter /> : null;
+  return (
+    <GlobalErrorBoundary>
+      <ApolloProvider>
+        <SafeAreaProvider>
+          <QueryClientProvider client={queryClient}>
+            <StreamProvider>
+              <ThemeProvider>
+                <RootToaster />
+                <PortalHost>
+                  <Router />
+                </PortalHost>
+              </ThemeProvider>
+            </StreamProvider>
+          </QueryClientProvider>
+        </SafeAreaProvider>
+      </ApolloProvider>
+    </GlobalErrorBoundary>
+  );
 }

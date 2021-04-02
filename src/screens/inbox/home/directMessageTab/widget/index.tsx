@@ -14,6 +14,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useNavigation } from '@react-navigation/native';
 import ChannelActions from './channelActions';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
+import { USER_DEFAULT_AVATAR } from '../../../../../constants';
 import {
   chatClient,
   LocalAttachmentType,
@@ -23,7 +24,6 @@ import {
   LocalReactionType,
   LocalUserType
 } from '../../../../../stream/types';
-import { USER_DEFAULT_AVATAR } from '../../../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -63,7 +63,9 @@ export default function CustomDirectMessagePreview(
   const { colors } = useThemeContext();
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
-  const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
+  const message = latestMessagePreview?.messageObject?.asMutable();
+  const latestMessageDate = message?.created_at.asMutable();
+  let messageText: string = `${message?.text}`;
 
   let receiverId: any = null;
   let channelDetails: any = null;
@@ -104,6 +106,12 @@ export default function CustomDirectMessagePreview(
 
   if (Boolean(channel.data?.isGroup)) {
     channelDetails = channel.data;
+
+    if (Boolean(message?.group_system)) {
+      messageText = `${message?.text}`;
+    } else {
+      messageText = `${message?.user?.name}: ${messageText}`;
+    }
   }
 
   const handleDeleteAction = async () => {
@@ -122,6 +130,16 @@ export default function CustomDirectMessagePreview(
     } catch {
       setMuted(getMuteStatus);
     }
+  };
+
+  const handleNavigate = () => {
+    setActiveChannel && setActiveChannel(channel);
+    navigation.navigate('DrawerScreen', {
+      screen: channelDetails?.isGroup
+        ? 'ChannelChatScreen'
+        : 'DirectChatScreen',
+      params: { channelId: channel.id, title: channelDetails?.name }
+    });
   };
 
   return (
@@ -143,13 +161,7 @@ export default function CustomDirectMessagePreview(
           borderBottomWidth: 1,
           padding: 10
         }}
-        onPress={() => {
-          setActiveChannel && setActiveChannel(channel);
-          navigation.navigate('DrawerScreen', {
-            screen: 'DirectChatScreen',
-            params: { channelId: channel.id, title: channelDetails?.name }
-          });
-        }}
+        onPress={handleNavigate}
         ref={hideSensitiveView}
       >
         <Fragment>
@@ -173,10 +185,10 @@ export default function CustomDirectMessagePreview(
                   width: RFValue(28),
                   height: RFValue(28),
                   borderRadius: RFValue(28 / 2),
-                  zIndex: 2,
-                  borderWidth: 2,
                   right: 1,
                   bottom: 1,
+                  zIndex: 2,
+                  borderWidth: 2,
                   position: 'absolute',
                   borderColor: colors.WHITE
                 }}
@@ -191,12 +203,12 @@ export default function CustomDirectMessagePreview(
                 style={{
                   width: RFValue(25),
                   height: RFValue(25),
-                  left: 1,
                   top: 5,
-                  borderRadius: RFValue(25 / 2),
+                  left: 1,
+                  borderWidth: 2,
                   position: 'absolute',
                   borderColor: colors.WHITE,
-                  borderWidth: 2
+                  borderRadius: RFValue(25 / 2)
                 }}
               />
             </GroupImageContainer>
@@ -270,7 +282,7 @@ export default function CustomDirectMessagePreview(
             <DetailsBottom>
               <StyledMessage unread={unread}>
                 {latestMessagePreview?.text &&
-                  truncate(latestMessagePreview.text.replace(/\n/g, ' '), {
+                  truncate(messageText.replace(/\n/g, ' '), {
                     length: latestMessageLength
                   })}
               </StyledMessage>

@@ -1,77 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import FastImage from 'react-native-fast-image';
 import { ChannelInterface } from '../../graphql/types';
 import { useThemeContext } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
-import {
-  chatClient,
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType
-} from '../../stream/types';
 
-import { Cover, LeftCover, Text, RightCover } from './styles';
+import { Cover, LeftCover, Text } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface MyChannelProp extends ChannelInterface {}
 
 export default function MyChannel(props: MyChannelProp) {
-  const { id, name, isMember, community } = props;
+  const { id, name, community } = props;
 
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
 
-  const [channel, setChannel] = useState<
-    Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LiteralStringForUnion,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-  >();
+  // const [channel, setChannel] = useState<
+  //   Channel<
+  //     LocalAttachmentType,
+  //     LocalChannelType,
+  //     LiteralStringForUnion,
+  //     LocalEventType,
+  //     LocalMessageType,
+  //     LocalReactionType,
+  //     LocalUserType
+  //   >
+  // >();
 
-  useEffect(() => {
-    const getConversation = async () => {
-      const filter = { id: { $in: [id] } };
+  // useEffect(() => {
+  //   const getConversation = async () => {
+  //     const filter = { id: { $in: [id] } };
 
-      const options = { presence: true, state: true, watch: true };
+  //     const options = { presence: true, state: true, watch: true };
 
-      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+  //     const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 
-      const [channel] = await chatClient.queryChannels(filter, sort, options);
+  //     const [channel] = await chatClient.queryChannels(filter, sort, options);
 
-      if (!channel) return;
+  //     if (!channel) return;
 
-      setChannel(channel);
-    };
+  //     setChannel(channel);
+  //   };
 
-    if (chatClient.user) getConversation();
-  }, [chatClient.user]);
+  //   if (chatClient.user) getConversation();
+  // }, [chatClient.user]);
 
-  const messageCount =
-    channel?.state?.messages.length || channel?.data?.member_count || 0;
+  // const messageCount =
+  //   channel?.state?.messages.length || channel?.data?.member_count || 0;
 
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
-      params: {
-        chatId: id,
-        channelId: id,
-        title: `#${name}`,
-        isMember: isMember,
-        details: { ...props },
-        channel: { name: name, community: community?.name }
-      }
+      params: { channelId: id, title: `#${name}` }
     });
   };
 
@@ -102,7 +84,7 @@ export default function MyChannel(props: MyChannelProp) {
               #{name?.length < 10 ? name : `${name?.substr(0, 10)}...`}
             </Text>
           </LeftCover>
-          <RightCover>
+          {/* <RightCover>
             <MaterialIcons
               name="chat-bubble-outline"
               size={12}
@@ -120,7 +102,7 @@ export default function MyChannel(props: MyChannelProp) {
               {Number(messageCount)}
             </Text>
             <Feather name="trending-up" size={12} color={colors.ONLINE} />
-          </RightCover>
+          </RightCover> */}
         </Cover>
       </FastImage>
     </TouchableRipple>

@@ -33,7 +33,11 @@ export interface LocalChannelType extends DefaultChannelType {
   receiver: MessageUserInterface;
   messageRequest: { status: boolean };
 }
-export interface LocalMessageType extends DefaultMessageType {}
+export interface LocalMessageType extends DefaultMessageType {
+  receiver: { firstName: string; lastName: string; id: string };
+  group_system: boolean;
+}
+
 export interface LocalEventType extends DefaultEventType {}
 export interface LocalUserType extends DefaultUserType {
   user: PassportInterface;
