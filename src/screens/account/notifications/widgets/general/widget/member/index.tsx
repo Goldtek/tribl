@@ -56,12 +56,8 @@ function TribeRequest(props: TribeRequestprop) {
 
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
-      screen: singlePassport?.conversation?.id
-        ? 'DirectChatScreen'
-        : 'ConnectionChatScreen',
+      screen: 'DirectChatScreen',
       params: {
-        receiverId: id,
-        chatId: singlePassport?.conversation?.id,
         title: `${firstName} ${lastName}`,
         ...{ ...props, ...singlePassport }
       }

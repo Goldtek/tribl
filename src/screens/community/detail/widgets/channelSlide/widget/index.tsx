@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
-import { Paragraph, TouchableRipple, Text } from 'react-native-paper';
+import { Paragraph, TouchableRipple } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { AntDesign } from '@expo/vector-icons';
 import { NavigationInterface } from '../../../../../types';
@@ -46,9 +46,10 @@ export default function ChannelCard(props: ChannelCardProp) {
 
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { setChannel: activeChannel } = useStreamContext();
   const { colors, fonts } = useThemeContext();
   const joinedChannel = useRef<boolean>(false);
+  const { setChannel: activeChannel } = useStreamContext();
+
   const [channel, setChannel] = useState<
     Channel<
       LocalAttachmentType,
@@ -61,11 +62,10 @@ export default function ChannelCard(props: ChannelCardProp) {
     >
   >();
 
-  useQuery(GET_CHANNEL_MEMBERS, { variables: { input: { channelId: id } } });
   const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
-
   const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
+  useQuery(GET_CHANNEL_MEMBERS, { variables: { input: { channelId: id } } });
 
   useEffect(() => {
     const channel = chatClient.channel('team', id);

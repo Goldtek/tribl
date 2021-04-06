@@ -86,7 +86,9 @@ export default function HomeScreen(props: ScreenProp) {
     getMyCommunities,
     { refetch, fetchMore, data: myCommunityData, loading: myCommunityLoading }
   ] = useLazyQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
-    variables: { input: { limit: PAGINATION_DEFAULT * 2, skip: 0 } }
+    variables: {
+      input: { limit: PAGINATION_DEFAULT * (PAGINATION_DEFAULT / 2), skip: 0 }
+    }
   });
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
@@ -125,14 +127,13 @@ export default function HomeScreen(props: ScreenProp) {
     GET_RECOMMENDED_COMMUNITIES
   );
 
-  const { data: myChannelsData } = useQuery<MyChannelRequestInterface>(
-    USER_CHANNELS,
-    {
-      variables: {
-        input: { limit: PAGINATION_DEFAULT / 2 }
-      }
+  const { data: myChannelsData, refetch: refetchMyChannels } = useQuery<
+    MyChannelRequestInterface
+  >(USER_CHANNELS, {
+    variables: {
+      input: { limit: PAGINATION_DEFAULT * (PAGINATION_DEFAULT / 2), skip: 0 }
     }
-  );
+  });
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
     variables: {
@@ -140,8 +141,8 @@ export default function HomeScreen(props: ScreenProp) {
     }
   });
 
+  const myChannels = myChannelsData?.myChannels;
   const myCommunities = myCommunityData?.myCommunities;
-  const myChannels = myChannelsData?.myChannels.data;
   const recommendedMembers = membersData?.recommendedMembers?.data;
   const communities = communityData?.recommendedCommunities?.data
     .slice()
@@ -152,7 +153,8 @@ export default function HomeScreen(props: ScreenProp) {
 
   useEffect(() => {
     myCommunities ? refetch() : getMyCommunities();
-  }, [isFocused, myCommunities]);
+    myChannels && refetchMyChannels();
+  }, [isFocused, myCommunities, myChannels]);
 
   const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
@@ -273,7 +275,7 @@ export default function HomeScreen(props: ScreenProp) {
             />
           </RecommendedList>
         ) : null}
-        {myChannels?.length ? (
+        {myChannels?.data?.length ? (
           <RecommendedList
             style={{
               paddingBottom: RFValue(15)
@@ -317,7 +319,7 @@ export default function HomeScreen(props: ScreenProp) {
             </RecommendedListHeader>
             <RecommendedCommunityContainer>
               <FlatList
-                data={myChannels}
+                data={myChannels.data}
                 horizontal={true}
                 renderItem={_renderMyChannelItem}
                 ListEmptyComponent={
