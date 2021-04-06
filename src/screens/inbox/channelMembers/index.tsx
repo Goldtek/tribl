@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { FlatList, RefreshControl, SafeAreaView } from 'react-native';
-import { ActivityIndicator, Text } from 'react-native-paper';
+import { FlatList, RefreshControl } from 'react-native';
+import { ActivityIndicator, Divider, Text } from 'react-native-paper';
 import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import SearchInput, { createFilter } from 'react-native-search-filter';
@@ -16,25 +16,27 @@ import { ChatScreenProps } from '../../types';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 import { Mixpanel } from '../../../config';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useStreamContext } from '../../../stream';
+import hexToRGB from '../../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
-interface ModalProp {
+interface ChannelMembersProp {
   route: { params: ChatScreenProps };
 }
 
-function ChannelMembers(props: ModalProp) {
+export default function ChannelMembers(props: ChannelMembersProp) {
   const { colors, fonts } = useThemeContext();
 
-  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
+  const { channel } = useStreamContext();
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState({ searchTerm: '' });
-
-  const { channelId } = props.route?.params;
+  const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
   const { data: channelData, refetch, fetchMore } = useQuery<
     ChannelMembersRequestInterface
   >(GET_CHANNEL_MEMBERS, {
-    variables: { input: { channelId } }
+    variables: { input: { channelId: channel.id } }
   });
 
   useEffect(() => {
@@ -60,8 +62,8 @@ function ChannelMembers(props: ModalProp) {
     fetchMore({
       variables: {
         input: {
-          channelId,
-          skip: filterMembers?.length,
+          channelId: channel.id,
+          skip: channelMembers?.data?.length,
           limit: PAGINATION_DEFAULT
         }
       },
@@ -94,6 +96,29 @@ function ChannelMembers(props: ModalProp) {
     [callOnScrollEnd]
   );
 
+  const _renderSeparator = ({ leadingItem }: any) => {
+    const user = leadingItem as PassportInterface;
+
+    if (
+      (!user.verified ||
+        user.lastName == null ||
+        user.firstName == null ||
+        user.currentLocation?.city == null,
+      user.currentLocation?.state == null)
+    ) {
+      return null;
+    }
+
+    return (
+      <Divider
+        style={{
+          height: 1.5,
+          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+        }}
+      />
+    );
+  };
+
   const keysToFilter = ['firstName', 'lastName'];
 
   const filteredWords =
@@ -101,13 +126,13 @@ function ChannelMembers(props: ModalProp) {
     filterMembers?.filter(createFilter(search.searchTerm, keysToFilter));
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <SearchInput
         onChangeText={searchUpdated}
         placeholder="Search"
         placeholderTextColor={colors.PRIMARY_TEXT}
         style={{
-          height: RFValue(40),
+          height: RFValue(50),
           color: colors.PRIMARY_TEXT,
           alignItems: 'center',
           elevation: 0,
@@ -115,6 +140,7 @@ function ChannelMembers(props: ModalProp) {
           borderColor: colors.INACTIVE,
           borderRadius: 4,
           paddingHorizontal: 10,
+          marginBottom: 10,
           marginHorizontal: 15
         }}
       />
@@ -130,7 +156,7 @@ function ChannelMembers(props: ModalProp) {
                 textAlign: 'center'
               }}
             >
-              There are no members in this channel
+              {`There is no member as ${search.searchTerm} in this channel`}
             </Text>
           }
           keyExtractor={({ id }) => id}
@@ -141,7 +167,7 @@ function ChannelMembers(props: ModalProp) {
           onEndReached={() => {
             if (
               channelMembers &&
-              channelMembers?.metadata.totalCount > filterMembers.length
+              channelMembers?.metadata.totalCount > channelMembers?.data?.length
             ) {
               setCallOnScrollEnd(true);
             }
@@ -153,6 +179,7 @@ function ChannelMembers(props: ModalProp) {
           }}
           renderItem={_renderItem}
           ListFooterComponent={_renderFooter}
+          ItemSeparatorComponent={_renderSeparator}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -168,5 +195,3 @@ function ChannelMembers(props: ModalProp) {
     </SafeAreaView>
   );
 }
-
-export default React.memo(ChannelMembers);
