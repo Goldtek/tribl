@@ -34,7 +34,8 @@ function ActiveModal(props: ActiveUserProp) {
     lastName,
     firstName,
     currentLocation,
-    connectionDetails
+    connectionDetails,
+    citizenship
   } = member;
 
   const [request, setRequest] = useState(false);
@@ -110,7 +111,8 @@ function ActiveModal(props: ActiveUserProp) {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+              lineHeight: RFValue(16)
             }}
           >
             {`${firstName} ${lastName}`}
@@ -140,6 +142,16 @@ function ActiveModal(props: ActiveUserProp) {
               {`${state}, ${country}`}
             </Paragraph>
           )}
+          {citizenship?.length ? (
+            <Title
+              style={{
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                lineHeight: RFValue(16)
+              }}
+            >
+              {citizenship?.map((country) => country.flag)}
+            </Title>
+          ) : null}
         </TextContainer>
         {connectionDetails?.status == 'PENDING' ||
         pending == 'PENDING' ||

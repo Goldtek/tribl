@@ -12,6 +12,7 @@ import AddMembersToGroupScreen from './addGroupParticipants';
 import InvitationToChannelScreen from './invitationToChannel';
 import DirectMessageInformation from './directMessageInformation';
 import SelectGroupParticipantsScreen from './selectGroupParticipants';
+import InviteToChannelFromProfileScreen from './inviteToChannelFromProfile';
 
 export default {
   InboxScreen,
@@ -27,5 +28,6 @@ export default {
   ChannelInformationScreen,
   DirectMessageInformation,
   InvitationToChannelScreen,
-  SelectGroupParticipantsScreen
+  SelectGroupParticipantsScreen,
+  InviteToChannelFromProfileScreen
 };

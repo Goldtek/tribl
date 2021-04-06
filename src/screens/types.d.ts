@@ -95,6 +95,8 @@ export type RootStackParamList = {
   CitizenshipScreen?: Object;
   InvitationToChannelScreen?: Object;
   ChannelInformationScreen?: Object;
+  InviteToTribeFromProfileScreen?: Object;
+  InviteToChannelFromProfileScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -170,7 +172,9 @@ export type RootStackParamScreensList =
   | 'CommunityRequestScreen'
   | 'CitizenshipScreen'
   | 'InvitationToChannelScreen'
-  | 'ChannelInformationScreen';
+  | 'ChannelInformationScreen'
+  | 'InviteToTribeFromProfileScreen'
+  | 'InviteToChannelFromProfileScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

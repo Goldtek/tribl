@@ -29,7 +29,9 @@ import {
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
   GET_TRENDING_CHANNELS,
-  USER_CHANNELS
+  USER_CHANNELS,
+  GET_USER_PASSPORT,
+  GET_FIREBASE_TOKEN
 } from '../../../graphql/server/query';
 import MyChannel from '../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
@@ -42,7 +44,8 @@ import {
   RecommendedCommunitiesRequestInterface,
   CommunityInterface,
   ChannelInterface,
-  MyChannelRequestInterface
+  MyChannelRequestInterface,
+  GenerateFirebaseTokenIT
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -51,6 +54,8 @@ import { PAGINATION_DEFAULT } from '../../../constants';
 import GradientButton from '../../../components/gradientButton';
 import { useIsFocused } from '@react-navigation/native';
 import MyCommunity from '../../../components/myCommunities';
+import Storage from '../../../libs/storage';
+import Firechat from '../../../firebase';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -82,6 +87,10 @@ export default function HomeScreen(props: ScreenProp) {
 
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
+  const { data: firebase, loading: firebaseLoading } = useQuery<
+    GenerateFirebaseTokenIT
+  >(GET_FIREBASE_TOKEN);
+
   const [
     getMyCommunities,
     { refetch, fetchMore, data: myCommunityData, loading: myCommunityLoading }
@@ -94,6 +103,8 @@ export default function HomeScreen(props: ScreenProp) {
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
+
+  const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
@@ -118,7 +129,15 @@ export default function HomeScreen(props: ScreenProp) {
     getNearbyMembers();
     getMyConnections();
     getAllMembers();
+    getUserPassport();
   }, []);
+
+  useEffect(() => {
+    if (firebase?.generateFirebaseToken) {
+      Storage.setUserCredentials(firebase?.generateFirebaseToken);
+      Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
+    }
+  }, [firebaseLoading]);
 
   const {
     loading: recommendedCommunityLoading,

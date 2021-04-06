@@ -53,7 +53,6 @@ interface ScreenProp extends NavigationInterface {
 
 export default function DirectChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
-
   const user = route.params;
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();

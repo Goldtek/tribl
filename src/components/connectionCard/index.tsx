@@ -22,7 +22,15 @@ function ConnectionCard(props: ConnectionCardProp) {
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
 
-  const { id, avatar, firstName, lastName, verified, currentLocation } = props;
+  const {
+    id,
+    avatar,
+    firstName,
+    lastName,
+    verified,
+    citizenship,
+    currentLocation
+  } = props;
 
   if (
     (id === chatClient.user?.id ||
@@ -89,7 +97,8 @@ function ConnectionCard(props: ConnectionCardProp) {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE - 2),
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+              lineHeight: RFValue(18)
             }}
           >
             {`${firstName} ${lastName}`}
@@ -106,6 +115,16 @@ function ConnectionCard(props: ConnectionCardProp) {
               ? `${currentLocation?.city}, ${currentLocation?.state}`
               : `${currentLocation?.state}, ${currentLocation?.country}`}
           </Text>
+          {citizenship?.length ? (
+            <Title
+              style={{
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                lineHeight: RFValue(18)
+              }}
+            >
+              {citizenship?.map((country) => country.flag)}
+            </Title>
+          ) : null}
         </NameContainer>
       </Fragment>
     </TouchableRipple>

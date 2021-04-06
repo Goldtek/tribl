@@ -17,6 +17,7 @@ import AccountScreens from '../../screens/account';
 import CommunityScreens from '../../screens/community';
 import MemberDetailScreen from '../../screens/community/memberPassport';
 import InvitationScreen from '../../screens/community/invitationToTribe';
+import InviteToTribeFromProfileScreen from '../../screens/community/inviteToTribeFromProfile';
 import CreateNewTribeScreen from '../../screens/community/home/widget/createTribe';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
 import UserConnectionListScreen from '../../screens/passport/userConnectionListScreen';
@@ -51,6 +52,20 @@ export default function DrawerStackNavigator() {
         return Math.ceil(safeAreaTop);
     }
   }, []);
+
+  const inviteTribeNavigation = (id: string) => {
+    navigation.navigate('InviteToTribeFromProfileScreen', {
+      memberId: id
+    });
+    setMenu(false);
+  };
+
+  const inviteChannelNavigation = (id: string) => {
+    navigation.navigate('InviteToChannelFromProfileScreen', {
+      memberId: id
+    });
+    setMenu(false);
+  };
 
   return (
     <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
@@ -151,6 +166,21 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="InvitationToChannelScreen"
         component={InboxScreens.InvitationToChannelScreen}
+        options={() => {
+          return {
+            headerShown: true,
+            headerTitle: () => null,
+            headerRight: () => null,
+            headerStyle: GLOBAL_HEADER_STYLE,
+            headerBackTitleVisible: false,
+            headerTintColor: colors.PRIMARY
+          };
+        }}
+      />
+
+      <DrawerStack.Screen
+        name="InviteToChannelFromProfileScreen"
+        component={InboxScreens.InviteToChannelFromProfileScreen}
         options={() => {
           return {
             headerShown: true,
@@ -265,7 +295,7 @@ export default function DrawerStackNavigator() {
               anchor={
                 <TouchableRipple
                   rippleColor={colors.PRIMARY}
-                  onPress={() => {}}
+                  onPress={showMenu}
                   style={{
                     padding: RFValue(3),
                     paddingTop: RFValue(6),
@@ -294,8 +324,8 @@ export default function DrawerStackNavigator() {
               style={{ top: RFValue(getMenuHeight()) }}
             >
               <Menu.Item
-                onPress={() => {}}
-                title={t(`community.memberPassport.block`)}
+                onPress={() => inviteTribeNavigation(route?.params?.details.id)}
+                title={t(`community.invitation.tribeInvite`)}
                 style={{
                   borderTopLeftRadius: 20,
                   borderTopRightRadius: 20,
@@ -308,34 +338,17 @@ export default function DrawerStackNavigator() {
                 }}
                 titleStyle={{
                   fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.RED,
+                  color: colors.PRIMARY_TEXT,
                   textAlign: 'center',
                   textTransform: 'capitalize'
                 }}
               />
               <Divider />
               <Menu.Item
-                onPress={() => {}}
-                title={t(`community.memberPassport.report`)}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.RED,
-                  textAlign: 'center',
-                  textTransform: 'capitalize'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title={t(`community.memberPassport.removeConnection`)}
+                onPress={() =>
+                  inviteChannelNavigation(route?.params?.details.id)
+                }
+                title={t(`community.invitation.channelTitle`)}
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -347,24 +360,7 @@ export default function DrawerStackNavigator() {
                 titleStyle={{
                   fontFamily: fonts.WORK_SANS_REGULAR,
                   color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {}}
-                title={t(`community.memberPassport.copy`)}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
+                  textAlign: 'center',
                   textTransform: 'capitalize'
                 }}
               />
@@ -618,6 +614,19 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="InviteToTribeScreen"
         component={InvitationScreen}
+        options={() => ({
+          headerShown: true,
+          headerTitle: () => null,
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE
+        })}
+      />
+
+      <DrawerStack.Screen
+        name="InviteToTribeFromProfileScreen"
+        component={InviteToTribeFromProfileScreen}
         options={() => ({
           headerShown: true,
           headerTitle: () => null,

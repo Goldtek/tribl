@@ -19,7 +19,14 @@ export default function Connection(props: ConnectionProp) {
 
   const navigation = useNavigation();
 
-  const { id, avatar, firstName, lastName, currentLocation } = props;
+  const {
+    id,
+    avatar,
+    firstName,
+    lastName,
+    currentLocation,
+    citizenship
+  } = props;
 
   useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
 
@@ -72,7 +79,8 @@ export default function Connection(props: ConnectionProp) {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+              lineHeight: RFValue(16)
             }}
           >
             {`${firstName} ${lastName}`}
@@ -89,6 +97,16 @@ export default function Connection(props: ConnectionProp) {
               ? `${currentLocation?.city}, ${currentLocation?.state}`
               : `${currentLocation?.state}, ${currentLocation?.country}`}
           </Text>
+          {citizenship?.length ? (
+            <Title
+              style={{
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                lineHeight: RFValue(18)
+              }}
+            >
+              {citizenship?.map((country) => country.flag)}
+            </Title>
+          ) : null}
         </NameContainer>
         <TouchableRipple
           style={{
