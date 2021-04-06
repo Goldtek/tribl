@@ -63,9 +63,9 @@ export default function CustomDirectMessagePreview(
   const { colors } = useThemeContext();
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
-  const message = latestMessagePreview?.messageObject?.asMutable();
+  const message = latestMessagePreview?.messageObject;
   const latestMessageDate = message?.created_at.asMutable();
-  let messageText: string = `${message?.text}`;
+  let messageText: string = `${latestMessagePreview?.text}`;
 
   let receiverId: any = null;
   let channelDetails: any = null;
@@ -87,12 +87,12 @@ export default function CustomDirectMessagePreview(
       if (groupAvatar.length === 3) break;
 
       if (chatClient.user?.id !== member.user?.id) {
-        const avatar = member.user?.user?.avatar || USER_DEFAULT_AVATAR;
+        const avatar = member.user?.image || USER_DEFAULT_AVATAR;
         groupAvatar.push(avatar);
       }
 
       if (members.length === 2 && groupAvatar.length < 2) {
-        groupAvatar.push(`${chatClient.user?.user.avatar}`);
+        groupAvatar.push(`${chatClient.user?.image}`);
       }
     }
   }

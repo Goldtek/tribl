@@ -70,9 +70,9 @@ export default function CustomChannelPreview(
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
-  const message = latestMessagePreview?.messageObject?.asMutable();
+  const message = latestMessagePreview?.messageObject;
   const latestMessageDate = message?.created_at.asMutable();
-  let messageText: string = `${message?.text}`;
+  let messageText: string = `${latestMessagePreview?.text}`;
 
   if (message?.type === 'system') {
     messageText = `${message?.text}`;
