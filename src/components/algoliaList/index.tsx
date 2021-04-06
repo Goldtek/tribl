@@ -1,16 +1,16 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import {
   connectInfiniteHits,
   connectStateResults
 } from 'react-instantsearch-native';
-import { Divider, Text } from 'react-native-paper';
-import { FlatList } from 'react-native';
-import { RFValue } from 'react-native-responsive-fontsize';
+import { ActivityIndicator, Divider, Text } from 'react-native-paper';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import hexToRGB from '../../utils/hexToRGB';
-import { useThemeContext } from '../../theme';
-import Highlight from '../algoliaHighlight';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { PassportInterface } from '../../graphql/types';
+import { useThemeContext } from '../../theme';
+import hexToRGB from '../../utils/hexToRGB';
+import Highlight from '../algoliaHighlight';
+import { FlatList } from 'react-native';
 
 export type AlgoliaListProps = {
   hasMore: boolean;
@@ -20,8 +20,19 @@ export type AlgoliaListProps = {
   _renderItem?: (props: any) => JSX.Element;
 };
 
-const _defaultSeparator = () => {
+const _defaultSeparator = ({ leadingItem }: any) => {
   const { colors } = useThemeContext();
+  const user = leadingItem as PassportInterface;
+
+  if (
+    (!user.verified ||
+      user.lastName == null ||
+      user.firstName == null ||
+      user.currentLocation?.city == null,
+    user.currentLocation?.state == null)
+  ) {
+    return null;
+  }
 
   return (
     <Divider
@@ -61,6 +72,11 @@ function AlgoliaList(props: AlgoliaListProps) {
     </Text>
   ));
 
+  const _renderFooter = useCallback(
+    () => (hasMore ? <ActivityIndicator /> : null),
+    [hasMore]
+  );
+
   return hits.length ? (
     <FlatList
       data={hits}
@@ -72,6 +88,7 @@ function AlgoliaList(props: AlgoliaListProps) {
       removeClippedSubviews={true}
       scrollEventThrottle={16}
       ListEmptyComponent={<Results />}
+      ListFooterComponent={_renderFooter}
       keyboardShouldPersistTaps="always"
       onEndReached={() => hasMore && refineNext()}
       contentContainerStyle={{
