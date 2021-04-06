@@ -43,7 +43,7 @@ function CustomSystemMessage(props: MessageSystemProps) {
 
   const { tDateTimeParser } = useTranslationContext();
 
-  const user = message.group_system ? message.receiver : message.user;
+  const user = Boolean(message.group_system) ? message.receiver : message.user;
 
   const { data } = useQuery<SinglePassportRequestInterface>(
     GET_SINGLE_PASSPORT,
@@ -68,22 +68,16 @@ function CustomSystemMessage(props: MessageSystemProps) {
       ? parsedDate.calendar().toUpperCase()
       : parsedDate;
 
-  let firstName: string | undefined = undefined;
   let text: string = '';
-
-  if (message.user?.user) {
-    firstName = message.user?.user.firstName.trim();
-  } else {
-    firstName = message.user?.name?.split(' ')[0].trim();
-  }
+  let firstName = message.user?.name?.split(' ')[0].trim();
 
   if (Boolean(message?.group_system)) {
-    firstName = message.receiver.firstName.trim();
+    firstName = message?.receiver?.name?.split(' ')[0].trim();
     const result = message.text?.split(`${firstName}`).join('');
-    text = result ? ` ${result.trim()}` : '';
+    text = result ? `${result.trim()}` : '';
   } else {
     const result = message.text?.match(/joined this channel/gi);
-    text = result ? `${result[0].trim()}` : ' joined this channel';
+    text = result ? `${result[0].trim()}` : 'joined this channel';
   }
 
   return (

@@ -24,6 +24,7 @@ export const Text = styled.Text<{ firstName?: string }>`
   color: ${({ theme, firstName }) =>
     firstName ? theme.colors.PRIMARY : ' rgba(0, 0, 0, 0.5)'};
   text-transform: uppercase;
+  margin-horizontal: 2px;
   ${({ theme }) => theme.messageList.messageSystem.text.css}
 `;
 
