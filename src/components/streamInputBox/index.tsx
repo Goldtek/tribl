@@ -40,7 +40,7 @@ import { GestureResponderEvent, View, Keyboard } from 'react-native';
 import { useThemeContext } from '../../theme';
 import ENVIRONMENT_VARIABLES from '../../config';
 import hexToRGB from '../../utils/hexToRGB';
-import { GiphyInterface } from '../../stream/types';
+import { chatClient, GiphyInterface } from '../../stream/types';
 import Storage from '../../libs/storage';
 
 import {
@@ -124,10 +124,12 @@ function StreamInputBox(props: InputProps) {
   };
 
   const sendMessage = () => {
-    if (channel?.id && !Boolean(channel.data?.isGroup)) {
-      trackChannelMessages();
-    } else {
+    if (Boolean(channel.data?.isGroup)) {
       trackGroupMessages();
+    } else if (Boolean(channel.data?.isDm)) {
+      trackDirectMessages();
+    } else {
+      trackChannelMessages();
     }
 
     if (channel.data?.isNew) {
@@ -168,18 +170,24 @@ function StreamInputBox(props: InputProps) {
           'Activity Screen': 'Channel Thread Message Screen'
         });
     }
+  };
+
+  const trackDirectMessages = () => {
+    const member = Object.values(channel.state.members).find(
+      ({ user }) => user?.id !== chatClient.user?.id
+    );
 
     if (activityScreen === 'directMessage') {
       logEvent('send direct message', { from: 'chat' });
 
       if (editing) {
         Mixpanel.track('User Edits Direct Message', {
-          info: `User edits direct message sent to ${channel.data?.receiver?.firstName} ${channel.data?.receiver?.lastName}`,
-          'Activity Screen': 'Channel Message Screen'
+          info: `User edits direct message sent to ${member?.user?.name}`,
+          'Activity Screen': 'Direct Message Screen'
         });
       } else {
         Mixpanel.track('User Sends Channel Message', {
-          info: `User sends direct message to ${channel.data?.receiver.firstName} ${channel.data?.receiver?.lastName}`,
+          info: `User sends direct message to ${member?.user?.name}`,
           'Activity Screen': 'Direct Message Screen'
         });
       }
@@ -190,12 +198,12 @@ function StreamInputBox(props: InputProps) {
 
       if (editing) {
         Mixpanel.track('User Edits Message on DM Thread', {
-          info: `User edits direct message sent to ${channel.data?.receiver.firstName} ${channel.data?.receiver?.lastName} on DM thread`,
+          info: `User edits direct message sent to ${member?.user?.name} on DM thread`,
           'Activity Screen': 'Direct Message Thread Screen'
         });
       } else
         Mixpanel.track('User Sends Message on DM Thread', {
-          info: `User sends direct message to ${channel.data?.receiver?.firstName} ${channel.data?.receiver?.lastName} on DM thread`,
+          info: `User sends direct message to ${member?.user?.name} on DM thread`,
           'Activity Screen': 'Direct Message Thread Screen'
         });
     }
