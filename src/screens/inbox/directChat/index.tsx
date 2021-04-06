@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Paragraph, Surface, TouchableRipple } from 'react-native-paper';
-import { Ionicons } from '@expo/vector-icons';
+import {
+  Paragraph,
+  Surface,
+  IconButton,
+  TouchableRipple
+} from 'react-native-paper';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   Chat,
   Avatar,
@@ -10,7 +15,6 @@ import {
   MessageList,
   MessageInput
 } from 'stream-chat-expo';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import hexToRGB from '../../../utils/hexToRGB';
 import { useThemeContext } from '../../../theme';
 import { tagScreenName } from '../../../utils/uxcamHelper';
@@ -23,7 +27,6 @@ import CustomKeyboardCompatibleView from '../../../components/customKeyboardComp
 import { ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import { crashlytics } from '../../../firebase/config';
 import { Channel as ChannelType } from 'stream-chat';
-import CustomSystemMessage from '../../../components/customSystemMessage';
 import { RFValue } from 'react-native-responsive-fontsize';
 import {
   chatClient,
@@ -36,7 +39,12 @@ import {
   LocalAttachmentType
 } from '../../../stream/types';
 
-import { Container, HeaderContainer, MessageListContainer } from './styles';
+import {
+  Container,
+  HeaderTitleContainer,
+  HeaderContainer,
+  MessageListContainer
+} from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -48,7 +56,6 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   const user = route.params;
   const [text, setText] = useState('');
-  const { bottom } = useSafeAreaInsets();
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
   const {
@@ -123,7 +130,7 @@ export default function DirectChatScreen(props: ScreenProp) {
           sender: {
             readAt: Date.now(),
             id: chatClient.user?.id,
-            ...chatClient.user?.user
+            ...chatClient.user
           },
           receiver: { ...user, readAt: Date.now() },
           name: Date.now(),
@@ -160,16 +167,10 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <Container style={{ paddingBottom: bottom }}>
+      <Container>
         <HeaderContainer>
           <TouchableRipple
-            onPress={() => {
-              if (Boolean(channel.data?.isDm)) {
-                navigation.goBack();
-              } else {
-                navigation.navigate('InboxScreen');
-              }
-            }}
+            onPress={navigation.goBack}
             style={{
               height: 40,
               width: 40,
@@ -203,17 +204,25 @@ export default function DirectChatScreen(props: ScreenProp) {
               />
             </Chat>
           </Surface>
-          <Paragraph
-            style={{
-              fontSize: fonts.MEDIUM_SIZE + 2,
-              fontFamily: fonts.WORK_SANS_BOLD,
-              marginHorizontal: 5
-            }}
-          >
-            {`${receiver?.name}`.length <= 20
-              ? `${receiver?.name}`
-              : `${receiver?.name}`.substr(0, 20).concat('...')}
-          </Paragraph>
+          <HeaderTitleContainer>
+            <Paragraph
+              numberOfLines={1}
+              style={{
+                fontSize: fonts.MEDIUM_SIZE + 2,
+                fontFamily: fonts.WORK_SANS_BOLD,
+                marginHorizontal: 5
+              }}
+            >
+              {receiver?.name}
+            </Paragraph>
+          </HeaderTitleContainer>
+
+          <IconButton
+            icon={(iconProps) => (
+              <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+            )}
+            onPress={() => navigation.navigate('DirectMessageInformation')}
+          />
         </HeaderContainer>
 
         <Chat
@@ -243,8 +252,6 @@ export default function DirectChatScreen(props: ScreenProp) {
                 }}
                 //@ts-ignore
                 Message={CustomDirectMessage}
-                //@ts-ignore
-                MessageSystem={CustomSystemMessage}
               />
               <MessageInput
                 Input={StreamInputBox}

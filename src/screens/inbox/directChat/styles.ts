@@ -1,8 +1,8 @@
-import { RFValue } from 'react-native-responsive-fontsize';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import Constants from 'expo-constants';
 
-export const Container = styled.View`
+export const Container = styled(SafeAreaView)`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.WHITE};
 `;
@@ -16,7 +16,7 @@ export const MessageListContainer = styled.View`
 
 export const HeaderContainer = styled.View`
   width: 100%;
-  height: ${RFValue(70)}px;
+  height: 70px;
   margin-top: ${Constants.statusBarHeight}px;
   flex-direction: row;
   align-items: center;
@@ -27,13 +27,7 @@ export const HeaderContainer = styled.View`
   border-top-color: transparent;
 `;
 
-export const GroupImageContainer = styled.View`
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: ${RFValue(43)}px;
-  height: ${RFValue(43)}px;
-  border-radius: ${RFValue(43 / 2)}px;
-  overflow: hidden;
-  background-color: ${({ theme }) => theme.colors.INACTIVE};
+export const HeaderTitleContainer = styled.View`
+  flex: 1;
+  padding-horizontal: 10px;
 `;
