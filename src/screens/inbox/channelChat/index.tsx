@@ -1,20 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomChannelMessage from '../../../components/customChannelMessage';
 import CustomSystemMessage from '../../../components/customSystemMessage';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import StreamInputBox from '../../../components/streamInputBox';
-import { chatClient, ThreadType } from '../../../stream/types';
+import {
+  chatClient,
+  LocalChannelType,
+  ThreadType
+} from '../../../stream/types';
 import { tagScreenName } from '../../../utils/uxcamHelper';
+import {
+  TouchableRipple,
+  Paragraph,
+  Surface,
+  IconButton
+} from 'react-native-paper';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useStreamContext } from '../../../stream';
 import { useThemeContext } from '../../../theme';
 import hexToRGB from '../../../utils/hexToRGB';
 import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { USER_DEFAULT_AVATAR } from '../../../constants';
+import { StatusBar } from 'expo-status-bar';
+import FastImage from 'react-native-fast-image';
+import { ChannelSort } from 'stream-chat';
 
-import { ChatContainer } from './styles';
+import {
+  ChatContainer,
+  MessageListContainer,
+  HeaderContainer,
+  CountBadge,
+  HeaderTitleContainer
+} from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -24,22 +45,211 @@ interface ScreenProp extends NavigationInterface {
 export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
   const [text, setText] = useState('');
-  const { colors } = useThemeContext();
-  const { bottom } = useSafeAreaInsets();
   const chatStyles = useStreamChatTheme();
-  const { setThread, setChannel, setActivityScreen } = useStreamContext();
+  const { colors, fonts } = useThemeContext();
+  const {
+    setThread,
+    setActivityScreen,
+    setChannel: setStreamChannel
+  } = useStreamContext();
 
-  const channel = chatClient.channel('team', route.params.channelId);
+  const [channel, setChannel] = useState(
+    chatClient.channel('team', route.params.channelId)
+  );
+
+  const channelMembers = Object.values(channel?.state?.members);
+
+  useEffect(() => {
+    const getConversation = async () => {
+      const filter = { id: { $in: [route.params.channelId] } };
+
+      const options = { presence: true, state: true, watch: true };
+
+      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+      const [channel] = await chatClient.queryChannels(filter, sort, options);
+
+      if (!channel) return;
+
+      setChannel(channel);
+
+      await channel.watch();
+    };
+
+    if (chatClient.user && chatClient.user) {
+      getConversation();
+    }
+  }, [chatClient.user, route.params.channelId]);
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
     setActivityScreen('channelScreen');
-    setChannel(channel);
+    setStreamChannel(channel);
   }, []);
+
+  const handleChannelNavigation = () => {
+    if (Boolean(channel.data?.isGroup)) {
+      navigation.navigate('GroupInformationScreen');
+    } else {
+      navigation.navigate('ChannelInformationScreen');
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ChatContainer style={{ paddingBottom: bottom }}>
+      <ChatContainer>
+        <StatusBar style="dark" backgroundColor={colors.WHITE} />
+        <HeaderContainer>
+          <TouchableRipple
+            onPress={() => {
+              if (Boolean(route?.params?.newly_created_group)) {
+                navigation.navigate('InboxScreen');
+              } else {
+                navigation.goBack();
+              }
+            }}
+            style={{
+              height: 40,
+              width: 40,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 40 / 2,
+              marginRight: 10
+            }}
+          >
+            <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
+          </TouchableRipple>
+
+          {channelMembers && channelMembers?.length === 1 ? (
+            <Surface
+              style={{
+                width: 40,
+                height: 40,
+                justifyContent: 'center',
+                top: 1,
+                right: 10,
+                elevation: 4,
+                borderRadius: 4
+              }}
+            >
+              <FastImage
+                resizeMode={FastImage.resizeMode.cover}
+                source={{
+                  uri: channelMembers[0].user?.image || USER_DEFAULT_AVATAR,
+                  priority: FastImage.priority.high
+                }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 4
+                }}
+              />
+              <CountBadge style={{ elevation: 4 }}>
+                <Paragraph
+                  style={{
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontWeight: 'bold',
+                    color: colors.WHITE
+                  }}
+                >
+                  {channelMembers.length}
+                </Paragraph>
+              </CountBadge>
+            </Surface>
+          ) : null}
+
+          {channelMembers && channelMembers?.length >= 2 ? (
+            <Fragment>
+              <Surface
+                style={{
+                  width: 40,
+                  height: 40,
+                  elevation: 4,
+                  borderRadius: 4
+                }}
+              >
+                <FastImage
+                  resizeMode={FastImage.resizeMode.cover}
+                  source={{
+                    uri:
+                      channelMembers[channelMembers?.length - 2]?.user?.image ||
+                      USER_DEFAULT_AVATAR,
+                    priority: FastImage.priority.high
+                  }}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 4,
+                    borderColor: colors.PRIMARY,
+                    borderWidth: 1
+                  }}
+                />
+              </Surface>
+              <Surface
+                style={{
+                  width: 40,
+                  height: 40,
+                  justifyContent: 'center',
+                  top: 1,
+                  right: 10,
+                  elevation: 4,
+                  borderRadius: 4
+                }}
+              >
+                <FastImage
+                  resizeMode={FastImage.resizeMode.cover}
+                  source={{
+                    uri:
+                      channelMembers[channelMembers?.length - 1]?.user?.image ||
+                      USER_DEFAULT_AVATAR,
+                    priority: FastImage.priority.high
+                  }}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 4,
+                    borderColor: colors.PRIMARY,
+                    borderWidth: 1
+                  }}
+                />
+                <CountBadge style={{ elevation: 4 }}>
+                  <Paragraph
+                    style={{
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontWeight: 'bold',
+                      color: colors.WHITE
+                    }}
+                  >
+                    {`${channel.data?.member_count}+`}
+                  </Paragraph>
+                </CountBadge>
+              </Surface>
+            </Fragment>
+          ) : null}
+
+          <HeaderTitleContainer>
+            <Paragraph
+              numberOfLines={1}
+              style={{
+                fontSize: fonts.MEDIUM_SIZE + 2,
+                fontFamily: fonts.WORK_SANS_BOLD,
+                marginLeft: 10
+              }}
+            >
+              {route.params?.title}
+            </Paragraph>
+          </HeaderTitleContainer>
+
+          <IconButton
+            icon={(iconProps) => (
+              <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+            )}
+            onPress={handleChannelNavigation}
+          />
+        </HeaderContainer>
+
         <Chat
           //@ts-ignore
           client={chatClient}
@@ -56,28 +266,30 @@ export default function ChannelChatScreen(props: ScreenProp) {
               })
             }
           >
-            <MessageList
-              onThreadSelect={(thread) => {
-                setThread(thread as ThreadType);
-                setActivityScreen('channelThreadScreen');
-                navigation.navigate('ThreadChatScreen', {
-                  channelId: thread?.id
-                });
-              }}
-              //@ts-ignore
-              Message={CustomChannelMessage}
-              //@ts-ignore
-              MessageSystem={CustomSystemMessage}
-            />
-            <MessageInput
-              initialValue={text}
-              Input={StreamInputBox}
-              onChangeText={(text) => setText(text)}
-              additionalTextInputProps={{
-                placeholderTextColor: hexToRGB(colors.STATUS_BAR_COLOR, 0.7),
-                placeholder: 'Type your message here'
-              }}
-            />
+            <MessageListContainer>
+              <MessageList
+                onThreadSelect={(thread) => {
+                  setThread(thread as ThreadType);
+                  setActivityScreen('channelThreadScreen');
+                  navigation.navigate('ThreadChatScreen', {
+                    channelId: thread?.id
+                  });
+                }}
+                //@ts-ignore
+                Message={CustomChannelMessage}
+                //@ts-ignore
+                MessageSystem={CustomSystemMessage}
+              />
+              <MessageInput
+                initialValue={text}
+                Input={StreamInputBox}
+                onChangeText={(text) => setText(text)}
+                additionalTextInputProps={{
+                  placeholderTextColor: hexToRGB(colors.STATUS_BAR_COLOR, 0.7),
+                  placeholder: 'Type your message here'
+                }}
+              />
+            </MessageListContainer>
           </Channel>
         </Chat>
       </ChatContainer>

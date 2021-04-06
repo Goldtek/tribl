@@ -1,10 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { ChannelInterface } from '../../../../../graphql/types';
 import { useThemeContext } from '../../../../../theme';
 import { useNavigation } from '@react-navigation/native';
+import { Channel, LiteralStringForUnion } from 'stream-chat';
+import { Mixpanel } from '../../../../../config';
+import { logEvent } from '../../../../../utils/uxcamHelper';
+import {
+  chatClient,
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+} from '../../../../../stream/types';
+import {
+  JOIN_COMMUNITY_CHANNEL,
+  SEND_CHANNEL_MESSAGE
+} from '../../../../../graphql/server/mutations';
+import {
+  GET_CHANNEL_MEMBERS,
+  GET_SINGLE_COMMUNITY
+} from '../../../../../graphql/server/query';
+import { useStreamContext } from '../../../../../stream';
+import { useTranslation } from 'react-i18next';
 
 import { Cover, LeftCover, Text } from './styles';
 
@@ -12,48 +35,66 @@ import { Cover, LeftCover, Text } from './styles';
 interface MyChannelProp extends ChannelInterface {}
 
 export default function MyChannel(props: MyChannelProp) {
-  const { name, community, id } = props;
+  const { name, community, id, isMember } = props;
 
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
+  const joinedChannel = useRef<boolean>(false);
+  const { setChannel: activeChannel } = useStreamContext();
 
-  // const [channel, setChannel] = useState<
-  //   Channel<
-  //     LocalAttachmentType,
-  //     LocalChannelType,
-  //     LiteralStringForUnion,
-  //     LocalEventType,
-  //     LocalMessageType,
-  //     LocalReactionType,
-  //     LocalUserType
-  //   >
-  // >();
+  const [channel, setChannel] = useState<
+    Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LiteralStringForUnion,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >
+  >();
 
-  // useEffect(() => {
-  //   const getConversation = async () => {
-  //     const filter = { id: { $in: [id] } };
+  useEffect(() => {
+    if (chatClient.user) {
+      const channel = chatClient.channel('team', id);
+      setChannel(channel);
+    }
+  }, [channel, chatClient.user]);
 
-  //     const options = { presence: true, state: true, watch: true };
-
-  //     const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
-
-  //     const [channel] = await chatClient.queryChannels(filter, sort, options);
-
-  //     if (!channel) return;
-
-  //     setChannel(channel);
-  //   };
-
-  //   if (chatClient.user) getConversation();
-  // }, [chatClient.user]);
-
-  // const messageCount =
-  //   channel?.state?.messages.length || channel?.data?.member_count || 0;
+  useQuery(GET_CHANNEL_MEMBERS, { variables: { input: { channelId: id } } });
+  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
+  const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
+  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
 
   const handleNavigation = () => {
+    if (channel) activeChannel(channel);
+
+    if (!isMember) {
+      logEvent('join channel', { from: 'channel' });
+      Mixpanel.track('User Joins Channel', {
+        info: `User Joins ${name} Channel on ${community.name} community`,
+        'Activity Screen': 'Community Highlight Tribe Channels List'
+      });
+
+      joinChannel({ variables: { payload: { channelId: id } } }).then(() => {
+        joinedChannel.current = true;
+        getChannelCommunity({ variables: { id: community.id } });
+        sendMessage({
+          variables: {
+            payload: {
+              system: true,
+              channelId: id,
+              content: t(`community.chat.join`)
+            }
+          }
+        });
+      });
+    }
+
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
-      params: { channelId: id, title: `#${name}` }
+      params: { channelId: channel?.id, title: `#${name}` }
     });
   };
 
