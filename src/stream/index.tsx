@@ -95,6 +95,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
       const initChat = async () => {
         try {
+          await chatClient.disconnect();
           const streamUser = await chatClient.connectUser(
             //@ts-ignore
             user,

@@ -17,6 +17,7 @@ interface MessageUserInterface extends PassportInterface {
   readAt: Date;
   senderId: string;
   receiverId: string;
+  name: string;
 }
 
 export interface LocalAttachmentType extends DefaultAttachmentType {}
@@ -34,7 +35,7 @@ export interface LocalChannelType extends DefaultChannelType {
   messageRequest: { status: boolean };
 }
 export interface LocalMessageType extends DefaultMessageType {
-  receiver: { firstName: string; lastName: string; id: string };
+  receiver: { name: string; image: string; id: string };
   group_system: boolean;
 }
 
