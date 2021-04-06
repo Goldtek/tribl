@@ -25,11 +25,11 @@ import { refreshToken } from '../../network/query';
 import { APP_VERSION } from '../../utils/device';
 import { NavigationInterface } from '../types';
 import Storage from '../../libs/storage';
+import { PAGINATION_DEFAULT } from '../../constants';
 import Firechat from '../../firebase';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
-import { PAGINATION_DEFAULT } from '../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}

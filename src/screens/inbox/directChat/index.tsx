@@ -138,7 +138,7 @@ export default function DirectChatScreen(props: ScreenProp) {
           isNew: true
         });
 
-        await newChannel.create();
+        await newChannel.watch();
         setChannel(newChannel);
         setChannelMembers(newChannel.state.members);
       }

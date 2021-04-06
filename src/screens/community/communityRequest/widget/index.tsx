@@ -10,11 +10,11 @@ import GradientButton from '../../../../components/gradientButton';
 import { TRIBE_INVITE_ACTION } from '../../../../graphql/server/mutations';
 import formatMessageTime from '../../../../utils/timesince';
 import { Mixpanel } from '../../../../config';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { crashlytics } from '../../../../firebase/config';
 
 import { Container, RightCover, ButtonCover } from './styles';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
 
 interface TribeRequestProp {
   name: string;

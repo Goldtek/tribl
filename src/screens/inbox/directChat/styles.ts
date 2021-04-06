@@ -1,4 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
 import Constants from 'expo-constants';
 

@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';

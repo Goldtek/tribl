@@ -1,5 +1,4 @@
 import styled from 'styled-components/native';
-import { RFValue } from 'react-native-responsive-fontsize';
 import hexToRGB from '../../utils/hexToRGB';
 
 export const Cover = styled.View`

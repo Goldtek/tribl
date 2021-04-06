@@ -15,7 +15,6 @@ import {
   HeaderContainer,
   ImageContainer,
   ImageTextContainer,
-  Connection,
   ConnectionCover,
   Cover
   // ImageIconContainer,
@@ -123,40 +122,36 @@ export default function PassportSkeleton(props: ScreenProp) {
                 </SkeletonPlaceholder>
               </Paragraph>
               <ConnectionCover>
-                <Connection>
-                  <SkeletonPlaceholder>
-                    <SkeletonPlaceholder.Item alignItems="center">
-                      <SkeletonPlaceholder.Item
-                        width={RFValue(40)}
-                        height={RFValue(10)}
-                        borderRadius={RFValue(4)}
-                      />
-                      <SkeletonPlaceholder.Item
-                        marginTop={RFValue(6)}
-                        width={RFValue(80)}
-                        height={RFValue(10)}
-                        borderRadius={RFValue(4)}
-                      />
-                    </SkeletonPlaceholder.Item>
-                  </SkeletonPlaceholder>
-                </Connection>
-                <Connection>
-                  <SkeletonPlaceholder>
-                    <SkeletonPlaceholder.Item alignItems="center">
-                      <SkeletonPlaceholder.Item
-                        width={RFValue(40)}
-                        height={RFValue(10)}
-                        borderRadius={RFValue(4)}
-                      />
-                      <SkeletonPlaceholder.Item
-                        marginTop={RFValue(6)}
-                        width={RFValue(80)}
-                        height={RFValue(10)}
-                        borderRadius={RFValue(4)}
-                      />
-                    </SkeletonPlaceholder.Item>
-                  </SkeletonPlaceholder>
-                </Connection>
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item alignItems="center">
+                    <SkeletonPlaceholder.Item
+                      width={RFValue(40)}
+                      height={RFValue(10)}
+                      borderRadius={RFValue(4)}
+                    />
+                    <SkeletonPlaceholder.Item
+                      marginTop={RFValue(6)}
+                      width={RFValue(80)}
+                      height={RFValue(10)}
+                      borderRadius={RFValue(4)}
+                    />
+                  </SkeletonPlaceholder.Item>
+                </SkeletonPlaceholder>
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item alignItems="center">
+                    <SkeletonPlaceholder.Item
+                      width={RFValue(40)}
+                      height={RFValue(10)}
+                      borderRadius={RFValue(4)}
+                    />
+                    <SkeletonPlaceholder.Item
+                      marginTop={RFValue(6)}
+                      width={RFValue(80)}
+                      height={RFValue(10)}
+                      borderRadius={RFValue(4)}
+                    />
+                  </SkeletonPlaceholder.Item>
+                </SkeletonPlaceholder>
               </ConnectionCover>
 
               {/* <ImageIconContainer>
