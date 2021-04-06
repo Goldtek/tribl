@@ -22,9 +22,16 @@ function ConnectionCard(props: ConnectionCardProp) {
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
 
-  const { id, avatar, firstName, lastName, currentLocation } = props;
+  const { id, avatar, firstName, lastName, verified, currentLocation } = props;
 
-  if (id === chatClient.user?.id) {
+  if (
+    (id === chatClient.user?.id ||
+      !verified ||
+      lastName == null ||
+      firstName == null ||
+      currentLocation?.city == null,
+    currentLocation?.state == null)
+  ) {
     return null;
   }
 
