@@ -189,7 +189,7 @@ export default function PassportScreen(props: ScreenProp) {
         citizenship: userDetails.citizenship,
         ...userDetails
       });
-      handleLocation();
+      // handleLocation();
     }
   }, [userDetails]);
 
@@ -205,7 +205,7 @@ export default function PassportScreen(props: ScreenProp) {
         ...passportInfo
       });
       setAvatar({ ...avatar, uri: passportInfo.avatar });
-      handleLocation();
+      // handleLocation();
     }
   };
 
