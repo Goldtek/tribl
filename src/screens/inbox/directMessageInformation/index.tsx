@@ -6,13 +6,7 @@ import { Switch, View, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import {
-  AntDesign,
-  Ionicons,
-  Feather,
-  Entypo,
-  Octicons
-} from '@expo/vector-icons';
+import { Ionicons, Entypo, Octicons, AntDesign } from '@expo/vector-icons';
 import { ImageHeaderScrollView } from 'react-native-image-header-scroll-view';
 import { crashlytics } from '../../../firebase/config';
 import { useThemeContext } from '../../../theme';
@@ -58,6 +52,9 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
     ({ user }) => user?.id !== chatClient.user?.id
   );
 
+  console.tron('chatClient.user?.id', chatClient.user?.id);
+  console.tron('channel.state.members', channel.state.members.user);
+
   const toggleMute = async () => {
     try {
       if (muted) {
@@ -95,6 +92,18 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
         }
       ]
     );
+  };
+
+  const inviteTribeNavigation = () => {
+    navigation.navigate('InviteToTribeFromProfileScreen', {
+      memberId: chatClient.user?.id
+    });
+  };
+
+  const inviteChannelNavigation = () => {
+    navigation.navigate('InviteToChannelFromProfileScreen', {
+      memberId: chatClient.user?.id
+    });
   };
 
   // const handleBlockDM = async () => {
@@ -171,6 +180,46 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
       >
         <View>
           <Divider style={{ backgroundColor: colors.INPUT, height: 5 }} />
+          <OptionWrapper onPress={inviteTribeNavigation}>
+            <LeftCover>
+              <AntDesign
+                name="addusergroup"
+                size={20}
+                color={colors.PRIMARY}
+                style={{ paddingRight: RFValue(10) }}
+              />
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: fonts.LARGE_SIZE,
+                  color: colors.PRIMARY_TEXT
+                }}
+              >
+                {t(`community.invitation.inviteTribe`)}
+              </Text>
+            </LeftCover>
+          </OptionWrapper>
+          <Divider style={{ backgroundColor: colors.INPUT }} />
+          <OptionWrapper onPress={inviteChannelNavigation}>
+            <LeftCover>
+              <AntDesign
+                name="addusergroup"
+                size={20}
+                color={colors.PRIMARY}
+                style={{ paddingRight: RFValue(10) }}
+              />
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: fonts.LARGE_SIZE,
+                  color: colors.PRIMARY_TEXT
+                }}
+              >
+                {t(`community.invitation.inviteChannel`)}
+              </Text>
+            </LeftCover>
+          </OptionWrapper>
+          <Divider style={{ backgroundColor: colors.INPUT }} />
           <OptionWrapper onPress={toggleMute}>
             <Fragment>
               <LeftCover>
