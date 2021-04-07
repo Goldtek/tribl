@@ -221,6 +221,8 @@
     "empty": " You currently don't have any community request",
     "channelTitle": "Invite friends to channel",
     "tribeInvite": "Invite friends to tribe",
+    "inviteChannel": "Invite friend to channel",
+    "inviteTribe": "Invite friend to tribe",
     "text2": "Select a community you want to invite your friend to",
     "channelText": "Select a channel you want to invite your friend to",
     "tribeInviteError": "You have to choose a tribe you want to invite your friend to"
