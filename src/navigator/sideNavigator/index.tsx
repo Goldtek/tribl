@@ -325,7 +325,7 @@ export default function DrawerStackNavigator() {
             >
               <Menu.Item
                 onPress={() => inviteTribeNavigation(route?.params?.details.id)}
-                title={t(`community.invitation.tribeInvite`)}
+                title={t(`community.invitation.inviteTribe`)}
                 style={{
                   borderTopLeftRadius: 20,
                   borderTopRightRadius: 20,
@@ -348,7 +348,7 @@ export default function DrawerStackNavigator() {
                 onPress={() =>
                   inviteChannelNavigation(route?.params?.details.id)
                 }
-                title={t(`community.invitation.channelTitle`)}
+                title={t(`community.invitation.inviteChannel`)}
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
