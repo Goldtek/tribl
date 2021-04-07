@@ -7,12 +7,13 @@ import React, {
 } from 'react';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
+import * as Location from 'expo-location';
 import { Title, ActivityIndicator } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
@@ -33,6 +34,7 @@ import {
   GET_USER_PASSPORT,
   GET_FIREBASE_TOKEN
 } from '../../../graphql/server/query';
+import { UPDATE_PASSPORT } from '../../../graphql/server/mutations';
 import MyChannel from '../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
@@ -67,6 +69,7 @@ import {
   CommunityCover
   // ButtonWrapper
 } from './styles';
+import { crashlytics } from '../../../firebase/config';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -104,7 +107,7 @@ export default function HomeScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
-  const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
+  const [getUserPassport, { data: userData }] = useLazyQuery(GET_USER_PASSPORT);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
@@ -130,6 +133,7 @@ export default function HomeScreen(props: ScreenProp) {
     getMyConnections();
     getAllMembers();
     getUserPassport();
+    handleLocation();
   }, []);
 
   useEffect(() => {
@@ -157,6 +161,73 @@ export default function HomeScreen(props: ScreenProp) {
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
     variables: {
       input: { limit: PAGINATION_DEFAULT / 2 }
+    }
+  });
+
+  const userDetails = userData?.myPassport;
+  const currentLocation = userDetails?.currentLocation;
+
+  const [location, setLocation] = useState<{
+    city?: string;
+    state?: string | null | undefined;
+    country?: string;
+    lat?: number | null;
+    long?: number | null;
+  }>({
+    city: currentLocation?.city,
+    state: currentLocation?.state,
+    country: currentLocation?.country,
+    lat: currentLocation?.lat,
+    long: currentLocation?.long
+  });
+
+  const handleLocation = async () => {
+    try {
+      await Location.requestPermissionsAsync();
+
+      const { coords } = await Location.getCurrentPositionAsync({
+        enableHighAccuracy: true,
+        accuracy: Location.Accuracy.Highest
+      });
+
+      const [currentLocation] = await Location.reverseGeocodeAsync({
+        latitude: coords.latitude,
+        longitude: coords.longitude
+      });
+
+      const { city, region, country } = currentLocation;
+
+      if (currentLocation) {
+        await setLocation({
+          ...location,
+          city: city,
+          state: region,
+          country: country,
+          lat: coords.latitude,
+          long: coords.longitude
+        });
+        await updatePassport();
+        Mixpanel.track('User Update Location', {
+          info: `User ${userDetails.firstName} ${userDetails.lastName} updates location`,
+          'Activity Screen': 'Community screen'
+        });
+      }
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
+  const [updatePassport] = useMutation(UPDATE_PASSPORT, {
+    variables: {
+      payload: {
+        currentLocation: {
+          city: location.city,
+          state: location.state,
+          country: location.country,
+          long: location.long,
+          lat: location.lat
+        }
+      }
     }
   });
 
