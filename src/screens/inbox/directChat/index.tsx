@@ -15,6 +15,7 @@ import {
   MessageList,
   MessageInput
 } from 'stream-chat-expo';
+import { StatusBar } from 'expo-status-bar';
 import hexToRGB from '../../../utils/hexToRGB';
 import { useThemeContext } from '../../../theme';
 import { tagScreenName } from '../../../utils/uxcamHelper';
@@ -167,6 +168,7 @@ export default function DirectChatScreen(props: ScreenProp) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Container>
+        <StatusBar style="dark" animated />
         <HeaderContainer>
           <TouchableRipple
             onPress={navigation.goBack}

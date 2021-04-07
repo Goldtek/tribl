@@ -57,7 +57,9 @@ export default function ChannelChatScreen(props: ScreenProp) {
     chatClient.channel('team', route.params.channelId)
   );
 
-  const channelMembers = Object.values(channel?.state?.members);
+  const [channelMembers, setChannelMembers] = useState(
+    Object.values(channel?.state?.members)
+  );
 
   useEffect(() => {
     const getConversation = async () => {
@@ -67,16 +69,20 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
       const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 
-      const [channel] = await chatClient.queryChannels(filter, sort, options);
+      const [channelExists] = await chatClient.queryChannels(
+        filter,
+        sort,
+        options
+      );
 
-      if (!channel) return;
+      if (!channelExists) return;
 
-      setChannel(channel);
-
-      await channel.watch();
+      await channelExists.watch();
+      setChannel(channelExists);
+      setChannelMembers(Object.values(channelExists?.state?.members));
     };
 
-    if (chatClient.user && chatClient.user) {
+    if (chatClient.user && route.params.channelId) {
       getConversation();
     }
   }, [chatClient.user, route.params.channelId]);
@@ -98,7 +104,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ChatContainer>
-        <StatusBar style="dark" backgroundColor={colors.WHITE} />
+        <StatusBar style="dark" animated />
         <HeaderContainer>
           <TouchableRipple
             onPress={() => {
