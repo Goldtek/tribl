@@ -239,6 +239,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
                 contentContainerStyle={{
                   paddingHorizontal: 6
                 }}
+                style={{ marginRight: 15, paddingRight: 5 }}
               />
             </SearchInputWrapper>
 
