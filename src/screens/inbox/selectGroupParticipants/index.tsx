@@ -94,33 +94,35 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
   );
 
   const _renderSelectedItem = ({ item }: { item: PassportInterface }) => (
-    <SelectedMemberWrapper ref={hideSensitiveView}>
-      <CloseIcon onPress={() => handleSelect(item)}>
-        <Ionicons name="md-close" size={15} color={colors.GREY} />
-      </CloseIcon>
-      <FastImage
-        resizeMode={FastImage.resizeMode.stretch}
-        source={{
-          uri: item.avatar || USER_DEFAULT_AVATAR,
-          priority: FastImage.priority.high
-        }}
-        style={{
-          width: RFValue(40),
-          height: RFValue(40),
-          borderRadius: 4
-        }}
-      />
-      <Title
-        numberOfLines={1}
-        style={{
-          color: colors.BLACK,
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(10)
-        }}
-      >
-        {item.firstName} {item.lastName} {item.lastName}
-      </Title>
-    </SelectedMemberWrapper>
+    <TouchableWithoutFeedback onPress={() => {}}>
+      <SelectedMemberWrapper ref={hideSensitiveView}>
+        <CloseIcon onPress={() => handleSelect(item)}>
+          <Ionicons name="md-close" size={15} color={colors.GREY} />
+        </CloseIcon>
+        <FastImage
+          resizeMode={FastImage.resizeMode.stretch}
+          source={{
+            uri: item.avatar || USER_DEFAULT_AVATAR,
+            priority: FastImage.priority.high
+          }}
+          style={{
+            width: RFValue(40),
+            height: RFValue(40),
+            borderRadius: 4
+          }}
+        />
+        <Title
+          numberOfLines={1}
+          style={{
+            color: colors.BLACK,
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(10)
+          }}
+        >
+          {item.firstName} {item.lastName} {item.lastName}
+        </Title>
+      </SelectedMemberWrapper>
+    </TouchableWithoutFeedback>
   );
   const _searchBox = ({ currentRefinement, refine }: any) => (
     <Searchbar
