@@ -1,7 +1,13 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { NavigationInterface } from '../../types';
-import { Text, TouchableRipple, Paragraph, Divider } from 'react-native-paper';
-import { Switch, Alert, ScrollView } from 'react-native';
+import {
+  Text,
+  TouchableRipple,
+  Paragraph,
+  Divider,
+  ActivityIndicator
+} from 'react-native-paper';
+import { Switch, Alert, ScrollView, Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
@@ -13,14 +19,18 @@ import { tagScreenName } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
 import { crashlytics } from '../../../firebase/config';
 import { Mixpanel } from '../../../config';
+import { chatClient } from '../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
+  Overlay,
   LeftCover,
   Container,
   RightCover,
   OptionWrapper,
+  LoaderMessage,
   HeaderContainer,
+  ModalContentWrapper,
   HeaderTitleContainer,
   ChannelInformationContainer
 } from './styles';
@@ -34,6 +44,7 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
   const { t } = useTranslation();
   const { channel } = useStreamContext();
   const { colors, fonts } = useThemeContext();
+  const [loading, setLoading] = useState(false);
 
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
 
@@ -77,11 +88,15 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
         text: 'Leave',
         onPress: async () => {
           try {
-            await leaveChannel({
+            setLoading(true);
+            await channel.removeMembers([`${chatClient.user?.id}`]);
+            setLoading(false);
+            navigation.navigate('InboxScreen');
+            leaveChannel({
               variables: { payload: { channelId: channel.id } }
             });
-            navigation.navigate('InboxScreen');
           } catch (error) {
+            setLoading(false);
             crashlytics.recordError(new Error(error));
           }
         }
@@ -297,6 +312,15 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
         </OptionWrapper>
         <Divider style={{ backgroundColor: colors.INPUT }} />
       </ScrollView>
+
+      <Modal animationType="fade" visible={loading} transparent>
+        <Overlay>
+          <ModalContentWrapper>
+            <ActivityIndicator size="small" color={colors.BLACK} />
+            <LoaderMessage>Leaving channel...</LoaderMessage>
+          </ModalContentWrapper>
+        </Overlay>
+      </Modal>
     </Container>
   );
 }

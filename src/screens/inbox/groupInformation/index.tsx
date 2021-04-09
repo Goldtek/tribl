@@ -1,7 +1,13 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { NavigationInterface } from '../../types';
-import { Text, TouchableRipple, Paragraph, Divider } from 'react-native-paper';
-import { Switch, ScrollView, Alert } from 'react-native';
+import {
+  Text,
+  TouchableRipple,
+  Paragraph,
+  Divider,
+  ActivityIndicator
+} from 'react-native-paper';
+import { Switch, ScrollView, Alert, Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -12,19 +18,22 @@ import { tagScreenName } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
 import { chatClient } from '../../../stream/types';
 import { Mixpanel } from '../../../config';
+import { USER_DEFAULT_AVATAR } from '../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   LeftCover,
+  Overlay,
   Container,
   RightCover,
   OptionWrapper,
+  LoaderMessage,
   HeaderContainer,
+  ModalContentWrapper,
   HeaderImageContainer,
   HeaderTitleContainer,
   ChannelInformationContainer
 } from './styles';
-import { USER_DEFAULT_AVATAR } from '../../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface GroupInformationProp extends NavigationInterface {}
@@ -35,6 +44,7 @@ export default function GroupInformation(props: GroupInformationProp) {
   const { t } = useTranslation();
   const { channel } = useStreamContext();
   const { colors, fonts } = useThemeContext();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     tagScreenName('GroupInformationScreen');
@@ -78,9 +88,12 @@ export default function GroupInformation(props: GroupInformationProp) {
         text: 'Leave',
         onPress: async () => {
           try {
+            setLoading(true);
             await channel.removeMembers([`${chatClient.user?.id}`]);
+            setLoading(false);
             navigation.navigate('InboxScreen');
           } catch (error) {
+            setLoading(false);
             crashlytics.recordError(new Error(error));
           }
         }
@@ -315,6 +328,14 @@ export default function GroupInformation(props: GroupInformationProp) {
         </OptionWrapper>
         <Divider style={{ backgroundColor: colors.INPUT }} />
       </ScrollView>
+      <Modal animationType="fade" visible={loading} transparent>
+        <Overlay>
+          <ModalContentWrapper>
+            <ActivityIndicator size="small" color={colors.BLACK} />
+            <LoaderMessage>Leaving group...</LoaderMessage>
+          </ModalContentWrapper>
+        </Overlay>
+      </Modal>
     </Container>
   );
 }

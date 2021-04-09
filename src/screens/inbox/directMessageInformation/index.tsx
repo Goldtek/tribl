@@ -2,7 +2,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { NavigationInterface } from '../../types';
 import { Text, Divider, IconButton } from 'react-native-paper';
-import { Switch, View, Alert } from 'react-native';
+import { Switch, View, Modal, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -17,11 +17,14 @@ import { Mixpanel } from '../../../config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
+  Overlay,
   LeftCover,
   Container,
   RightCover,
   OptionWrapper,
-  HeaderContainer
+  LoaderMessage,
+  HeaderContainer,
+  ModalContentWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -36,6 +39,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
   const { t } = useTranslation();
   const { channel } = useStreamContext();
   const { colors, fonts } = useThemeContext();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     tagScreenName('DirectMessageInformation');
@@ -52,9 +56,6 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
     ({ user }) => user?.id !== chatClient.user?.id
   );
 
-  console.tron('chatClient.user?.id', chatClient.user?.id);
-  console.tron('channel.state.members', channel.state.members.user);
-
   const toggleMute = async () => {
     try {
       if (muted) {
@@ -69,7 +70,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
     }
   };
 
-  const handleLeaveDM = async () => {
+  const handleLeaveDM = () => {
     Alert.alert(
       'Delete conversation',
       `Are you sure you want to delete this conversation`,
@@ -83,9 +84,12 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
           text: 'Delete',
           onPress: async () => {
             try {
+              setLoading(true);
               await channel.removeMembers([`${chatClient.user?.id}`]);
+              setLoading(false);
               navigation.navigate('InboxScreen');
             } catch (error) {
+              setLoading(false);
               crashlytics.recordError(new Error(error));
             }
           }
@@ -317,6 +321,14 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
           <Divider style={{ backgroundColor: colors.INPUT }} />
         </View>
       </ImageHeaderScrollView>
+      <Modal animationType="fade" visible={loading} transparent>
+        <Overlay>
+          <ModalContentWrapper>
+            <ActivityIndicator size="small" color={colors.BLACK} />
+            <LoaderMessage>Leaving conversation...</LoaderMessage>
+          </ModalContentWrapper>
+        </Overlay>
+      </Modal>
     </Container>
   );
 }

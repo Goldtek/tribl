@@ -31,15 +31,15 @@ export default function GroupMembers(props: GroupMembersProp) {
 
   const groupAdmin = channel.data?.created_by;
 
-  const groupMembers = Object.values(channel.state.members.asMutable()).sort(
-    (a, _) => {
+  const groupMembers = Object.values(channel.state.members.asMutable())
+    .sort((a, _) => {
       if (a.user?.id === groupAdmin?.id) {
         return -1;
       } else {
         return 1;
       }
-    }
-  );
+    })
+    .map(({ user }) => user);
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
@@ -56,7 +56,7 @@ export default function GroupMembers(props: GroupMembersProp) {
     />
   );
 
-  const keysToFilter = ['name, firstName', 'lastName'];
+  const keysToFilter = ['name'];
 
   const filteredWords =
     groupMembers &&
@@ -98,7 +98,7 @@ export default function GroupMembers(props: GroupMembersProp) {
         scrollEventThrottle={16}
         onEndReachedThreshold={1}
         removeClippedSubviews={true}
-        keyExtractor={({ user }) => `${user?.id}`}
+        keyExtractor={(user) => `${user?.id}`}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: RFValue(20),

@@ -10,7 +10,6 @@ import { useThemeContext } from '../../../../theme';
 import hexToRGB from '../../../../utils/hexToRGB';
 import { chatClient, LocalUserType } from '../../../../stream/types';
 import { SinglePassportRequestInterface } from '../../../../graphql/types';
-import { ChannelMemberResponse } from 'stream-chat';
 import { useTranslation } from 'react-i18next';
 import { useStreamContext } from '../../../../stream';
 import { crashlytics } from '../../../../firebase/config';
@@ -19,16 +18,15 @@ import { crashlytics } from '../../../../firebase/config';
 import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ChannelUserProp extends ChannelMemberResponse<LocalUserType> {}
+interface ChannelUserProp extends LocalUserType {}
 
 export default function GroupMember(props: ChannelUserProp) {
+  const user = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { channel } = useStreamContext();
 
   const [loading, setLoading] = useState(false);
-
-  const { user } = props;
 
   const groupAdmin = channel.data?.created_by;
 
@@ -70,7 +68,7 @@ export default function GroupMember(props: ChannelUserProp) {
                 setLoading(true);
                 await channel.removeMembers([`${user?.id}`]);
                 await channel.sendMessage({
-                  text: `${user?.name?.split(' ')[0]} was removed by ${
+                  text: `${`${user?.name}`?.split(' ')[0]} was removed by ${
                     chatClient.user?.name?.split(' ')[0]
                   }`,
                   group_system: true,
@@ -128,7 +126,7 @@ export default function GroupMember(props: ChannelUserProp) {
               textTransform: 'capitalize'
             }}
           >
-            {user?.name}
+            {`${user?.name}`}
           </Text>
           <Text
             style={{
