@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   Modal,
@@ -49,7 +49,8 @@ import {
   HeaderContainer,
   HeaderActionText,
   ModalContentWrapper,
-  SelectedMemberWrapper
+  SelectedMemberWrapper,
+  SearchInputWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -59,6 +60,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
   const { navigation } = props;
   const { t } = useTranslation();
   const { channel, setChannel } = useStreamContext();
+  const selecteduserRef = useRef<any>(null);
   const [loading, setLoading] = useState(false);
   const { colors, fonts } = useThemeContext();
   const { dismissKeyboard } = useKeyboardContext();
@@ -189,33 +191,35 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
   };
 
   const _renderSelectedItem = ({ item }: { item: PassportInterface }) => (
-    <SelectedMemberWrapper ref={hideSensitiveView}>
-      <CloseIcon onPress={() => handleSelect(item)}>
-        <Ionicons name="md-close" size={15} color={colors.GREY} />
-      </CloseIcon>
-      <FastImage
-        resizeMode={FastImage.resizeMode.stretch}
-        source={{
-          uri: item.avatar || USER_DEFAULT_AVATAR,
-          priority: FastImage.priority.high
-        }}
-        style={{
-          width: RFValue(40),
-          height: RFValue(40),
-          borderRadius: 4
-        }}
-      />
-      <Title
-        numberOfLines={1}
-        style={{
-          color: colors.BLACK,
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(10)
-        }}
-      >
-        {item.firstName} {item.lastName} {item.lastName}
-      </Title>
-    </SelectedMemberWrapper>
+    <TouchableWithoutFeedback onPress={() => {}}>
+      <SelectedMemberWrapper ref={hideSensitiveView}>
+        <CloseIcon onPress={() => handleSelect(item)}>
+          <Ionicons name="md-close" size={15} color={colors.GREY} />
+        </CloseIcon>
+        <FastImage
+          resizeMode={FastImage.resizeMode.stretch}
+          source={{
+            uri: item.avatar || USER_DEFAULT_AVATAR,
+            priority: FastImage.priority.high
+          }}
+          style={{
+            width: RFValue(40),
+            height: RFValue(40),
+            borderRadius: 4
+          }}
+        />
+        <Title
+          numberOfLines={1}
+          style={{
+            color: colors.BLACK,
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(10)
+          }}
+        >
+          {item.firstName} {item.lastName}
+        </Title>
+      </SelectedMemberWrapper>
+    </TouchableWithoutFeedback>
   );
 
   const _searchBox = ({ currentRefinement, refine }: any) => (
@@ -309,22 +313,32 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
             onSearchStateChange={onSearchStateChange}
           >
             <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
-            <AlgoliaSearchBox />
 
-            <View>
+            <SearchInputWrapper>
+              <AlgoliaSearchBox />
               <FlatList
+                ref={selecteduserRef}
+                onContentSizeChange={() =>
+                  selecteduserRef.current.scrollToEnd({ animated: true })
+                }
+                onLayout={() =>
+                  selecteduserRef.current.scrollToEnd({ animated: true })
+                }
                 bounces={false}
                 horizontal={true}
                 scrollEnabled={true}
                 onEndReachedThreshold={0.5}
-                ref={hideSensitiveView}
+                scrollEventThrottle={16}
                 data={Object.values(group)}
                 renderItem={_renderSelectedItem}
                 keyExtractor={(item) => item.id}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 10 }}
+                contentContainerStyle={{
+                  paddingHorizontal: 10
+                }}
+                style={{ marginRight: 15, paddingRight: 5 }}
               />
-            </View>
+            </SearchInputWrapper>
 
             <AlgoliaList
               //@ts-ignore

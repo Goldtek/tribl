@@ -119,3 +119,8 @@ export const ModalContentWrapper = styled.View`
   border-radius: 5px;
   background-color: ${({ theme }) => theme.colors.WHITE};
 `;
+
+export const SearchInputWrapper = styled.View`
+  border-bottom-width: 2px;
+  border-bottom-color: ${({ theme }) => theme.colors.GREY_LIGHT};
+`
