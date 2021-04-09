@@ -52,6 +52,7 @@ export const HeaderActionText = styled.Text<{ selectedParticipants: boolean }>`
   font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
   color: ${({ theme, selectedParticipants }) =>
     selectedParticipants ? theme.colors.PRIMARY : theme.colors.SECONDARY_TEXT};
+  text-transform:capitalize;
 `;
 
 export const GroupContainer = styled.View`

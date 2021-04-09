@@ -292,7 +292,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
                 color={colors.PRIMARY}
               />
             </TouchableRipple>
-            <HeaderTitle>Add Participants</HeaderTitle>
+            <HeaderTitle>{t(`community.chat.inviteToGroup`)}</HeaderTitle>
             <ContentWrapper style={{ flex: 1, paddingHorizontal: 0 }}>
               <HeaderAction
                 onPress={handleGroupNavigation}
@@ -301,7 +301,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
                 <HeaderActionText
                   selectedParticipants={Boolean(participants.length)}
                 >
-                  Add
+                  {t(`community.recommended.add`)}
                 </HeaderActionText>
               </HeaderAction>
             </ContentWrapper>
@@ -358,7 +358,9 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
         <Overlay>
           <ModalContentWrapper>
             <ActivityIndicator size="small" color={colors.BLACK} />
-            <LoaderMessage>Adding members...</LoaderMessage>
+            <LoaderMessage>
+              {t(`community.chat.addingMembers`)}...
+            </LoaderMessage>
           </ModalContentWrapper>
         </Overlay>
       </Modal>

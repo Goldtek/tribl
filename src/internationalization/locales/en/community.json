@@ -151,7 +151,9 @@
     "groupCreatedBy": "Created by",
     "groupInformation": "group information",
     "edit": "edit",
-    "removeUser": "remove"
+    "removeUser": "remove",
+    "addingMembers": "adding members",
+    "create": "create"
   },
 
   "update": {
