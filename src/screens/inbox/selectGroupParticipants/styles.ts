@@ -98,3 +98,8 @@ export const CloseIcon = styled.TouchableOpacity`
 export const ContentWrapper = styled.View`
   padding-horizontal: 20px;
 `;
+
+export const SearchInputWrapper = styled.View`
+  border-bottom-width: 2px;
+  border-bottom-color: ${({ theme }) => theme.colors.GREY_LIGHT};
+`

@@ -32,7 +32,8 @@ import {
   ContentWrapper,
   HeaderContainer,
   HeaderActionText,
-  SelectedMemberWrapper
+  SelectedMemberWrapper,
+  SearchInputWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -216,28 +217,30 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
             onSearchStateChange={onSearchStateChange}
           >
             <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
-            <AlgoliaSearchBox />
-            <FlatList
-              ref={selecteduserRef}
-              onContentSizeChange={() =>
-                selecteduserRef.current.scrollToEnd({ animated: true })
-              }
-              onLayout={() =>
-                selecteduserRef.current.scrollToEnd({ animated: true })
-              }
-              bounces={false}
-              horizontal={true}
-              scrollEnabled={true}
-              onEndReachedThreshold={0.5}
-              scrollEventThrottle={16}
-              data={Object.values(group)}
-              renderItem={_renderSelectedItem}
-              keyExtractor={(item) => item.id}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                paddingHorizontal: 6
-              }}
-            />
+            <SearchInputWrapper>
+              <AlgoliaSearchBox />
+              <FlatList
+                ref={selecteduserRef}
+                onContentSizeChange={() =>
+                  selecteduserRef.current.scrollToEnd({ animated: true })
+                }
+                onLayout={() =>
+                  selecteduserRef.current.scrollToEnd({ animated: true })
+                }
+                bounces={false}
+                horizontal={true}
+                scrollEnabled={true}
+                onEndReachedThreshold={0.5}
+                scrollEventThrottle={16}
+                data={Object.values(group)}
+                renderItem={_renderSelectedItem}
+                keyExtractor={(item) => item.id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  paddingHorizontal: 6
+                }}
+              />
+            </SearchInputWrapper>
 
             <AlgoliaList
               //@ts-ignore
