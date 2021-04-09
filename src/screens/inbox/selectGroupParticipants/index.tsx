@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { FlatList, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { FlatList, TouchableWithoutFeedback } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -42,7 +42,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
+  const selecteduserRef = useRef<any>(null);
   const { dismissKeyboard } = useKeyboardContext();
 
   const [group, setGroup] = useState<{ [key: string]: PassportInterface }>({});
@@ -122,7 +122,6 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
       </Title>
     </SelectedMemberWrapper>
   );
-
   const _searchBox = ({ currentRefinement, refine }: any) => (
     <Searchbar
       value={currentRefinement}
@@ -207,6 +206,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
               </HeaderAction>
             </ContentWrapper>
           </HeaderContainer>
+
           <InstantSearch
             indexName={indexName}
             searchState={state.search}
@@ -215,21 +215,27 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
           >
             <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
             <AlgoliaSearchBox />
-
-            <View>
-              <FlatList
-                bounces={false}
-                horizontal={true}
-                scrollEnabled={true}
-                onEndReachedThreshold={0.5}
-                ref={hideSensitiveView}
-                data={Object.values(group)}
-                renderItem={_renderSelectedItem}
-                keyExtractor={(item) => item.id}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 10 }}
-              />
-            </View>
+            <FlatList
+              ref={selecteduserRef}
+              onContentSizeChange={() =>
+                selecteduserRef.current.scrollToEnd({ animated: true })
+              }
+              onLayout={() =>
+                selecteduserRef.current.scrollToEnd({ animated: true })
+              }
+              bounces={false}
+              horizontal={true}
+              scrollEnabled={true}
+              onEndReachedThreshold={0.5}
+              scrollEventThrottle={16}
+              data={Object.values(group)}
+              renderItem={_renderSelectedItem}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 6
+              }}
+            />
 
             <AlgoliaList
               //@ts-ignore
