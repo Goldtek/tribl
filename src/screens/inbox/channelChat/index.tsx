@@ -6,18 +6,20 @@ import CustomSystemMessage from '../../../components/customSystemMessage';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import StreamInputBox from '../../../components/streamInputBox';
+import { useIsFocused } from '@react-navigation/core';
 import {
   chatClient,
   LocalChannelType,
   ThreadType
 } from '../../../stream/types';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { logEvent, tagScreenName } from '../../../utils/uxcamHelper';
 import {
   TouchableRipple,
   Paragraph,
   Surface,
   IconButton
 } from 'react-native-paper';
+import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useStreamContext } from '../../../stream';
 import { useThemeContext } from '../../../theme';
@@ -28,12 +30,19 @@ import { USER_DEFAULT_AVATAR } from '../../../constants';
 import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
 import { ChannelSort } from 'stream-chat';
+import { Mixpanel } from '../../../config';
+import { useTranslation } from 'react-i18next';
+import {
+  JOIN_COMMUNITY_CHANNEL,
+  SEND_CHANNEL_MESSAGE
+} from '../../../graphql/server/mutations';
+import { GET_SINGLE_COMMUNITY } from '../../../graphql/server/query';
 
 import {
-  ChatContainer,
-  MessageListContainer,
-  HeaderContainer,
   CountBadge,
+  ChatContainer,
+  HeaderContainer,
+  MessageListContainer,
   HeaderTitleContainer
 } from './styles';
 
@@ -44,8 +53,10 @@ interface ScreenProp extends NavigationInterface {
 
 export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
+  const isFocused = useIsFocused();
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();
+  const { t } = useTranslation();
   const { colors, fonts } = useThemeContext();
   const {
     setThread,
@@ -53,39 +64,75 @@ export default function ChannelChatScreen(props: ScreenProp) {
     setChannel: setStreamChannel
   } = useStreamContext();
 
+  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
+  const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
+  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
+
   const [channel, setChannel] = useState(
     chatClient.channel('team', route.params.channelId)
   );
 
   const [channelMembers, setChannelMembers] = useState(
-    Object.values(channel?.state?.members)
+    Object.values(channel?.state?.members.asMutable())
   );
 
+  const getConversation = async () => {
+    const filter = { id: { $in: [route.params.channelId] } };
+
+    const options = { presence: true, state: true, watch: true };
+
+    const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+    const [channelExists] = await chatClient.queryChannels(
+      filter,
+      sort,
+      options
+    );
+
+    if (!channelExists) return;
+
+    await channelExists.watch();
+    setChannel(channelExists);
+    setChannelMembers(Object.values(channelExists?.state?.members.asMutable()));
+  };
+
   useEffect(() => {
-    const getConversation = async () => {
-      const filter = { id: { $in: [route.params.channelId] } };
-
-      const options = { presence: true, state: true, watch: true };
-
-      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
-
-      const [channelExists] = await chatClient.queryChannels(
-        filter,
-        sort,
-        options
-      );
-
-      if (!channelExists) return;
-
-      await channelExists.watch();
-      setChannel(channelExists);
-      setChannelMembers(Object.values(channelExists?.state?.members));
-    };
-
-    if (chatClient.user && route.params.channelId) {
+    if (isFocused && route.params.channelId && chatClient.user) {
       getConversation();
     }
-  }, [chatClient.user, route.params.channelId]);
+  }, [isFocused, chatClient.user, route.params.channelId]);
+
+  useEffect(() => {
+    if (isFocused && channelMembers.length) {
+      const user = channel?.state?.members[`${chatClient.user?.id}`];
+
+      if (!user?.user?.id) {
+        logEvent('join channel', { from: 'channel' });
+        Mixpanel.track('User Joins Channel', {
+          info: `User Joins ${channel.data?.name} Channel on ${channel.data?.community?.name} community`,
+          'Activity Screen': 'Community Highlight Tribe Channels List'
+        });
+
+        joinChannel({
+          variables: { payload: { channelId: route.params.channelId } }
+        }).then(() => {
+          getChannelCommunity({
+            variables: { id: channel.data?.community?.id }
+          });
+          sendMessage({
+            variables: {
+              payload: {
+                system: true,
+                channelId: route.params.channelId,
+                content: t(`community.chat.join`)
+              }
+            }
+          });
+          getConversation();
+        });
+      }
+    }
+  }, [isFocused, channel, channel?.state?.members, channelMembers]);
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');

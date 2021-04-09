@@ -99,13 +99,7 @@ export default function ChannelCard(props: ChannelCardProp) {
 
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
-      params: {
-        isMember,
-        chatId: id,
-        title: `#${name}`,
-        channelId: channel?.id,
-        channel: { name, community: communityDetails?.name }
-      }
+      params: { title: `#${name}`, channelId: channel?.id }
     });
   };
 

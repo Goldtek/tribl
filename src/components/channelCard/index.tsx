@@ -17,39 +17,6 @@ export default function MyChannel(props: MyChannelProp) {
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
 
-  // const [channel, setChannel] = useState<
-  //   Channel<
-  //     LocalAttachmentType,
-  //     LocalChannelType,
-  //     LiteralStringForUnion,
-  //     LocalEventType,
-  //     LocalMessageType,
-  //     LocalReactionType,
-  //     LocalUserType
-  //   >
-  // >();
-
-  // useEffect(() => {
-  //   const getConversation = async () => {
-  //     const filter = { id: { $in: [id] } };
-
-  //     const options = { presence: true, state: true, watch: true };
-
-  //     const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
-
-  //     const [channel] = await chatClient.queryChannels(filter, sort, options);
-
-  //     if (!channel) return;
-
-  //     setChannel(channel);
-  //   };
-
-  //   if (chatClient.user) getConversation();
-  // }, [chatClient.user]);
-
-  // const messageCount =
-  //   channel?.state?.messages.length || channel?.data?.member_count || 0;
-
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
