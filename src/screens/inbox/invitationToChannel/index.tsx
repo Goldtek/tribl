@@ -146,7 +146,7 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
               fontFamily: fonts.WORK_SANS_MEDIUM,
               fontSize: RFValue(fonts.LARGE_SIZE - 2),
               color: colors.PRIMARY_TEXT,
-              width: RFValue(80),
+              width: '60%',
               textTransform: 'capitalize'
             }}
           >

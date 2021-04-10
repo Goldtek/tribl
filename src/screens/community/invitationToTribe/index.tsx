@@ -158,7 +158,8 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
               fontFamily: fonts.WORK_SANS_MEDIUM,
               fontSize: RFValue(fonts.LARGE_SIZE - 2),
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+              width: '60%'
             }}
           >
             {`${item?.firstName} ${item?.lastName}`}
