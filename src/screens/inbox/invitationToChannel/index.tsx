@@ -180,8 +180,8 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
         contentContainerStyle={{ flexGrow: 1 }}
         style={{
           borderWidth: 1,
-          marginBottom: 10,
-          borderColor: colors.INPUT
+          borderColor: colors.INPUT,
+          marginHorizontal: 15
         }}
       >
         <FlatList
@@ -259,7 +259,8 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
           fontSize: RFValue(fonts.LARGE_SIZE),
           color: colors.PRIMARY_TEXT,
           lineHeight: RFValue(30),
-          textAlign: 'center'
+          textAlign: 'center',
+          paddingHorizontal: 15
         }}
       >
         {t(`community.invitation.channelTitle`)}
@@ -269,7 +270,8 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
           fontFamily: fonts.WORK_SANS_REGULAR,
           fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
           color: colors.PRIMARY_TEXT,
-          textAlign: 'center'
+          textAlign: 'center',
+          paddingHorizontal: 15
         }}
       >
         {t(`community.invitation.text`)}
@@ -279,7 +281,8 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
           fontFamily: fonts.WORK_SANS_MEDIUM,
           fontSize: RFValue(fonts.LARGE_SIZE - 2),
           color: colors.PRIMARY_TEXT,
-          marginTop: RFValue(20)
+          marginTop: RFValue(20),
+          paddingHorizontal: 15
         }}
       >
         {t(`community.invitation.label`)}
@@ -288,7 +291,12 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
       {participants?.length ? <_renderSelectedItem /> : null}
 
       <View
-        style={{ borderWidth: 1, borderColor: colors.INPUT, maxHeight: '40%' }}
+        style={{
+          borderWidth: 1,
+          borderColor: colors.INPUT,
+          maxHeight: '40%',
+          marginHorizontal: 15
+        }}
       >
         <InstantSearch
           indexName={indexName}
