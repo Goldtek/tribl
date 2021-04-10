@@ -65,6 +65,13 @@ export const Overlay = styled.View`
   background-color: ${({ theme }) => hexToRGB(theme.colors.BLACK, 0.7)};
 `;
 
+export const CoverImageOverlay = styled(Overlay)`
+  position: absolute;
+  background-color: ${({ theme }) => hexToRGB(theme.colors.BLACK, 0.5)};
+  width: 100%;
+  height: 100%;
+`;
+
 export const ModalContentWrapper = styled.View`
   padding: 20px;
   border-radius: 5px;

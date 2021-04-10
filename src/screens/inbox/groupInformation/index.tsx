@@ -7,7 +7,7 @@ import {
   Divider,
   ActivityIndicator
 } from 'react-native-paper';
-import { Switch, ScrollView, Alert, Modal } from 'react-native';
+import { Switch, ScrollView, Alert, Modal, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -32,7 +32,8 @@ import {
   ModalContentWrapper,
   HeaderImageContainer,
   HeaderTitleContainer,
-  ChannelInformationContainer
+  ChannelInformationContainer,
+  CoverImageOverlay
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -142,34 +143,36 @@ export default function GroupInformation(props: GroupInformationProp) {
         showsVerticalScrollIndicator={false}
       >
         <HeaderImageContainer>
-          <FastImage
+          <Image
             source={{
-              uri: channelMembers[0]?.user?.image || USER_DEFAULT_AVATAR,
-              priority: FastImage.priority.high
+              uri: channelMembers[0]?.user?.image || USER_DEFAULT_AVATAR
             }}
-            style={{ width: '33.5%', height: '100%' }}
-            resizeMode={FastImage.resizeMode.stretch}
+            style={{ flex: 1, width: undefined, height: undefined }}
+            resizeMode="repeat"
+            blurRadius={3}
           />
-          <FastImage
+          <Image
             source={{
               uri:
                 channelMembers[channelMembers?.length - 2]?.user?.image ||
-                USER_DEFAULT_AVATAR,
-              priority: FastImage.priority.high
+                USER_DEFAULT_AVATAR
             }}
-            style={{ width: '33.5%', height: '100%' }}
-            resizeMode={FastImage.resizeMode.stretch}
+            style={{ flex: 2, width: undefined, height: undefined }}
+            resizeMode="repeat"
+            blurRadius={1}
           />
-          <FastImage
+
+          <Image
             source={{
               uri:
                 channelMembers[channelMembers?.length - 1]?.user?.image ||
-                USER_DEFAULT_AVATAR,
-              priority: FastImage.priority.high
+                USER_DEFAULT_AVATAR
             }}
-            style={{ width: '33.5%', height: '100%' }}
-            resizeMode={FastImage.resizeMode.stretch}
+            style={{ flex: 1, width: undefined, height: undefined }}
+            resizeMode="repeat"
+            blurRadius={3}
           />
+          <CoverImageOverlay />
         </HeaderImageContainer>
 
         <ChannelInformationContainer>
