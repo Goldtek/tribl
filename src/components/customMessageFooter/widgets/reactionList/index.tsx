@@ -54,10 +54,7 @@ export const ReactionItem = ({
                     uri: item.user.image
                   }}
                 />
-                <UserDetails>
-                  {item ? item.user.user.firstName : null}{' '}
-                  {item ? item.user.user.lastName : null}
-                </UserDetails>
+                <UserDetails>{item ? item.user.name : null} </UserDetails>
               </ImageContainer>
             </ReactionDetailContainer>
 

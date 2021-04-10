@@ -21,6 +21,7 @@ const PRODUCTION: string = 'production_channel_new_api';
 const STAGING_INTERNAL: string = 'staging_internal_channel_new_api';
 const STAGING_EXTERNAL: string = 'staging_external_channel_new_api';
 const STAGING_EXTERNAL_FOR_OTA_TEST: string = `staging_external_channel_for_ota_test`;
+const STAGING_INTERNAL_FOR_OTA_TEST: string = `staging_internal_channel_for_ota_test`;
 
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 20;

@@ -1,22 +1,18 @@
-import React, { useState, useEffect, Fragment, useMemo } from 'react';
-import { Title, Text, Button, Searchbar } from 'react-native-paper';
+import React, { useState, Fragment, useMemo } from 'react';
+import { Title, Text, Button, Searchbar, Divider } from 'react-native-paper';
 import {
   InstantSearch,
   connectSearchBox,
   Configure
 } from 'react-instantsearch-native';
-import { Image, TouchableHighlight } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import {
-  PassportInterface,
-  AllMembersRequestInterface
-} from '../../../graphql/types';
-import { GET_ALL_MEMBERS } from '../../../graphql/server/query';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { PassportInterface } from '../../../graphql/types';
+import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
 import GradientButton from '../../../components/gradientButton';
@@ -25,36 +21,41 @@ import { logEvent } from '../../../utils/uxcamHelper';
 import ENVIRONMENT_VARIABLES, { Mixpanel } from '../../../config';
 import { crashlytics } from '../../../firebase/config';
 import { Toast } from '../../../components/rootToaster';
-import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
+import { useKeyboardContext } from 'stream-chat-react-native-core';
 import { searchClient } from '../../../config';
-import AlgoliaList from '../../../components/inviteAlgoliaList';
+import hexToRGB from '../../../utils/hexToRGB';
+import AlgoliaList from '../../../components/algoliaList';
+import InviteAlgoliaHighlight from '../../../components/inviteAlgoliaHighlight';
 
 import { Container, TagCover, ButtonCover } from './styles';
-import { PAGINATION_DEFAULT } from '../../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface InviteFriendsScreenProp extends NavigationInterface {}
 
 export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
-  const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
   const { navigation } = props;
   const communityId = props.route.params?.communityId;
+
+  const { t } = useTranslation();
+  const { dismissKeyboard } = useKeyboardContext();
+  const { colors, fonts } = useThemeContext();
+
+  const [search, setSearch] = useState({ search: {} });
+
+  const [selected, setSelected] = useState<{
+    [key: string]: PassportInterface;
+  }>({});
+
   const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
-  const [state, setState] = useState<{
-    tagsSelected: PassportInterface[];
-    receipientIds: string[];
-    search: {};
-  }>({
-    tagsSelected: [],
-    receipientIds: [],
-    search: {}
-  });
+  const participants = Object.values(selected);
 
   const [inviteToTribe, { loading }] = useMutation(INVITE_TO_TRIBE, {
     variables: {
-      payload: { communityId: communityId, receipientIds: state.receipientIds }
+      payload: {
+        communityId: communityId,
+        recipientIds: participants.map(({ id }) => id)
+      }
     }
   });
 
@@ -63,48 +64,86 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   };
 
   const sendTribeInvite = async () => {
-    if (state.tagsSelected?.length < 1) {
+    if (!selected?.length) {
       return handleInputError('inviteError');
     }
+
     logEvent('send tribe invite', { from: 'passport' });
+
     try {
       Mixpanel.track('Send Tribe Invite', {
         info: `Invite friends to ${communityId.name}`,
         'Activity Screen': 'Tribe invitation screen'
       });
       await inviteToTribe();
-      setState({
-        ...state,
-        tagsSelected: []
-      });
+      setSelected({});
       navigation.goBack();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
-  const handleDelete = (index: any) => {
-    let tagsSelected = state.tagsSelected;
-    tagsSelected.splice(index, 1);
-    let receipientIds = state.receipientIds;
-    receipientIds.splice(index, 1);
-    setState({ ...state, tagsSelected, receipientIds });
+  const handleSelect = (user: PassportInterface) => {
+    dismissKeyboard();
+    const { firstName, lastName, id, avatar } = user;
+
+    const payload = {
+      id,
+      avatar,
+      lastName,
+      firstName
+    } as PassportInterface;
+
+    if (!selected[id]) {
+      return setSelected({ ...selected, [id]: payload });
+    }
+
+    const { [id]: _, ...restUsers } = { ...selected };
+    setSelected(restUsers);
   };
 
-  const handleAddition = (suggestion: PassportInterface) => {
-    return setState({
-      ...state,
-      tagsSelected: state.tagsSelected.concat([suggestion]),
-      receipientIds: state.receipientIds.concat([suggestion?.id])
-    });
+  const _renderSeparator = ({ leadingItem }: any) => {
+    const user = leadingItem as PassportInterface;
+
+    if (
+      (!user.verified ||
+        user.lastName == null ||
+        user.firstName == null ||
+        user.currentLocation?.city == null,
+      user.currentLocation?.state == null)
+    ) {
+      return null;
+    }
+
+    return (
+      <Divider
+        style={{
+          height: 1.5,
+          marginHorizontal: RFValue(20),
+          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+        }}
+      />
+    );
+  };
+
+  const _renderItem = ({ item }: any) => {
+    if (selected[item.id]) return null;
+
+    return (
+      <InviteAlgoliaHighlight
+        {...item}
+        key={item.id}
+        handleSelect={() => handleSelect(item)}
+      />
+    );
   };
 
   const _renderTags = () => {
     return (
       <TagCover>
-        {state.tagsSelected.map((item) => {
+        {participants.map((item) => {
           return (
-            <TouchableHighlight
+            <TouchableOpacity
               key={item?.id}
               style={{
                 flexDirection: 'row',
@@ -117,7 +156,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
                 marginHorizontal: RFValue(10),
                 borderRadius: 4
               }}
-              onPress={() => handleDelete(item)}
+              onPress={() => handleSelect(item)}
             >
               <Fragment>
                 <FastImage
@@ -152,15 +191,15 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
                   }}
                 />
               </Fragment>
-            </TouchableHighlight>
+            </TouchableOpacity>
           );
         })}
       </TagCover>
     );
   };
 
-  const onSearchStateChange = (search: string) => {
-    setState({ ...state, search });
+  const onSearchStateChange = (query: string) => {
+    setSearch({ ...search, search: query });
   };
 
   const _searchBox = ({ currentRefinement, refine }: any) => (
@@ -246,19 +285,19 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         <Fragment>
           <InstantSearch
             indexName={indexName}
-            searchState={state.search}
+            searchState={search.search}
             searchClient={searchClient}
             onSearchStateChange={onSearchStateChange}
           >
-            {state?.tagsSelected?.length ? <_renderTags /> : null}
-            <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
+            {participants?.length ? <_renderTags /> : null}
+            <Configure hitsPerPage={5} distinct />
             <AlgoliaSearchBox />
-            {
+            <AlgoliaList
               //@ts-ignore
-              state?.search?.query?.length ? (
-                <AlgoliaList handleAddition={handleAddition} />
-              ) : null
-            }
+              _separator={_renderSeparator}
+              //@ts-ignore
+              _renderItem={_renderItem}
+            />
           </InstantSearch>
         </Fragment>
       </KeyboardAwareScrollView>

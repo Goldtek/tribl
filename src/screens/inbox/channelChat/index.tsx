@@ -6,7 +6,6 @@ import CustomSystemMessage from '../../../components/customSystemMessage';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import StreamInputBox from '../../../components/streamInputBox';
-import { useIsFocused } from '@react-navigation/core';
 import {
   chatClient,
   LocalChannelType,
@@ -19,7 +18,7 @@ import {
   Surface,
   IconButton
 } from 'react-native-paper';
-import { useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useStreamContext } from '../../../stream';
 import { useThemeContext } from '../../../theme';
@@ -36,7 +35,7 @@ import {
   JOIN_COMMUNITY_CHANNEL,
   SEND_CHANNEL_MESSAGE
 } from '../../../graphql/server/mutations';
-import { GET_SINGLE_COMMUNITY } from '../../../graphql/server/query';
+import { crashlytics } from '../../../firebase/config';
 
 import {
   CountBadge,
@@ -53,7 +52,6 @@ interface ScreenProp extends NavigationInterface {
 
 export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
-  const isFocused = useIsFocused();
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();
   const { t } = useTranslation();
@@ -66,7 +64,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
   const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
-  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
 
   const [channel, setChannel] = useState(
     chatClient.channel('team', route.params.channelId)
@@ -77,62 +74,70 @@ export default function ChannelChatScreen(props: ScreenProp) {
   );
 
   const getConversation = async () => {
-    const filter = { id: { $in: [route.params.channelId] } };
+    try {
+      const filter = {
+        id: { $in: [route.params.channelId] },
+        members: { $in: [`${chatClient.user?.id}`] }
+      };
 
-    const options = { presence: true, state: true, watch: true };
+      const options = { presence: true, state: true, watch: true };
 
-    const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 
-    const [channelExists] = await chatClient.queryChannels(
-      filter,
-      sort,
-      options
-    );
+      const [channelExists] = await chatClient.queryChannels(
+        filter,
+        sort,
+        options
+      );
 
-    if (!channelExists) return;
+      if (!channelExists) {
+        return addUserToChannel();
+      }
 
-    await channelExists.watch();
-    setChannel(channelExists);
-    setChannelMembers(Object.values(channelExists?.state?.members.asMutable()));
+      await channelExists.watch();
+      setChannel(channelExists);
+      setChannelMembers(
+        Object.values(channelExists?.state?.members.asMutable())
+      );
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
   };
 
   useEffect(() => {
-    if (isFocused && route.params.channelId && chatClient.user) {
+    if (route.params.channelId && chatClient.user) {
       getConversation();
     }
-  }, [isFocused, chatClient.user, route.params.channelId]);
+  }, [route.params.channelId]);
 
-  useEffect(() => {
-    if (isFocused && channelMembers.length) {
-      const user = channel?.state?.members[`${chatClient.user?.id}`];
+  const addUserToChannel = async () => {
+    try {
+      logEvent('join channel', { from: 'channel' });
 
-      if (!user?.user?.id) {
-        logEvent('join channel', { from: 'channel' });
-        Mixpanel.track('User Joins Channel', {
-          info: `User Joins ${channel.data?.name} Channel on ${channel.data?.community?.name} community`,
-          'Activity Screen': 'Community Highlight Tribe Channels List'
-        });
+      Mixpanel.track('User Joins Channel', {
+        info: `User Joins ${channel.data?.name} Channel on ${channel.data?.community?.name} community`,
+        'Activity Screen': 'Community Highlight Tribe Channels List'
+      });
 
-        joinChannel({
-          variables: { payload: { channelId: route.params.channelId } }
-        }).then(() => {
-          getChannelCommunity({
-            variables: { id: channel.data?.community?.id }
-          });
-          sendMessage({
-            variables: {
-              payload: {
-                system: true,
-                channelId: route.params.channelId,
-                content: t(`community.chat.join`)
-              }
-            }
-          });
-          getConversation();
-        });
-      }
+      await joinChannel({
+        variables: { payload: { channelId: route.params.channelId } }
+      });
+
+      sendMessage({
+        variables: {
+          payload: {
+            system: true,
+            channelId: route.params.channelId,
+            content: t(`community.chat.join`)
+          }
+        }
+      });
+
+      getConversation();
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
     }
-  }, [isFocused, channel, channel?.state?.members, channelMembers]);
+  };
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
@@ -173,134 +178,153 @@ export default function ChannelChatScreen(props: ScreenProp) {
             <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
           </TouchableRipple>
 
-          {channelMembers && channelMembers?.length === 1 ? (
-            <Surface
-              style={{
-                width: 40,
-                height: 40,
-                justifyContent: 'center',
-                top: 1,
-                right: 10,
-                elevation: 4,
-                borderRadius: 4
-              }}
-            >
-              <FastImage
-                resizeMode={FastImage.resizeMode.cover}
-                source={{
-                  uri: channelMembers[0].user?.image || USER_DEFAULT_AVATAR,
-                  priority: FastImage.priority.high
-                }}
+          <Fragment>
+            {channelMembers && channelMembers?.length === 1 ? (
+              <TouchableRipple
+                onPress={handleChannelNavigation}
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 4
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}
-              />
-              <CountBadge style={{ elevation: 4 }}>
-                <Paragraph
+              >
+                <Surface
                   style={{
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontWeight: 'bold',
-                    color: colors.WHITE
+                    width: 40,
+                    height: 40,
+                    justifyContent: 'center',
+                    top: 1,
+                    right: 10,
+                    elevation: 4,
+                    borderRadius: 4
                   }}
                 >
-                  {channelMembers.length}
-                </Paragraph>
-              </CountBadge>
-            </Surface>
-          ) : null}
-
-          {channelMembers && channelMembers?.length >= 2 ? (
-            <Fragment>
-              <Surface
-                style={{
-                  width: 40,
-                  height: 40,
-                  elevation: 4,
-                  borderRadius: 4
-                }}
-              >
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri:
-                      channelMembers[channelMembers?.length - 2]?.user?.image ||
-                      USER_DEFAULT_AVATAR,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 4,
-                    borderColor: colors.PRIMARY,
-                    borderWidth: 1
-                  }}
-                />
-              </Surface>
-              <Surface
-                style={{
-                  width: 40,
-                  height: 40,
-                  justifyContent: 'center',
-                  top: 1,
-                  right: 10,
-                  elevation: 4,
-                  borderRadius: 4
-                }}
-              >
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri:
-                      channelMembers[channelMembers?.length - 1]?.user?.image ||
-                      USER_DEFAULT_AVATAR,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 4,
-                    borderColor: colors.PRIMARY,
-                    borderWidth: 1
-                  }}
-                />
-                <CountBadge style={{ elevation: 4 }}>
-                  <Paragraph
+                  <FastImage
+                    resizeMode={FastImage.resizeMode.cover}
+                    source={{
+                      uri: channelMembers[0].user?.image || USER_DEFAULT_AVATAR,
+                      priority: FastImage.priority.high
+                    }}
                     style={{
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontWeight: 'bold',
-                      color: colors.WHITE
+                      width: 40,
+                      height: 40,
+                      borderRadius: 4
+                    }}
+                  />
+                  <CountBadge style={{ elevation: 4 }}>
+                    <Paragraph
+                      style={{
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontWeight: 'bold',
+                        color: colors.WHITE
+                      }}
+                    >
+                      {channelMembers.length}
+                    </Paragraph>
+                  </CountBadge>
+                </Surface>
+              </TouchableRipple>
+            ) : null}
+
+            {channelMembers && channelMembers?.length >= 2 ? (
+              <TouchableRipple
+                onPress={handleChannelNavigation}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <Fragment>
+                  <Surface
+                    style={{
+                      width: 40,
+                      height: 40,
+                      elevation: 4,
+                      borderRadius: 4
                     }}
                   >
-                    {`${channel.data?.member_count}+`}
-                  </Paragraph>
-                </CountBadge>
-              </Surface>
-            </Fragment>
-          ) : null}
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri:
+                          channelMembers[channelMembers?.length - 2]?.user
+                            ?.image || USER_DEFAULT_AVATAR,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 4,
+                        borderColor: colors.PRIMARY,
+                        borderWidth: 1
+                      }}
+                    />
+                  </Surface>
+                  <Surface
+                    style={{
+                      width: 40,
+                      height: 40,
+                      justifyContent: 'center',
+                      top: 1,
+                      right: 10,
+                      elevation: 4,
+                      borderRadius: 4
+                    }}
+                  >
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri:
+                          channelMembers[channelMembers?.length - 1]?.user
+                            ?.image || USER_DEFAULT_AVATAR,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 4,
+                        borderColor: colors.PRIMARY,
+                        borderWidth: 1
+                      }}
+                    />
+                    <CountBadge style={{ elevation: 4 }}>
+                      <Paragraph
+                        style={{
+                          fontSize: RFValue(fonts.MEDIUM_SIZE),
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          fontWeight: 'bold',
+                          color: colors.WHITE
+                        }}
+                      >
+                        {`${channel.data?.member_count}+`}
+                      </Paragraph>
+                    </CountBadge>
+                  </Surface>
+                </Fragment>
+              </TouchableRipple>
+            ) : null}
 
-          <HeaderTitleContainer>
-            <Paragraph
-              numberOfLines={1}
-              style={{
-                fontSize: fonts.MEDIUM_SIZE + 2,
-                fontFamily: fonts.WORK_SANS_BOLD,
-                marginLeft: 10
-              }}
-            >
-              {route.params?.title}
-            </Paragraph>
-          </HeaderTitleContainer>
-
-          <IconButton
-            icon={(iconProps) => (
-              <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
-            )}
-            onPress={handleChannelNavigation}
-          />
+            <HeaderTitleContainer>
+              <Paragraph
+                numberOfLines={1}
+                style={{
+                  fontSize: fonts.MEDIUM_SIZE + 2,
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  marginLeft: 10
+                }}
+              >
+                {route.params?.title}
+              </Paragraph>
+            </HeaderTitleContainer>
+            <IconButton
+              icon={(iconProps) => (
+                <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+              )}
+              onPress={handleChannelNavigation}
+            />
+          </Fragment>
         </HeaderContainer>
 
         <Chat

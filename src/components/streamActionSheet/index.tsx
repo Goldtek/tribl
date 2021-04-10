@@ -135,7 +135,7 @@ export const MessageActionSheet = React.forwardRef(
     const handleOpenReactionPicker = () => {
       props.setActionSheetVisible(false);
       setTimeout(() => {
-        props.openReactionPicker();
+        openReactionPicker();
       }, 100);
     };
 
@@ -160,14 +160,10 @@ export const MessageActionSheet = React.forwardRef(
           );
         })}
         ref={actionSheetRef as React.MutableRefObject<ActionSheet>}
-        title={renderReactions(
-          (type) => {
-            handleReaction(type);
-            setActionSheetVisible(false);
-          },
-          handleOpenReactionPicker,
-          colors
-        )}
+        title={renderReactions((type) => {
+          handleReaction(type);
+          setActionSheetVisible(false);
+        }, handleOpenReactionPicker)}
         styles={{
           body: {
             backgroundColor: colors.WHITE,
@@ -205,8 +201,7 @@ export const MessageActionSheet = React.forwardRef(
 
 export const renderReactions = (
   handleReaction: (type: string) => void,
-  handleOpenReactionPicker: () => void,
-  colors: any
+  handleOpenReactionPicker: () => void
 ) => {
   const supportedReactions: Reaction[] = [
     { id: 'joy', icon: '😂' },

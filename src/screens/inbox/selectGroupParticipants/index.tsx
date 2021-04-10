@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { FlatList, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { FlatList, TouchableWithoutFeedback } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -32,7 +32,8 @@ import {
   ContentWrapper,
   HeaderContainer,
   HeaderActionText,
-  SelectedMemberWrapper
+  SelectedMemberWrapper,
+  SearchInputWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -42,7 +43,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
+  const selecteduserRef = useRef<any>(null);
   const { dismissKeyboard } = useKeyboardContext();
 
   const [group, setGroup] = useState<{ [key: string]: PassportInterface }>({});
@@ -94,35 +95,36 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
   );
 
   const _renderSelectedItem = ({ item }: { item: PassportInterface }) => (
-    <SelectedMemberWrapper ref={hideSensitiveView}>
-      <CloseIcon onPress={() => handleSelect(item)}>
-        <Ionicons name="md-close" size={15} color={colors.GREY} />
-      </CloseIcon>
-      <FastImage
-        resizeMode={FastImage.resizeMode.stretch}
-        source={{
-          uri: item.avatar || USER_DEFAULT_AVATAR,
-          priority: FastImage.priority.high
-        }}
-        style={{
-          width: RFValue(40),
-          height: RFValue(40),
-          borderRadius: 4
-        }}
-      />
-      <Title
-        numberOfLines={1}
-        style={{
-          color: colors.BLACK,
-          fontFamily: fonts.WORK_SANS_REGULAR,
-          fontSize: RFValue(10)
-        }}
-      >
-        {item.firstName} {item.lastName} {item.lastName}
-      </Title>
-    </SelectedMemberWrapper>
+    <TouchableWithoutFeedback onPress={() => {}}>
+      <SelectedMemberWrapper ref={hideSensitiveView}>
+        <CloseIcon onPress={() => handleSelect(item)}>
+          <Ionicons name="md-close" size={15} color={colors.GREY} />
+        </CloseIcon>
+        <FastImage
+          resizeMode={FastImage.resizeMode.stretch}
+          source={{
+            uri: item.avatar || USER_DEFAULT_AVATAR,
+            priority: FastImage.priority.high
+          }}
+          style={{
+            width: RFValue(40),
+            height: RFValue(40),
+            borderRadius: 4
+          }}
+        />
+        <Title
+          numberOfLines={1}
+          style={{
+            color: colors.BLACK,
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(10)
+          }}
+        >
+          {item.firstName} {item.lastName} {item.lastName}
+        </Title>
+      </SelectedMemberWrapper>
+    </TouchableWithoutFeedback>
   );
-
   const _searchBox = ({ currentRefinement, refine }: any) => (
     <Searchbar
       value={currentRefinement}
@@ -193,7 +195,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
                 color={colors.PRIMARY}
               />
             </TouchableRipple>
-            <HeaderTitle>Add Participants</HeaderTitle>
+            <HeaderTitle>{t(`community.chat.inviteToGroup`)}</HeaderTitle>
             <ContentWrapper style={{ flex: 1, paddingHorizontal: 0 }}>
               <HeaderAction
                 onPress={handleGroupNavigation}
@@ -202,11 +204,12 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
                 <HeaderActionText
                   selectedParticipants={Boolean(participants.length)}
                 >
-                  Create
+                  {t(`community.chat.create`)}
                 </HeaderActionText>
               </HeaderAction>
             </ContentWrapper>
           </HeaderContainer>
+
           <InstantSearch
             indexName={indexName}
             searchState={state.search}
@@ -214,22 +217,31 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
             onSearchStateChange={onSearchStateChange}
           >
             <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
-            <AlgoliaSearchBox />
-
-            <View>
+            <SearchInputWrapper>
+              <AlgoliaSearchBox />
               <FlatList
+                ref={selecteduserRef}
+                onContentSizeChange={() =>
+                  selecteduserRef.current.scrollToEnd({ animated: true })
+                }
+                onLayout={() =>
+                  selecteduserRef.current.scrollToEnd({ animated: true })
+                }
                 bounces={false}
                 horizontal={true}
                 scrollEnabled={true}
                 onEndReachedThreshold={0.5}
-                ref={hideSensitiveView}
+                scrollEventThrottle={16}
                 data={Object.values(group)}
                 renderItem={_renderSelectedItem}
                 keyExtractor={(item) => item.id}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 10 }}
+                contentContainerStyle={{
+                  paddingHorizontal: 6
+                }}
+                style={{ marginRight: 15, paddingRight: 5 }}
               />
-            </View>
+            </SearchInputWrapper>
 
             <AlgoliaList
               //@ts-ignore
