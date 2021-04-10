@@ -128,7 +128,8 @@ function ContactSlide(props: ScreenProp) {
   const [select, setSelect] = useState({
     identity: [],
     interest: [],
-    deleteInterest: []
+    deleteInterest: [],
+    deleteIdentity: []
   });
 
   useEffect(() => {
@@ -176,9 +177,13 @@ function ContactSlide(props: ScreenProp) {
     const filteredIdentity = select.identity.filter(
       (identity) => identity.name !== selected
     );
+    const deleteIdentity = select.identity.filter(
+      (identity) => identity.name == selected
+    );
     setSelect({
       ...select,
-      identity: filteredIdentity
+      identity: filteredIdentity,
+      deleteIdentity: [...select.deleteIdentity, ...deleteIdentity]
     });
   };
 
