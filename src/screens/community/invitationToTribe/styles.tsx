@@ -1,23 +1,15 @@
 import styled from 'styled-components/native';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { ScrollView } from 'react-native';
 
-export const Container = styled.View`
+export const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.WHITE};
-  padding: ${RFValue(15)}px;
-`;
-
-export const TagCover = styled.ScrollView`
-  flex-direction: row;
-  flex-wrap: wrap;
-  width: 100%;
-  max-height: ${RFValue(90)}px;
-  border: 1px solid ${({ theme }) => theme.colors.INPUT};
+  padding-horizontal: 15px;
 `;
 
 export const ButtonCover = styled.View`
-  margin-bottom: ${RFValue(15)}px;
+  flex: 1;
+  justify-content: flex-end;
+  padding-bottom: 10px;
 `;
 
 export const AutoTagCover = styled.View`

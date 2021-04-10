@@ -1,8 +1,8 @@
-import React, { useState, Fragment, useMemo } from 'react';
-import { Title, Text, Button, Searchbar, Divider } from 'react-native-paper';
+import React, { useState, useRef, Fragment, useMemo } from 'react';
+import { Title, Text, Button, Searchbar } from 'react-native-paper';
 import {
   Image,
-  TouchableHighlight,
+  TouchableOpacity,
   View,
   ScrollView,
   FlatList
@@ -15,7 +15,6 @@ import {
 import AlgoliaList from '../../../components/algoliaList';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { PassportInterface } from '../../../graphql/types';
@@ -30,18 +29,19 @@ import { crashlytics } from '../../../firebase/config';
 import { Toast } from '../../../components/rootToaster';
 import { useKeyboardContext } from 'stream-chat-react-native-core';
 import { searchClient } from '../../../config';
-import hexToRGB from '../../../utils/hexToRGB';
 import InviteAlgoliaHighlight from '../../../components/inviteAlgoliaHighlight';
 
-import { Container, TagCover, ButtonCover } from './styles';
+import { Container, ButtonCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface InviteFriendsScreenProp extends NavigationInterface {}
 
-export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
-  const { navigation } = props;
-  const channelId = props.route.params?.channelId;
+export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
+  let numColumns = 2;
+  const { navigation, route } = props;
+  const channelId = route.params?.channelId;
 
+  const selecteduserRef = useRef<any>(null);
   const { t } = useTranslation();
   const { colors, fonts } = useThemeContext();
   const { dismissKeyboard } = useKeyboardContext();
@@ -58,7 +58,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const [inviteToChannel, { loading }] = useMutation(INVITE_TO_CHANNEL, {
     variables: {
       payload: {
-        channelId: channelId,
+        channelId,
         recipientIds: participants.map(({ id }) => id)
       }
     }
@@ -111,17 +111,17 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
 
   const _renderCard = ({ item }: any) => {
     return (
-      <TouchableHighlight
+      <TouchableOpacity
         key={item?.id}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           width: RFValue(150),
-          marginTop: 5,
-          marginBottom: 5,
+          paddingVertical: 5,
+          paddingHorizontal: 8,
+          marginVertical: 5,
+          marginHorizontal: 5,
           backgroundColor: colors.INACTIVE,
-          paddingVertical: RFValue(4),
-          marginHorizontal: RFValue(10),
           borderRadius: 4
         }}
         onPress={() => handleSelect(item)}
@@ -134,10 +134,10 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
               priority: FastImage.priority.high
             }}
             style={{
+              marginRight: 5,
               width: RFValue(25),
               height: RFValue(25),
-              borderRadius: RFValue(50),
-              marginRight: RFValue(7)
+              borderRadius: RFValue(50)
             }}
           />
           <Text
@@ -146,7 +146,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
               fontFamily: fonts.WORK_SANS_MEDIUM,
               fontSize: RFValue(fonts.LARGE_SIZE - 2),
               color: colors.PRIMARY_TEXT,
-              width: RFValue(80),
+              width: '60%',
               textTransform: 'capitalize'
             }}
           >
@@ -161,9 +161,15 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
             }}
           />
         </Fragment>
-      </TouchableHighlight>
+      </TouchableOpacity>
     );
   };
+
+  if (participants.length % 2 == 0) {
+    numColumns = Math.floor(participants.length / 2);
+  } else {
+    numColumns = Math.floor(participants.length / 2) + 1;
+  }
 
   const _renderSelectedItem = () => {
     return (
@@ -172,18 +178,27 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
-        style={{ borderWidth: 1, borderColor: colors.INPUT }}
+        style={{
+          borderWidth: 1,
+          marginBottom: 10,
+          borderColor: colors.INPUT
+        }}
       >
         <FlatList
-          numColumns={participants?.length ? participants?.length / 2 : 2}
+          numColumns={numColumns}
           data={participants}
           renderItem={_renderCard}
+          ref={selecteduserRef}
+          onContentSizeChange={() =>
+            selecteduserRef.current.scrollToEnd({ animated: true })
+          }
+          onLayout={() =>
+            selecteduserRef.current.scrollToEnd({ animated: true })
+          }
+          keyExtractor={({ id }) => id}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            flex: 1,
-            alignSelf: participants?.length ? 'flex-start' : 'center'
-          }}
+          contentContainerStyle={{ flex: 1, paddingBottom: 30 }}
         />
       </ScrollView>
     );
@@ -213,29 +228,6 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), [
     indexName
   ]);
-
-  const _renderSeparator = ({ leadingItem }: any) => {
-    const user = leadingItem as PassportInterface;
-
-    if (
-      (!user.verified ||
-        user.lastName == null ||
-        user.firstName == null ||
-        user.currentLocation?.city == null,
-      user.currentLocation?.state == null)
-    ) {
-      return null;
-    }
-
-    return (
-      <Divider
-        style={{
-          height: 1.5,
-          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
-        }}
-      />
-    );
-  };
 
   const _renderItem = ({ item }: any) => {
     if (selected[item.id]) return null;
@@ -267,8 +259,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
           fontSize: RFValue(fonts.LARGE_SIZE),
           color: colors.PRIMARY_TEXT,
           lineHeight: RFValue(30),
-          textAlign: 'center',
-          marginTop: 20
+          textAlign: 'center'
         }}
       >
         {t(`community.invitation.channelTitle`)}
@@ -288,43 +279,38 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
           fontFamily: fonts.WORK_SANS_MEDIUM,
           fontSize: RFValue(fonts.LARGE_SIZE - 2),
           color: colors.PRIMARY_TEXT,
-          marginTop: RFValue(40)
+          marginTop: RFValue(20)
         }}
       >
         {t(`community.invitation.label`)}
       </Title>
 
-      <KeyboardAwareScrollView
-        scrollEnabled={true}
-        keyboardShouldPersistTaps={'always'}
-        showsVerticalScrollIndicator={false}
+      {participants?.length ? <_renderSelectedItem /> : null}
+
+      <View
+        style={{ borderWidth: 1, borderColor: colors.INPUT, maxHeight: '40%' }}
       >
-        <Fragment>
-          <InstantSearch
-            indexName={indexName}
-            searchState={search.search}
-            searchClient={searchClient}
-            onSearchStateChange={onSearchStateChange}
-          >
-            {participants?.length ? <_renderSelectedItem /> : null}
-            <Configure hitsPerPage={5} distinct />
-            <AlgoliaSearchBox />
-            <View style={{ borderWidth: 1, borderColor: colors.INPUT }}>
-              <AlgoliaList
-                //@ts-ignore
-                contentContainerStyle={{
-                  paddingTop: 0,
-                  paddingBottom: RFValue(10)
-                }}
-                //@ts-ignore
-                _separator={_renderSeparator}
-                //@ts-ignore
-                _renderItem={_renderItem}
-              />
-            </View>
-          </InstantSearch>
-        </Fragment>
-      </KeyboardAwareScrollView>
+        <InstantSearch
+          indexName={indexName}
+          searchState={search.search}
+          searchClient={searchClient}
+          onSearchStateChange={onSearchStateChange}
+        >
+          <Configure hitsPerPage={5} distinct />
+          <AlgoliaSearchBox />
+          <AlgoliaList
+            //@ts-ignore
+            contentContainerStyle={{
+              paddingTop: 0,
+              paddingBottom: 10
+            }}
+            //@ts-ignore
+            _separator={() => null}
+            //@ts-ignore
+            _renderItem={_renderItem}
+          />
+        </InstantSearch>
+      </View>
       <ButtonCover>
         <GradientButton
           loading={loading}
