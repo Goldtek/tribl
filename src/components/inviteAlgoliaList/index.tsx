@@ -67,10 +67,6 @@ function AlgoliaList(props: AlgoliaListProps) {
         ListFooterComponent={_renderFooter}
         keyboardShouldPersistTaps="always"
         onEndReached={() => hasMore && refineNext()}
-        contentContainerStyle={{
-          paddingTop: RFValue(10),
-          paddingBottom: RFValue(60)
-        }}
       />
     </View>
   ) : (

@@ -46,48 +46,13 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const { navigation } = props;
   const channelId = props.route.params?.channelId;
   const [state, setState] = useState<{
-    suggestions: PassportInterface[];
     tagsSelected: PassportInterface[];
-    query: string;
     receipientIds: string[];
     search: {};
   }>({
-    suggestions: [],
     tagsSelected: [],
-    query: '',
     receipientIds: [],
     search: {}
-  });
-
-  const { data } = useQuery<MyConnectionsInterface>(GET_MY_CONNECTIONS, {
-    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
-  });
-
-  const { data: allMembersData } = useQuery<AllMembersRequestInterface>(
-    GET_ALL_MEMBERS,
-    {
-      variables: { input: { limit: 0, skip: 0 } }
-    }
-  );
-
-  const myConnection = data?.myConnections?.data;
-  const allMembers = allMembersData?.Passport;
-  const filteredMembers = removeDuplicateMembers(allMembers?.data.slice());
-
-  const filterConnections = myConnection?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
-  });
-
-  const filterAllMembers = filteredMembers?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
   });
 
   const [inviteToChannel, { loading }] = useMutation(INVITE_TO_CHANNEL, {
@@ -119,35 +84,6 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     } catch (error) {
       crashlytics.recordError(error);
     }
-  };
-
-  useEffect(() => {
-    if (filterAllMembers?.length) {
-      setState({
-        ...state,
-        suggestions: filterAllMembers
-      });
-    }
-  }, []);
-
-  const _filterData = (query: string) => {
-    if (!query || query.trim() == '' || !state.suggestions) {
-      return;
-    }
-
-    let suggestions = state.suggestions;
-    let queryResult: PassportInterface[] = [];
-
-    query = query.toUpperCase();
-    suggestions.forEach((i) => {
-      if (
-        i.firstName.toUpperCase().includes(query) ||
-        i.lastName.toUpperCase().includes(query)
-      ) {
-        queryResult.push(i);
-      }
-    });
-    return queryResult;
   };
 
   const handleDelete = (index: any) => {
@@ -308,8 +244,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         keyboardShouldPersistTaps={'always'}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: 'space-between'
+          flexGrow: 1
         }}
       >
         <Fragment>
@@ -322,7 +257,12 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
             {state?.tagsSelected?.length ? <_renderTags /> : null}
             <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
             <AlgoliaSearchBox />
-            <AlgoliaList handleAddition={handleAddition} />
+            {
+              //@ts-ignore
+              state?.search?.query?.length ? (
+                <AlgoliaList handleAddition={handleAddition} />
+              ) : null
+            }
           </InstantSearch>
         </Fragment>
 

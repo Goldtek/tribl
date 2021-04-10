@@ -43,35 +43,13 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
   const [state, setState] = useState<{
-    suggestions: PassportInterface[];
     tagsSelected: PassportInterface[];
-    query: string;
     receipientIds: string[];
     search: {};
   }>({
-    suggestions: [],
     tagsSelected: [],
-    query: '',
     receipientIds: [],
     search: {}
-  });
-
-  const { data: allMembersData } = useQuery<AllMembersRequestInterface>(
-    GET_ALL_MEMBERS,
-    {
-      variables: { input: { limit: 0, skip: 0 } }
-    }
-  );
-
-  const allMembers = allMembersData?.Passport;
-  const filteredMembers = removeDuplicateMembers(allMembers?.data.slice());
-
-  const filterAllMembers = filteredMembers?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
   });
 
   const [inviteToTribe, { loading }] = useMutation(INVITE_TO_TRIBE, {
@@ -104,15 +82,6 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
       crashlytics.recordError(error);
     }
   };
-
-  useEffect(() => {
-    if (filterAllMembers?.length) {
-      setState({
-        ...state,
-        suggestions: filterAllMembers
-      });
-    }
-  }, []);
 
   const handleDelete = (index: any) => {
     let tagsSelected = state.tagsSelected;
@@ -271,8 +240,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         keyboardShouldPersistTaps={'always'}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: 'space-between'
+          flexGrow: 1
         }}
       >
         <Fragment>
@@ -285,32 +253,37 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
             {state?.tagsSelected?.length ? <_renderTags /> : null}
             <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
             <AlgoliaSearchBox />
-            <AlgoliaList handleAddition={handleAddition} />
+            {
+              //@ts-ignore
+              state?.search?.query?.length ? (
+                <AlgoliaList handleAddition={handleAddition} />
+              ) : null
+            }
           </InstantSearch>
         </Fragment>
-        <ButtonCover>
-          <GradientButton
-            onPress={sendTribeInvite}
-            loading={loading}
-            style={{ height: 50 }}
-            gradientContainerstyle={{ height: 50 }}
-            contentStyle={{ height: 50 }}
-          >
-            {t(`community.invitation.invite`)}
-          </GradientButton>
-          <Button
-            labelStyle={{
-              color: colors.PRIMARY_TEXT,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            onPress={() => navigation.goBack()}
-          >
-            {t(`community.invitation.cancel`)}
-          </Button>
-        </ButtonCover>
       </KeyboardAwareScrollView>
+      <ButtonCover>
+        <GradientButton
+          onPress={sendTribeInvite}
+          loading={loading}
+          style={{ height: 50 }}
+          gradientContainerstyle={{ height: 50, marginTop: RFValue(15) }}
+          contentStyle={{ height: 50 }}
+        >
+          {t(`community.invitation.invite`)}
+        </GradientButton>
+        <Button
+          labelStyle={{
+            color: colors.PRIMARY_TEXT,
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            textTransform: 'capitalize'
+          }}
+          onPress={() => navigation.goBack()}
+        >
+          {t(`community.invitation.cancel`)}
+        </Button>
+      </ButtonCover>
     </Container>
   );
 }

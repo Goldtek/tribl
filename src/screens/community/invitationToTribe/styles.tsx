@@ -1,6 +1,6 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { ScrollView } from 'react-native';
 
 export const Container = styled.View`
   flex: 1;
@@ -8,10 +8,11 @@ export const Container = styled.View`
   padding: ${RFValue(15)}px;
 `;
 
-export const TagCover = styled.View`
+export const TagCover = styled.ScrollView`
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
+  max-height: ${RFValue(90)}px;
   border: 1px solid ${({ theme }) => theme.colors.INPUT};
 `;
 
