@@ -41,7 +41,7 @@ interface InviteFriendsScreenProp extends NavigationInterface {}
 export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const { navigation } = props;
   const communityId = props.route.params?.communityId;
-
+  const communityName = props.route.params?.communityName;
   const { t } = useTranslation();
   const { dismissKeyboard } = useKeyboardContext();
   const { colors, fonts } = useThemeContext();
@@ -78,7 +78,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
 
     try {
       Mixpanel.track('Send Tribe Invite', {
-        info: `Invite friends to ${communityId.name}`,
+        info: `Invite friends to ${communityName}`,
         'Activity Screen': 'Tribe invitation screen'
       });
       await inviteToTribe();

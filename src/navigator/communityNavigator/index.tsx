@@ -53,11 +53,12 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
     toggleSideMenu({ variables: { showSideMenu: !drawerData?.showSideMenu } });
   };
 
-  const inviteNavigation = (id: string) => {
+  const inviteNavigation = (id: string, name: string) => {
     navigation.navigate('DrawerScreen', {
       screen: 'InviteToTribeScreen',
       params: {
-        communityId: id
+        communityId: id,
+        communityName: name
       }
     });
     setCommunityMenu(false);
@@ -294,7 +295,14 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
               >
                 <Menu.Item
                   //@ts-ignore
-                  onPress={() => inviteNavigation(route.params?.details?.id)}
+                  onPress={() =>
+                    inviteNavigation(
+                      //@ts-ignore
+                      route.params?.details?.id,
+                      //@ts-ignore
+                      route.params?.title
+                    )
+                  }
                   title={t(`community.invitation.invite`)}
                   style={{
                     borderTopLeftRadius: 20,
