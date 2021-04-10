@@ -5,7 +5,8 @@ import {
   TouchableRipple,
   Paragraph,
   Divider,
-  ActivityIndicator
+  ActivityIndicator,
+  Surface
 } from 'react-native-paper';
 import { Switch, ScrollView, Alert, Modal, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +20,7 @@ import { useStreamContext } from '../../../stream';
 import { chatClient } from '../../../stream/types';
 import { Mixpanel } from '../../../config';
 import { USER_DEFAULT_AVATAR } from '../../../constants';
+import BrickList from 'react-native-masonry-brick-list';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -59,6 +61,127 @@ export default function GroupInformation(props: GroupInformationProp) {
   const [muted, setMuted] = useState(getMuteStatus);
 
   const channelMembers = Object.values(channel.state.members);
+
+  const [images] = useState([
+    {
+      id: '1',
+      name: channelMembers[0]?.user?.image,
+      color: '#f44336',
+      span: 1
+    },
+    {
+      id: '2',
+      name: channelMembers[channelMembers?.length - 2]?.user?.image,
+      color: '#E91E63',
+      span: 2
+    },
+    {
+      id: '3',
+      name: channelMembers[channelMembers?.length - 1]?.user?.image,
+      color: '#9C27B0',
+      span: 3
+    },
+    {
+      id: '4',
+      name: channelMembers[0]?.user?.image,
+      color: '#673AB7',
+      span: 1
+    },
+    {
+      id: '5',
+      name: channelMembers[channelMembers?.length - 2]?.user?.image,
+      color: '#3F51B5',
+      span: 1
+    },
+    {
+      id: '6',
+      name: channelMembers[channelMembers?.length - 1]?.user?.image,
+      color: '#2196F3',
+      span: 1
+    },
+    {
+      id: '7',
+      name: channelMembers[0]?.user?.image,
+      color: '#03A9F4',
+      span: 3
+    },
+    {
+      id: '8',
+      name: channelMembers[channelMembers?.length - 2]?.user?.image,
+      color: '#00BCD4',
+      span: 2
+    },
+    {
+      id: '9',
+      name: channelMembers[channelMembers?.length - 1]?.user?.image,
+      color: '#009688',
+      span: 1
+    },
+    {
+      id: '10',
+      name: channelMembers[0]?.user?.image,
+      color: '#4CAF50',
+      span: 1
+    },
+    {
+      id: '11',
+      name: channelMembers[channelMembers?.length - 2]?.user?.image,
+      color: '#8BC34A',
+      span: 2
+    },
+    {
+      id: '12',
+      name: channelMembers[channelMembers?.length - 2]?.user?.image,
+      color: '#CDDC39',
+      span: 3
+    },
+    {
+      id: '13',
+      name: channelMembers[0]?.user?.image,
+      color: '#FFEB3B',
+      span: 2
+    },
+    {
+      id: '14',
+      name: channelMembers[channelMembers?.length - 2]?.user?.image,
+      color: '#FFC107',
+      span: 1
+    },
+    {
+      id: '15',
+      name: channelMembers[channelMembers?.length - 1]?.user?.image,
+      color: '#FF5722',
+      span: 3
+    }
+  ]);
+
+  const BrickImages = (prop: any) => {
+    return (
+      <Surface
+        key={prop.id}
+        style={{
+          flex: 1,
+          elevation: 10,
+          borderRadius: 4
+        }}
+      >
+        <FastImage
+          resizeMode={FastImage.resizeMode.cover}
+          source={{
+            uri: prop.name || USER_DEFAULT_AVATAR,
+            priority: FastImage.priority.high
+          }}
+          style={{
+            flex: 1,
+            width: undefined,
+            height: undefined,
+            borderRadius: 4
+          }}
+        />
+        <CoverImageOverlay color={prop.color} />
+      </Surface>
+    );
+  };
 
   const groupCreationDate = new Date(
     channel.data?.created_at as string
@@ -143,7 +266,7 @@ export default function GroupInformation(props: GroupInformationProp) {
         showsVerticalScrollIndicator={false}
       >
         <HeaderImageContainer>
-          <Image
+          {/* <Image
             source={{
               uri: channelMembers[0]?.user?.image || USER_DEFAULT_AVATAR
             }}
@@ -171,8 +294,13 @@ export default function GroupInformation(props: GroupInformationProp) {
             style={{ flex: 1, width: undefined, height: undefined }}
             resizeMode="repeat"
             blurRadius={3}
+          /> */}
+
+          <BrickList
+            data={images}
+            renderItem={(prop: any) => BrickImages(prop)}
+            columns={6}
           />
-          <CoverImageOverlay />
         </HeaderImageContainer>
 
         <ChannelInformationContainer>
