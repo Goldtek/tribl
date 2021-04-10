@@ -5,7 +5,13 @@ import {
   connectSearchBox,
   Configure
 } from 'react-instantsearch-native';
-import { Image, TouchableOpacity } from 'react-native';
+import {
+  Image,
+  TouchableOpacity,
+  View,
+  ScrollView,
+  FlatList
+} from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -54,7 +60,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     variables: {
       payload: {
         communityId: communityId,
-        recipientIds: participants.map(({ id }) => id)
+        receipientIds: participants.map(({ id }) => id)
       }
     }
   });
@@ -64,7 +70,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   };
 
   const sendTribeInvite = async () => {
-    if (!selected?.length) {
+    if (!participants?.length) {
       return handleInputError('inviteError');
     }
 
@@ -119,7 +125,6 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
       <Divider
         style={{
           height: 1.5,
-          marginHorizontal: RFValue(20),
           backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
         }}
       />
@@ -128,7 +133,6 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
 
   const _renderItem = ({ item }: any) => {
     if (selected[item.id]) return null;
-
     return (
       <InviteAlgoliaHighlight
         {...item}
@@ -138,63 +142,84 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     );
   };
 
+  const _renderCard = ({ item }: any) => {
+    return (
+      <TouchableOpacity
+        key={item?.id}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          width: RFValue(150),
+          marginTop: 5,
+          marginBottom: 5,
+          backgroundColor: colors.INACTIVE,
+          paddingVertical: RFValue(4),
+          paddingHorizontal: RFValue(10),
+          marginHorizontal: RFValue(10),
+          borderRadius: 4
+        }}
+        onPress={() => handleSelect(item)}
+      >
+        <Fragment>
+          <FastImage
+            resizeMode={FastImage.resizeMode.contain}
+            source={{
+              uri: item?.avatar,
+              priority: FastImage.priority.high
+            }}
+            style={{
+              width: RFValue(25),
+              height: RFValue(25),
+              borderRadius: RFValue(50),
+              marginRight: RFValue(7)
+            }}
+          />
+          <Text
+            numberOfLines={1}
+            style={{
+              fontFamily: fonts.WORK_SANS_MEDIUM,
+              fontSize: RFValue(fonts.LARGE_SIZE - 2),
+              color: colors.PRIMARY_TEXT,
+              width: RFValue(80),
+              textTransform: 'capitalize'
+            }}
+          >
+            {`${item?.firstName} ${item?.lastName}`}
+          </Text>
+          <Feather
+            name="x"
+            style={{
+              fontSize: RFValue(fonts.LARGE_SIZE - 2),
+              color: colors.PRIMARY_TEXT,
+              marginLeft: RFValue(10)
+            }}
+          />
+        </Fragment>
+      </TouchableOpacity>
+    );
+  };
+
   const _renderTags = () => {
     return (
-      <TagCover>
-        {participants.map((item) => {
-          return (
-            <TouchableOpacity
-              key={item?.id}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 5,
-                marginBottom: 5,
-                backgroundColor: colors.INACTIVE,
-                paddingVertical: RFValue(4),
-                paddingHorizontal: RFValue(10),
-                marginHorizontal: RFValue(10),
-                borderRadius: 4
-              }}
-              onPress={() => handleSelect(item)}
-            >
-              <Fragment>
-                <FastImage
-                  resizeMode={FastImage.resizeMode.contain}
-                  source={{
-                    uri: item?.avatar,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(25),
-                    height: RFValue(25),
-                    borderRadius: RFValue(50),
-                    marginRight: RFValue(7)
-                  }}
-                />
-                <Text
-                  style={{
-                    fontFamily: fonts.WORK_SANS_MEDIUM,
-                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {`${item?.firstName} ${item?.lastName}`}
-                </Text>
-                <Feather
-                  name="x"
-                  style={{
-                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                    color: colors.PRIMARY_TEXT,
-                    marginLeft: RFValue(10)
-                  }}
-                />
-              </Fragment>
-            </TouchableOpacity>
-          );
-        })}
-      </TagCover>
+      <ScrollView
+        horizontal
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ borderWidth: 1, borderColor: colors.INPUT }}
+      >
+        <FlatList
+          numColumns={participants?.length ? participants?.length / 2 : 2}
+          data={participants}
+          renderItem={_renderCard}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            flex: 1,
+            alignSelf: participants?.length ? 'flex-start' : 'center'
+          }}
+        />
+      </ScrollView>
     );
   };
 
@@ -204,7 +229,6 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
 
   const _searchBox = ({ currentRefinement, refine }: any) => (
     <Searchbar
-      autoFocus
       value={currentRefinement}
       onChangeText={(value) => refine(value)}
       placeholder={t(`community.invitation.placeholder`)}
@@ -274,13 +298,9 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         {t(`community.invitation.label`)}
       </Title>
       <KeyboardAwareScrollView
-        style={{ flexGrow: 1 }}
         scrollEnabled={true}
         keyboardShouldPersistTaps={'always'}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          flexGrow: 1
-        }}
       >
         <Fragment>
           <InstantSearch
@@ -292,12 +312,19 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
             {participants?.length ? <_renderTags /> : null}
             <Configure hitsPerPage={5} distinct />
             <AlgoliaSearchBox />
-            <AlgoliaList
-              //@ts-ignore
-              _separator={_renderSeparator}
-              //@ts-ignore
-              _renderItem={_renderItem}
-            />
+            <View style={{ borderWidth: 1, borderColor: colors.INPUT }}>
+              <AlgoliaList
+                //@ts-ignore
+                contentContainerStyle={{
+                  paddingTop: 0,
+                  paddingBottom: RFValue(10)
+                }}
+                //@ts-ignore
+                _separator={_renderSeparator}
+                //@ts-ignore
+                _renderItem={_renderItem}
+              />
+            </View>
           </InstantSearch>
         </Fragment>
       </KeyboardAwareScrollView>

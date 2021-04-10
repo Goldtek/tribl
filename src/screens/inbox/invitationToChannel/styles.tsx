@@ -1,6 +1,5 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { ScrollView } from 'react-native';
 
 export const Container = styled.View`
   flex: 1;
@@ -9,7 +8,6 @@ export const Container = styled.View`
 `;
 
 export const TagCover = styled.ScrollView`
-  width: 100%;
   flex-direction: row;
   flex-wrap: wrap;
   max-height: ${RFValue(90)}px;

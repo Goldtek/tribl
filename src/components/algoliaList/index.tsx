@@ -3,6 +3,7 @@ import {
   connectInfiniteHits,
   connectStateResults
 } from 'react-instantsearch-native';
+import { StyleProp, ViewStyle, FlatList } from 'react-native';
 import { ActivityIndicator, Divider, Text } from 'react-native-paper';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -10,7 +11,6 @@ import { PassportInterface } from '../../graphql/types';
 import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
 import Highlight from '../algoliaHighlight';
-import { FlatList } from 'react-native';
 
 export type AlgoliaListProps = {
   hasMore: boolean;
@@ -18,6 +18,7 @@ export type AlgoliaListProps = {
   hits: PassportInterface[];
   _separator?: () => JSX.Element;
   _renderItem?: (props: any) => JSX.Element;
+  contentContainerStyle?: StyleProp<ViewStyle>;
 };
 
 const _defaultSeparator = ({ leadingItem }: any) => {
@@ -56,7 +57,8 @@ function AlgoliaList(props: AlgoliaListProps) {
     hasMore,
     refineNext,
     _renderItem = _defaultRenderItem,
-    _separator = _defaultSeparator
+    _separator = _defaultSeparator,
+    contentContainerStyle
   } = props;
 
   const Results = connectStateResults(({ searchState }: any) => (
@@ -91,10 +93,13 @@ function AlgoliaList(props: AlgoliaListProps) {
       ListFooterComponent={_renderFooter}
       keyboardShouldPersistTaps="always"
       onEndReached={() => hasMore && refineNext()}
-      contentContainerStyle={{
-        paddingTop: RFValue(10),
-        paddingBottom: RFValue(60)
-      }}
+      contentContainerStyle={[
+        {
+          paddingTop: RFValue(10),
+          paddingBottom: RFValue(60)
+        },
+        contentContainerStyle
+      ]}
     />
   ) : (
     <Fragment>

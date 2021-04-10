@@ -16,23 +16,15 @@ export type AlgoliaListProps = {
   refineNext: () => void;
   hits: PassportInterface[];
   _separator?: () => JSX.Element;
-  handleAddition: any;
 };
 
 function AlgoliaList(props: AlgoliaListProps) {
   const { fonts, colors } = useThemeContext();
 
-  const { hits, hasMore, refineNext, handleAddition } = props;
+  const { hits, hasMore, refineNext } = props;
 
   const _defaultRenderItem = ({ item }: { item: PassportInterface }) => {
-    return (
-      <Highlight
-        attribute="id"
-        hit={item}
-        key={item.id}
-        handleAddition={handleAddition}
-      />
-    );
+    return <Highlight attribute="id" hit={item} key={item.id} />;
   };
 
   const Results = connectStateResults(({ searchState }: any) => (
