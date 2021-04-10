@@ -3,7 +3,6 @@ import React, { useState, Fragment, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
-import * as Updates from 'expo-updates';
 import FastImage from 'react-native-fast-image';
 import { Share, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
@@ -32,7 +31,6 @@ import {
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
   USER_CHANNELS,
-  GET_TRENDING_CHANNELS,
   GET_FIREBASE_TOKEN
 } from '../../graphql/server/query';
 import {
@@ -43,7 +41,6 @@ import {
 import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
-import CheckAppUpdates from '../../libs/updates';
 import {
   CHANGE_ACTIVE_SIDE_MENU_STATE,
   CHANGE_CONNECTION_NOTIFICATION_BADGE
@@ -101,6 +98,8 @@ export default function PassportScreen(props: ScreenProp) {
   const { top: paddingTop } = useSafeAreaInsets();
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const [update, setUpdate] = useState(true);
+
   const selectedCountries = props?.route?.params?.selectedCountries;
 
   const [cache, setCache] = useState({
@@ -113,9 +112,6 @@ export default function PassportScreen(props: ScreenProp) {
       date: ''
     }
   });
-
-  const [OTAUpdate, setOTAUpdate] = useState(false);
-  const [update, setUpdate] = useState(true);
 
   const [avatar, setAvatar] = useState<StateType>({
     uri: cache?.avatar,
@@ -284,7 +280,6 @@ export default function PassportScreen(props: ScreenProp) {
       Storage.setUserCredentials(firebase?.generateFirebaseToken);
       Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
     }
-    checkUpdate();
   }, [firebaseLoading]);
 
   useEffect(() => {
@@ -297,11 +292,6 @@ export default function PassportScreen(props: ScreenProp) {
       }
     }, 1000);
   }, [userDetails]);
-
-  const checkUpdate = async () => {
-    const update = await Updates.checkForUpdateAsync();
-    setOTAUpdate(update.isAvailable);
-  };
 
   const handleLocation = async () => {
     try {
@@ -842,10 +832,6 @@ export default function PassportScreen(props: ScreenProp) {
             </TabCover>
           </Fragment>
         </KeyboardAwareScrollView>
-
-        {OTAUpdate ? (
-          <CheckAppUpdates cancelUpdate={() => setOTAUpdate(false)} />
-        ) : null}
       </SafeAreaView>
     </ScreenCover>
   );
