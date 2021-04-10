@@ -8844,6 +8844,11 @@ react-native-markdown-package@1.8.1:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
+react-native-masonry-brick-list@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-masonry-brick-list/-/react-native-masonry-brick-list-1.0.3.tgz#aee44bd82755d598b2add63ab5eec42bf385c9ec"
+  integrity sha512-slMafRUJzdU6Fw1fzPN2E+wY/yV98UsgkgbjtPxauGoJnRfy2Bkgm4/tEAoU+4nMypMTmp5HgEs2+TENLToFYQ==
+
 react-native-mixpanel@^1.2.3:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/react-native-mixpanel/-/react-native-mixpanel-1.2.5.tgz#1d3348625a82786e860c5a41d3d9d73939f2eeda"

@@ -172,135 +172,144 @@ export default function ChannelChatScreen(props: ScreenProp) {
           >
             <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
           </TouchableRipple>
-
-          {channelMembers && channelMembers?.length === 1 ? (
-            <Surface
-              style={{
-                width: 40,
-                height: 40,
-                justifyContent: 'center',
-                top: 1,
-                right: 10,
-                elevation: 4,
-                borderRadius: 4
-              }}
-            >
-              <FastImage
-                resizeMode={FastImage.resizeMode.cover}
-                source={{
-                  uri: channelMembers[0].user?.image || USER_DEFAULT_AVATAR,
-                  priority: FastImage.priority.high
-                }}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 4
-                }}
-              />
-              <CountBadge style={{ elevation: 4 }}>
-                <Paragraph
+          <TouchableRipple
+            onPress={handleChannelNavigation}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Fragment>
+              {channelMembers && channelMembers?.length === 1 ? (
+                <Surface
                   style={{
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontWeight: 'bold',
-                    color: colors.WHITE
+                    width: 40,
+                    height: 40,
+                    justifyContent: 'center',
+                    top: 1,
+                    right: 10,
+                    elevation: 4,
+                    borderRadius: 4
                   }}
                 >
-                  {channelMembers.length}
-                </Paragraph>
-              </CountBadge>
-            </Surface>
-          ) : null}
-
-          {channelMembers && channelMembers?.length >= 2 ? (
-            <Fragment>
-              <Surface
-                style={{
-                  width: 40,
-                  height: 40,
-                  elevation: 4,
-                  borderRadius: 4
-                }}
-              >
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri:
-                      channelMembers[channelMembers?.length - 2]?.user?.image ||
-                      USER_DEFAULT_AVATAR,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 4,
-                    borderColor: colors.PRIMARY,
-                    borderWidth: 1
-                  }}
-                />
-              </Surface>
-              <Surface
-                style={{
-                  width: 40,
-                  height: 40,
-                  justifyContent: 'center',
-                  top: 1,
-                  right: 10,
-                  elevation: 4,
-                  borderRadius: 4
-                }}
-              >
-                <FastImage
-                  resizeMode={FastImage.resizeMode.cover}
-                  source={{
-                    uri:
-                      channelMembers[channelMembers?.length - 1]?.user?.image ||
-                      USER_DEFAULT_AVATAR,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 4,
-                    borderColor: colors.PRIMARY,
-                    borderWidth: 1
-                  }}
-                />
-                <CountBadge style={{ elevation: 4 }}>
-                  <Paragraph
+                  <FastImage
+                    resizeMode={FastImage.resizeMode.cover}
+                    source={{
+                      uri: channelMembers[0].user?.image || USER_DEFAULT_AVATAR,
+                      priority: FastImage.priority.high
+                    }}
                     style={{
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontWeight: 'bold',
-                      color: colors.WHITE
+                      width: 40,
+                      height: 40,
+                      borderRadius: 4
+                    }}
+                  />
+                  <CountBadge style={{ elevation: 4 }}>
+                    <Paragraph
+                      style={{
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontWeight: 'bold',
+                        color: colors.WHITE
+                      }}
+                    >
+                      {channelMembers.length}
+                    </Paragraph>
+                  </CountBadge>
+                </Surface>
+              ) : null}
+
+              {channelMembers && channelMembers?.length >= 2 ? (
+                <Fragment>
+                  <Surface
+                    style={{
+                      width: 40,
+                      height: 40,
+                      elevation: 4,
+                      borderRadius: 4
                     }}
                   >
-                    {`${channel.data?.member_count}+`}
-                  </Paragraph>
-                </CountBadge>
-              </Surface>
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri:
+                          channelMembers[channelMembers?.length - 2]?.user
+                            ?.image || USER_DEFAULT_AVATAR,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 4,
+                        borderColor: colors.PRIMARY,
+                        borderWidth: 1
+                      }}
+                    />
+                  </Surface>
+                  <Surface
+                    style={{
+                      width: 40,
+                      height: 40,
+                      justifyContent: 'center',
+                      top: 1,
+                      right: 10,
+                      elevation: 4,
+                      borderRadius: 4
+                    }}
+                  >
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri:
+                          channelMembers[channelMembers?.length - 1]?.user
+                            ?.image || USER_DEFAULT_AVATAR,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 4,
+                        borderColor: colors.PRIMARY,
+                        borderWidth: 1
+                      }}
+                    />
+                    <CountBadge style={{ elevation: 4 }}>
+                      <Paragraph
+                        style={{
+                          fontSize: RFValue(fonts.MEDIUM_SIZE),
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          fontWeight: 'bold',
+                          color: colors.WHITE
+                        }}
+                      >
+                        {`${channel.data?.member_count}+`}
+                      </Paragraph>
+                    </CountBadge>
+                  </Surface>
+                </Fragment>
+              ) : null}
+
+              <HeaderTitleContainer>
+                <Paragraph
+                  numberOfLines={1}
+                  style={{
+                    fontSize: fonts.MEDIUM_SIZE + 2,
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    marginLeft: 10
+                  }}
+                >
+                  {route.params?.title}
+                </Paragraph>
+              </HeaderTitleContainer>
+              <IconButton
+                icon={(iconProps) => (
+                  <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+                )}
+                onPress={handleChannelNavigation}
+              />
             </Fragment>
-          ) : null}
-
-          <HeaderTitleContainer>
-            <Paragraph
-              numberOfLines={1}
-              style={{
-                fontSize: fonts.MEDIUM_SIZE + 2,
-                fontFamily: fonts.WORK_SANS_BOLD,
-                marginLeft: 10
-              }}
-            >
-              {route.params?.title}
-            </Paragraph>
-          </HeaderTitleContainer>
-
-          <IconButton
-            icon={(iconProps) => (
-              <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
-            )}
-            onPress={handleChannelNavigation}
-          />
+          </TouchableRipple>
         </HeaderContainer>
 
         <Chat

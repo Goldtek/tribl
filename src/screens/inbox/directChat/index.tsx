@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {
@@ -193,49 +193,56 @@ export default function DirectChatScreen(props: ScreenProp) {
           >
             <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
           </TouchableRipple>
-          <Surface
-            style={{
-              width: 40,
-              height: 40,
-              elevation: 4,
-              borderRadius: 40 / 2,
-              marginRight: channel.data?.isGroup ? 10 : 0,
-              justifyContent: 'center'
-            }}
-          >
-            <Chat
-              //@ts-ignore
-              client={chatClient}
-              style={chatStyles}
-            >
-              <TouchableRipple onPress={handleNavigation}>
-                <Avatar
-                  image={receiver?.image}
-                  name={receiver?.name}
-                  size={RFValue(40)}
-                />
-              </TouchableRipple>
-            </Chat>
-          </Surface>
-          <HeaderTitleContainer>
-            <Paragraph
-              numberOfLines={1}
+
+          <Fragment>
+            <Surface
               style={{
-                fontSize: fonts.MEDIUM_SIZE + 2,
-                fontFamily: fonts.WORK_SANS_BOLD,
-                marginHorizontal: 5
+                width: 40,
+                height: 40,
+                elevation: 4,
+                borderRadius: 40 / 2,
+                marginRight: channel.data?.isGroup ? 10 : 0,
+                justifyContent: 'center'
               }}
             >
-              {receiver?.name}
-            </Paragraph>
-          </HeaderTitleContainer>
+              <Chat
+                //@ts-ignore
+                client={chatClient}
+                style={chatStyles}
+              >
+                <TouchableRipple
+                  onPress={() =>
+                    navigation.navigate('DirectMessageInformation')
+                  }
+                >
+                  <Avatar
+                    image={receiver?.image}
+                    name={receiver?.name}
+                    size={RFValue(40)}
+                  />
+                </TouchableRipple>
+              </Chat>
+            </Surface>
+            <HeaderTitleContainer>
+              <Paragraph
+                numberOfLines={1}
+                style={{
+                  fontSize: fonts.MEDIUM_SIZE + 2,
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  marginHorizontal: 5
+                }}
+              >
+                {receiver?.name}
+              </Paragraph>
+            </HeaderTitleContainer>
 
-          <IconButton
-            icon={(iconProps) => (
-              <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
-            )}
-            onPress={() => navigation.navigate('DirectMessageInformation')}
-          />
+            <IconButton
+              icon={(iconProps) => (
+                <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+              )}
+              onPress={() => navigation.navigate('DirectMessageInformation')}
+            />
+          </Fragment>
         </HeaderContainer>
 
         <Chat
