@@ -79,6 +79,16 @@ export default function DirectChatScreen(props: ScreenProp) {
     setStreamContextChannel(channel);
   }, [channel?.id]);
 
+  const handleNavigation = () => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'MemberDetailScreen',
+      params: {
+        title: `${user?.firstName} ${user?.lastName}`,
+        details: user
+      }
+    });
+  };
+
   const getConversation = async () => {
     const filter = {
       isDm: true,
@@ -198,11 +208,13 @@ export default function DirectChatScreen(props: ScreenProp) {
               client={chatClient}
               style={chatStyles}
             >
-              <Avatar
-                image={receiver?.image}
-                name={receiver?.name}
-                size={RFValue(40)}
-              />
+              <TouchableRipple onPress={handleNavigation}>
+                <Avatar
+                  image={receiver?.image}
+                  name={receiver?.name}
+                  size={RFValue(40)}
+                />
+              </TouchableRipple>
             </Chat>
           </Surface>
           <HeaderTitleContainer>
