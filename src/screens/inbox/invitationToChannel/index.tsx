@@ -1,13 +1,15 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import { Title, Text, Button, Divider } from 'react-native-paper';
-import { Image, Keyboard, TouchableHighlight } from 'react-native';
-//@ts-ignore
-import AutoTags from 'react-native-tag-autocomplete';
+import React, { useState, useEffect, Fragment, useMemo } from 'react';
+import { Title, Text, Button, Searchbar } from 'react-native-paper';
+import { Image, TouchableHighlight } from 'react-native';
+import {
+  InstantSearch,
+  connectSearchBox,
+  Configure
+} from 'react-instantsearch-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useThemeContext } from '../../../theme';
-import hexToRGB from '../../../utils/hexToRGB';
 import { NavigationInterface } from '../../types';
 import {
   MyConnectionsInterface,
@@ -25,11 +27,13 @@ import { Feather } from '@expo/vector-icons';
 import GradientButton from '../../../components/gradientButton';
 import { INVITE_TO_CHANNEL } from '../../../graphql/server/mutations';
 import { logEvent } from '../../../utils/uxcamHelper';
-import { Mixpanel } from '../../../config';
+import ENVIRONMENT_VARIABLES, { Mixpanel } from '../../../config';
 import { crashlytics } from '../../../firebase/config';
 import { Toast } from '../../../components/rootToaster';
+import AlgoliaList from '../../../components/inviteAlgoliaList';
+import { searchClient } from '../../../config';
 
-import { Container, TagCover, ButtonCover, AutoTagCover } from './styles';
+import { Container, TagCover, ButtonCover } from './styles';
 import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 // DEFINE SCREEN PROP TYPES
@@ -38,6 +42,7 @@ interface InviteFriendsScreenProp extends NavigationInterface {}
 export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
   const { navigation } = props;
   const channelId = props.route.params?.channelId;
   const [state, setState] = useState<{
@@ -45,11 +50,13 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     tagsSelected: PassportInterface[];
     query: string;
     receipientIds: string[];
+    search: {};
   }>({
     suggestions: [],
     tagsSelected: [],
     query: '',
-    receipientIds: []
+    receipientIds: [],
+    search: {}
   });
 
   const { data } = useQuery<MyConnectionsInterface>(GET_MY_CONNECTIONS, {
@@ -59,7 +66,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const { data: allMembersData } = useQuery<AllMembersRequestInterface>(
     GET_ALL_MEMBERS,
     {
-      variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
+      variables: { input: { limit: 0, skip: 0 } }
     }
   );
 
@@ -162,10 +169,10 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const _renderTags = () => {
     return (
       <TagCover>
-        {state.tagsSelected.map((item, i) => {
+        {state.tagsSelected.map((item) => {
           return (
             <TouchableHighlight
-              key={i}
+              key={item?.id}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -177,13 +184,13 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
                 marginHorizontal: RFValue(10),
                 borderRadius: 4
               }}
-              onPress={() => handleDelete(i)}
+              onPress={() => handleDelete(item)}
             >
               <Fragment>
                 <FastImage
                   resizeMode={FastImage.resizeMode.contain}
                   source={{
-                    uri: item.avatar,
+                    uri: item?.avatar,
                     priority: FastImage.priority.high
                   }}
                   style={{
@@ -201,7 +208,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
                     textTransform: 'capitalize'
                   }}
                 >
-                  {`${item.firstName} ${item.lastName}`}
+                  {`${item?.firstName} ${item?.lastName}`}
                 </Text>
                 <Feather
                   name="x"
@@ -218,6 +225,37 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
       </TagCover>
     );
   };
+
+  const onSearchStateChange = (search: string) => {
+    setState({ ...state, search });
+  };
+
+  const _searchBox = ({ currentRefinement, refine }: any) => (
+    <Searchbar
+      autoFocus
+      value={currentRefinement}
+      onChangeText={(value) => refine(value)}
+      placeholder={t(`community.invitation.placeholder`)}
+      style={{
+        height: RFValue(40),
+        width: '100%',
+        fontFamily: fonts.WORK_SANS_REGULAR,
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        color: colors.SECONDARY_TEXT,
+        backgroundColor: colors.WHITE,
+        elevation: 0,
+        borderColor: colors.INACTIVE,
+        borderRadius: 4,
+        borderWidth: 1
+      }}
+      iconColor={colors.PRIMARY_TEXT}
+    />
+  );
+
+  const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), [
+    indexName
+  ]);
+
   return (
     <Container>
       <Image
@@ -268,92 +306,25 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         style={{ flexGrow: 1 }}
         scrollEnabled={true}
         keyboardShouldPersistTaps={'always'}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           flexGrow: 1,
           justifyContent: 'space-between'
         }}
       >
-        <AutoTagCover>
-          <AutoTags
-            onBlur={Keyboard.dismiss}
-            suggestions={state.suggestions}
-            tagsSelected={state.tagsSelected}
-            handleAddition={handleAddition}
-            handleDelete={handleDelete}
-            blurOnSubmit={true}
-            placeholder={t(`community.invitation.placeholder`)}
-            autoFocus={false}
-            tagStyles={{
-              backgroundColor: colors.WHITE
-            }}
-            style={{
-              backgroundColor: colors.WHITE,
-              margin: 0
-            }}
-            inputContainerStyle={{
-              backgroundColor: colors.WHITE,
-              width: '100%',
-              margin: 0,
-              padding: RFValue(10)
-            }}
-            containerStyle={{
-              backgroundColor: colors.WHITE,
-              width: '100%'
-            }}
-            renderTags={_renderTags}
-            filterData={_filterData}
-            renderItem={({ item, i }: any) => (
-              <Fragment>
-                <TouchableHighlight
-                  key={i}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 5,
-                    marginBottom: 5,
-                    backgroundColor: colors.TRANSPARENT,
-                    paddingVertical: RFValue(4),
-                    paddingHorizontal: RFValue(10),
-                    borderRadius: 4
-                  }}
-                  onPress={() => handleAddition(item)}
-                >
-                  <Fragment>
-                    <FastImage
-                      resizeMode={FastImage.resizeMode.contain}
-                      source={{
-                        uri: item.avatar,
-                        priority: FastImage.priority.high
-                      }}
-                      style={{
-                        width: RFValue(25),
-                        height: RFValue(25),
-                        borderRadius: RFValue(50),
-                        marginRight: RFValue(7)
-                      }}
-                    />
-                    <Text
-                      style={{
-                        fontFamily: fonts.WORK_SANS_MEDIUM,
-                        fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      {`${item.firstName} ${item.lastName}`}
-                    </Text>
-                  </Fragment>
-                </TouchableHighlight>
-                <Divider
-                  style={{
-                    height: 1.5,
-                    backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
-                  }}
-                />
-              </Fragment>
-            )}
-          />
-        </AutoTagCover>
+        <Fragment>
+          <InstantSearch
+            indexName={indexName}
+            searchState={state.search}
+            searchClient={searchClient}
+            onSearchStateChange={onSearchStateChange}
+          >
+            {state?.tagsSelected?.length ? <_renderTags /> : null}
+            <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
+            <AlgoliaSearchBox />
+            <AlgoliaList handleAddition={handleAddition} />
+          </InstantSearch>
+        </Fragment>
 
         <ButtonCover>
           <GradientButton
