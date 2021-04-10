@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, Fragment } from 'react';
 import {
   createStackNavigator,
   TransitionPresets
@@ -37,6 +37,9 @@ export default function DrawerStackNavigator() {
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
 
+  const [communityMenu, setCommunityMenu] = useState(false);
+  const showCommunityMenu = () => setCommunityMenu(!communityMenu);
+
   const getMenuHeight = useCallback(() => {
     switch (true) {
       case Math.ceil(safeAreaTop) <= 20:
@@ -65,6 +68,14 @@ export default function DrawerStackNavigator() {
       memberId: id
     });
     setMenu(false);
+  };
+
+  const inviteNavigation = (id: string, name: string) => {
+    navigation.navigate('InviteToTribeScreen', {
+      communityId: id,
+      communityName: name
+    });
+    setCommunityMenu(false);
   };
 
   return (
@@ -380,6 +391,102 @@ export default function DrawerStackNavigator() {
         options={({ route }: any) => ({
           headerShown: true,
           headerTitle: route.params?.title,
+          headerRight: () =>
+            //@ts-ignore
+            route?.params?.details?.isMember ? (
+              <Menu
+                visible={communityMenu}
+                onDismiss={showCommunityMenu}
+                anchor={
+                  <TouchableRipple
+                    rippleColor={colors.PRIMARY}
+                    onPress={showCommunityMenu}
+                    style={{
+                      padding: RFValue(3),
+                      paddingTop: RFValue(6),
+                      paddingBottom: RFValue(6),
+                      backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                      borderRadius: 4,
+                      borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                      borderWidth: 1
+                    }}
+                  >
+                    <Entypo
+                      name="dots-three-vertical"
+                      color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                      size={20}
+                    />
+                  </TouchableRipple>
+                }
+                contentStyle={{
+                  right: 10,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  overflow: Platform.select({ android: 'hidden' })
+                }}
+                style={{ top: RFValue(getMenuHeight()) }}
+              >
+                <Menu.Item
+                  //@ts-ignore
+                  onPress={() =>
+                    inviteNavigation(
+                      //@ts-ignore
+                      route.params?.details?.id,
+                      //@ts-ignore
+                      route.params?.title
+                    )
+                  }
+                  title={t(`community.invitation.invite`)}
+                  style={{
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                  titleStyle={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    color: colors.PRIMARY_TEXT,
+                    textAlign: 'center',
+                    textTransform: 'capitalize'
+                  }}
+                />
+                {
+                  //@ts-ignore
+                  route?.params?.details?.isModerator ? (
+                    <Fragment>
+                      <Divider />
+                      <Menu.Item
+                        onPress={() =>
+                          //@ts-ignore
+                          requestNavigation(route.params?.details?.id)
+                        }
+                        title={t(`community.recommended.communityRequests`)}
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                        titleStyle={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.PRIMARY_TEXT,
+                          textAlign: 'center',
+                          textTransform: 'capitalize'
+                        }}
+                      />
+                    </Fragment>
+                  ) : null
+                }
+              </Menu>
+            ) : null,
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -389,7 +496,6 @@ export default function DrawerStackNavigator() {
             flex: 1,
             paddingLeft: DEVICE_OS === 'ios' ? 20 : 0
           },
-
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerRightContainerStyle: { marginRight: 10 },
