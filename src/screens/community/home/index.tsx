@@ -94,13 +94,13 @@ export default function HomeScreen(props: ScreenProp) {
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 
-  const [
-    getMyCommunities,
-    { refetch, fetchMore, data: myCommunityData, loading: myCommunityLoading }
-  ] = useLazyQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
-    variables: {
-      input: { limit: PAGINATION_DEFAULT * (PAGINATION_DEFAULT / 2), skip: 0 }
-    }
+  const {
+    data: myCommunityData,
+    refetch: myCommunityRefetch,
+    loading: myCommunityLoading,
+    fetchMore: myCommunityFetchMore
+  } = useQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
@@ -242,9 +242,9 @@ export default function HomeScreen(props: ScreenProp) {
     });
 
   useEffect(() => {
-    myCommunities ? refetch() : getMyCommunities();
+    myCommunities && myCommunityRefetch();
     myChannels && refetchMyChannels();
-  }, [isFocused, myCommunities, myChannels]);
+  }, [isFocused]);
 
   const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
@@ -280,33 +280,33 @@ export default function HomeScreen(props: ScreenProp) {
     [callOnScrollEnd]
   );
 
-  // const handleEndReach = () => {
-  //   if (!callOnScrollEnd) return;
+  const handleEndReach = () => {
+    if (!callOnScrollEnd) return;
 
-  //   fetchMore({
-  //     variables: {
-  //       input: {
-  //         skip: myCommunities?.data.length,
-  //         limit: PAGINATION_DEFAULT / 2
-  //       }
-  //     },
-  //     updateQuery: (prev, { fetchMoreResult }) => {
-  //       setCallOnScrollEnd(false);
+    myCommunityFetchMore({
+      variables: {
+        input: {
+          skip: myCommunities?.data.length,
+          limit: PAGINATION_DEFAULT / 2
+        }
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setCallOnScrollEnd(false);
 
-  //       if (!fetchMoreResult) return prev;
+        if (!fetchMoreResult) return prev;
 
-  //       return Object.assign({}, prev, {
-  //         myCommunities: {
-  //           ...prev.myCommunities,
-  //           data: [
-  //             ...prev.myCommunities.data,
-  //             ...fetchMoreResult.myCommunities.data
-  //           ]
-  //         }
-  //       });
-  //     }
-  //   });
-  // };
+        return Object.assign({}, prev, {
+          myCommunities: {
+            ...prev.myCommunities,
+            data: [
+              ...prev.myCommunities.data,
+              ...fetchMoreResult.myCommunities.data
+            ]
+          }
+        });
+      }
+    });
+  };
 
   return (
     <Fragment>
@@ -343,18 +343,18 @@ export default function HomeScreen(props: ScreenProp) {
               horizontal={true}
               onEndReachedThreshold={0.5}
               ListEmptyComponent={<MyCommunitySkeleton skeletonSize={2} />}
-              // onEndReached={() => {
-              //   if (
-              //     myCommunities &&
-              //     myCommunities?.metadata.totalCount >
-              //       myCommunities?.data.length
-              //   ) {
-              //     setCallOnScrollEnd(true);
-              //   }
-              // }}
+              onEndReached={() => {
+                if (
+                  myCommunities &&
+                  myCommunities?.metadata.totalCount >
+                    myCommunities?.data.length
+                ) {
+                  setCallOnScrollEnd(true);
+                }
+              }}
               ListFooterComponent={_renderFooter}
               renderItem={_renderMyCommunityItem}
-              // onMomentumScrollEnd={handleEndReach}
+              onMomentumScrollEnd={handleEndReach}
               ListFooterComponentStyle={{ justifyContent: 'center' }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{

@@ -1,27 +1,19 @@
-import React, { useState, useEffect, Fragment, useMemo } from 'react';
-import { Title, Text, Button, Searchbar } from 'react-native-paper';
+import React, { useState, Fragment, useMemo } from 'react';
+import { Title, Text, Button, Searchbar, Divider } from 'react-native-paper';
 import { Image, TouchableHighlight } from 'react-native';
 import {
   InstantSearch,
   connectSearchBox,
   Configure
 } from 'react-instantsearch-native';
+import AlgoliaList from '../../../components/algoliaList';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import {
-  MyConnectionsInterface,
-  PassportInterface,
-  AllMembersRequestInterface
-} from '../../../graphql/types';
-import {
-  GET_MY_CONNECTIONS,
-  GET_ALL_MEMBERS
-} from '../../../graphql/server/query';
-import { PAGINATION_DEFAULT } from '../../../constants';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { PassportInterface } from '../../../graphql/types';
+import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
 import GradientButton from '../../../components/gradientButton';
@@ -30,146 +22,93 @@ import { logEvent } from '../../../utils/uxcamHelper';
 import ENVIRONMENT_VARIABLES, { Mixpanel } from '../../../config';
 import { crashlytics } from '../../../firebase/config';
 import { Toast } from '../../../components/rootToaster';
-import AlgoliaList from '../../../components/inviteAlgoliaList';
+import { useKeyboardContext } from 'stream-chat-react-native-core';
 import { searchClient } from '../../../config';
+import hexToRGB from '../../../utils/hexToRGB';
+import InviteAlgoliaHighlight from '../../../components/inviteAlgoliaHighlight';
 
 import { Container, TagCover, ButtonCover } from './styles';
-import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 // DEFINE SCREEN PROP TYPES
 interface InviteFriendsScreenProp extends NavigationInterface {}
 
 export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
-  const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
-  const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
   const { navigation } = props;
   const channelId = props.route.params?.channelId;
-  const [state, setState] = useState<{
-    suggestions: PassportInterface[];
-    tagsSelected: PassportInterface[];
-    query: string;
-    receipientIds: string[];
-    search: {};
-  }>({
-    suggestions: [],
-    tagsSelected: [],
-    query: '',
-    receipientIds: [],
-    search: {}
-  });
 
-  const { data } = useQuery<MyConnectionsInterface>(GET_MY_CONNECTIONS, {
-    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
-  });
+  const { t } = useTranslation();
+  const { colors, fonts } = useThemeContext();
+  const { dismissKeyboard } = useKeyboardContext();
+  const [selected, setSelected] = useState<{
+    [key: string]: PassportInterface;
+  }>({});
 
-  const { data: allMembersData } = useQuery<AllMembersRequestInterface>(
-    GET_ALL_MEMBERS,
-    {
-      variables: { input: { limit: 0, skip: 0 } }
-    }
-  );
+  const [search, setSearch] = useState({ search: {} });
 
-  const myConnection = data?.myConnections?.data;
-  const allMembers = allMembersData?.Passport;
-  const filteredMembers = removeDuplicateMembers(allMembers?.data.slice());
+  const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
-  const filterConnections = myConnection?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
-  });
-
-  const filterAllMembers = filteredMembers?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
-  });
+  const participants = Object.values(selected);
 
   const [inviteToChannel, { loading }] = useMutation(INVITE_TO_CHANNEL, {
     variables: {
-      payload: { channelId: channelId, recipientIds: state.receipientIds }
+      payload: {
+        channelId: channelId,
+        recipientIds: participants.map(({ id }) => id)
+      }
     }
   });
+
+  const onSearchStateChange = (query: string) => {
+    setSearch({ ...search, search: query });
+  };
 
   const handleInputError = (error: string) => {
     Toast.show(t(`community.createTribe.${error}`));
   };
 
   const sendChannelInvite = async () => {
-    if (state.tagsSelected?.length < 1) {
+    if (!selected?.length) {
       return handleInputError('inviteError');
     }
+
     logEvent('send channel invite', { from: 'channel' });
+
     try {
       Mixpanel.track('Send Channel Invites', {
         info: `Invite friends to channel`,
         'Activity Screen': 'Tribe invitation screen'
       });
       await inviteToChannel();
-      setState({
-        ...state,
-        tagsSelected: []
-      });
+      setSelected({});
       navigation.goBack();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
-  useEffect(() => {
-    if (filterAllMembers?.length) {
-      setState({
-        ...state,
-        suggestions: filterAllMembers
-      });
+  const handleSelect = (user: PassportInterface) => {
+    dismissKeyboard();
+    const { firstName, lastName, id, avatar } = user;
+
+    const payload = {
+      id,
+      avatar,
+      lastName,
+      firstName
+    } as PassportInterface;
+
+    if (!selected[id]) {
+      return setSelected({ ...selected, [id]: payload });
     }
-  }, []);
 
-  const _filterData = (query: string) => {
-    if (!query || query.trim() == '' || !state.suggestions) {
-      return;
-    }
-
-    let suggestions = state.suggestions;
-    let queryResult: PassportInterface[] = [];
-
-    query = query.toUpperCase();
-    suggestions.forEach((i) => {
-      if (
-        i.firstName.toUpperCase().includes(query) ||
-        i.lastName.toUpperCase().includes(query)
-      ) {
-        queryResult.push(i);
-      }
-    });
-    return queryResult;
+    const { [id]: _, ...restUsers } = { ...selected };
+    setSelected(restUsers);
   };
 
-  const handleDelete = (index: any) => {
-    let tagsSelected = state.tagsSelected;
-    tagsSelected.splice(index, 1);
-    let receipientIds = state.receipientIds;
-    receipientIds.splice(index, 1);
-    setState({ ...state, tagsSelected, receipientIds });
-  };
-
-  const handleAddition = (suggestion: PassportInterface) => {
-    setState({
-      ...state,
-      tagsSelected: state.tagsSelected.concat([suggestion]),
-      receipientIds: state.receipientIds.concat([suggestion?.id])
-    });
-  };
-
-  const _renderTags = () => {
+  const _renderSelectedItem = () => {
     return (
       <TagCover>
-        {state.tagsSelected.map((item) => {
+        {participants.map((item) => {
           return (
             <TouchableHighlight
               key={item?.id}
@@ -184,7 +123,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
                 marginHorizontal: RFValue(10),
                 borderRadius: 4
               }}
-              onPress={() => handleDelete(item)}
+              onPress={() => handleSelect(item)}
             >
               <Fragment>
                 <FastImage
@@ -201,6 +140,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
                   }}
                 />
                 <Text
+                  numberOfLines={1}
                   style={{
                     fontFamily: fonts.WORK_SANS_MEDIUM,
                     fontSize: RFValue(fonts.LARGE_SIZE - 2),
@@ -224,10 +164,6 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         })}
       </TagCover>
     );
-  };
-
-  const onSearchStateChange = (search: string) => {
-    setState({ ...state, search });
   };
 
   const _searchBox = ({ currentRefinement, refine }: any) => (
@@ -256,6 +192,42 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
     indexName
   ]);
 
+  const _renderSeparator = ({ leadingItem }: any) => {
+    const user = leadingItem as PassportInterface;
+
+    if (
+      (!user.verified ||
+        user.lastName == null ||
+        user.firstName == null ||
+        user.currentLocation?.city == null,
+      user.currentLocation?.state == null)
+    ) {
+      return null;
+    }
+
+    return (
+      <Divider
+        style={{
+          height: 1.5,
+          marginHorizontal: RFValue(20),
+          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+        }}
+      />
+    );
+  };
+
+  const _renderItem = ({ item }: any) => {
+    if (selected[item.id]) return null;
+
+    return (
+      <InviteAlgoliaHighlight
+        {...item}
+        key={item.id}
+        handleSelect={() => handleSelect(item)}
+      />
+    );
+  };
+
   return (
     <Container>
       <Image
@@ -265,8 +237,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
           width: RFValue(80),
           height: RFValue(80),
           marginLeft: 'auto',
-          marginRight: 'auto',
-          marginTop: RFValue(15)
+          marginRight: 'auto'
         }}
       />
       <Title
@@ -315,24 +286,29 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         <Fragment>
           <InstantSearch
             indexName={indexName}
-            searchState={state.search}
+            searchState={search.search}
             searchClient={searchClient}
             onSearchStateChange={onSearchStateChange}
           >
-            {state?.tagsSelected?.length ? <_renderTags /> : null}
-            <Configure hitsPerPage={PAGINATION_DEFAULT} distinct />
+            {participants?.length ? <_renderSelectedItem /> : null}
+            <Configure hitsPerPage={5} distinct />
             <AlgoliaSearchBox />
-            <AlgoliaList handleAddition={handleAddition} />
+            <AlgoliaList
+              //@ts-ignore
+              _separator={_renderSeparator}
+              //@ts-ignore
+              _renderItem={_renderItem}
+            />
           </InstantSearch>
         </Fragment>
 
         <ButtonCover>
           <GradientButton
-            onPress={sendChannelInvite}
             loading={loading}
             style={{ height: 50 }}
-            gradientContainerstyle={{ height: 50 }}
+            onPress={sendChannelInvite}
             contentStyle={{ height: 50 }}
+            gradientContainerstyle={{ height: 50 }}
           >
             {t(`community.invitation.invite`)}
           </GradientButton>

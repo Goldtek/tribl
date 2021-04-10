@@ -211,9 +211,15 @@ export default function DirectChatScreen(props: ScreenProp) {
                 style={chatStyles}
               >
                 <TouchableRipple
+                  borderless
                   onPress={() =>
                     navigation.navigate('DirectMessageInformation')
                   }
+                  style={{
+                    height: RFValue(40),
+                    width: RFValue(40),
+                    borderRadius: 40 / 2
+                  }}
                 >
                   <Avatar
                     image={receiver?.image}
