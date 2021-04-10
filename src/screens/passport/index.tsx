@@ -108,6 +108,7 @@ export default function PassportScreen(props: ScreenProp) {
     details: {
       selectedIdentity: [],
       selectedInterest: [],
+      deleteIdentity: [],
       deleteInterest: [],
       date: ''
     }
@@ -375,13 +376,15 @@ export default function PassportScreen(props: ScreenProp) {
   const filterIdentity = userDetails?.identity?.map(
     (identity) => identity.name
   );
-  const removeIdentity = filterIdentity?.filter(
-    (tag) => !identity.includes(tag)
+  // const removeIdentity = filterIdentity?.filter(
+  //   (tag) => !identity.includes(tag)
+  // );
+  const removeIdentity = cache.details?.deleteIdentity?.map(
+    (item) => item?.name
   );
   const filterInterest = userDetails?.interest?.map(
     (interest) => interest.name
   );
-
   const removeInterest = filterInterest?.filter(
     (tag) => !cache.details.selectedInterest.includes(tag)
   );
@@ -453,6 +456,7 @@ export default function PassportScreen(props: ScreenProp) {
       ...details,
       details: {
         ...cache.details,
+        deleteIdentity: select.deleteIdentity,
         selectedIdentity: select.identity,
         selectedInterest: select.interest,
         deleteInterest: select.deleteInterest,

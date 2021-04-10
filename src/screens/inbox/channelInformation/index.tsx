@@ -131,7 +131,8 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
             style={{
               fontSize: fonts.MEDIUM_SIZE + 2,
               fontFamily: fonts.WORK_SANS_BOLD,
-              marginHorizontal: 5
+              marginHorizontal: 5,
+              textTransform: 'capitalize'
             }}
           >
             {t(`community.chat.channelInformation`)}

@@ -1,7 +1,12 @@
 //@ts-nocheck
 import React, { Fragment, useEffect, useState } from 'react';
 import { NavigationInterface } from '../../types';
-import { Text, Divider, IconButton } from 'react-native-paper';
+import {
+  Text,
+  Divider,
+  IconButton,
+  ActivityIndicator
+} from 'react-native-paper';
 import { Switch, View, Modal, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
@@ -174,7 +179,8 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
                 fontFamily: fonts.WORK_SANS_BOLD,
                 fontSize: fonts.LARGE_SIZE + 5,
                 color: colors.WHITE,
-                marginHorizontal: 10
+                marginHorizontal: 10,
+                textTransform: 'capitalize'
               }}
             >
               {user?.user?.name}

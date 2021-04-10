@@ -11,7 +11,7 @@ export const Container = styled.View`
 export const TagCover = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
-  width: ${RFValue(DEVICE_FULL_WIDTH)}px;
+  width: 100%;
   border: 1px solid ${({ theme }) => theme.colors.INPUT};
 `;
 
