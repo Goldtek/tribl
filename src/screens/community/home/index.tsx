@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback
 } from 'react';
+import * as Updates from 'expo-updates';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import * as Location from 'expo-location';
@@ -29,7 +30,6 @@ import {
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
-  GET_TRENDING_CHANNELS,
   USER_CHANNELS,
   GET_USER_PASSPORT,
   GET_FIREBASE_TOKEN
@@ -58,6 +58,8 @@ import { useIsFocused } from '@react-navigation/native';
 import MyCommunity from '../../../components/myCommunities';
 import Storage from '../../../libs/storage';
 import Firechat from '../../../firebase';
+import CheckAppUpdates from '../../../libs/updates';
+import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -69,7 +71,6 @@ import {
   CommunityCover
   // ButtonWrapper
 } from './styles';
-import { crashlytics } from '../../../firebase/config';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -82,6 +83,7 @@ export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const isFocused = useIsFocused();
+  const [OTAUpdate, setOTAUpdate] = useState(false);
 
   const [state, setState] = useState({
     showJoinCommunityModal: false,
@@ -125,15 +127,21 @@ export default function HomeScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
+  const checkUpdate = async () => {
+    const update = await Updates.checkForUpdateAsync();
+    setOTAUpdate(update.isAvailable);
+  };
+
   useEffect(() => {
     tagScreenName('TriblScreen');
     getPopularCommunities();
     getConnectionRequest();
     getNearbyMembers();
     getMyConnections();
-    getAllMembers();
     getUserPassport();
     handleLocation();
+    getAllMembers();
+    checkUpdate();
   }, []);
 
   useEffect(() => {
@@ -585,6 +593,10 @@ export default function HomeScreen(props: ScreenProp) {
 
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
+      ) : null}
+
+      {OTAUpdate ? (
+        <CheckAppUpdates cancelUpdate={() => setOTAUpdate(false)} />
       ) : null}
     </Fragment>
   );
