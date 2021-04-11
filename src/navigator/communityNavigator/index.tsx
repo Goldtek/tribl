@@ -323,7 +323,9 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                 />
                 {
                   //@ts-ignore
-                  route?.params?.details?.isModerator ? (
+                  route?.params?.details?.isModerator &&
+                  //@ts-ignore
+                  route?.params?.details?.isPrivate ? (
                     <Fragment>
                       <Divider />
                       <Menu.Item

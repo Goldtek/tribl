@@ -78,6 +78,13 @@ export default function DrawerStackNavigator() {
     setCommunityMenu(false);
   };
 
+  const requestNavigation = (id: string) => {
+    navigation.navigate('CommunityRequestScreen', {
+      communityId: id
+    });
+    setCommunityMenu(false);
+  };
+
   return (
     <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
       <DrawerStack.Screen
@@ -458,7 +465,8 @@ export default function DrawerStackNavigator() {
                 />
                 {
                   //@ts-ignore
-                  route?.params?.details?.isModerator ? (
+                  route?.params?.details?.isModerator &&
+                  route?.params?.details?.isPrivate ? (
                     <Fragment>
                       <Divider />
                       <Menu.Item
