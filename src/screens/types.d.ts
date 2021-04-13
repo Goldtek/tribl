@@ -97,6 +97,14 @@ export type RootStackParamList = {
   ChannelInformationScreen?: Object;
   InviteToTribeFromProfileScreen?: Object;
   InviteToChannelFromProfileScreen?: Object;
+  ActivateWalletScreen?: Object;
+  TriblPayScreen?: Object;
+  BankCountryScreen?: Object;
+  CountryIdScreen?: Object;
+  VerifyIdentityScreen?: Object;
+  LinkAccountScreen?: Object;
+  WalletScreen?: Object;
+  AddCashScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -174,7 +182,15 @@ export type RootStackParamScreensList =
   | 'InvitationToChannelScreen'
   | 'ChannelInformationScreen'
   | 'InviteToTribeFromProfileScreen'
-  | 'InviteToChannelFromProfileScreen';
+  | 'InviteToChannelFromProfileScreen'
+  | 'ActivateWalletScreen'
+  | 'TriblPayScreen'
+  | 'BankCountryScreen'
+  | 'CountryIdScreen'
+  | 'VerifyIdentityScreen'
+  | 'LinkAccountScreen'
+  | 'WalletScreen'
+  | 'AddCashScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
