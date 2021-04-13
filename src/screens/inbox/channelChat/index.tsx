@@ -30,11 +30,8 @@ import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
 import { ChannelSort } from 'stream-chat';
 import { Mixpanel } from '../../../config';
-import { useTranslation } from 'react-i18next';
-import {
-  JOIN_COMMUNITY_CHANNEL,
-  SEND_CHANNEL_MESSAGE
-} from '../../../graphql/server/mutations';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { JOIN_COMMUNITY_CHANNEL } from '../../../graphql/server/mutations';
 import { crashlytics } from '../../../firebase/config';
 
 import {
@@ -54,7 +51,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();
-  const { t } = useTranslation();
+  const { bottom } = useSafeAreaInsets();
   const { colors, fonts } = useThemeContext();
   const {
     setThread,
@@ -62,7 +59,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
     setChannel: setStreamChannel
   } = useStreamContext();
 
-  const [sendMessage] = useMutation(SEND_CHANNEL_MESSAGE);
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
 
   const [channel, setChannel] = useState(
@@ -92,13 +88,14 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
       if (!channelExists) {
         return addUserToChannel();
+      } else {
+        await channelExists.watch();
+        setChannel(channelExists);
+        setStreamChannel(channelExists);
+        setChannelMembers(
+          Object.values(channelExists?.state?.members.asMutable())
+        );
       }
-
-      await channelExists.watch();
-      setChannel(channelExists);
-      setChannelMembers(
-        Object.values(channelExists?.state?.members.asMutable())
-      );
     } catch (error) {
       crashlytics.recordError(new Error(error));
     }
@@ -123,16 +120,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
         variables: { payload: { channelId: route.params.channelId } }
       });
 
-      sendMessage({
-        variables: {
-          payload: {
-            system: true,
-            channelId: route.params.channelId,
-            content: t(`community.chat.join`)
-          }
-        }
-      });
-
       getConversation();
     } catch (error) {
       crashlytics.recordError(new Error(error));
@@ -155,7 +142,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ChatContainer>
+      <ChatContainer style={{ paddingBottom: bottom }}>
         <StatusBar style="dark" animated />
         <HeaderContainer>
           <TouchableRipple

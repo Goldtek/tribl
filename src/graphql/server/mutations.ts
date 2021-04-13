@@ -141,15 +141,6 @@ export const SEND_DIRECT_MESSAGE = gql`
   }
 `;
 
-// SEND DIRECT MESSAGE
-export const SEND_CHANNEL_MESSAGE = gql`
-  mutation createChannelConversation($payload: CreateChannelConversation!) {
-    createChannelConversation(input: $payload) {
-      success
-    }
-  }
-`;
-
 // DELETE MESSAGE REQUEST
 export const DELETE_MESSAGE_REQUEST = gql`
   mutation deleteMessageRequest($payload: DeleteMessageRequestInput!) {

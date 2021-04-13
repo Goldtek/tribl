@@ -79,16 +79,6 @@ export default function DirectChatScreen(props: ScreenProp) {
     setStreamContextChannel(channel);
   }, [channel?.id]);
 
-  const handleNavigation = () => {
-    navigation.navigate('DrawerScreen', {
-      screen: 'MemberDetailScreen',
-      params: {
-        title: `${user?.firstName} ${user?.lastName}`,
-        details: user
-      }
-    });
-  };
-
   const getConversation = async () => {
     const filter = {
       isDm: true,
