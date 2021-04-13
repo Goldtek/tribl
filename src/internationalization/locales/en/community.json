@@ -163,7 +163,7 @@
     "update": "this update",
     "version": "found new version",
     "title": "limited update release",
-    "update_info": "Fix channel message for new users; Fix channel message crash; Fix message reaction crash; Add fix for more bugs & feedbacks"
+    "update_info": "Fix channel message for new users; Fix channel messages not loading up"
   },
   "addTags": {
     "title": "Looks like you’re visiting for the first time.",
