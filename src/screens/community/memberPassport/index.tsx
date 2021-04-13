@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, Fragment, useEffect, useCallback } from 'react';
 import { Mixpanel } from '../../../config';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView, FlatList } from 'react-native';
@@ -31,6 +31,7 @@ import MyChannel from './widget/channelCard';
 import { StatusBar } from 'expo-status-bar';
 import MyConnectionCard from '../../../components/MyConnectionCard';
 import MyCommunity from '../../../components/myCommunities';
+import TransferModal from '../../../components/transferModal';
 
 import {
   ContactContainer,
@@ -60,6 +61,8 @@ export default function PassportDetail(props: MemberDetailProps) {
   const { t } = useTranslation();
 
   const [state, setState] = useState({ loading: false, pending: false });
+
+  const [visible, setVisible] = useState(false);
 
   const passport = { ...props.route.params.details };
 
@@ -152,6 +155,14 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const _renderMyConnectionItem = ({ item }: { item: PassportInterface }) => (
     <MyConnectionCard key={item.id} {...item} singlePassport={data} />
+  );
+
+  const showTransferModal = useCallback(
+    (visible: boolean) => () => {
+      setVisible(visible);
+      return true;
+    },
+    []
   );
 
   return (
@@ -283,29 +294,56 @@ export default function PassportDetail(props: MemberDetailProps) {
         </Header>
 
         {data?.connectionDetails?.status === 'ACCEPTED' ? (
-          <Button
-            onPress={handleMessageNavigation}
-            mode="outlined"
-            color={colors.PRIMARY}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{
-              height: RFValue(55),
-              borderColor: colors.PRIMARY_TEXT
-            }}
-            style={{
-              width: '100%',
-              height: RFValue(55),
-              borderRadius: 4,
-              marginTop: RFValue(20),
-              borderColor: colors.PRIMARY_TEXT
-            }}
-          >
-            {t(`community.memberPassport.message`)}
-          </Button>
+          <ButtonCover>
+            <Button
+              onPress={handleMessageNavigation}
+              mode="outlined"
+              color={colors.PRIMARY}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                borderColor: colors.PRIMARY_TEXT
+              }}
+              style={{
+                width: DEVICE_FULL_WIDTH / 2 - 30,
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.PRIMARY_TEXT
+              }}
+            >
+              {t(`community.memberPassport.message`)}
+            </Button>
+            <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: DEVICE_FULL_WIDTH / 2 - 30,
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
+            </Button>
+          </ButtonCover>
         ) : pending ||
           data?.connectionDetails?.status === 'PENDING' ||
           data?.pending == 'PENDING' ||
@@ -322,7 +360,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               }}
               contentStyle={{ height: RFValue(55) }}
               style={{
-                width: DEVICE_FULL_WIDTH / 2 - 30,
+                width: DEVICE_FULL_WIDTH / 2 - 60,
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
@@ -345,7 +383,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 borderColor: colors.PRIMARY_TEXT
               }}
               style={{
-                width: DEVICE_FULL_WIDTH / 2 - 30,
+                width: DEVICE_FULL_WIDTH / 2 - 60,
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
@@ -354,13 +392,38 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
+            <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: RFValue(50),
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
+            </Button>
           </ButtonCover>
         ) : (
           <ButtonCover>
             <GradientButton
               onPress={handleRequest}
               loading={loading}
-              style={{ width: DEVICE_FULL_WIDTH / 2 - 30 }}
+              style={{ width: DEVICE_FULL_WIDTH / 2 - 60 }}
             >
               {t(`community.memberPassport.connect`)}
             </GradientButton>
@@ -378,7 +441,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 borderColor: colors.PRIMARY_TEXT
               }}
               style={{
-                width: DEVICE_FULL_WIDTH / 2 - 30,
+                width: DEVICE_FULL_WIDTH / 2 - 60,
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
@@ -386,6 +449,31 @@ export default function PassportDetail(props: MemberDetailProps) {
               }}
             >
               {t(`community.memberPassport.message`)}
+            </Button>
+            <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: RFValue(50),
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
             </Button>
           </ButtonCover>
         )}
@@ -719,6 +807,10 @@ export default function PassportDetail(props: MemberDetailProps) {
           </Cover>
         ) : null}
       </ContactContainer>
+      <TransferModal
+        closeTranferModal={showTransferModal(false)}
+        isVisible={visible}
+      />
     </ScrollView>
   );
 }
