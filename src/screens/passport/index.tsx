@@ -69,7 +69,8 @@ import {
   ConnectionCover,
   Cover,
   TabCover,
-  ScreenCover
+  ScreenCover,
+  ButtonHeaderCover
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
@@ -523,6 +524,20 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
+  const [triblPay, setTriblPay] = useState(false);
+
+  const handleActivateWallet = () => {
+    navigation.navigate('TriblPayScreen', {
+      screen: 'ActivateWalletScreen'
+    });
+  };
+
+  const handleViewWallet = () => {
+    navigation.navigate('TriblPayScreen', {
+      screen: 'WalletScreen'
+    });
+  };
+
   return (
     <ScreenCover>
       <SafeAreaView
@@ -794,34 +809,55 @@ export default function PassportScreen(props: ScreenProp) {
                 </ImageIconContainer> */}
                 </ImageTextContainer>
               </ImageContainer>
-
-              <Button
-                icon={{
-                  uri: 'https://img.icons8.com/ios-filled/96/000000/share-3.png'
-                }}
-                mode="text"
-                color={colors.WHITE}
-                uppercase={false}
-                loading={false}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'capitalize'
-                }}
-                contentStyle={{
-                  height: RFValue(55),
-                  backgroundColor: colors.PRIMARY_LIGHT
-                }}
-                style={{
-                  width: '100%',
-                  height: RFValue(55),
-                  marginTop: RFValue(10),
-                  marginBottom: RFValue(20)
-                }}
-                onPress={onShare}
-              >
-                {t(`signup.passportScreen.sharePassport`)}
-              </Button>
+              <ButtonHeaderCover>
+                <Button
+                  icon={{
+                    uri:
+                      'https://img.icons8.com/ios-filled/96/000000/share-3.png'
+                  }}
+                  mode="text"
+                  color={colors.WHITE}
+                  uppercase={false}
+                  loading={false}
+                  labelStyle={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                    textTransform: 'capitalize'
+                  }}
+                  contentStyle={{
+                    height: RFValue(50),
+                    backgroundColor: colors.PRIMARY_LIGHT
+                  }}
+                  style={{
+                    height: RFValue(50),
+                    width: '49%'
+                  }}
+                  onPress={onShare}
+                >
+                  {t(`community.passport.share`)}
+                </Button>
+                <Button
+                  onPress={triblPay ? handleViewWallet : handleActivateWallet}
+                  labelStyle={{
+                    color: colors.PRIMARY,
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                    textTransform: 'capitalize'
+                  }}
+                  contentStyle={{
+                    height: RFValue(50),
+                    backgroundColor: colors.WHITE
+                  }}
+                  style={{
+                    height: RFValue(50),
+                    width: '49%'
+                  }}
+                >
+                  {triblPay
+                    ? t(`community.passport.viewWallet`)
+                    : t(`community.passport.activate`)}
+                </Button>
+              </ButtonHeaderCover>
             </HeaderContainer>
             <TabCover>
               <TabViewSlider
