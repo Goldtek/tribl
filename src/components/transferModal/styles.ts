@@ -36,5 +36,5 @@ export const Amount = styled.View`
 export const ButtonCover = styled.View`
   flex-direction: row;
   justify-content: space-between;
-  margin: ${RFValue(30)}px ${RFValue(15)}px;
+  margin: ${RFValue(20)}px ${RFValue(15)}px ${RFValue(15)}px;
 `;

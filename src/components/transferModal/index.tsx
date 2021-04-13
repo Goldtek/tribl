@@ -93,7 +93,7 @@ function TransferModal(props: ModalProp) {
           </HeaderContainer>
         }
       >
-        <Card style={{ marginTop: RFValue(5), paddingBottom: RFValue(40) }}>
+        <Card style={{ marginTop: RFValue(5), paddingBottom: RFValue(30) }}>
           <Card.Content>
             <LogoCover>
               <Image
@@ -122,7 +122,7 @@ function TransferModal(props: ModalProp) {
                     color: colors.BLACK,
                     fontSize: RFValue(fonts.LARGE_SIZE * 2),
                     fontFamily: fonts.WORK_SANS_BOLD,
-                    lineHeight: RFValue(50)
+                    lineHeight: RFValue(40)
                   }}
                 >
                   -
@@ -159,7 +159,7 @@ function TransferModal(props: ModalProp) {
                     color: colors.BLACK,
                     fontSize: RFValue(fonts.LARGE_SIZE * 2),
                     fontFamily: fonts.WORK_SANS_BOLD,
-                    lineHeight: RFValue(50)
+                    lineHeight: RFValue(40)
                   }}
                 >
                   +
