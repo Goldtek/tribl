@@ -27,11 +27,19 @@ function ConnectionCard(props: ConnectionCardProp) {
     avatar,
     firstName,
     lastName,
-    currentLocation,
-    citizenship
+    verified,
+    citizenship,
+    currentLocation
   } = props;
 
-  if (id === chatClient.user?.id) {
+  if (
+    (id === chatClient.user?.id ||
+      !verified ||
+      lastName == null ||
+      firstName == null ||
+      currentLocation?.city == null,
+    currentLocation?.state == null)
+  ) {
     return null;
   }
 

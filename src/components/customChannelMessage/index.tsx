@@ -84,32 +84,59 @@ function CustomChannelMessage(props: MessageProps) {
               text: 'OK',
               onPress: () => {
                 if (activityScreen === 'channelScreen') {
-                  logEvent('user deletes message on channel message screen', {
-                    from: 'chat'
-                  });
+                  if (Boolean(channel.data?.isGroup)) {
+                    logEvent('send group message', { from: 'chat' });
 
-                  Mixpanel.track(
-                    'User Deletes Message On Channel Message Screen',
-                    {
-                      info: `User deletes message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
-                      'Activity Screen': 'Channel Message Screen'
-                    }
-                  );
+                    Mixpanel.track(
+                      'User Deletes Message On Group Message Screen',
+                      {
+                        info: `User deletes message on ${channel.data?.name} group`,
+                        'Activity Screen': 'Group Message Screen'
+                      }
+                    );
+                  } else {
+                    logEvent('user deletes message on channel message screen', {
+                      from: 'chat'
+                    });
+
+                    Mixpanel.track(
+                      'User Deletes Message On Channel Message Screen',
+                      {
+                        info: `User deletes message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+                        'Activity Screen': 'Channel Message Screen'
+                      }
+                    );
+                  }
                 }
 
                 if (activityScreen === 'channelThreadScreen') {
-                  logEvent(
-                    'user deletes message on channel thread message screen',
-                    { from: 'chat' }
-                  );
+                  if (Boolean(channel.data?.isGroup)) {
+                    logEvent(
+                      'user deletes message on group thread message screen',
+                      { from: 'chat' }
+                    );
 
-                  Mixpanel.track(
-                    'User Deletes Message On Channel Thread Message',
-                    {
-                      info: `User deletes message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
-                      'Activity Screen': 'Channel Thread Message Screen'
-                    }
-                  );
+                    Mixpanel.track(
+                      'User Deletes Message On Group Thread Message',
+                      {
+                        info: `User deletes message on ${channel.data?.name} group thread`,
+                        'Activity Screen': 'Group Thread Message Screen'
+                      }
+                    );
+                  } else {
+                    logEvent(
+                      'user deletes message on channel thread message screen',
+                      { from: 'chat' }
+                    );
+
+                    Mixpanel.track(
+                      'User Deletes Message On Channel Thread Message',
+                      {
+                        info: `User deletes message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+                        'Activity Screen': 'Channel Thread Message Screen'
+                      }
+                    );
+                  }
                 }
 
                 props.handleDelete();
@@ -124,21 +151,39 @@ function CustomChannelMessage(props: MessageProps) {
 
   const handleReaction = async (type: string) => {
     if (activityScreen === 'channelScreen') {
-      logEvent('user reacts to channel message', { from: 'chat' });
+      if (Boolean(channel.data?.isGroup)) {
+        logEvent('user reacts to group message', { from: 'chat' });
 
-      Mixpanel.track('User Reacts to Channel Message', {
-        info: `User reacts to message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
-        'Activity Screen': 'Channel Message Screen'
-      });
+        Mixpanel.track('User Reacts to Group Message', {
+          info: `User reacts to message on ${channel.data?.name} group`,
+          'Activity Screen': 'Group Message Screen'
+        });
+      } else {
+        logEvent('user reacts to channel message', { from: 'chat' });
+
+        Mixpanel.track('User Reacts to Channel Message', {
+          info: `User reacts to message on ${channel.data?.name} channel in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Message Screen'
+        });
+      }
     }
 
     if (activityScreen === 'channelThreadScreen') {
-      logEvent('user reacts to channel thread message', { from: 'chat' });
+      if (Boolean(channel.data?.isGroup)) {
+        logEvent('user reacts to group thread message', { from: 'chat' });
 
-      Mixpanel.track('User Reacts to Channel Thread Message', {
-        info: `User reacts to message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
-        'Activity Screen': 'Channel Thread Message Screen'
-      });
+        Mixpanel.track('User Reacts to Group Thread Message', {
+          info: `User reacts to message on ${channel.data?.name} group thread`,
+          'Activity Screen': 'Group Thread Message Screen'
+        });
+      } else {
+        logEvent('user reacts to channel thread message', { from: 'chat' });
+
+        Mixpanel.track('User Reacts to Channel Thread Message', {
+          info: `User reacts to message on ${channel.data?.name} channel thread in ${channel.data?.community.name} community`,
+          'Activity Screen': 'Channel Thread Message Screen'
+        });
+      }
     }
 
     props.handleReaction(type);

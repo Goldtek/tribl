@@ -131,15 +131,29 @@
     "giphyPlaceholder": "Posted using Giphy.com",
     "leave": "has left the channel!",
     "channelMembers": "view channel members",
-    "leaveChannel": "leave channel",
-    "members": "members",
+    "leaveChannel": "Leave channel",
+    "leaveGroup": "Leave group",
+    "leaveDm": "Delete conversation",
+    "blockDm": "Block",
+    "members": "participants",
     "leave_channel": "leave",
     "delete": "delete",
+    "muteNotifications": "Mute notifications",
     "mute": "mute",
+    "reportGroup": "Report group",
+    "reportDM": "Report user",
+    "reportChannel": "Report channel",
     "unmute": "unmute",
-    "invite": "Invite friends to channel",
+    "inviteToChannel": "Invite friends to channel",
+    "inviteToGroup": "Add participants",
     "channelInformation": "channel information",
-    "edit": "edit"
+    "createdBy": "Created at",
+    "groupCreatedBy": "Created by",
+    "groupInformation": "group information",
+    "edit": "edit",
+    "removeUser": "remove",
+    "addingMembers": "adding members",
+    "create": "create"
   },
 
   "update": {
@@ -149,7 +163,7 @@
     "update": "this update",
     "version": "found new version",
     "title": "limited update release",
-    "update_info": "Fix direct sending bug; Fix direct message context bug"
+    "update_info": "Fix channel message for new users; Fix channel messages not loading up"
   },
   "addTags": {
     "title": "Looks like you’re visiting for the first time.",
@@ -209,6 +223,8 @@
     "empty": " You currently don't have any community request",
     "channelTitle": "Invite friends to channel",
     "tribeInvite": "Invite friends to tribe",
+    "inviteChannel": "Invite friend to channel",
+    "inviteTribe": "Invite friend to tribe",
     "text2": "Select a community you want to invite your friend to",
     "channelText": "Select a channel you want to invite your friend to",
     "tribeInviteError": "You have to choose a tribe you want to invite your friend to"

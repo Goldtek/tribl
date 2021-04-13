@@ -26,7 +26,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>tribl</string>
+			<string>com.thetriblnetwork.tribl</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>betribl</string>

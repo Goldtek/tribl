@@ -8,6 +8,7 @@ interface ChatScreenProps extends PassportInterface {
   chatId: string;
   channelId: string;
   receiverId: string;
+  newly_created_group?: boolean;
   channel?: { community: string; name: string };
 }
 
@@ -52,7 +53,8 @@ export type RootStackParamList = {
   NewMessageScreen?: Object;
   MessageRequestChatScreen?: Object;
   NewChatSearch?: Object;
-  GroupMessageScreen?: Object;
+  SelectGroupParticipantsScreen?: Object;
+  AddMembersToGroupScreen?: Object;
   PassportScreen?: Object;
   PrivacyScreen?: Object;
   ProfileScreen?: Object;
@@ -73,9 +75,12 @@ export type RootStackParamList = {
   ViewAllScreen?: Object;
   ViewAllTribes?: Object;
   ViewAllMembers?: Object;
+  GroupInformationScreen?: Object;
   AddTags?: Object;
   CommunityAlgoliaScreen?: Object;
+  DirectMessageInformation?: Object;
   ChannelMembersScreen?: Object;
+  GroupMembersScreen?: Object;
   ConnectionListScreen?: Object;
   CommunityListScreen?: Object;
   UserConnectionListScreen?: Object;
@@ -98,10 +103,13 @@ export type RootStackParamScreensList =
   | 'CommunitySearchScreen'
   | 'MemberDetailScreen'
   | 'DirectMessageTab'
+  | 'GroupMembersScreen'
   | 'SignupPassportScreen'
   | 'CommunityDetailScreen'
   | 'ConnectionChatScreen'
   | 'ConnectionRequestScreen'
+  | 'DirectMessageInformation'
+  | 'GroupInformationScreen'
   | 'ChannelChatScreen'
   | 'MessageRequestTab'
   | 'AccountSettingScreen'
@@ -120,11 +128,12 @@ export type RootStackParamScreensList =
   | 'WalkThroughScreen'
   | 'BirthPlaceScreen'
   | 'DirectChatScreen'
+  | 'AddMembersToGroupScreen'
   | 'NewMessageScreen'
   | 'CommunityScreen'
   | 'PassportScreen'
   | 'ChannelsTab'
-  | 'GroupMessageScreen'
+  | 'SelectGroupParticipantsScreen'
   | 'ThreadScreen'
   | 'MyConnectionScreen'
   | 'MemberPassportScreen'

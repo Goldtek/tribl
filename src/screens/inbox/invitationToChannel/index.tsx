@@ -1,100 +1,79 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import { Title, Text, Button, Divider } from 'react-native-paper';
-import { Image, Keyboard, TouchableHighlight } from 'react-native';
-//@ts-ignore
-import AutoTags from 'react-native-tag-autocomplete';
+import React, { useState, useRef, Fragment, useMemo } from 'react';
+import { Title, Text, Button, Searchbar } from 'react-native-paper';
+import {
+  Image,
+  TouchableOpacity,
+  View,
+  ScrollView,
+  FlatList
+} from 'react-native';
+import {
+  InstantSearch,
+  connectSearchBox,
+  Configure
+} from 'react-instantsearch-native';
+import AlgoliaList from '../../../components/algoliaList';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useThemeContext } from '../../../theme';
-import hexToRGB from '../../../utils/hexToRGB';
 import { NavigationInterface } from '../../types';
-import {
-  MyConnectionsInterface,
-  PassportInterface,
-  AllMembersRequestInterface
-} from '../../../graphql/types';
-import {
-  GET_MY_CONNECTIONS,
-  GET_ALL_MEMBERS
-} from '../../../graphql/server/query';
-import { PAGINATION_DEFAULT } from '../../../constants';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { PassportInterface } from '../../../graphql/types';
+import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
 import GradientButton from '../../../components/gradientButton';
 import { INVITE_TO_CHANNEL } from '../../../graphql/server/mutations';
 import { logEvent } from '../../../utils/uxcamHelper';
-import { Mixpanel } from '../../../config';
+import ENVIRONMENT_VARIABLES, { Mixpanel } from '../../../config';
 import { crashlytics } from '../../../firebase/config';
 import { Toast } from '../../../components/rootToaster';
+import { useKeyboardContext } from 'stream-chat-react-native-core';
+import { searchClient } from '../../../config';
+import InviteAlgoliaHighlight from '../../../components/inviteAlgoliaHighlight';
 
-import { Container, TagCover, ButtonCover, AutoTagCover } from './styles';
-import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
+import { Container, ButtonCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface InviteFriendsScreenProp extends NavigationInterface {}
 
-export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
-  const { colors, fonts } = useThemeContext();
+export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
+  let numColumns = 2;
+  const { navigation, route } = props;
+  const channelId = route.params?.channelId;
+
+  const selecteduserRef = useRef<any>(null);
   const { t } = useTranslation();
-  const { navigation } = props;
-  const channelId = props.route.params?.channelId;
-  const [state, setState] = useState<{
-    suggestions: PassportInterface[];
-    tagsSelected: PassportInterface[];
-    query: string;
-    receipientIds: string[];
-  }>({
-    suggestions: [],
-    tagsSelected: [],
-    query: '',
-    receipientIds: []
-  });
+  const { colors, fonts } = useThemeContext();
+  const { dismissKeyboard } = useKeyboardContext();
+  const [selected, setSelected] = useState<{
+    [key: string]: PassportInterface;
+  }>({});
 
-  const { data } = useQuery<MyConnectionsInterface>(GET_MY_CONNECTIONS, {
-    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
-  });
+  const [search, setSearch] = useState({ search: {} });
 
-  const { data: allMembersData } = useQuery<AllMembersRequestInterface>(
-    GET_ALL_MEMBERS,
-    {
-      variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
-    }
-  );
+  const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
-  const myConnection = data?.myConnections?.data;
-  const allMembers = allMembersData?.Passport;
-  const filteredMembers = removeDuplicateMembers(allMembers?.data.slice());
-
-  const filterConnections = myConnection?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
-  });
-
-  const filterAllMembers = filteredMembers?.slice().sort(function (a, b) {
-    if (a.firstName < b.firstName) return -1;
-
-    if (a.firstName > b.firstName) return 1;
-
-    return 0;
-  });
+  const participants = Object.values(selected);
 
   const [inviteToChannel, { loading }] = useMutation(INVITE_TO_CHANNEL, {
     variables: {
-      payload: { channelId: channelId, recipientIds: state.receipientIds }
+      payload: {
+        channelId,
+        recipientIds: participants.map(({ id }) => id)
+      }
     }
   });
+
+  const onSearchStateChange = (query: string) => {
+    setSearch({ ...search, search: query });
+  };
 
   const handleInputError = (error: string) => {
     Toast.show(t(`community.createTribe.${error}`));
   };
 
   const sendChannelInvite = async () => {
-    if (state.tagsSelected?.length < 1) {
+    if (!participants?.length) {
       return handleInputError('inviteError');
     }
     logEvent('send channel invite', { from: 'channel' });
@@ -104,120 +83,164 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
         'Activity Screen': 'Tribe invitation screen'
       });
       await inviteToChannel();
-      setState({
-        ...state,
-        tagsSelected: []
-      });
+      setSelected({});
       navigation.goBack();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
-  useEffect(() => {
-    if (filterAllMembers?.length) {
-      setState({
-        ...state,
-        suggestions: filterAllMembers
-      });
+  const handleSelect = (user: PassportInterface) => {
+    dismissKeyboard();
+    const { firstName, lastName, id, avatar } = user;
+
+    const payload = {
+      id,
+      avatar,
+      lastName,
+      firstName
+    } as PassportInterface;
+
+    if (!selected[id]) {
+      return setSelected({ ...selected, [id]: payload });
     }
-  }, []);
 
-  const _filterData = (query: string) => {
-    if (!query || query.trim() == '' || !state.suggestions) {
-      return;
-    }
-
-    let suggestions = state.suggestions;
-    let queryResult: PassportInterface[] = [];
-
-    query = query.toUpperCase();
-    suggestions.forEach((i) => {
-      if (
-        i.firstName.toUpperCase().includes(query) ||
-        i.lastName.toUpperCase().includes(query)
-      ) {
-        queryResult.push(i);
-      }
-    });
-    return queryResult;
+    const { [id]: _, ...restUsers } = { ...selected };
+    setSelected(restUsers);
   };
 
-  const handleDelete = (index: any) => {
-    let tagsSelected = state.tagsSelected;
-    tagsSelected.splice(index, 1);
-    let receipientIds = state.receipientIds;
-    receipientIds.splice(index, 1);
-    setState({ ...state, tagsSelected, receipientIds });
-  };
-
-  const handleAddition = (suggestion: PassportInterface) => {
-    setState({
-      ...state,
-      tagsSelected: state.tagsSelected.concat([suggestion]),
-      receipientIds: state.receipientIds.concat([suggestion?.id])
-    });
-  };
-
-  const _renderTags = () => {
+  const _renderCard = ({ item }: any) => {
     return (
-      <TagCover>
-        {state.tagsSelected.map((item, i) => {
-          return (
-            <TouchableHighlight
-              key={i}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 5,
-                marginBottom: 5,
-                backgroundColor: colors.INACTIVE,
-                paddingVertical: RFValue(4),
-                paddingHorizontal: RFValue(10),
-                marginHorizontal: RFValue(10),
-                borderRadius: 4
-              }}
-              onPress={() => handleDelete(i)}
-            >
-              <Fragment>
-                <FastImage
-                  resizeMode={FastImage.resizeMode.contain}
-                  source={{
-                    uri: item.avatar,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(25),
-                    height: RFValue(25),
-                    borderRadius: RFValue(50),
-                    marginRight: RFValue(7)
-                  }}
-                />
-                <Text
-                  style={{
-                    fontFamily: fonts.WORK_SANS_MEDIUM,
-                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {`${item.firstName} ${item.lastName}`}
-                </Text>
-                <Feather
-                  name="x"
-                  style={{
-                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                    color: colors.PRIMARY_TEXT,
-                    marginLeft: RFValue(10)
-                  }}
-                />
-              </Fragment>
-            </TouchableHighlight>
-          );
-        })}
-      </TagCover>
+      <TouchableOpacity
+        key={item?.id}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          width: RFValue(150),
+          paddingVertical: 5,
+          paddingHorizontal: 8,
+          marginVertical: 5,
+          marginHorizontal: 5,
+          backgroundColor: colors.INACTIVE,
+          borderRadius: 4
+        }}
+        onPress={() => handleSelect(item)}
+      >
+        <Fragment>
+          <FastImage
+            resizeMode={FastImage.resizeMode.contain}
+            source={{
+              uri: item?.avatar,
+              priority: FastImage.priority.high
+            }}
+            style={{
+              marginRight: 5,
+              width: RFValue(25),
+              height: RFValue(25),
+              borderRadius: RFValue(50)
+            }}
+          />
+          <Text
+            numberOfLines={1}
+            style={{
+              fontFamily: fonts.WORK_SANS_MEDIUM,
+              fontSize: RFValue(fonts.LARGE_SIZE - 2),
+              color: colors.PRIMARY_TEXT,
+              width: '60%',
+              textTransform: 'capitalize'
+            }}
+          >
+            {`${item?.firstName} ${item?.lastName}`}
+          </Text>
+          <Feather
+            name="x"
+            style={{
+              fontSize: RFValue(fonts.LARGE_SIZE - 2),
+              color: colors.PRIMARY_TEXT,
+              marginLeft: RFValue(10)
+            }}
+          />
+        </Fragment>
+      </TouchableOpacity>
     );
   };
+
+  if (participants.length % 2 == 0) {
+    numColumns = Math.floor(participants.length / 2);
+  } else {
+    numColumns = Math.floor(participants.length / 2) + 1;
+  }
+
+  const _renderSelectedItem = () => {
+    return (
+      <ScrollView
+        horizontal
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+        style={{
+          borderWidth: 1,
+          borderColor: colors.INPUT,
+          marginHorizontal: 15
+        }}
+      >
+        <FlatList
+          numColumns={numColumns}
+          data={participants}
+          renderItem={_renderCard}
+          ref={selecteduserRef}
+          onContentSizeChange={() =>
+            selecteduserRef.current.scrollToEnd({ animated: true })
+          }
+          onLayout={() =>
+            selecteduserRef.current.scrollToEnd({ animated: true })
+          }
+          keyExtractor={({ id }) => id}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ flex: 1, paddingBottom: 30 }}
+        />
+      </ScrollView>
+    );
+  };
+
+  const _searchBox = ({ currentRefinement, refine }: any) => (
+    <Searchbar
+      value={currentRefinement}
+      onChangeText={(value) => refine(value)}
+      placeholder={t(`community.invitation.placeholder`)}
+      style={{
+        height: RFValue(40),
+        width: '100%',
+        fontFamily: fonts.WORK_SANS_REGULAR,
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        color: colors.SECONDARY_TEXT,
+        backgroundColor: colors.WHITE,
+        elevation: 0,
+        borderColor: colors.INACTIVE,
+        borderRadius: 4,
+        borderWidth: 1
+      }}
+      iconColor={colors.PRIMARY_TEXT}
+    />
+  );
+
+  const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), [
+    indexName
+  ]);
+
+  const _renderItem = ({ item }: any) => {
+    if (selected[item.id]) return null;
+
+    return (
+      <InviteAlgoliaHighlight
+        {...item}
+        key={item.id}
+        handleSelect={() => handleSelect(item)}
+      />
+    );
+  };
+
   return (
     <Container>
       <Image
@@ -227,8 +250,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
           width: RFValue(80),
           height: RFValue(80),
           marginLeft: 'auto',
-          marginRight: 'auto',
-          marginTop: RFValue(15)
+          marginRight: 'auto'
         }}
       />
       <Title
@@ -238,7 +260,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
           color: colors.PRIMARY_TEXT,
           lineHeight: RFValue(30),
           textAlign: 'center',
-          marginTop: 20
+          paddingHorizontal: 15
         }}
       >
         {t(`community.invitation.channelTitle`)}
@@ -248,7 +270,8 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
           fontFamily: fonts.WORK_SANS_REGULAR,
           fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
           color: colors.PRIMARY_TEXT,
-          textAlign: 'center'
+          textAlign: 'center',
+          paddingHorizontal: 15
         }}
       >
         {t(`community.invitation.text`)}
@@ -258,126 +281,66 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
           fontFamily: fonts.WORK_SANS_MEDIUM,
           fontSize: RFValue(fonts.LARGE_SIZE - 2),
           color: colors.PRIMARY_TEXT,
-          marginTop: RFValue(40)
+          marginTop: RFValue(20),
+          paddingHorizontal: 15
         }}
       >
         {t(`community.invitation.label`)}
       </Title>
 
-      <KeyboardAwareScrollView
-        style={{ flexGrow: 1 }}
-        scrollEnabled={true}
-        keyboardShouldPersistTaps={'always'}
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: 'space-between'
+      {participants?.length ? <_renderSelectedItem /> : null}
+
+      <View
+        style={{
+          borderWidth: 1,
+          borderColor: colors.INPUT,
+          maxHeight: '40%',
+          marginHorizontal: 15
         }}
       >
-        <AutoTagCover>
-          <AutoTags
-            onBlur={Keyboard.dismiss}
-            suggestions={state.suggestions}
-            tagsSelected={state.tagsSelected}
-            handleAddition={handleAddition}
-            handleDelete={handleDelete}
-            blurOnSubmit={true}
-            placeholder={t(`community.invitation.placeholder`)}
-            autoFocus={false}
-            tagStyles={{
-              backgroundColor: colors.WHITE
+        <InstantSearch
+          indexName={indexName}
+          searchState={search.search}
+          searchClient={searchClient}
+          onSearchStateChange={onSearchStateChange}
+        >
+          <Configure hitsPerPage={5} distinct />
+          <AlgoliaSearchBox />
+          <AlgoliaList
+            //@ts-ignore
+            contentContainerStyle={{
+              paddingTop: 0,
+              paddingBottom: 10
             }}
-            style={{
-              backgroundColor: colors.WHITE,
-              margin: 0
-            }}
-            inputContainerStyle={{
-              backgroundColor: colors.WHITE,
-              width: '100%',
-              margin: 0,
-              padding: RFValue(10)
-            }}
-            containerStyle={{
-              backgroundColor: colors.WHITE,
-              width: '100%'
-            }}
-            renderTags={_renderTags}
-            filterData={_filterData}
-            renderItem={({ item, i }: any) => (
-              <Fragment>
-                <TouchableHighlight
-                  key={i}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 5,
-                    marginBottom: 5,
-                    backgroundColor: colors.TRANSPARENT,
-                    paddingVertical: RFValue(4),
-                    paddingHorizontal: RFValue(10),
-                    borderRadius: 4
-                  }}
-                  onPress={() => handleAddition(item)}
-                >
-                  <Fragment>
-                    <FastImage
-                      resizeMode={FastImage.resizeMode.contain}
-                      source={{
-                        uri: item.avatar,
-                        priority: FastImage.priority.high
-                      }}
-                      style={{
-                        width: RFValue(25),
-                        height: RFValue(25),
-                        borderRadius: RFValue(50),
-                        marginRight: RFValue(7)
-                      }}
-                    />
-                    <Text
-                      style={{
-                        fontFamily: fonts.WORK_SANS_MEDIUM,
-                        fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      {`${item.firstName} ${item.lastName}`}
-                    </Text>
-                  </Fragment>
-                </TouchableHighlight>
-                <Divider
-                  style={{
-                    height: 1.5,
-                    backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
-                  }}
-                />
-              </Fragment>
-            )}
+            //@ts-ignore
+            _separator={() => null}
+            //@ts-ignore
+            _renderItem={_renderItem}
           />
-        </AutoTagCover>
-
-        <ButtonCover>
-          <GradientButton
-            onPress={sendChannelInvite}
-            loading={loading}
-            style={{ height: 50 }}
-            gradientContainerstyle={{ height: 50 }}
-            contentStyle={{ height: 50 }}
-          >
-            {t(`community.invitation.invite`)}
-          </GradientButton>
-          <Button
-            labelStyle={{
-              color: colors.PRIMARY_TEXT,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            onPress={() => navigation.goBack()}
-          >
-            {t(`community.invitation.cancel`)}
-          </Button>
-        </ButtonCover>
-      </KeyboardAwareScrollView>
+        </InstantSearch>
+      </View>
+      <ButtonCover>
+        <GradientButton
+          loading={loading}
+          style={{ height: 50 }}
+          onPress={sendChannelInvite}
+          contentStyle={{ height: 50 }}
+          gradientContainerstyle={{ height: 50, marginTop: RFValue(15) }}
+        >
+          {t(`community.invitation.invite`)}
+        </GradientButton>
+        <Button
+          labelStyle={{
+            color: colors.PRIMARY_TEXT,
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            textTransform: 'capitalize'
+          }}
+          onPress={() => navigation.goBack()}
+        >
+          {t(`community.invitation.cancel`)}
+        </Button>
+      </ButtonCover>
     </Container>
   );
 }

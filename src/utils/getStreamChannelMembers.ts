@@ -7,6 +7,6 @@ export default function getStreamChannelMembers(channel: ChannelType) {
 
   return members.map((member) => ({
     avatar: member.user?.image,
-    ...member.user?.user
+    ...member.user
   }));
 }

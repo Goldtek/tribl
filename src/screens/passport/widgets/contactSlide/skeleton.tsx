@@ -1,30 +1,10 @@
-import React, {
-  useState,
-  useRef,
-  useCallback,
-  Fragment,
-  useEffect
-} from 'react';
-import { AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
-import {
-  Button,
-  IconButton,
-  Title,
-  Paragraph,
-  TextInput,
-  TouchableRipple
-} from 'react-native-paper';
+import React from 'react';
+import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
+import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { useTranslation } from 'react-i18next';
-import DateTimePicker from 'react-native-modal-datetime-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../theme';
-import hexToRGB from '../../../../utils/hexToRGB';
-import { MyPassportInterface } from '../../../../graphql/types';
-import { useQuery } from '@apollo/react-hooks';
-import formatMessageTime from '../../../../utils/timesince';
-import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
-import IdentityModal from '../identityModal';
 
 import {
   ContactContainer,
@@ -32,25 +12,16 @@ import {
   LastNameContainer,
   DOBContainer,
   Container,
-  InterestContainer,
   IdentityContainer,
   Identities,
-  IdentityText,
   LocationContainer,
   Location,
-  CitizenshipContainer,
-  EditTextInput,
   AddIdentity
 } from './styles';
 
 function ContactSlideSkeleton(props: any) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
-  const { data: userData, loading } = useQuery<MyPassportInterface>(
-    GET_USER_PASSPORT
-  );
-  const userDetails = userData?.myPassport;
 
   return (
     <ContactContainer>

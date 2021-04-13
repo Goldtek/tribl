@@ -81,7 +81,7 @@ function CustomDirectMessage(props: MessageProps) {
                   Mixpanel.track(
                     'User Deletes Message On Direct Message Screen',
                     {
-                      info: `${props.message.user?.name} deletes his message on a conversation with ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName}}`,
+                      info: `${props.message.user?.name} deletes his message on a conversation with ${channel.data?.receiver.name}}`,
                       'Activity Screen': 'Direct Message Screen'
                     }
                   );
@@ -95,7 +95,7 @@ function CustomDirectMessage(props: MessageProps) {
                   Mixpanel.track(
                     'User Deletes Message On Direct Message Thread Screen',
                     {
-                      info: `${props.message.user?.name} deletes his message on a conversation with ${channel.data?.receiver.firstName} ${channel.data?.receiver.lastName}} in a DM thread screen`,
+                      info: `${props.message.user?.name} deletes his message on a conversation with ${channel.data?.receiver.name}} in a DM thread screen`,
                       'Activity Screen': 'Direct Message Thread Screen'
                     }
                   );

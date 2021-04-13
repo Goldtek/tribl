@@ -80,7 +80,7 @@ function ChannelMember(props: ChannelUserProp) {
   return (
     <TouchableRipple
       onPress={handleNavigation}
-      rippleColor={hexToRGB(colors.PRIMARY, 0.3)}
+      rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
       style={{
         flex: 1,
         flexDirection: 'row',

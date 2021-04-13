@@ -1,13 +1,17 @@
 import InboxScreen from './home';
 import NewMessageScreen from './newMessage';
 import DirectChatScreen from './directChat';
-import ChannelChatScreen from './channelChat';
 import ThreadChatScreen from './threadChat';
+import ChannelChatScreen from './channelChat';
+import GroupMembersScreen from './groupMembers';
+import CreateGroupScreen from './createNewGroup';
 import ChannelMembersScreen from './channelMembers';
-import InvitationToChannelScreen from './invitationToChannel';
-import GroupMessageScreen from './groupMessage';
-import CreateGroupScreen from './groupMessage/widgets/createGroup';
+import GroupInformationScreen from './groupInformation';
 import ChannelInformationScreen from './channelInformation';
+import AddMembersToGroupScreen from './addGroupParticipants';
+import InvitationToChannelScreen from './invitationToChannel';
+import DirectMessageInformation from './directMessageInformation';
+import SelectGroupParticipantsScreen from './selectGroupParticipants';
 import InviteToChannelFromProfileScreen from './inviteToChannelFromProfile';
 
 export default {
@@ -16,10 +20,14 @@ export default {
   DirectChatScreen,
   NewMessageScreen,
   ChannelChatScreen,
-  GroupMessageScreen,
-  ChannelMembersScreen,
-  InvitationToChannelScreen,
   CreateGroupScreen,
+  GroupMembersScreen,
+  ChannelMembersScreen,
+  GroupInformationScreen,
+  AddMembersToGroupScreen,
   ChannelInformationScreen,
+  DirectMessageInformation,
+  InvitationToChannelScreen,
+  SelectGroupParticipantsScreen,
   InviteToChannelFromProfileScreen
 };

@@ -5,14 +5,16 @@ import React, {
   useEffect,
   useCallback
 } from 'react';
+import * as Updates from 'expo-updates';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
+import * as Location from 'expo-location';
 import { Title, ActivityIndicator } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { FlatList } from 'react-native-gesture-handler';
 import RecommendedUser from '../../../components/recommendedUser';
 import RecommendedCommunity from '../../../components/recommendedCommunity';
@@ -28,11 +30,11 @@ import {
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
-  GET_TRENDING_CHANNELS,
   USER_CHANNELS,
   GET_USER_PASSPORT,
   GET_FIREBASE_TOKEN
 } from '../../../graphql/server/query';
+import { UPDATE_PASSPORT } from '../../../graphql/server/mutations';
 import MyChannel from '../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
@@ -56,6 +58,8 @@ import { useIsFocused } from '@react-navigation/native';
 import MyCommunity from '../../../components/myCommunities';
 import Storage from '../../../libs/storage';
 import Firechat from '../../../firebase';
+import CheckAppUpdates from '../../../libs/updates';
+import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -79,6 +83,7 @@ export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const isFocused = useIsFocused();
+  const [OTAUpdate, setOTAUpdate] = useState(false);
 
   const [state, setState] = useState({
     showJoinCommunityModal: false,
@@ -91,18 +96,20 @@ export default function HomeScreen(props: ScreenProp) {
     GenerateFirebaseTokenIT
   >(GET_FIREBASE_TOKEN);
 
-  const [
-    getMyCommunities,
-    { refetch, fetchMore, data: myCommunityData, loading: myCommunityLoading }
-  ] = useLazyQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
-    variables: { input: { limit: PAGINATION_DEFAULT * 2, skip: 0 } }
+  const {
+    data: myCommunityData,
+    refetch: myCommunityRefetch,
+    loading: myCommunityLoading,
+    fetchMore: myCommunityFetchMore
+  } = useQuery<MyCommunitiesRequestInterface>(GET_MY_COMMUNITIES, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
   const [getConnectionRequest] = useLazyQuery(GET_CONNECTION_REQUEST, {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
-  const [getUserPassport] = useLazyQuery(GET_USER_PASSPORT);
+  const [getUserPassport, { data: userData }] = useLazyQuery(GET_USER_PASSPORT);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
@@ -120,14 +127,21 @@ export default function HomeScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
+  const checkUpdate = async () => {
+    const update = await Updates.checkForUpdateAsync();
+    setOTAUpdate(update.isAvailable);
+  };
+
   useEffect(() => {
     tagScreenName('TriblScreen');
     getPopularCommunities();
     getConnectionRequest();
     getNearbyMembers();
     getMyConnections();
-    getAllMembers();
     getUserPassport();
+    handleLocation();
+    getAllMembers();
+    checkUpdate();
   }, []);
 
   useEffect(() => {
@@ -144,14 +158,13 @@ export default function HomeScreen(props: ScreenProp) {
     GET_RECOMMENDED_COMMUNITIES
   );
 
-  const { data: myChannelsData } = useQuery<MyChannelRequestInterface>(
-    USER_CHANNELS,
-    {
-      variables: {
-        input: { limit: PAGINATION_DEFAULT / 2 }
-      }
+  const { data: myChannelsData, refetch: refetchMyChannels } = useQuery<
+    MyChannelRequestInterface
+  >(USER_CHANNELS, {
+    variables: {
+      input: { limit: PAGINATION_DEFAULT * (PAGINATION_DEFAULT / 2), skip: 0 }
     }
-  );
+  });
 
   const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
     variables: {
@@ -159,8 +172,75 @@ export default function HomeScreen(props: ScreenProp) {
     }
   });
 
+  const userDetails = userData?.myPassport;
+  const currentLocation = userDetails?.currentLocation;
+
+  const [location, setLocation] = useState<{
+    city?: string;
+    state?: string | null | undefined;
+    country?: string;
+    lat?: number | null;
+    long?: number | null;
+  }>({
+    city: currentLocation?.city,
+    state: currentLocation?.state,
+    country: currentLocation?.country,
+    lat: currentLocation?.lat,
+    long: currentLocation?.long
+  });
+
+  const handleLocation = async () => {
+    try {
+      await Location.requestPermissionsAsync();
+
+      const { coords } = await Location.getCurrentPositionAsync({
+        enableHighAccuracy: true,
+        accuracy: Location.Accuracy.Highest
+      });
+
+      const [currentLocation] = await Location.reverseGeocodeAsync({
+        latitude: coords.latitude,
+        longitude: coords.longitude
+      });
+
+      const { city, region, country } = currentLocation;
+
+      if (currentLocation) {
+        await setLocation({
+          ...location,
+          city: city,
+          state: region,
+          country: country,
+          lat: coords.latitude,
+          long: coords.longitude
+        });
+        await updatePassport();
+        Mixpanel.track('User Update Location', {
+          info: `User ${userDetails.firstName} ${userDetails.lastName} updates location`,
+          'Activity Screen': 'Community screen'
+        });
+      }
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
+  const [updatePassport] = useMutation(UPDATE_PASSPORT, {
+    variables: {
+      payload: {
+        currentLocation: {
+          city: location.city,
+          state: location.state,
+          country: location.country,
+          long: location.long,
+          lat: location.lat
+        }
+      }
+    }
+  });
+
+  const myChannels = myChannelsData?.myChannels;
   const myCommunities = myCommunityData?.myCommunities;
-  const myChannels = myChannelsData?.myChannels.data;
   const recommendedMembers = membersData?.recommendedMembers?.data;
   const communities = communityData?.recommendedCommunities?.data
     .slice()
@@ -170,8 +250,9 @@ export default function HomeScreen(props: ScreenProp) {
     });
 
   useEffect(() => {
-    myCommunities ? refetch() : getMyCommunities();
-  }, [isFocused, myCommunities]);
+    myCommunities && myCommunityRefetch();
+    myChannels && refetchMyChannels();
+  }, [isFocused]);
 
   const navigateToSearch = (index: number) => {
     navigation.navigate('CommunitySearchScreen', { index: index });
@@ -207,33 +288,33 @@ export default function HomeScreen(props: ScreenProp) {
     [callOnScrollEnd]
   );
 
-  // const handleEndReach = () => {
-  //   if (!callOnScrollEnd) return;
+  const handleEndReach = () => {
+    if (!callOnScrollEnd) return;
 
-  //   fetchMore({
-  //     variables: {
-  //       input: {
-  //         skip: myCommunities?.data.length,
-  //         limit: PAGINATION_DEFAULT / 2
-  //       }
-  //     },
-  //     updateQuery: (prev, { fetchMoreResult }) => {
-  //       setCallOnScrollEnd(false);
+    myCommunityFetchMore({
+      variables: {
+        input: {
+          skip: myCommunities?.data.length,
+          limit: PAGINATION_DEFAULT / 2
+        }
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setCallOnScrollEnd(false);
 
-  //       if (!fetchMoreResult) return prev;
+        if (!fetchMoreResult) return prev;
 
-  //       return Object.assign({}, prev, {
-  //         myCommunities: {
-  //           ...prev.myCommunities,
-  //           data: [
-  //             ...prev.myCommunities.data,
-  //             ...fetchMoreResult.myCommunities.data
-  //           ]
-  //         }
-  //       });
-  //     }
-  //   });
-  // };
+        return Object.assign({}, prev, {
+          myCommunities: {
+            ...prev.myCommunities,
+            data: [
+              ...prev.myCommunities.data,
+              ...fetchMoreResult.myCommunities.data
+            ]
+          }
+        });
+      }
+    });
+  };
 
   return (
     <Fragment>
@@ -270,18 +351,18 @@ export default function HomeScreen(props: ScreenProp) {
               horizontal={true}
               onEndReachedThreshold={0.5}
               ListEmptyComponent={<MyCommunitySkeleton skeletonSize={2} />}
-              // onEndReached={() => {
-              //   if (
-              //     myCommunities &&
-              //     myCommunities?.metadata.totalCount >
-              //       myCommunities?.data.length
-              //   ) {
-              //     setCallOnScrollEnd(true);
-              //   }
-              // }}
+              onEndReached={() => {
+                if (
+                  myCommunities &&
+                  myCommunities?.metadata.totalCount >
+                    myCommunities?.data.length
+                ) {
+                  setCallOnScrollEnd(true);
+                }
+              }}
               ListFooterComponent={_renderFooter}
               renderItem={_renderMyCommunityItem}
-              // onMomentumScrollEnd={handleEndReach}
+              onMomentumScrollEnd={handleEndReach}
               ListFooterComponentStyle={{ justifyContent: 'center' }}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -292,7 +373,7 @@ export default function HomeScreen(props: ScreenProp) {
             />
           </RecommendedList>
         ) : null}
-        {myChannels?.length ? (
+        {myChannels?.data?.length ? (
           <RecommendedList
             style={{
               paddingBottom: RFValue(15)
@@ -336,7 +417,7 @@ export default function HomeScreen(props: ScreenProp) {
             </RecommendedListHeader>
             <RecommendedCommunityContainer>
               <FlatList
-                data={myChannels}
+                data={myChannels.data}
                 horizontal={true}
                 renderItem={_renderMyChannelItem}
                 ListEmptyComponent={
@@ -512,6 +593,10 @@ export default function HomeScreen(props: ScreenProp) {
 
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
+      ) : null}
+
+      {OTAUpdate ? (
+        <CheckAppUpdates cancelUpdate={() => setOTAUpdate(false)} />
       ) : null}
     </Fragment>
   );

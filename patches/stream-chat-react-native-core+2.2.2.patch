@@ -1,3 +1,223 @@
+diff --git a/node_modules/stream-chat-react-native-core/src/components/Attachment/Card.tsx b/node_modules/stream-chat-react-native-core/src/components/Attachment/Card.tsx
+index ce69745..8e1cd07 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/Attachment/Card.tsx
++++ b/node_modules/stream-chat-react-native-core/src/components/Attachment/Card.tsx
+@@ -1,5 +1,6 @@
+ import React from 'react';
+ import { ImageRequireSource, Linking, View } from 'react-native';
++import FastImage from 'react-native-fast-image'
+ 
+ import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
+ import { styled } from '../../styles/styledComponents';
+@@ -25,7 +26,7 @@ const Container = styled.TouchableOpacity<{ alignment: Alignment }>`
+   ${({ theme }) => theme.message.card.container.css}
+ `;
+ 
+-const CardCover = styled.Image`
++const CardCover = styled(FastImage)`
+   height: 150px;
+   ${({ theme }) => theme.message.card.cover.css}
+ `;
+@@ -69,27 +70,27 @@ const goToURL = (url?: string) => {
+ 
+ export type CardProps<
+   At extends UnknownType = DefaultAttachmentType
+-> = Attachment<At> & {
+-  /**
+-   * Position of the message, either 'right' or 'left'
+-   */
+-  alignment: Alignment;
+-  /**
+-   * Custom UI component to override default cover (between Header and Footer) of Card component.
+-   * Accepts the same props as Card component.
+-   */
+-  Cover?: React.ComponentType<CardProps<At>>;
+-  /**
+-   * Custom UI component to override default Footer of Card component.
+-   * Accepts the same props as Card component.
+-   */
+-  Footer?: React.ComponentType<CardProps<At>>;
+-  /**
+-   * Custom UI component to override default header of Card component.
+-   * Accepts the same props as Card component.
+-   */
+-  Header?: React.ComponentType<CardProps<At>>;
+-};
++  > = Attachment<At> & {
++    /**
++     * Position of the message, either 'right' or 'left'
++     */
++    alignment: Alignment;
++    /**
++     * Custom UI component to override default cover (between Header and Footer) of Card component.
++     * Accepts the same props as Card component.
++     */
++    Cover?: React.ComponentType<CardProps<At>>;
++    /**
++     * Custom UI component to override default Footer of Card component.
++     * Accepts the same props as Card component.
++     */
++    Footer?: React.ComponentType<CardProps<At>>;
++    /**
++     * Custom UI component to override default header of Card component.
++     * Accepts the same props as Card component.
++     */
++    Header?: React.ComponentType<CardProps<At>>;
++  };
+ 
+ /**
+  * UI component for card in attachments.
+@@ -129,8 +130,11 @@ export const Card = <At extends UnknownType = DefaultAttachmentType>(
+       {Cover && <Cover {...props} />}
+       {uri && !Cover && (
+         <CardCover
+-          resizeMode='cover'
+-          source={{ uri: makeImageCompatibleUrl(uri) }}
++          resizeMode={FastImage.resizeMode.cover}
++          source={{
++            uri: makeImageCompatibleUrl(uri),
++            priority: FastImage.priority.normal
++          }}
+         />
+       )}
+       {Footer ? (
+diff --git a/node_modules/stream-chat-react-native-core/src/components/Attachment/Gallery.tsx b/node_modules/stream-chat-react-native-core/src/components/Attachment/Gallery.tsx
+index 3a5429a..4c49c1a 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/Attachment/Gallery.tsx
++++ b/node_modules/stream-chat-react-native-core/src/components/Attachment/Gallery.tsx
+@@ -10,7 +10,7 @@ import {
+ } from 'react-native';
+ import ImageViewer from 'react-native-image-zoom-viewer';
+ import { Immutable, isImmutable } from 'seamless-immutable';
+-
++import FastImage from 'react-native-fast-image'
+ import { CloseButton } from '../CloseButton/CloseButton';
+ 
+ import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
+@@ -53,8 +53,8 @@ const GalleryContainer = styled.View<{
+     length && length >= 4
+       ? theme.message.gallery.doubleSize
+       : length === 3
+-      ? theme.message.gallery.halfSize
+-      : theme.message.gallery.size}px;
++        ? theme.message.gallery.halfSize
++        : theme.message.gallery.size}px;
+   overflow: hidden;
+   width: ${({ theme }) => theme.message.gallery.width}px;
+   ${({ theme }) => theme.message.gallery.galleryContainer.css}
+@@ -167,10 +167,21 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
+           testID='image-attachment-single'
+           {...additionalTouchableProps}
+         >
+-          <Image
+-            resizeMode='cover'
+-            source={{ uri: galleryImages[0].url }}
++
++          {/* <Image
++                  resizeMode='cover'
++                  source={{ uri: galleryImages[0].url }}
++                  style={{ flex: 1, opacity: 0.5 }}
++                /> */}
++
++
++          <FastImage
+             style={{ flex: 1 }}
++            source={{
++              uri: galleryImages[0].url,
++              priority: FastImage.priority.high
++            }}
++            resizeMode={FastImage.resizeMode.cover}
+           />
+         </Single>
+         {viewerModalOpen && (
+@@ -222,10 +233,19 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
+           >
+             {i === 3 && galleryImages.length > 4 ? (
+               <View style={{ flex: 1 }}>
+-                <Image
++                {/* <Image
+                   resizeMode='cover'
+                   source={{ uri: galleryImages[i].url }}
+                   style={{ flex: 1, opacity: 0.5 }}
++                /> */}
++
++                <FastImage
++                  style={{ flex: 1, opacity: 0.5 }}
++                  resizeMode={FastImage.resizeMode.cover}
++                  source={{
++                    uri: galleryImages[i].url,
++                    priority: FastImage.priority.high
++                  }}
+                 />
+                 <View
+                   style={[
+@@ -248,17 +268,25 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
+                     >
+                       +
+                       {t('{{ imageCount }} more', {
+-                        imageCount: galleryImages.length - i,
+-                      })}
++                      imageCount: galleryImages.length - i,
++                    })}
+                     </Text>
+                   </View>
+                 </View>
+               </View>
+             ) : (
+-              <Image
+-                resizeMode='cover'
+-                source={{ uri: image?.url }}
++              // <Image
++              //   resizeMode='cover'
++              //   source={{ uri: image?.url }}
++              //   style={{ flex: 1 }}
++              // />
++              <FastImage
+                 style={{ flex: 1 }}
++                resizeMode={FastImage.resizeMode.cover}
++                source={{
++                  uri: image?.url,
++                  priority: FastImage.priority.high
++                }}
+               />
+             )}
+           </ImageContainer>
+diff --git a/node_modules/stream-chat-react-native-core/src/components/Avatar/Avatar.tsx b/node_modules/stream-chat-react-native-core/src/components/Avatar/Avatar.tsx
+index d3b5017..3e09bd6 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/Avatar/Avatar.tsx
++++ b/node_modules/stream-chat-react-native-core/src/components/Avatar/Avatar.tsx
+@@ -1,4 +1,5 @@
+ import React, { useState } from 'react';
++import FastImage from 'react-native-fast-image'
+ 
+ import { styled } from '../../styles/styledComponents';
+ 
+@@ -20,7 +21,7 @@ const AvatarFallback = styled.View<{ size: number }>`
+   ${({ theme }) => theme.avatar.fallback.css}
+ `;
+ 
+-const AvatarImage = styled.Image<{ size: number }>`
++const AvatarImage = styled(FastImage)<{ size: number }>`
+   border-radius: ${({ size }) => size / 2}px;
+   height: ${({ size }) => size}px;
+   width: ${({ size }) => size}px;
+@@ -66,12 +67,12 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
+     <AvatarContainer>
+       {image && !imageError ? (
+         <AvatarImage
+-          accessibilityLabel='initials'
+-          onError={() => setImageError(true)}
+-          resizeMethod='resize'
+           size={size}
+-          source={{ uri: image }}
++          accessibilityLabel='initials'
+           testID={testID || 'avatar-image'}
++          onError={() => setImageError(true)}
++          resizeMode={FastImage.resizeMode.stretch}
++          source={{ uri: image, priority: FastImage.priority.normal }}
+         />
+       ) : (
+         <AvatarFallback size={size}>
 diff --git a/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx b/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx
 index 33319a7..9fc949e 100644
 --- a/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx

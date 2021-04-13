@@ -1,10 +1,10 @@
 import { PassportInterface } from '../graphql/types';
-import { fireAuth } from '../firebase/config';
+import { chatClient } from '../stream/types';
 
 const removeDuplicateMembers = (members?: PassportInterface[]) => {
   if (!members) return;
 
-  const userId = fireAuth.currentUser?.uid;
+  const userId = chatClient.user?.id;
 
   const uniqueMembers: PassportInterface[] = [];
   const hashMap: { [key: string]: string } = {};

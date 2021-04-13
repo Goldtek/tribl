@@ -423,8 +423,8 @@ export const GET_POPULAR_COMMUNITIES = gql`
 
 //GET MY COMMUNITIES
 export const GET_MY_COMMUNITIES = gql`
-  query myCommunities {
-    myCommunities {
+  query myCommunities($input: CommunityArgsInput) {
+    myCommunities(input: $input) {
       metadata {
         totalCount
       }

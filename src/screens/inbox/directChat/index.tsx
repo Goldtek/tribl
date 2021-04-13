@@ -1,17 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { ChatScreenProps, NavigationInterface } from '../../types';
-import { Keyboard, TouchableWithoutFeedback, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {
   Paragraph,
   Surface,
-  TouchableRipple,
-  Menu,
-  Divider
+  IconButton,
+  TouchableRipple
 } from 'react-native-paper';
-import { Ionicons, Entypo } from '@expo/vector-icons';
-import FastImage from 'react-native-fast-image';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   Chat,
   Avatar,
@@ -19,6 +15,7 @@ import {
   MessageList,
   MessageInput
 } from 'stream-chat-expo';
+import { StatusBar } from 'expo-status-bar';
 import hexToRGB from '../../../utils/hexToRGB';
 import { useThemeContext } from '../../../theme';
 import { tagScreenName } from '../../../utils/uxcamHelper';
@@ -31,7 +28,6 @@ import CustomKeyboardCompatibleView from '../../../components/customKeyboardComp
 import { ChannelSort, LiteralStringForUnion } from 'stream-chat';
 import { crashlytics } from '../../../firebase/config';
 import { Channel as ChannelType } from 'stream-chat';
-import CustomSystemMessage from '../../../components/customSystemMessage';
 import { RFValue } from 'react-native-responsive-fontsize';
 import {
   chatClient,
@@ -46,11 +42,9 @@ import {
 
 import {
   Container,
+  HeaderTitleContainer,
   HeaderContainer,
-  GroupImageContainer,
-  MessageListContainer,
-  HeaderLeftCover,
-  HeaderRightCover
+  MessageListContainer
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -61,8 +55,6 @@ interface ScreenProp extends NavigationInterface {
 export default function DirectChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
   const user = route.params;
-  const { t } = useTranslation();
-  const { bottom, top: safeAreaTop } = useSafeAreaInsets();
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
@@ -71,9 +63,6 @@ export default function DirectChatScreen(props: ScreenProp) {
     setActivityScreen,
     setChannel: setStreamContextChannel
   } = useStreamContext();
-
-  const [menu, setMenu] = useState(false);
-  const showMenu = () => setMenu(!menu);
 
   const [channel, setChannel] = useState(
     chatClient.channel('team', user.channelId)
@@ -89,22 +78,6 @@ export default function DirectChatScreen(props: ScreenProp) {
     setActivityScreen('directMessage');
     setStreamContextChannel(channel);
   }, [channel?.id]);
-
-  const getMenuHeight = useCallback(() => {
-    switch (true) {
-      case Math.ceil(safeAreaTop) <= 20:
-        return Math.ceil(safeAreaTop + 50);
-
-      case Math.ceil(safeAreaTop) <= 36:
-        return Math.ceil(safeAreaTop + 50);
-
-      case Math.ceil(safeAreaTop) <= 44:
-        return Math.ceil(safeAreaTop + 35);
-
-      default:
-        return Math.ceil(safeAreaTop);
-    }
-  }, []);
 
   const getConversation = async () => {
     const filter = {
@@ -157,7 +130,7 @@ export default function DirectChatScreen(props: ScreenProp) {
           sender: {
             readAt: Date.now(),
             id: chatClient.user?.id,
-            ...chatClient.user?.user
+            ...chatClient.user
           },
           receiver: { ...user, readAt: Date.now() },
           name: Date.now(),
@@ -166,7 +139,7 @@ export default function DirectChatScreen(props: ScreenProp) {
           isNew: true
         });
 
-        await newChannel.create();
+        await newChannel.watch();
         setChannel(newChannel);
         setChannelMembers(newChannel.state.members);
       }
@@ -175,63 +148,18 @@ export default function DirectChatScreen(props: ScreenProp) {
     }
   };
 
-  let receiver: any = null;
-  let receiverId: any = null;
-  const groupAvatar: string[] = [];
+  const receiverId = Object.keys(channelMembers).find(
+    (userId: string) => userId !== chatClient.user?.id
+  );
 
-  if (Boolean(channel.data?.isDm)) {
-    receiverId = Object.keys(channelMembers).find(
-      (userId: string) => userId !== chatClient.user?.id
-    );
-  }
-
-  if (Boolean(channel.data?.isGroup)) {
-    const members = Object.values(channel.state.members);
-
-    for (let index = 0; index < members.length; index++) {
-      const member = members[index];
-
-      if (groupAvatar.length === 3) break;
-
-      if (chatClient.user?.id !== member.user?.id) {
-        const avatar = member.user?.user.avatar || USER_DEFAULT_AVATAR;
-        groupAvatar.push(avatar);
-      }
-
-      if (members.length === 2 && groupAvatar.length < 2) {
-        groupAvatar.push(`${chatClient.user?.user.avatar}`);
-      }
-    }
-  }
-
-  if (Boolean(channel.data?.isDm)) {
-    receiver = receiverId
-      ? channelMembers[`${receiverId}`].user
-      : {
-          image: route.params.avatar || USER_DEFAULT_AVATAR,
-          name:
-            route.params.title ||
-            `${route.params.firstName} ${route.params.lastName}`
-        };
-  }
-
-  if (Boolean(channel.data?.isGroup)) {
-    receiver = channel.data;
-  }
-
-  const inviteTribeNavigation = () => {
-    navigation.navigate('InviteToTribeFromProfileScreen', {
-      memberId: user?.id
-    });
-    setMenu(false);
-  };
-
-  const inviteChannelNavigation = () => {
-    navigation.navigate('InviteToChannelFromProfileScreen', {
-      memberId: user?.id
-    });
-    setMenu(false);
-  };
+  const receiver = receiverId
+    ? channelMembers[`${receiverId}`].user
+    : {
+        image: route.params.avatar || USER_DEFAULT_AVATAR,
+        name:
+          route.params.title ||
+          `${route.params.firstName} ${route.params.lastName}`
+      };
 
   useEffect(() => {
     tagScreenName('DirectChatScreen');
@@ -239,236 +167,78 @@ export default function DirectChatScreen(props: ScreenProp) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <Container style={{ paddingBottom: bottom }}>
+      <Container>
+        <StatusBar style="dark" animated />
         <HeaderContainer>
-          <HeaderLeftCover>
-            <TouchableRipple
-              onPress={() => {
-                if (Boolean(channel.data?.isDm)) {
-                  navigation.goBack();
-                } else {
-                  navigation.navigate('InboxScreen');
-                }
-              }}
-              style={{
-                height: 40,
-                width: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 40 / 2,
-                marginRight: 10
-              }}
-            >
-              <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
-            </TouchableRipple>
+          <TouchableRipple
+            onPress={navigation.goBack}
+            style={{
+              height: 40,
+              width: 40,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 40 / 2,
+              marginRight: 10
+            }}
+          >
+            <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
+          </TouchableRipple>
+
+          <Fragment>
             <Surface
               style={{
                 width: 40,
                 height: 40,
                 elevation: 4,
                 borderRadius: 40 / 2,
-                marginRight: channel.data?.isGroup ? 10 : 5,
+                marginRight: channel.data?.isGroup ? 10 : 0,
                 justifyContent: 'center'
               }}
             >
-              {Boolean(channel.data?.isDm) && (
-                <Chat
-                  //@ts-ignore
-                  client={chatClient}
-                  style={chatStyles}
+              <Chat
+                //@ts-ignore
+                client={chatClient}
+                style={chatStyles}
+              >
+                <TouchableRipple
+                  borderless
+                  onPress={() =>
+                    navigation.navigate('DirectMessageInformation')
+                  }
+                  style={{
+                    height: RFValue(40),
+                    width: RFValue(40),
+                    borderRadius: 40 / 2
+                  }}
                 >
                   <Avatar
                     image={receiver?.image}
                     name={receiver?.name}
                     size={RFValue(40)}
                   />
-                </Chat>
-              )}
-
-              {channel.data?.isGroup && groupAvatar.length === 2 && (
-                <GroupImageContainer>
-                  <FastImage
-                    resizeMode={FastImage.resizeMode.cover}
-                    source={{
-                      uri: groupAvatar[1],
-                      priority: FastImage.priority.high
-                    }}
-                    style={{
-                      width: RFValue(28),
-                      height: RFValue(28),
-                      borderRadius: RFValue(28 / 2),
-                      zIndex: 2,
-                      borderWidth: 2,
-                      right: 1,
-                      bottom: 1,
-                      position: 'absolute',
-                      borderColor: colors.WHITE
-                    }}
-                  />
-
-                  <FastImage
-                    resizeMode={FastImage.resizeMode.cover}
-                    source={{
-                      uri: groupAvatar[0],
-                      priority: FastImage.priority.high
-                    }}
-                    style={{
-                      width: RFValue(25),
-                      height: RFValue(25),
-                      left: 1,
-                      top: 5,
-                      borderRadius: RFValue(25 / 2),
-                      position: 'absolute',
-                      borderColor: colors.WHITE,
-                      borderWidth: 2
-                    }}
-                  />
-                </GroupImageContainer>
-              )}
-
-              {channel.data?.isGroup && groupAvatar.length === 3 && (
-                <GroupImageContainer>
-                  <FastImage
-                    resizeMode={FastImage.resizeMode.cover}
-                    source={{
-                      uri: groupAvatar[0],
-                      priority: FastImage.priority.high
-                    }}
-                    style={{
-                      width: RFValue(22),
-                      height: RFValue(22),
-                      borderRadius: RFValue(22 / 2),
-                      borderColor: colors.WHITE,
-                      bottom: 5,
-                      borderWidth: 2
-                    }}
-                  />
-
-                  <FastImage
-                    resizeMode={FastImage.resizeMode.cover}
-                    source={{
-                      uri: groupAvatar[1],
-                      priority: FastImage.priority.high
-                    }}
-                    style={{
-                      width: RFValue(25),
-                      height: RFValue(25),
-                      borderRadius: RFValue(25 / 2),
-                      top: 20,
-                      zIndex: 2,
-                      borderWidth: 2,
-                      borderColor: colors.WHITE,
-                      position: 'absolute'
-                    }}
-                  />
-
-                  <FastImage
-                    resizeMode={FastImage.resizeMode.cover}
-                    source={{
-                      uri: groupAvatar[2],
-                      priority: FastImage.priority.high
-                    }}
-                    style={{
-                      width: RFValue(22),
-                      height: RFValue(22),
-                      bottom: 5,
-                      borderWidth: 2,
-                      borderColor: colors.WHITE,
-                      borderRadius: RFValue(22 / 2)
-                    }}
-                  />
-                </GroupImageContainer>
-              )}
+                </TouchableRipple>
+              </Chat>
             </Surface>
-            <Paragraph
-              style={{
-                fontSize: fonts.MEDIUM_SIZE + 2,
-                fontFamily: fonts.WORK_SANS_BOLD,
-                marginHorizontal: 5
-              }}
-            >
-              {`${receiver?.name}`.length <= 20
-                ? `${receiver?.name}`
-                : `${receiver?.name}`.substr(0, 20).concat('...')}
-            </Paragraph>
-          </HeaderLeftCover>
-          {Boolean(channel.data?.isDm) && (
-            <HeaderRightCover>
-              <Menu
-                visible={menu}
-                onDismiss={showMenu}
-                anchor={
-                  <TouchableRipple
-                    rippleColor={colors.PRIMARY}
-                    onPress={showMenu}
-                    style={{
-                      padding: RFValue(3),
-                      paddingTop: RFValue(6),
-                      paddingBottom: RFValue(6),
-                      backgroundColor: menu ? colors.PRIMARY : 'transparent',
-                      borderRadius: 4,
-                      borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
-                      borderWidth: 1
-                    }}
-                  >
-                    <Entypo
-                      name="dots-three-vertical"
-                      color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
-                      size={20}
-                    />
-                  </TouchableRipple>
-                }
-                contentStyle={{
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  paddingTop: 0,
-                  paddingBottom: 0,
-                  overflow: Platform.select({ android: 'hidden' })
+            <HeaderTitleContainer>
+              <Paragraph
+                numberOfLines={1}
+                style={{
+                  fontSize: fonts.MEDIUM_SIZE + 2,
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  marginHorizontal: 5
                 }}
-                style={{ top: RFValue(getMenuHeight()) }}
               >
-                <Menu.Item
-                  onPress={inviteTribeNavigation}
-                  title={t(`community.invitation.tribeInvite`)}
-                  style={{
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10
-                  }}
-                  titleStyle={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.PRIMARY_TEXT,
-                    textAlign: 'center',
-                    textTransform: 'capitalize'
-                  }}
-                />
-                <Divider />
-                <Menu.Item
-                  onPress={inviteChannelNavigation}
-                  title={t(`community.invitation.channelTitle`)}
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10
-                  }}
-                  titleStyle={{
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.PRIMARY_TEXT,
-                    textAlign: 'center',
-                    textTransform: 'capitalize'
-                  }}
-                />
-              </Menu>
-            </HeaderRightCover>
-          )}
+                {receiver?.name}
+              </Paragraph>
+            </HeaderTitleContainer>
+
+            <IconButton
+              icon={(iconProps) => (
+                <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+              )}
+              onPress={() => navigation.navigate('DirectMessageInformation')}
+            />
+          </Fragment>
         </HeaderContainer>
 
         <Chat
@@ -480,6 +250,12 @@ export default function DirectChatScreen(props: ScreenProp) {
             //@ts-ignore
             channel={channel}
             KeyboardCompatibleView={CustomKeyboardCompatibleView}
+            doSendMessageRequest={(_cid, message) =>
+              channel.sendMessage({
+                ...message,
+                link_url: 'direct_chats_screen'
+              })
+            }
           >
             <MessageListContainer>
               <MessageList
@@ -490,9 +266,8 @@ export default function DirectChatScreen(props: ScreenProp) {
                     channelId: thread?.id
                   });
                 }}
-                Message={CustomDirectMessage}
                 //@ts-ignore
-                MessageSystem={CustomSystemMessage}
+                Message={CustomDirectMessage}
               />
               <MessageInput
                 Input={StreamInputBox}

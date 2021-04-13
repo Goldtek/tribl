@@ -30,15 +30,14 @@ export default function SearchScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const { colors, fonts } = useThemeContext();
   const [isMember, setIsMember] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [tabIndex, setTabIndex] = React.useState(0);
 
   const id = details?.details?.id || details?.communityHit?.id;
 
   const { data, refetch } = useQuery<SingleCommunityRequestInterface>(
     GET_SINGLE_COMMUNITY,
-    {
-      variables: { input: { filter: { id } } }
-    }
+    { variables: { input: { filter: { id } } } }
   );
 
   const communityDetails: CommunityInterface = {
@@ -79,10 +78,37 @@ export default function SearchScreen(props: ScreenProp) {
 
       setRoutes([newHighlightScreenData, ...restScreenData]);
       setIsMember(newHighlightScreenData.communityDetails.isMember);
+      setIsPrivate(newHighlightScreenData.communityDetails.isPrivate);
     }
   }, [data]);
 
   const renderScene = SceneMap({ highlightSlide, channelSlide, memberSlide });
+
+  const getTitleColor = (focused: boolean) => {
+    const style = {
+      fontFamily: focused ? fonts.WORK_SANS_SEMI_BOLD : fonts.WORK_SANS_REGULAR,
+      fontSize: RFValue(fonts.LARGE_SIZE + 1),
+      color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
+      textTransform: 'capitalize',
+      marginTop: 0,
+      marginBottom: 0,
+      width: '105%'
+    };
+
+    if (!focused && !isMember) {
+      style.color = colors.INACTIVE;
+    }
+
+    if (!isPrivate) {
+      style.color = colors.PRIMARY_TEXT;
+    }
+
+    if (isPrivate && !isMember) {
+      style.color = colors.INACTIVE;
+    }
+
+    return style;
+  };
 
   const renderLabel = ({
     route,
@@ -92,21 +118,8 @@ export default function SearchScreen(props: ScreenProp) {
     focused: boolean;
   }) => (
     <Title
-      style={{
-        fontFamily: focused
-          ? fonts.WORK_SANS_SEMI_BOLD
-          : fonts.WORK_SANS_REGULAR,
-        fontSize: RFValue(fonts.LARGE_SIZE + 1),
-        color: focused
-          ? colors.PRIMARY
-          : !isMember
-          ? colors.INACTIVE
-          : colors.PRIMARY_TEXT,
-        textTransform: 'capitalize',
-        marginTop: 0,
-        marginBottom: 0,
-        width: '105%'
-      }}
+      //@ts-ignore
+      style={getTitleColor(focused)}
     >
       {route.title}
     </Title>
@@ -132,7 +145,7 @@ export default function SearchScreen(props: ScreenProp) {
   };
 
   const handleIndexChange = (index: number) => {
-    isMember ? setTabIndex(index) : setTabIndex(0);
+    !isPrivate || isMember ? setTabIndex(index) : setTabIndex(0);
   };
 
   return (
@@ -144,7 +157,7 @@ export default function SearchScreen(props: ScreenProp) {
         renderTabBar={renderTabBar}
         onIndexChange={handleIndexChange}
         initialLayout={{ width: DEVICE_FULL_WIDTH }}
-        swipeEnabled={isMember ? true : false}
+        swipeEnabled={!isPrivate || isMember ? true : false}
       />
     </Container>
   );

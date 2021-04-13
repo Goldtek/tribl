@@ -51,7 +51,7 @@ export const UPDATE_USER_PASSPORT = gql`
 `;
 
 // REFRESH TOKEN
-export const REFRESH_TOKEN = gql`
+export const REFRESH_TOKEN = `
   mutation refreshToken($payload: RefreshTokenInput!) {
     refreshToken(input: $payload) {
       id_token
@@ -136,15 +136,6 @@ export const UPDATE_PASSPORT = gql`
 export const SEND_DIRECT_MESSAGE = gql`
   mutation createDirectMessage($payload: ComposeDirectMessageInput!) {
     createDirectMessage(input: $payload) {
-      success
-    }
-  }
-`;
-
-// SEND DIRECT MESSAGE
-export const SEND_CHANNEL_MESSAGE = gql`
-  mutation createChannelConversation($payload: CreateChannelConversation!) {
-    createChannelConversation(input: $payload) {
       success
     }
   }

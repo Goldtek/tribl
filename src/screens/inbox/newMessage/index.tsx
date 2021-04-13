@@ -37,8 +37,7 @@ import {
   SearchInput,
   IconContainer,
   HeaderTitle,
-  SearchInputContainer,
-  HeaderAction
+  SearchInputContainer
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -66,7 +65,7 @@ export default function ChatScreen(props: ScreenProp) {
   const filteredMembers = removeDuplicateMembers(allMembers?.data.slice());
 
   const handleMessageNavigation = () => {
-    navigation.navigate('GroupMessageScreen');
+    navigation.navigate('SelectGroupParticipantsScreen');
   };
 
   const handleEndReach = () => {
@@ -113,6 +112,30 @@ export default function ChatScreen(props: ScreenProp) {
     [callOnScrollEnd]
   );
 
+  const _renderSeparator = ({ leadingItem }: any) => {
+    const user = leadingItem as PassportInterface;
+
+    if (
+      (!user.verified ||
+        user.lastName == null ||
+        user.firstName == null ||
+        user.currentLocation?.city == null,
+      user.currentLocation?.state == null)
+    ) {
+      return null;
+    }
+
+    return (
+      <Divider
+        style={{
+          height: 1.5,
+          marginHorizontal: RFValue(20),
+          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+        }}
+      />
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
       <Container>
@@ -134,7 +157,6 @@ export default function ChatScreen(props: ScreenProp) {
             />
           </TouchableRipple>
           <HeaderTitle>New Chat</HeaderTitle>
-          <HeaderAction></HeaderAction>
         </HeaderContainer>
 
         <FilterContainer>
@@ -159,7 +181,7 @@ export default function ChatScreen(props: ScreenProp) {
               height: RFValue(80),
               flexDirection: 'row',
               alignItems: 'center',
-              paddingHorizontal: RFValue(20)
+              paddingHorizontal: 15
             }}
             rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
             onPress={handleMessageNavigation}
@@ -187,20 +209,12 @@ export default function ChatScreen(props: ScreenProp) {
 
         {!loading ? (
           <FlatList
-            ref={hideSensitiveView}
-            data={filteredMembers}
             bounces={false}
+            data={filteredMembers}
+            ref={hideSensitiveView}
             renderItem={_renderItem}
             keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={() => (
-              <Divider
-                style={{
-                  height: 1.5,
-                  backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
-                  marginHorizontal: RFValue(20)
-                }}
-              />
-            )}
+            ItemSeparatorComponent={_renderSeparator}
             ListEmptyComponent={
               <Text
                 style={{

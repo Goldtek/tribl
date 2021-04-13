@@ -1,7 +1,6 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import hexToRGB from '../../../utils/hexToRGB';
-import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 export const Container = styled.View`
   flex: 1;
@@ -20,35 +19,33 @@ export const IconContainer = styled.View`
   justify-content: center;
   align-items: center;
   background-color: ${({ theme }) => hexToRGB(theme.colors.PRIMARY, 0.3)};
-`
+`;
 
 export const NameContainer = styled.View`
   margin-left: ${RFValue(10)}px;
 `;
 
 export const HeaderContainer = styled.View`
-  justify-content: space-between;
   align-items: center;
   flex-direction: row;
-  padding-right: 50px;
 `;
 
 export const SearchInputContainer = styled.View`
-justify-content: space-between;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
-`
+  padding-horizontal: 15px;
+`;
 
 export const HeaderTitle = styled.Text`
-  font-size: 28px;
-  font-family:${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  font-size: ${({ theme }) => theme.fonts.SMALL_SIZE * 2}px;
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   text-transform: capitalize;
-`
+  margin-horizontal: 10px;
+`;
 
-export const HeaderAction = styled.TouchableOpacity`
-
-`
+export const HeaderAction = styled.TouchableOpacity``;
 
 export const GroupContainer = styled.View`
   flex-direction: row;
@@ -69,12 +66,11 @@ export const GroupWrapper = styled.View`
 
 export const SearchInput = styled.View`
   flex: 1;
-  height: ${RFValue(40)}px;
+  height: ${RFValue(50)}px;
   flex-direction: row;
   align-items: center;
   border-color: ${({ theme }) => theme.colors.INACTIVE};
   border-radius: 4px;
   border-width: 1px;
-  margin: 0px 10px;
   padding: 0px 10px;
 `;

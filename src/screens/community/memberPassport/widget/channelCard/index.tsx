@@ -1,77 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Channel, ChannelSort, LiteralStringForUnion } from 'stream-chat';
+import { useQuery } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import { ChannelInterface } from '../../../../../graphql/types';
 import { useThemeContext } from '../../../../../theme';
 import { useNavigation } from '@react-navigation/native';
-import {
-  chatClient,
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType
-} from '../../../../../stream/types';
+import { GET_CHANNEL_MEMBERS } from '../../../../../graphql/server/query';
 
-import { Cover, LeftCover, Text, RightCover } from './styles';
+import { Cover, LeftCover, Text } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface MyChannelProp extends ChannelInterface {}
 
 export default function MyChannel(props: MyChannelProp) {
-  const { name, community, id, isMember } = props;
+  const { name, community, id } = props;
 
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
 
-  const [channel, setChannel] = useState<
-    Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LiteralStringForUnion,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-  >();
-
-  useEffect(() => {
-    const getConversation = async () => {
-      const filter = { id: { $in: [id] } };
-
-      const options = { presence: true, state: true, watch: true };
-
-      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
-
-      const [channel] = await chatClient.queryChannels(filter, sort, options);
-
-      if (!channel) return;
-
-      setChannel(channel);
-    };
-
-    if (chatClient.user) getConversation();
-  }, [chatClient.user]);
-
-  const messageCount =
-    channel?.state?.messages.length || channel?.data?.member_count || 0;
+  useQuery(GET_CHANNEL_MEMBERS, { variables: { input: { channelId: id } } });
 
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
       screen: 'ChannelChatScreen',
-      params: {
-        title: `#${name}`,
-        chatId: id,
-        isMember,
-        channelId: id,
-        details: { ...props },
-        channel: { name, community: community?.name }
-      }
+      params: { channelId: id, title: `#${name}` }
     });
   };
 
@@ -107,7 +60,7 @@ export default function MyChannel(props: MyChannelProp) {
               #{name.length < 10 ? name : `${name.substr(0, 10)}...`}
             </Text>
           </LeftCover>
-          <RightCover>
+          {/* <RightCover>
             <MaterialIcons
               name="chat-bubble-outline"
               size={12}
@@ -124,7 +77,7 @@ export default function MyChannel(props: MyChannelProp) {
             >
               {Number(messageCount)}
             </Text>
-          </RightCover>
+          </RightCover> */}
         </Cover>
       </FastImage>
     </TouchableRipple>

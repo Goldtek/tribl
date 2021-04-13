@@ -1,22 +1,22 @@
 import React, {
-  FunctionComponent,
-  useContext,
+  useState,
   useEffect,
-  useState
+  useContext,
+  FunctionComponent
 } from 'react';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import { GET_USER_PASSPORT } from '../graphql/server/query';
 import {
-  GENERATE_STREAMS_TOKEN,
-  UPDATE_USER_PASSPORT
+  UPDATE_USER_PASSPORT,
+  GENERATE_STREAMS_TOKEN
 } from '../graphql/server/mutations';
 import { crashlytics } from '../firebase/config';
 import {
-  GenerateStreamsTokenRequestInterface,
   MyPassportInterface,
-  NotificationMessage
+  NotificationMessage,
+  GenerateStreamsTokenRequestInterface
 } from '../graphql/types';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
@@ -95,6 +95,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
       const initChat = async () => {
         try {
+          await chatClient.disconnect();
           const streamUser = await chatClient.connectUser(
             //@ts-ignore
             user,
