@@ -54,16 +54,17 @@ export default function ChannelChatScreen(props: ScreenProp) {
   const { bottom } = useSafeAreaInsets();
   const { colors, fonts } = useThemeContext();
   const {
+    channel,
     setThread,
-    setActivityScreen,
-    setChannel: setStreamChannel
+    setChannel,
+    setActivityScreen
   } = useStreamContext();
 
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
 
-  const [channel, setChannel] = useState(
-    chatClient.channel('team', route.params.channelId)
-  );
+  useEffect(() => {
+    setChannel(chatClient.channel('team', route.params.channelId));
+  }, [channel.id]);
 
   const [channelMembers, setChannelMembers] = useState(
     Object.values(channel?.state?.members.asMutable())
@@ -89,9 +90,8 @@ export default function ChannelChatScreen(props: ScreenProp) {
       if (!channelExists) {
         return addUserToChannel();
       } else {
-        await channelExists.watch();
+        await channel.watch();
         setChannel(channelExists);
-        setStreamChannel(channelExists);
         setChannelMembers(
           Object.values(channelExists?.state?.members.asMutable())
         );
@@ -129,7 +129,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
     setActivityScreen('channelScreen');
-    setStreamChannel(channel);
   }, []);
 
   const handleChannelNavigation = () => {
