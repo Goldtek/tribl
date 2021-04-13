@@ -5,7 +5,8 @@ import Modal from 'react-native-modal';
 import {
   MaterialCommunityIcons,
   SimpleLineIcons,
-  FontAwesome
+  FontAwesome,
+  Feather
 } from '@expo/vector-icons';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../../theme';
@@ -35,7 +36,8 @@ import {
   DrawerFooter,
   MenuContainer,
   ProfileContainer,
-  ConnectionBadgeWrapper
+  ConnectionBadgeWrapper,
+  TransferCover
 } from './styles';
 
 export default function CustomDrawerComponent() {
@@ -67,6 +69,7 @@ export default function CustomDrawerComponent() {
   };
 
   const changeSideMenu = (menu: string) => {
+    console.tron('side', menu);
     changeSideMenuState({ variables: { activeSideMenu: menu } });
   };
 
@@ -118,6 +121,18 @@ export default function CustomDrawerComponent() {
       },
       drawerIcon: (
         <SimpleLineIcons name="user" size={24} color={colors.PRIMARY_TEXT} />
+      )
+    },
+    {
+      key: 'drawer_wallet_key',
+      name: `community.passport.wallet`,
+      onPress: () => {
+        changeSideMenu('drawer_wallet_key');
+        navigation?.navigate('TriblPayScreen', { screen: 'WalletScreen' });
+        toggleMenu();
+      },
+      drawerIcon: (
+        <Feather name="dollar-sign" size={24} color={colors.PRIMARY_TEXT} />
       )
     },
     {
@@ -196,6 +211,27 @@ export default function CustomDrawerComponent() {
           </Text>
         </ProfileContainer>
 
+        <TransferCover>
+          <Text
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: fonts.LARGE_SIZE
+            }}
+          >
+            {'\u0024'}20.00
+          </Text>
+          <Text
+            style={{
+              color: colors.PRIMARY,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: fonts.LARGE_SIZE,
+              textTransform: 'capitalize'
+            }}
+          >
+            {t(`community.passport.tranfer`)}
+          </Text>
+        </TransferCover>
         <MenuContainer>
           {sideMenuScreens.map((item, index) => {
             return (
