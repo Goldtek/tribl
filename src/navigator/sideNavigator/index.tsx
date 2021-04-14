@@ -123,6 +123,11 @@ export default function DrawerStackNavigator() {
       />
 
       <DrawerStack.Screen
+        name="CreateChannelParticipant"
+        component={InboxScreens.CreateChannelParticipant}
+      />
+
+      <DrawerStack.Screen
         name="ThreadChatScreen"
         component={InboxScreens.ThreadChatScreen}
         options={{
@@ -179,6 +184,16 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="GroupInformationScreen"
         component={InboxScreens.GroupInformationScreen}
+      />
+
+      <DrawerStack.Screen
+        name="CreateChannelTribeScreen"
+        component={InboxScreens.CreateChannelTribeScreen}
+      />
+
+      <DrawerStack.Screen
+        name="CreateChannelNameScreen"
+        component={InboxScreens.CreateChannelNameScreen}
       />
 
       <DrawerStack.Screen
