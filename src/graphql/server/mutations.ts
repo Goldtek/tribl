@@ -251,3 +251,12 @@ export const TRIBE_INVITE_ACTION = gql`
     }
   }
 `;
+
+// CREATE NEW CHANNEL
+export const CREATE_NEW_CHANNEL = gql`
+  mutation addChannelToCommunity($payload: AddChannelInput!) {
+    addChannelToCommunity(input: $payload) {
+      success
+    }
+  }
+`;
