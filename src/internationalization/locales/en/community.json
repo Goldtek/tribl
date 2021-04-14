@@ -153,7 +153,15 @@
     "edit": "edit",
     "removeUser": "remove",
     "addingMembers": "adding members",
-    "create": "create"
+    "create": "create",
+    "newGroup": "new Group",
+    "newChannel": "new channel",
+    "newChat": "new chat",
+    "createChannel": "create channel",
+    "channelText": "Name your channel around a topic, chapter, or interests that resonates with members of the community",
+    "channelNamePlaceholder": "#channelname",
+    "next": "next",
+    "addParticipant": "Add Participants"
   },
 
   "update": {
