@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import CheckBox from '@react-native-community/checkbox';
 import { Text, TouchableRipple, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
@@ -13,7 +13,7 @@ import { NameContainer, CheckboxCover } from './styles';
 
 interface AddAdminProp extends PassportInterface {
   handleSelect(T: string): void;
-  selected: boolean;
+  selected: string;
   admin: string;
 }
 
@@ -29,6 +29,8 @@ export default function AddAdmin(props: AddAdminProp) {
     selected
   } = props;
 
+  const [toggle, setToggle] = useState(false);
+
   const onPress = () => handleSelect(id);
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
@@ -38,6 +40,14 @@ export default function AddAdmin(props: AddAdminProp) {
   useEffect(() => {
     getUserPassport();
   }, []);
+
+  useEffect(() => {
+    if (selected !== id) {
+      setToggle(false);
+    } else {
+      setToggle(true);
+    }
+  }, [selected]);
 
   return (
     <TouchableRipple
@@ -91,7 +101,7 @@ export default function AddAdmin(props: AddAdminProp) {
         <CheckboxCover>
           <CheckBox
             disabled={false}
-            value={selected}
+            value={toggle}
             onValueChange={onPress}
             boxType="square"
             tintColors={{
