@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   NativeModules,
   NativeEventEmitter,
@@ -24,13 +24,14 @@ import ApolloProvider from './src/graphql';
 import StreamProvider from './src/stream';
 import ThemeProvider from './src/theme';
 import Router from './src';
+import loadResources from './src/libs/loadResources';
 
 enableScreens();
 
 export default function App() {
   let uxcamEvent: EventSubscription;
   const { isConnected } = useNetInfo();
-
+  const [isReady, setIsReady] = useState(false);
   const queryClient = new QueryClient({
     defaultOptions: { queries: { cacheTime: 1000 * 60 * 60 * 24 } }
   });
@@ -68,6 +69,13 @@ export default function App() {
     return () => uxcamEvent.remove();
   }, []);
 
+  useEffect(() => {
+    loadResources().then(async () => {
+      await SplashScreen.hideAsync();
+      setIsReady(true);
+    });
+  }, []);
+
   return (
     <GlobalErrorBoundary>
       <ApolloProvider>
@@ -76,9 +84,7 @@ export default function App() {
             <StreamProvider>
               <ThemeProvider>
                 <RootToaster />
-                <PortalHost>
-                  <Router />
-                </PortalHost>
+                <PortalHost>{isReady && <Router />}</PortalHost>
               </ThemeProvider>
             </StreamProvider>
           </QueryClientProvider>

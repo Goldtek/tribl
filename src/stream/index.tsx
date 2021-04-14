@@ -63,6 +63,13 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     // Check whether an initial notification is available
     messaging.getInitialNotification().then(presentNotification);
 
+    messaging.onNotificationOpenedApp((message) => {
+      const data = JSON.stringify(message?.data);
+
+      // navigate user to the appropriate screen using the link_url gotten from RNPush
+      // Call the React Navigation handler to handle routing via URL
+    });
+
     return unsubscribe;
   }, []);
 

@@ -78,7 +78,7 @@ const linking: LinkingOptions = {
 
     // Get deep link from data
     // if this is undefined, the app will open the default/home page
-    return message?.data?.link;
+    return message?.data?.link_url;
   },
 
   subscribe(listener) {
