@@ -105,6 +105,9 @@ export type RootStackParamList = {
   LinkAccountScreen?: Object;
   WalletScreen?: Object;
   AddCashScreen?: Object;
+  CreateChannelTribeScreen?: Object;
+  CreateChannelNameScreen?: Object;
+  CreateChannelParticipant?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -190,7 +193,10 @@ export type RootStackParamScreensList =
   | 'VerifyIdentityScreen'
   | 'LinkAccountScreen'
   | 'WalletScreen'
-  | 'AddCashScreen';
+  | 'AddCashScreen'
+  | 'CreateChannelTribeScreen'
+  | 'CreateChannelNameScreen'
+  | 'CreateChannelParticipant';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
