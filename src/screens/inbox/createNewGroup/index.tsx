@@ -123,6 +123,7 @@ export default function CreateGroup(props: ScreenProp) {
       //@ts-ignore
       navigation.navigate('ChannelChatScreen', {
         channelId: `${channel?.id}`,
+        newly_created_group: true,
         title: subject
       });
     } catch (error) {

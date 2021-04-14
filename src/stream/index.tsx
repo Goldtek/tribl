@@ -106,6 +106,8 @@ const StreamProvider: FunctionComponent = ({ children }) => {
             }
           );
 
+          setChannel(chatClient.channel('team', 'default_channel'));
+
           if (streamUser && streamUser.me?.total_unread_count) {
             changeMessageNotification({
               variables: { showMessageNotificationBadge: true }

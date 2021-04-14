@@ -249,7 +249,12 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
         <Divider style={{ backgroundColor: colors.INPUT }} />
 
         <OptionWrapper
-          onPress={() => navigation.navigate('InvitationToChannelScreen')}
+          onPress={() =>
+            navigation.navigate('InvitationToChannelScreen', {
+              channelId: channel.id,
+              title: channel.data?.name
+            })
+          }
         >
           <LeftCover>
             <AntDesign

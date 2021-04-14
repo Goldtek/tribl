@@ -61,14 +61,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
   } = useStreamContext();
 
   const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
-
-  useEffect(() => {
-    setChannel(chatClient.channel('team', route.params.channelId));
-  }, [channel.id]);
-
-  const [channelMembers, setChannelMembers] = useState(
-    Object.values(channel?.state?.members.asMutable())
-  );
+  const [members, setMembers] = useState(channel?.state?.members);
 
   const getConversation = async () => {
     try {
@@ -92,9 +85,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
       } else {
         await channel.watch();
         setChannel(channelExists);
-        setChannelMembers(
-          Object.values(channelExists?.state?.members.asMutable())
-        );
+        setMembers(channelExists.state.members);
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
@@ -139,6 +130,8 @@ export default function ChannelChatScreen(props: ScreenProp) {
     }
   };
 
+  const channelMembers = Object.values(members.asMutable());
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ChatContainer style={{ paddingBottom: bottom }}>
@@ -150,6 +143,9 @@ export default function ChannelChatScreen(props: ScreenProp) {
                 navigation.navigate('InboxScreen');
               } else {
                 navigation.goBack();
+                setTimeout(() => {
+                  setChannel(chatClient.channel('team', 'default_channel'));
+                }, 100);
               }
             }}
             style={{
@@ -206,7 +202,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
                         color: colors.WHITE
                       }}
                     >
-                      {channelMembers.length}
+                      {Number(channel.data?.member_count)}
                     </Paragraph>
                   </CountBadge>
                 </Surface>

@@ -219,7 +219,7 @@ index d3b5017..3e09bd6 100644
        ) : (
          <AvatarFallback size={size}>
 diff --git a/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx b/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx
-index 33319a7..9fc949e 100644
+index 33319a7..fb5e60a 100644
 --- a/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx
 +++ b/node_modules/stream-chat-react-native-core/src/components/Channel/Channel.tsx
 @@ -280,6 +280,8 @@ export const Channel = <
@@ -254,7 +254,7 @@ index 33319a7..9fc949e 100644
 -      </Text>
 -    );
 -  }
-+  // if (!channel || error) {
++  // if (channel.id === "default_channel") {
 +  //   return (
 +  //     <LoadingErrorIndicator
 +  //       error={error}
@@ -450,9 +450,230 @@ index 03eff3b..e625b44 100644
      <Markdown
        onLink={onLink}
 diff --git a/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx b/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
-index aafb6ee..b68c5ea 100644
+index aafb6ee..3856958 100644
 --- a/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
 +++ b/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
+@@ -104,113 +104,113 @@ export type MessageListProps<
+   Me extends UnknownType = DefaultMessageType,
+   Re extends UnknownType = DefaultReactionType,
+   Us extends UnknownType = DefaultUserType
+-> = {
+-  /**
+-   * Style object for action sheet (used to message actions).
+-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+-   */
+-  actionSheetStyles?: ActionSheetStyles;
+-  /**
+-   * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
+-   * to attach some additional props to underlying FlatList, you can add it to following prop.
+-   *
+-   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
+-   *
+-   * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
+-   *
+-   * e.g.
+-   * ```js
+-   * <MessageList
+-   *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
+-   * ```
+-   */
+-  additionalFlatListProps?: Partial<
+-    FlatListProps<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>>
+-  >;
+-  /**
+-   * Custom UI component for attachment icon for type 'file' attachment.
+-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
+-   */
+-  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
+-  /**
+-   * Date separator UI component to render
+-   *
+-   * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
+-   */
+-  DateSeparator?: React.ComponentType<
+-    DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>
+-  >;
+-  disableWhileEditing?: boolean;
+-  /** Should keyboard be dismissed when messaged is touched */
+-  dismissKeyboardOnMessageTouch?: boolean;
+-  /**
+-   * UI component for header of message list. By default message list doesn't have any header.
+-   * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
+-   * used in MessageList. Its footer instead of header, since message list is inverted.
+-   *
+-   */
+-  FooterComponent?: React.ReactElement;
+-  HeaderComponent?: React.ReactElement;
+-  /** Whether or not the FlatList is inverted. Defaults to true */
+-  inverted?: boolean;
+-  /**
+-   * Custom UI component to display a message in MessageList component
+-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+-   */
+-  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
+-  /**
+-   * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
+-   * If all the actions need to be disabled, empty array or false should be provided as value of prop.
+-   */
+-  messageActions?: boolean | string[];
+-  MessageNotification?: React.ComponentType<MessageNotificationProps>;
+-  /**
+-   * Custom UI component to display a system message
+-   * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
+-   */
+-  MessageSystem?: React.ComponentType<
+-    MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>
+-  >;
+-  /**
+-   * Custom UI component to render network down indicator
+-   *
+-   * Defaults to and accepts same props as: [NetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#NetworkDownIndicator)
+-   */
+-  NetworkDownIndicator?: React.ComponentType;
+-  /** Turn off grouping of messages by user */
+-  noGroupByUser?: boolean;
+-  onListScroll?: ScrollViewProps['onScroll'];
+-  /**
+-   * Handler to open the thread on message. This is callback for touch event for replies button.
+-   *
+-   * @param message A message object to open the thread upon.
+-   */
+-  onThreadSelect?: (
+-    message: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'],
+-  ) => void;
+-  /**
+-   * Use `setFlatListRef` to get access to ref to inner FlatList.
+-   *
+-   * e.g.
+-   * ```js
+-   * <MessageList
+-   *  setFlatListRef={(ref) => {
+-   *    // Use ref for your own good
+-   *  }}
+-   * ```
+-   */
+-  setFlatListRef?: (
+-    ref: FlatList<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>> | null,
+-  ) => void;
+-  /** Whether or not the MessageList is part of a Thread */
+-  threadList?: boolean;
+-  /**
+-   * Typing indicator UI component to render
+-   *
+-   * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
+-   */
+-  TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
+-};
++  > = {
++    /**
++     * Style object for action sheet (used to message actions).
++     * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
++     */
++    actionSheetStyles?: ActionSheetStyles;
++    /**
++     * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
++     * to attach some additional props to underlying FlatList, you can add it to following prop.
++     *
++     * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
++     *
++     * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
++     *
++     * e.g.
++     * ```js
++     * <MessageList
++     *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
++     * ```
++     */
++    additionalFlatListProps?: Partial<
++      FlatListProps<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>>
++    >;
++    /**
++     * Custom UI component for attachment icon for type 'file' attachment.
++     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
++     */
++    AttachmentFileIcon?: React.ComponentType<FileIconProps>;
++    /**
++     * Date separator UI component to render
++     *
++     * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
++     */
++    DateSeparator?: React.ComponentType<
++      DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>
++    >;
++    disableWhileEditing?: boolean;
++    /** Should keyboard be dismissed when messaged is touched */
++    dismissKeyboardOnMessageTouch?: boolean;
++    /**
++     * UI component for header of message list. By default message list doesn't have any header.
++     * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
++     * used in MessageList. Its footer instead of header, since message list is inverted.
++     *
++     */
++    FooterComponent?: React.ReactElement;
++    HeaderComponent?: React.ReactElement;
++    /** Whether or not the FlatList is inverted. Defaults to true */
++    inverted?: boolean;
++    /**
++     * Custom UI component to display a message in MessageList component
++     * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
++     */
++    Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
++    /**
++     * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
++     * If all the actions need to be disabled, empty array or false should be provided as value of prop.
++     */
++    messageActions?: boolean | string[];
++    MessageNotification?: React.ComponentType<MessageNotificationProps>;
++    /**
++     * Custom UI component to display a system message
++     * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
++     */
++    MessageSystem?: React.ComponentType<
++      MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>
++    >;
++    /**
++     * Custom UI component to render network down indicator
++     *
++     * Defaults to and accepts same props as: [NetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#NetworkDownIndicator)
++     */
++    NetworkDownIndicator?: React.ComponentType;
++    /** Turn off grouping of messages by user */
++    noGroupByUser?: boolean;
++    onListScroll?: ScrollViewProps['onScroll'];
++    /**
++     * Handler to open the thread on message. This is callback for touch event for replies button.
++     *
++     * @param message A message object to open the thread upon.
++     */
++    onThreadSelect?: (
++      message: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'],
++    ) => void;
++    /**
++     * Use `setFlatListRef` to get access to ref to inner FlatList.
++     *
++     * e.g.
++     * ```js
++     * <MessageList
++     *  setFlatListRef={(ref) => {
++     *    // Use ref for your own good
++     *  }}
++     * ```
++     */
++    setFlatListRef?: (
++      ref: FlatList<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>> | null,
++    ) => void;
++    /** Whether or not the MessageList is part of a Thread */
++    threadList?: boolean;
++    /**
++     * Typing indicator UI component to render
++     *
++     * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
++     */
++    TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
++  };
+ 
+ /**
+  * The message list component renders a list of messages. It consumes the following contexts:
 @@ -342,6 +342,9 @@ export const MessageList = <
      if (message.type === 'system') {
        return <MessageSystem message={message} />;
@@ -463,9 +684,19 @@ index aafb6ee..b68c5ea 100644
      if (message.type !== 'message.read') {
        return (
          <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-@@ -397,7 +400,9 @@ export const MessageList = <
+@@ -396,8 +399,19 @@ export const MessageList = <
+   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
    // https://github.com/facebook/react-native/issues/21196
    if (messageList.length === 0 && !threadList) {
++
++    if (channel.id === "default_channel") {
++      return (
++        <View style={{ flex: 1 }} testID='loading-state'>
++          <LoadingIndicator listType='message' />
++        </View>
++      )
++    }
++
      return messagesLoading ? (
 -      <LoadingIndicator listType='message' />
 +      <View style={{ flex: 1 }} testID='loading-state'>

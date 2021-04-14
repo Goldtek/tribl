@@ -171,7 +171,12 @@ export default function DirectChatScreen(props: ScreenProp) {
         <StatusBar style="dark" animated />
         <HeaderContainer>
           <TouchableRipple
-            onPress={navigation.goBack}
+            onPress={() => {
+              navigation.goBack();
+              setTimeout(() => {
+                setChannel(chatClient.channel('team', 'default_channel'));
+              }, 100);
+            }}
             style={{
               height: 40,
               width: 40,

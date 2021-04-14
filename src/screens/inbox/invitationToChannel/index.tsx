@@ -39,7 +39,7 @@ interface InviteFriendsScreenProp extends NavigationInterface {}
 export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
   let numColumns = 2;
   const { navigation, route } = props;
-  const channelId = route.params?.channelId;
+  const params = route.params;
 
   const selecteduserRef = useRef<any>(null);
   const { t } = useTranslation();
@@ -58,7 +58,7 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
   const [inviteToChannel, { loading }] = useMutation(INVITE_TO_CHANNEL, {
     variables: {
       payload: {
-        channelId,
+        channelId: params.channelId,
         recipientIds: participants.map(({ id }) => id)
       }
     }
@@ -84,7 +84,10 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
       });
       await inviteToChannel();
       setSelected({});
-      navigation.goBack();
+      navigation.navigate('ChannelChatScreen', {
+        title: params.title,
+        channelId: params.channelId
+      });
     } catch (error) {
       crashlytics.recordError(error);
     }
