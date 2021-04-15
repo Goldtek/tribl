@@ -209,13 +209,20 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
           `${route.params.firstName} ${route.params.lastName}`
       };
 
+  const goBack = () => {
+    const canGoBack = navigation.canGoBack();
+    return canGoBack
+      ? navigation.goBack()
+      : navigation.replace('CommunityScreen', { screen: 'InboxScreen' });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Container>
         <StatusBar style="dark" animated />
         <HeaderContainer>
           <TouchableRipple
-            onPress={() => navigation.goBack()}
+            onPress={goBack}
             style={{
               height: 40,
               width: 40,
@@ -276,12 +283,14 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
               </Paragraph>
             </HeaderTitleContainer>
 
-            <IconButton
-              icon={(iconProps) => (
-                <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
-              )}
-              onPress={() => navigation.navigate('DirectMessageInformation')}
-            />
+            {!Boolean(channel.data?.isNew) && (
+              <IconButton
+                icon={(iconProps) => (
+                  <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+                )}
+                onPress={() => navigation.navigate('DirectMessageInformation')}
+              />
+            )}
           </Fragment>
         </HeaderContainer>
 

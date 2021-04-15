@@ -23,6 +23,7 @@ export default function AppNavigator() {
   // Deep links
   const deepLinksConfig = {
     screens: {
+      initialRouteName: 'CommunityScreen',
       SplashScreen: 'splash_screen',
       WalkThroughScreen: 'walk_through_screen',
       SignupScreen: {
