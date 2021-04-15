@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { NavigationInterface } from '../../types';
+import { ChatScreenProps, NavigationInterface } from '../../types';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {
   Paragraph,
@@ -13,7 +13,9 @@ import {
   Avatar,
   Channel,
   MessageList,
-  MessageInput
+  MessageInput,
+  DefaultCommandType,
+  ChannelContextValue
 } from 'stream-chat-expo';
 import { StatusBar } from 'expo-status-bar';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -23,37 +25,189 @@ import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { useStreamContext } from '../../../stream';
 import StreamInputBox from '../../../components/streamInputBox';
 import CustomDirectMessage from '../../../components/customDirectMessage';
+import { USER_DEFAULT_AVATAR } from '../../../constants';
 import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
+import {
+  ChannelSort,
+  LiteralStringForUnion,
+  Channel as StreamChatChannel
+} from 'stream-chat';
+import { crashlytics } from '../../../firebase/config';
+import { Channel as ChannelType } from 'stream-chat';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { chatClient, ThreadType } from '../../../stream/types';
+import {
+  chatClient,
+  ThreadType,
+  LocalUserType,
+  LocalEventType,
+  LocalChannelType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalAttachmentType
+} from '../../../stream/types';
 
 import {
   Container,
-  HeaderContainer,
   HeaderTitleContainer,
+  HeaderContainer,
   MessageListContainer
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: { params: ChatScreenProps };
+}
 
-export default function DirectChatScreen(props: ScreenProp) {
-  const { navigation } = props;
+export default function DeepLinkDirectChatScreen(props: ScreenProp) {
+  const { navigation, route } = props;
+  const user = route.params;
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
-  const { channel, setThread, setActivityScreen } = useStreamContext();
 
-  const receiverId = Object.keys(channel.state.members).find(
+  const {
+    setThread,
+    setActivityScreen,
+    setChannel: streamSetChannel
+  } = useStreamContext();
+
+  const [channel, setChannel] = useState<
+    StreamChatChannel<
+      LocalAttachmentType,
+      LocalChannelType,
+      DefaultCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >
+  >(
+    {} as StreamChatChannel<
+      LocalAttachmentType,
+      LocalChannelType,
+      DefaultCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >
+  );
+
+  const [channelMembers, setChannelMembers] = useState<
+    ChannelContextValue<
+      LocalAttachmentType,
+      LocalChannelType,
+      DefaultCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >['members']
+  >(
+    {} as ChannelContextValue<
+      LocalAttachmentType,
+      LocalChannelType,
+      DefaultCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >['members']
+  );
+
+  useEffect(() => {
+    if (chatClient.user?.id && user.id) {
+      getConversation();
+    }
+  }, [chatClient.user?.id]);
+
+  useEffect(() => {
+    setActivityScreen('directMessage');
+    tagScreenName('DirectChatScreen');
+  }, []);
+
+  const getConversation = async () => {
+    const filter = {
+      isDm: true,
+      type: 'team',
+      member_count: 2,
+      members: { $eq: [user.id, `${chatClient.user?.id}`] }
+    };
+
+    const options = { presence: true, state: true, watch: true };
+    const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+    try {
+      const [channelExists] = await chatClient.queryChannels(
+        user.channelId ? { ...filter, id: { $in: [user.channelId] } } : filter,
+        sort,
+        options
+      );
+
+      if (channelExists) {
+        setChannel(channelExists);
+        setChannelMembers(channelExists.state.members);
+        streamSetChannel(channelExists);
+      } else {
+        createDmConversation();
+      }
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
+  const createDmConversation = async () => {
+    let newChannel: ChannelType<
+      LocalAttachmentType,
+      LocalChannelType,
+      LiteralStringForUnion,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
+
+    try {
+      if (!channel?.id) {
+        // @ts-ignore
+        newChannel = chatClient.channel('team', {
+          conversationId: `${user.id}|${chatClient.user?.id}`,
+          channelId: `${user.id}|${chatClient.user?.id}`,
+          members: [user.id, `${chatClient.user?.id}`],
+          messageRequest: { status: false },
+          sender: {
+            readAt: Date.now(),
+            id: chatClient.user?.id,
+            ...chatClient.user
+          },
+          receiver: { ...user, readAt: Date.now() },
+          name: Date.now(),
+          community: {},
+          isDm: true,
+          isNew: true
+        });
+
+        await newChannel.watch();
+        setChannel(newChannel);
+        setChannelMembers(newChannel.state.members);
+      }
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
+  const receiverId = Object.keys(channelMembers).find(
     (userId: string) => userId !== chatClient.user?.id
   );
 
-  const receiver = channel.state.members[`${receiverId}`].user;
-
-  useEffect(() => {
-    tagScreenName('DirectChatScreen');
-    setActivityScreen('directMessage');
-  }, []);
+  const receiver = receiverId
+    ? channelMembers[`${receiverId}`].user
+    : {
+        image: route.params.avatar || USER_DEFAULT_AVATAR,
+        name:
+          route.params.title ||
+          `${route.params.firstName} ${route.params.lastName}`
+      };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

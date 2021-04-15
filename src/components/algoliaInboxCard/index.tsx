@@ -61,13 +61,9 @@ const Highlight = (props: HighlightProp) => {
     }
 
     rootNavigator.navigate('DrawerScreen', {
-      screen: hit.conversation?.id
-        ? 'DirectChatScreen'
-        : 'ConnectionChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         title: `${hit.firstName} ${hit.lastName}`,
-        chatId: hit.conversation?.id,
-        receiverId: hit.id,
         ...hit
       }
     });

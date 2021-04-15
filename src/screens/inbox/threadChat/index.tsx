@@ -19,7 +19,6 @@ interface ScreenProp extends NavigationInterface {}
 function ThreadChatScreen(props: ScreenProp) {
   const { colors } = useThemeContext();
   const { thread, channel } = useStreamContext();
-
   const chatStyles = useStreamChatTheme();
 
   useEffect(() => {

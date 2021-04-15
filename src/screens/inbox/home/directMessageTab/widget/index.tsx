@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import ChannelActions from './channelActions';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
 import { USER_DEFAULT_AVATAR } from '../../../../../constants';
+import { useStreamContext } from '../../../../../stream';
 import {
   chatClient,
   LocalAttachmentType,
@@ -51,7 +52,6 @@ export default function CustomDirectMessagePreview(
   const {
     unread,
     channel,
-    setActiveChannel,
     latestMessagePreview,
     formatLatestMessageDate,
     latestMessageLength = 40
@@ -61,6 +61,7 @@ export default function CustomDirectMessagePreview(
 
   const navigation = useNavigation();
   const { colors } = useThemeContext();
+  const { setChannel } = useStreamContext();
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
   const message = latestMessagePreview?.messageObject;
@@ -133,7 +134,7 @@ export default function CustomDirectMessagePreview(
   };
 
   const handleNavigate = () => {
-    setActiveChannel && setActiveChannel(channel);
+    setChannel(channel as any);
     navigation.navigate('DrawerScreen', {
       screen: channelDetails?.isGroup
         ? 'ChannelChatScreen'

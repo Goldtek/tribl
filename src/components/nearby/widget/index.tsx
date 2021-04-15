@@ -65,7 +65,7 @@ function NearbyModal(props: NearbyUserProp) {
   const handleMessageNavigation = async () => {
     NearbyUserModal();
     rootNavigator.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         id,
         avatar,
