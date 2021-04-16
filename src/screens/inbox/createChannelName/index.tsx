@@ -3,10 +3,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons } from '@expo/vector-icons';
+import FastImage from 'react-native-fast-image';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
+import { tagScreenName } from '../../../utils/uxcamHelper';
+import Input from '../../../components/input';
+import GradientButton from '../../../components/gradientButton';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -17,9 +20,6 @@ import {
   Cover,
   TopCover
 } from './styles';
-import FastImage from 'react-native-fast-image';
-import Input from '../../../components/input';
-import GradientButton from '../../../components/gradientButton';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
