@@ -17,6 +17,7 @@ export const GET_USER_DETAILS = gql`
       countryCode
       firstName
       lastName
+      invite_url
       citizenship {
         name
         flag
