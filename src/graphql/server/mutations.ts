@@ -260,3 +260,21 @@ export const CREATE_NEW_CHANNEL = gql`
     }
   }
 `;
+
+// BLOCK/REPORT A USER
+export const BLOCK_REPORT_USER = gql`
+  mutation passportPrivacyAction($payload: PassportPrivacyAction!) {
+    passportPrivacyAction(input: $payload) {
+      success
+    }
+  }
+`;
+
+// GENERATE INVITE LINK
+export const GENERATE_INVITE_LINK = gql`
+  mutation createRecordInKickOff($payload: PassportActionInput!) {
+    createRecordInKickOff(input: $payload) {
+      success
+    }
+  }
+`;
