@@ -3,8 +3,8 @@ import {
   createStackNavigator,
   TransitionPresets
 } from '@react-navigation/stack';
-import { TouchableRipple, Menu, Divider } from 'react-native-paper';
-import { Image, Platform } from 'react-native';
+import { TouchableRipple, Menu, Divider, Text } from 'react-native-paper';
+import { Image, Platform, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -25,6 +25,14 @@ import CommunityDetailScreen from '../../screens/community/detail';
 import AddAdminScreen from '../../screens/community/home/widget/addAdmin';
 import TribeDetailScreen from '../../screens/community/home/widget/tribeDetails';
 import { DEVICE_OS } from '../../utils/device';
+import BlockUserModal from '../../components/blockUser';
+import ReportModal from '../../components/reportModal';
+import { REJECT_CONNECTION } from '../../graphql/server/mutations';
+import { useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { logEvent } from '../../utils/uxcamHelper';
+import { crashlytics } from '../../firebase/config';
+import { UserPassportInterface } from '../../graphql/types';
+import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 
 const DrawerStack = createStackNavigator();
 
@@ -36,6 +44,24 @@ export default function DrawerStackNavigator() {
 
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
+
+  const [blockModalVisible, setBlockModalVisible] = useState(false);
+
+  const showBlockModal = () => {
+    setBlockModalVisible(!blockModalVisible);
+    setMenu(false);
+  };
+
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+
+  const showReportModal = useCallback(
+    (visible: boolean) => () => {
+      setReportModalVisible(visible);
+      setMenu(false);
+      return true;
+    },
+    []
+  );
 
   const [communityMenu, setCommunityMenu] = useState(false);
   const showCommunityMenu = () => setCommunityMenu(!communityMenu);
@@ -83,6 +109,34 @@ export default function DrawerStackNavigator() {
       communityId: id
     });
     setCommunityMenu(false);
+  };
+
+  const [connectionLoading, setConnectionLoading] = useState(false);
+
+  const [id, setID] = useState('');
+
+  const [getUserPassport, { refetch }] = useLazyQuery<UserPassportInterface>(
+    GET_SINGLE_PASSPORT,
+    { variables: { id } }
+  );
+
+  const [declineConnection] = useMutation(REJECT_CONNECTION, {
+    variables: { payload: { id: id } }
+  });
+
+  const handleRemoveConnection = async (id: string) => {
+    setID(id);
+    logEvent('remove connection', { from: 'Member Detail Screen' });
+    setConnectionLoading(true);
+    try {
+      await declineConnection();
+      setMenu(false);
+      getUserPassport();
+      refetch();
+    } catch (error) {
+      setConnectionLoading(false);
+      crashlytics.recordError(new Error(error));
+    }
   };
 
   return (
@@ -308,103 +362,202 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="MemberDetailScreen"
         component={MemberDetailScreen}
-        options={({ route }: any) => ({
-          headerShown: true,
-          headerTitle: () => null,
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerTitleContainerStyle: {
-            flex: 1,
-            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
-          },
-          headerRight: () => (
-            <Menu
-              visible={menu}
-              onDismiss={showMenu}
-              anchor={
-                <TouchableRipple
-                  rippleColor={colors.PRIMARY}
-                  onPress={showMenu}
-                  style={{
-                    padding: RFValue(3),
-                    paddingTop: RFValue(6),
-                    paddingBottom: RFValue(6),
-                    backgroundColor: menu ? colors.PRIMARY : 'transparent',
-                    borderRadius: 4,
-                    borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
-                    borderWidth: 1
+        options={({ route }: any) => {
+          setID(route?.params?.details.id);
+          return {
+            headerShown: true,
+            headerTitle: () => null,
+            headerTitleStyle: {
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              textTransform: 'capitalize'
+            },
+            headerTitleContainerStyle: {
+              flex: 1,
+              paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+            },
+            headerRight: () => (
+              <Fragment>
+                <Menu
+                  visible={menu}
+                  onDismiss={showMenu}
+                  anchor={
+                    <TouchableRipple
+                      rippleColor={colors.PRIMARY}
+                      onPress={showMenu}
+                      style={{
+                        padding: RFValue(3),
+                        paddingTop: RFValue(6),
+                        paddingBottom: RFValue(6),
+                        backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                        borderRadius: 4,
+                        borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                        borderWidth: 1
+                      }}
+                    >
+                      <Entypo
+                        name="dots-three-vertical"
+                        color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                        size={20}
+                      />
+                    </TouchableRipple>
+                  }
+                  contentStyle={{
+                    right: 10,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    overflow: Platform.select({ android: 'hidden' })
                   }}
+                  style={{ top: RFValue(getMenuHeight()) }}
                 >
-                  <Entypo
-                    name="dots-three-vertical"
-                    color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
-                    size={20}
+                  <Menu.Item
+                    onPress={showBlockModal}
+                    title={t(`community.memberPassport.block`)}
+                    style={{
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.RED,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
                   />
-                </TouchableRipple>
-              }
-              contentStyle={{
-                right: 10,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                paddingTop: 0,
-                paddingBottom: 0,
-                overflow: Platform.select({ android: 'hidden' })
-              }}
-              style={{ top: RFValue(getMenuHeight()) }}
-            >
-              <Menu.Item
-                onPress={() => inviteTribeNavigation(route?.params?.details.id)}
-                title={t(`community.invitation.inviteTribe`)}
-                style={{
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textAlign: 'center',
-                  textTransform: 'capitalize'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() =>
-                  inviteChannelNavigation(route?.params?.details.id)
-                }
-                title={t(`community.invitation.inviteChannel`)}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textAlign: 'center',
-                  textTransform: 'capitalize'
-                }}
-              />
-            </Menu>
-          ),
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
-          headerLeftContainerStyle: { paddingLeft: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        })}
+                  <Divider />
+                  <Menu.Item
+                    onPress={showReportModal(true)}
+                    title={t(`community.memberPassport.report`)}
+                    style={{
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.RED,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                  <Divider />
+                  <Menu.Item
+                    onPress={() =>
+                      handleRemoveConnection(route?.params?.details.id)
+                    }
+                    title={
+                      <Fragment>
+                        {connectionLoading ? (
+                          <ActivityIndicator
+                            size="small"
+                            color={colors.RED}
+                            style={{
+                              marginLeft: 'auto',
+                              marginRight: RFValue(5)
+                            }}
+                          />
+                        ) : null}
+                        <Text>
+                          {t(`community.memberPassport.removeConnection`)}
+                        </Text>
+                      </Fragment>
+                    }
+                    style={{
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.PRIMARY_TEXT,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                  <Divider />
+
+                  <Menu.Item
+                    onPress={() =>
+                      inviteTribeNavigation(route?.params?.details.id)
+                    }
+                    title={t(`community.invitation.inviteTribe`)}
+                    style={{
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.PRIMARY_TEXT,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                  <Divider />
+                  <Menu.Item
+                    onPress={() =>
+                      inviteChannelNavigation(route?.params?.details.id)
+                    }
+                    title={t(`community.invitation.inviteChannel`)}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.PRIMARY_TEXT,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                </Menu>
+                <BlockUserModal
+                  data={route?.params}
+                  blockModalVisible={blockModalVisible}
+                  closeModal={showBlockModal}
+                />
+                <ReportModal
+                  data={route?.params}
+                  closeReportModal={showReportModal(false)}
+                  isVisible={reportModalVisible}
+                />
+              </Fragment>
+            ),
+            headerBackTitleVisible: false,
+            headerTintColor: colors.PRIMARY,
+            headerRightContainerStyle: { marginRight: 10 },
+            headerLeftContainerStyle: { paddingLeft: 10 },
+            headerStyle: GLOBAL_HEADER_STYLE
+          };
+        }}
       />
 
       <DrawerStack.Screen
@@ -807,3 +960,47 @@ export default function DrawerStackNavigator() {
     </DrawerStack.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF'
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3'
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center'
+  }
+});
