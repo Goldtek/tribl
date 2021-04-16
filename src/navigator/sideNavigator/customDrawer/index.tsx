@@ -69,7 +69,6 @@ export default function CustomDrawerComponent() {
   };
 
   const changeSideMenu = (menu: string) => {
-    console.tron('side', menu);
     changeSideMenuState({ variables: { activeSideMenu: menu } });
   };
 
