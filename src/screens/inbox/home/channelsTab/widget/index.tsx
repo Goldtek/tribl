@@ -15,6 +15,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useNavigation } from '@react-navigation/native';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import ChannelActions from './channelActions';
+import { useStreamContext } from '../../../../../stream';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
 import { GET_SINGLE_COMMUNITY } from '../../../../../graphql/server/query';
@@ -52,7 +53,6 @@ export default function CustomChannelPreview(
   const {
     unread,
     channel,
-    setActiveChannel,
     latestMessagePreview,
     formatLatestMessageDate,
     latestMessageLength = 40
@@ -64,6 +64,7 @@ export default function CustomChannelPreview(
 
   const navigation = useNavigation();
   const { colors } = useThemeContext();
+  const { setChannel } = useStreamContext();
   const getMuteStatus = channel.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
   const displayName = useChannelPreviewDisplayName(channel);
@@ -123,7 +124,7 @@ export default function CustomChannelPreview(
           padding: 10
         }}
         onPress={() => {
-          setActiveChannel && setActiveChannel(channel);
+          setChannel(channel as any);
           navigation.navigate('DrawerScreen', {
             screen: 'ChannelChatScreen',
             params: { title: channelTitle, channelId: channel.id }

@@ -30,7 +30,7 @@ export default function ChannelCard(props: ChannelCardProp) {
 
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
-      screen: 'ChannelChatScreen',
+      screen: 'DeepLinkChannelChatScreen',
       params: { title: `#${name}`, channelId: id }
     });
   };

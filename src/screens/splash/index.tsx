@@ -17,8 +17,6 @@ import {
   GET_MY_COMMUNITIES,
   USER_CHANNELS
 } from '../../graphql/server/query';
-import * as ExpoSplashScreen from 'expo-splash-screen';
-import loadResources from '../../libs/loadResources';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
 import { refreshToken } from '../../network/query';
@@ -67,8 +65,6 @@ export default function SplashScreen(props: ScreenProp) {
 
   const handleAuthentication = async () => {
     try {
-      await loadResources();
-      await ExpoSplashScreen.hideAsync();
       const value = await Storage.checkInitialLaunch();
 
       if (!value) {
@@ -85,7 +81,7 @@ export default function SplashScreen(props: ScreenProp) {
       const credentials = JSON.parse(userCredStorageData) as VerifyOTPIT;
       const userRegistration: RegistrationInfo = JSON.parse(userRegStorageData);
 
-      if (!credentials.appVersion || credentials.appVersion !== APP_VERSION) {
+      if (!credentials.appVersion) {
         return navigation.replace('SignupScreen');
       }
 

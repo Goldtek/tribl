@@ -62,7 +62,7 @@ function ChannelMember(props: ChannelUserProp) {
 
   const handleMessageNavigation = () => {
     rootNavigator.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         id,
         avatar,

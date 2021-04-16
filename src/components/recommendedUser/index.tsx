@@ -81,7 +81,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         id,
         avatar,

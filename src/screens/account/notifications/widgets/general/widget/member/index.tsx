@@ -56,7 +56,7 @@ function TribeRequest(props: TribeRequestprop) {
 
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         title: `${firstName} ${lastName}`,
         ...{ ...props, ...singlePassport }

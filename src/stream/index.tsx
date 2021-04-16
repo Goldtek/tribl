@@ -57,10 +57,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     // Register foreground handler
     const unsubscribe = messaging.onMessage(presentNotification);
 
-    // Register background handler
-    messaging.setBackgroundMessageHandler(presentNotification);
-
-    // Check whether an initial notification is available
+    // // Check whether an initial notification is available
     messaging.getInitialNotification().then(presentNotification);
 
     return unsubscribe;
@@ -105,8 +102,6 @@ const StreamProvider: FunctionComponent = ({ children }) => {
               return data?.generateStreamsToken.streams_token;
             }
           );
-
-          setChannel(chatClient.channel('team', 'default_channel'));
 
           if (streamUser && streamUser.me?.total_unread_count) {
             changeMessageNotification({
@@ -176,7 +171,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
         }
       };
 
-      if (!chatClient.user) {
+      if (!chatClient.user?.id) {
         initChat();
       }
     }
