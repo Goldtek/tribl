@@ -168,12 +168,17 @@ type Tags = {
   updatedAt: string;
 };
 
+type Blocked = {
+  blocked: PassportInterface[];
+};
+
 export interface PassportInterface {
   id: string;
   bio: string;
   email: string;
   avatar: string;
   dob: string;
+  invite_url: string;
   lastName: string;
   verified: boolean;
   firstName: string;
@@ -201,6 +206,8 @@ export interface PassportInterface {
   connectionRequests: ConnectionStatusInterface[];
   connectionDetails: ConnectionStatusInterface;
   pending: string;
+  privacy: Blocked;
+  blocked: Blocked;
 }
 
 export interface ConnectionStatusInterface {
