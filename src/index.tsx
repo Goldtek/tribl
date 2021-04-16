@@ -14,6 +14,7 @@ import { Linking } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { LinkingOptions } from '@react-navigation/native';
 import { NotificationMessage } from './graphql/types';
+import { DEVICE_OS } from './utils/device';
 
 const RootStack = createStackNavigator();
 
@@ -98,9 +99,12 @@ export default function AppNavigator() {
 
       if (!localMessage) return null;
 
-      const { data } = JSON.parse(localMessage) as {
+      const pushData = JSON.parse(localMessage) as {
         data: NotificationMessage;
+        body: NotificationMessage;
       };
+
+      const data = DEVICE_OS === 'ios' ? pushData?.body : pushData?.data;
 
       AsyncStorage.removeItem('BACK_GROUND_MESSAGE');
 
@@ -123,7 +127,11 @@ export default function AppNavigator() {
       // Listen to firebase push notifications
       const unsubscribeNotification = messaging().onNotificationOpenedApp(
         (message) => {
-          const data = message?.data as NotificationMessage;
+          const data =
+            DEVICE_OS === 'ios'
+              ? //@ts-ignore
+                (message?.body as NotificationMessage)
+              : (message?.data as NotificationMessage);
 
           if (
             data.link_url === 'deep_link_direct_chats_screen' ||
