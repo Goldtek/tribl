@@ -38,7 +38,10 @@ import {
   MyPassportInterface,
   PassportInterface
 } from '../../graphql/types';
-import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
+import {
+  UPDATE_PASSPORT,
+  GENERATE_INVITE_LINK
+} from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import Firechat from '../../firebase';
 import {
@@ -174,6 +177,31 @@ export default function PassportScreen(props: ScreenProp) {
     ? userDetails?.currentLocation
     : cache?.currentLocation;
 
+  const [generateInviteLink] = useMutation(GENERATE_INVITE_LINK, {
+    variables: { payload: { passportId: userDetails?.id } }
+  });
+
+  const handleGenerateLink = async () => {
+    logEvent('generate invite link', { from: 'passport' });
+    try {
+      Mixpanel.track('Generate Invite Link', {
+        info: `Generate Invite Link`,
+        'Activity Screen': 'Passport Screen'
+      });
+      await generateInviteLink();
+      refetch();
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
+  useEffect(() => {
+    if (userDetails && !userDetails?.invite_url?.length) {
+      handleGenerateLink();
+      refetch();
+    }
+  }, [userDetails]);
+  
   useEffect(() => {
     if (userDetails) {
       tagScreenName('PassportScreen');
@@ -426,7 +454,7 @@ export default function PassportScreen(props: ScreenProp) {
       const { action } = await Share.share(
         {
           title: t(`signup.passportScreen.title`),
-          message: t(`signup.passportScreen.sharePassportMessage`)
+          message: cache?.invite_url || userDetails?.invite_url
         },
         {
           dialogTitle: t(`signup.passportScreen.title`)
