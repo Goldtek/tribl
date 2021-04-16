@@ -16,7 +16,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import RecommendedMembers from '../../../../../components/recommendedUser';
 import {
   GET_NEARBY_MEMBERS,
-  GET_RECOMMENDED_MEMBERS
+  GET_RECOMMENDED_MEMBERS,
+  GET_USER_PASSPORT
 } from '../../../../../graphql/server/query';
 import NearbyModal from '../../../../../components/nearby';
 import ActiveModal from '../../../../../components/activeMembers';
@@ -28,6 +29,7 @@ import {
 } from '../../../../../graphql/types';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../../../../constants';
+import removeDuplicateMembers from '../../../../../utils/removeDuplicatePassports';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
@@ -38,6 +40,9 @@ interface ScreenProp extends NavigationInterface {}
 function MemberSTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
 
   useEffect(() => {
     tagScreenName('ViewAllMembers');
@@ -72,6 +77,18 @@ function MemberSTabScreen(props: ScreenProp) {
 
   const recommendedMembers = membersData?.recommendedMembers?.data;
 
+  const filterRecommendedMebers = removeDuplicateMembers(
+    recommendedMembers?.slice()
+  );
+
+  const filteredUnblockedRecommendedMebers = filterRecommendedMebers?.filter(
+    function (users) {
+      return !blockedUsers?.some(function (userTwo: any) {
+        return users.id == userTwo.id;
+      });
+    }
+  );
+
   const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
     GET_NEARBY_MEMBERS,
     {
@@ -80,6 +97,16 @@ function MemberSTabScreen(props: ScreenProp) {
   );
 
   const nearbyMembers = nearbyData?.nearbyMembers?.data;
+
+  const filterNearbyMebers = removeDuplicateMembers(nearbyMembers?.slice());
+
+  const filteredUnblockedNearbyMebers = filterNearbyMebers?.filter(function (
+    users
+  ) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
 
   const _renderNearbyMember = useMemo(
     () => ({ item }: { item: PassportInterface }) => (
@@ -151,7 +178,7 @@ function MemberSTabScreen(props: ScreenProp) {
             </TouchableRipple>
           </RecommendedListHeader>
           <FlatList
-            data={recommendedMembers}
+            data={filteredUnblockedRecommendedMebers}
             horizontal={true}
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
@@ -208,7 +235,7 @@ function MemberSTabScreen(props: ScreenProp) {
             </TouchableRipple>
           </RecommendedListHeader>
           <FlatList
-            data={nearbyMembers}
+            data={filteredUnblockedNearbyMebers}
             horizontal={true}
             renderItem={_renderNearbyMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}

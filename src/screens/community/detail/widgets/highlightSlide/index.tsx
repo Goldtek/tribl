@@ -38,6 +38,7 @@ import hexToRGB from '../../../../../utils/hexToRGB';
 import ChannelSkeleton from '../../../../../components/channelSkeleton';
 import { PAGINATION_DEFAULT } from '../../../../../constants';
 import MyChannel from '../../../memberPassport/widget/channelCard';
+import removeDuplicateMembers from '../../../../../utils/removeDuplicatePassports';
 
 import {
   Tags,
@@ -148,21 +149,51 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   const userDetails = userData?.myPassport;
   const userId = userDetails?.id;
   const myTribes = userDetails?.participantOf;
-
+  const blockedUsers = userDetails?.privacy?.blocked;
   const communityChannels = channelData?.Channel?.data;
   const participants = communityMembers?.communityMembers?.data;
   const communityNearbyMembers = communityMembersData?.nearbyMembers?.data;
   const nearbyMembersData = NearbyMembers?.nearbyMembers?.data;
 
+  const filterNearbyMebers = removeDuplicateMembers(nearbyMembersData?.slice());
+
+  const filterUnblockedNearbyMebers = filterNearbyMebers?.filter(function (
+    users
+  ) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
+  const filterCommunityNearbyMembers = removeDuplicateMembers(
+    communityNearbyMembers?.slice()
+  );
+
+  const filterUnblockedCommunityNearbyMembers = filterCommunityNearbyMembers?.filter(
+    function (users) {
+      return !blockedUsers?.some(function (userTwo: any) {
+        return users.id == userTwo.id;
+      });
+    }
+  );
+
+  const filterParticiant = removeDuplicateMembers(participants?.slice());
+
+  const filterUnblockedParticiant = filterParticiant?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
   const filteredParticipants = participants?.filter(
     (member) => member.id !== userId
   );
 
-  const nearbyMembers = communityNearbyMembers?.length
-    ? communityNearbyMembers
-    : filteredParticipants?.length
-    ? filteredParticipants
-    : nearbyMembersData;
+  const nearbyMembers = filterUnblockedCommunityNearbyMembers?.length
+    ? filterUnblockedCommunityNearbyMembers
+    : filterUnblockedParticiant?.length
+    ? filterUnblockedParticiant
+    : filterUnblockedNearbyMebers;
 
   const handleJoinCommunity = () => {
     setState({
@@ -201,7 +232,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   });
 
   const [leaveCommunity] = useMutation(LEAVE_COMMUNITY, {
-    variables: { payload: { communityId: id } }
+    variables: { payload: { communityId: id, receipientIds: [userId] } }
   });
 
   const handleJoin = async () => {

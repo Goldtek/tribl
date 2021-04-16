@@ -20,6 +20,7 @@ import {
   NearbyMembersRequestInterface
 } from '../../graphql/types';
 import { PAGINATION_DEFAULT } from '../../constants';
+import removeDuplicateMembers from '../../utils/removeDuplicatePassports';
 
 // DEFINE SCREEN PROP TYPES
 interface ModalProp {
@@ -44,12 +45,20 @@ function NearbyModal(props: ModalProp) {
   );
 
   const nearbyMember = nearbyData?.nearbyMembers?.data;
+  const filterNearbyMebers = removeDuplicateMembers(nearbyMember?.slice());
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
   const userId = userDetails?.id;
+  const blockedUsers = userDetails?.privacy?.blocked;
 
-  const nearbyList = nearbyMember?.slice().sort((a, b) => {
+  const filteredUsers = filterNearbyMebers?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
+  const nearbyList = filteredUsers?.slice().sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
@@ -101,7 +110,7 @@ function NearbyModal(props: ModalProp) {
           </Text>
         }
         flatListProps={{
-          data: filterMembers || [],
+          data: nearbyList || [],
           renderItem: _renderItem,
           ListEmptyComponent: <Skeleton />,
           showsVerticalScrollIndicator: false,

@@ -23,6 +23,9 @@ import ENVIRONMENT_VARIABLES, {
 } from '../../../../../config';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
 import hexToRGB from '../../../../../utils/hexToRGB';
+import removeDuplicateMembers from '../../../../../utils/removeDuplicatePassports';
+import { useQuery } from '@apollo/react-hooks';
+import { GET_USER_PASSPORT } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -43,6 +46,9 @@ export default function MemberSlide(props: MemberSlideProp) {
     setState({ ...state, search });
   };
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+
   useEffect(() => {
     tagScreenName('TribeMembersScreen');
     Mixpanel.track('User Views Community Members', {
@@ -57,11 +63,17 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   const _memberList = (props: any) => {
     const { hits, hasMore, refineNext } = props;
+    const filterHits = removeDuplicateMembers(hits?.slice());
+    const filteredUsers = filterHits?.filter(function (users) {
+      return !blockedUsers?.some(function (userTwo: any) {
+        return users.id == userTwo.id;
+      });
+    });
 
     return (
       <Results>
         <FlatList
-          data={hits}
+          data={filteredUsers}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={() => (
             <Divider

@@ -16,7 +16,10 @@ import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import MemberCard from '../../../components/connectionCard';
 import hexToRGB from '../../../utils/hexToRGB';
-import { GET_ALL_MEMBERS } from '../../../graphql/server/query';
+import {
+  GET_ALL_MEMBERS,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
 import ENVIRONMENT_VARIABLES from '../../../config';
 import {
@@ -54,6 +57,9 @@ export default function ChatScreen(props: ScreenProp) {
 
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+
   const { data, loading, fetchMore } = useQuery<AllMembersRequestInterface>(
     GET_ALL_MEMBERS,
     {
@@ -63,6 +69,11 @@ export default function ChatScreen(props: ScreenProp) {
 
   const allMembers = data?.Passport;
   const filteredMembers = removeDuplicateMembers(allMembers?.data.slice());
+  const filteredUsers = filteredMembers?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
 
   const handleMessageNavigation = () => {
     navigation.navigate('SelectGroupParticipantsScreen');
@@ -73,7 +84,7 @@ export default function ChatScreen(props: ScreenProp) {
 
     fetchMore({
       variables: {
-        input: { skip: filteredMembers?.length, limit: PAGINATION_DEFAULT }
+        input: { skip: filteredUsers?.length, limit: PAGINATION_DEFAULT }
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         setCallOnScrollEnd(false);
@@ -240,7 +251,7 @@ export default function ChatScreen(props: ScreenProp) {
         {!loading ? (
           <FlatList
             bounces={false}
-            data={filteredMembers}
+            data={filteredUsers}
             ref={hideSensitiveView}
             renderItem={_renderItem}
             keyExtractor={(item) => item.id}

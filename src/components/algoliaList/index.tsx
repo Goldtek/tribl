@@ -11,6 +11,9 @@ import { PassportInterface } from '../../graphql/types';
 import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
 import Highlight from '../algoliaHighlight';
+import removeDuplicateMembers from '../../utils/removeDuplicatePassports';
+import { useQuery } from '@apollo/react-hooks';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
 
 export type AlgoliaListProps = {
   hasMore: boolean;
@@ -52,6 +55,8 @@ const _defaultRenderItem = ({ item }: { item: PassportInterface }) => (
 function AlgoliaList(props: AlgoliaListProps) {
   const { fonts } = useThemeContext();
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
   const {
     hits,
     hasMore,
@@ -79,7 +84,14 @@ function AlgoliaList(props: AlgoliaListProps) {
     [hasMore]
   );
 
-  return hits.length ? (
+  const filterHits = removeDuplicateMembers(hits?.slice());
+  const filteredUsers = filterHits?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
+  return filteredUsers?.length ? (
     <FlatList
       data={hits}
       renderItem={_renderItem}

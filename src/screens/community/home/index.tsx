@@ -60,6 +60,7 @@ import Storage from '../../../libs/storage';
 import Firechat from '../../../firebase';
 import CheckAppUpdates from '../../../libs/updates';
 import { crashlytics } from '../../../firebase/config';
+import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -242,6 +243,16 @@ export default function HomeScreen(props: ScreenProp) {
   const myChannels = myChannelsData?.myChannels;
   const myCommunities = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers?.data;
+  const filterRecommendedMebers = removeDuplicateMembers(
+    recommendedMembers?.slice()
+  );
+  const blockedUsers = userDetails?.privacy?.blocked;
+  const filteredUsers = filterRecommendedMebers?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
   const communities = communityData?.recommendedCommunities?.data
     .slice()
     .sort((a) => {
@@ -532,7 +543,7 @@ export default function HomeScreen(props: ScreenProp) {
             </GradientButton>
           </RecommendedListHeader>
           <FlatList
-            data={recommendedMembers}
+            data={filteredUsers}
             horizontal={true}
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
