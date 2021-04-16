@@ -186,7 +186,7 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
                   textAlign: 'center'
                 }}
               >
-                There are no members at this time
+                You have to join a tribe for you to be able to create a channel.
               </Text>
             }
             showsVerticalScrollIndicator={false}
