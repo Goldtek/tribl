@@ -1,44 +1,44 @@
-import React, { useState, useEffect, Fragment, useMemo } from 'react';
-import { FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { FlatList, TouchableWithoutFeedback } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { Searchbar, Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Divider, TouchableRipple, Title } from 'react-native-paper';
 import {
-  connectInfiniteHits,
   InstantSearch,
   connectSearchBox,
-  Configure
+  Configure,
+  connectInfiniteHits
 } from 'react-instantsearch-native';
-import {
-  Divider,
-  TouchableRipple,
-  Title,
-  Searchbar,
-  Text,
-  Button
-} from 'react-native-paper';
-import { useMutation } from '@apollo/react-hooks';
-import { Results } from '../../../components/algoliaCommunityMembersList';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useKeyboardContext } from 'stream-chat-react-native-core';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
-import MemberCard from './widgets';
+import TribeMembersMemberCard from './widget';
 import hexToRGB from '../../../utils/hexToRGB';
-import ENVIRONMENT_VARIABLES, { Mixpanel, searchClient } from '../../../config';
-import { CREATE_NEW_CHANNEL } from '../../../graphql/server/mutations';
+import ENVIRONMENT_VARIABLES, { searchClient, Mixpanel } from '../../../config';
 import { PassportInterface } from '../../../graphql/types';
 import { NavigationInterface } from '../../types';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import { tagScreenName, hideSensitiveView } from '../../../utils/uxcamHelper';
+import { USER_DEFAULT_AVATAR } from '../../../constants';
+import { CREATE_NEW_CHANNEL } from '../../../graphql/server/mutations';
+import AlgoliaList from '../../../components/algoliaList';
+import { crashlytics } from '../../../firebase/config';
+import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
+import { Results } from '../../../components/algoliaCommunityMembersList';
+import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   Container,
-  HeaderContainer,
+  CloseIcon,
   HeaderTitle,
-  IconCover,
-  SelectedCover
+  HeaderContainer,
+  SelectedMemberWrapper,
+  SearchInputWrapper
 } from './styles';
-import FastImage from 'react-native-fast-image';
-import { crashlytics } from '../../../firebase/config';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -48,125 +48,154 @@ export default function NewChannelParticipants(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { id, name, channelName } = route?.params;
+  const selecteduserRef = useRef<any>(null);
+  const { dismissKeyboard } = useKeyboardContext();
+
+  const [tribeMembers, setTribeMembers] = useState<{
+    [key: string]: PassportInterface;
+  }>({});
   const [state, setState] = useState({ search: {} });
 
-  const [participant, setparticipant] = useState({
-    selectedParticipant: new Map()
-  });
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+
+  const handleSelect = (user: PassportInterface) => {
+    dismissKeyboard();
+    const { firstName, lastName, id, avatar } = user;
+
+    const payload = {
+      id,
+      avatar,
+      lastName,
+      firstName
+    } as PassportInterface;
+
+    if (!tribeMembers[id]) {
+      return setTribeMembers({ ...tribeMembers, [id]: payload });
+    }
+
+    const { [id]: _, ...restUsers } = { ...tribeMembers };
+    setTribeMembers(restUsers);
+  };
+
+  useEffect(() => {
+    tagScreenName('CreateChannelParticipant');
+  }, [tribeMembers]);
 
   const onSearchStateChange = (search: string) => {
     setState({ ...state, search });
   };
 
-  const handleSelect = (selected: {}) => {
-    console.tron('id', selected.id);
-    const id = selected.id;
-    if (!participant.selectedParticipant.has(id)) {
-      return setparticipant({
-        ...participant,
-        selectedParticipant: new Map(
-          participant.selectedParticipant.set(id, selected)
-        )
-      });
-    }
+  const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME;
 
-    participant.selectedParticipant.delete(id);
-    setparticipant({
-      ...participant,
-      selectedParticipant: new Map(participant.selectedParticipant)
-    });
-  };
+  const selectedParticipant = [Object.values(tribeMembers)];
 
-  const selectedParticipant = [
-    ...Array.from(participant.selectedParticipant.values())
-  ];
+  const channelParticipant = selectedParticipant[0]?.map((item) => item.id);
 
   const [createChannel, { loading }] = useMutation(CREATE_NEW_CHANNEL, {
     variables: {
       payload: {
         communityId: id,
         name: channelName,
-        participants: [],
+        participants: channelParticipant,
         isPrivate: false
       }
     }
   });
 
-  console.tron('selectedParticipant', selectedParticipant);
-  const channelParticipant = selectedParticipant?.map((item) => item.id);
-
-  console.tron('channelParticipant', channelParticipant);
-
-  useEffect(() => {
-    tagScreenName('CreateChannelParticipant');
-  }, []);
-
-  const SelectedParticipants = () => {
-    return (
-      <SelectedCover>
-        {selectedParticipant?.length ? (
-          <Fragment>
-            {selectedParticipant?.map((item) => (
-              <TouchableOpacity
-                key={item}
-                style={{
-                  flexDirection: 'row',
-                  width: RFValue(45),
-                  paddingVertical: 5,
-                  paddingHorizontal: 8,
-                  marginVertical: 5,
-                  marginHorizontal: 5,
-                  borderRadius: 4
-                }}
-                onPress={() => handleSelect(item)}
-              >
-                <Fragment>
-                  <FastImage
-                    resizeMode={FastImage.resizeMode.contain}
-                    source={{
-                      uri: item.avatar,
-                      priority: FastImage.priority.high
-                    }}
-                    style={{
-                      width: RFValue(35),
-                      height: RFValue(35),
-                      borderRadius: RFValue(2)
-                    }}
-                  />
-                  <IconCover>
-                    <Feather
-                      name="x"
-                      style={{
-                        fontSize: RFValue(fonts.MEDIUM_SIZE),
-                        color: colors.WHITE
-                      }}
-                    />
-                  </IconCover>
-                </Fragment>
-              </TouchableOpacity>
-            ))}
-          </Fragment>
-        ) : null}
-      </SelectedCover>
-    );
+  const handleCreateChannel = async () => {
+    try {
+      Mixpanel.track('Create a new channel', {
+        info: `User creates a new channel in ${name} community`,
+        'Activity Screen': 'Add participant to new channel screen'
+      });
+      await createChannel();
+      navigation.navigate('ChannelChatScreen', {
+        params: { title: `#${channelName}` }
+      });
+    } catch (error) {
+      crashlytics.recordError(error);
+    }
   };
 
-  const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <MemberCard
-      key={item.id}
+  const _renderItem = ({ item }: any) => (
+    <TribeMembersMemberCard
       {...item}
-      selected={participant.selectedParticipant.get(item.id)}
+      attribute="id"
+      key={item.id}
       handleSelect={handleSelect}
-      member={item.firstName}
+      selected={Boolean(tribeMembers[item.id])}
     />
   );
 
+  const _renderSelectedItem = ({ item }: { item: PassportInterface }) => (
+    <TouchableWithoutFeedback onPress={() => {}}>
+      <SelectedMemberWrapper ref={hideSensitiveView}>
+        <CloseIcon onPress={() => handleSelect(item)}>
+          <Ionicons name="md-close" size={15} color={colors.GREY} />
+        </CloseIcon>
+        <FastImage
+          resizeMode={FastImage.resizeMode.stretch}
+          source={{
+            uri: item.avatar || USER_DEFAULT_AVATAR,
+            priority: FastImage.priority.high
+          }}
+          style={{
+            width: RFValue(40),
+            height: RFValue(40),
+            borderRadius: 4
+          }}
+        />
+        <Title
+          numberOfLines={1}
+          style={{
+            color: colors.BLACK,
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(10)
+          }}
+        >
+          {item.firstName} {item.lastName} {item.lastName}
+        </Title>
+      </SelectedMemberWrapper>
+    </TouchableWithoutFeedback>
+  );
+
+  const _searchBox = ({ currentRefinement, refine }: any) => (
+    <Searchbar
+      value={currentRefinement}
+      iconColor={colors.PRIMARY_TEXT}
+      onChangeText={(value) => refine(value)}
+      placeholder={t(`community.chat.search`)}
+      style={{
+        marginLeft: RFValue(10),
+        marginRight: RFValue(10),
+        fontFamily: fonts.WORK_SANS_REGULAR,
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        color: colors.SECONDARY_TEXT,
+        marginHorizontal: 15,
+        elevation: 0,
+        borderColor: colors.INACTIVE,
+        borderRadius: 4,
+        borderWidth: 1
+      }}
+    />
+  );
+
+  const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), []);
+
   const _memberList = (props: any) => {
     const { hits, hasMore, refineNext } = props;
+    const filterHits = removeDuplicateMembers(hits?.slice());
+    const filteredUsers = filterHits?.filter(function (users) {
+      return !blockedUsers?.some(function (userTwo: any) {
+        return users.id == userTwo.id;
+      });
+    });
+
     return (
       <Results>
         <FlatList
-          data={hits}
+          data={filteredUsers}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={() => (
             <Divider
@@ -188,44 +217,30 @@ export default function NewChannelParticipants(props: ScreenProp) {
     );
   };
 
-  const _searchBox = ({ currentRefinement, refine }: any) => (
-    <Searchbar
-      value={currentRefinement}
-      onChangeText={(value) => refine(value)}
-      placeholder={t(`community.chat.search`)}
-      style={{
-        marginLeft: RFValue(10),
-        marginRight: RFValue(10),
-        fontFamily: fonts.WORK_SANS_REGULAR,
-        fontSize: RFValue(fonts.LARGE_SIZE),
-        color: colors.SECONDARY_TEXT,
-        marginHorizontal: 15,
-        elevation: 0,
-        borderColor: colors.INACTIVE,
-        borderRadius: 4,
-        borderWidth: 1
-      }}
-      iconColor={colors.PRIMARY_TEXT}
-    />
-  );
-
-  const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), []);
   const AlgoliaMemberList = useMemo(() => connectInfiniteHits(_memberList), []);
 
-  const handleCreateChannel = async () => {
-    try {
-      Mixpanel.track('Create a new channel', {
-        info: `User creates a new channel in ${name} community`,
-        'Activity Screen': 'Add participant to new channel screen'
-      });
-      await createChannel();
-      navigation.navigate('ChannelChatScreen', {
-        params: { title: `#${channelName}` }
-      });
-    } catch (error) {
-      console.tron('error', error);
-      crashlytics.recordError(error);
+  const _renderSeparator = ({ leadingItem }: any) => {
+    const user = leadingItem as PassportInterface;
+
+    if (
+      (!user.verified ||
+        user.lastName == null ||
+        user.firstName == null ||
+        user.currentLocation?.city == null,
+      user.currentLocation?.state == null)
+    ) {
+      return null;
     }
+
+    return (
+      <Divider
+        style={{
+          height: 1.5,
+          marginHorizontal: RFValue(10),
+          backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
+        }}
+      />
+    );
   };
 
   return (
@@ -265,9 +280,9 @@ export default function NewChannelParticipants(props: ScreenProp) {
           </Button>
         </HeaderContainer>
         <InstantSearch
-          searchClient={searchClient}
           indexName={ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME}
           searchState={state.search}
+          searchClient={searchClient}
           onSearchStateChange={onSearchStateChange}
         >
           <Configure
@@ -275,21 +290,46 @@ export default function NewChannelParticipants(props: ScreenProp) {
             hitsPerPage={8}
             distinct
           />
-          <AlgoliaSearchBox />
-          <SelectedParticipants />
-          <Title
-            style={{
-              color: colors.PRIMARY_TEXT,
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              marginTop: RFValue(20),
-              marginLeft: RFValue(10),
-              textTransform: 'capitalize'
-            }}
-          >
-            {`${name} ${t(`community.tabPanel.members`)}`}
-          </Title>
-          <AlgoliaMemberList />
+          <SearchInputWrapper>
+            <AlgoliaSearchBox />
+            <FlatList
+              ref={selecteduserRef}
+              onContentSizeChange={() =>
+                selecteduserRef.current.scrollToEnd({
+                  animated: true
+                })
+              }
+              onLayout={() =>
+                selecteduserRef.current.scrollToEnd({
+                  animated: true
+                })
+              }
+              bounces={false}
+              horizontal={true}
+              scrollEnabled={true}
+              onEndReachedThreshold={0.5}
+              scrollEventThrottle={16}
+              data={Object.values(tribeMembers)}
+              renderItem={_renderSelectedItem}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 6
+              }}
+              style={{
+                marginRight: 15,
+                paddingRight: 5,
+                marginTop: RFValue(10)
+              }}
+            />
+          </SearchInputWrapper>
+
+          <AlgoliaList
+            //@ts-ignore
+            _separator={_renderSeparator}
+            //@ts-ignore
+            _renderItem={_renderItem}
+          />
         </InstantSearch>
       </Container>
     </SafeAreaView>

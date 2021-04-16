@@ -22,20 +22,58 @@ export const HeaderTitle = styled.Text`
   margin-right: 15px;
 `;
 
-export const IconCover = styled.View`
-  background-color: ${({ theme }) => theme.colors.textGrey};
-  width: ${RFValue(15)}px;
-  height: ${RFValue(15)}px;
+export const HeaderActionText = styled.Text<{ selectedParticipants: boolean }>`
+  font-size: 14px;
+  font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
+  color: ${({ theme, selectedParticipants }) =>
+    selectedParticipants ? theme.colors.PRIMARY : theme.colors.SECONDARY_TEXT};
+  text-transform: capitalize;
+`;
+
+export const HeaderAction = styled.TouchableOpacity`
+  height: 100%;
+  justify-content: center;
+  padding-horizontal: 10px;
+  align-items: center;
+  align-self: flex-end;
+`;
+
+export const SelectedMemberWrapper = styled.View`
+  width: ${RFValue(50)}px;
+  margin-horizontal: 5px;
+  padding-horizontal: 5px;
+  margin-top: 5px;
+`;
+
+export const SearchInputContainer = styled.View`
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom: 10px;
+`;
+
+export const ContentWrapper = styled.View`
+  padding-horizontal: 20px;
+`;
+
+export const SearchInputWrapper = styled.View`
+  border-bottom-width: 2px;
+  border-bottom-color: ${({ theme }) => theme.colors.GREY_LIGHT};
+`;
+
+export const CloseIcon = styled.TouchableOpacity`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background-color: #979797;
+  z-index: 1;
   justify-content: center;
   align-items: center;
-  position: relative;
-  right: ${RFValue(5)}px;
-  bottom: ${RFValue(3)}px;
   border-radius: 10px;
 `;
 
-export const SelectedCover = styled.View`
-  flex-direction: row;
-  align-items: center;
-  margin-top: ${RFValue(10)}px;
+export const Cover = styled.View`
+  flex: 1;
 `;
