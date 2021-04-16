@@ -55,7 +55,12 @@
     "requested": "requested",
     "interestTitle": "what are you interested in?",
     "interestParagraph": "Let us know what you have interest in. \n(Select all that apply)",
-    "channels": "recent channels"
+    "channels": "recent channels",
+    "blockMessage": "will no longer be able to connect or message you, and you will not see notifications from",
+    "cancel": "cancel",
+    "reportHeader": "Why are you reporting this account?",
+    "reportText": "Your report is anonymous, except if you're reporting an intellectual property infringement. If someone is in immediate danger, call the local emergency services. Don't wait.",
+    "unblock": "unblock"
   },
 
   "tabPanel": {
