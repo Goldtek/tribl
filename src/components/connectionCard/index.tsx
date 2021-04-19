@@ -47,7 +47,7 @@ function ConnectionCard(props: ConnectionCardProp) {
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         id,
         avatar,

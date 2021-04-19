@@ -19,7 +19,7 @@ export default function MyChannel(props: MyChannelProp) {
 
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
-      screen: 'ChannelChatScreen',
+      screen: 'DeepLinkChannelChatScreen',
       params: { channelId: id, title: `#${name}` }
     });
   };

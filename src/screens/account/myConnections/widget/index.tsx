@@ -32,7 +32,7 @@ export default function Connection(props: ConnectionProp) {
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         id,
         avatar,

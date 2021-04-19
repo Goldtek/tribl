@@ -8,7 +8,9 @@ import CreateGroupScreen from './createNewGroup';
 import ChannelMembersScreen from './channelMembers';
 import GroupInformationScreen from './groupInformation';
 import ChannelInformationScreen from './channelInformation';
+import DeepLinkDirectChatScreen from './deepLinkDirectChat';
 import AddMembersToGroupScreen from './addGroupParticipants';
+import DeepLinkChannelChatScreen from './deepLinkChannelChat';
 import InvitationToChannelScreen from './invitationToChannel';
 import DirectMessageInformation from './directMessageInformation';
 import SelectGroupParticipantsScreen from './selectGroupParticipants';
@@ -29,6 +31,8 @@ export default {
   GroupInformationScreen,
   AddMembersToGroupScreen,
   ChannelInformationScreen,
+  DeepLinkDirectChatScreen,
+  DeepLinkChannelChatScreen,
   DirectMessageInformation,
   InvitationToChannelScreen,
   SelectGroupParticipantsScreen,

@@ -65,7 +65,7 @@ function ActiveModal(props: ActiveUserProp) {
   const handleMessageNavigation = async () => {
     closeActiveModal();
     rootNavigator.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         id,
         avatar,

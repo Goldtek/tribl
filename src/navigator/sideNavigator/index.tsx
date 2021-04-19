@@ -182,6 +182,16 @@ export default function DrawerStackNavigator() {
       />
 
       <DrawerStack.Screen
+        name="DeepLinkDirectChatScreen"
+        component={InboxScreens.DeepLinkDirectChatScreen}
+      />
+
+      <DrawerStack.Screen
+        name="DeepLinkChannelChatScreen"
+        component={InboxScreens.DeepLinkChannelChatScreen}
+      />
+
+      <DrawerStack.Screen
         name="ThreadChatScreen"
         component={InboxScreens.ThreadChatScreen}
         options={{

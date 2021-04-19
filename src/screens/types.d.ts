@@ -27,6 +27,7 @@ export type RootStackParamList = {
   MessageRequestChatScreen: ChatScreenProps;
   MessageRequestScreen?: Object;
   DirectChatScreen: ChatScreenProps;
+  DeepLinkDirectChatScreen?: ChatScreenProps;
   DirectMessageTab?: Object;
   SignupPassportScreen?: Object;
   ChannelsTab?: Object;
@@ -40,6 +41,7 @@ export type RootStackParamList = {
   AccountSettingScreen?: Object;
   SelectCountryScreen?: Object;
   ChannelChatScreen?: Object;
+  DeepLinkChannelChatScreen?: Object;
   CommunityScreen?: Object;
   CreateAccountScreen?: Object;
   MemberDetailScreen?: Object;
@@ -122,6 +124,7 @@ export type RootStackParamScreensList =
   | 'DirectMessageInformation'
   | 'GroupInformationScreen'
   | 'ChannelChatScreen'
+  | 'DeepLinkChannelChatScreen'
   | 'MessageRequestTab'
   | 'AccountSettingScreen'
   | 'SelectCountry'
@@ -139,6 +142,7 @@ export type RootStackParamScreensList =
   | 'WalkThroughScreen'
   | 'BirthPlaceScreen'
   | 'DirectChatScreen'
+  | 'DeepLinkDirectChatScreen'
   | 'AddMembersToGroupScreen'
   | 'NewMessageScreen'
   | 'CommunityScreen'

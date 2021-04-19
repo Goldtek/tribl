@@ -169,7 +169,7 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         avatar,
         lastName,

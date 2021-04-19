@@ -1,19 +1,37 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Chat, Channel, MessageList, MessageInput } from 'stream-chat-expo';
+import {
+  Chat,
+  Channel,
+  MessageList,
+  MessageInput,
+  DefaultCommandType,
+  ChannelContextValue
+} from 'stream-chat-expo';
 import CustomChannelMessage from '../../../components/customChannelMessage';
 import CustomSystemMessage from '../../../components/customSystemMessage';
 import useStreamChatTheme from '../../../utils/useStreamChatTheme';
 import { ChatScreenProps, NavigationInterface } from '../../types';
 import StreamInputBox from '../../../components/streamInputBox';
-import { chatClient, ThreadType } from '../../../stream/types';
-import { tagScreenName } from '../../../utils/uxcamHelper';
+import {
+  chatClient,
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType,
+  ThreadType
+} from '../../../stream/types';
+import { logEvent, tagScreenName } from '../../../utils/uxcamHelper';
 import {
   TouchableRipple,
   Paragraph,
   Surface,
   IconButton
 } from 'react-native-paper';
+import type { Channel as StreamChatChannel, ChannelSort } from 'stream-chat';
+import { useMutation } from '@apollo/react-hooks';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useStreamContext } from '../../../stream';
 import { useThemeContext } from '../../../theme';
@@ -23,7 +41,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { USER_DEFAULT_AVATAR } from '../../../constants';
 import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
+import { Mixpanel } from '../../../config';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { JOIN_COMMUNITY_CHANNEL } from '../../../graphql/server/mutations';
+import { crashlytics } from '../../../firebase/config';
 
 import {
   CountBadge,
@@ -38,13 +59,119 @@ interface ScreenProp extends NavigationInterface {
   route: { params: ChatScreenProps };
 }
 
-export default function ChannelChatScreen(props: ScreenProp) {
+export default function DeepLinkChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
   const [text, setText] = useState('');
-  const chatStyles = useStreamChatTheme();
   const { bottom } = useSafeAreaInsets();
+  const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
-  const { channel, setThread, setActivityScreen } = useStreamContext();
+
+  const {
+    setThread,
+    setActivityScreen,
+    setChannel: streamSetChannel
+  } = useStreamContext();
+
+  const [joinChannel] = useMutation(JOIN_COMMUNITY_CHANNEL);
+  const [channel, setChannel] = useState<
+    StreamChatChannel<
+      LocalAttachmentType,
+      LocalChannelType,
+      DefaultCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >
+  >(
+    {} as StreamChatChannel<
+      LocalAttachmentType,
+      LocalChannelType,
+      DefaultCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >
+  );
+
+  const [channelMembers, setChannelMembers] = useState<
+    ChannelContextValue<
+      LocalAttachmentType,
+      LocalChannelType,
+      DefaultCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >['members']
+  >(
+    {} as ChannelContextValue<
+      LocalAttachmentType,
+      LocalChannelType,
+      DefaultCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >['members']
+  );
+
+  const getConversation = async () => {
+    try {
+      const filter = {
+        id: { $in: [route.params.channelId] },
+        members: { $in: [`${chatClient.user?.id}`] }
+      };
+
+      const options = { presence: true, state: true, watch: true };
+
+      const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+
+      const [channelExists] = await chatClient.queryChannels(
+        filter,
+        sort,
+        options
+      );
+
+      if (channelExists) {
+        setChannel(channelExists);
+        setChannelMembers(channelExists.state.members);
+        streamSetChannel(channelExists);
+      } else {
+        addUserToChannel();
+      }
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
+  useEffect(() => {
+    if (route.params.channelId && chatClient.user?.id) {
+      getConversation();
+    }
+  }, [route.params.channelId, chatClient?.user?.id]);
+
+  const members = Object.values(channelMembers);
+
+  const addUserToChannel = async () => {
+    try {
+      logEvent('join channel', { from: 'channel' });
+
+      Mixpanel.track('User Joins Channel', {
+        info: `User Joins ${channel.data?.name} Channel on ${channel.data?.community?.name} community`,
+        'Activity Screen': 'Community Highlight Tribe Channels List'
+      });
+
+      await joinChannel({
+        variables: { payload: { channelId: route.params.channelId } }
+      });
+
+      getConversation();
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
 
   useEffect(() => {
     tagScreenName('ChannelChatScreen');
@@ -58,8 +185,6 @@ export default function ChannelChatScreen(props: ScreenProp) {
       navigation.navigate('ChannelInformationScreen');
     }
   };
-
-  const channelMembers = Object.values(channel.state.members.asMutable());
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -87,7 +212,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
           </TouchableRipple>
 
           <Fragment>
-            {channelMembers && channelMembers?.length === 1 ? (
+            {members && members?.length === 1 ? (
               <TouchableRipple
                 onPress={handleChannelNavigation}
                 style={{
@@ -135,7 +260,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
               </TouchableRipple>
             ) : null}
 
-            {channelMembers && channelMembers?.length >= 2 ? (
+            {members && members?.length >= 2 ? (
               <TouchableRipple
                 onPress={handleChannelNavigation}
                 style={{
@@ -157,8 +282,8 @@ export default function ChannelChatScreen(props: ScreenProp) {
                       resizeMode={FastImage.resizeMode.cover}
                       source={{
                         uri:
-                          channelMembers[channelMembers?.length - 2]?.user
-                            ?.image || USER_DEFAULT_AVATAR,
+                          members[members?.length - 2]?.user?.image ||
+                          USER_DEFAULT_AVATAR,
                         priority: FastImage.priority.high
                       }}
                       style={{
@@ -185,8 +310,8 @@ export default function ChannelChatScreen(props: ScreenProp) {
                       resizeMode={FastImage.resizeMode.cover}
                       source={{
                         uri:
-                          channelMembers[channelMembers?.length - 1]?.user
-                            ?.image || USER_DEFAULT_AVATAR,
+                          members[members?.length - 1]?.user?.image ||
+                          USER_DEFAULT_AVATAR,
                         priority: FastImage.priority.high
                       }}
                       style={{

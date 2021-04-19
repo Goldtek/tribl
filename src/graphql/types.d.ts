@@ -124,13 +124,15 @@ export enum IFCMMessageTypes {
 }
 
 type NotificationMessage = {
-  meta: string;
-  receiverAvatar: string;
-  receiverId: string;
-  receiverName: string;
-  senderAvatar: string;
-  senderId: string;
-  senderName: string;
+  channelType: string;
+  channelId: string;
+  sender_id: string;
+  sender_image: string;
+  sender_title: string;
+  message: string;
+  link_url: string;
+  message: string;
+  link_url: string;
   type: IFCMMessageTypes;
 };
 

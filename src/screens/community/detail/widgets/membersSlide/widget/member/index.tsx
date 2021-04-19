@@ -51,7 +51,7 @@ function Member(props: MemberProp) {
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
-      screen: 'DirectChatScreen',
+      screen: 'DeepLinkDirectChatScreen',
       params: {
         id,
         avatar,
