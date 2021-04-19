@@ -109,10 +109,15 @@ export default function NewChannelParticipants(props: ScreenProp) {
         info: `User creates a new channel in ${name} community`,
         'Activity Screen': 'Add participant to new channel screen'
       });
-      await createChannel();
-      navigation.navigate('ChannelChatScreen', {
-        params: { title: `#${channelName}` }
-      });
+      const { data } = await createChannel();
+      if (data) {
+        navigation.navigate('ChannelChatScreen', {
+          params: {
+            title: `#${channelName}`,
+            channelId: data?.addChannelToCommunity?.id
+          }
+        });
+      }
     } catch (error) {
       crashlytics.recordError(error);
     }
