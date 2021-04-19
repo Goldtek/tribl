@@ -257,6 +257,7 @@ export const CREATE_NEW_CHANNEL = gql`
   mutation addChannelToCommunity($payload: AddChannelInput!) {
     addChannelToCommunity(input: $payload) {
       success
+      id
     }
   }
 `;
