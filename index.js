@@ -13,9 +13,11 @@ LogBox.ignoreLogs([
 ]);
 
 // Register background handler
-messaging().setBackgroundMessageHandler((message) =>
-  AsyncStorage.setItem('BACK_GROUND_MESSAGE', JSON.stringify(message))
-);
+messaging().setBackgroundMessageHandler((message) => {
+  if (message) {
+    return AsyncStorage.setItem('BACK_GROUND_MESSAGE', JSON.stringify(message));
+  }
+});
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in the Expo client or in a native build,

@@ -29,9 +29,7 @@ export interface LocalChannelType extends DefaultChannelType {
   channelId: string;
   conversationId: string;
   created_by: LocalUserType;
-  sender: MessageUserInterface;
   community: CommunityInterface;
-  receiver: MessageUserInterface;
   messageRequest: { status: boolean };
 }
 export interface LocalMessageType extends DefaultMessageType {

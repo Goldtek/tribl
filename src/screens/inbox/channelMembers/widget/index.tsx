@@ -50,6 +50,7 @@ function ChannelMember(props: ChannelUserProp) {
       setPending(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 

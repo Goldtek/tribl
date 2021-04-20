@@ -143,6 +143,7 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -170,6 +171,7 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
       getConversation();
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 

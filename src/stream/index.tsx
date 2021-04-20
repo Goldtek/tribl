@@ -16,7 +16,8 @@ import { crashlytics } from '../firebase/config';
 import {
   MyPassportInterface,
   NotificationMessage,
-  GenerateStreamsTokenRequestInterface
+  GenerateStreamsTokenRequestInterface,
+  PassportInterface
 } from '../graphql/types';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
@@ -57,7 +58,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     // Register foreground handler
     const unsubscribe = messaging.onMessage(presentNotification);
 
-    // // Check whether an initial notification is available
+    // Check whether an initial notification is available
     messaging.getInitialNotification().then(presentNotification);
 
     return unsubscribe;
@@ -66,6 +67,10 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   const presentNotification = async (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
   ) => {
+    crashlytics.log(
+      `PRESENT NOTIFICATION MESSAGE, ${JSON.stringify(remoteMessage)}`
+    );
+
     const data = (remoteMessage?.data as unknown) as NotificationMessage;
 
     if (data.type === 'CONNECTION_REQUEST_RECEIVED') {
@@ -78,6 +83,19 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   const [authenticateStream] = useMutation<
     GenerateStreamsTokenRequestInterface
   >(GENERATE_STREAMS_TOKEN);
+
+  const onSignIn = async (user: PassportInterface) => {
+    crashlytics.log('USER SINGED IN SUCCESSFULLY.');
+    await Promise.all([
+      crashlytics.setUserId(user.id),
+      crashlytics.setAttribute('verified_user', String(user.verified)),
+      crashlytics.setAttributes({
+        email: user.email,
+        lastName: `${user.lastName}`,
+        firstName: `${user.firstName}`
+      })
+    ]);
+  };
 
   useEffect(() => {
     if (userData?.myPassport) {
@@ -102,6 +120,8 @@ const StreamProvider: FunctionComponent = ({ children }) => {
               return data?.generateStreamsToken.streams_token;
             }
           );
+
+          onSignIn(userData?.myPassport);
 
           if (streamUser && streamUser.me?.total_unread_count) {
             changeMessageNotification({
@@ -158,6 +178,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
 
             // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
             onRegistrationError: (error) => {
+              crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
               return crashlytics.recordError(new Error(error));
             },
 
@@ -168,6 +189,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
           });
         } catch (error) {
           crashlytics.recordError(new Error(error));
+          crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
         }
       };
 
