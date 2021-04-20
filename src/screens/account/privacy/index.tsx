@@ -80,6 +80,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
       const { data } = await updatePassport();
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 

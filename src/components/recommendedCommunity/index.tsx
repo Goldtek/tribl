@@ -93,6 +93,7 @@ function RecommendedCommunity(props: CommunityInterface) {
     } catch (error) {
       setLoading(false);
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -129,6 +130,7 @@ function RecommendedCommunity(props: CommunityInterface) {
     } catch (error) {
       setLoading(false);
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
