@@ -27,7 +27,10 @@ import TribeDetailScreen from '../../screens/community/home/widget/tribeDetails'
 import { DEVICE_OS } from '../../utils/device';
 import BlockUserModal from '../../components/blockUser';
 import ReportModal from '../../components/reportModal';
-import { REJECT_CONNECTION } from '../../graphql/server/mutations';
+import {
+  REJECT_CONNECTION,
+  BLOCK_REPORT_USER
+} from '../../graphql/server/mutations';
 import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { logEvent } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
@@ -117,16 +120,22 @@ export default function DrawerStackNavigator() {
 
   const [getUserPassport, { refetch }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
-    { variables: { id } }
+    {
+      variables: { id }
+    }
   );
 
   const [declineConnection] = useMutation(REJECT_CONNECTION, {
-    variables: { payload: { id: id } }
+    variables: {
+      payload: { id: id }
+    }
   });
 
   const handleRemoveConnection = async (id: string) => {
     setID(id);
-    logEvent('remove connection', { from: 'Member Detail Screen' });
+    logEvent('remove connection', {
+      from: 'Member Detail Screen'
+    });
     setConnectionLoading(true);
     try {
       await declineConnection();
@@ -139,8 +148,48 @@ export default function DrawerStackNavigator() {
     }
   };
 
+  const [block, setBlock] = useState(false);
+
+  const getBlockedDetails = (details: boolean) => {
+    setBlock(details);
+  };
+
+  enum status {
+    UNBLOCK
+  }
+
+  const note = `${t(`community.memberPassport.unblock`)} `;
+
+  const [unBlockUser, { loading: unblockLoading }] = useMutation(
+    BLOCK_REPORT_USER,
+    {
+      variables: {
+        payload: {
+          passportId: id,
+          status: status[0],
+          notes: note
+        }
+      }
+    }
+  );
+
+  const handleUnBlock = async (id: string) => {
+    setID(id);
+    try {
+      await unBlockUser();
+      setBlock(false);
+      refetch();
+    } catch (error) {
+      crashlytics.recordError(error);
+    }
+  };
+
   return (
-    <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
+    <DrawerStack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
       <DrawerStack.Screen
         name="ConnectionRequest"
         component={AccountScreens.ConnectionRequestScreen}
@@ -197,7 +246,9 @@ export default function DrawerStackNavigator() {
         options={{
           headerShown: true,
           headerTitle: 'Thread',
-          headerStyle: { height: RFValue(90) },
+          headerStyle: {
+            height: RFValue(90)
+          },
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -419,13 +470,39 @@ export default function DrawerStackNavigator() {
                     borderTopRightRadius: 20,
                     paddingTop: 0,
                     paddingBottom: 0,
-                    overflow: Platform.select({ android: 'hidden' })
+                    overflow: Platform.select({
+                      android: 'hidden'
+                    })
                   }}
-                  style={{ top: RFValue(getMenuHeight()) }}
+                  style={{
+                    top: RFValue(getMenuHeight())
+                  }}
                 >
                   <Menu.Item
-                    onPress={showBlockModal}
-                    title={t(`community.memberPassport.block`)}
+                    onPress={
+                      block
+                        ? () => handleUnBlock(route?.params?.details.id)
+                        : showBlockModal
+                    }
+                    title={
+                      <Fragment>
+                        {unblockLoading ? (
+                          <ActivityIndicator
+                            size="small"
+                            color={colors.PRIMARY}
+                            style={{
+                              marginLeft: 'auto',
+                              marginRight: RFValue(5)
+                            }}
+                          />
+                        ) : null}
+                        <Text style={{ textAlign: 'center' }}>
+                          {block
+                            ? t(`community.memberPassport.unblock`)
+                            : t(`community.memberPassport.block`)}
+                        </Text>
+                      </Fragment>
+                    }
                     style={{
                       borderTopLeftRadius: 20,
                       borderTopRightRadius: 20,
@@ -464,45 +541,51 @@ export default function DrawerStackNavigator() {
                       textTransform: 'capitalize'
                     }}
                   />
-                  <Divider />
-                  <Menu.Item
-                    onPress={() =>
-                      handleRemoveConnection(route?.params?.details.id)
-                    }
-                    title={
-                      <Fragment>
-                        {connectionLoading ? (
-                          <ActivityIndicator
-                            size="small"
-                            color={colors.RED}
-                            style={{
-                              marginLeft: 'auto',
-                              marginRight: RFValue(5)
-                            }}
-                          />
-                        ) : null}
-                        <Text>
-                          {t(`community.memberPassport.removeConnection`)}
-                        </Text>
-                      </Fragment>
-                    }
-                    style={{
-                      borderTopLeftRadius: 20,
-                      borderTopRightRadius: 20,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      paddingTop: 10,
-                      paddingBottom: 10,
-                      paddingLeft: 10,
-                      paddingRight: 10
-                    }}
-                    titleStyle={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      color: colors.PRIMARY_TEXT,
-                      textAlign: 'center',
-                      textTransform: 'capitalize'
-                    }}
-                  />
+                  {route?.params?.details?.connectionDetails?.status ===
+                  'ACCEPTED' ? (
+                    <Fragment>
+                      <Divider />
+                      <Menu.Item
+                        onPress={() =>
+                          handleRemoveConnection(route?.params?.details.id)
+                        }
+                        title={
+                          <Fragment>
+                            {connectionLoading ? (
+                              <ActivityIndicator
+                                size="small"
+                                color={colors.RED}
+                                style={{
+                                  marginLeft: 'auto',
+                                  marginRight: RFValue(5)
+                                }}
+                              />
+                            ) : null}
+                            <Text>
+                              {t(`community.memberPassport.removeConnection`)}
+                            </Text>
+                          </Fragment>
+                        }
+                        style={{
+                          borderTopLeftRadius: 20,
+                          borderTopRightRadius: 20,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                        titleStyle={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.PRIMARY_TEXT,
+                          textAlign: 'center',
+                          textTransform: 'capitalize'
+                        }}
+                      />
+                    </Fragment>
+                  ) : null}
+
                   <Divider />
 
                   <Menu.Item
@@ -550,9 +633,11 @@ export default function DrawerStackNavigator() {
                   />
                 </Menu>
                 <BlockUserModal
+                  refetch={refetch}
                   data={route?.params}
                   blockModalVisible={blockModalVisible}
                   closeModal={showBlockModal}
+                  getBlockedDetails={getBlockedDetails}
                 />
                 <ReportModal
                   data={route?.params}
@@ -563,8 +648,12 @@ export default function DrawerStackNavigator() {
             ),
             headerBackTitleVisible: false,
             headerTintColor: colors.PRIMARY,
-            headerRightContainerStyle: { marginRight: 10 },
-            headerLeftContainerStyle: { paddingLeft: 10 },
+            headerRightContainerStyle: {
+              marginRight: 10
+            },
+            headerLeftContainerStyle: {
+              paddingLeft: 10
+            },
             headerStyle: GLOBAL_HEADER_STYLE
           };
         }}
@@ -609,9 +698,13 @@ export default function DrawerStackNavigator() {
                   borderTopRightRadius: 20,
                   paddingTop: 0,
                   paddingBottom: 0,
-                  overflow: Platform.select({ android: 'hidden' })
+                  overflow: Platform.select({
+                    android: 'hidden'
+                  })
                 }}
-                style={{ top: RFValue(getMenuHeight()) }}
+                style={{
+                  top: RFValue(getMenuHeight())
+                }}
               >
                 <Menu.Item
                   //@ts-ignore
@@ -684,7 +777,9 @@ export default function DrawerStackNavigator() {
           },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -739,7 +834,9 @@ export default function DrawerStackNavigator() {
           return {
             headerShown: true,
             headerBackTitleVisible: false,
-            headerStyle: { height: RFValue(90) },
+            headerStyle: {
+              height: RFValue(90)
+            },
             headerTitleStyle: {
               color: colors.PRIMARY_TEXT,
               fontSize: RFValue(fonts.LARGE_SIZE),
@@ -777,7 +874,9 @@ export default function DrawerStackNavigator() {
           return {
             headerShown: true,
             headerBackTitleVisible: false,
-            headerStyle: { height: RFValue(90) },
+            headerStyle: {
+              height: RFValue(90)
+            },
             headerTitleStyle: {
               color: colors.PRIMARY_TEXT,
               fontSize: RFValue(fonts.LARGE_SIZE),
@@ -817,7 +916,9 @@ export default function DrawerStackNavigator() {
           headerTitleAlign: 'left',
           headerTitle: route.params.title,
           headerBackTitleVisible: false,
-          headerStyle: { height: RFValue(90) },
+          headerStyle: {
+            height: RFValue(90)
+          },
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -853,7 +954,9 @@ export default function DrawerStackNavigator() {
           headerTitleAlign: 'left',
           headerTitle: route.params.title,
           headerBackTitleVisible: false,
-          headerStyle: { height: RFValue(90) },
+          headerStyle: {
+            height: RFValue(90)
+          },
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -898,8 +1001,12 @@ export default function DrawerStackNavigator() {
           ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerTitleContainerStyle: { alignItems: 'center' },
-          headerLeftContainerStyle: { marginLeft: 5 }
+          headerTitleContainerStyle: {
+            alignItems: 'center'
+          },
+          headerLeftContainerStyle: {
+            marginLeft: 5
+          }
         }}
       />
 
@@ -911,7 +1018,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -924,7 +1033,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -937,7 +1048,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -950,7 +1063,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -963,54 +1078,12 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
     </DrawerStack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF'
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3'
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center'
-  }
-});
