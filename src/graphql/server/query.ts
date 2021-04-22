@@ -113,17 +113,17 @@ export const GET_USER_PASSPORT = gql`
           avatar
         }
       }
-      # recentChannels {
-      #   id
-      #   name
-      #   isMember
-      #   isPrivate
-      #   community {
-      #     id
-      #     name
-      #     avatar
-      #   }
-      # }
+      recentChannels {
+        id
+        name
+        isMember
+        isPrivate
+        community {
+          id
+          name
+          avatar
+        }
+      }
       connectionCount
       communityCount
       lastName
@@ -147,6 +147,16 @@ export const GET_USER_PASSPORT = gql`
           id
           firstName
           lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
         }
         identity
         age
@@ -180,6 +190,16 @@ export const GET_RECOMMENDED_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -187,6 +207,16 @@ export const GET_RECOMMENDED_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         citizenship {
@@ -251,6 +281,16 @@ export const GET_NEARBY_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -258,6 +298,16 @@ export const GET_NEARBY_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         citizenship {
@@ -324,6 +374,16 @@ export const GET_CHANNEL_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -331,6 +391,16 @@ export const GET_CHANNEL_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         citizenship {
@@ -387,6 +457,16 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -394,6 +474,16 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         citizenship {
@@ -550,6 +640,16 @@ export const GET_MY_CONNECTIONS_NEARBY = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -557,6 +657,16 @@ export const GET_MY_CONNECTIONS_NEARBY = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         citizenship {
@@ -621,6 +731,16 @@ export const GET_MY_CONNECTIONS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -628,6 +748,16 @@ export const GET_MY_CONNECTIONS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         birthPlace {
@@ -683,6 +813,16 @@ export const GET_CONNECTION_REQUEST = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -690,6 +830,16 @@ export const GET_CONNECTION_REQUEST = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         citizenship {
@@ -859,6 +1009,16 @@ export const GET_MEMBER_PASSPORT = gql`
           id
           firstName
           lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
         }
       }
       blocked {
@@ -866,6 +1026,16 @@ export const GET_MEMBER_PASSPORT = gql`
           id
           firstName
           lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
         }
       }
       citizenship {
@@ -961,6 +1131,16 @@ export const GET_COMMUNITY_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -968,6 +1148,16 @@ export const GET_COMMUNITY_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         citizenship {
@@ -1029,6 +1219,16 @@ export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
           id
           firstName
           lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
         }
       }
       blocked {
@@ -1036,6 +1236,16 @@ export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
           id
           firstName
           lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
         }
       }
       citizenship {
@@ -1097,6 +1307,16 @@ export const GET_ALL_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         blocked {
@@ -1104,6 +1324,16 @@ export const GET_ALL_MEMBERS = gql`
             id
             firstName
             lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
           }
         }
         citizenship {
@@ -1393,6 +1623,17 @@ export const GET_COMMUNITY_CHANNELS = gql`
         id
         name
         isMember
+        isPrivate
+        participants {
+          id
+          firstName
+          lastName
+        }
+        moderators {
+          id
+          firstName
+          lastName
+        }
         community {
           id
           name
