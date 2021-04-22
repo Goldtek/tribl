@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { Modal } from 'react-native';
@@ -17,17 +17,24 @@ interface BlockUserProps {
   blockModalVisible: boolean;
   closeModal(): void;
   data: any;
+  refetch: VoidFunction;
+  getBlockedDetails(details: boolean): void;
 }
 
 export default function BlockUserModal(props: BlockUserProps) {
-  const { blockModalVisible, closeModal, data } = props;
+  const { blockModalVisible, closeModal, data, refetch } = props;
   const { t } = useTranslation();
   const { colors, fonts } = useThemeContext();
+  const [block, setBlock] = useState(false);
 
   const [getUserPassport] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
     { variables: { id: data?.details?.id } }
   );
+
+  useEffect(() => {
+    props.getBlockedDetails(block);
+  }, [block]);
 
   const note = `${data?.details.firstName} ${t(
     `community.memberPassport.blockMessage`
@@ -54,8 +61,10 @@ export default function BlockUserModal(props: BlockUserProps) {
         'Activity Screen': 'Member details screen'
       });
       await blockUser();
-      getUserPassport();
+      setBlock(true);
       closeModal();
+      refetch();
+      getUserPassport();
     } catch (error) {
       crashlytics.recordError(error);
     }
