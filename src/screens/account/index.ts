@@ -4,6 +4,7 @@ import NotificationScreen from './notifications';
 import PrivacyPolicyScreen from './privacyPolicy';
 import AccountSettingScreen from './accountSettings';
 import ConnectionRequestScreen from './connectionRequest';
+import BlockedAccountScreen from './blockedAccounts';
 
 export default {
   MyConnectionScreen,
@@ -11,5 +12,6 @@ export default {
   AccountSettingScreen,
   PrivacyScreen,
   PrivacyPolicyScreen,
-  NotificationScreen
+  NotificationScreen,
+  BlockedAccountScreen
 };
