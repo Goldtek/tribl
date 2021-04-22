@@ -47,7 +47,7 @@ export default function NewChannelParticipants(props: ScreenProp) {
   const { navigation, route } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { id, name, channelName } = route?.params;
+  const { id, name, channelName, privateStatus } = route?.params;
   const selecteduserRef = useRef<any>(null);
   const { dismissKeyboard } = useKeyboardContext();
 
@@ -98,7 +98,8 @@ export default function NewChannelParticipants(props: ScreenProp) {
         communityId: id,
         name: channelName,
         participants: channelParticipant,
-        isPrivate: false
+        isPrivate: privateStatus,
+        moderators: [userData?.myPassport?.id]
       }
     }
   });
