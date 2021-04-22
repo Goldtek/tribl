@@ -53,7 +53,8 @@
     "serverError": "Passport already exist",
     "emailInputError": "Invalid email address!",
     "registrationError": "Registration failed try again!",
-    "loading": "creating..."
+    "loading": "creating...",
+    "inviteError": "You can't create an account because you have not been invited to join the app"
   },
 
   "avatarUploadScreen": {

@@ -82,7 +82,8 @@
     "memberTitle": "tribe members",
     "leave": "leave",
     "tribeChannels": "tribe channels",
-    "connectedTribes": "similar tribes"
+    "connectedTribes": "similar tribes",
+    "save": "save"
   },
 
   "sideNav": {
@@ -97,7 +98,8 @@
     "invite": "invite friend",
     "policy": "privacy policy",
     "version": "version 1.0.0",
-    "company": "silicon jungle labs"
+    "company": "silicon jungle labs",
+    "activities": "activities"
   },
 
   "accountSettings": {
@@ -168,7 +170,6 @@
     "next": "next",
     "addParticipant": "Add Participants"
   },
-
   "update": {
     "new": "new",
     "yes": "upgrade",
@@ -225,7 +226,8 @@
   "invitation": {
     "title": "Invite friends to community",
     "text": "To invite your friends who don’t have an account on Tribl, please type email address",
-    "label": "Type name or email address",
+    "label": "Type name",
+    "emailLabel": "Type email",
     "placeholder": "Start typing ...",
     "invite": "Invite friends",
     "cancel": "cancel",
