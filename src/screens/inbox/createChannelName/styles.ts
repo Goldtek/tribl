@@ -22,7 +22,7 @@ export const HeaderTitle = styled.Text`
 export const TribeContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  margin: 15px 0 20px;
+  margin: 15px 0 10px;
 `;
 
 export const Cover = styled.View`
@@ -33,4 +33,10 @@ export const Cover = styled.View`
 
 export const TopCover = styled.View`
   margin-top: 15px;
+`;
+
+export const PrivateCover = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;

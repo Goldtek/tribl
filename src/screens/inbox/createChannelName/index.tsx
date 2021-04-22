@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, TouchableRipple } from 'react-native-paper';
+import { Switch } from 'react-native';
+import { Text, TouchableRipple, Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons } from '@expo/vector-icons';
 import FastImage from 'react-native-fast-image';
@@ -18,7 +19,8 @@ import {
   HeaderTitle,
   TribeContainer,
   Cover,
-  TopCover
+  TopCover,
+  PrivateCover
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -32,6 +34,12 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
 
   const [channelName, setChannelName] = useState('');
 
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const toggleSwitch = async () => {
+    setIsEnabled((previousState) => !previousState);
+  };
+
   useEffect(() => {
     tagScreenName('CreateChannelNameScreen');
   }, []);
@@ -40,7 +48,8 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
     navigation.navigate('CreateChannelParticipant', {
       id,
       name,
-      channelName
+      channelName,
+      privateStatus: isEnabled
     });
   };
 
@@ -104,6 +113,29 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
                 {name}
               </Text>
             </TribeContainer>
+            <PrivateCover>
+              <Title
+                style={{
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 3),
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {isEnabled
+                  ? t(`community.createTribe.private`)
+                  : t(`community.createTribe.public`)}
+              </Title>
+              <Switch
+                trackColor={{ false: colors.DISABLED, true: colors.ONLINE }}
+                thumbColor={colors.WHITE}
+                ios_backgroundColor={colors.DISABLED}
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+                style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
+              />
+            </PrivateCover>
+
             <Input
               placeholder={t(`community.chat.channelNamePlaceholder`)}
               defaultValue={channelName}
