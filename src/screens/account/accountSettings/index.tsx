@@ -48,7 +48,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           <AntDesign name="caretright" size={20} color={colors.PRIMARY_TEXT} />
         </Fragment>
       </TouchableRipple>
-      <Divider style={{ backgroundColor: colors.INPUT }} />
+      {/* <Divider style={{ backgroundColor: colors.INPUT }} />
       <TouchableRipple
         onPress={() => {}}
         style={{
@@ -123,6 +123,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           <AntDesign name="caretright" size={20} color={colors.PRIMARY_TEXT} />
         </Fragment>
       </TouchableRipple>
+     */}
     </Container>
   );
 }
