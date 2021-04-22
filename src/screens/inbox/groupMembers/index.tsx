@@ -31,7 +31,7 @@ export default function GroupMembers(props: GroupMembersProp) {
 
   const groupAdmin = channel.data?.created_by;
 
-  const groupMembers = Object.values(channel.state.members.asMutable())
+  const groupMembers = Object?.values(channel?.state?.members.asMutable())
     .sort((a, _) => {
       if (a.user?.id === groupAdmin?.id) {
         return -1;

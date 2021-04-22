@@ -103,7 +103,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
 
     const members = [
       ...participants.map(({ id }) => id),
-      ...Object.values(channel.state.members)
+      ...Object?.values(channel?.state?.members)
     ];
 
     if (members.length > 30) {

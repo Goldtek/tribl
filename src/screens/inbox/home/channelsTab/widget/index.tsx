@@ -65,7 +65,7 @@ export default function CustomChannelPreview(
   const navigation = useNavigation();
   const { colors } = useThemeContext();
   const { setChannel } = useStreamContext();
-  const getMuteStatus = channel.muteStatus().muted;
+  const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
   const displayName = useChannelPreviewDisplayName(channel);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);

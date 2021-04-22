@@ -189,7 +189,7 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
 
         await newChannel.watch();
         setChannel(newChannel);
-        setChannelMembers(newChannel.state.members);
+        setChannelMembers(newChannel?.state?.members);
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
