@@ -170,7 +170,12 @@ type Tags = {
   updatedAt: string;
 };
 
-type Blocked = {
+type PassportPrivacy = {
+  identity: string;
+  age: string;
+  interest: string;
+  locality: string;
+  visibility: string;
   blocked: PassportInterface[];
 };
 
@@ -208,8 +213,8 @@ export interface PassportInterface {
   connectionRequests: ConnectionStatusInterface[];
   connectionDetails: ConnectionStatusInterface;
   pending: string;
-  privacy: Blocked;
-  blocked: Blocked;
+  privacy: PassportPrivacy;
+  blocked: PassportPrivacy;
 }
 
 export interface ConnectionStatusInterface {
@@ -235,6 +240,7 @@ export type ChannelInterface = {
   isPrivate: boolean;
   community: CommunityInterface;
   participants: PassportInterface[];
+  moderators: PassportInterface[];
 };
 
 type Interest = {
