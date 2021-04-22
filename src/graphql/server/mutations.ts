@@ -279,3 +279,12 @@ export const GENERATE_INVITE_LINK = gql`
     }
   }
 `;
+
+// INVITE USER TO APP
+export const INVITE_USER_TO_APP = gql`
+  mutation inviteUserToApp($payload: InviteUserInput!) {
+    inviteUserToApp(input: $payload) {
+      success
+    }
+  }
+`;
