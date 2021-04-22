@@ -126,6 +126,12 @@ export default function CreateAccountScreen(props: ScreenProp) {
         }, 3500);
       }
     } catch (error) {
+      if (
+        error?.message ==
+        'GraphQL error: Cannot perform action, you need to be referred to join the app'
+      ) {
+        return handleInputError('inviteError');
+      }
       crashlytics.recordError(new Error(error));
     }
   };
