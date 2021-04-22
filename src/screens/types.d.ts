@@ -10,6 +10,7 @@ interface ChatScreenProps extends PassportInterface {
   receiverId: string;
   newly_created_group?: boolean;
   channel?: { community: string; name: string };
+  moderators?: PassportInterface[];
 }
 
 interface MessageRequestScreenProps extends PassportInterface {
@@ -110,6 +111,7 @@ export type RootStackParamList = {
   CreateChannelTribeScreen?: Object;
   CreateChannelNameScreen?: Object;
   CreateChannelParticipant?: Object;
+  BlockedAccountScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -200,7 +202,8 @@ export type RootStackParamScreensList =
   | 'AddCashScreen'
   | 'CreateChannelTribeScreen'
   | 'CreateChannelNameScreen'
-  | 'CreateChannelParticipant';
+  | 'CreateChannelParticipant'
+  | 'BlockedAccountScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
