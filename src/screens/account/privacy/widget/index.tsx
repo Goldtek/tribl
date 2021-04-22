@@ -82,27 +82,12 @@ function PrivacyModal(props: any) {
       ? privacyItems[2]
       : privacyItems[3];
 
-  const identities = userDetails?.identity.map((item: any) => item.id);
-
   const [updatePassport] = useMutation(UPDATE_PASSPORT, {
     variables: {
       payload: {
-        dob: userDetails?.dob,
-        identity: identities,
-        currentLocation: {
-          state: userDetails?.currentLocation[0].state,
-          country: userDetails?.currentLocation[0].country,
-          long: userDetails?.currentLocation[0].long,
-          lat: userDetails?.currentLocation[0].lat
-        },
-        birthPlace: {
-          state: userDetails?.currentLocation[0].state,
-          country: userDetails?.currentLocation[0].country,
-          long: userDetails?.currentLocation[0].long,
-          lat: userDetails?.currentLocation[0].lat
-        },
         privacy: {
-          [params]: state.value
+          [params]: state.value,
+          visibility: privacyOptions[0]
         }
       }
     }
@@ -113,12 +98,6 @@ function PrivacyModal(props: any) {
       ...state,
       value: item
     });
-
-    try {
-      const { data } = await updatePassport();
-    } catch (error) {
-      crashlytics.recordError(new Error(error));
-    }
   };
 
   return (
