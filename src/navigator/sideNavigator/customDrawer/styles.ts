@@ -11,7 +11,7 @@ export const Container = styled(SafeAreaView)`
 
 export const ProfileContainer = styled.View`
   align-items: center;
-  margin-top: ${RFValue(20)}px;
+  margin-top: ${RFValue(15)}px;
   margin-bottom: ${RFValue(10)}px;
 `;
 
@@ -46,5 +46,5 @@ export const TransferCover = styled.View`
   justify-content: space-between;
   align-self: flex-start;
   padding: ${RFValue(10)}px ${RFValue(20)}px;
-  margin-bottom: ${RFValue(20)}px;
+  margin-bottom: ${RFValue(10)}px;
 `;
