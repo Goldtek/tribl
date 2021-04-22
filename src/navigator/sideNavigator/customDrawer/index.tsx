@@ -135,10 +135,10 @@ export default function CustomDrawerComponent() {
       )
     },
     {
-      key: 'drawer_notification_key',
-      name: `community.sideNav.notification`,
+      key: 'drawer_activities_key',
+      name: `community.sideNav.activities`,
       onPress: () => {
-        changeSideMenu('drawer_notification_key');
+        changeSideMenu('drawer_activities_key');
         navigation?.navigate('DrawerScreen', {
           screen: 'MyNotifications'
         });
@@ -151,6 +151,21 @@ export default function CustomDrawerComponent() {
             <ConnectionBadgeWrapper />
           ) : null}
         </Fragment>
+      )
+    },
+    {
+      key: 'drawer_settings_key',
+      name: `community.sideNav.settings`,
+      onPress: () => {
+        navigation?.navigate('AccountSettingScreen', {
+          screen: 'AccountSettingScreen',
+          params: { previousMenu: sideMenuData?.activeSideMenu }
+        });
+        changeSideMenu('drawer_settings_key');
+        toggleMenu();
+      },
+      drawerIcon: (
+        <Feather name="settings" size={24} color={colors.PRIMARY_TEXT} />
       )
     },
     {
@@ -238,7 +253,7 @@ export default function CustomDrawerComponent() {
                 key={item.key}
                 style={{
                   flexDirection: 'row',
-                  marginVertical: 10,
+                  marginVertical: 5,
                   paddingHorizontal: 10,
                   backgroundColor:
                     sideMenuData?.activeSideMenu === item.key
