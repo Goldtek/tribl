@@ -107,7 +107,10 @@ export default function PassportDetail(props: MemberDetailProps) {
   const singlePassport = passportData?.singlePassport;
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
-  const channels = singlePassport?.channelParticipantOf?.slice(0, 10);
+  const filteredChannels = singlePassport?.channelParticipantOf?.filter(
+    (channel) => channel?.isPrivate == false || channel?.isMember == true
+  );
+  const channels = filteredChannels?.slice(0, 10);
 
   const [blocked, setBlock] = useState(data?.blocked?.blocked);
   const note = `${firstName} ${t(
@@ -225,7 +228,7 @@ export default function PassportDetail(props: MemberDetailProps) {
         flexGrow: 1,
         backgroundColor: colors.WHITE,
         paddingTop: 20,
-        paddingBottom: 20
+        paddingBottom: 30
       }}
       style={{ backgroundColor: colors.WHITE }}
     >
