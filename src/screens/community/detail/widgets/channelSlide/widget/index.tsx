@@ -21,7 +21,7 @@ interface ChannelCardProp extends NavigationInterface {
 
 export default function ChannelCard(props: ChannelCardProp) {
   const { item } = props;
-  const { id, name } = item;
+  const { id, name, moderators, isPrivate } = item;
 
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
@@ -31,7 +31,7 @@ export default function ChannelCard(props: ChannelCardProp) {
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
       screen: 'DeepLinkChannelChatScreen',
-      params: { title: `#${name}`, channelId: id }
+      params: { title: `#${name}`, channelId: id, moderators, isPrivate }
     });
   };
 
