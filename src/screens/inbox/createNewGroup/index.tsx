@@ -76,28 +76,21 @@ export default function CreateGroup(props: ScreenProp) {
     }
 
     try {
-      const channel = chatClient.channel('team', channelId, {
-        conversationId: channelId,
-        channelId: channelId,
-        members,
-        messageRequest: { status: false },
-        // @ts-ignore
-        sender: {
-          id: `${chatClient.user?.id}`,
-          ...chatClient.user,
-          readAt: new Date()
-        },
-        // @ts-ignore
-        receiver: {
-          id: `${chatClient.user?.id}`,
-          ...chatClient.user,
-          readAt: new Date()
-        },
-        name: subject,
-        isDm: false,
-        isNew: false,
-        isGroup: true
-      });
+      const channel = chatClient.channel(
+        'team',
+        channelId,
+        //@ts-ignore
+        {
+          channelId: channelId,
+          conversationId: channelId,
+          messageRequest: { status: false },
+          members,
+          name: subject,
+          isDm: false,
+          isNew: false,
+          isGroup: true
+        }
+      );
 
       await channel.watch();
       setChannel(channel);
@@ -128,6 +121,7 @@ export default function CreateGroup(props: ScreenProp) {
       });
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
       setLoader(false);
     }
   };

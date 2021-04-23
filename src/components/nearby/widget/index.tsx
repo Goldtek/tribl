@@ -51,6 +51,7 @@ function NearbyModal(props: NearbyUserProp) {
       setRequest(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 

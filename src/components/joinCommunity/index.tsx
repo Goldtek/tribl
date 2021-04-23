@@ -48,6 +48,7 @@ function JoinCommunity(props: JoinCommunityProp) {
       setState({ ...state, loading: false });
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
       setState({ ...state, loading: false });
     }
   };

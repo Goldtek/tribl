@@ -89,6 +89,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
         handleInputError();
       }
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
