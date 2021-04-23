@@ -237,7 +237,7 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
                   <FastImage
                     resizeMode={FastImage.resizeMode.cover}
                     source={{
-                      uri: channelMembers[0].user?.image || USER_DEFAULT_AVATAR,
+                      uri: members[0].user?.image || USER_DEFAULT_AVATAR,
                       priority: FastImage.priority.high
                     }}
                     style={{

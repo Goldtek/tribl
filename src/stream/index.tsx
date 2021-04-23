@@ -85,16 +85,16 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   >(GENERATE_STREAMS_TOKEN);
 
   const onSignIn = async (user: PassportInterface) => {
-    crashlytics.log('USER SINGED IN SUCCESSFULLY.');
     await Promise.all([
       crashlytics.setUserId(user.id),
-      crashlytics.setAttribute('verified_user', String(user.verified)),
       crashlytics.setAttributes({
         email: user.email,
         lastName: `${user.lastName}`,
-        firstName: `${user.firstName}`
+        firstName: `${user.firstName}`,
+        verified_user: String(user.verified)
       })
     ]);
+    crashlytics.log('USER SINGED IN SUCCESSFULLY.');
   };
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
 import { LogBox } from 'react-native';
 import { registerRootComponent } from 'expo';
+import { crashlytics } from './src/firebase/config';
 
 import App from './App';
 
@@ -15,6 +16,9 @@ LogBox.ignoreLogs([
 // Register background handler
 messaging().setBackgroundMessageHandler((message) => {
   if (message) {
+    crashlytics.log(
+      `BACKGROUND NOTIFICATION MESSAGE ${JSON.stringify(message)}`
+    );
     return AsyncStorage.setItem('BACK_GROUND_MESSAGE', JSON.stringify(message));
   }
 });

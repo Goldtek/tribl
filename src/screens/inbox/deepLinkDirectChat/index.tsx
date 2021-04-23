@@ -146,7 +146,7 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
 
       if (channelExists) {
         setChannel(channelExists);
-        setChannelMembers(channelExists.state.members);
+        setChannelMembers(channelExists?.state?.members);
         streamSetChannel(channelExists);
       } else {
         createDmConversation();
