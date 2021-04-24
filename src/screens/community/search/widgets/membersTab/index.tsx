@@ -8,6 +8,7 @@ import React, {
 import { ScrollView, FlatList } from 'react-native';
 import { NavigationInterface } from '../../../../types';
 import { Title, Paragraph, TouchableRipple } from 'react-native-paper';
+import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { useQuery } from '@apollo/react-hooks';
@@ -33,6 +34,7 @@ import removeDuplicateMembers from '../../../../../utils/removeDuplicatePassport
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
+import { userDetails } from '../../../../../graphql/cache';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -41,8 +43,12 @@ function MemberSTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const { data: userData, refetch: passportRefetch } = useQuery(
+    GET_USER_PASSPORT
+  );
   const blockedUsers = userData?.myPassport?.privacy?.blocked;
+  const userDetails = userData?.myPassport;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     tagScreenName('ViewAllMembers');
@@ -68,12 +74,11 @@ function MemberSTabScreen(props: ScreenProp) {
     []
   );
 
-  const { data: membersData } = useQuery<RecommendedMembersRequestInterface>(
-    GET_RECOMMENDED_MEMBERS,
-    {
-      variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-    }
-  );
+  const { data: membersData, refetch: recommendedRefetch } = useQuery<
+    RecommendedMembersRequestInterface
+  >(GET_RECOMMENDED_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
 
   const recommendedMembers = membersData?.recommendedMembers?.data;
 
@@ -89,12 +94,11 @@ function MemberSTabScreen(props: ScreenProp) {
     }
   );
 
-  const { data: nearbyData } = useQuery<NearbyMembersRequestInterface>(
-    GET_NEARBY_MEMBERS,
-    {
-      variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-    }
-  );
+  const { data: nearbyData, refetch: nearbyRefetch } = useQuery<
+    NearbyMembersRequestInterface
+  >(GET_NEARBY_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
 
   const nearbyMembers = nearbyData?.nearbyMembers?.data;
 
@@ -107,6 +111,12 @@ function MemberSTabScreen(props: ScreenProp) {
       return users.id == userTwo.id;
     });
   });
+
+  useEffect(() => {
+    userDetails && passportRefetch();
+    recommendedMembers && recommendedRefetch();
+    nearbyMembers && nearbyRefetch();
+  }, [isFocused]);
 
   const _renderNearbyMember = useMemo(
     () => ({ item }: { item: PassportInterface }) => (

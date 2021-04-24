@@ -110,7 +110,10 @@ export default function HomeScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
-  const [getUserPassport, { data: userData }] = useLazyQuery(GET_USER_PASSPORT);
+  const [
+    getUserPassport,
+    { data: userData, refetch: passportRefetch }
+  ] = useLazyQuery(GET_USER_PASSPORT);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
@@ -167,11 +170,14 @@ export default function HomeScreen(props: ScreenProp) {
     }
   });
 
-  const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
-    variables: {
-      input: { limit: PAGINATION_DEFAULT / 2 }
+  const { data: membersData, refetch: recommendedRefetch } = useQuery(
+    GET_RECOMMENDED_MEMBERS,
+    {
+      variables: {
+        input: { limit: PAGINATION_DEFAULT / 2 }
+      }
     }
-  });
+  );
 
   const userDetails = userData?.myPassport;
   const currentLocation = userDetails?.currentLocation;
@@ -261,8 +267,10 @@ export default function HomeScreen(props: ScreenProp) {
     });
 
   useEffect(() => {
+    userDetails && passportRefetch();
     myCommunities && myCommunityRefetch();
     myChannels && refetchMyChannels();
+    recommendedMembers && recommendedRefetch();
   }, [isFocused]);
 
   const navigateToSearch = (index: number) => {

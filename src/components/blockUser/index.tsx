@@ -8,10 +8,15 @@ import { useThemeContext } from '../../theme';
 import { BLOCK_REPORT_USER } from '../../graphql/server/mutations';
 import { Mixpanel } from '../../config';
 import { crashlytics } from '../../firebase/config';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_RECOMMENDED_MEMBERS,
+  GET_NEARBY_MEMBERS
+} from '../../graphql/server/query';
+import { UserPassportInterface } from '../../graphql/types';
+import { PAGINATION_DEFAULT } from '../../constants';
 
 import { Container, Cover, ButtonContainer } from './styles';
-import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
-import { UserPassportInterface } from '../../graphql/types';
 
 interface BlockUserProps {
   blockModalVisible: boolean;
@@ -26,6 +31,14 @@ export default function BlockUserModal(props: BlockUserProps) {
   const { t } = useTranslation();
   const { colors, fonts } = useThemeContext();
   const [block, setBlock] = useState(false);
+
+  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
+
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
 
   const [getUserPassport] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT,
