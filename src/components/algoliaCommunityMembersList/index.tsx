@@ -5,16 +5,22 @@ import {
 } from 'react-instantsearch-native';
 import { Divider, Text } from 'react-native-paper';
 import { FlatList } from 'react-native';
+import { useQuery } from '@apollo/react-hooks';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { RFValue } from 'react-native-responsive-fontsize';
 import hexToRGB from '../../utils/hexToRGB';
 import { useThemeContext } from '../../theme';
 import HighLight from '../algoliaInboxCard';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
+import removeDuplicateMembers from '../../utils/removeDuplicatePassports';
 
 function AlgoliaList(props: any) {
   const { colors } = useThemeContext();
 
   const { hits, hasMore, refine } = props;
+
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
 
   const _separator = useMemo(
     () => () => (
@@ -33,10 +39,17 @@ function AlgoliaList(props: any) {
     []
   );
 
+  const filterHits = removeDuplicateMembers(hits?.slice());
+  const filteredUsers = filterHits?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
   return (
     <Results>
       <FlatList
-        data={hits}
+        data={filteredUsers}
         keyExtractor={(item: any) => item.objectID}
         ItemSeparatorComponent={_separator}
         onEndReached={() => hasMore && refine()}

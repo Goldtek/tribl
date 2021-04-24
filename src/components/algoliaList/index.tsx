@@ -93,7 +93,7 @@ function AlgoliaList(props: AlgoliaListProps) {
 
   return filteredUsers?.length ? (
     <FlatList
-      data={hits}
+      data={filteredUsers}
       renderItem={_renderItem}
       keyExtractor={(item) => item.id}
       ItemSeparatorComponent={_separator}
