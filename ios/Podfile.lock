@@ -783,6 +783,13 @@ PODS:
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
+  - TensorFlowLiteC (2.4.0):
+    - TensorFlowLiteC/Core (= 2.4.0)
+  - TensorFlowLiteC/Core (2.4.0)
+  - TensorFlowLiteSwift (2.4.0):
+    - TensorFlowLiteSwift/Core (= 2.4.0)
+  - TensorFlowLiteSwift/Core (2.4.0):
+    - TensorFlowLiteC (= 2.4.0)
   - TOCropViewController (2.6.0)
   - UMAppLoader (1.4.0)
   - UMBarCodeScannerInterface (5.4.0)
@@ -802,6 +809,11 @@ PODS:
   - UMSensorsInterface (5.4.0)
   - UMTaskManagerInterface (5.4.0)
   - UXCam (3.3.3)
+  - Vouched (0.5.7):
+    - TensorFlowLiteSwift (~> 2.2)
+  - vouched-react-native (0.2.1):
+    - React
+    - Vouched (= 0.5.7)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -916,6 +928,7 @@ DEPENDENCIES:
   - "UMReactNativeAdapter (from `../node_modules/react-native-unimodules/node_modules/@unimodules/react-native-adapter/ios`)"
   - UMSensorsInterface (from `../node_modules/react-native-unimodules/node_modules/unimodules-sensors-interface/ios`)
   - UMTaskManagerInterface (from `../node_modules/react-native-unimodules/node_modules/unimodules-task-manager-interface/ios`)
+  - "vouched-react-native (from `../node_modules/@vouched.id/vouched-react-native`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -954,8 +967,11 @@ SPEC REPOS:
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
+    - TensorFlowLiteC
+    - TensorFlowLiteSwift
     - TOCropViewController
     - UXCam
+    - Vouched
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -1135,6 +1151,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-unimodules/node_modules/unimodules-sensors-interface/ios"
   UMTaskManagerInterface:
     :path: "../node_modules/react-native-unimodules/node_modules/unimodules-task-manager-interface/ios"
+  vouched-react-native:
+    :path: "../node_modules/@vouched.id/vouched-react-native"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1248,6 +1266,8 @@ SPEC CHECKSUMS:
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
   SDWebImage: c666b97e1fa9c64b4909816a903322018f0a9c84
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
+  TensorFlowLiteC: 09f8ac75a76caeadb19bcfa694e97454cc1ecf87
+  TensorFlowLiteSwift: f062dc1178120100d825d7799fd9f115b4a37fee
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   UMAppLoader: 92d044af52626af3d81a69796ad666fc7a9a7d78
   UMBarCodeScannerInterface: 3f6c1b09ef4b867ce752b8c0b3893bcf9cd85f32
@@ -1263,9 +1283,11 @@ SPEC CHECKSUMS:
   UMSensorsInterface: 4df9ec662134de5614ae61acc249d6912db87ca5
   UMTaskManagerInterface: 4c60b43eaf3cb05a164bc9113258a171c18b7bf7
   UXCam: a695fd94e6c08e24d0e395d9ff4d0c6f4250ade2
+  Vouched: e2ce13df3a22f2b7c7bafe8bbaa107ab092546ef
+  vouched-react-native: 8ef00cf8e36aeb3b638cc90351384a84272ec941
   Yoga: 7d2edc5b410474191962e6dee88ee67f9b328b6b
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 99a4291d4497d04aa97f3be735f69ca5cd83f08e
+PODFILE CHECKSUM: 4b08107419397537e8b35fa99031e5a2f21b56e6
 
 COCOAPODS: 1.10.1

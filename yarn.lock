@@ -2644,6 +2644,11 @@
     invariant "^2.2.4"
     lodash "^4.5.0"
 
+"@vouched.id/vouched-react-native@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@vouched.id/vouched-react-native/-/vouched-react-native-0.2.1.tgz#d25cdacd15df8fa88e3dcd928c9b9d44d9153d7c"
+  integrity sha512-1AuIeMc8Q6k/PfjR8Qh3Nwn0VD7PYcLwoX5CnBNlxrVpn6ZtXJRwlWra4dh9/bBelNUxB4efj1g35cA3nnxxSQ==
+
 "@wry/context@^0.4.0":
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/@wry/context/-/context-0.4.4.tgz#e50f5fa1d6cfaabf2977d1fda5ae91717f8815f8"
