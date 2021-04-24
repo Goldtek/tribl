@@ -20,7 +20,6 @@ import {
 import { tagScreenName } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
 import { refreshToken } from '../../network/query';
-import { APP_VERSION } from '../../utils/device';
 import { NavigationInterface } from '../types';
 import Storage from '../../libs/storage';
 import { PAGINATION_DEFAULT } from '../../constants';
@@ -96,6 +95,7 @@ export default function SplashScreen(props: ScreenProp) {
       navigation.replace(userRegistration.route);
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
       return navigation.replace('SignupScreen');
     }
   };

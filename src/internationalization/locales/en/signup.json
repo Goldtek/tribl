@@ -20,6 +20,10 @@
     "submit": "next",
     "gotAnAccount": "Already have an account?",
     "login": "log in",
+    "EULA": "EULA",
+    "decline": "decline",
+    "accept": "accept",
+    "acceptLicence": "Accept EULA to proceed",
     "inputError": "Provide a valid number",
     "loading": "loading..."
   },

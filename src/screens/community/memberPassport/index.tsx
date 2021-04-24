@@ -195,6 +195,7 @@ export default function PassportDetail(props: MemberDetailProps) {
       setState({ ...state, loading: false, pending: true });
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
       setState({ ...state, loading: false });
     }
   };

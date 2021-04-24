@@ -44,7 +44,7 @@
     <meta-data android:name="expo.modules.updates.ENABLED" android:value="true"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
-    <meta-data android:name="expo.modules.updates.EXPO_RELEASE_CHANNEL" android:value="staging_channel_with_ota" />
+    <meta-data android:name="expo.modules.updates.EXPO_RELEASE_CHANNEL" android:value="production_channel_with_ota" />
     <meta-data  android:name="com.dieam.reactnativepushnotification.notification_foreground" android:value="false"/>
     <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color" android:resource="@color/white"/>
 

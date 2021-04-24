@@ -98,6 +98,13 @@ function PrivacyModal(props: any) {
       ...state,
       value: item
     });
+
+    try {
+      const { data } = await updatePassport();
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+    }
   };
 
   return (

@@ -58,6 +58,10 @@ function CustomDirectMessage(props: MessageProps) {
     }
   };
 
+  const [receiver] = Object.values(channel?.state?.members)?.filter(
+    ({ user }) => user?.id !== chatClient.user?.id
+  );
+
   const handleDelete = async () => {
     setTimeout(
       () =>
@@ -81,7 +85,7 @@ function CustomDirectMessage(props: MessageProps) {
                   Mixpanel.track(
                     'User Deletes Message On Direct Message Screen',
                     {
-                      info: `${props.message.user?.name} deletes his message on a conversation with ${channel.data?.receiver.name}}`,
+                      info: `${chatClient.user?.name} deletes his message on a conversation with ${receiver?.user?.name}}`,
                       'Activity Screen': 'Direct Message Screen'
                     }
                   );
@@ -95,7 +99,7 @@ function CustomDirectMessage(props: MessageProps) {
                   Mixpanel.track(
                     'User Deletes Message On Direct Message Thread Screen',
                     {
-                      info: `${props.message.user?.name} deletes his message on a conversation with ${channel.data?.receiver.name}} in a DM thread screen`,
+                      info: `${chatClient.user?.name} deletes his message on a conversation with ${receiver?.user?.name}} in a DM thread screen`,
                       'Activity Screen': 'Direct Message Thread Screen'
                     }
                   );
@@ -116,7 +120,7 @@ function CustomDirectMessage(props: MessageProps) {
       logEvent('user reacts to direct message', { from: 'chat' });
 
       Mixpanel.track('User Reacts to Direct Message', {
-        info: `User reacts to ${props.message.user?.name} message`,
+        info: `User reacts to ${chatClient.user?.name} message`,
         'Activity Screen': 'Channel Message Screen'
       });
     }
@@ -125,7 +129,7 @@ function CustomDirectMessage(props: MessageProps) {
       logEvent('user reacts to DM thread message', { from: 'chat' });
 
       Mixpanel.track('User Reacts to DM Thread Message', {
-        info: `User reacts to ${props.message.user?.name} DM thread message`,
+        info: `User reacts to ${chatClient.user?.name} DM thread message`,
         'Activity Screen': 'Direct Message Thread Screen'
       });
     }

@@ -189,6 +189,7 @@ export default function UserLocationScreen(props: ScreenProp) {
     } catch (error) {
       handleInputError('currentPosition');
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 

@@ -106,6 +106,7 @@ function PopularCommunity(props: PopularCommunityProp) {
     } catch (error) {
       setLoading(false);
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -140,6 +141,7 @@ function PopularCommunity(props: PopularCommunityProp) {
     } catch (error) {
       setLoading(false);
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 

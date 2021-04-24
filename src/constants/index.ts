@@ -8,6 +8,7 @@ import * as React from 'react';
 import { NavigationContainerRef } from '@react-navigation/native';
 
 // ALL ASYNC STORAGE CONSTANTS
+export const USER_EULA = '@USER_EULA';
 export const USER_FIRST_LAUNCH = '@FIRST_TIME_LAUNCH';
 export const USER_REG_INFO: string = '@USER_REG_INFO';
 export const USER_FCM_TOKEN: string = '@USER_FCM_TOKEN';
@@ -20,6 +21,7 @@ const DEVELOPMENT = 'development_channel';
 const STAGING: string = 'staging_channel';
 const PRODUCTION: string = 'production_channel';
 const CURRENTLY_USED_CHANNEL: string = `staging_channel_with_ota`;
+const STORE_TEST_CHANNEL: string = `production_channel_with_ota`;
 
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 20;

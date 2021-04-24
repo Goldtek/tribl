@@ -28,15 +28,17 @@ export default function CustomMessageFooter(props: MessageProps) {
   const hasReactions =
     message.latest_reactions && message.latest_reactions.length > 0;
 
-  return hasReactions ? (
+  return (
     <Container>
       {renderReactions(props)}
       <ReactionPicker {...props} />
-      <MoreReaction onPress={openReactionPicker}>
-        <EmojiIcon />
-      </MoreReaction>
+      {hasReactions && (
+        <MoreReaction onPress={openReactionPicker}>
+          <EmojiIcon />
+        </MoreReaction>
+      )}
     </Container>
-  ) : null;
+  );
 }
 
 export const renderReactions = (props: MessageProps) => {
