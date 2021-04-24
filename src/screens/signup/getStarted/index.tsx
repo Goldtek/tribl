@@ -57,11 +57,12 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   const { t } = useTranslation();
   changeNavigationBarColor(colors.WHITE, true, true);
 
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [licenceAccepted, setLicenceAccepted] = useState(false);
   const modalizeRef = useRef<Modalize>(null);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
   const openModal = () => modalizeRef.current?.open();
   const closeModal = () => modalizeRef.current?.close();
+  const [licenceAccepted, setLicenceAccepted] = useState(false);
 
   useEffect(() => {
     checkUserLicenceAgreement();
@@ -112,10 +113,17 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     }
   };
 
+  useEffect(() => {
+    if (licenceAccepted && phoneNumber && isSubmit) {
+      closeModal();
+      handleSubmit();
+    }
+  }, [licenceAccepted, phoneNumber, isSubmit]);
+
   const handleAccept = async () => {
     await Storage.setEULA();
-    await setLicenceAccepted(true);
-    closeModal();
+    setIsSubmit(true);
+    setLicenceAccepted(true);
   };
 
   return (
