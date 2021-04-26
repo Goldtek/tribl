@@ -186,6 +186,7 @@ export interface PassportInterface {
   avatar: string;
   dob: string;
   invite_url: string;
+  isAdmin: boolean;
   lastName: string;
   verified: boolean;
   firstName: string;
