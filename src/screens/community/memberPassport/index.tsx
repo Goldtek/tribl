@@ -374,7 +374,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 borderColor: colors.PRIMARY_TEXT
               }}
               style={{
-                width: DEVICE_FULL_WIDTH / 2 - 30,
+                width: '100%',
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
@@ -383,7 +383,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
-            <Button
+            {/* <Button
               onPress={showTransferModal(true)}
               mode="contained"
               labelStyle={{
@@ -408,6 +408,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {'\u0024'}
             </Button>
+          */}
           </ButtonCover>
         ) : pending ||
           data?.connectionDetails?.status === 'PENDING' ||
@@ -425,7 +426,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               }}
               contentStyle={{ height: RFValue(55) }}
               style={{
-                width: DEVICE_FULL_WIDTH / 2 - 60,
+                width: DEVICE_FULL_WIDTH / 2 - 30,
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
@@ -448,7 +449,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 borderColor: colors.PRIMARY_TEXT
               }}
               style={{
-                width: DEVICE_FULL_WIDTH / 2 - 60,
+                width: DEVICE_FULL_WIDTH / 2 - 30,
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
@@ -457,7 +458,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
-            <Button
+            {/* <Button
               onPress={showTransferModal(true)}
               mode="contained"
               labelStyle={{
@@ -481,14 +482,14 @@ export default function PassportDetail(props: MemberDetailProps) {
               }}
             >
               {'\u0024'}
-            </Button>
+            </Button> */}
           </ButtonCover>
         ) : (
           <ButtonCover>
             <GradientButton
               onPress={handleRequest}
               loading={loading}
-              style={{ width: DEVICE_FULL_WIDTH / 2 - 60 }}
+              style={{ width: DEVICE_FULL_WIDTH / 2 - 30 }}
             >
               {t(`community.memberPassport.connect`)}
             </GradientButton>
@@ -506,7 +507,7 @@ export default function PassportDetail(props: MemberDetailProps) {
                 borderColor: colors.PRIMARY_TEXT
               }}
               style={{
-                width: DEVICE_FULL_WIDTH / 2 - 60,
+                width: DEVICE_FULL_WIDTH / 2 - 30,
                 height: RFValue(55),
                 borderRadius: 4,
                 marginTop: RFValue(20),
@@ -515,7 +516,7 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
-            <Button
+            {/* <Button
               onPress={showTransferModal(true)}
               mode="contained"
               labelStyle={{
@@ -539,7 +540,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               }}
             >
               {'\u0024'}
-            </Button>
+            </Button> */}
           </ButtonCover>
         )}
 

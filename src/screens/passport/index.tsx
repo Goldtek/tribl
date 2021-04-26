@@ -863,13 +863,13 @@ export default function PassportScreen(props: ScreenProp) {
                   }}
                   style={{
                     height: RFValue(50),
-                    width: '49%'
+                    width: '100%'
                   }}
                   onPress={onShare}
                 >
                   {t(`community.passport.share`)}
                 </Button>
-                <Button
+                {/* <Button
                   onPress={triblPay ? handleViewWallet : handleActivateWallet}
                   labelStyle={{
                     color: colors.PRIMARY,
@@ -889,7 +889,7 @@ export default function PassportScreen(props: ScreenProp) {
                   {triblPay
                     ? t(`community.passport.viewWallet`)
                     : t(`community.passport.activate`)}
-                </Button>
+                </Button> */}
               </ButtonHeaderCover>
             </HeaderContainer>
             <TabCover>
