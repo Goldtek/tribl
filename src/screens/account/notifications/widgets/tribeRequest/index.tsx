@@ -8,10 +8,16 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../../../theme';
 import NotificationCard from './widget';
-import { GET_TRIBE_INVITES } from '../../../../../graphql/server/query';
+import CommunityCreationRequestCard from './widget/tribeCreationRequest';
+import {
+  GET_TRIBE_INVITES,
+  GET_COMMUNITY_CREATION_REQUEST,
+  GET_USER_PASSPORT
+} from '../../../../../graphql/server/query';
 import hexToRGB from '../../../../../utils/hexToRGB';
 
 import { Container, TitleCover } from './styles';
+import { PAGINATION_DEFAULT } from '../../../../../constants';
 
 interface tribeRequestScreenProp extends NavigationInterface {}
 
@@ -23,7 +29,20 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
 
   const { data: inviteData, refetch } = useQuery(GET_TRIBE_INVITES);
 
+  const { data: requestData, refetch: requestRefetch } = useQuery(
+    GET_COMMUNITY_CREATION_REQUEST,
+    {
+      variables: {
+        input: { limit: PAGINATION_DEFAULT }
+      }
+    }
+  );
+
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+
   const tribeInvites = inviteData?.communityInvites?.data;
+  const tribeRequest = requestData?.communityCreationRequests?.data;
+  const userDetails = userData?.myPassport;
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
@@ -32,6 +51,17 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
     'sender.lastName',
     'community.name'
   ];
+
+  const communityKeysToFilter = [
+    'name',
+    'moderators.firstName',
+    'moderators.lastName'
+  ];
+  const filteredCommunityWords =
+    tribeRequest &&
+    tribeRequest?.filter(
+      createFilter(search.searchTerm, communityKeysToFilter)
+    );
 
   const filteredWords =
     tribeInvites &&
@@ -50,6 +80,21 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
         userId={item.sender.id}
         tribeId={item.community.id}
         createdAt={item.createdAt}
+        {...item}
+      />
+    ),
+    []
+  );
+
+  const _renderCommunityCreationCard = useMemo(
+    () => ({ item }: { item: any }) => (
+      <CommunityCreationRequestCard
+        key={item.id}
+        id={item.id}
+        name={item.name}
+        avatar={item.avatar}
+        moderators={item.moderators}
+        refetch={requestRefetch}
         {...item}
       />
     ),
@@ -104,8 +149,12 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
       </TitleCover>
 
       <FlatList
-        data={filteredWords}
-        renderItem={_renderNotification}
+        data={userDetails?.isAdmin ? filteredCommunityWords : filteredWords}
+        renderItem={
+          userDetails?.isAdmin
+            ? _renderCommunityCreationCard
+            : _renderNotification
+        }
         ItemSeparatorComponent={() => (
           <Divider
             style={{

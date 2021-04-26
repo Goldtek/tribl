@@ -112,6 +112,7 @@ export type RootStackParamList = {
   CreateChannelNameScreen?: Object;
   CreateChannelParticipant?: Object;
   BlockedAccountScreen?: Object;
+  ChannelRequestScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -203,7 +204,8 @@ export type RootStackParamScreensList =
   | 'CreateChannelTribeScreen'
   | 'CreateChannelNameScreen'
   | 'CreateChannelParticipant'
-  | 'BlockedAccountScreen';
+  | 'BlockedAccountScreen'
+  | 'ChannelRequestScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
