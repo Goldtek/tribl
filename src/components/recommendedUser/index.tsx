@@ -263,30 +263,10 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             </Title>
           ) : null}
         </TextContainer>
-        {unblock?.length ? (
-          <Button
-            loading={unblockLoading}
-            mode="contained"
-            uppercase={false}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.MEDIUM_SIZE),
-              textTransform: 'capitalize',
-              color: colors.WHITE
-            }}
-            contentStyle={{
-              width: '100%',
-              backgroundColor: colors.PRIMARY
-            }}
-            style={{ borderRadius: 5 }}
-            onPress={handleUnBlock}
-          >
-            {t(`community.memberPassport.unblock`)}
-          </Button>
-        ) : connectionDetails?.status == 'PENDING' ||
-          pending == 'PENDING' ||
-          pending == 'REQUESTED' ||
-          request ? (
+        {connectionDetails?.status == 'PENDING' ||
+        pending == 'PENDING' ||
+        pending == 'REQUESTED' ||
+        request ? (
           <Button
             disabled={true}
             mode="contained"
