@@ -20,7 +20,8 @@
     "communityRequests": "Community Requests",
     "leaveCommunity": "Leave Community",
     "trendingChannel": "trending channels",
-    "myChannel": "my channels"
+    "myChannel": "my channels",
+    "newChannelRequest": "new channel requests"
   },
 
   "joinModal": {
@@ -221,7 +222,9 @@
     "general": "general",
     "placeholder": "Type name of member",
     "tribe": "tribe requests",
-    "empty": " You currently don't have any notification"
+    "channel": "channel requests",
+    "empty": " You currently don't have any notification",
+    "channelPlaceholder": "Type name of channel"
   },
   "invitation": {
     "title": "Invite friends to community",
@@ -235,14 +238,19 @@
     "request": "asked to join your community",
     "accept": "accept",
     "decline": "decline",
+    "approve": "approve",
+    "reject": "reject",
     "empty": " You currently don't have any community request",
+    "channelEmpty": "You currently don't have any channel request",
     "channelTitle": "Invite friends to channel",
     "tribeInvite": "Invite friends to tribe",
     "inviteChannel": "Invite friend to channel",
     "inviteTribe": "Invite friend to tribe",
     "text2": "Select a community you want to invite your friend to",
     "channelText": "Select a channel you want to invite your friend to",
-    "tribeInviteError": "You have to choose a tribe you want to invite your friend to"
+    "tribeInviteError": "You have to choose a tribe you want to invite your friend to",
+    "newTribeRequest": "wants to create a new tribe",
+    "newChannelRequest": "wants to create a new channel"
   },
   "passport": {
     "addCitizen": "add citizenship",
