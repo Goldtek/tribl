@@ -51,6 +51,7 @@ export const GET_USER_PASSPORT = gql`
       avatar
       verified
       invite_url
+      isAdmin
       privacy {
         blocked {
           id
@@ -1659,6 +1660,56 @@ export const GET_TRENDING_CHANNELS = gql`
             name
             avatar
           }
+        }
+      }
+    }
+  }
+`;
+
+//GET COMMUNITY CREATION REQUEST
+export const GET_COMMUNITY_CREATION_REQUEST = gql`
+  query communityCreationRequests($input: CommunityCreationRequestArgsInput!) {
+    communityCreationRequests(input: $input) {
+      data {
+        id
+        isMember
+        isModerator
+        membersCount
+        name
+        avatar
+        status
+        isDefault
+        isPrivate
+        description
+        moderators {
+          id
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
+//GET COMMUNITY CREATION REQUEST
+export const GET_CHANNEL_CREATION_REQUEST = gql`
+  query channelCreationRequests($input: ChannelRequestInput) {
+    channelCreationRequests(input: $input) {
+      data {
+        id
+        name
+        status
+        isPrivate
+        moderators {
+          id
+          firstName
+          lastName
+        }
+        community {
+          id
+          name
+          avatar
+          isModerator
         }
       }
     }
