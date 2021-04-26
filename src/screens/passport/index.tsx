@@ -173,6 +173,7 @@ export default function PassportScreen(props: ScreenProp) {
   });
 
   const userDetails = userData?.myPassport;
+
   const currentLocation = userDetails?.currentLocation?.country
     ? userDetails?.currentLocation
     : cache?.currentLocation;
@@ -201,7 +202,7 @@ export default function PassportScreen(props: ScreenProp) {
       refetch();
     }
   }, [userDetails]);
-  
+
   useEffect(() => {
     if (userDetails) {
       tagScreenName('PassportScreen');

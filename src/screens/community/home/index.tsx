@@ -9,8 +9,8 @@ import * as Updates from 'expo-updates';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import * as Location from 'expo-location';
-import { Title, ActivityIndicator } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
+import { Title, ActivityIndicator, Button } from 'react-native-paper';
+import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
@@ -69,7 +69,8 @@ import {
   RecommendedListHeader,
   RecommendedCommunityContainer,
   RecentActivitiesList,
-  CommunityCover
+  CommunityCover,
+  ButtonWrapper
   // ButtonWrapper
 } from './styles';
 
@@ -246,6 +247,12 @@ export default function HomeScreen(props: ScreenProp) {
       }
     }
   });
+
+  const navigateToCreateNewTribeScreen = () => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'CreateTribeScreen'
+    });
+  };
 
   const myChannels = myChannelsData?.myChannels;
   const myCommunities = myCommunityData?.myCommunities;
@@ -590,8 +597,8 @@ export default function HomeScreen(props: ScreenProp) {
           </RecentActivitiesList>
         ) : null}
       </ScrollView>
-
-      {/* <ButtonWrapper>
+      {/* 
+      <ButtonWrapper>
         <Button
           onPress={navigateToCreateNewTribeScreen}
           mode="contained"
