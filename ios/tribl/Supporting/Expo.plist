@@ -9,7 +9,7 @@
 	<key>EXUpdatesLaunchWaitMs</key>
 	<integer>0</integer>
 	<key>EXUpdatesReleaseChannel</key>
-	<string>staging_channel_with_ota</string>
+	<string>staging_channel_with_ota_for_test</string>
 	<key>EXUpdatesSDKVersion</key>
 	<string>38.0.0</string>
 	<key>EXUpdatesURL</key>

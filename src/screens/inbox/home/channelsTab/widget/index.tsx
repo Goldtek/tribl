@@ -58,7 +58,11 @@ export default function CustomChannelPreview(
     latestMessageLength = 40
   } = props;
 
-  if (channel.data?.isDm || channel.data?.isNew || channel.data?.isGroup) {
+  if (
+    Boolean(channel.data?.isDm) ||
+    Boolean(channel.data?.isNew) ||
+    Boolean(channel.data?.isGroup)
+  ) {
     return null;
   }
 
@@ -70,7 +74,6 @@ export default function CustomChannelPreview(
   const displayName = useChannelPreviewDisplayName(channel);
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
-  const [getChannelCommunity] = useLazyQuery(GET_SINGLE_COMMUNITY);
   const message = latestMessagePreview?.messageObject;
   const latestMessageDate = message?.created_at.asMutable();
   let messageText: string = `${latestMessagePreview?.text}`;
@@ -78,7 +81,7 @@ export default function CustomChannelPreview(
   if (message?.type === 'system') {
     messageText = `${message?.text}`;
   } else {
-    messageText = `${message?.user?.name}: ${message?.text}`;
+    messageText = `${message?.user?.name}: ${messageText}`;
   }
 
   const channelTitle = channel.data?.community
@@ -87,7 +90,6 @@ export default function CustomChannelPreview(
 
   const handleDeleteAction = async () => {
     await leaveChannel({ variables: { payload: { channelId: channel.id } } });
-    getChannelCommunity();
   };
 
   const toggleMuteAction = async () => {
