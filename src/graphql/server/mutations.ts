@@ -288,3 +288,21 @@ export const INVITE_USER_TO_APP = gql`
     }
   }
 `;
+
+// APPROVE OR REJECT A NEW TRIBE
+export const APPROVE_REJECT_NEW_TRIBE = gql`
+  mutation communityCreationAction($payload: CommunityCreationActionInput!) {
+    communityCreationAction(input: $payload) {
+      success
+    }
+  }
+`;
+
+// APPROVE OR REJECT A NEW CHANNEL
+export const APPROVE_REJECT_NEW_CHANNEL = gql`
+  mutation channelCreationAction($payload: CommunityCreationActionInput!) {
+    channelCreationAction(input: $payload) {
+      success
+    }
+  }
+`;
