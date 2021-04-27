@@ -1,0 +1,144 @@
+import React, { Fragment } from 'react';
+import { Title, Text, TouchableRipple } from 'react-native-paper';
+import FastImage from 'react-native-fast-image';
+import { Entypo, Feather } from '@expo/vector-icons';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useNavigation } from '@react-navigation/native';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { useThemeContext } from '../../../../../../../theme';
+import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
+import {
+  PassportInterface,
+  SinglePassportRequestInterface
+} from '../../../../../../../graphql/types';
+import { GET_COMMUNITY_MEMBER_PASSPORT } from '../../../../../../../graphql/server/query';
+import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
+import { fireAuth, crashlytics } from '../../../../../../../firebase/config';
+
+// IMPORT FOR ALL CUSTOM STYLES
+import { NameContainer } from './styles';
+
+// DEFINE SCREEN PROP TYPES
+interface TribeRequestprop extends PassportInterface {}
+
+function TribeRequest(props: TribeRequestprop) {
+  const { colors, fonts } = useThemeContext();
+  const navigation = useNavigation();
+
+  const { avatar, firstName, lastName, id, currentLocation } = props;
+
+  if (id === fireAuth.currentUser?.uid) return null;
+
+  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
+    variables: { payload: { id } }
+  });
+
+  const { data: passportData } = useQuery<SinglePassportRequestInterface>(
+    GET_COMMUNITY_MEMBER_PASSPORT,
+    { variables: { id } }
+  );
+
+  const singlePassport = passportData?.singlePassport;
+
+  const connectedUsers =
+    singlePassport?.connected === 'CONNECTED' ||
+    singlePassport?.connected === 'ACCEPTED'
+      ? true
+      : false;
+
+  const handleRequest = async () => {
+    try {
+      await requestConnection();
+    } catch (error) {
+      crashlytics.recordError(error);
+    }
+  };
+
+  const handleNavigation = () => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'DeepLinkDirectChatScreen',
+      params: {
+        title: `${firstName} ${lastName}`,
+        ...{ ...props, ...singlePassport }
+      }
+    });
+  };
+
+  return (
+    <TouchableRipple
+      style={{
+        height: RFValue(60),
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: RFValue(10),
+        paddingLeft: RFValue(10),
+        paddingRight: RFValue(10)
+      }}
+      onPress={() =>
+        navigation.navigate('MemberDetailScreen', {
+          title: `${firstName} ${lastName}`,
+          details: { ...props, ...singlePassport }
+        })
+      }
+    >
+      <Fragment>
+        <FastImage
+          source={{ uri: avatar, priority: FastImage.priority.high }}
+          resizeMode={FastImage.resizeMode.cover}
+          style={{
+            width: RFValue(50),
+            height: RFValue(50),
+            borderRadius: RFValue(4)
+          }}
+        />
+        <NameContainer ref={hideSensitiveView}>
+          <Title
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              textTransform: 'capitalize'
+            }}
+          >
+            {`${firstName} ${lastName}`}
+          </Title>
+          <Text
+            style={{
+              color: colors.SECONDARY_TEXT,
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'lowercase'
+            }}
+          >
+            {currentLocation?.city
+              ? `${currentLocation?.city}, ${currentLocation?.state}`
+              : `${currentLocation?.state}, ${currentLocation?.country}`}
+          </Text>
+        </NameContainer>
+
+        <TouchableRipple
+          style={{
+            marginLeft: 'auto',
+            width: RFValue(50),
+            height: RFValue(35),
+            backgroundColor: connectedUsers ? colors.WHITE : colors.PRIMARY,
+            borderWidth: connectedUsers ? 1 : 0,
+            borderColor: connectedUsers ? colors.INPUT : colors.TRANSPARENT,
+            borderRadius: 4,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          onPress={connectedUsers ? handleNavigation : handleRequest}
+        >
+          {connectedUsers ? (
+            <Entypo name="new-message" size={20} color={colors.PRIMARY_TEXT} />
+          ) : (
+            <Feather name="plus" size={20} color={colors.WHITE} />
+          )}
+        </TouchableRipple>
+      </Fragment>
+    </TouchableRipple>
+  );
+}
+
+export default React.memo(TribeRequest, () => false);

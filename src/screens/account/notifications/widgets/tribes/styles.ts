@@ -5,10 +5,12 @@ export const Container = styled.View`
   flex: 1;
   flex-direction: column;
   background-color: ${({ theme }) => theme.colors.WHITE};
-  padding: ${RFValue(15)}px 0;
+  padding: ${RFValue(15)}px ${RFValue(10)}px;
 `;
 
-export const TitleCover = styled.View`
-  flex-direction: row;
-  margin-top: ${RFValue(15)}px;
+export const ModalCover = styled.View`
+  flex: 1;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 ${RFValue(10)}px ${RFValue(30)}px;
 `;

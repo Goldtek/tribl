@@ -1,11 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { NavigationInterface } from '../../../../types';
-import { Title, Text, Divider } from 'react-native-paper';
+import React, { useState, useMemo, Fragment } from 'react';
+import { Title, Text, Divider, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { FlatList } from 'react-native';
+import { FlatList, TouchableOpacity } from 'react-native';
+import Modal from 'react-native-modal';
 import SearchInput, { createFilter } from 'react-native-search-filter';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { FontAwesome } from '@expo/vector-icons';
 import { useQuery } from '@apollo/react-hooks';
+import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
 import NotificationCard from './widget';
 import CommunityCreationRequestCard from './widget/tribeCreationRequest';
@@ -15,17 +17,26 @@ import {
   GET_USER_PASSPORT
 } from '../../../../../graphql/server/query';
 import hexToRGB from '../../../../../utils/hexToRGB';
-
-import { Container, TitleCover } from './styles';
 import { PAGINATION_DEFAULT } from '../../../../../constants';
 
-interface tribeRequestScreenProp extends NavigationInterface {}
+import { Container, ModalCover } from './styles';
+import GradientButton from '../../../../../components/gradientButton';
 
-export default function TribeRequestScreen(props: tribeRequestScreenProp) {
+interface tribeScreenProp extends NavigationInterface {}
+
+export default function TribeScreen(props: tribeScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
   const [search, setSearch] = useState({ searchTerm: '' });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [tribeData, setTribeData] = useState(
+    t(`community.notification.general`)
+  );
+
+  const showModal = () => {
+    setModalVisible(!modalVisible);
+  };
 
   const { data: inviteData, refetch } = useQuery(GET_TRIBE_INVITES);
 
@@ -43,6 +54,8 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
   const tribeInvites = inviteData?.communityInvites?.data;
   const tribeRequest = requestData?.communityCreationRequests?.data;
   const userDetails = userData?.myPassport;
+  const tribe = userDetails?.participantOf;
+  const moderator = tribe.filter((item: any) => item.isModerator);
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
@@ -102,87 +115,127 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
   );
 
   return (
-    <Container>
-      <SearchInput
-        onChangeText={searchUpdated}
-        placeholder={t(`community.notification.placeholder`)}
-        placeholderTextColor={colors.PRIMARY_TEXT}
-        style={{
-          height: RFValue(40),
-          color: colors.PRIMARY_TEXT,
-          alignItems: 'center',
-          elevation: 0,
-          borderWidth: 1,
-          borderColor: colors.INACTIVE,
-          borderRadius: 4,
-          paddingHorizontal: 10,
-          marginHorizontal: 15
-        }}
-      />
-      <TitleCover>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_BOLD,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-            color: colors.PRIMARY_TEXT,
-            textTransform: 'capitalize',
-            marginTop: 0,
-            marginBottom: 0,
-            paddingLeft: 15
-          }}
-        >
-          {t(`community.notification.tribe`)}
-        </Title>
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-            color: colors.ONLINE,
-            textTransform: 'capitalize',
-            marginTop: 0,
-            marginBottom: 0,
-            paddingLeft: 5
-          }}
-        >
-          ({tribeInvites?.length ? tribeInvites?.length : '0'})
-        </Title>
-      </TitleCover>
-
-      <FlatList
-        data={userDetails?.isAdmin ? filteredCommunityWords : filteredWords}
-        renderItem={
-          userDetails?.isAdmin
-            ? _renderCommunityCreationCard
-            : _renderNotification
-        }
-        ItemSeparatorComponent={() => (
-          <Divider
+    <Fragment>
+      <Container>
+        {moderator?.length ? (
+          <TouchableOpacity
+            onPress={showModal}
             style={{
-              height: 1.5,
-              backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
-              marginVertical: RFValue(20)
-            }}
-          />
-        )}
-        ListEmptyComponent={
-          <Text
-            style={{
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              margin: RFValue(20),
-              textAlign: 'center'
+              backgroundColor: colors.SHADOW,
+              height: RFValue(40),
+              flexDirection: 'row',
+              alignItems: 'center'
             }}
           >
-            {t(`community.notification.empty`)}
-          </Text>
-        }
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          marginTop: 20,
-          paddingHorizontal: 15,
-          backgroundColor: colors.WHITE
-        }}
-      />
-    </Container>
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                textAlign: 'center',
+                marginLeft: 'auto'
+              }}
+            >
+              {tribeData}
+            </Text>
+            <FontAwesome
+              name="sliders"
+              size={20}
+              color={colors.PRIMARY_TEXT}
+              style={{ marginLeft: 'auto', marginRight: RFValue(15) }}
+            />
+          </TouchableOpacity>
+        ) : null}
+        <FlatList
+          data={userDetails?.isAdmin ? filteredCommunityWords : filteredWords}
+          renderItem={
+            userDetails?.isAdmin
+              ? _renderCommunityCreationCard
+              : _renderNotification
+          }
+          ItemSeparatorComponent={() => (
+            <Divider
+              style={{
+                height: 1.5,
+                backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
+                marginVertical: RFValue(20)
+              }}
+            />
+          )}
+          ListEmptyComponent={
+            <Text
+              style={{
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_BOLD,
+                margin: RFValue(20),
+                textAlign: 'center'
+              }}
+            >
+              {t(`community.notification.empty`)}
+            </Text>
+          }
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            marginTop: 20,
+            paddingHorizontal: 15,
+            backgroundColor: colors.WHITE
+          }}
+        />
+        <Modal isVisible={modalVisible}>
+          <ModalCover>
+            <GradientButton
+              onPress={() => {
+                setTribeData(t(`community.notification.general`));
+                setModalVisible(false);
+              }}
+              style={{ width: '100%' }}
+              gradientContainerstyle={{
+                width: '100%',
+                height: RFValue(45),
+                marginTop: RFValue(5)
+              }}
+            >
+              {t(`community.notification.general`)}
+            </GradientButton>
+            <GradientButton
+              onPress={() => {
+                setTribeData(t(`community.notification.adminTribe`));
+                setModalVisible(false);
+              }}
+              style={{ width: '100%' }}
+              gradientContainerstyle={{
+                width: '100%',
+                height: RFValue(45),
+                marginTop: RFValue(5)
+              }}
+            >
+              {t(`community.notification.adminTribe`)}
+            </GradientButton>
+            <Button
+              uppercase={false}
+              mode="text"
+              onPress={showModal}
+              style={{
+                width: '100%',
+                height: RFValue(45),
+                marginTop: RFValue(5)
+              }}
+              contentStyle={{ backgroundColor: colors.WHITE }}
+              labelStyle={{
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_BOLD,
+                color: colors.PRIMARY,
+                margin: RFValue(20),
+                textAlign: 'center',
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`community.notification.cancel`)}
+            </Button>
+          </ModalCover>
+        </Modal>
+      </Container>
+    </Fragment>
   );
 }
