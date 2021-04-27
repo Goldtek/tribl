@@ -1,7 +1,5 @@
 // import * as firebase from 'firebase';
 import firebase from '@react-native-firebase/app';
-import auth from '@react-native-firebase/auth';
-import firebaseFirestore from '@react-native-firebase/firestore';
 import rnCrashlytics from '@react-native-firebase/crashlytics';
 import ENVIRONMENT_VARIABLES from '../config';
 
@@ -22,6 +20,4 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-export const fireAuth = auth();
-export const firechat = firebaseFirestore();
 export const crashlytics = rnCrashlytics();
