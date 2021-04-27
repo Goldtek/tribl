@@ -7,7 +7,10 @@ import React, {
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
+import ENVIRONMENT_VARIABLES from 'react-native-config';
 import { GET_USER_PASSPORT } from '../graphql/server/query';
+//@ts-ignore
+import { StreamApp } from 'expo-activity-feed';
 import {
   UPDATE_USER_PASSPORT,
   GENERATE_STREAMS_TOKEN
@@ -199,6 +202,9 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     }
   }, [userData?.myPassport]);
 
+  const apiKey = ENVIRONMENT_VARIABLES.TRIBL_STREAM_API_KEY;
+  const appId = ENVIRONMENT_VARIABLES.TRIBL_STREAM_APP_ID;
+
   return (
     <StreamContext.Provider
       value={{
@@ -210,7 +216,13 @@ const StreamProvider: FunctionComponent = ({ children }) => {
         setActivityScreen
       }}
     >
-      {children}
+      <StreamApp
+        apiKey={apiKey}
+        appId={appId}
+        token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoicHJvdWQtcmVzb25hbmNlLTkifQ.TuI5oHBRozK4e9gMx32N-qWplJy5Zzf_dTJTbjVV_1Q"
+      >
+        {children}
+      </StreamApp>
     </StreamContext.Provider>
   );
 };
