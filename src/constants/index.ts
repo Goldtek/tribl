@@ -22,6 +22,7 @@ const STAGING: string = 'staging_channel';
 const PRODUCTION: string = 'production_channel';
 const CURRENTLY_USED_CHANNEL: string = `staging_channel_with_ota`;
 const STORE_TEST_CHANNEL: string = `production_channel_with_ota`;
+const CURRENTLY_USED_TEST_CHANNEL: string = `staging_channel_with_ota_for_test`;
 
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 20;
