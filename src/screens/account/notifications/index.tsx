@@ -7,8 +7,9 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Title, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
-import requestSlide from './widgets/tribeRequest';
-import generalSlide from './widgets/general';
+import tribeSlide from './widgets/tribes';
+import allSlide from './widgets/all';
+import connectionSlide from './widgets/connections';
 import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 import { GET_SIDE_MENU } from '../../../graphql/cache/query';
@@ -49,16 +50,20 @@ export default function NotificationScreen(props: ScreenProp) {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [routes] = React.useState([
     {
-      key: 'requestSlide',
-      title: `${t(`community.notification.invitation`)}`
+      key: 'allSlide',
+      title: `${t(`community.notification.all`)}`
     },
     {
-      key: 'generalSlide',
-      title: `${t(`community.notification.general`)}`
+      key: 'tribeSlide',
+      title: `${t(`community.notification.tribes`)}`
+    },
+    {
+      key: 'connectionSlide',
+      title: `${t(`community.notification.connections`)}`
     }
   ]);
 
-  const renderScene = SceneMap({ requestSlide, generalSlide });
+  const renderScene = SceneMap({ allSlide, tribeSlide, connectionSlide });
 
   const renderLabel = ({
     route,
@@ -73,7 +78,7 @@ export default function NotificationScreen(props: ScreenProp) {
           ? fonts.WORK_SANS_SEMI_BOLD
           : fonts.WORK_SANS_REGULAR,
         fontSize: RFValue(fonts.LARGE_SIZE - 1),
-        color: focused ? colors.PRIMARY : colors.INACTIVE,
+        color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
         textTransform: 'capitalize',
         marginTop: 0,
         marginBottom: 0,
@@ -96,15 +101,14 @@ export default function NotificationScreen(props: ScreenProp) {
         style={{
           ...GLOBAL_HEADER_STYLE,
           backgroundColor: colors.WHITE,
-          marginBottom: 10,
-          paddingBottom: 10
+          paddingBottom: 5
         }}
       />
     );
   };
 
   const handleIndexChange = (index: number) => {
-    setTabIndex(0);
+    setTabIndex(index);
   };
 
   return (
