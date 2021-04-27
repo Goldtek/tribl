@@ -167,6 +167,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
             } catch (error) {
               setLoading(false);
               crashlytics.recordError(new Error(error));
+              crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
             }
           }
         }

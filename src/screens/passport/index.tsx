@@ -329,6 +329,7 @@ export default function PassportScreen(props: ScreenProp) {
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -437,6 +438,7 @@ export default function PassportScreen(props: ScreenProp) {
       // PROFILE SHARED HERE
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -475,6 +477,7 @@ export default function PassportScreen(props: ScreenProp) {
       setUpdate(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
       setUpdate(true);
     }
   };
@@ -520,6 +523,7 @@ export default function PassportScreen(props: ScreenProp) {
       ImagePicker.clean();
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 

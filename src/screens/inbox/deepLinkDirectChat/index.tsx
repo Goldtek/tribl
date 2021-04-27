@@ -146,13 +146,14 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
 
       if (channelExists) {
         setChannel(channelExists);
-        setChannelMembers(channelExists.state.members);
+        setChannelMembers(channelExists?.state?.members);
         streamSetChannel(channelExists);
       } else {
         createDmConversation();
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -175,12 +176,6 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
           channelId: `${user.id}|${chatClient.user?.id}`,
           members: [user.id, `${chatClient.user?.id}`],
           messageRequest: { status: false },
-          sender: {
-            readAt: Date.now(),
-            id: chatClient.user?.id,
-            ...chatClient.user
-          },
-          receiver: { ...user, readAt: Date.now() },
           name: Date.now(),
           community: {},
           isDm: true,
@@ -193,6 +188,7 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 

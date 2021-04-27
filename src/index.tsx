@@ -15,6 +15,7 @@ import messaging from '@react-native-firebase/messaging';
 import { LinkingOptions } from '@react-navigation/native';
 import { NotificationMessage } from './graphql/types';
 import { DEVICE_OS } from './utils/device';
+import { crashlytics } from './firebase/config';
 
 const RootStack = createStackNavigator();
 
@@ -127,6 +128,10 @@ export default function AppNavigator() {
       // Listen to firebase push notifications
       const unsubscribeNotification = messaging().onNotificationOpenedApp(
         (message) => {
+          crashlytics.log(
+            `DEEP LINK NOTIFICATION MESSAGE, ${JSON.stringify(message)}`
+          );
+
           const data =
             DEVICE_OS === 'ios'
               ? //@ts-ignore

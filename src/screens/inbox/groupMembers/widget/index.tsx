@@ -83,6 +83,7 @@ export default function GroupMember(props: ChannelUserProp) {
               } catch (error) {
                 setLoading(false);
                 crashlytics.recordError(new Error(error));
+                crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
               }
             }
           }

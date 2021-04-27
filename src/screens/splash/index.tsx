@@ -96,6 +96,7 @@ export default function SplashScreen(props: ScreenProp) {
       navigation.replace(userRegistration.route);
     } catch (error) {
       crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
       return navigation.replace('SignupScreen');
     }
   };

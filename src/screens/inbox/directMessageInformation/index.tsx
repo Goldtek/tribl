@@ -96,6 +96,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
             } catch (error) {
               setLoading(false);
               crashlytics.recordError(new Error(error));
+              crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
             }
           }
         }
@@ -129,6 +130,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
   //           navigation.navigate('InboxScreen');
   //         } catch (error) {
   //           crashlytics.recordError(new Error(error));
+  crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
   //         }
   //       }
   //     }
