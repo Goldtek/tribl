@@ -224,7 +224,12 @@
     "tribe": "tribe requests",
     "channel": "channel requests",
     "empty": " You currently don't have any notification",
-    "channelPlaceholder": "Type name of channel"
+    "channelPlaceholder": "Type name of channel",
+    "all": "all",
+    "tribes": "tribes",
+    "connections": "connections",
+    "adminTribe": "admin tribes",
+    "cancel": "cancel"
   },
   "invitation": {
     "title": "Invite friends to community",
