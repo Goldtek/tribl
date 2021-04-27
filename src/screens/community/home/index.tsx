@@ -67,7 +67,6 @@ import {
   RecentActivitiesList,
   CommunityCover,
   ButtonWrapper
-  // ButtonWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -582,7 +581,7 @@ export default function HomeScreen(props: ScreenProp) {
           </RecentActivitiesList>
         ) : null}
       </ScrollView>
-      {/* 
+
       <ButtonWrapper>
         <Button
           onPress={navigateToCreateNewTribeScreen}
@@ -601,7 +600,7 @@ export default function HomeScreen(props: ScreenProp) {
         >
           {t(`community.createTribe.buttonText`)}
         </Button>
-      </ButtonWrapper> */}
+      </ButtonWrapper>
 
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
