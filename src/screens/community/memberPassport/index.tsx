@@ -350,15 +350,7 @@ export default function PassportDetail(props: MemberDetailProps) {
           </ConnectionCover>
         </Header>
 
-        {blocked?.length ? (
-          <GradientButton
-            onPress={handleUnBlock}
-            loading={unblockLoading}
-            style={{ width: DEVICE_FULL_WIDTH }}
-          >
-            {t(`community.memberPassport.unblock`)}
-          </GradientButton>
-        ) : data?.connectionDetails?.status === 'ACCEPTED' ? (
+        {data?.connectionDetails?.status === 'ACCEPTED' ? (
           <ButtonCover>
             <Button
               onPress={handleMessageNavigation}
