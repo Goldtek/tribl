@@ -1,14 +1,9 @@
 import React, { useEffect } from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { useLazyQuery } from '@apollo/react-hooks';
-import {
-  VerifyOTPIT,
-  RegistrationInfo,
-  GenerateFirebaseTokenIT
-} from '../../graphql/types';
+import { VerifyOTPIT, RegistrationInfo } from '../../graphql/types';
 import {
   GET_USER_PASSPORT,
-  GET_FIREBASE_TOKEN,
   GET_ALL_MEMBERS,
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
@@ -23,7 +18,6 @@ import { refreshToken } from '../../network/query';
 import { NavigationInterface } from '../types';
 import Storage from '../../libs/storage';
 import { PAGINATION_DEFAULT } from '../../constants';
-import Firechat from '../../firebase';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -57,10 +51,6 @@ export default function SplashScreen(props: ScreenProp) {
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: 8 } }
   });
-
-  const [authenticateFirebase, { data: firebase }] = useLazyQuery<
-    GenerateFirebaseTokenIT
-  >(GET_FIREBASE_TOKEN);
 
   const handleAuthentication = async () => {
     try {
@@ -102,15 +92,7 @@ export default function SplashScreen(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('SplashScreen');
-    if (firebase?.generateFirebaseToken) {
-      Storage.setUserCredentials(firebase?.generateFirebaseToken);
-      Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
-    }
-  }, [firebase]);
-
-  useEffect(() => {
     handleAuthentication();
-    authenticateFirebase();
     getUserPassport();
     getMyCommunities();
     getMyChannels();

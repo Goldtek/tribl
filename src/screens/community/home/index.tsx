@@ -31,8 +31,7 @@ import {
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
   USER_CHANNELS,
-  GET_USER_PASSPORT,
-  GET_FIREBASE_TOKEN
+  GET_USER_PASSPORT
 } from '../../../graphql/server/query';
 import { UPDATE_PASSPORT } from '../../../graphql/server/mutations';
 import MyChannel from '../../../components/channelCard';
@@ -46,8 +45,7 @@ import {
   RecommendedCommunitiesRequestInterface,
   CommunityInterface,
   ChannelInterface,
-  MyChannelRequestInterface,
-  GenerateFirebaseTokenIT
+  MyChannelRequestInterface
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -56,8 +54,6 @@ import { PAGINATION_DEFAULT } from '../../../constants';
 import GradientButton from '../../../components/gradientButton';
 import { useIsFocused } from '@react-navigation/native';
 import MyCommunity from '../../../components/myCommunities';
-import Storage from '../../../libs/storage';
-import Firechat from '../../../firebase';
 import CheckAppUpdates from '../../../libs/updates';
 import { crashlytics } from '../../../firebase/config';
 import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
@@ -93,10 +89,6 @@ export default function HomeScreen(props: ScreenProp) {
   });
 
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
-
-  const { data: firebase, loading: firebaseLoading } = useQuery<
-    GenerateFirebaseTokenIT
-  >(GET_FIREBASE_TOKEN);
 
   const {
     data: myCommunityData,
@@ -148,13 +140,6 @@ export default function HomeScreen(props: ScreenProp) {
     getAllMembers();
     checkUpdate();
   }, []);
-
-  useEffect(() => {
-    if (firebase?.generateFirebaseToken) {
-      Storage.setUserCredentials(firebase?.generateFirebaseToken);
-      Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
-    }
-  }, [firebaseLoading]);
 
   const {
     loading: recommendedCommunityLoading,
