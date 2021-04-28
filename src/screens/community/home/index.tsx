@@ -583,23 +583,22 @@ export default function HomeScreen(props: ScreenProp) {
       </ScrollView>
 
       <ButtonWrapper>
-        <Button
+        <GradientButton
           onPress={navigateToCreateNewTribeScreen}
-          mode="contained"
           labelStyle={{
             fontSize: RFValue(fonts.MEDIUM_SIZE),
             fontFamily: fonts.WORK_SANS_REGULAR,
             color: colors.WHITE,
             textTransform: 'capitalize'
           }}
-          style={{
-            backgroundColor: colors.PRIMARY_TEXT,
+          gradientContainerstyle={{
             width: RFPercentage(25),
-            borderRadius: RFValue(50)
+            height: RFValue(30),
+            borderRadius: RFValue(15)
           }}
         >
           {t(`community.createTribe.buttonText`)}
-        </Button>
+        </GradientButton>
       </ButtonWrapper>
 
       {state.showJoinCommunityModal ? (
