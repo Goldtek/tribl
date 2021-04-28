@@ -43,9 +43,7 @@ export default function TribeScreen(props: tribeScreenProp) {
   const { data: requestData, refetch: requestRefetch } = useQuery(
     GET_COMMUNITY_CREATION_REQUEST,
     {
-      variables: {
-        input: { limit: PAGINATION_DEFAULT }
-      }
+      variables: { input: { limit: PAGINATION_DEFAULT } }
     }
   );
 
@@ -70,6 +68,7 @@ export default function TribeScreen(props: tribeScreenProp) {
     'moderators.firstName',
     'moderators.lastName'
   ];
+
   const filteredCommunityWords =
     tribeRequest &&
     tribeRequest?.filter(

@@ -4,15 +4,18 @@ import {
   TransitionPresets
 } from '@react-navigation/stack';
 import { TouchableRipple, Menu, Divider, Text } from 'react-native-paper';
-import { Image, Platform, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image, Platform, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
+import ENVIRONMENT_VARIABLES from 'react-native-config';
 import { useThemeContext } from '../../theme';
 import InboxScreens from '../../screens/inbox';
+//@ts-ignore
+import { StreamApp } from 'expo-activity-feed';
 import AccountScreens from '../../screens/account';
 import CommunityScreens from '../../screens/community';
 import MemberDetailScreen from '../../screens/community/memberPassport';
@@ -36,6 +39,7 @@ import { logEvent } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
 import { UserPassportInterface } from '../../graphql/types';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
+import { chatClient } from '../../stream/types';
 
 const DrawerStack = createStackNavigator();
 
@@ -207,10 +211,23 @@ export default function DrawerStackNavigator() {
         component={AccountScreens.MyConnectionScreen}
       />
 
-      <DrawerStack.Screen
-        name="MyNotifications"
-        component={AccountScreens.NotificationScreen}
-      />
+      <DrawerStack.Screen name="MyNotifications">
+        {(props) => (
+          <StreamApp
+            userId={chatClient.user?.id}
+            token={chatClient.tokenManager.token}
+            appId={ENVIRONMENT_VARIABLES.TRIBL_STREAM_APP_ID}
+            apiKey={ENVIRONMENT_VARIABLES.TRIBL_STREAM_API_KEY}
+            defaultUserData={{
+              name: chatClient.user?.name,
+              coverImage: chatClient.user?.image,
+              profileImage: chatClient.user?.image
+            }}
+          >
+            <AccountScreens.NotificationScreen {...props} />
+          </StreamApp>
+        )}
+      </DrawerStack.Screen>
 
       <DrawerStack.Screen
         name="SelectGroupParticipantsScreen"
