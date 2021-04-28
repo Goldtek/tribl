@@ -16,6 +16,7 @@ import {
 import ActiveMember from './widget';
 import Skeleton from './widget/skeleton';
 import { PAGINATION_DEFAULT } from '../../constants';
+import removeDuplicateMembers from '../../utils/removeDuplicatePassports';
 
 import {
   PassportInterface,
@@ -44,12 +45,22 @@ function ActiveModal(props: ModalProp) {
   });
 
   const recommendedMembers = recommendedData?.recommendedMembers?.data;
+  const filterRecommendedMebers = removeDuplicateMembers(
+    recommendedMembers?.slice()
+  );
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
   const userId = userDetails?.id;
+  const blockedUsers = userDetails?.privacy?.blocked;
 
-  const activeList = recommendedMembers?.slice().sort((a, b) => {
+  const filteredUsers = filterRecommendedMebers?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
+  const activeList = filteredUsers?.slice().sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
 
     if (a.firstName > b.firstName) return 1;
@@ -102,7 +113,7 @@ function ActiveModal(props: ModalProp) {
           </Text>
         }
         flatListProps={{
-          data: filterMembers || [],
+          data: activeList || [],
           renderItem: _renderItem,
           ListEmptyComponent: <Skeleton />,
           showsVerticalScrollIndicator: false,

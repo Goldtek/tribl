@@ -1,17 +1,24 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, Fragment, useEffect, useCallback } from 'react';
 import { Mixpanel } from '../../../config';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView, FlatList } from 'react-native';
 import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery, useLazyQuery } from '@apollo/react-hooks';
 // @ts-ignore
 import SingleImage from '../../../libs/react-native-zoom-lightbox';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
-import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
-import { GET_MEMBER_PASSPORT } from '../../../graphql/server/query';
+import {
+  REQUEST_CONNECTION,
+  BLOCK_REPORT_USER
+} from '../../../graphql/server/mutations';
+import {
+  GET_MEMBER_PASSPORT,
+  GET_RECOMMENDED_MEMBERS,
+  GET_NEARBY_MEMBERS
+} from '../../../graphql/server/query';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import {
   CommunityInterface,
@@ -31,6 +38,8 @@ import MyChannel from './widget/channelCard';
 import { StatusBar } from 'expo-status-bar';
 import MyConnectionCard from '../../../components/MyConnectionCard';
 import MyCommunity from '../../../components/myCommunities';
+import TransferModal from '../../../components/transferModal';
+import { PAGINATION_DEFAULT } from '../../../constants';
 
 import {
   ContactContainer,
@@ -61,6 +70,8 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const [state, setState] = useState({ loading: false, pending: false });
 
+  const [visible, setVisible] = useState(false);
+
   const passport = { ...props.route.params.details };
 
   const [data, setData] = useState({ ...passport });
@@ -81,15 +92,63 @@ export default function PassportDetail(props: MemberDetailProps) {
     variables: { payload: { id: passport.id } }
   });
 
-  const { data: passportData } = useQuery<SinglePassportRequestInterface>(
-    GET_MEMBER_PASSPORT,
-    { variables: { id: passport.id } }
-  );
+  const { data: passportData, refetch } = useQuery<
+    SinglePassportRequestInterface
+  >(GET_MEMBER_PASSPORT, { variables: { id: passport.id } });
+
+  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
+
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
 
   const singlePassport = passportData?.singlePassport;
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
-  const channels = singlePassport?.channelParticipantOf?.slice(0, 10);
+  const filteredChannels = singlePassport?.channelParticipantOf?.filter(
+    (channel) => channel?.isPrivate == false || channel?.isMember == true
+  );
+  const channels = filteredChannels?.slice(0, 10);
+
+  const [blocked, setBlock] = useState(data?.blocked?.blocked);
+  const note = `${firstName} ${t(
+    `community.memberPassport.unblock`
+  )} ${firstName}`;
+
+  enum status {
+    UNBLOCK
+  }
+
+  const [unBlockUser, { loading: unblockLoading }] = useMutation(
+    BLOCK_REPORT_USER,
+    {
+      variables: {
+        payload: {
+          passportId: passport?.id,
+          status: status[0],
+          notes: note
+        }
+      }
+    }
+  );
+
+  const handleUnBlock = async () => {
+    try {
+      Mixpanel.track('UnBlock User', {
+        info: `UnBlock ${firstName}`,
+        'Activity Screen': 'Community Screen'
+      });
+      await unBlockUser();
+      refetch();
+      setBlock([]);
+      getRecommendedMembers();
+      getNearbyMembers();
+    } catch (error) {
+      crashlytics.recordError(error);
+    }
+  };
 
   useEffect(() => {
     if (singlePassport?.id) {
@@ -155,6 +214,14 @@ export default function PassportDetail(props: MemberDetailProps) {
     <MyConnectionCard key={item.id} {...item} singlePassport={data} />
   );
 
+  const showTransferModal = useCallback(
+    (visible: boolean) => () => {
+      setVisible(visible);
+      return true;
+    },
+    []
+  );
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -162,7 +229,7 @@ export default function PassportDetail(props: MemberDetailProps) {
         flexGrow: 1,
         backgroundColor: colors.WHITE,
         paddingTop: 20,
-        paddingBottom: 20
+        paddingBottom: 30
       }}
       style={{ backgroundColor: colors.WHITE }}
     >
@@ -284,29 +351,57 @@ export default function PassportDetail(props: MemberDetailProps) {
         </Header>
 
         {data?.connectionDetails?.status === 'ACCEPTED' ? (
-          <Button
-            onPress={handleMessageNavigation}
-            mode="outlined"
-            color={colors.PRIMARY}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{
-              height: RFValue(55),
-              borderColor: colors.PRIMARY_TEXT
-            }}
-            style={{
-              width: '100%',
-              height: RFValue(55),
-              borderRadius: 4,
-              marginTop: RFValue(20),
-              borderColor: colors.PRIMARY_TEXT
-            }}
-          >
-            {t(`community.memberPassport.message`)}
-          </Button>
+          <ButtonCover>
+            <Button
+              onPress={handleMessageNavigation}
+              mode="outlined"
+              color={colors.PRIMARY}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                borderColor: colors.PRIMARY_TEXT
+              }}
+              style={{
+                width: '100%',
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.PRIMARY_TEXT
+              }}
+            >
+              {t(`community.memberPassport.message`)}
+            </Button>
+            {/* <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: DEVICE_FULL_WIDTH / 2 - 30,
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
+            </Button>
+          */}
+          </ButtonCover>
         ) : pending ||
           data?.connectionDetails?.status === 'PENDING' ||
           data?.pending == 'PENDING' ||
@@ -355,6 +450,31 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
+            {/* <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: RFValue(50),
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
+            </Button> */}
           </ButtonCover>
         ) : (
           <ButtonCover>
@@ -388,6 +508,31 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
+            {/* <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: RFValue(50),
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
+            </Button> */}
           </ButtonCover>
         )}
 
@@ -720,6 +865,10 @@ export default function PassportDetail(props: MemberDetailProps) {
           </Cover>
         ) : null}
       </ContactContainer>
+      <TransferModal
+        closeTranferModal={showTransferModal(false)}
+        isVisible={visible}
+      />
     </ScrollView>
   );
 }

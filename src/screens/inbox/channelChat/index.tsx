@@ -59,7 +59,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
     }
   };
 
-  const channelMembers = Object.values(channel.state.members.asMutable());
+  const channelMembers = Object?.values(channel?.state?.members.asMutable());
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -110,7 +110,8 @@ export default function ChannelChatScreen(props: ScreenProp) {
                   <FastImage
                     resizeMode={FastImage.resizeMode.cover}
                     source={{
-                      uri: channelMembers[0].user?.image || USER_DEFAULT_AVATAR,
+                      uri:
+                        channelMembers[0]?.user?.image || USER_DEFAULT_AVATAR,
                       priority: FastImage.priority.high
                     }}
                     style={{

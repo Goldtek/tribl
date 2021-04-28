@@ -46,6 +46,9 @@ export default function ChannelScreen(props: ScreenProp) {
   });
 
   const communityChannels = data?.Channel;
+  const filteredChannels = communityChannels?.data.filter(
+    (channel) => channel.isPrivate == false || channel.isMember == true
+  );
 
   useEffect(() => {
     communityChannels ? refetch() : getCommunityChannels();
@@ -82,10 +85,10 @@ export default function ChannelScreen(props: ScreenProp) {
 
   return (
     <FlatList
-      bounces={false}
+      bounces={true}
       renderItem={_renderItem}
-      data={communityChannels?.data}
-      contentContainerStyle={{ flex: 1 }}
+      data={filteredChannels}
+      contentContainerStyle={{ flexGrow: 1 }}
       ItemSeparatorComponent={() => (
         <Divider style={{ borderWidth: 0.6, borderColor: colors.DISABLED }} />
       )}

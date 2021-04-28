@@ -56,7 +56,7 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
     });
   }, []);
 
-  const getMuteStatus = channel.muteStatus().muted;
+  const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
 
   const channelCreationDate = new Date(

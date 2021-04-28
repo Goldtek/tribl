@@ -62,7 +62,7 @@ export default function CustomDirectMessagePreview(
   const navigation = useNavigation();
   const { colors } = useThemeContext();
   const { setChannel } = useStreamContext();
-  const getMuteStatus = channel.muteStatus().muted;
+  const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
   const message = latestMessagePreview?.messageObject;
   const latestMessageDate = message?.created_at.asMutable();
@@ -74,13 +74,13 @@ export default function CustomDirectMessagePreview(
   const groupAvatar: string[] = [];
 
   if (Boolean(channel.data?.isDm)) {
-    receiverId = Object.keys(channel.state.members).find(
+    receiverId = Object.keys(channel?.state?.members).find(
       (userId: string) => userId !== chatClient.user?.id
     );
   }
 
-  if (Boolean(channel.data?.isGroup)) {
-    const members = Object.values(channel.state.members);
+  if (Boolean(channel?.data?.isGroup)) {
+    const members = Object?.values(channel?.state?.members);
 
     for (let index = 0; index < members.length; index++) {
       const member = members[index];
@@ -100,8 +100,8 @@ export default function CustomDirectMessagePreview(
 
   if (!receiverId && Boolean(channel.data?.isDm)) return null;
 
-  if (Boolean(channel.data?.isDm)) {
-    channelDetails = channel.state.members[`${receiverId}`].user;
+  if (Boolean(channel?.data?.isDm)) {
+    channelDetails = channel?.state?.members[`${receiverId}`].user;
     receiverAvatar = channelDetails?.image || USER_DEFAULT_AVATAR;
   }
 

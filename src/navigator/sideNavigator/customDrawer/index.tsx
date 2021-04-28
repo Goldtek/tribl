@@ -5,7 +5,8 @@ import Modal from 'react-native-modal';
 import {
   MaterialCommunityIcons,
   SimpleLineIcons,
-  FontAwesome
+  FontAwesome,
+  Feather
 } from '@expo/vector-icons';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../../theme';
@@ -35,7 +36,8 @@ import {
   DrawerFooter,
   MenuContainer,
   ProfileContainer,
-  ConnectionBadgeWrapper
+  ConnectionBadgeWrapper,
+  TransferCover
 } from './styles';
 
 export default function CustomDrawerComponent() {
@@ -120,11 +122,23 @@ export default function CustomDrawerComponent() {
         <SimpleLineIcons name="user" size={24} color={colors.PRIMARY_TEXT} />
       )
     },
+    // {
+    //   key: 'drawer_wallet_key',
+    //   name: `community.passport.wallet`,
+    //   onPress: () => {
+    //     changeSideMenu('drawer_wallet_key');
+    //     navigation?.navigate('TriblPayScreen', { screen: 'WalletScreen' });
+    //     toggleMenu();
+    //   },
+    //   drawerIcon: (
+    //     <Feather name="dollar-sign" size={24} color={colors.PRIMARY_TEXT} />
+    //   )
+    // },
     {
-      key: 'drawer_notification_key',
-      name: `community.sideNav.notification`,
+      key: 'drawer_activities_key',
+      name: `community.sideNav.activities`,
       onPress: () => {
-        changeSideMenu('drawer_notification_key');
+        changeSideMenu('drawer_activities_key');
         navigation?.navigate('DrawerScreen', {
           screen: 'MyNotifications'
         });
@@ -137,6 +151,21 @@ export default function CustomDrawerComponent() {
             <ConnectionBadgeWrapper />
           ) : null}
         </Fragment>
+      )
+    },
+    {
+      key: 'drawer_settings_key',
+      name: `community.sideNav.settings`,
+      onPress: () => {
+        navigation?.navigate('AccountSettingScreen', {
+          screen: 'AccountSettingScreen',
+          params: { previousMenu: sideMenuData?.activeSideMenu }
+        });
+        changeSideMenu('drawer_settings_key');
+        toggleMenu();
+      },
+      drawerIcon: (
+        <Feather name="settings" size={24} color={colors.PRIMARY_TEXT} />
       )
     },
     {
@@ -196,6 +225,28 @@ export default function CustomDrawerComponent() {
           </Text>
         </ProfileContainer>
 
+        {/* <TransferCover>
+          <Text
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: fonts.LARGE_SIZE
+            }}
+          >
+            {'\u0024'}20.00
+          </Text>
+          <Text
+            style={{
+              color: colors.PRIMARY,
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: fonts.LARGE_SIZE,
+              textTransform: 'capitalize'
+            }}
+          >
+            {t(`community.passport.tranfer`)}
+          </Text>
+        </TransferCover>
+       */}
         <MenuContainer>
           {sideMenuScreens.map((item, index) => {
             return (
@@ -203,7 +254,7 @@ export default function CustomDrawerComponent() {
                 key={item.key}
                 style={{
                   flexDirection: 'row',
-                  marginVertical: 10,
+                  marginVertical: 5,
                   paddingHorizontal: 10,
                   backgroundColor:
                     sideMenuData?.activeSideMenu === item.key

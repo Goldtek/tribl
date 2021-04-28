@@ -8,7 +8,7 @@ export const Container = styled.View`
 `;
 
 export const FilterContainer = styled.View`
-  height: ${RFValue(110)}px;
+  height: ${RFValue(180)}px;
   margin: 25px 0px 10px 0px;
 `;
 
@@ -34,7 +34,8 @@ export const SearchInputContainer = styled.View`
   justify-content: space-between;
   align-items: center;
   flex-direction: row;
-  padding-horizontal: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
 `;
 
 export const HeaderTitle = styled.Text`
@@ -42,7 +43,8 @@ export const HeaderTitle = styled.Text`
   font-family: ${({ theme }) => theme.fonts.WORK_SANS_BOLD};
   color: ${({ theme }) => theme.colors.PRIMARY_TEXT};
   text-transform: capitalize;
-  margin-horizontal: 10px;
+  margin-left: 15px;
+  margin-right: 15px;
 `;
 
 export const HeaderAction = styled.TouchableOpacity``;

@@ -33,7 +33,10 @@ import {
   USER_CHANNELS
 } from '../../graphql/server/query';
 import { MyPassportInterface, PassportInterface } from '../../graphql/types';
-import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
+import {
+  UPDATE_PASSPORT,
+  GENERATE_INVITE_LINK
+} from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
 import {
   CHANGE_ACTIVE_SIDE_MENU_STATE,
@@ -63,7 +66,8 @@ import {
   ConnectionCover,
   Cover,
   TabCover,
-  ScreenCover
+  ScreenCover,
+  ButtonHeaderCover
   // ImageIconContainer,
   // SocialMediaButton
 } from './styles';
@@ -159,9 +163,35 @@ export default function PassportScreen(props: ScreenProp) {
   });
 
   const userDetails = userData?.myPassport;
+
   const currentLocation = userDetails?.currentLocation?.country
     ? userDetails?.currentLocation
     : cache?.currentLocation;
+
+  const [generateInviteLink] = useMutation(GENERATE_INVITE_LINK, {
+    variables: { payload: { passportId: userDetails?.id } }
+  });
+
+  const handleGenerateLink = async () => {
+    logEvent('generate invite link', { from: 'passport' });
+    try {
+      Mixpanel.track('Generate Invite Link', {
+        info: `Generate Invite Link`,
+        'Activity Screen': 'Passport Screen'
+      });
+      await generateInviteLink();
+      refetch();
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
+  useEffect(() => {
+    if (userDetails && !userDetails?.invite_url?.length) {
+      handleGenerateLink();
+      refetch();
+    }
+  }, [userDetails]);
 
   useEffect(() => {
     if (userDetails) {
@@ -409,7 +439,7 @@ export default function PassportScreen(props: ScreenProp) {
       const { action } = await Share.share(
         {
           title: t(`signup.passportScreen.title`),
-          message: t(`signup.passportScreen.sharePassportMessage`)
+          message: cache?.invite_url || userDetails?.invite_url
         },
         {
           dialogTitle: t(`signup.passportScreen.title`)
@@ -508,6 +538,20 @@ export default function PassportScreen(props: ScreenProp) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
+  };
+
+  const [triblPay, setTriblPay] = useState(false);
+
+  const handleActivateWallet = () => {
+    navigation.navigate('TriblPayScreen', {
+      screen: 'ActivateWalletScreen'
+    });
+  };
+
+  const handleViewWallet = () => {
+    navigation.navigate('TriblPayScreen', {
+      screen: 'WalletScreen'
+    });
   };
 
   return (
@@ -781,34 +825,55 @@ export default function PassportScreen(props: ScreenProp) {
                 </ImageIconContainer> */}
                 </ImageTextContainer>
               </ImageContainer>
-
-              <Button
-                icon={{
-                  uri: 'https://img.icons8.com/ios-filled/96/000000/share-3.png'
-                }}
-                mode="text"
-                color={colors.WHITE}
-                uppercase={false}
-                loading={false}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  textTransform: 'capitalize'
-                }}
-                contentStyle={{
-                  height: RFValue(55),
-                  backgroundColor: colors.PRIMARY_LIGHT
-                }}
-                style={{
-                  width: '100%',
-                  height: RFValue(55),
-                  marginTop: RFValue(10),
-                  marginBottom: RFValue(20)
-                }}
-                onPress={onShare}
-              >
-                {t(`signup.passportScreen.sharePassport`)}
-              </Button>
+              <ButtonHeaderCover>
+                <Button
+                  icon={{
+                    uri:
+                      'https://img.icons8.com/ios-filled/96/000000/share-3.png'
+                  }}
+                  mode="text"
+                  color={colors.WHITE}
+                  uppercase={false}
+                  loading={false}
+                  labelStyle={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                    textTransform: 'capitalize'
+                  }}
+                  contentStyle={{
+                    height: RFValue(50),
+                    backgroundColor: colors.PRIMARY_LIGHT
+                  }}
+                  style={{
+                    height: RFValue(50),
+                    width: '100%'
+                  }}
+                  onPress={onShare}
+                >
+                  {t(`community.passport.share`)}
+                </Button>
+                {/* <Button
+                  onPress={triblPay ? handleViewWallet : handleActivateWallet}
+                  labelStyle={{
+                    color: colors.PRIMARY,
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                    textTransform: 'capitalize'
+                  }}
+                  contentStyle={{
+                    height: RFValue(50),
+                    backgroundColor: colors.WHITE
+                  }}
+                  style={{
+                    height: RFValue(50),
+                    width: '49%'
+                  }}
+                >
+                  {triblPay
+                    ? t(`community.passport.viewWallet`)
+                    : t(`community.passport.activate`)}
+                </Button> */}
+              </ButtonHeaderCover>
             </HeaderContainer>
             <TabCover>
               <TabViewSlider

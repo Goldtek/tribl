@@ -44,11 +44,11 @@ export default function DirectChatScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { channel, setThread, setActivityScreen } = useStreamContext();
 
-  const receiverId = Object.keys(channel.state.members).find(
+  const receiverId = Object.keys(channel?.state?.members).find(
     (userId: string) => userId !== chatClient.user?.id
   );
 
-  const receiver = channel.state.members[`${receiverId}`].user;
+  const receiver = channel?.state?.members[`${receiverId}`].user;
 
   useEffect(() => {
     tagScreenName('DirectChatScreen');

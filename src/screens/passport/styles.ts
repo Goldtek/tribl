@@ -63,3 +63,12 @@ export const ScreenCover = styled.View`
   background-color: ${({ theme }) => theme.colors.WHITE};
   flex: 1;
 `;
+
+export const ButtonHeaderCover = styled.View`
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: ${RFValue(10)}px;
+  margin-bottom: ${RFValue(20)}px;
+`;

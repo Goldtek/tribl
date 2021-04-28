@@ -79,9 +79,12 @@ function Member(props: MemberProp) {
         padding: 10
       }}
       onPress={() =>
-        navigation.navigate('MemberDetailScreen', {
-          title: `${firstName} ${lastName}`,
-          details: { ...props, ...singlePassport }
+        navigation.navigate('DrawerScreen', {
+          screen: 'MemberDetailScreen',
+          params: {
+            title: `${firstName} ${lastName}`,
+            details: { ...props, ...singlePassport }
+          }
         })
       }
     >

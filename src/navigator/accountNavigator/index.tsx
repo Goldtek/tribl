@@ -114,19 +114,15 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
         name="PrivacyScreen"
         component={Screens.PrivacyScreen}
         options={{
-          //@ts-ignore
-          headerTitle: t(`community.accountSettings.privacy`),
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
+          headerShown: false
+        }}
+      />
+
+      <AccountStack.Screen
+        name="BlockedAccountScreen"
+        component={Screens.BlockedAccountScreen}
+        options={{
+          headerShown: false
         }}
       />
 

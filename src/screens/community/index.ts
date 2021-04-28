@@ -11,6 +11,7 @@ import NewTribeScreen from './home/widget/newTribe';
 import InviteToTribeScreen from './invitationToTribe';
 import CommunityRequestScreen from './communityRequest';
 import InviteToTribeFromProfileScreen from './inviteToTribeFromProfile';
+import ChannelRequestScreen from './channelRequest';
 
 export default {
   HomeScreen,
@@ -25,5 +26,6 @@ export default {
   NewTribeScreen,
   InviteToTribeScreen,
   CommunityRequestScreen,
-  InviteToTribeFromProfileScreen
+  InviteToTribeFromProfileScreen,
+  ChannelRequestScreen
 };

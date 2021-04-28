@@ -41,6 +41,22 @@ export const GET_USER_PASSPORT = gql`
       email
       avatar
       verified
+      invite_url
+      isAdmin
+      privacy {
+        blocked {
+          id
+          firstName
+          lastName
+        }
+      }
+      blocked {
+        blocked {
+          id
+          firstName
+          lastName
+        }
+      }
       interest {
         id
         name
@@ -50,22 +66,24 @@ export const GET_USER_PASSPORT = gql`
         name
       }
       myConnections {
-        id
-        bio
-        email
-        avatar
-        pending
-        verified
-        lastName
-        connected
-        firstName
-        phoneNumber
-        communityCount
-        connectionCount
-        currentLocation {
-          country
-          state
-          city
+        data {
+          id
+          bio
+          email
+          avatar
+          pending
+          verified
+          lastName
+          connected
+          firstName
+          phoneNumber
+          communityCount
+          connectionCount
+          currentLocation {
+            country
+            state
+            city
+          }
         }
       }
       participantOf {
@@ -121,6 +139,16 @@ export const GET_USER_PASSPORT = gql`
           id
           firstName
           lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
         }
         identity
         age
@@ -149,6 +177,40 @@ export const GET_RECOMMENDED_MEMBERS = gql`
         connectionCount
         communityCount
         pending
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         citizenship {
           name
           flag
@@ -206,6 +268,40 @@ export const GET_NEARBY_MEMBERS = gql`
         communityCount
         connectionCount
         pending
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         citizenship {
           name
           flag
@@ -265,6 +361,40 @@ export const GET_CHANNEL_MEMBERS = gql`
         communityCount
         connectionCount
         pending
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         citizenship {
           name
           flag
@@ -314,6 +444,40 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         connectionCount
         verified
         pending
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         citizenship {
           name
           flag
@@ -463,6 +627,40 @@ export const GET_MY_CONNECTIONS_NEARBY = gql`
         pending
         connectionCount
         communityCount
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         citizenship {
           name
           flag
@@ -520,6 +718,40 @@ export const GET_MY_CONNECTIONS = gql`
           name
           flag
         }
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         birthPlace {
           country
           state
@@ -568,6 +800,40 @@ export const GET_CONNECTION_REQUEST = gql`
         connectionCount
         communityCount
         verified
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         citizenship {
           name
           flag
@@ -646,6 +912,41 @@ export const GET_SINGLE_PASSPORT = gql`
       connectionCount
       communityCount
       pending
+      myConnections {
+        data {
+          id
+          bio
+          email
+          avatar
+          pending
+          verified
+          lastName
+          connected
+          firstName
+          phoneNumber
+          communityCount
+          connectionCount
+          currentLocation {
+            country
+            state
+            city
+          }
+        }
+      }
+      privacy {
+        blocked {
+          id
+          firstName
+          lastName
+        }
+      }
+      blocked {
+        blocked {
+          id
+          firstName
+          lastName
+        }
+      }
       citizenship {
         name
         flag
@@ -695,6 +996,40 @@ export const GET_MEMBER_PASSPORT = gql`
       connectionCount
       communityCount
       pending
+      privacy {
+        blocked {
+          id
+          firstName
+          lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
+        }
+      }
+      blocked {
+        blocked {
+          id
+          firstName
+          lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
+        }
+      }
       citizenship {
         name
         flag
@@ -725,15 +1060,24 @@ export const GET_MEMBER_PASSPORT = gql`
         name
       }
       myConnections {
-        id
-        firstName
-        lastName
-        avatar
-        phoneNumber
-        currentLocation {
-          country
-          state
-          city
+        data {
+          id
+          bio
+          email
+          avatar
+          pending
+          verified
+          lastName
+          connected
+          firstName
+          phoneNumber
+          communityCount
+          connectionCount
+          currentLocation {
+            country
+            state
+            city
+          }
         }
       }
       participantOf {
@@ -774,6 +1118,40 @@ export const GET_COMMUNITY_MEMBERS = gql`
         connectionCount
         communityCount
         pending
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         citizenship {
           name
           flag
@@ -828,6 +1206,40 @@ export const GET_COMMUNITY_MEMBER_PASSPORT = gql`
       communityCount
       connectionCount
       pending
+      privacy {
+        blocked {
+          id
+          firstName
+          lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
+        }
+      }
+      blocked {
+        blocked {
+          id
+          firstName
+          lastName
+          avatar
+          currentLocation {
+            state
+            city
+            country
+          }
+          citizenship {
+            flag
+            name
+          }
+        }
+      }
       citizenship {
         name
         flag
@@ -882,6 +1294,40 @@ export const GET_ALL_MEMBERS = gql`
         connected
         bio
         pending
+        privacy {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
+        blocked {
+          blocked {
+            id
+            firstName
+            lastName
+            avatar
+            currentLocation {
+              state
+              city
+              country
+            }
+            citizenship {
+              flag
+              name
+            }
+          }
+        }
         citizenship {
           name
           flag
@@ -1169,6 +1615,17 @@ export const GET_COMMUNITY_CHANNELS = gql`
         id
         name
         isMember
+        isPrivate
+        participants {
+          id
+          firstName
+          lastName
+        }
+        moderators {
+          id
+          firstName
+          lastName
+        }
         community {
           id
           name
@@ -1194,6 +1651,56 @@ export const GET_TRENDING_CHANNELS = gql`
             name
             avatar
           }
+        }
+      }
+    }
+  }
+`;
+
+//GET COMMUNITY CREATION REQUEST
+export const GET_COMMUNITY_CREATION_REQUEST = gql`
+  query communityCreationRequests($input: CommunityCreationRequestArgsInput!) {
+    communityCreationRequests(input: $input) {
+      data {
+        id
+        isMember
+        isModerator
+        membersCount
+        name
+        avatar
+        status
+        isDefault
+        isPrivate
+        description
+        moderators {
+          id
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
+//GET COMMUNITY CREATION REQUEST
+export const GET_CHANNEL_CREATION_REQUEST = gql`
+  query channelCreationRequests($input: ChannelRequestInput) {
+    channelCreationRequests(input: $input) {
+      data {
+        id
+        name
+        status
+        isPrivate
+        moderators {
+          id
+          firstName
+          lastName
+        }
+        community {
+          id
+          name
+          avatar
+          isModerator
         }
       }
     }

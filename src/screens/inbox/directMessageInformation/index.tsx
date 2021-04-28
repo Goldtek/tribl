@@ -54,10 +54,10 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
     });
   }, []);
 
-  const getMuteStatus = channel.muteStatus().muted;
+  const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
 
-  const user = Object.values(channel.state.members).find(
+  const user = Object?.values(channel?.state?.members).find(
     ({ user }) => user?.id !== chatClient.user?.id
   );
 

@@ -44,6 +44,7 @@ import FastImage from 'react-native-fast-image';
 import { Mixpanel } from '../../../config';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { JOIN_COMMUNITY_CHANNEL } from '../../../graphql/server/mutations';
+import { GET_COMMUNITY_CHANNELS } from '../../../graphql/server/query';
 import { crashlytics } from '../../../firebase/config';
 
 import {
@@ -153,7 +154,7 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
     }
   }, [route.params.channelId, chatClient?.user?.id]);
 
-  const members = Object.values(channelMembers);
+  const members = Object?.values(channelMembers);
 
   const addUserToChannel = async () => {
     try {
