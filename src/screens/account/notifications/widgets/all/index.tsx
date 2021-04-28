@@ -3,9 +3,12 @@ import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import SearchInput, { createFilter } from 'react-native-search-filter';
+//@ts-ignore
+import { FlatFeed } from 'expo-activity-feed';
 import { useThemeContext } from '../../../../../theme';
 import { NavigationInterface } from '../../../../types';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
+import { chatClient } from '../../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -61,6 +64,10 @@ export default function GeneralSlide(props: GeneralSlideProp) {
       >
         General Notification
       </Title>
+      <FlatFeed
+        feedGroup="activities_notification"
+        userId={chatClient.user?.id}
+      />
     </Container>
   );
 }
