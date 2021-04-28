@@ -55,7 +55,7 @@ export default function TribeScreen(props: tribeScreenProp) {
   const tribeRequest = requestData?.communityCreationRequests?.data;
   const userDetails = userData?.myPassport;
   const tribe = userDetails?.participantOf;
-  const moderator = tribe.filter((item: any) => item.isModerator);
+  const moderator = tribe?.filter((item: any) => item.isModerator);
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
