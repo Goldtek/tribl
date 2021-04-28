@@ -20,7 +20,8 @@
     "communityRequests": "Community Requests",
     "leaveCommunity": "Leave Community",
     "trendingChannel": "trending channels",
-    "myChannel": "my channels"
+    "myChannel": "my channels",
+    "newChannelRequest": "new channel requests"
   },
 
   "joinModal": {
@@ -55,7 +56,12 @@
     "requested": "requested",
     "interestTitle": "what are you interested in?",
     "interestParagraph": "Let us know what you have interest in. \n(Select all that apply)",
-    "channels": "recent channels"
+    "channels": "recent channels",
+    "blockMessage": "will no longer be able to connect or message you, and you will not see notifications from",
+    "cancel": "cancel",
+    "reportHeader": "Why are you reporting this account?",
+    "reportText": "Your report is anonymous, except if you're reporting an intellectual property infringement. If someone is in immediate danger, call the local emergency services. Don't wait.",
+    "unblock": "unblock"
   },
 
   "tabPanel": {
@@ -77,7 +83,8 @@
     "memberTitle": "tribe members",
     "leave": "leave",
     "tribeChannels": "tribe channels",
-    "connectedTribes": "similar tribes"
+    "connectedTribes": "similar tribes",
+    "save": "save"
   },
 
   "sideNav": {
@@ -92,7 +99,8 @@
     "invite": "invite friend",
     "policy": "privacy policy",
     "version": "version 1.0.0",
-    "company": "silicon jungle labs"
+    "company": "silicon jungle labs",
+    "activities": "activities"
   },
 
   "accountSettings": {
@@ -153,9 +161,16 @@
     "edit": "edit",
     "removeUser": "remove",
     "addingMembers": "adding members",
-    "create": "create"
+    "create": "create",
+    "newGroup": "new Group",
+    "newChannel": "new channel",
+    "newChat": "new chat",
+    "createChannel": "create channel",
+    "channelText": "Name your channel around a topic, chapter, or interests that resonates with members of the community",
+    "channelNamePlaceholder": "#channelname",
+    "next": "next",
+    "addParticipant": "Add Participants"
   },
-
   "update": {
     "new": "new",
     "yes": "upgrade",
@@ -207,12 +222,20 @@
     "general": "general",
     "placeholder": "Type name of member",
     "tribe": "tribe requests",
-    "empty": " You currently don't have any notification"
+    "channel": "channel requests",
+    "empty": " You currently don't have any notification",
+    "channelPlaceholder": "Type name of channel",
+    "all": "all",
+    "tribes": "tribes",
+    "connections": "connections",
+    "adminTribe": "admin tribes",
+    "cancel": "cancel"
   },
   "invitation": {
     "title": "Invite friends to community",
     "text": "To invite your friends who don’t have an account on Tribl, please type email address",
-    "label": "Type name or email address",
+    "label": "Type name",
+    "emailLabel": "Type email",
     "placeholder": "Start typing ...",
     "invite": "Invite friends",
     "cancel": "cancel",
@@ -220,14 +243,19 @@
     "request": "asked to join your community",
     "accept": "accept",
     "decline": "decline",
+    "approve": "approve",
+    "reject": "reject",
     "empty": " You currently don't have any community request",
+    "channelEmpty": "You currently don't have any channel request",
     "channelTitle": "Invite friends to channel",
     "tribeInvite": "Invite friends to tribe",
     "inviteChannel": "Invite friend to channel",
     "inviteTribe": "Invite friend to tribe",
     "text2": "Select a community you want to invite your friend to",
     "channelText": "Select a channel you want to invite your friend to",
-    "tribeInviteError": "You have to choose a tribe you want to invite your friend to"
+    "tribeInviteError": "You have to choose a tribe you want to invite your friend to",
+    "newTribeRequest": "wants to create a new tribe",
+    "newChannelRequest": "wants to create a new channel"
   },
   "passport": {
     "addCitizen": "add citizenship",
@@ -235,6 +263,40 @@
     "countryError": "You can only add three countries",
     "selectError": "Select atleast one country",
     "subTitle": "Use your passport to connect & engage.",
-    "addInterest": "Add interest"
+    "addInterest": "Add interest",
+    "share": "share passport",
+    "activate": "activate wallet",
+    "step": "step",
+    "steps": "steps",
+    "bank": "bank country",
+    "next": "next",
+    "verifyText": "To verify your identity, we will need some information.",
+    "securityNumber": "Social Security Number",
+    "idNumber": "Passport/ID Number",
+    "countryId": "Country ID",
+    "capture": "Take a picture of your Driver’s License, Passport, or relevant form of identification.",
+    "submit": "submit",
+    "pay": "pay",
+    "balance": "cash balance",
+    "unavailable": "unavailable",
+    "linkedAccounts": "link accounts",
+    "accounts": "accounts",
+    "linkedCreditCard": "Link Credit Card",
+    "linkedBankAccount": "Link Bank Account",
+    "addCash": "add cash",
+    "cashOut": "cash out",
+    "cashAccount": "cash account",
+    "cryptocurrency": "cryptocurrency account",
+    "nativeCurrency": "native currency",
+    "country": "country",
+    "triblCoin": "tribl coin",
+    "learn": "learn more",
+    "account": "account",
+    "addAmount": "add",
+    "viewWallet": "view wallet",
+    "cashBalance": "cash balance",
+    "tranfer": "transfer to bank",
+    "wallet": "wallet",
+    "request": "request"
   }
 }

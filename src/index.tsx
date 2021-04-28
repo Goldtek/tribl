@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import DrawerStackNavigator from './navigator/sideNavigator';
+import TriblPayNavigator from './navigator/triblPayNavigator';
 import SignupNavigator from './navigator/signupNavigator';
 import { navigationRef } from './constants';
 import { useThemeContext } from './theme';
@@ -188,6 +189,7 @@ export default function AppNavigator() {
           name="DrawerScreen"
           component={DrawerStackNavigator}
         />
+        <RootStack.Screen name="TriblPayScreen" component={TriblPayNavigator} />
 
         <RootStack.Screen
           name="AccountSettingScreen"

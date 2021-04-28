@@ -170,12 +170,23 @@ type Tags = {
   updatedAt: string;
 };
 
+type PassportPrivacy = {
+  identity: string;
+  age: string;
+  interest: string;
+  locality: string;
+  visibility: string;
+  blocked: PassportInterface[];
+};
+
 export interface PassportInterface {
   id: string;
   bio: string;
   email: string;
   avatar: string;
   dob: string;
+  invite_url: string;
+  isAdmin: boolean;
   lastName: string;
   verified: boolean;
   firstName: string;
@@ -203,6 +214,8 @@ export interface PassportInterface {
   connectionRequests: ConnectionStatusInterface[];
   connectionDetails: ConnectionStatusInterface;
   pending: string;
+  privacy: PassportPrivacy;
+  blocked: PassportPrivacy;
 }
 
 export interface ConnectionStatusInterface {
@@ -228,6 +241,7 @@ export type ChannelInterface = {
   isPrivate: boolean;
   community: CommunityInterface;
   participants: PassportInterface[];
+  moderators: PassportInterface[];
 };
 
 type Interest = {
@@ -329,8 +343,6 @@ interface ShowModal {
 export type VerifyOTPInterface = { validateOtp: VerifyOTPIT };
 
 export type RefreshTokenInterface = { refreshToken: VerifyOTPIT };
-
-export type GenerateFirebaseTokenIT = { generateFirebaseToken: VerifyOTPIT };
 
 // GENERATE STREAMS TOKEN REQUEST (RESPONSE) TYPE
 export type GenerateStreamsTokenRequestInterface = {

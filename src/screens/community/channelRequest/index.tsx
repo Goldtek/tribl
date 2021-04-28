@@ -1,55 +1,68 @@
 import React, { useState, useMemo } from 'react';
-import { NavigationInterface } from '../../../../types';
+import { NavigationInterface } from '../../types';
 import { Title, Text, Divider } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlatList } from 'react-native';
 import SearchInput, { createFilter } from 'react-native-search-filter';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
-import { useThemeContext } from '../../../../../theme';
-import NotificationCard from './widget';
-import { GET_TRIBE_INVITES } from '../../../../../graphql/server/query';
-import hexToRGB from '../../../../../utils/hexToRGB';
+import { useThemeContext } from '../../../theme';
+import ChannelRequestCard from './widget';
+import { GET_CHANNEL_CREATION_REQUEST } from '../../../graphql/server/query';
+import hexToRGB from '../../../utils/hexToRGB';
 
 import { Container, TitleCover } from './styles';
 
-interface tribeRequestScreenProp extends NavigationInterface {}
+interface channelRequestScreenProp extends NavigationInterface {}
 
-export default function TribeRequestScreen(props: tribeRequestScreenProp) {
+export default function NewChannelRequestScreen(
+  props: channelRequestScreenProp
+) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const communityId = props.route?.params?.communityId;
 
   const [search, setSearch] = useState({ searchTerm: '' });
 
-  const { data: inviteData, refetch } = useQuery(GET_TRIBE_INVITES);
+  const { data: requestData, refetch } = useQuery(
+    GET_CHANNEL_CREATION_REQUEST,
+    {
+      variables: {
+        input: {
+          filter: {
+            communityId
+          }
+        }
+      }
+    }
+  );
 
-  const tribeInvites = inviteData?.communityInvites?.data;
-
+  const channelRequest = requestData?.channelCreationRequests?.data;
+  
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const KeysToFilter = [
-    'sender.firstName',
-    'sender.lastName',
+    'moderators.firstName',
+    'moderators.lastName',
+    'name',
     'community.name'
   ];
 
   const filteredWords =
-    tribeInvites &&
-    tribeInvites?.filter(createFilter(search.searchTerm, KeysToFilter));
+    channelRequest &&
+    channelRequest?.filter(createFilter(search.searchTerm, KeysToFilter));
 
-  const _renderNotification = useMemo(
+  const _renderRequestTribe = useMemo(
     () => ({ item }: { item: any }) => (
-      <NotificationCard
+      <ChannelRequestCard
         key={item.id}
         id={item.id}
-        name={item.community.name}
-        firstName={item.sender.firstName}
-        lastName={item.sender.lastName}
-        avatar={item.sender.avatar}
+        name={item.name}
+        firstName={item.moderators[0]?.firstName}
+        lastName={item.moderators[0]?.lastName}
+        avatar={item.community.avatar}
         refetch={refetch}
-        userId={item.sender.id}
-        tribeId={item.community.id}
-        createdAt={item.createdAt}
+        userId={item.moderators[0]?.id}
         {...item}
       />
     ),
@@ -60,7 +73,7 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
     <Container>
       <SearchInput
         onChangeText={searchUpdated}
-        placeholder={t(`community.notification.placeholder`)}
+        placeholder={t(`community.notification.channelPlaceholder`)}
         placeholderTextColor={colors.PRIMARY_TEXT}
         style={{
           height: RFValue(40),
@@ -86,7 +99,7 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
             paddingLeft: 15
           }}
         >
-          {t(`community.notification.tribe`)}
+          {t(`community.notification.channel`)}
         </Title>
         <Title
           style={{
@@ -99,13 +112,13 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
             paddingLeft: 5
           }}
         >
-          ({tribeInvites?.length ? tribeInvites?.length : '0'})
+          ({channelRequest?.length ? channelRequest?.length : '0'})
         </Title>
       </TitleCover>
 
       <FlatList
         data={filteredWords}
-        renderItem={_renderNotification}
+        renderItem={_renderRequestTribe}
         ItemSeparatorComponent={() => (
           <Divider
             style={{
@@ -124,7 +137,7 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
               textAlign: 'center'
             }}
           >
-            {t(`community.notification.empty`)}
+            {t(`community.invitation.channelEmpty`)}
           </Text>
         }
         showsVerticalScrollIndicator={false}

@@ -14,7 +14,7 @@ import { Cover, LeftCover, Text } from './styles';
 interface MyChannelProp extends ChannelInterface {}
 
 export default function MyChannel(props: MyChannelProp) {
-  const { name, community, id } = props;
+  const { name, community, id, moderators, isPrivate } = props;
 
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
@@ -24,7 +24,7 @@ export default function MyChannel(props: MyChannelProp) {
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
       screen: 'DeepLinkChannelChatScreen',
-      params: { channelId: id, title: `#${name}` }
+      params: { channelId: id, title: `#${name}`, moderators, isPrivate }
     });
   };
 

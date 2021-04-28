@@ -50,24 +50,14 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Play, listen and share music with your connections, and play push notification sound</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Allow Tribl to access the calendars on your device</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow Tribl to access the camera on your device</string>
-	<key>NSContactsUsageDescription</key>
-	<string>Allow Tribl to access contacts on your device</string>
+	<string>Take pictures and share them with the friends in your community</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Allow Tribl to access your location always and while using the app</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Allow Tribl to always use your location</string>
+	<string>Share your geo-location and more to connect with strangers nearby</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Tribl to access your location while using the app</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow Tribl to access the microphone on your device</string>
+	<string>Share your geo-location and more to connect with strangers nearby</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow Tribl to access the photos and media on your device</string>
+	<string>Allow access to share photos with your community</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

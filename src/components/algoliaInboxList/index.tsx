@@ -5,17 +5,23 @@ import {
 } from 'react-instantsearch-native';
 import { Divider, Text } from 'react-native-paper';
 import { FlatList } from 'react-native';
+import { useQuery } from '@apollo/react-hooks';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { RFValue } from 'react-native-responsive-fontsize';
 import hexToRGB from '../../utils/hexToRGB';
 import { useThemeContext } from '../../theme';
 import HighLight from '../algoliaInboxCard';
 import { PassportInterface } from '../../graphql/types';
+import removeDuplicateMembers from '../../utils/removeDuplicatePassports';
+import { GET_USER_PASSPORT } from '../../graphql/server/query';
 
 function AlgoliaList(props: any) {
   const { colors, fonts } = useThemeContext();
 
   const { hits, hasMore, refine, closeModal } = props;
+
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
 
   const _separator = useMemo(
     () => () => (
@@ -167,10 +173,16 @@ function AlgoliaList(props: any) {
     }
   );
 
+  const filterHits = removeDuplicateMembers(hits?.slice());
+  const filteredUsers = filterHits?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
   return (
     <Results>
       <FlatList
-        data={hits as PassportInterface[]}
+        data={filteredUsers as PassportInterface[]}
         keyExtractor={(item) => item.id}
         ItemSeparatorComponent={_separator}
         onEndReached={() => hasMore && refine()}

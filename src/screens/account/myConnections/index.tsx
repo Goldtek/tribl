@@ -11,7 +11,10 @@ import SearchInput, { createFilter } from 'react-native-search-filter';
 import { useThemeContext } from '../../../theme';
 import Header from '../../../components/header';
 import Connection from './widget';
-import { GET_MY_CONNECTIONS } from '../../../graphql/server/query';
+import {
+  GET_MY_CONNECTIONS,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
 import { TOGGLE_SIDE_MENU } from '../../../graphql/cache/mutations';
 import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/myConnectionSkeleton';
@@ -49,6 +52,8 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
     { variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } } }
   );
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+
   const { data: notificationData } = useQuery<ShowConnectionNotificationBadge>(
     GET_CONNECTION_NOTIFICATION_BADGE
   );
@@ -60,6 +65,15 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const myConnection = data?.myConnections;
 
   const filterConnections = removeDuplicateMembers(myConnection?.data?.slice());
+
+  const userDetails = userData?.myPassport;
+  const blockedUsers = userDetails?.privacy?.blocked;
+
+  const filteredUsers = filterConnections?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
 
   const _renderFooter = useCallback(
     () => (callOnScrollEnd ? <ActivityIndicator /> : null),
@@ -81,7 +95,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
 
     fetchMore({
       variables: {
-        input: { skip: filterConnections?.length, limit: PAGINATION_DEFAULT }
+        input: { skip: filteredUsers?.length, limit: PAGINATION_DEFAULT }
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         setCallOnScrollEnd(false);
@@ -106,8 +120,8 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
   const keysToFilter = ['firstName', 'lastName'];
 
   const filteredWords =
-    filterConnections &&
-    filterConnections?.filter(createFilter(search.searchTerm, keysToFilter));
+    filteredUsers &&
+    filteredUsers?.filter(createFilter(search.searchTerm, keysToFilter));
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
     <Connection key={item.id} {...item} />
@@ -186,7 +200,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           }}
         />
 
-        {filterConnections ? (
+        {filteredUsers ? (
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
@@ -201,7 +215,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
           </Title>
         ) : null}
 
-        {filterConnections ? (
+        {filteredUsers ? (
           <FlatList
             data={filteredWords}
             refreshing={refreshing}
@@ -211,7 +225,7 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
             onEndReached={() => {
               if (
                 myConnection &&
-                myConnection?.metadata.totalCount > filterConnections.length
+                myConnection?.metadata.totalCount > filteredUsers.length
               ) {
                 setCallOnScrollEnd(true);
               }

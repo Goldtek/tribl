@@ -3,16 +3,19 @@ import {
   createStackNavigator,
   TransitionPresets
 } from '@react-navigation/stack';
-import { TouchableRipple, Menu, Divider } from 'react-native-paper';
-import { Image, Platform } from 'react-native';
+import { TouchableRipple, Menu, Divider, Text } from 'react-native-paper';
+import { Image, Platform, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
+import ENVIRONMENT_VARIABLES from 'react-native-config';
 import { useThemeContext } from '../../theme';
 import InboxScreens from '../../screens/inbox';
+//@ts-ignore
+import { StreamApp } from 'expo-activity-feed';
 import AccountScreens from '../../screens/account';
 import CommunityScreens from '../../screens/community';
 import MemberDetailScreen from '../../screens/community/memberPassport';
@@ -25,6 +28,18 @@ import CommunityDetailScreen from '../../screens/community/detail';
 import AddAdminScreen from '../../screens/community/home/widget/addAdmin';
 import TribeDetailScreen from '../../screens/community/home/widget/tribeDetails';
 import { DEVICE_OS } from '../../utils/device';
+import BlockUserModal from '../../components/blockUser';
+import ReportModal from '../../components/reportModal';
+import {
+  REJECT_CONNECTION,
+  BLOCK_REPORT_USER
+} from '../../graphql/server/mutations';
+import { useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { logEvent } from '../../utils/uxcamHelper';
+import { crashlytics } from '../../firebase/config';
+import { UserPassportInterface } from '../../graphql/types';
+import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
+import { chatClient } from '../../stream/types';
 
 const DrawerStack = createStackNavigator();
 
@@ -36,6 +51,24 @@ export default function DrawerStackNavigator() {
 
   const [menu, setMenu] = useState(false);
   const showMenu = () => setMenu(!menu);
+
+  const [blockModalVisible, setBlockModalVisible] = useState(false);
+
+  const showBlockModal = () => {
+    setBlockModalVisible(!blockModalVisible);
+    setMenu(false);
+  };
+
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+
+  const showReportModal = useCallback(
+    (visible: boolean) => () => {
+      setReportModalVisible(visible);
+      setMenu(false);
+      return true;
+    },
+    []
+  );
 
   const [communityMenu, setCommunityMenu] = useState(false);
   const showCommunityMenu = () => setCommunityMenu(!communityMenu);
@@ -85,8 +118,89 @@ export default function DrawerStackNavigator() {
     setCommunityMenu(false);
   };
 
+  const ChannelRequestNavigation = (id: string) => {
+    navigation.navigate('ChannelRequestScreen', {
+      communityId: id
+    });
+    setCommunityMenu(false);
+  };
+
+  const [connectionLoading, setConnectionLoading] = useState(false);
+
+  const [id, setID] = useState('');
+
+  const [getUserPassport, { refetch }] = useLazyQuery<UserPassportInterface>(
+    GET_SINGLE_PASSPORT,
+    {
+      variables: { id }
+    }
+  );
+
+  const [declineConnection] = useMutation(REJECT_CONNECTION, {
+    variables: {
+      payload: { id: id }
+    }
+  });
+
+  const handleRemoveConnection = async (id: string) => {
+    setID(id);
+    logEvent('remove connection', {
+      from: 'Member Detail Screen'
+    });
+    setConnectionLoading(true);
+    try {
+      await declineConnection();
+      setMenu(false);
+      getUserPassport();
+      refetch();
+    } catch (error) {
+      setConnectionLoading(false);
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
+  const [block, setBlock] = useState(false);
+
+  const getBlockedDetails = (details: boolean) => {
+    setBlock(details);
+  };
+
+  enum status {
+    UNBLOCK
+  }
+
+  const note = `${t(`community.memberPassport.unblock`)} `;
+
+  const [unBlockUser, { loading: unblockLoading }] = useMutation(
+    BLOCK_REPORT_USER,
+    {
+      variables: {
+        payload: {
+          passportId: id,
+          status: status[0],
+          notes: note
+        }
+      }
+    }
+  );
+
+  const handleUnBlock = async (id: string) => {
+    setID(id);
+    try {
+      await unBlockUser();
+      setBlock(false);
+      refetch();
+    } catch (error) {
+      crashlytics.recordError(error);
+    }
+  };
+
   return (
-    <DrawerStack.Navigator screenOptions={{ headerShown: false }}>
+    <DrawerStack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
       <DrawerStack.Screen
         name="ConnectionRequest"
         component={AccountScreens.ConnectionRequestScreen}
@@ -97,10 +211,23 @@ export default function DrawerStackNavigator() {
         component={AccountScreens.MyConnectionScreen}
       />
 
-      <DrawerStack.Screen
-        name="MyNotifications"
-        component={AccountScreens.NotificationScreen}
-      />
+      <DrawerStack.Screen name="MyNotifications">
+        {(props) => (
+          <StreamApp
+            userId={chatClient.user?.id}
+            token={chatClient.tokenManager.token}
+            appId={ENVIRONMENT_VARIABLES.TRIBL_STREAM_APP_ID}
+            apiKey={ENVIRONMENT_VARIABLES.TRIBL_STREAM_API_KEY}
+            defaultUserData={{
+              name: chatClient.user?.name,
+              coverImage: chatClient.user?.image,
+              profileImage: chatClient.user?.image
+            }}
+          >
+            <AccountScreens.NotificationScreen {...props} />
+          </StreamApp>
+        )}
+      </DrawerStack.Screen>
 
       <DrawerStack.Screen
         name="SelectGroupParticipantsScreen"
@@ -123,6 +250,11 @@ export default function DrawerStackNavigator() {
       />
 
       <DrawerStack.Screen
+        name="CreateChannelParticipant"
+        component={InboxScreens.CreateChannelParticipant}
+      />
+
+      <DrawerStack.Screen
         name="DeepLinkDirectChatScreen"
         component={InboxScreens.DeepLinkDirectChatScreen}
       />
@@ -138,7 +270,9 @@ export default function DrawerStackNavigator() {
         options={{
           headerShown: true,
           headerTitle: 'Thread',
-          headerStyle: { height: RFValue(90) },
+          headerStyle: {
+            height: RFValue(90)
+          },
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -189,6 +323,16 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="GroupInformationScreen"
         component={InboxScreens.GroupInformationScreen}
+      />
+
+      <DrawerStack.Screen
+        name="CreateChannelTribeScreen"
+        component={InboxScreens.CreateChannelTribeScreen}
+      />
+
+      <DrawerStack.Screen
+        name="CreateChannelNameScreen"
+        component={InboxScreens.CreateChannelNameScreen}
       />
 
       <DrawerStack.Screen
@@ -303,103 +447,240 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="MemberDetailScreen"
         component={MemberDetailScreen}
-        options={({ route }: any) => ({
-          headerShown: true,
-          headerTitle: () => null,
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerTitleContainerStyle: {
-            flex: 1,
-            paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
-          },
-          headerRight: () => (
-            <Menu
-              visible={menu}
-              onDismiss={showMenu}
-              anchor={
-                <TouchableRipple
-                  rippleColor={colors.PRIMARY}
-                  onPress={showMenu}
+        options={({ route }: any) => {
+          setID(route?.params?.details.id);
+          return {
+            headerShown: true,
+            headerTitle: () => null,
+            headerTitleStyle: {
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              textTransform: 'capitalize'
+            },
+            headerTitleContainerStyle: {
+              flex: 1,
+              paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
+            },
+            headerRight: () => (
+              <Fragment>
+                <Menu
+                  visible={menu}
+                  onDismiss={showMenu}
+                  anchor={
+                    <TouchableRipple
+                      rippleColor={colors.PRIMARY}
+                      onPress={showMenu}
+                      style={{
+                        padding: RFValue(3),
+                        paddingTop: RFValue(6),
+                        paddingBottom: RFValue(6),
+                        backgroundColor: menu ? colors.PRIMARY : 'transparent',
+                        borderRadius: 4,
+                        borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
+                        borderWidth: 1
+                      }}
+                    >
+                      <Entypo
+                        name="dots-three-vertical"
+                        color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
+                        size={20}
+                      />
+                    </TouchableRipple>
+                  }
+                  contentStyle={{
+                    right: 10,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    overflow: Platform.select({
+                      android: 'hidden'
+                    })
+                  }}
                   style={{
-                    padding: RFValue(3),
-                    paddingTop: RFValue(6),
-                    paddingBottom: RFValue(6),
-                    backgroundColor: menu ? colors.PRIMARY : 'transparent',
-                    borderRadius: 4,
-                    borderColor: menu ? colors.PRIMARY : colors.INACTIVE,
-                    borderWidth: 1
+                    top: RFValue(getMenuHeight())
                   }}
                 >
-                  <Entypo
-                    name="dots-three-vertical"
-                    color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
-                    size={20}
+                  <Menu.Item
+                    onPress={
+                      block
+                        ? () => handleUnBlock(route?.params?.details.id)
+                        : showBlockModal
+                    }
+                    title={
+                      <Fragment>
+                        {unblockLoading ? (
+                          <ActivityIndicator
+                            size="small"
+                            color={colors.PRIMARY}
+                            style={{
+                              marginLeft: 'auto',
+                              marginRight: RFValue(5)
+                            }}
+                          />
+                        ) : null}
+                        <Text style={{ textAlign: 'center' }}>
+                          {block
+                            ? t(`community.memberPassport.unblock`)
+                            : t(`community.memberPassport.block`)}
+                        </Text>
+                      </Fragment>
+                    }
+                    style={{
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.RED,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
                   />
-                </TouchableRipple>
-              }
-              contentStyle={{
-                right: 10,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                paddingTop: 0,
-                paddingBottom: 0,
-                overflow: Platform.select({ android: 'hidden' })
-              }}
-              style={{ top: RFValue(getMenuHeight()) }}
-            >
-              <Menu.Item
-                onPress={() => inviteTribeNavigation(route?.params?.details.id)}
-                title={t(`community.invitation.inviteTribe`)}
-                style={{
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textAlign: 'center',
-                  textTransform: 'capitalize'
-                }}
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() =>
-                  inviteChannelNavigation(route?.params?.details.id)
-                }
-                title={t(`community.invitation.inviteChannel`)}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
-                titleStyle={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  color: colors.PRIMARY_TEXT,
-                  textAlign: 'center',
-                  textTransform: 'capitalize'
-                }}
-              />
-            </Menu>
-          ),
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
-          headerLeftContainerStyle: { paddingLeft: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
-        })}
+                  <Divider />
+                  <Menu.Item
+                    onPress={showReportModal(true)}
+                    title={t(`community.memberPassport.report`)}
+                    style={{
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.RED,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                  {route?.params?.details?.connectionDetails?.status ===
+                  'ACCEPTED' ? (
+                    <Fragment>
+                      <Divider />
+                      <Menu.Item
+                        onPress={() =>
+                          handleRemoveConnection(route?.params?.details.id)
+                        }
+                        title={
+                          <Fragment>
+                            {connectionLoading ? (
+                              <ActivityIndicator
+                                size="small"
+                                color={colors.RED}
+                                style={{
+                                  marginLeft: 'auto',
+                                  marginRight: RFValue(5)
+                                }}
+                              />
+                            ) : null}
+                            <Text>
+                              {t(`community.memberPassport.removeConnection`)}
+                            </Text>
+                          </Fragment>
+                        }
+                        style={{
+                          borderTopLeftRadius: 20,
+                          borderTopRightRadius: 20,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                        titleStyle={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.PRIMARY_TEXT,
+                          textAlign: 'center',
+                          textTransform: 'capitalize'
+                        }}
+                      />
+                    </Fragment>
+                  ) : null}
+
+                  <Divider />
+
+                  <Menu.Item
+                    onPress={() =>
+                      inviteTribeNavigation(route?.params?.details.id)
+                    }
+                    title={t(`community.invitation.inviteTribe`)}
+                    style={{
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.PRIMARY_TEXT,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                  <Divider />
+                  <Menu.Item
+                    onPress={() =>
+                      inviteChannelNavigation(route?.params?.details.id)
+                    }
+                    title={t(`community.invitation.inviteChannel`)}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}
+                    titleStyle={{
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      color: colors.PRIMARY_TEXT,
+                      textAlign: 'center',
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                </Menu>
+                <BlockUserModal
+                  refetch={refetch}
+                  data={route?.params}
+                  blockModalVisible={blockModalVisible}
+                  closeModal={showBlockModal}
+                  getBlockedDetails={getBlockedDetails}
+                />
+                <ReportModal
+                  data={route?.params}
+                  closeReportModal={showReportModal(false)}
+                  isVisible={reportModalVisible}
+                />
+              </Fragment>
+            ),
+            headerBackTitleVisible: false,
+            headerTintColor: colors.PRIMARY,
+            headerRightContainerStyle: {
+              marginRight: 10
+            },
+            headerLeftContainerStyle: {
+              paddingLeft: 10
+            },
+            headerStyle: GLOBAL_HEADER_STYLE
+          };
+        }}
       />
 
       <DrawerStack.Screen
@@ -441,9 +722,13 @@ export default function DrawerStackNavigator() {
                   borderTopRightRadius: 20,
                   paddingTop: 0,
                   paddingBottom: 0,
-                  overflow: Platform.select({ android: 'hidden' })
+                  overflow: Platform.select({
+                    android: 'hidden'
+                  })
                 }}
-                style={{ top: RFValue(getMenuHeight()) }}
+                style={{
+                  top: RFValue(getMenuHeight())
+                }}
               >
                 <Menu.Item
                   //@ts-ignore
@@ -503,6 +788,35 @@ export default function DrawerStackNavigator() {
                     </Fragment>
                   ) : null
                 }
+                {
+                  //@ts-ignore
+                  route?.params?.details?.isModerator ? (
+                    <Fragment>
+                      <Divider />
+                      <Menu.Item
+                        onPress={() =>
+                          //@ts-ignore
+                          ChannelRequestNavigation(route.params?.details?.id)
+                        }
+                        title={t(`community.recommended.newChannelRequest`)}
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                        titleStyle={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.PRIMARY_TEXT,
+                          textAlign: 'center',
+                          textTransform: 'capitalize'
+                        }}
+                      />
+                    </Fragment>
+                  ) : null
+                }
               </Menu>
             ) : null,
           headerTitleStyle: {
@@ -516,7 +830,9 @@ export default function DrawerStackNavigator() {
           },
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -571,7 +887,9 @@ export default function DrawerStackNavigator() {
           return {
             headerShown: true,
             headerBackTitleVisible: false,
-            headerStyle: { height: RFValue(90) },
+            headerStyle: {
+              height: RFValue(90)
+            },
             headerTitleStyle: {
               color: colors.PRIMARY_TEXT,
               fontSize: RFValue(fonts.LARGE_SIZE),
@@ -609,7 +927,9 @@ export default function DrawerStackNavigator() {
           return {
             headerShown: true,
             headerBackTitleVisible: false,
-            headerStyle: { height: RFValue(90) },
+            headerStyle: {
+              height: RFValue(90)
+            },
             headerTitleStyle: {
               color: colors.PRIMARY_TEXT,
               fontSize: RFValue(fonts.LARGE_SIZE),
@@ -649,7 +969,9 @@ export default function DrawerStackNavigator() {
           headerTitleAlign: 'left',
           headerTitle: route.params.title,
           headerBackTitleVisible: false,
-          headerStyle: { height: RFValue(90) },
+          headerStyle: {
+            height: RFValue(90)
+          },
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -685,7 +1007,9 @@ export default function DrawerStackNavigator() {
           headerTitleAlign: 'left',
           headerTitle: route.params.title,
           headerBackTitleVisible: false,
-          headerStyle: { height: RFValue(90) },
+          headerStyle: {
+            height: RFValue(90)
+          },
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
@@ -730,8 +1054,12 @@ export default function DrawerStackNavigator() {
           ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerTitleContainerStyle: { alignItems: 'center' },
-          headerLeftContainerStyle: { marginLeft: 5 }
+          headerTitleContainerStyle: {
+            alignItems: 'center'
+          },
+          headerLeftContainerStyle: {
+            marginLeft: 5
+          }
         }}
       />
 
@@ -743,7 +1071,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -756,7 +1086,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -769,7 +1101,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -782,7 +1116,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
@@ -795,7 +1131,9 @@ export default function DrawerStackNavigator() {
           headerTitle: () => null,
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
-          headerRightContainerStyle: { marginRight: 10 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />

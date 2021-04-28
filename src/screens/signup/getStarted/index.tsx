@@ -1,14 +1,12 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, useRef, Fragment, useEffect } from 'react';
+import { Image, TouchableOpacity } from 'react-native';
 import {
-  Image,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Title, Subheading, Paragraph } from 'react-native-paper';
+  SafeAreaView,
+  useSafeAreaInsets
+} from 'react-native-safe-area-context';
+import { Title, Subheading, Paragraph, IconButton } from 'react-native-paper';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
@@ -21,13 +19,21 @@ import countriesDB from '../../../libs/countries';
 import { GET_USER_DETAILS } from '../../../graphql/cache/query';
 import { ADD_USER_DETAILS } from '../../../graphql/cache/mutations';
 import { SEND_USER_OTP } from '../../../graphql/server/mutations';
+import { Modalize } from 'react-native-modalize';
+import { Portal } from 'react-native-portalize';
+import HTML from 'react-native-render-html';
 import {
   StoreInterface,
   OTPInterface,
   VerifyOTPIT
 } from '../../../graphql/types';
-import { DEVICE_OS, DEVICE_ID, APP_VERSION } from '../../../utils/device';
+import {
+  DEVICE_ID,
+  APP_VERSION,
+  DEVICE_FULL_WIDTH
+} from '../../../utils/device';
 import GradientButton from '../../../components/gradientButton';
+import { htmlContent } from './licence';
 import {
   tagScreenName,
   logEvent,
@@ -37,6 +43,7 @@ import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
+import hexToRGB from '../../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -46,19 +53,31 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
   const { data } = useQuery<StoreInterface>(GET_USER_DETAILS);
   const { colors, fonts } = useThemeContext();
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   changeNavigationBarColor(colors.WHITE, true, true);
 
+  const modalizeRef = useRef<Modalize>(null);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const openModal = () => modalizeRef.current?.open();
+  const closeModal = () => modalizeRef.current?.close();
+  const [licenceAccepted, setLicenceAccepted] = useState(false);
+
   useEffect(() => {
+    checkUserLicenceAgreement();
     tagScreenName('GetStartedScreen');
     logEvent('get started', { from: 'signup' });
   }, []);
 
+  const checkUserLicenceAgreement = async () => {
+    const value = await Storage.checkEULA();
+    setLicenceAccepted(Boolean(Number(!!value)));
+  };
+
   const userDetails = data?.userDetails;
 
   const country = countriesDB.getCountry(userDetails?.countryCode);
-
-  const [phoneNumber, setPhoneNumber] = useState('');
 
   const onChangeText = (phoneNumber: string) => setPhoneNumber(phoneNumber);
 
@@ -70,11 +89,12 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     variables: { details: { phoneNumber: phoneNumber } }
   });
 
-  const handleInputError = () => {
-    Toast.show(t(`signup.getStartedScreen.inputError`));
+  const handleInputError = (error: string = 'inputError') => {
+    Toast.show(t(`signup.getStartedScreen.${error}`));
   };
 
   const handleSubmit = async () => {
+    if (!licenceAccepted) return openModal();
     if (!phoneNumber) return handleInputError();
 
     try {
@@ -93,6 +113,19 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     }
   };
 
+  useEffect(() => {
+    if (licenceAccepted && phoneNumber && isSubmit) {
+      closeModal();
+      handleSubmit();
+    }
+  }, [licenceAccepted, phoneNumber, isSubmit]);
+
+  const handleAccept = async () => {
+    await Storage.setEULA();
+    setIsSubmit(true);
+    setLicenceAccepted(true);
+  };
+
   return (
     <SafeAreaView
       style={{
@@ -101,107 +134,203 @@ export default function getStartedScreenScreen(props: ScreenProp) {
         backgroundColor: colors.WHITE
       }}
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1, padding: 20 }}
-        behavior={DEVICE_OS === 'ios' ? 'padding' : 'height'}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <Fragment>
-            <Container
+      <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, padding: 20 }}>
+        <Fragment>
+          <Container
+            style={{
+              height: '40%',
+              justifyContent: 'flex-start',
+              alignItems: 'flex-start'
+            }}
+          >
+            <Image
+              source={require('../../../../assets/images/icon.png')}
               style={{
-                height: '40%',
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start'
+                resizeMode: 'contain',
+                width: RFValue(60),
+                height: RFValue(60)
+              }}
+            />
+          </Container>
+
+          <Container style={{ flex: 1, paddingTop: RFValue(20) }}>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                lineHeight: RFValue(30)
               }}
             >
-              <Image
-                source={require('../../../../assets/images/icon.png')}
-                style={{
-                  resizeMode: 'contain',
-                  width: RFValue(60),
-                  height: RFValue(60)
-                }}
-              />
-            </Container>
+              {t(`signup.getStartedScreen.title`)}
+            </Title>
+            <Subheading
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.SECONDARY_TEXT
+              }}
+            >
+              {t(`signup.getStartedScreen.subTitle`)}
+            </Subheading>
+            <Paragraph
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'uppercase',
+                marginTop: 30
+              }}
+            >
+              {t(`signup.getStartedScreen.mobileNumber`)}
+            </Paragraph>
 
-            <Container style={{ flex: 1, paddingTop: RFValue(20) }}>
-              <Title
+            <Input
+              placeholder={t(`signup.getStartedScreen.placeholder`)}
+              defaultValue={country?.phoneCode}
+              onChangeText={onChangeText}
+              keyboardType="phone-pad"
+              returnKeyType="done"
+            >
+              <TouchableOpacity
+                ref={hideSensitiveView}
+                onPress={() => navigation.navigate('SelectCountryScreen')}
                 style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  lineHeight: RFValue(30)
+                  height: '100%',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingLeft: 15
                 }}
               >
-                {t(`signup.getStartedScreen.title`)}
-              </Title>
-              <Subheading
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.SECONDARY_TEXT
-                }}
-              >
-                {t(`signup.getStartedScreen.subTitle`)}
-              </Subheading>
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase',
-                  marginTop: 30
-                }}
-              >
-                {t(`signup.getStartedScreen.mobileNumber`)}
-              </Paragraph>
+                <Fragment>
+                  <Paragraph
+                    style={{
+                      fontSize: RFValue(fonts.LARGE_SIZE)
+                    }}
+                  >
+                    {country?.emoji}
+                  </Paragraph>
+                  <Container
+                    style={{
+                      height: RFValue(30),
+                      margin: RFValue(10),
+                      borderWidth: 0.7,
+                      borderColor: colors.INACTIVE
+                    }}
+                  />
+                </Fragment>
+              </TouchableOpacity>
+            </Input>
 
-              <Input
-                placeholder={t(`signup.getStartedScreen.placeholder`)}
-                defaultValue={country?.phoneCode}
-                onChangeText={onChangeText}
-                keyboardType="phone-pad"
-                returnKeyType="done"
-              >
-                <TouchableOpacity
-                  ref={hideSensitiveView}
-                  onPress={() => navigation.navigate('SelectCountryScreen')}
+            <GradientButton loading={loading} onPress={handleSubmit}>
+              {t(`signup.getStartedScreen.${loading ? 'loading' : 'submit'}`)}
+            </GradientButton>
+          </Container>
+
+          <Portal>
+            <Modalize
+              ref={modalizeRef}
+              modalStyle={{ marginTop: RFValue(80) }}
+              scrollViewProps={{
+                style: { flex: 1 },
+                contentContainerStyle: {
+                  paddingHorizontal: RFValue(10),
+                  paddingBottom: RFValue(
+                    insets.bottom > 0 ? insets.bottom * 2 : 20 * 2
+                  )
+                }
+              }}
+              HeaderComponent={
+                <Container
                   style={{
-                    height: '100%',
                     flexDirection: 'row',
+                    borderBottomWidth: 1,
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingLeft: 15
+                    padding: RFValue(10),
+                    justifyContent: 'space-between',
+                    borderBottomColor: colors.DISABLED
                   }}
                 >
-                  <Fragment>
-                    <Paragraph
+                  <Container
+                    style={{ flexDirection: 'row', alignItems: 'center' }}
+                  >
+                    <IconButton
+                      borderless
+                      icon="close"
+                      size={RFValue(20)}
+                      color={colors.RED}
+                      onPress={closeModal}
+                      style={{ backgroundColor: hexToRGB(colors.RED, 0.3) }}
+                    />
+                    <Title
                       style={{
-                        fontSize: RFValue(fonts.LARGE_SIZE)
+                        color: colors.PRIMARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(Math.ceil(fonts.MEDIUM_SIZE))
                       }}
                     >
-                      {country?.emoji}
-                    </Paragraph>
-                    <Container
-                      style={{
-                        height: RFValue(30),
-                        margin: RFValue(10),
-                        borderWidth: 0.7,
-                        borderColor: colors.INACTIVE
-                      }}
-                    />
-                  </Fragment>
-                </TouchableOpacity>
-              </Input>
+                      {t(`signup.getStartedScreen.decline`)}
+                    </Title>
+                  </Container>
 
-              <GradientButton loading={loading} onPress={handleSubmit}>
-                {t(`signup.getStartedScreen.${loading ? 'loading' : 'submit'}`)}
-              </GradientButton>
-            </Container>
-          </Fragment>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+                  <Title
+                    style={{
+                      lineHeight: RFValue(30),
+                      color: colors.PRIMARY_TEXT,
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE - 2))
+                    }}
+                  >
+                    {t(`signup.getStartedScreen.EULA`)}
+                  </Title>
+                  <Container
+                    style={{ flexDirection: 'row', alignItems: 'center' }}
+                  >
+                    <Title
+                      style={{
+                        color: colors.PRIMARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(Math.ceil(fonts.MEDIUM_SIZE))
+                      }}
+                    >
+                      {t(`signup.getStartedScreen.accept`)}
+                    </Title>
+                    <IconButton
+                      borderless
+                      icon="check"
+                      size={RFValue(20)}
+                      color={colors.ONLINE}
+                      onPress={handleAccept}
+                      style={{ backgroundColor: hexToRGB(colors.ONLINE, 0.3) }}
+                    />
+                  </Container>
+                </Container>
+              }
+            >
+              <HTML
+                source={{ html: htmlContent }}
+                classesStyles={{
+                  agreement_md: {
+                    color: 'teal',
+                    fontWeight: '800',
+                    marginTop: RFValue(20)
+                  }
+                }}
+                tagsStyles={{
+                  h1: {
+                    fontWeight: 'bold',
+                    fontSize: RFValue(24),
+                    lineHeight: RFValue(30),
+                    marginVertical: RFValue(10)
+                  }
+                }}
+              />
+            </Modalize>
+          </Portal>
+        </Fragment>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

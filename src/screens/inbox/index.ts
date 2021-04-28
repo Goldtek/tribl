@@ -15,6 +15,9 @@ import InvitationToChannelScreen from './invitationToChannel';
 import DirectMessageInformation from './directMessageInformation';
 import SelectGroupParticipantsScreen from './selectGroupParticipants';
 import InviteToChannelFromProfileScreen from './inviteToChannelFromProfile';
+import CreateChannelTribeScreen from './createChannelTribe';
+import CreateChannelNameScreen from './createChannelName';
+import CreateChannelParticipant from './createChannelParticipant';
 
 export default {
   InboxScreen,
@@ -33,5 +36,8 @@ export default {
   DirectMessageInformation,
   InvitationToChannelScreen,
   SelectGroupParticipantsScreen,
-  InviteToChannelFromProfileScreen
+  InviteToChannelFromProfileScreen,
+  CreateChannelTribeScreen,
+  CreateChannelNameScreen,
+  CreateChannelParticipant
 };

@@ -173,8 +173,8 @@ function StreamInputBox(props: InputProps) {
   };
 
   const trackDirectMessages = () => {
-    const member = Object.values(channel.state.members).find(
-      ({ user }) => user?.id !== chatClient.user?.id
+    const member = Object?.values(channel?.state?.members).find(
+      ({ user }) => user?.id !== chatClient?.user?.id
     );
 
     if (activityScreen === 'directMessage') {
