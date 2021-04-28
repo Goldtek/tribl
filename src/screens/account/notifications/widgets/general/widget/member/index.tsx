@@ -13,7 +13,8 @@ import {
 } from '../../../../../../../graphql/types';
 import { GET_COMMUNITY_MEMBER_PASSPORT } from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
-import { fireAuth, crashlytics } from '../../../../../../../firebase/config';
+import { crashlytics } from '../../../../../../../firebase/config';
+import { chatClient } from '../../../../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -27,7 +28,7 @@ function TribeRequest(props: TribeRequestprop) {
 
   const { avatar, firstName, lastName, id, currentLocation } = props;
 
-  if (id === fireAuth.currentUser?.uid) return null;
+  if (id === chatClient.user?.id) return null;
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }

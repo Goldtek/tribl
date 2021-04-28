@@ -330,8 +330,6 @@ export type VerifyOTPInterface = { validateOtp: VerifyOTPIT };
 
 export type RefreshTokenInterface = { refreshToken: VerifyOTPIT };
 
-export type GenerateFirebaseTokenIT = { generateFirebaseToken: VerifyOTPIT };
-
 // GENERATE STREAMS TOKEN REQUEST (RESPONSE) TYPE
 export type GenerateStreamsTokenRequestInterface = {
   generateStreamsToken: VerifyOTPIT;

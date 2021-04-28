@@ -30,17 +30,11 @@ import {
   GET_POPULAR_COMMUNITIES,
   GET_RECOMMENDED_COMMUNITIES,
   GET_RECOMMENDED_MEMBERS,
-  USER_CHANNELS,
-  GET_FIREBASE_TOKEN
+  USER_CHANNELS
 } from '../../graphql/server/query';
-import {
-  GenerateFirebaseTokenIT,
-  MyPassportInterface,
-  PassportInterface
-} from '../../graphql/types';
+import { MyPassportInterface, PassportInterface } from '../../graphql/types';
 import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
-import Firechat from '../../firebase';
 import {
   CHANGE_ACTIVE_SIDE_MENU_STATE,
   CHANGE_CONNECTION_NOTIFICATION_BADGE
@@ -126,10 +120,6 @@ export default function PassportScreen(props: ScreenProp) {
   );
 
   const [changeSideMenuState] = useMutation(CHANGE_ACTIVE_SIDE_MENU_STATE);
-
-  const { data: firebase, loading: firebaseLoading } = useQuery<
-    GenerateFirebaseTokenIT
-  >(GET_FIREBASE_TOKEN);
 
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
@@ -274,13 +264,6 @@ export default function PassportScreen(props: ScreenProp) {
     getAllMembers();
     getMyChannels();
   }, []);
-
-  useEffect(() => {
-    if (firebase?.generateFirebaseToken) {
-      Storage.setUserCredentials(firebase?.generateFirebaseToken);
-      Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
-    }
-  }, [firebaseLoading]);
 
   useEffect(() => {
     setTimeout(() => {

@@ -2197,35 +2197,25 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-5.0.11.tgz#dbeb2d1b2452607926407c99e4de59c7db9e3019"
   integrity sha512-eboJwbDQjP1qJP3LFzVspgh88IGNF07S2qpU296j+4kL0inVuL+HXs81SuczMGtJmDZ4u19RNEBVq79of/h+jQ==
 
-"@react-native-firebase/app@^11.1.1":
-  version "11.1.2"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-11.1.2.tgz#b3497c2c242b560f80d168e48cf4dccc6fd54819"
-  integrity sha512-b9FaFu+o3cqpAHF+KCAUMgoREloByQKUudPERmeO31fXvYP74mvZ0ed+KPHR58+Z/eaJ7pRHWH1nMR7X4nKRUQ==
+"@react-native-firebase/app@^11.1.2":
+  version "11.3.3"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-11.3.3.tgz#cd6c4a9f69133ff0c4ecbb1f4322d421dd5ebcf5"
+  integrity sha512-bptZVXzI3GgPdjR2WKdpLr5zJS9TgyQcHxsO4RChykUsZYVe4PAI/AGDTd8e1w6JqMsABaVlY+nosnQv6Ye3vQ==
   dependencies:
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/auth@^11.1.1":
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-11.1.1.tgz#3dde387cc14c1d5e552ba0180c04bb7dc90b593f"
-  integrity sha512-TU13JKeCs35KRzPh6dB11G/KPwOgfdh6ZhgaWwNb1O1SfHcyx7w0AFiBA7etw6gY2iaDzcR6XFwGG9ztogqkRg==
-
-"@react-native-firebase/crashlytics@^11.1.1":
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-11.1.1.tgz#fee946f3396d594c1b4f3c90638d0e49a60136aa"
-  integrity sha512-4hp6zAUr6oRqMBWDRQ9IFN91AM7rBxQk//Z28N3v+Fk8ptPHaoDjZ+1/deA67YfIRn74Hc18Oh+3Fcd87ZKACA==
+"@react-native-firebase/crashlytics@^11.1.2":
+  version "11.3.3"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-11.3.3.tgz#1c791d1ff7b415ffe4f2bc9ea3c280038911fa16"
+  integrity sha512-0XeR80OL01EEhACwIQOm4EYEkL6fPCmJE45GMu/BfTqxCaT/+PhqRZjNAZhFHX7fMPopfXOFd4rUBfl7wqOw3g==
   dependencies:
     stacktrace-js "^2.0.0"
 
-"@react-native-firebase/firestore@^11.1.1":
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-11.1.1.tgz#1a29e709a5bfeb476640f2922c6e6dc29c0b19e1"
-  integrity sha512-jAjg/7yASS0t4xKB9gFTAHRIiW5seLta3+zyWh204KEP+XWxpJ+Q/sGawbZmLxMHVApgJcPmP2FDOIe7TAs33w==
-
-"@react-native-firebase/messaging@^11.1.1":
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-11.1.1.tgz#e495fd2b25a33c064061077377ef7fa48de49e01"
-  integrity sha512-56iVLG1zB9Z+EHuKMFE6xbYg2oCDSZrdrEtGJXURI5zQ484SsJr1uxwXeFBiuydxn5IyCxXyP/0oN9jq3kzQaQ==
+"@react-native-firebase/messaging@^11.1.2":
+  version "11.3.3"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-11.3.3.tgz#63d8969875b5d1f5c5ea08c946d7bdc9ae814f97"
+  integrity sha512-D6t9fO4AYXSfuzZcRtc6Webxp6/oO3HRbF4gQzOmYJb8XDGXyA4A6CQCDtBCO/rY8bJSkzI+CcHK0hfSuePfCA==
 
 "@react-navigation/core@^5.15.2":
   version "5.15.2"

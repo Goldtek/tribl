@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { connectHighlight } from 'react-instantsearch-native';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
@@ -7,12 +7,9 @@ import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
 import { rootNavigator } from '../../constants';
 import { PassportInterface } from '../../graphql/types';
-import { OnlinePresence } from '../../screens/inbox/types';
-import formatMessageTime from '../../utils/timesince';
 import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
-import Firechat from '../../firebase';
-import { fireAuth } from '../../firebase/config';
 import { useLazyQuery } from '@apollo/react-hooks';
+import { chatClient } from '../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, Container } from './style';
@@ -32,7 +29,7 @@ const Highlight = (props: HighlightProp) => {
     hit
   });
 
-  const userId = fireAuth.currentUser?.uid;
+  const userId = chatClient.user?.id;
 
   const { colors, fonts } = useThemeContext();
 
