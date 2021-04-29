@@ -4,6 +4,7 @@ import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView, FlatList } from 'react-native';
 import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { useIsFocused } from '@react-navigation/native';
 import { useMutation, useQuery, useLazyQuery } from '@apollo/react-hooks';
 // @ts-ignore
 import SingleImage from '../../../libs/react-native-zoom-lightbox';
@@ -64,6 +65,7 @@ interface MemberDetailProps extends NavigationInterface {
 
 export default function PassportDetail(props: MemberDetailProps) {
   const { navigation } = props;
+  const isFocused = useIsFocused();
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
@@ -96,14 +98,6 @@ export default function PassportDetail(props: MemberDetailProps) {
     SinglePassportRequestInterface
   >(GET_MEMBER_PASSPORT, { variables: { id: passport.id } });
 
-  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
-
-  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
-
   const singlePassport = passportData?.singlePassport;
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
@@ -112,7 +106,6 @@ export default function PassportDetail(props: MemberDetailProps) {
   );
   const channels = filteredChannels?.slice(0, 10);
 
-  const [blocked, setBlock] = useState(data?.blocked?.blocked);
   const note = `${firstName} ${t(
     `community.memberPassport.unblock`
   )} ${firstName}`;
@@ -120,35 +113,6 @@ export default function PassportDetail(props: MemberDetailProps) {
   enum status {
     UNBLOCK
   }
-
-  const [unBlockUser, { loading: unblockLoading }] = useMutation(
-    BLOCK_REPORT_USER,
-    {
-      variables: {
-        payload: {
-          passportId: passport?.id,
-          status: status[0],
-          notes: note
-        }
-      }
-    }
-  );
-
-  const handleUnBlock = async () => {
-    try {
-      Mixpanel.track('UnBlock User', {
-        info: `UnBlock ${firstName}`,
-        'Activity Screen': 'Community Screen'
-      });
-      await unBlockUser();
-      refetch();
-      setBlock([]);
-      getRecommendedMembers();
-      getNearbyMembers();
-    } catch (error) {
-      crashlytics.recordError(error);
-    }
-  };
 
   useEffect(() => {
     if (singlePassport?.id) {
@@ -169,6 +133,10 @@ export default function PassportDetail(props: MemberDetailProps) {
     tagScreenName('MemberPassportScreen');
     logEvent('view member passport', { from: 'passport' });
   }, []);
+
+  useEffect(() => {
+    singlePassport && refetch();
+  }, [isFocused]);
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
