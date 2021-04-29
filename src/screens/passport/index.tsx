@@ -850,7 +850,7 @@ export default function PassportScreen(props: ScreenProp) {
                   }}
                   onPress={onShare}
                 >
-                  {t(`community.passport.share`)}
+                  {t(`community.passport.shareInvite`)}
                 </Button>
                 {/* <Button
                   onPress={triblPay ? handleViewWallet : handleActivateWallet}
