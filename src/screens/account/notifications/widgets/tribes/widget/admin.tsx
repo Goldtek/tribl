@@ -8,7 +8,7 @@ export default function Admin() {
   const AdminCustomActivity = (props: any) => {
     if (
       props?.activity?.isAdmin == true &&
-      props?.activity?.activityType === 'COMMUNITY'
+      props?.activity?.tab === 'COMMUNITY'
     ) {
       return (
         <Activity

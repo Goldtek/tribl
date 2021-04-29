@@ -6,7 +6,7 @@ import { chatClient } from '../../../../../../stream/types';
 
 export default function General() {
   const CustomActivity = (props: any) => {
-    if (props?.activity?.activityType === 'COMMUNITY') {
+    if (props?.activity?.tab === 'COMMUNITY') {
       return (
         <Activity
           {...props}

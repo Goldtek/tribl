@@ -21,7 +21,7 @@ export default function ConnectionSlide(props: ConnectionSlideProp) {
   }, []);
 
   const CustomActivity = (props: any) => {
-    if (props?.activity?.activityType === 'CONNECTION') {
+    if (props?.activity?.tab === 'CONNECTION') {
       return (
         <Activity
           {...props}
