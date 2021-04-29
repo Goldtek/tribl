@@ -91,6 +91,7 @@
     "community": "community",
     "chat": "chat",
     "request": "connection requests",
+    "communityRequest": "tribe requests",
     "connection": "my connections",
     "userConnection": "connections",
     "notification": "notifications",
@@ -229,7 +230,9 @@
     "tribes": "tribes",
     "connections": "connections",
     "adminTribe": "admin tribes",
-    "cancel": "cancel"
+    "cancel": "cancel",
+    "communityInvite": "tribe invite",
+    "communityRequest": "new tribe request"
   },
   "invitation": {
     "title": "Invite friends to community",
@@ -265,6 +268,7 @@
     "subTitle": "Use your passport to connect & engage.",
     "addInterest": "Add interest",
     "share": "share passport",
+    "shareInvite": "share invite",
     "activate": "activate wallet",
     "step": "step",
     "steps": "steps",
