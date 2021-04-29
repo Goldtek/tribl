@@ -3,17 +3,13 @@ import { Text, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
-//@ts-ignore
-import { FlatFeed, Activity } from 'expo-activity-feed';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { FontAwesome } from '@expo/vector-icons';
 import { useQuery } from '@apollo/react-hooks';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
-import { chatClient } from '../../../../../stream/types';
 import { GET_USER_PASSPORT } from '../../../../../graphql/server/query';
 import GradientButton from '../../../../../components/gradientButton';
-import ActivityCard from '../activityCard';
 import GeneralFeed from './widget/general';
 import AdminFeed from './widget/admin';
 
@@ -28,53 +24,6 @@ export default function TribeScreen(props: tribeScreenProp) {
   const [search, setSearch] = useState({ searchTerm: '' });
   const [modalVisible, setModalVisible] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-
-  const CustomActivity = (props: any) => {
-    if (props?.activity?.activityType === 'COMMUNITY') {
-      return (
-        <Activity
-          {...props}
-          Header={null}
-          Content={
-            <ActivityCard
-              activityType={props?.activity?.activityType}
-              userAvatar={props?.activity?.passport?.avatar}
-              tribeAvatar={props?.activity?.community?.avatar}
-              message={props.activity.message}
-              timeStamp={props.activity.time}
-            />
-          }
-        />
-      );
-    } else {
-      return null;
-    }
-  };
-
-  const AdminCustomActivity = (props: any) => {
-    if (
-      props?.activity?.isAdmin == true &&
-      props?.activity?.activityType === 'COMMUNITY'
-    ) {
-      return (
-        <Activity
-          {...props}
-          Header={null}
-          Content={
-            <ActivityCard
-              activityType={props?.activity?.activityType}
-              userAvatar={props?.activity?.passport?.avatar}
-              tribeAvatar={props?.activity?.community?.avatar}
-              message={props.activity.message}
-              timeStamp={props.activity.time}
-            />
-          }
-        />
-      );
-    } else {
-      return null;
-    }
-  };
 
   const showModal = () => {
     setModalVisible(!modalVisible);
