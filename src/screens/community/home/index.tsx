@@ -552,7 +552,7 @@ export default function HomeScreen(props: ScreenProp) {
             contentContainerStyle={{
               marginTop: 20,
               paddingLeft: 15,
-              paddingBottom: 20
+              paddingBottom: 40
             }}
           />
         </RecommendedList>
