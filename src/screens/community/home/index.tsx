@@ -9,7 +9,7 @@ import * as Updates from 'expo-updates';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import * as Location from 'expo-location';
-import { Title, ActivityIndicator, Button } from 'react-native-paper';
+import { Title, ActivityIndicator } from 'react-native-paper';
 import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
