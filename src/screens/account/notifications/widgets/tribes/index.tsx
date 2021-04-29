@@ -1,26 +1,23 @@
-import React, { useState, useMemo, Fragment } from 'react';
-import { Title, Text, Divider, Button } from 'react-native-paper';
+import React, { useState, Fragment } from 'react';
+import { Text, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { FlatList, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
-import SearchInput, { createFilter } from 'react-native-search-filter';
+//@ts-ignore
+import { FlatFeed, Activity } from 'expo-activity-feed';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { FontAwesome } from '@expo/vector-icons';
 import { useQuery } from '@apollo/react-hooks';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
-import NotificationCard from './widget';
-import CommunityCreationRequestCard from './widget/tribeCreationRequest';
-import {
-  GET_TRIBE_INVITES,
-  GET_COMMUNITY_CREATION_REQUEST,
-  GET_USER_PASSPORT
-} from '../../../../../graphql/server/query';
-import hexToRGB from '../../../../../utils/hexToRGB';
-import { PAGINATION_DEFAULT } from '../../../../../constants';
+import { chatClient } from '../../../../../stream/types';
+import { GET_USER_PASSPORT } from '../../../../../graphql/server/query';
+import GradientButton from '../../../../../components/gradientButton';
+import ActivityCard from '../activityCard';
+import GeneralFeed from './widget/general';
+import AdminFeed from './widget/admin';
 
 import { Container, ModalCover } from './styles';
-import GradientButton from '../../../../../components/gradientButton';
 
 interface tribeScreenProp extends NavigationInterface {}
 
@@ -30,88 +27,63 @@ export default function TribeScreen(props: tribeScreenProp) {
 
   const [search, setSearch] = useState({ searchTerm: '' });
   const [modalVisible, setModalVisible] = useState(false);
-  const [tribeData, setTribeData] = useState(
-    t(`community.notification.general`)
-  );
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const CustomActivity = (props: any) => {
+    if (props?.activity?.activityType === 'COMMUNITY') {
+      return (
+        <Activity
+          {...props}
+          Header={null}
+          Content={
+            <ActivityCard
+              activityType={props?.activity?.activityType}
+              userAvatar={props?.activity?.passport?.avatar}
+              tribeAvatar={props?.activity?.community?.avatar}
+              message={props.activity.message}
+              timeStamp={props.activity.time}
+            />
+          }
+        />
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const AdminCustomActivity = (props: any) => {
+    if (
+      props?.activity?.isAdmin == true &&
+      props?.activity?.activityType === 'COMMUNITY'
+    ) {
+      return (
+        <Activity
+          {...props}
+          Header={null}
+          Content={
+            <ActivityCard
+              activityType={props?.activity?.activityType}
+              userAvatar={props?.activity?.passport?.avatar}
+              tribeAvatar={props?.activity?.community?.avatar}
+              message={props.activity.message}
+              timeStamp={props.activity.time}
+            />
+          }
+        />
+      );
+    } else {
+      return null;
+    }
+  };
 
   const showModal = () => {
     setModalVisible(!modalVisible);
   };
 
-  const { data: inviteData, refetch } = useQuery(GET_TRIBE_INVITES);
-
-  const { data: requestData, refetch: requestRefetch } = useQuery(
-    GET_COMMUNITY_CREATION_REQUEST,
-    {
-      variables: { input: { limit: PAGINATION_DEFAULT } }
-    }
-  );
-
   const { data: userData } = useQuery(GET_USER_PASSPORT);
-
-  const tribeInvites = inviteData?.communityInvites?.data;
-  const tribeRequest = requestData?.communityCreationRequests?.data;
   const userDetails = userData?.myPassport;
   const tribe = userDetails?.participantOf;
   const moderator = tribe?.filter((item: any) => item.isModerator);
-
-  const searchUpdated = (text: string) => setSearch({ searchTerm: text });
-
-  const KeysToFilter = [
-    'sender.firstName',
-    'sender.lastName',
-    'community.name'
-  ];
-
-  const communityKeysToFilter = [
-    'name',
-    'moderators.firstName',
-    'moderators.lastName'
-  ];
-
-  const filteredCommunityWords =
-    tribeRequest &&
-    tribeRequest?.filter(
-      createFilter(search.searchTerm, communityKeysToFilter)
-    );
-
-  const filteredWords =
-    tribeInvites &&
-    tribeInvites?.filter(createFilter(search.searchTerm, KeysToFilter));
-
-  const _renderNotification = useMemo(
-    () => ({ item }: { item: any }) => (
-      <NotificationCard
-        key={item.id}
-        id={item.id}
-        name={item.community.name}
-        firstName={item.sender.firstName}
-        lastName={item.sender.lastName}
-        avatar={item.sender.avatar}
-        refetch={refetch}
-        userId={item.sender.id}
-        tribeId={item.community.id}
-        createdAt={item.createdAt}
-        {...item}
-      />
-    ),
-    []
-  );
-
-  const _renderCommunityCreationCard = useMemo(
-    () => ({ item }: { item: any }) => (
-      <CommunityCreationRequestCard
-        key={item.id}
-        id={item.id}
-        name={item.name}
-        avatar={item.avatar}
-        moderators={item.moderators}
-        refetch={requestRefetch}
-        {...item}
-      />
-    ),
-    []
-  );
 
   return (
     <Fragment>
@@ -136,7 +108,9 @@ export default function TribeScreen(props: tribeScreenProp) {
                 marginLeft: 'auto'
               }}
             >
-              {tribeData}
+              {isAdmin
+                ? t(`community.notification.adminTribe`)
+                : t(`community.notification.general`)}
             </Text>
             <FontAwesome
               name="sliders"
@@ -146,46 +120,13 @@ export default function TribeScreen(props: tribeScreenProp) {
             />
           </TouchableOpacity>
         ) : null}
-        <FlatList
-          data={userDetails?.isAdmin ? filteredCommunityWords : filteredWords}
-          renderItem={
-            userDetails?.isAdmin
-              ? _renderCommunityCreationCard
-              : _renderNotification
-          }
-          ItemSeparatorComponent={() => (
-            <Divider
-              style={{
-                height: 1.5,
-                backgroundColor: hexToRGB(colors.INACTIVE, 0.5),
-                marginVertical: RFValue(20)
-              }}
-            />
-          )}
-          ListEmptyComponent={
-            <Text
-              style={{
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_BOLD,
-                margin: RFValue(20),
-                textAlign: 'center'
-              }}
-            >
-              {t(`community.notification.empty`)}
-            </Text>
-          }
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            marginTop: 20,
-            paddingHorizontal: 15,
-            backgroundColor: colors.WHITE
-          }}
-        />
+        {isAdmin ? <AdminFeed /> : <GeneralFeed />}
+
         <Modal isVisible={modalVisible}>
           <ModalCover>
             <GradientButton
               onPress={() => {
-                setTribeData(t(`community.notification.general`));
+                setIsAdmin(false);
                 setModalVisible(false);
               }}
               style={{ width: '100%' }}
@@ -199,7 +140,7 @@ export default function TribeScreen(props: tribeScreenProp) {
             </GradientButton>
             <GradientButton
               onPress={() => {
-                setTribeData(t(`community.notification.adminTribe`));
+                setIsAdmin(true);
                 setModalVisible(false);
               }}
               style={{ width: '100%' }}
