@@ -97,7 +97,7 @@ function TransferModal(props: ModalProp) {
           <Card.Content>
             <LogoCover>
               <Image
-                source={require('../../../assets/images/triblLogo.png')}
+                source={require('../../../assets/images/logo.png')}
                 style={{
                   resizeMode: 'contain',
                   width: RFValue(25),
