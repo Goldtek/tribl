@@ -6,6 +6,8 @@ import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Title, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Feather } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeContext } from '../../../theme';
 import tribeSlide from './widgets/tribes';
 import allSlide from './widgets/all';
@@ -19,8 +21,6 @@ import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import Header from '../../../components/header';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import hexToRGB from '../../../utils/hexToRGB';
-import { Feather } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -124,7 +124,7 @@ export default function NotificationScreen(props: ScreenProp) {
               textTransform: 'capitalize'
             }}
           >
-            {t(`community.sideNav.notification`)}
+            {t(`community.sideNav.activities`)}
           </Text>
         )}
         headerLeft={() => (

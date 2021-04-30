@@ -2,13 +2,11 @@ import React, { Fragment } from 'react';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 // DEFINE SCREEN PROP TYPES
-interface MyConnectionSkeletonProps {
+interface SkeletonProps {
   skeletonSize?: number;
 }
 
-export default function MyConnectionSkeleton({
-  skeletonSize = 3
-}: MyConnectionSkeletonProps) {
+export default function Skeleton({ skeletonSize = 3 }: SkeletonProps) {
   return (
     <Fragment>
       {[...Array(skeletonSize)].map((_, index) => (

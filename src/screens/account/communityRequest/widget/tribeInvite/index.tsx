@@ -2,101 +2,115 @@ import React, { useEffect } from 'react';
 import { Text, Paragraph, Button } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../../../../../theme';
-import { GET_SINGLE_PASSPORT } from '../../../../../../../graphql/server/query';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import { logEvent } from '../../../../../../../utils/uxcamHelper';
-import GradientButton from '../../../../../../../components/gradientButton';
-import { APPROVE_REJECT_NEW_TRIBE } from '../../../../../../../graphql/server/mutations';
-import { Mixpanel } from '../../../../../../../config';
-import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { crashlytics } from '../../../../../../../firebase/config';
+import { useNavigation } from '@react-navigation/native';
+import { useThemeContext } from '../../../../../theme';
+import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { logEvent } from '../../../../../utils/uxcamHelper';
+import GradientButton from '../../../../../components/gradientButton';
+import { TRIBE_INVITE_ACTION } from '../../../../../graphql/server/mutations';
+import { Mixpanel } from '../../../../../config';
+import { crashlytics } from '../../../../../firebase/config';
+import formatMessageTime from '../../../../../utils/timesince';
 
 import { Container, RightCover, ButtonCover } from './styles';
 
-interface TribeRequestProp {
+interface NotificationProp {
   name: string;
   id: string;
   avatar: string;
-  moderators: [{ firstName: string; lastName: string; id: string }];
+  firstName: string;
+  lastName: string;
   refetch: VoidFunction;
+  userId: string;
+  tribeId: string;
+  createdAt: string;
 }
 
-export default function TribeRequest(props: TribeRequestProp) {
+export default function Notification(props: NotificationProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { id, avatar, name, moderators, refetch } = props;
+  const {
+    id,
+    avatar,
+    firstName,
+    lastName,
+    name,
+    refetch,
+    userId,
+    tribeId,
+    createdAt
+  } = props;
+
+  enum InvitationStatus {
+    ACCEPTED,
+    PENDING,
+    DECLINED
+  }
+
+  let timeStamp = formatMessageTime(Number(createdAt));
 
   const handleMemberNavigation = () => {
     navigation.navigate('MemberDetailScreen', {
-      details: {
-        id: moderators[0]?.id,
-        firstName: moderators[0]?.firstName,
-        lastName: moderators[0]?.lastName
-      },
-      title: `${moderators[0]?.firstName} ${moderators[0]?.lastName}`
+      details: { id: userId, firstName, lastName },
+      title: `${firstName} ${lastName}`
     });
   };
 
   const handleTribeNavigation = () => {
     navigation.navigate('CommunityDetailScreen', {
-      details: { id }
+      details: { id: tribeId }
     });
   };
 
-  enum StatusOptions {
-    APPROVED,
-    DECLINED
-  }
-
-  const [acceptRequest, { loading }] = useMutation(APPROVE_REJECT_NEW_TRIBE, {
+  const [acceptInvite, { loading }] = useMutation(TRIBE_INVITE_ACTION, {
     variables: {
-      payload: { id: id, action: StatusOptions[0] }
+      payload: { id: id, action: InvitationStatus[0] }
     }
   });
 
-  const [declineRequest, { loading: declineLoading }] = useMutation(
-    APPROVE_REJECT_NEW_TRIBE,
+  const [declineInvite, { loading: declineLoading }] = useMutation(
+    TRIBE_INVITE_ACTION,
     {
       variables: {
-        payload: { id: id, action: StatusOptions[1] }
+        payload: { id: id, action: InvitationStatus[2] }
       }
     }
   );
 
   const handleAcceptInvitation = async () => {
-    logEvent('accept tribe creation', { from: 'passport' });
+    logEvent('accept tribe invite', { from: 'passport' });
     try {
-      Mixpanel.track('Super Admin Accepts Tribe Creation', {
-        info: `Admin accepts tribe creation`,
+      Mixpanel.track('User Accepts Connection Request', {
+        info: `User accepts tribe invite`,
         'Activity Screen': 'Tribe Request Screen'
       });
-      await acceptRequest();
-      refetch();
+      await acceptInvite();
+      props.refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
   const handleDeclineInvitation = async () => {
-    logEvent('decline new tribe creation', { from: 'passport' });
+    logEvent('decline tribe invite', { from: 'passport' });
     try {
-      Mixpanel.track('Super Admin Declines Tribe Creation', {
-        info: `Admin declines tribe invicreationte`,
+      Mixpanel.track('User Declines Connection Request', {
+        info: `User declines tribe invite`,
         'Activity Screen': 'Tribe Request Screen'
       });
-      await declineRequest();
-      refetch();
+      await declineInvite();
+      props.refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id: moderators[0]?.id }
+    variables: { id }
   });
 
   useEffect(() => {
@@ -112,9 +126,10 @@ export default function TribeRequest(props: TribeRequestProp) {
           priority: FastImage.priority.high
         }}
         style={{
-          width: RFValue(35),
-          height: RFValue(35),
-          borderRadius: RFValue(4)
+          width: RFValue(60),
+          height: RFValue(60),
+          borderRadius: RFValue(4),
+          marginTop: RFValue(10)
         }}
       />
       <RightCover>
@@ -137,11 +152,8 @@ export default function TribeRequest(props: TribeRequestProp) {
               flexWrap: 'wrap'
             }}
             onPress={handleMemberNavigation}
-          >
-            {`${moderators[0]?.firstName} ${moderators[0]?.lastName}`}
-            {'  '}
-          </Text>
-          {t(`community.invitation.newTribeRequest`)} -{' '}
+          >{`${firstName} ${lastName}`}</Text>{' '}
+          invited you to join the tribe -{' '}
           <Text
             style={{
               fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -154,6 +166,17 @@ export default function TribeRequest(props: TribeRequestProp) {
           >
             {name}
             {'  '}
+          </Text>
+          <Text
+            style={{
+              fontSize: RFValue(fonts.SMALL_SIZE + 1),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              color: colors.PRIMARY_TEXT,
+              flexWrap: 'wrap'
+            }}
+          >
+            {'  '}
+            {timeStamp}
           </Text>
         </Paragraph>
         <ButtonCover>
@@ -178,7 +201,7 @@ export default function TribeRequest(props: TribeRequestProp) {
             loading={declineLoading}
             onPress={handleDeclineInvitation}
           >
-            {t(`community.invitation.reject`)}
+            {t(`community.invitation.decline`)}
           </Button>
           <GradientButton
             style={{ height: RFValue(30) }}
@@ -194,7 +217,7 @@ export default function TribeRequest(props: TribeRequestProp) {
             loading={loading}
             onPress={handleAcceptInvitation}
           >
-            {t(`community.invitation.approve`)}
+            {t(`community.invitation.accept`)}
           </GradientButton>
         </ButtonCover>
       </RightCover>

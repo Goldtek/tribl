@@ -362,6 +362,42 @@ export type MyConnectionsInterface = {
   myConnections: { data: PassportInterface[]; metadata: QueryMetadata };
 };
 
+enum InvitationStatus {
+  ACCEPTED,
+  PENDING,
+  DECLINED
+}
+
+enum InvitationType {
+  REQUEST,
+  INVITE
+}
+
+// USER COMMUNITY INVITE (RESPONSE) TYPE
+export type CommunityInviteInterface = {
+  communityInvites: {
+    data: {
+      id: string;
+      status: InvitationStatus;
+      type: InvitationType;
+      community: CommunityInterface;
+      sender: PassportInterface;
+      receipient: PassportInterface;
+      createdAt: string;
+      updatedAt: string;
+    }[];
+    metadata: QueryMetadata;
+  };
+};
+
+// USER COMMUNITY CREATION REQUEST (RESPONSE) TYPE
+export type CommunityCreationRequestInterface = {
+  communityCreationRequests: {
+    data: CommunityInterface[];
+    metadata: QueryMetadata;
+  };
+};
+
 // COMMUNITY USER SINGLE PASSPORT (RESPONSE) TYPE
 export type UserPassportInterface = { singlePassport: PassportInterface };
 
