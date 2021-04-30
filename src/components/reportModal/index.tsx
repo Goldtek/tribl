@@ -7,7 +7,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { useThemeContext } from '../../theme';
-import { DEVICE_FULL_HEIGHT } from '../../utils/device';
+import { DEVICE_FULL_HEIGHT, DEVICE_OS } from '../../utils/device';
 import GradientButton from '../gradientButton';
 import Input from '../input';
 import { BLOCK_REPORT_USER } from '../../graphql/server/mutations';
@@ -27,7 +27,6 @@ function ReportModal(props: ModalProp) {
   const { isVisible, closeReportModal, data } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
   enum status {
     REPORT
   }
@@ -43,7 +42,6 @@ function ReportModal(props: ModalProp) {
   useEffect(() => {
     isVisible ? openModal() : closeModal();
   }, [isVisible]);
-
 
   const [reportUser, { loading }] = useMutation(BLOCK_REPORT_USER, {
     variables: {
@@ -71,10 +69,11 @@ function ReportModal(props: ModalProp) {
   return (
     <Portal>
       <StatusBar translucent animated style="light" />
-
       <Modalize
         ref={modalizeRef}
         onClose={closeReportModal}
+        avoidKeyboardLikeIOS={true}
+        keyboardAvoidingBehavior={DEVICE_OS == 'ios' ? 'padding' : 'height'}
         modalStyle={{
           height: DEVICE_FULL_HEIGHT / 2,
           paddingTop: RFValue(20),

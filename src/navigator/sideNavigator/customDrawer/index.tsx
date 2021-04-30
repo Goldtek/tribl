@@ -6,7 +6,8 @@ import {
   MaterialCommunityIcons,
   SimpleLineIcons,
   FontAwesome,
-  Feather
+  Feather,
+  AntDesign
 } from '@expo/vector-icons';
 import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../../theme';
@@ -87,6 +88,18 @@ export default function CustomDrawerComponent() {
           size={24}
           color={colors.PRIMARY_TEXT}
         />
+      )
+    },
+    {
+      key: 'drawer_communityRequest_key',
+      name: `community.sideNav.communityRequest`,
+      onPress: () => {
+        changeSideMenu('drawer_communityRequest_key');
+        navigation?.navigate('DrawerScreen', { screen: 'TribeRequestScreen' });
+        toggleMenu();
+      },
+      drawerIcon: (
+        <AntDesign name="addusergroup" size={28} color={colors.PRIMARY_TEXT} />
       )
     },
     {

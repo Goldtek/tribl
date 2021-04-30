@@ -43,7 +43,6 @@ export default function DirectChatScreen(props: ScreenProp) {
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
   const { channel, setThread, setActivityScreen } = useStreamContext();
-
   const receiverId = Object.keys(channel?.state?.members).find(
     (userId: string) => userId !== chatClient.user?.id
   );
@@ -54,7 +53,6 @@ export default function DirectChatScreen(props: ScreenProp) {
     tagScreenName('DirectChatScreen');
     setActivityScreen('directMessage');
   }, []);
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Container>
@@ -93,7 +91,9 @@ export default function DirectChatScreen(props: ScreenProp) {
                 <TouchableRipple
                   borderless
                   onPress={() =>
-                    navigation.navigate('DirectMessageInformation')
+                    navigation.navigate('DirectMessageInformation', {
+                      details: { id: receiverId }
+                    })
                   }
                   style={{
                     height: RFValue(40),
@@ -126,7 +126,11 @@ export default function DirectChatScreen(props: ScreenProp) {
               icon={(iconProps) => (
                 <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
               )}
-              onPress={() => navigation.navigate('DirectMessageInformation')}
+              onPress={() =>
+                navigation.navigate('DirectMessageInformation', {
+                  details: { id: receiverId }
+                })
+              }
             />
           </Fragment>
         </HeaderContainer>

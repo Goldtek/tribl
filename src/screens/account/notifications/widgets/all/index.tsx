@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Title } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import SearchInput, { createFilter } from 'react-native-search-filter';
 //@ts-ignore
-import { FlatFeed } from 'expo-activity-feed';
+import { FlatFeed, Activity } from 'expo-activity-feed';
 import { useThemeContext } from '../../../../../theme';
 import { NavigationInterface } from '../../../../types';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
 import { chatClient } from '../../../../../stream/types';
+import ActivityCard from '../activityCard';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -21,22 +20,33 @@ export default function GeneralSlide(props: GeneralSlideProp) {
   const { t } = useTranslation();
 
   const [search, setSearch] = useState({ searchTerm: '' });
-
   useEffect(() => {
     tagScreenName('NotificationScreen');
   }, []);
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
-  const KeysToFilter = [
-    'sender.firstName',
-    'sender.lastName',
-    'community.name'
-  ];
+  const CustomActivity = (props: any) => {
+    return (
+      <Activity
+        {...props}
+        Header={null}
+        Content={
+          <ActivityCard
+            message={props.activity.message}
+            timeStamp={props.activity.time}
+            activityType={props?.activity?.activityType}
+            userAvatar={props?.activity?.passport?.avatar}
+            tribeAvatar={props?.activity?.community?.avatar}
+          />
+        }
+      />
+    );
+  };
 
   return (
     <Container>
-      <SearchInput
+      {/* <SearchInput
         onChangeText={searchUpdated}
         placeholder={t(`community.notification.placeholder`)}
         placeholderTextColor={colors.PRIMARY_TEXT}
@@ -51,22 +61,11 @@ export default function GeneralSlide(props: GeneralSlideProp) {
           paddingHorizontal: 10,
           marginHorizontal: 15
         }}
-      />
-      <Title
-        style={{
-          color: colors.PRIMARY_TEXT,
-          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-          fontSize: RFValue(fonts.LARGE_SIZE),
-          marginTop: RFValue(20),
-          marginLeft: RFValue(10),
-          textTransform: 'capitalize'
-        }}
-      >
-        General Notification
-      </Title>
+      /> */}
       <FlatFeed
-        feedGroup="activities_notification"
+        feedGroup="timeline"
         userId={chatClient.user?.id}
+        Activity={CustomActivity}
       />
     </Container>
   );

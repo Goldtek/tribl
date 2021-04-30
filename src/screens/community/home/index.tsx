@@ -9,7 +9,7 @@ import * as Updates from 'expo-updates';
 import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import * as Location from 'expo-location';
-import { Title, ActivityIndicator, Button } from 'react-native-paper';
+import { Title, ActivityIndicator } from 'react-native-paper';
 import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
@@ -583,23 +583,22 @@ export default function HomeScreen(props: ScreenProp) {
       </ScrollView>
 
       <ButtonWrapper>
-        <Button
+        <GradientButton
           onPress={navigateToCreateNewTribeScreen}
-          mode="contained"
           labelStyle={{
             fontSize: RFValue(fonts.MEDIUM_SIZE),
             fontFamily: fonts.WORK_SANS_REGULAR,
             color: colors.WHITE,
             textTransform: 'capitalize'
           }}
-          style={{
-            backgroundColor: colors.PRIMARY_TEXT,
+          gradientContainerstyle={{
             width: RFPercentage(25),
-            borderRadius: RFValue(50)
+            height: RFValue(30),
+            borderRadius: RFValue(15)
           }}
         >
           {t(`community.createTribe.buttonText`)}
-        </Button>
+        </GradientButton>
       </ButtonWrapper>
 
       {state.showJoinCommunityModal ? (

@@ -1390,7 +1390,7 @@ export const USER_CHANNELS = gql`
 
 //GET ALL TRIBE INVITES
 export const GET_TRIBE_INVITES = gql`
-  query communityInvites($input: CommunityRequestArgsInput) {
+  query communityInvites($input: CommunityInviteArgsInput) {
     communityInvites(input: $input) {
       data {
         id

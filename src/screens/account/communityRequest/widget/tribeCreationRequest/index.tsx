@@ -2,115 +2,101 @@ import React, { useEffect } from 'react';
 import { Text, Paragraph, Button } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
-import { useThemeContext } from '../../../../../../theme';
-import { GET_SINGLE_PASSPORT } from '../../../../../../graphql/server/query';
+import { useThemeContext } from '../../../../../theme';
+import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import { logEvent } from '../../../../../../utils/uxcamHelper';
-import GradientButton from '../../../../../../components/gradientButton';
-import { TRIBE_INVITE_ACTION } from '../../../../../../graphql/server/mutations';
-import { Mixpanel } from '../../../../../../config';
-import { crashlytics } from '../../../../../../firebase/config';
-import formatMessageTime from '../../../../../../utils/timesince';
+import { logEvent } from '../../../../../utils/uxcamHelper';
+import GradientButton from '../../../../../components/gradientButton';
+import { APPROVE_REJECT_NEW_TRIBE } from '../../../../../graphql/server/mutations';
+import { Mixpanel } from '../../../../../config';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { crashlytics } from '../../../../../firebase/config';
 
 import { Container, RightCover, ButtonCover } from './styles';
 
-interface NotificationProp {
+interface TribeRequestProp {
   name: string;
   id: string;
   avatar: string;
-  firstName: string;
-  lastName: string;
+  moderators: [{ firstName: string; lastName: string; id: string }];
   refetch: VoidFunction;
-  userId: string;
-  tribeId: string;
-  createdAt: string;
 }
 
-export default function Notification(props: NotificationProp) {
+export default function TribeRequest(props: TribeRequestProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const {
-    id,
-    avatar,
-    firstName,
-    lastName,
-    name,
-    refetch,
-    userId,
-    tribeId,
-    createdAt
-  } = props;
-
-  enum InvitationStatus {
-    ACCEPTED,
-    PENDING,
-    DECLINED
-  }
-
-  let timeStamp = formatMessageTime(Number(createdAt));
+  const { id, avatar, name, moderators, refetch } = props;
 
   const handleMemberNavigation = () => {
     navigation.navigate('MemberDetailScreen', {
-      details: { id: userId, firstName, lastName },
-      title: `${firstName} ${lastName}`
+      details: {
+        id: moderators[0]?.id,
+        firstName: moderators[0]?.firstName,
+        lastName: moderators[0]?.lastName
+      },
+      title: `${moderators[0]?.firstName} ${moderators[0]?.lastName}`
     });
   };
 
   const handleTribeNavigation = () => {
     navigation.navigate('CommunityDetailScreen', {
-      details: { id: tribeId }
+      details: { id }
     });
   };
 
-  const [acceptInvite, { loading }] = useMutation(TRIBE_INVITE_ACTION, {
+  enum StatusOptions {
+    APPROVED,
+    DECLINED
+  }
+
+  const [acceptRequest, { loading }] = useMutation(APPROVE_REJECT_NEW_TRIBE, {
     variables: {
-      payload: { id: id, action: InvitationStatus[0] }
+      payload: { id: id, action: StatusOptions[0] }
     }
   });
 
-  const [declineInvite, { loading: declineLoading }] = useMutation(
-    TRIBE_INVITE_ACTION,
+  const [declineRequest, { loading: declineLoading }] = useMutation(
+    APPROVE_REJECT_NEW_TRIBE,
     {
       variables: {
-        payload: { id: id, action: InvitationStatus[2] }
+        payload: { id: id, action: StatusOptions[1] }
       }
     }
   );
 
   const handleAcceptInvitation = async () => {
-    logEvent('accept tribe invite', { from: 'passport' });
+    logEvent('accept tribe creation', { from: 'passport' });
     try {
-      Mixpanel.track('User Accepts Connection Request', {
-        info: `User accepts tribe invite`,
+      Mixpanel.track('Super Admin Accepts Tribe Creation', {
+        info: `Admin accepts tribe creation`,
         'Activity Screen': 'Tribe Request Screen'
       });
-      await acceptInvite();
-      props.refetch();
+      await acceptRequest();
+      refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
   const handleDeclineInvitation = async () => {
-    logEvent('decline tribe invite', { from: 'passport' });
+    logEvent('decline new tribe creation', { from: 'passport' });
     try {
-      Mixpanel.track('User Declines Connection Request', {
-        info: `User declines tribe invite`,
+      Mixpanel.track('Super Admin Declines Tribe Creation', {
+        info: `Admin declines tribe invicreationte`,
         'Activity Screen': 'Tribe Request Screen'
       });
-      await declineInvite();
-      props.refetch();
+      await declineRequest();
+      refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
+    variables: { id: moderators[0]?.id }
   });
 
   useEffect(() => {
@@ -126,9 +112,10 @@ export default function Notification(props: NotificationProp) {
           priority: FastImage.priority.high
         }}
         style={{
-          width: RFValue(35),
-          height: RFValue(35),
-          borderRadius: RFValue(4)
+          width: RFValue(60),
+          height: RFValue(60),
+          borderRadius: RFValue(4),
+          marginTop: RFValue(5)
         }}
       />
       <RightCover>
@@ -151,8 +138,11 @@ export default function Notification(props: NotificationProp) {
               flexWrap: 'wrap'
             }}
             onPress={handleMemberNavigation}
-          >{`${firstName} ${lastName}`}</Text>{' '}
-          invited you to join the tribe -{' '}
+          >
+            {`${moderators[0]?.firstName} ${moderators[0]?.lastName}`}
+            {'  '}
+          </Text>
+          {t(`community.invitation.newTribeRequest`)} -{' '}
           <Text
             style={{
               fontSize: RFValue(fonts.MEDIUM_SIZE),
@@ -165,17 +155,6 @@ export default function Notification(props: NotificationProp) {
           >
             {name}
             {'  '}
-          </Text>
-          <Text
-            style={{
-              fontSize: RFValue(fonts.SMALL_SIZE + 1),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              color: colors.PRIMARY_TEXT,
-              flexWrap: 'wrap'
-            }}
-          >
-            {'  '}
-            {timeStamp}
           </Text>
         </Paragraph>
         <ButtonCover>
@@ -200,7 +179,7 @@ export default function Notification(props: NotificationProp) {
             loading={declineLoading}
             onPress={handleDeclineInvitation}
           >
-            {t(`community.invitation.decline`)}
+            {t(`community.invitation.reject`)}
           </Button>
           <GradientButton
             style={{ height: RFValue(30) }}
@@ -216,7 +195,7 @@ export default function Notification(props: NotificationProp) {
             loading={loading}
             onPress={handleAcceptInvitation}
           >
-            {t(`community.invitation.accept`)}
+            {t(`community.invitation.approve`)}
           </GradientButton>
         </ButtonCover>
       </RightCover>
