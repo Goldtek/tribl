@@ -30,7 +30,7 @@ import { crashlytics } from '../../../../firebase/config';
 import { chatClient } from '../../../../stream/types';
 
 export default function EditGroupName(props: any) {
-  const { channel, user } = props;
+  const { channel, user, isAdmin, displayEdit } = props;
   const insets = useSafeAreaInsets();
   const { colors } = useThemeContext();
   const [subject, setSubject] = useState(channel.data?.name);
@@ -38,28 +38,30 @@ export default function EditGroupName(props: any) {
   const closeModal = () => props.modalizeRef.current?.close();
 
   const updateGroupName = async () => {
-    try {
-      setLoader(true);
+    if (isAdmin && displayEdit) {
+      try {
+        setLoader(true);
 
-      await channel.updatePartial({ set: { name: subject } });
-      await channel.sendMessage({
-        text: `${
-          chatClient.user?.name?.split(' ')[0]
-        } changed group name to ${subject}`,
-        group_system: true,
-        receiver: {
-          id: `${user?.id}`,
-          name: `${user?.name}`,
-          image: `${user?.image}`
-        }
-      });
+        await channel.updatePartial({ set: { name: subject } });
+        await channel.sendMessage({
+          text: `${
+            chatClient.user?.name?.split(' ')[0]
+          } changed the subject to ${subject}`,
+          group_system: true,
+          receiver: {
+            id: `${user?.id}`,
+            name: `${user?.name}`,
+            image: `${user?.image}`
+          }
+        });
 
-      setLoader(false);
-      closeModal();
-    } catch (error) {
-      setLoader(false);
-      crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+        setLoader(false);
+        closeModal();
+      } catch (error) {
+        setLoader(false);
+        crashlytics.recordError(new Error(error));
+        crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+      }
     }
   };
 
