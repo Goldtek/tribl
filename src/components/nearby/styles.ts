@@ -1,10 +1,10 @@
 import styled from 'styled-components/native';
-import { BlurView } from '@react-native-community/blur';
 import { Surface } from 'react-native-paper';
 
 export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.WHITE};
 `;
+
 export const BlurContents = styled.View`
   flex: 1;
   align-items: center;

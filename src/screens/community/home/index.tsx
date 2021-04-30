@@ -552,7 +552,7 @@ export default function HomeScreen(props: ScreenProp) {
             contentContainerStyle={{
               marginTop: 20,
               paddingLeft: 15,
-              paddingBottom: 40
+              paddingBottom: RFValue(50)
             }}
           />
         </RecommendedList>
@@ -587,12 +587,21 @@ export default function HomeScreen(props: ScreenProp) {
           onPress={navigateToCreateNewTribeScreen}
           labelStyle={{
             fontSize: RFValue(fonts.MEDIUM_SIZE),
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            color: colors.WHITE,
-            textTransform: 'capitalize'
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            textTransform: 'capitalize',
+            color: colors.WHITE
           }}
           gradientContainerstyle={{
+            height: RFValue(30),
             width: RFPercentage(25),
+            borderRadius: RFValue(15)
+          }}
+          contentStyle={{
+            width: '100%',
+            height: '100%',
+            borderRadius: RFValue(15)
+          }}
+          style={{
             height: RFValue(30),
             borderRadius: RFValue(15)
           }}

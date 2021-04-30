@@ -23,6 +23,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { USER_DEFAULT_AVATAR } from '../../../constants';
 import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
+import { IFCMMessageTypes } from '../../../graphql/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -248,7 +249,8 @@ export default function ChannelChatScreen(props: ScreenProp) {
             doSendMessageRequest={(_cid, message) =>
               channel.sendMessage({
                 ...message,
-                link_url: 'deep_link_channel_chat_screen'
+                link_url: 'deep_link_channel_chat_screen',
+                message_type: IFCMMessageTypes.CHANNEL_MESSAGE_RECEIVED
               })
             }
           >

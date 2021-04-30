@@ -17,7 +17,6 @@ import {
   GET_CONNECTION_NOTIFICATION_BADGE,
   GET_SIDE_MENU
 } from '../../graphql/cache/query';
-import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import {
   ShowConnectionNotificationBadge,
   ShowSideMenu
@@ -26,6 +25,7 @@ import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
 import { DEVICE_OS } from '../../utils/device';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
+import { MenuBadgeWrapper } from '../bottomNavigator/TabBar/styles';
 
 const CommunityStack = createStackNavigator();
 

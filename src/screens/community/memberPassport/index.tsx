@@ -4,21 +4,14 @@ import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView, FlatList } from 'react-native';
 import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 // @ts-ignore
 import SingleImage from '../../../libs/react-native-zoom-lightbox';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
 import GradientButton from '../../../components/gradientButton';
-import {
-  REQUEST_CONNECTION,
-  BLOCK_REPORT_USER
-} from '../../../graphql/server/mutations';
-import {
-  GET_MEMBER_PASSPORT,
-  GET_RECOMMENDED_MEMBERS,
-  GET_NEARBY_MEMBERS
-} from '../../../graphql/server/query';
+import { REQUEST_CONNECTION } from '../../../graphql/server/mutations';
+import { GET_MEMBER_PASSPORT } from '../../../graphql/server/query';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import {
   CommunityInterface,
@@ -39,7 +32,7 @@ import { StatusBar } from 'expo-status-bar';
 import MyConnectionCard from '../../../components/MyConnectionCard';
 import MyCommunity from '../../../components/myCommunities';
 import TransferModal from '../../../components/transferModal';
-import { PAGINATION_DEFAULT } from '../../../constants';
+import { useIsFocused } from '@react-navigation/core';
 
 import {
   ContactContainer,
@@ -67,14 +60,11 @@ export default function PassportDetail(props: MemberDetailProps) {
 
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
-  const [state, setState] = useState({ loading: false, pending: false });
-
   const [visible, setVisible] = useState(false);
-
+  const [state, setState] = useState({ loading: false, pending: false });
   const passport = { ...props.route.params.details };
-
   const [data, setData] = useState({ ...passport });
+  const isFocused = useIsFocused();
 
   const {
     firstName,
@@ -96,59 +86,20 @@ export default function PassportDetail(props: MemberDetailProps) {
     SinglePassportRequestInterface
   >(GET_MEMBER_PASSPORT, { variables: { id: passport.id } });
 
-  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
-
-  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
-
   const singlePassport = passportData?.singlePassport;
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
   const filteredChannels = singlePassport?.channelParticipantOf?.filter(
     (channel) => channel?.isPrivate == false || channel?.isMember == true
   );
+
   const channels = filteredChannels?.slice(0, 10);
 
-  const [blocked, setBlock] = useState(data?.blocked?.blocked);
-  const note = `${firstName} ${t(
-    `community.memberPassport.unblock`
-  )} ${firstName}`;
-
-  enum status {
-    UNBLOCK
-  }
-
-  const [unBlockUser, { loading: unblockLoading }] = useMutation(
-    BLOCK_REPORT_USER,
-    {
-      variables: {
-        payload: {
-          passportId: passport?.id,
-          status: status[0],
-          notes: note
-        }
-      }
-    }
-  );
-
-  const handleUnBlock = async () => {
-    try {
-      Mixpanel.track('UnBlock User', {
-        info: `UnBlock ${firstName}`,
-        'Activity Screen': 'Community Screen'
-      });
-      await unBlockUser();
+  useEffect(() => {
+    if (isFocused && data?.id) {
       refetch();
-      setBlock([]);
-      getRecommendedMembers();
-      getNearbyMembers();
-    } catch (error) {
-      crashlytics.recordError(error);
     }
-  };
+  }, [isFocused]);
 
   useEffect(() => {
     if (singlePassport?.id) {

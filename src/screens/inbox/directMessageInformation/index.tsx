@@ -130,7 +130,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
   //           navigation.navigate('InboxScreen');
   //         } catch (error) {
   //           crashlytics.recordError(new Error(error));
-  crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+  //            crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
   //         }
   //       }
   //     }

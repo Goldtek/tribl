@@ -34,6 +34,7 @@ import {
 } from 'stream-chat';
 import { crashlytics } from '../../../firebase/config';
 import { Channel as ChannelType } from 'stream-chat';
+import { IFCMMessageTypes } from '../../../graphql/types';
 import { RFValue } from 'react-native-responsive-fontsize';
 import {
   chatClient,
@@ -279,7 +280,7 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
               </Paragraph>
             </HeaderTitleContainer>
 
-            {!Boolean(channel.data?.isNew) && (
+            {Boolean(channel.data) && !Boolean(channel.data?.isNew) && (
               <IconButton
                 icon={(iconProps) => (
                   <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
@@ -299,12 +300,17 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
             //@ts-ignore
             channel={channel}
             KeyboardCompatibleView={CustomKeyboardCompatibleView}
-            doSendMessageRequest={(_cid, message) =>
-              channel.sendMessage({
+            doSendMessageRequest={(_cid, message) => {
+              if (Boolean(channel.data?.isNew)) {
+                channel.updatePartial({ set: { isNew: false } });
+              }
+
+              return channel.sendMessage({
                 ...message,
-                link_url: 'deep_link_direct_chats_screen'
-              })
-            }
+                link_url: 'deep_link_direct_chats_screen',
+                message_type: IFCMMessageTypes.DIRECT_MESSAGE_RECEIVED
+              });
+            }}
           >
             <MessageListContainer>
               <MessageList
