@@ -132,10 +132,6 @@ function StreamInputBox(props: InputProps) {
       trackChannelMessages();
     }
 
-    if (Boolean(channel.data?.isNew)) {
-      channel.updatePartial({ set: { isNew: false } });
-    }
-
     props.sendMessage();
   };
 

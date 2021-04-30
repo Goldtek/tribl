@@ -4,10 +4,13 @@ import { IconProps } from './types';
 
 export default function InboxIcon(props: IconProps) {
   const xml = `
-  <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M22 12.5H16L14 15.5H10L8 12.5H2" stroke="${props.fillColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M5.45 5.61L2 12.5V18.5C2 19.0304 2.21071 19.5391 2.58579 19.9142C2.96086 20.2893 3.46957 20.5 4 20.5H20C20.5304 20.5 21.0391 20.2893 21.4142 19.9142C21.7893 19.5391 22 19.0304 22 18.5V12.5L18.55 5.61C18.3844 5.27679 18.1292 4.99637 17.813 4.80028C17.4967 4.60419 17.1321 4.5002 16.76 4.5H7.24C6.86792 4.5002 6.50326 4.60419 6.18704 4.80028C5.87083 4.99637 5.61558 5.27679 5.45 5.61V5.61Z" stroke="${props.fillColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
+  <svg width="25" height="22" viewBox="0 0 25 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="14" height="14" transform="translate(1 7)" fill="white"/>
+<path d="M15 16.3333C15 16.7459 14.8361 17.1416 14.5444 17.4333C14.2527 17.725 13.857 17.8889 13.4444 17.8889H4.11111L1 21V8.55556C1 8.143 1.16389 7.74733 1.45561 7.45561C1.74733 7.16389 2.143 7 2.55556 7H13.4444C13.857 7 14.2527 7.16389 14.5444 7.45561C14.8361 7.74733 15 8.143 15 8.55556V16.3333Z" stroke=${props.fillColor} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect width="14" height="14" transform="translate(10 1)" fill="white"/>
+<path d="M24 10.3333C24 10.7459 23.8361 11.1416 23.5444 11.4333C23.2527 11.725 22.857 11.8889 22.4444 11.8889H13.1111L10 15V2.55556C10 2.143 10.1639 1.74733 10.4556 1.45561C10.7473 1.16389 11.143 1 11.5556 1H22.4444C22.857 1 23.2527 1.16389 23.5444 1.45561C23.8361 1.74733 24 2.143 24 2.55556V10.3333Z" stroke=${props.fillColor} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
   
 `;
 

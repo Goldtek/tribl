@@ -44,8 +44,8 @@ import FastImage from 'react-native-fast-image';
 import { Mixpanel } from '../../../config';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { JOIN_COMMUNITY_CHANNEL } from '../../../graphql/server/mutations';
-import { GET_COMMUNITY_CHANNELS } from '../../../graphql/server/query';
 import { crashlytics } from '../../../firebase/config';
+import { IFCMMessageTypes } from '../../../graphql/types';
 
 import {
   CountBadge,
@@ -354,12 +354,15 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
                 {route.params?.title}
               </Paragraph>
             </HeaderTitleContainer>
-            <IconButton
-              icon={(iconProps) => (
-                <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
-              )}
-              onPress={handleChannelNavigation}
-            />
+
+            {Boolean(channel.data) && (
+              <IconButton
+                icon={(iconProps) => (
+                  <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+                )}
+                onPress={handleChannelNavigation}
+              />
+            )}
           </Fragment>
         </HeaderContainer>
 
@@ -375,7 +378,8 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
             doSendMessageRequest={(_cid, message) =>
               channel.sendMessage({
                 ...message,
-                link_url: 'deep_link_channel_chat_screen'
+                link_url: 'deep_link_channel_chat_screen',
+                message_type: IFCMMessageTypes.CHANNEL_MESSAGE_RECEIVED
               })
             }
           >

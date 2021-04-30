@@ -17,7 +17,8 @@ import {
   MyPassportInterface,
   NotificationMessage,
   GenerateStreamsTokenRequestInterface,
-  PassportInterface
+  PassportInterface,
+  IFCMMessageTypes
 } from '../graphql/types';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
@@ -73,7 +74,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
 
     const data = (remoteMessage?.data as unknown) as NotificationMessage;
 
-    if (data.type === 'CONNECTION_REQUEST_RECEIVED') {
+    if (data.type === IFCMMessageTypes.CONNECTION_REQUEST_RECEIVED) {
       changeConnectionNotification({
         variables: { showConnectionNotificationBadge: true }
       });
@@ -151,9 +152,9 @@ const StreamProvider: FunctionComponent = ({ children }) => {
           PushNotification.configure({
             // (optional) Called when Token is generated (iOS and Android)
             onRegister: async ({ token, os }) => {
-              updatePassportFCM({ variables: { payload: { fcm: token } } });
-
               const fcmToken = await messaging.getToken();
+
+              updatePassportFCM({ variables: { payload: { fcm: fcmToken } } });
 
               await chatClient.addDevice(
                 os === 'ios' ? token : fcmToken,
