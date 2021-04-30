@@ -8,7 +8,6 @@ import { Share, SafeAreaView } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
 import { useTranslation } from 'react-i18next';
 // @ts-ignore
 import SingleImage from '../../libs/react-native-zoom-lightbox';

@@ -5,6 +5,7 @@ import PrivacyPolicyScreen from './privacyPolicy';
 import AccountSettingScreen from './accountSettings';
 import ConnectionRequestScreen from './connectionRequest';
 import BlockedAccountScreen from './blockedAccounts';
+import TribeRequestScreen from './communityRequest';
 
 export default {
   MyConnectionScreen,
@@ -13,5 +14,6 @@ export default {
   PrivacyScreen,
   PrivacyPolicyScreen,
   NotificationScreen,
-  BlockedAccountScreen
+  BlockedAccountScreen,
+  TribeRequestScreen
 };

@@ -65,13 +65,11 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
   const [text, setText] = useState('');
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
-
   const {
     setThread,
     setActivityScreen,
     setChannel: streamSetChannel
   } = useStreamContext();
-
   const [channel, setChannel] = useState<
     StreamChatChannel<
       LocalAttachmentType,
@@ -251,7 +249,9 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
                 <TouchableRipple
                   borderless
                   onPress={() =>
-                    navigation.navigate('DirectMessageInformation')
+                    navigation.navigate('DirectMessageInformation', {
+                      details: user
+                    })
                   }
                   style={{
                     height: RFValue(40),
@@ -285,7 +285,11 @@ export default function DeepLinkDirectChatScreen(props: ScreenProp) {
                 icon={(iconProps) => (
                   <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
                 )}
-                onPress={() => navigation.navigate('DirectMessageInformation')}
+                onPress={() =>
+                  navigation.navigate('DirectMessageInformation', {
+                    details: user
+                  })
+                }
               />
             )}
           </Fragment>

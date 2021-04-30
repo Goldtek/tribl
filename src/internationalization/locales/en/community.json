@@ -91,6 +91,7 @@
     "community": "community",
     "chat": "chat",
     "request": "connection requests",
+    "communityRequest": "tribe requests",
     "connection": "my connections",
     "userConnection": "connections",
     "notification": "notifications",
@@ -229,7 +230,9 @@
     "tribes": "tribes",
     "connections": "connections",
     "adminTribe": "admin tribes",
-    "cancel": "cancel"
+    "cancel": "cancel",
+    "communityInvite": "tribe invite",
+    "communityRequest": "new tribe request"
   },
   "invitation": {
     "title": "Invite friends to community",

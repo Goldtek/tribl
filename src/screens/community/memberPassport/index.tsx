@@ -5,6 +5,7 @@ import { ScrollView, FlatList } from 'react-native';
 import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useIsFocused } from '@react-navigation/native';
 // @ts-ignore
 import SingleImage from '../../../libs/react-native-zoom-lightbox';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -32,7 +33,6 @@ import { StatusBar } from 'expo-status-bar';
 import MyConnectionCard from '../../../components/MyConnectionCard';
 import MyCommunity from '../../../components/myCommunities';
 import TransferModal from '../../../components/transferModal';
-import { useIsFocused } from '@react-navigation/core';
 
 import {
   ContactContainer,
@@ -57,7 +57,6 @@ interface MemberDetailProps extends NavigationInterface {
 
 export default function PassportDetail(props: MemberDetailProps) {
   const { navigation } = props;
-
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
@@ -120,6 +119,10 @@ export default function PassportDetail(props: MemberDetailProps) {
     tagScreenName('MemberPassportScreen');
     logEvent('view member passport', { from: 'passport' });
   }, []);
+
+  useEffect(() => {
+    singlePassport && refetch();
+  }, [isFocused]);
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {

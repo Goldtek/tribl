@@ -211,6 +211,11 @@ export default function DrawerStackNavigator() {
         component={AccountScreens.MyConnectionScreen}
       />
 
+      <DrawerStack.Screen
+        name="TribeRequestScreen"
+        component={AccountScreens.TribeRequestScreen}
+      />
+
       <DrawerStack.Screen name="MyNotifications">
         {(props) => (
           <StreamApp

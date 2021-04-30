@@ -735,7 +735,9 @@ function ContactSlide(props: ScreenProp) {
               {select.identity.map((identity) => (
                 <IdentityText
                   key={identity.id}
-                  onPress={() => handleSelectIdentity(identity.name)}
+                  onPress={() =>
+                    click ? {} : handleSelectIdentity(identity.name)
+                  }
                 >
                   {identity.name}
                   {!click ? (
