@@ -313,7 +313,7 @@ export default function GroupInformation(props: GroupInformationProp) {
               {`, ${groupCreationDate}`}
             </Paragraph>
           </InfoWrapper>
-          {displayEdit && (
+          {displayEdit && isAdmin && (
             <TouchableRipple onPress={openModal}>
               <Entypo name="edit" size={25} color={colors.PRIMARY} />
             </TouchableRipple>
