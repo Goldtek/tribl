@@ -118,12 +118,20 @@ type Connection = {
 };
 
 export enum IFCMMessageTypes {
+  TRIBE_INVITE_ACCEPTED = 'TRIBE_INVITE_ACCEPTED',
+  TRIBE_INVITE_REQUESTED = 'TRIBE_INVITE_REQUESTED',
+  CHANNEL_INVITE_ACCEPTED = 'CHANNEL_INVITE_ACCEPTED',
+  DIRECT_MESSAGE_RECEIVED = 'DIRECT_MESSAGE_RECEIVED',
+  THREAD_MESSAGE_RECEIVED = 'THREAD_MESSAGE_RECEIVED',
+  CHANNEL_INVITE_REQUESTED = 'CHANNEL_INVITE_REQUESTED',
+  CHANNEL_MESSAGE_RECEIVED = 'CHANNEL_MESSAGE_RECEIVED',
   CONNECTION_REQUEST_RECEIVED = 'CONNECTION_REQUEST_RECEIVED',
-  CONNECTION_REQUEST_ACCEPTED = 'CONNECTION_REQUEST_ACCEPTED',
-  MESSAGE_RECEIVED = 'MESSAGE_RECEIVED'
+  CONNECTION_REQUEST_ACCEPTED = 'CONNECTION_REQUEST_ACCEPTED'
 }
 
-type NotificationMessage = {
+export type NotificationMessageType = keyof typeof IFCMMessageTypes;
+
+export type NotificationMessage = {
   channelType: string;
   channelId: string;
   sender_id: string;
@@ -131,26 +139,7 @@ type NotificationMessage = {
   sender_title: string;
   message: string;
   link_url: string;
-  message: string;
-  link_url: string;
-  type: IFCMMessageTypes;
-};
-
-type NotificationMetaData = {
-  route: string;
-  data: {
-    id?: string;
-    title?: string;
-    chatId?: string;
-    senderId?: string;
-    avatar?: string;
-    firstName?: string;
-    lastName?: string;
-    communityCount?: number;
-    connectionCount?: number;
-    phoneNumber?: string;
-    receiverId?: string;
-  };
+  type: NotificationMessageType;
 };
 
 type Citizenship = {
@@ -256,31 +245,23 @@ type CommunityPrivacy = {
   visibility: PrivacyStatus;
 };
 
-type Citizenship = {
-  name: string;
-  flag: string;
-};
-
 export interface CommunityInterface {
   id: string;
   name: string;
   avatar: string;
+  tags: Interest[];
   isMember: boolean;
-  isModerator: boolean;
   isPrivate: boolean;
-  isRequested: boolean;
   isInvited: boolean;
   description: string;
   membersCount: number;
-  channels: ChannelInterface[];
-  tags: Interest[];
-  uniqueInterests: {
-    name;
-    id;
-  }[];
+  isRequested: boolean;
+  isModerator: boolean;
   privacy: CommunityPrivacy;
+  channels: ChannelInterface[];
   moderators: PassportInterface[];
   participants: PassportInterface[];
+  uniqueInterests: { name: string; id: string }[];
 }
 
 /*
@@ -316,12 +297,12 @@ type QueryMetadata = {
 };
 
 // SERVER VERIFY OTP (RESPONSE) TYPE
-interface VerifyOTPIT extends JwtTokenResult {
+export interface VerifyOTPIT extends JwtTokenResult {
   __typename: string;
 }
 
 // LOCAL REGISTRATION OBJECT TYPE
-interface RegistrationInfo {
+export interface RegistrationInfo {
   route: RootStackParamScreensList;
   completed?: boolean;
   user?: {
@@ -336,7 +317,7 @@ interface RegistrationInfo {
   };
 }
 
-interface ShowModal {
+export interface ShowModal {
   community: string[];
 }
 

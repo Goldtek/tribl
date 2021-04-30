@@ -58,7 +58,7 @@ function CustomDirectMessage(props: MessageProps) {
     }
   };
 
-  const [receiver] = Object.values(channel?.state?.members)?.filter(
+  const [receiver] = Object.values(channel?.state?.members || {})?.filter(
     ({ user }) => user?.id !== chatClient.user?.id
   );
 

@@ -116,32 +116,6 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
     });
   };
 
-  // const handleBlockDM = async () => {
-  //   Alert.alert('Block user', `Are you sure you want to block this user`, [
-  //     {
-  //       text: 'Cancel',
-  //       onPress: () => {},
-  //       style: 'cancel'
-  //     },
-  //     {
-  //       text: 'Block',
-  //       onPress: async () => {
-  //         try {
-  //           navigation.navigate('InboxScreen');
-  //         } catch (error) {
-  //           crashlytics.recordError(new Error(error));
-  // crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-  //         }
-  //       }
-  //     }
-  //   ]);
-  // };
-
-  const handleReportGroup = async () => {
-    // await leaveChannel({ variables: { payload: { channelId: channel.id } } });
-    // navigation.goBack();
-  };
-
   const [reportModalVisible, setReportModalVisible] = useState(false);
 
   const showReportModal = useCallback(
