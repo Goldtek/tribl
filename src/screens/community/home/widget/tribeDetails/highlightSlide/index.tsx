@@ -126,14 +126,17 @@ export default function newTribe(props: newTribeDetailsScreenProp) {
     try {
       const { data } = await createTribe();
       if (data) {
-        navigation.navigate('NewTribeScreen', {
-          name: detail?.details?.name,
-          image: avatar,
-          memberCount: membersCount,
-          tags: selectedTag,
-          description: state.description,
-          private: detail?.details.private,
-          data: data
+        navigation.navigate('DrawerScreen', {
+          screen: 'NewTribeScreen',
+          params: {
+            name: detail?.details?.name,
+            image: avatar,
+            memberCount: membersCount,
+            tags: selectedTag,
+            description: state.description,
+            private: detail?.details.private,
+            data: data
+          }
         });
       }
     } catch (error) {
