@@ -459,10 +459,10 @@ export default function DrawerStackNavigator() {
             headerShown: true,
             headerTitle: () => null,
             headerTitleStyle: {
+              borderWidth: 1,
               color: colors.PRIMARY_TEXT,
               fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              textTransform: 'capitalize'
+              fontFamily: fonts.WORK_SANS_BOLD
             },
             headerTitleContainerStyle: {
               flex: 1,

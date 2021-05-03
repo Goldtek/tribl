@@ -9,7 +9,6 @@ import { useThemeContext } from '../../theme';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import GradientButton from '../../components/gradientButton';
-import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
   ShowConnectionNotificationBadge,
@@ -22,6 +21,7 @@ import {
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
 import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
+import { MenuBadgeWrapper } from '../bottomNavigator/TabBar/styles';
 
 const ChatStack = createStackNavigator();
 

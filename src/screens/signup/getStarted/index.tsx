@@ -44,6 +44,7 @@ import { crashlytics } from '../../../firebase/config';
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
 import hexToRGB from '../../../utils/hexToRGB';
+import { StatusBar } from 'expo-status-bar';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -153,6 +154,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
             />
           </Container>
 
+          <StatusBar style="dark" />
           <Container style={{ flex: 1, paddingTop: RFValue(20) }}>
             <Title
               style={{
@@ -253,6 +255,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                     borderBottomColor: colors.DISABLED
                   }}
                 >
+                  <StatusBar style="light" />
                   <Container
                     style={{ flexDirection: 'row', alignItems: 'center' }}
                   >

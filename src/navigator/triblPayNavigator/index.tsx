@@ -33,7 +33,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           headerRight: () => (
             <HeaderRightCover>
               <Image
-                source={require('../../../assets/images/triblLogo.png')}
+                source={require('../../../assets/images/logo.png')}
                 style={{
                   resizeMode: 'contain',
                   width: RFValue(30),
@@ -151,7 +151,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           headerRight: () => (
             <HeaderRightCover>
               <Image
-                source={require('../../../assets/images/triblLogo.png')}
+                source={require('../../../assets/images/logo.png')}
                 style={{
                   resizeMode: 'contain',
                   width: RFValue(30),

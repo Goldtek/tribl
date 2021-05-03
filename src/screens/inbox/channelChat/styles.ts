@@ -1,7 +1,6 @@
 import Constants from 'expo-constants';
 import { Surface } from 'react-native-paper';
 import styled from 'styled-components/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const ChatContainer = styled.View`
   flex: 1;

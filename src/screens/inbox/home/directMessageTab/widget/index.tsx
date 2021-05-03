@@ -134,13 +134,13 @@ export default function CustomDirectMessagePreview(
   };
 
   const handleNavigate = () => {
-    setChannel(channel as any);
     navigation.navigate('DrawerScreen', {
       screen: channelDetails?.isGroup
         ? 'ChannelChatScreen'
         : 'DirectChatScreen',
       params: { channelId: channel.id, title: channelDetails?.name }
     });
+    setChannel(channel as any);
   };
 
   return (

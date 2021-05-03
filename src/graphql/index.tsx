@@ -35,7 +35,7 @@ const retryLink = new RetryLink({
     initial: 100,
     jitter: true
   },
-  attempts: { max: 5, retryIf: (error, _operation) => !!error }
+  attempts: { max: 3, retryIf: (error, _operation) => !!error }
 });
 
 // using the ability to split links, you can send data to each link

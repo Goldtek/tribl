@@ -23,9 +23,10 @@ import AdminBadge from '../adminBadge';
 import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
 import { PAGINATION_DEFAULT } from '../../constants';
+import { TouchableOpacity } from 'react-native';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { TextContainer, AvatarContainer } from './styles';
+import { TextContainer, Container, AvatarContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp extends PassportInterface {}
@@ -160,29 +161,8 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   };
 
   return (
-    <Card
-      onPress={handleNavigation}
-      style={{
-        width: RFValue(DEVICE_FULL_WIDTH / 3),
-        height: RFValue(215),
-        alignItems: 'center',
-        borderRadius: 5,
-        marginBottom: 20,
-        marginRight: 15,
-        borderWidth: 0.5,
-        borderColor: hexToRGB(colors.DISABLED, 0.3)
-      }}
-    >
-      <Card.Content
-        style={{
-          width: RFValue(DEVICE_FULL_WIDTH / 3),
-          height: '100%',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingLeft: 0,
-          paddingRight: 0
-        }}
-      >
+    <TouchableOpacity onPress={handleNavigation} activeOpacity={0.5}>
+      <Container>
         <AvatarContainer>
           <FastImage
             resizeMode={FastImage.resizeMode.contain}
@@ -323,7 +303,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             {t(`community.recommended.add`)}+
           </Button>
         )}
-      </Card.Content>
-    </Card>
+      </Container>
+    </TouchableOpacity>
   );
 }
