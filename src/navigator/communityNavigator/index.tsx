@@ -529,13 +529,27 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerStyle: GLOBAL_HEADER_STYLE
         }}
       /> */}
-      <CommunityStack.Screen
+      {/* <CommunityStack.Screen
         name="NewTribeScreen"
         component={Screens.NewTribeScreen}
         options={({ route }) => ({
           //@ts-ignore
           headerTitle: route.params?.name,
-          headerLeft: () => null,
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={() => navigation.navigate('CommunityScreen')}
+              style={{
+                height: 40,
+                width: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 40 / 2,
+                marginRight: 10
+              }}
+            >
+              <Feather name="chevron-left" size={34} color={colors.PRIMARY} />
+            </TouchableRipple>
+          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerTitleStyle: {
@@ -546,7 +560,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
-      />
+      /> */}
       <CommunityStack.Screen
         name="CommunityRequestScreen"
         component={Screens.CommunityRequestScreen}
