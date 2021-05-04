@@ -142,12 +142,12 @@ export default function PassportScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
-  const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
-    GET_CONNECTION_REQUEST,
-    {
-      variables: { input: { limit: PAGINATION_DEFAULT } }
-    }
-  );
+  const [
+    getConnectionRequest,
+    { data: connectionRequestData }
+  ] = useLazyQuery(GET_CONNECTION_REQUEST, {
+    variables: { input: { limit: PAGINATION_DEFAULT } }
+  });
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: 8 } }

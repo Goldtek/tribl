@@ -87,7 +87,6 @@ export default function CreateGroup(props: ScreenProp) {
           members,
           name: subject,
           isDm: false,
-          isNew: false,
           isGroup: true
         }
       );
