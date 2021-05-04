@@ -2,6 +2,7 @@ import React, {
   useState,
   useEffect,
   useContext,
+  useCallback,
   FunctionComponent
 } from 'react';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -19,7 +20,8 @@ import {
   GenerateStreamsTokenRequestInterface,
   PassportInterface,
   IFCMMessageTypes,
-  VerifyOTPIT
+  VerifyOTPIT,
+  Citizenship
 } from '../graphql/types';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
@@ -102,109 +104,116 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     crashlytics.log('USER SINGED IN SUCCESSFULLY.');
   };
 
-  useEffect(() => {
-    if (userData?.myPassport.id) {
-      const user: UserResponse<LocalUserType> = {
-        id: `${userData?.myPassport.id}`,
-        image: `${userData?.myPassport.avatar}`,
-        citizenship: `${userData?.myPassport.citizenship}`,
-        name: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`,
-        value: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`
-      };
+  const initChat = useCallback(async () => {
+    if (
+      !userData?.myPassport.id &&
+      !userData?.myPassport.avatar &&
+      !userData?.myPassport.firstName &&
+      !userData?.myPassport.lastName
+    ) {
+      return;
+    }
 
-      // Initializes Stream's chat client.
-      // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
-      const initChat = async () => {
-        try {
-          await chatClient.disconnect();
-          const streamUser = await chatClient.connectUser(user, async () => {
-            const { data } = await authenticateStream();
-            return `${data?.generateStreamsToken.streams_token}`;
+    const user: UserResponse<LocalUserType> = {
+      id: `${userData?.myPassport.id}`,
+      image: `${userData?.myPassport.avatar}`,
+      citizenship: JSON.stringify(userData?.myPassport.citizenship),
+      name: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`,
+      value: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`
+    };
+
+    try {
+      await chatClient.disconnect();
+      const streamUser = await chatClient.connectUser(user, async () => {
+        const { data } = await authenticateStream();
+        return `${data?.generateStreamsToken.streams_token}`;
+      });
+
+      onSignIn(userData?.myPassport);
+
+      if (streamUser && streamUser.me?.total_unread_count) {
+        changeMessageNotification({
+          variables: { showMessageNotificationBadge: true }
+        });
+      }
+
+      chatClient.on((event) => {
+        if (
+          event.total_unread_count !== undefined &&
+          event.total_unread_count >= 1
+        ) {
+          changeMessageNotification({
+            variables: { showMessageNotificationBadge: true }
           });
+        } else if (
+          event.total_unread_count !== undefined &&
+          event.total_unread_count === 0
+        ) {
+          changeMessageNotification({
+            variables: { showMessageNotificationBadge: false }
+          });
+        }
+      });
 
-          onSignIn(userData?.myPassport);
+      // Must be outside of any component LifeCycle (such as `componentDidMount`).
+      PushNotification.configure({
+        // (optional) Called when Token is generated (iOS and Android)
+        onRegister: async ({ token, os }) => {
+          const fcmToken = await messaging.getToken();
+          const userCredStorageData = await Storage.getUserCredentials();
 
-          if (streamUser && streamUser.me?.total_unread_count) {
-            changeMessageNotification({
-              variables: { showMessageNotificationBadge: true }
-            });
-          }
+          if (userCredStorageData) {
+            const credentials = JSON.parse(userCredStorageData) as VerifyOTPIT;
 
-          chatClient.on((event) => {
-            if (
-              event.total_unread_count !== undefined &&
-              event.total_unread_count >= 1
-            ) {
-              changeMessageNotification({
-                variables: { showMessageNotificationBadge: true }
-              });
-            } else if (
-              event.total_unread_count !== undefined &&
-              event.total_unread_count === 0
-            ) {
-              changeMessageNotification({
-                variables: { showMessageNotificationBadge: false }
+            if (credentials.id_token) {
+              updatePassportFCM({
+                variables: { payload: { fcm: fcmToken } }
               });
             }
+          }
+
+          await chatClient.addDevice(
+            os === 'ios' ? token : fcmToken,
+            os === 'ios' ? 'apn' : 'firebase',
+            userData?.myPassport.id
+          );
+
+          const { devices } = await chatClient.getDevices();
+
+          devices?.forEach((device) => {
+            if (device.disabled) {
+              chatClient.removeDevice(`${device?.id}`);
+            }
           });
+        },
 
-          // Must be outside of any component LifeCycle (such as `componentDidMount`).
-          PushNotification.configure({
-            // (optional) Called when Token is generated (iOS and Android)
-            onRegister: async ({ token, os }) => {
-              const fcmToken = await messaging.getToken();
-              const userCredStorageData = await Storage.getUserCredentials();
+        // (required) Called when a remote is received or opened, or local notification is opened
+        onNotification: (notification) => {
+          // (required) Called when a remote is received or opened, or local notification is opened
+          notification.finish(PushNotificationIOS.FetchResult.NoData);
+        },
 
-              if (userCredStorageData) {
-                const credentials = JSON.parse(
-                  userCredStorageData
-                ) as VerifyOTPIT;
-
-                if (credentials.id_token) {
-                  updatePassportFCM({
-                    variables: { payload: { fcm: fcmToken } }
-                  });
-                }
-              }
-
-              await chatClient.addDevice(
-                os === 'ios' ? token : fcmToken,
-                os === 'ios' ? 'apn' : 'firebase',
-                userData?.myPassport.id
-              );
-
-              const { devices } = await chatClient.getDevices();
-
-              devices?.forEach((device) => {
-                if (device.disabled) {
-                  chatClient.removeDevice(`${device?.id}`);
-                }
-              });
-            },
-
-            // (required) Called when a remote is received or opened, or local notification is opened
-            onNotification: (notification) => {
-              // (required) Called when a remote is received or opened, or local notification is opened
-              notification.finish(PushNotificationIOS.FetchResult.NoData);
-            },
-
-            // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-            onRegistrationError: (error) => {
-              crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-              return crashlytics.recordError(new Error(error));
-            },
-
-            // IOS ONLY (optional): default: all - Permissions to register.
-            permissions: { alert: true, badge: true, sound: true },
-
-            requestPermissions: true
-          });
-        } catch (error) {
-          crashlytics.recordError(new Error(error));
+        // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
+        onRegistrationError: (error) => {
           crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-        }
-      };
+          return crashlytics.recordError(new Error(error));
+        },
 
+        // IOS ONLY (optional): default: all - Permissions to register.
+        permissions: { alert: true, badge: true, sound: true },
+
+        requestPermissions: true
+      });
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+    }
+  }, [userData?.myPassport.id]);
+
+  useEffect(() => {
+    if (userData?.myPassport.id) {
+      // Initializes Stream's chat client.
+      // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
       if (!chatClient.user?.id) {
         initChat();
       }

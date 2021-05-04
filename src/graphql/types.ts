@@ -148,7 +148,7 @@ export type NotificationMessage = {
   type: NotificationMessageType;
 };
 
-type Citizenship = {
+export type Citizenship = {
   id: string;
   name: string;
   flag: string;
