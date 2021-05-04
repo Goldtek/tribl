@@ -168,16 +168,16 @@ export default function AppNavigator() {
         return `${defaultUrl}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`;
 
       case IFCMMessageTypes.CONNECTION_REQUEST_ACCEPTED:
-        return `${defaultUrl}/connection_chat_screen`;
+        return `${defaultUrl}`;
 
       case IFCMMessageTypes.CONNECTION_REQUEST_RECEIVED:
         changeConnectionNotification({
           variables: { showConnectionNotificationBadge: true }
         });
-        return `${defaultUrl}/connection_request_screen`;
+        return `${defaultUrl}`;
 
       default:
-        return `${defaultUrl}/${data.link_url}`;
+        return `${defaultUrl}`;
     }
   };
 

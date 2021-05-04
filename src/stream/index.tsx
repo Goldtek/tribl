@@ -18,7 +18,8 @@ import {
   NotificationMessage,
   GenerateStreamsTokenRequestInterface,
   PassportInterface,
-  IFCMMessageTypes
+  IFCMMessageTypes,
+  VerifyOTPIT
 } from '../graphql/types';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
@@ -27,12 +28,15 @@ import {
 import fcmMessaging, {
   FirebaseMessagingTypes
 } from '@react-native-firebase/messaging';
+import { UserResponse } from 'stream-chat';
+import Storage from '../libs/storage';
 
 import {
   ThreadType,
   chatClient,
   ChannelType,
   StreamContext,
+  LocalUserType,
   ActivityScreenType
 } from './types';
 
@@ -99,10 +103,11 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   };
 
   useEffect(() => {
-    if (userData?.myPassport) {
-      const user = {
+    if (userData?.myPassport.id) {
+      const user: UserResponse<LocalUserType> = {
         id: `${userData?.myPassport.id}`,
         image: `${userData?.myPassport.avatar}`,
+        citizenship: `${userData?.myPassport.citizenship}`,
         name: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`,
         value: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`
       };
@@ -112,15 +117,10 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       const initChat = async () => {
         try {
           await chatClient.disconnect();
-          const streamUser = await chatClient.connectUser(
-            //@ts-ignore
-            user,
-            //@ts-ignore
-            async () => {
-              const { data } = await authenticateStream();
-              return data?.generateStreamsToken.streams_token;
-            }
-          );
+          const streamUser = await chatClient.connectUser(user, async () => {
+            const { data } = await authenticateStream();
+            return `${data?.generateStreamsToken.streams_token}`;
+          });
 
           onSignIn(userData?.myPassport);
 
@@ -153,8 +153,19 @@ const StreamProvider: FunctionComponent = ({ children }) => {
             // (optional) Called when Token is generated (iOS and Android)
             onRegister: async ({ token, os }) => {
               const fcmToken = await messaging.getToken();
+              const userCredStorageData = await Storage.getUserCredentials();
 
-              updatePassportFCM({ variables: { payload: { fcm: fcmToken } } });
+              if (userCredStorageData) {
+                const credentials = JSON.parse(
+                  userCredStorageData
+                ) as VerifyOTPIT;
+
+                if (credentials.id_token) {
+                  updatePassportFCM({
+                    variables: { payload: { fcm: fcmToken } }
+                  });
+                }
+              }
 
               await chatClient.addDevice(
                 os === 'ios' ? token : fcmToken,
@@ -198,7 +209,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
         initChat();
       }
     }
-  }, [userData?.myPassport]);
+  }, [userData?.myPassport.id]);
 
   return (
     <StreamContext.Provider

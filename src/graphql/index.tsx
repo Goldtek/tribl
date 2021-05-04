@@ -2,13 +2,12 @@ import React, { FunctionComponent } from 'react';
 import { ApolloLink, Observable, Operation, split } from 'apollo-link';
 import { ApolloProvider as Provider } from '@apollo/react-hooks';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
+import checkRefreshToken from '../utils/checkRefreshToken';
 import { getMainDefinition } from 'apollo-utilities';
 import { crashlytics } from '../firebase/config';
-import { refreshToken } from '../network/query';
 import { WebSocketLink } from 'apollo-link-ws';
 import { RetryLink } from 'apollo-link-retry';
 import ENVIRONMENT_VARIABLES from '../config';
-import jsonwebtoken from 'jwt-decode';
 import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
@@ -16,7 +15,6 @@ import resolvers from './cache/resolvers';
 import Storage from '../libs/storage';
 import { VerifyOTPIT } from './types';
 import cache from './cache';
-import { addMinutes, fromUnixTime } from 'date-fns';
 
 // Create a Http link:
 const httpLink = new HttpLink({
@@ -53,25 +51,6 @@ const link = split(
   httpLink
 );
 
-const checkRefreshToken = async (credentials: VerifyOTPIT) => {
-  const payload: null | { [key: string]: any } | any = jsonwebtoken(
-    credentials.id_token
-  );
-
-  const tokenExpiryTime = fromUnixTime(payload?.exp);
-  const tokenExpiryMinute = addMinutes(new Date(), 30);
-  const expiryHour = tokenExpiryTime.getTime() <= tokenExpiryMinute.getTime();
-
-  if (!expiryHour) return;
-
-  try {
-    const { data } = await refreshToken(credentials.refresh_token);
-    await Storage.setUserCredentials(data?.refreshToken);
-  } catch (error) {
-    crashlytics.recordError(new Error(`[GraphQL error]: Message: ${error}`));
-  }
-};
-
 const request = async (operation: Operation) => {
   const storageData = await Storage.getUserCredentials();
 
@@ -105,7 +84,6 @@ const requestLink = new ApolloLink(
 
 const handleErrors = onError(({ graphQLErrors, networkError }) => {
   // SUBSCRIBE THIS TO A THIRD PARTY LOG ANALYTICS
-
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) =>
       crashlytics.recordError(

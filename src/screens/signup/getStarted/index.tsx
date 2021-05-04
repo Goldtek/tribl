@@ -27,11 +27,7 @@ import {
   OTPInterface,
   VerifyOTPIT
 } from '../../../graphql/types';
-import {
-  DEVICE_ID,
-  APP_VERSION,
-  DEVICE_FULL_WIDTH
-} from '../../../utils/device';
+import { DEVICE_ID, APP_VERSION } from '../../../utils/device';
 import GradientButton from '../../../components/gradientButton';
 import { htmlContent } from './licence';
 import {
@@ -77,10 +73,15 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   };
 
   const userDetails = data?.userDetails;
-
   const country = countriesDB.getCountry(userDetails?.countryCode);
 
-  const onChangeText = (phoneNumber: string) => setPhoneNumber(phoneNumber);
+  const onChangeText = (phoneNumber: string) => {
+    if (
+      phoneNumber.substring(0, country?.phoneCode?.length) == country?.phoneCode
+    ) {
+      setPhoneNumber(phoneNumber);
+    }
+  };
 
   const [sendOtp, { loading }] = useMutation<OTPInterface>(SEND_USER_OTP, {
     variables: { payload: { phoneNumber, deviceId: DEVICE_ID } }
@@ -119,7 +120,13 @@ export default function getStartedScreenScreen(props: ScreenProp) {
       closeModal();
       handleSubmit();
     }
-  }, [licenceAccepted, phoneNumber, isSubmit]);
+  }, [licenceAccepted, isSubmit]);
+
+  useEffect(() => {
+    if (country?.phoneCode) {
+      setPhoneNumber(country?.phoneCode);
+    }
+  }, [country.phoneCode]);
 
   const handleAccept = async () => {
     await Storage.setEULA();
@@ -190,7 +197,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
 
             <Input
               placeholder={t(`signup.getStartedScreen.placeholder`)}
-              defaultValue={country?.phoneCode}
+              value={phoneNumber}
               onChangeText={onChangeText}
               keyboardType="phone-pad"
               returnKeyType="done"
