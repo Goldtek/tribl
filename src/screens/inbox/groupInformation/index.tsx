@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { NavigationInterface } from '../../types';
 import {
   Text,
@@ -17,7 +17,7 @@ import { crashlytics } from '../../../firebase/config';
 import { useThemeContext } from '../../../theme';
 import { tagScreenName } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
-import { chatClient } from '../../../stream/types';
+import { chatClient, LocalUserType } from '../../../stream/types';
 import { Mixpanel } from '../../../config';
 import { USER_DEFAULT_AVATAR } from '../../../constants';
 import BrickList from 'react-native-masonry-brick-list';
@@ -35,19 +35,33 @@ import {
   HeaderImageContainer,
   HeaderTitleContainer,
   ChannelInformationContainer,
-  CoverImageOverlay
+  CoverImageOverlay,
+  InfoWrapper
 } from './styles';
+import EditGroupName from './widgets';
+import { Modalize } from 'react-native-modalize';
+import { useNavigation } from '@react-navigation/native';
 
 // DEFINE SCREEN PROP TYPES
-interface GroupInformationProp extends NavigationInterface {}
+// interface GroupInformationProp extends NavigationInterface {}
+
+interface GroupInformationProp extends LocalUserType {}
 
 export default function GroupInformation(props: GroupInformationProp) {
-  const { navigation } = props;
+  const user = props;
 
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { channel } = useStreamContext();
   const { colors, fonts } = useThemeContext();
   const [loading, setLoading] = useState(false);
+  const modalizeRef = useRef<Modalize>(null);
+  const openModal = () => modalizeRef.current?.open();
+
+  const groupAdmin = channel.data?.created_by;
+
+  const isAdmin = groupAdmin?.id === chatClient.user?.id ? true : false;
+  const displayEdit = user?.id !== chatClient.user?.id ? true : false;
 
   useEffect(() => {
     tagScreenName('GroupInformationScreen');
@@ -268,36 +282,6 @@ export default function GroupInformation(props: GroupInformationProp) {
         showsVerticalScrollIndicator={false}
       >
         <HeaderImageContainer>
-          {/* <Image
-            source={{
-              uri: channelMembers[0]?.user?.image || USER_DEFAULT_AVATAR
-            }}
-            style={{ flex: 1, width: undefined, height: undefined }}
-            resizeMode="repeat"
-            blurRadius={3}
-          />
-          <Image
-            source={{
-              uri:
-                channelMembers[channelMembers?.length - 2]?.user?.image ||
-                USER_DEFAULT_AVATAR
-            }}
-            style={{ flex: 2, width: undefined, height: undefined }}
-            resizeMode="repeat"
-            blurRadius={1}
-          />
-
-          <Image
-            source={{
-              uri:
-                channelMembers[channelMembers?.length - 1]?.user?.image ||
-                USER_DEFAULT_AVATAR
-            }}
-            style={{ flex: 1, width: undefined, height: undefined }}
-            resizeMode="repeat"
-            blurRadius={3}
-          /> */}
-
           <BrickList
             data={images}
             renderItem={(prop: any) => BrickImages(prop)}
@@ -306,25 +290,34 @@ export default function GroupInformation(props: GroupInformationProp) {
         </HeaderImageContainer>
 
         <ChannelInformationContainer>
-          <Text
-            style={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE + 1),
-              color: colors.PRIMARY,
-              textTransform: 'capitalize'
-            }}
-          >
-            {`#${channel.data?.name}`}
-          </Text>
-          <Paragraph
-            style={{
-              fontSize: fonts.MEDIUM_SIZE,
-              fontFamily: fonts.WORK_SANS_MEDIUM
-            }}
-          >
-            {t(`community.chat.groupCreatedBy`)} {channel.data?.created_by.name}
-            {`, ${groupCreationDate}`}
-          </Paragraph>
+          <InfoWrapper>
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 1),
+                color: colors.PRIMARY,
+                textTransform: 'capitalize'
+              }}
+            >
+              {`#${channel.data?.name}`}
+            </Text>
+
+            <Paragraph
+              style={{
+                fontSize: fonts.MEDIUM_SIZE,
+                fontFamily: fonts.WORK_SANS_MEDIUM
+              }}
+            >
+              {t(`community.chat.groupCreatedBy`)}{' '}
+              {channel.data?.created_by.name}
+              {`, ${groupCreationDate}`}
+            </Paragraph>
+          </InfoWrapper>
+          {displayEdit && isAdmin && (
+            <TouchableRipple onPress={openModal}>
+              <Entypo name="edit" size={25} color={colors.PRIMARY} />
+            </TouchableRipple>
+          )}
         </ChannelInformationContainer>
 
         <Divider style={{ backgroundColor: colors.INPUT }} />
@@ -469,6 +462,13 @@ export default function GroupInformation(props: GroupInformationProp) {
           </ModalContentWrapper>
         </Overlay>
       </Modal>
+      <EditGroupName
+        modalizeRef={modalizeRef}
+        channel={channel}
+        isAdmin={isAdmin}
+        displayEdit={displayEdit}
+        user={user}
+      />
     </Container>
   );
 }
