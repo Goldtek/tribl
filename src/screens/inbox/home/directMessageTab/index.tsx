@@ -24,8 +24,8 @@ function DirectMessageTab(props: ScreenProp) {
   const filters = {
     members: { $in: [chatClient.user?.id] },
     $or: [{ isDm: true }, { isGroup: true }],
-    type: 'team',
-    isNew: false
+    last_message_at: { $gt: new Date(2021, 1, 1) },
+    type: 'team'
   };
 
   const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };

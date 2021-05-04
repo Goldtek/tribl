@@ -24,11 +24,7 @@ function ChannelsTab(props: ScreenProp) {
   const filters = {
     type: 'team',
     members: { $in: [chatClient.user?.id] },
-    $and: [
-      { isDm: { $ne: true } },
-      { isNew: { $ne: true } },
-      { isGroup: { $ne: true } }
-    ]
+    $and: [{ isDm: { $ne: true } }, { isGroup: { $ne: true } }]
   };
 
   const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };

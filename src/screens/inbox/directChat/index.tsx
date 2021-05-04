@@ -145,17 +145,13 @@ export default function DirectChatScreen(props: ScreenProp) {
             //@ts-ignore
             channel={channel}
             KeyboardCompatibleView={CustomKeyboardCompatibleView}
-            doSendMessageRequest={(_cid, message) => {
-              if (Boolean(channel.data?.isNew)) {
-                channel.updatePartial({ set: { isNew: false } });
-              }
-
-              return channel.sendMessage({
+            doSendMessageRequest={(_cid, message) =>
+              channel.sendMessage({
                 ...message,
                 link_url: 'deep_link_direct_chats_screen',
                 message_type: IFCMMessageTypes.DIRECT_MESSAGE_RECEIVED
-              });
-            }}
+              })
+            }
           >
             <MessageListContainer>
               <MessageList

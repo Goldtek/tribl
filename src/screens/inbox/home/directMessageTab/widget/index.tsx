@@ -57,7 +57,9 @@ export default function CustomDirectMessagePreview(
     latestMessageLength = 40
   } = props;
 
-  if (Boolean(channel.data?.isNew)) return null;
+  // if (!Boolean(channel.state.last_message_at)) {
+  //   return null;
+  // }
 
   const navigation = useNavigation();
   const { colors } = useThemeContext();
