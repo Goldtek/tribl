@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
-import { NavigationInterface } from '../../../../types';
+import React, { Fragment } from 'react';
+import { Text, TouchableRipple } from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
 import { Title } from 'react-native-paper';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { NavigationInterface } from '../../../../types';
+import { StatusBar } from 'react-native';
+import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../theme';
 import highlightSlide from './highlightSlide';
-import channelSlide from './highlightSlide';
-import memberSlide from './highlightSlide';
-import { StatusBar } from 'expo-status-bar';
+import channelSlide from './channelSlide';
+import Header from '../../../../../components/header';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import memberSlide from './membersSlide';
 import { GLOBAL_HEADER_STYLE } from '../../../../../constants';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -20,9 +24,10 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function SearchScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
+  const { navigation } = props;
   const { t } = useTranslation();
+  const { top } = useSafeAreaInsets();
   const details = props.route.params;
-  const [isMember, setIsMember] = useState(false);
   const [tabIndex, setTabIndex] = React.useState(0);
   const [routes] = React.useState([
     {
@@ -32,11 +37,13 @@ export default function SearchScreen(props: ScreenProp) {
     },
     {
       key: 'channelSlide',
-      title: `${t(`community.tabPanel.channel`)}`
+      title: `${t(`community.tabPanel.channel`)}`,
+      communityDetails: details
     },
     {
       key: 'memberSlide',
-      title: `${t(`community.tabPanel.member`)}`
+      title: `${t(`community.tabPanel.member`)}`,
+      communityDetails: details
     }
   ]);
 
@@ -55,11 +62,7 @@ export default function SearchScreen(props: ScreenProp) {
           ? fonts.WORK_SANS_SEMI_BOLD
           : fonts.WORK_SANS_REGULAR,
         fontSize: RFValue(fonts.LARGE_SIZE + 1),
-        color: focused
-          ? colors.PRIMARY
-          : !isMember
-          ? colors.INACTIVE
-          : colors.PRIMARY_TEXT,
+        color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
         textTransform: 'capitalize',
         marginTop: 0,
         marginBottom: 0,
@@ -90,20 +93,52 @@ export default function SearchScreen(props: ScreenProp) {
   };
 
   const handleIndexChange = (index: number) => {
-    isMember ? setTabIndex(index) : setTabIndex(0);
+    setTabIndex(index);
   };
 
   return (
-    <Container>
-      <StatusBar translucent animated style="dark" />
-      <TabView
-        navigationState={{ index: tabIndex, routes }}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={handleIndexChange}
-        initialLayout={{ width: DEVICE_FULL_WIDTH }}
-        swipeEnabled={isMember ? true : false}
+    <Fragment>
+      <StatusBar translucent barStyle="dark-content" />
+      <Header
+        title={() => (
+          <Text
+            style={{
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              textTransform: 'capitalize'
+            }}
+          >
+            {details?.name}
+          </Text>
+        )}
+        headerLeft={() => (
+          <TouchableRipple
+            onPress={() => navigation.navigate('CommunityScreen')}
+            style={{
+              height: 40,
+              width: 40,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 40 / 2,
+              marginRight: 10
+            }}
+          >
+            <Feather name="chevron-left" size={34} color={colors.PRIMARY} />
+          </TouchableRipple>
+        )}
+        style={{ paddingTop: top }}
       />
-    </Container>
+      <Container>
+        <TabView
+          navigationState={{ index: tabIndex, routes }}
+          renderScene={renderScene}
+          renderTabBar={renderTabBar}
+          onIndexChange={handleIndexChange}
+          initialLayout={{ width: DEVICE_FULL_WIDTH }}
+          swipeEnabled={true}
+        />
+      </Container>
+    </Fragment>
   );
 }

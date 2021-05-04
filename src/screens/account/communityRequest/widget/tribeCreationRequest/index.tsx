@@ -43,6 +43,7 @@ export default function TribeRequest(props: TribeRequestProp) {
 
   const handleTribeNavigation = () => {
     navigation.navigate('CommunityDetailScreen', {
+      title: name,
       details: { id }
     });
   };
