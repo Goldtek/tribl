@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import hexToRGB from '../../../utils/hexToRGB';
 
 export const Container = styled(SafeAreaView)`
   flex: 1;
@@ -10,8 +11,8 @@ export const Container = styled(SafeAreaView)`
 
 export const ProfileContainer = styled.View`
   align-items: center;
-  margin-top: ${RFValue(20)}px;
-  margin-bottom: ${RFValue(30)}px;
+  margin-top: ${RFValue(15)}px;
+  margin-bottom: ${RFValue(10)}px;
 `;
 
 export const MenuContainer = styled.View`
@@ -36,4 +37,14 @@ export const ConnectionBadgeWrapper = styled.View`
   top: 20px;
   border-width: 3px;
   border-color: ${({ theme }) => theme.colors.WHITE};
+`;
+
+export const TransferCover = styled.View`
+  background-color: ${({ theme }) => hexToRGB(theme.colors.PRIMARY_LIGHT, 0.3)};
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: flex-start;
+  padding: ${RFValue(10)}px ${RFValue(20)}px;
+  margin-bottom: ${RFValue(10)}px;
 `;

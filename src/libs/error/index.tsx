@@ -1,46 +1,42 @@
 import React from 'react';
 import { Alert } from 'react-native';
-import RNRestart from 'react-native-restart';
-import {
-  setJSExceptionHandler,
-  setNativeExceptionHandler
-} from 'react-native-exception-handler';
+import { useQueryErrorResetBoundary } from 'react-query';
+import { ErrorBoundary } from 'react-error-boundary';
 import { crashlytics } from '../../firebase/config';
 
 type GlobalErrorProps = {
-  children: React.ReactElement;
+  children: React.ReactNode;
 };
 
 export default function GlobalErrorBoundary(props: GlobalErrorProps) {
-  const errorHandler = (e: Error, isFatal: boolean) => {
-    if (!isFatal) return;
-    Alert.alert(
-      'Unexpected error occurred',
-      `
+  const { reset } = useQueryErrorResetBoundary();
+
+  function ErrorFallback({ resetErrorBoundary }: any) {
+    return (
+      <>
+        {Alert.alert(
+          'Unexpected error occurred',
+          `
   Something went wrong 😞😞😞 \nand we sincerely apologize for this. \nWe have reported this to our team!\n Please close the app and start again!
   `,
-      [
-        {
-          text: 'Close',
-          onPress: () => {
-            exceptionHandler(e);
-            RNRestart.Restart();
-          }
-        }
-      ]
+          [{ text: 'Close', onPress: resetErrorBoundary }]
+        )}
+      </>
     );
+  }
+
+  const errorHandler = (nativeError: Error) => {
+    crashlytics.recordError(nativeError);
+    crashlytics.log(`ERROR MESSAGE, ${nativeError.toString()}`);
   };
 
-  const exceptionHandler = (nativeError: Error | string) => {
-    // our exception handler code here
-    // E.g. reporting error using crashlytics
-    // @ts-ignore
-    crashlytics.recordError(new Error(nativeError));
-  };
-
-  setJSExceptionHandler(errorHandler);
-
-  setNativeExceptionHandler(exceptionHandler, true);
-
-  return props.children;
+  return (
+    <ErrorBoundary
+      onReset={reset}
+      FallbackComponent={ErrorFallback}
+      onError={errorHandler}
+    >
+      {props.children}
+    </ErrorBoundary>
+  );
 }

@@ -9,7 +9,6 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
-import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
   ShowConnectionNotificationBadge,
@@ -26,6 +25,7 @@ import {
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
 import { TouchableRipple } from 'react-native-paper';
+import { MenuBadgeWrapper } from '../bottomNavigator/TabBar/styles';
 
 const AccountStack = createStackNavigator();
 
@@ -114,19 +114,15 @@ export default function AccountNavigator(props: AccountNavigatorProps) {
         name="PrivacyScreen"
         component={Screens.PrivacyScreen}
         options={{
-          //@ts-ignore
-          headerTitle: t(`community.accountSettings.privacy`),
-          headerTitleStyle: {
-            color: colors.PRIMARY_TEXT,
-            fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            textTransform: 'capitalize'
-          },
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerLeftContainerStyle: { paddingLeft: 10 },
-          headerRightContainerStyle: { marginRight: 10 },
-          headerStyle: GLOBAL_HEADER_STYLE
+          headerShown: false
+        }}
+      />
+
+      <AccountStack.Screen
+        name="BlockedAccountScreen"
+        component={Screens.BlockedAccountScreen}
+        options={{
+          headerShown: false
         }}
       />
 

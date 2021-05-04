@@ -1,10 +1,11 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, Fragment, useEffect, useCallback } from 'react';
 import { Mixpanel } from '../../../config';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { ScrollView, FlatList } from 'react-native';
 import { Title, Paragraph, Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useIsFocused } from '@react-navigation/native';
 // @ts-ignore
 import SingleImage from '../../../libs/react-native-zoom-lightbox';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -31,6 +32,7 @@ import MyChannel from './widget/channelCard';
 import { StatusBar } from 'expo-status-bar';
 import MyConnectionCard from '../../../components/MyConnectionCard';
 import MyCommunity from '../../../components/myCommunities';
+import TransferModal from '../../../components/transferModal';
 
 import {
   ContactContainer,
@@ -55,15 +57,13 @@ interface MemberDetailProps extends NavigationInterface {
 
 export default function PassportDetail(props: MemberDetailProps) {
   const { navigation } = props;
-
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
+  const [visible, setVisible] = useState(false);
   const [state, setState] = useState({ loading: false, pending: false });
-
   const passport = { ...props.route.params.details };
-
   const [data, setData] = useState({ ...passport });
+  const isFocused = useIsFocused();
 
   const {
     firstName,
@@ -81,15 +81,24 @@ export default function PassportDetail(props: MemberDetailProps) {
     variables: { payload: { id: passport.id } }
   });
 
-  const { data: passportData } = useQuery<SinglePassportRequestInterface>(
-    GET_MEMBER_PASSPORT,
-    { variables: { id: passport.id } }
-  );
+  const { data: passportData, refetch } = useQuery<
+    SinglePassportRequestInterface
+  >(GET_MEMBER_PASSPORT, { variables: { id: passport.id } });
 
   const singlePassport = passportData?.singlePassport;
   const community = singlePassport?.participantOf;
   const connections = singlePassport?.myConnections;
-  const channels = singlePassport?.channelParticipantOf?.slice(0, 10);
+  const filteredChannels = singlePassport?.channelParticipantOf?.filter(
+    (channel) => channel?.isPrivate == false || channel?.isMember == true
+  );
+
+  const channels = filteredChannels?.slice(0, 10);
+
+  useEffect(() => {
+    if (isFocused && data?.id) {
+      refetch();
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     if (singlePassport?.id) {
@@ -110,6 +119,10 @@ export default function PassportDetail(props: MemberDetailProps) {
     tagScreenName('MemberPassportScreen');
     logEvent('view member passport', { from: 'passport' });
   }, []);
+
+  useEffect(() => {
+    singlePassport && refetch();
+  }, [isFocused]);
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
@@ -155,6 +168,14 @@ export default function PassportDetail(props: MemberDetailProps) {
     <MyConnectionCard key={item.id} {...item} singlePassport={data} />
   );
 
+  const showTransferModal = useCallback(
+    (visible: boolean) => () => {
+      setVisible(visible);
+      return true;
+    },
+    []
+  );
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -162,7 +183,7 @@ export default function PassportDetail(props: MemberDetailProps) {
         flexGrow: 1,
         backgroundColor: colors.WHITE,
         paddingTop: 20,
-        paddingBottom: 20
+        paddingBottom: 30
       }}
       style={{ backgroundColor: colors.WHITE }}
     >
@@ -284,29 +305,57 @@ export default function PassportDetail(props: MemberDetailProps) {
         </Header>
 
         {data?.connectionDetails?.status === 'ACCEPTED' ? (
-          <Button
-            onPress={handleMessageNavigation}
-            mode="outlined"
-            color={colors.PRIMARY}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              textTransform: 'capitalize'
-            }}
-            contentStyle={{
-              height: RFValue(55),
-              borderColor: colors.PRIMARY_TEXT
-            }}
-            style={{
-              width: '100%',
-              height: RFValue(55),
-              borderRadius: 4,
-              marginTop: RFValue(20),
-              borderColor: colors.PRIMARY_TEXT
-            }}
-          >
-            {t(`community.memberPassport.message`)}
-          </Button>
+          <ButtonCover>
+            <Button
+              onPress={handleMessageNavigation}
+              mode="outlined"
+              color={colors.PRIMARY}
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                textTransform: 'capitalize'
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                borderColor: colors.PRIMARY_TEXT
+              }}
+              style={{
+                width: '100%',
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.PRIMARY_TEXT
+              }}
+            >
+              {t(`community.memberPassport.message`)}
+            </Button>
+            {/* <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: DEVICE_FULL_WIDTH / 2 - 30,
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
+            </Button>
+          */}
+          </ButtonCover>
         ) : pending ||
           data?.connectionDetails?.status === 'PENDING' ||
           data?.pending == 'PENDING' ||
@@ -355,6 +404,31 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
+            {/* <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: RFValue(50),
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
+            </Button> */}
           </ButtonCover>
         ) : (
           <ButtonCover>
@@ -388,6 +462,31 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {t(`community.memberPassport.message`)}
             </Button>
+            {/* <Button
+              onPress={showTransferModal(true)}
+              mode="contained"
+              labelStyle={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                textTransform: 'capitalize',
+                color: colors.WHITE
+              }}
+              contentStyle={{
+                height: RFValue(55),
+                backgroundColor: colors.ONLINE,
+                borderColor: colors.ONLINE
+              }}
+              style={{
+                width: RFValue(50),
+                height: RFValue(55),
+                borderRadius: 4,
+                marginTop: RFValue(20),
+                borderColor: colors.ONLINE,
+                backgroundColor: colors.ONLINE
+              }}
+            >
+              {'\u0024'}
+            </Button> */}
           </ButtonCover>
         )}
 
@@ -720,6 +819,10 @@ export default function PassportDetail(props: MemberDetailProps) {
           </Cover>
         ) : null}
       </ContactContainer>
+      <TransferModal
+        closeTranferModal={showTransferModal(false)}
+        isVisible={visible}
+      />
     </ScrollView>
   );
 }

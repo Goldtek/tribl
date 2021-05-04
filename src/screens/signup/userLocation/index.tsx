@@ -52,7 +52,6 @@ export default function UserLocationScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
-  const [timeoutError, setTimeoutError] = useState(0);
 
   const birthPlaceRef = useRef<GooglePlacesAutocomplete | null>(null);
 
@@ -83,25 +82,6 @@ export default function UserLocationScreen(props: ScreenProp) {
       'Activity Screen': 'User Location Screen'
     });
   }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!state.isVisible) return;
-      setTimeoutError(timeoutError + 1);
-
-      if (timeoutError === 5 && !state.birthPlaceInput) {
-        setState({
-          ...state,
-          isVisible: false,
-          loading: false,
-          isModalVisible: false
-        });
-        handleInputError('currentPosition');
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timeoutError, state.isVisible, state.birthPlaceInput]);
 
   const [addUserDetails] = useMutation(ADD_USER_DETAILS, {
     variables: {
@@ -162,10 +142,7 @@ export default function UserLocationScreen(props: ScreenProp) {
 
       setState({ ...state, isVisible: true });
 
-      const { coords } = await Location.getCurrentPositionAsync({
-        enableHighAccuracy: true,
-        accuracy: Location.Accuracy.Highest
-      });
+      const { coords } = await Location.getLastKnownPositionAsync();
 
       const [currentLocation] = await Location.reverseGeocodeAsync({
         latitude: coords.latitude,

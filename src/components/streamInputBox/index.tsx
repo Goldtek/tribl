@@ -132,10 +132,6 @@ function StreamInputBox(props: InputProps) {
       trackChannelMessages();
     }
 
-    if (Boolean(channel.data?.isNew)) {
-      channel.updatePartial({ set: { isNew: false } });
-    }
-
     props.sendMessage();
   };
 
@@ -173,8 +169,8 @@ function StreamInputBox(props: InputProps) {
   };
 
   const trackDirectMessages = () => {
-    const member = Object.values(channel.state.members).find(
-      ({ user }) => user?.id !== chatClient.user?.id
+    const member = Object?.values(channel?.state?.members).find(
+      ({ user }) => user?.id !== chatClient?.user?.id
     );
 
     if (activityScreen === 'directMessage') {

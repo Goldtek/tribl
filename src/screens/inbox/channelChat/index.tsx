@@ -23,6 +23,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { USER_DEFAULT_AVATAR } from '../../../constants';
 import { StatusBar } from 'expo-status-bar';
 import FastImage from 'react-native-fast-image';
+import { IFCMMessageTypes } from '../../../graphql/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -59,7 +60,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
     }
   };
 
-  const channelMembers = Object.values(channel.state.members.asMutable());
+  const channelMembers = Object?.values(channel?.state?.members.asMutable());
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -110,7 +111,8 @@ export default function ChannelChatScreen(props: ScreenProp) {
                   <FastImage
                     resizeMode={FastImage.resizeMode.cover}
                     source={{
-                      uri: channelMembers[0].user?.image || USER_DEFAULT_AVATAR,
+                      uri:
+                        channelMembers[0]?.user?.image || USER_DEFAULT_AVATAR,
                       priority: FastImage.priority.high
                     }}
                     style={{
@@ -247,7 +249,8 @@ export default function ChannelChatScreen(props: ScreenProp) {
             doSendMessageRequest={(_cid, message) =>
               channel.sendMessage({
                 ...message,
-                link_url: 'deep_link_channel_chat_screen'
+                link_url: 'deep_link_channel_chat_screen',
+                message_type: IFCMMessageTypes.CHANNEL_MESSAGE_RECEIVED
               })
             }
           >

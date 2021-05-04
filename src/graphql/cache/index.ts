@@ -23,6 +23,7 @@ export const userDetails = {
   connectionCount: 0,
   communityCount: 0,
   connected: null,
+  invite_url: '',
   status: null,
   conversation: null,
   identity: [],

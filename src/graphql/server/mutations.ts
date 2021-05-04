@@ -251,3 +251,58 @@ export const TRIBE_INVITE_ACTION = gql`
     }
   }
 `;
+
+// CREATE NEW CHANNEL
+export const CREATE_NEW_CHANNEL = gql`
+  mutation addChannelToCommunity($payload: AddChannelInput!) {
+    addChannelToCommunity(input: $payload) {
+      success
+      id
+    }
+  }
+`;
+
+// BLOCK/REPORT A USER
+export const BLOCK_REPORT_USER = gql`
+  mutation passportPrivacyAction($payload: PassportPrivacyAction!) {
+    passportPrivacyAction(input: $payload) {
+      success
+    }
+  }
+`;
+
+// GENERATE INVITE LINK
+export const GENERATE_INVITE_LINK = gql`
+  mutation createRecordInKickOff($payload: PassportActionInput!) {
+    createRecordInKickOff(input: $payload) {
+      success
+    }
+  }
+`;
+
+// INVITE USER TO APP
+export const INVITE_USER_TO_APP = gql`
+  mutation inviteUserToApp($payload: InviteUserInput!) {
+    inviteUserToApp(input: $payload) {
+      success
+    }
+  }
+`;
+
+// APPROVE OR REJECT A NEW TRIBE
+export const APPROVE_REJECT_NEW_TRIBE = gql`
+  mutation communityCreationAction($payload: CommunityCreationActionInput!) {
+    communityCreationAction(input: $payload) {
+      success
+    }
+  }
+`;
+
+// APPROVE OR REJECT A NEW CHANNEL
+export const APPROVE_REJECT_NEW_CHANNEL = gql`
+  mutation channelCreationAction($payload: CommunityCreationActionInput!) {
+    channelCreationAction(input: $payload) {
+      success
+    }
+  }
+`;

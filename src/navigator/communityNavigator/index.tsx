@@ -17,7 +17,6 @@ import {
   GET_CONNECTION_NOTIFICATION_BADGE,
   GET_SIDE_MENU
 } from '../../graphql/cache/query';
-import { MenuBadgeWrapper } from '../bottomNavigator/styles';
 import {
   ShowConnectionNotificationBadge,
   ShowSideMenu
@@ -26,6 +25,7 @@ import { TOGGLE_SIDE_MENU } from '../../graphql/cache/mutations';
 import { DEVICE_OS } from '../../utils/device';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
+import { MenuBadgeWrapper } from '../bottomNavigator/TabBar/styles';
 
 const CommunityStack = createStackNavigator();
 
@@ -66,6 +66,13 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
 
   const requestNavigation = (id: string) => {
     navigation.navigate('CommunityRequestScreen', {
+      communityId: id
+    });
+    setCommunityMenu(false);
+  };
+
+  const ChannelRequestNavigation = (id: string) => {
+    navigation.navigate('ChannelRequestScreen', {
       communityId: id
     });
     setCommunityMenu(false);
@@ -352,6 +359,35 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
                     </Fragment>
                   ) : null
                 }
+                {
+                  //@ts-ignore
+                  route?.params?.details?.isModerator ? (
+                    <Fragment>
+                      <Divider />
+                      <Menu.Item
+                        onPress={() =>
+                          //@ts-ignore
+                          ChannelRequestNavigation(route.params?.details?.id)
+                        }
+                        title={t(`community.recommended.newChannelRequest`)}
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                        titleStyle={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.PRIMARY_TEXT,
+                          textAlign: 'center',
+                          textTransform: 'capitalize'
+                        }}
+                      />
+                    </Fragment>
+                  ) : null
+                }
               </Menu>
             ) : null,
           headerBackTitleVisible: false,
@@ -493,13 +529,27 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerStyle: GLOBAL_HEADER_STYLE
         }}
       /> */}
-      <CommunityStack.Screen
+      {/* <CommunityStack.Screen
         name="NewTribeScreen"
         component={Screens.NewTribeScreen}
         options={({ route }) => ({
           //@ts-ignore
           headerTitle: route.params?.name,
-          headerLeft: () => null,
+          headerLeft: () => (
+            <TouchableRipple
+              onPress={() => navigation.navigate('CommunityScreen')}
+              style={{
+                height: 40,
+                width: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 40 / 2,
+                marginRight: 10
+              }}
+            >
+              <Feather name="chevron-left" size={34} color={colors.PRIMARY} />
+            </TouchableRipple>
+          ),
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerTitleStyle: {
@@ -510,7 +560,7 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerRightContainerStyle: { marginRight: 10 },
           headerStyle: GLOBAL_HEADER_STYLE
         })}
-      />
+      /> */}
       <CommunityStack.Screen
         name="CommunityRequestScreen"
         component={Screens.CommunityRequestScreen}
@@ -523,7 +573,25 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           headerTitleStyle: {
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.LARGE_SIZE),
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTranform: 'capitalize'
+          }
+        })}
+      />
+      <CommunityStack.Screen
+        name="ChannelRequestScreen"
+        component={Screens.ChannelRequestScreen}
+        options={() => ({
+          headerTitle: t(`community.recommended.newChannelRequest`),
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerRightContainerStyle: { marginRight: 10 },
+          headerStyle: GLOBAL_HEADER_STYLE,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }
         })}
       />

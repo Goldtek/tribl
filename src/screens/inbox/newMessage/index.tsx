@@ -10,13 +10,16 @@ import {
   Title
 } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Ionicons, Octicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, Octicons, FontAwesome, Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import MemberCard from '../../../components/connectionCard';
 import hexToRGB from '../../../utils/hexToRGB';
-import { GET_ALL_MEMBERS } from '../../../graphql/server/query';
+import {
+  GET_ALL_MEMBERS,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
 import Skeleton from './widgets/newMessageSkeleton';
 import ENVIRONMENT_VARIABLES from '../../../config';
 import {
@@ -54,6 +57,9 @@ export default function ChatScreen(props: ScreenProp) {
 
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+
   const { data, loading, fetchMore } = useQuery<AllMembersRequestInterface>(
     GET_ALL_MEMBERS,
     {
@@ -63,6 +69,11 @@ export default function ChatScreen(props: ScreenProp) {
 
   const allMembers = data?.Passport;
   const filteredMembers = removeDuplicateMembers(allMembers?.data.slice());
+  const filteredUsers = filteredMembers?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
 
   const handleMessageNavigation = () => {
     navigation.navigate('SelectGroupParticipantsScreen');
@@ -73,7 +84,7 @@ export default function ChatScreen(props: ScreenProp) {
 
     fetchMore({
       variables: {
-        input: { skip: filteredMembers?.length, limit: PAGINATION_DEFAULT }
+        input: { skip: filteredUsers?.length, limit: PAGINATION_DEFAULT }
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         setCallOnScrollEnd(false);
@@ -156,7 +167,7 @@ export default function ChatScreen(props: ScreenProp) {
               color={colors.PRIMARY}
             />
           </TouchableRipple>
-          <HeaderTitle>New Chat</HeaderTitle>
+          <HeaderTitle> {t(`community.chat.newChat`)}</HeaderTitle>
         </HeaderContainer>
 
         <FilterContainer>
@@ -178,7 +189,7 @@ export default function ChatScreen(props: ScreenProp) {
           <TouchableRipple
             ref={hideSensitiveView}
             style={{
-              height: RFValue(80),
+              height: RFValue(70),
               flexDirection: 'row',
               alignItems: 'center',
               paddingHorizontal: 15
@@ -200,7 +211,37 @@ export default function ChatScreen(props: ScreenProp) {
                     textTransform: 'capitalize'
                   }}
                 >
-                  New Group
+                  {t(`community.chat.newGroup`)}
+                </Title>
+              </NameContainer>
+            </Fragment>
+          </TouchableRipple>
+          <TouchableRipple
+            ref={hideSensitiveView}
+            style={{
+              height: RFValue(70),
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: 15
+            }}
+            rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
+            onPress={() => navigation.navigate('CreateChannelTribeScreen')}
+          >
+            <Fragment>
+              <IconContainer>
+                <Feather name="hash" size={30} color={colors.PRIMARY} />
+              </IconContainer>
+
+              <NameContainer ref={hideSensitiveView}>
+                <Title
+                  style={{
+                    color: colors.PRIMARY_TEXT,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {t(`community.chat.newChannel`)}
                 </Title>
               </NameContainer>
             </Fragment>
@@ -210,7 +251,7 @@ export default function ChatScreen(props: ScreenProp) {
         {!loading ? (
           <FlatList
             bounces={false}
-            data={filteredMembers}
+            data={filteredUsers}
             ref={hideSensitiveView}
             renderItem={_renderItem}
             keyExtractor={(item) => item.id}
@@ -230,8 +271,8 @@ export default function ChatScreen(props: ScreenProp) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               flexGrow: 1,
-              paddingBottom: 20,
-              paddingVertical: RFValue(20)
+              paddingTop: RFValue(10),
+              paddingBottom: RFValue(20)
             }}
             onEndReachedThreshold={1}
             ListFooterComponent={_renderFooter}

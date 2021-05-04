@@ -9,15 +9,24 @@ import { useThemeContext } from '../../theme';
 import { DEVICE_FULL_WIDTH } from '../../utils/device';
 import { useNavigation } from '@react-navigation/native';
 import hexToRGB from '../../utils/hexToRGB';
-import { REQUEST_CONNECTION } from '../../graphql/server/mutations';
+import {
+  REQUEST_CONNECTION,
+  BLOCK_REPORT_USER
+} from '../../graphql/server/mutations';
 import { PassportInterface, UserPassportInterface } from '../../graphql/types';
-import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_RECOMMENDED_MEMBERS,
+  GET_NEARBY_MEMBERS
+} from '../../graphql/server/query';
 import AdminBadge from '../adminBadge';
 import { logEvent, hideSensitiveView } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
+import { PAGINATION_DEFAULT } from '../../constants';
+import { TouchableOpacity } from 'react-native';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { TextContainer, AvatarContainer } from './styles';
+import { TextContainer, Container, AvatarContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface RecommendedUserProp extends PassportInterface {}
@@ -39,7 +48,8 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     citizenship,
     moderatorOf,
     currentLocation,
-    connectionDetails
+    connectionDetails,
+    blocked
   } = member;
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
@@ -47,9 +57,40 @@ export default function RecommendedUser(props: RecommendedUserProp) {
     { variables: { id } }
   );
 
+  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
+
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+  });
+
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
   });
+
+  const [unblock, setUnblock] = useState(blocked?.blocked);
+
+  const note = `${firstName} ${t(
+    `community.memberPassport.unblock`
+  )} ${firstName}`;
+
+  enum status {
+    UNBLOCK
+  }
+
+  const [unBlockUser, { loading: unblockLoading }] = useMutation(
+    BLOCK_REPORT_USER,
+    {
+      variables: {
+        payload: {
+          passportId: id,
+          status: status[0],
+          notes: note
+        }
+      }
+    }
+  );
 
   useEffect(() => {
     if (
@@ -64,6 +105,22 @@ export default function RecommendedUser(props: RecommendedUserProp) {
       setMember({ ...member, ...data?.singlePassport });
     }
   }, []);
+
+  const handleUnBlock = async () => {
+    try {
+      Mixpanel.track('UnBlock User', {
+        info: `UnBlock ${firstName}`,
+        'Activity Screen': 'Community Screen'
+      });
+      await unBlockUser();
+      setUnblock([]);
+      getUserPassport();
+      getRecommendedMembers();
+      getNearbyMembers();
+    } catch (error) {
+      crashlytics.recordError(error);
+    }
+  };
 
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
@@ -104,29 +161,8 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   };
 
   return (
-    <Card
-      onPress={handleNavigation}
-      style={{
-        width: RFValue(DEVICE_FULL_WIDTH / 3),
-        height: RFValue(215),
-        alignItems: 'center',
-        borderRadius: 5,
-        marginBottom: 20,
-        marginRight: 15,
-        borderWidth: 0.5,
-        borderColor: hexToRGB(colors.DISABLED, 0.3)
-      }}
-    >
-      <Card.Content
-        style={{
-          width: RFValue(DEVICE_FULL_WIDTH / 3),
-          height: '100%',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingLeft: 0,
-          paddingRight: 0
-        }}
-      >
+    <TouchableOpacity onPress={handleNavigation} activeOpacity={0.5}>
+      <Container>
         <AvatarContainer>
           <FastImage
             resizeMode={FastImage.resizeMode.contain}
@@ -267,7 +303,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             {t(`community.recommended.add`)}+
           </Button>
         )}
-      </Card.Content>
-    </Card>
+      </Container>
+    </TouchableOpacity>
   );
 }

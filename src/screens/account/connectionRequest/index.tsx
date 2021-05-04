@@ -13,7 +13,10 @@ import Header from '../../../components/header';
 import ConnectionRequest from './widget';
 import { StatusBar } from 'expo-status-bar';
 import { GET_SIDE_MENU } from '../../../graphql/cache/query';
-import { GET_CONNECTION_REQUEST } from '../../../graphql/server/query';
+import {
+  GET_CONNECTION_REQUEST,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
 import hexToRGB from '../../../utils/hexToRGB';
 import Skeleton from './widget/connectionRequestSkeleton';
 import { PassportInterface } from '../../../graphql/types';
@@ -47,6 +50,8 @@ export default function ConnectionRequestScreen(
     { variables: { input: { limit: PAGINATION_DEFAULT } } }
   );
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
   );
@@ -71,6 +76,15 @@ export default function ConnectionRequestScreen(
     connectionRequests?.data?.slice()
   );
 
+  const userDetails = userData?.myPassport;
+  const blockedUsers = userDetails?.privacy?.blocked;
+
+  const filteredUsers = filterConnectionRequests?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
   const _renderFooter = useCallback(
     () => (callOnScrollEnd ? <ActivityIndicator /> : null),
     [callOnScrollEnd]
@@ -92,7 +106,7 @@ export default function ConnectionRequestScreen(
     fetchMore({
       variables: {
         input: {
-          skip: filterConnectionRequests?.length,
+          skip: filteredUsers?.length,
           limit: PAGINATION_DEFAULT
         }
       },
@@ -120,14 +134,14 @@ export default function ConnectionRequestScreen(
 
   useFocusEffect(
     useCallback(() => {
-      filterConnectionRequests?.length
+      filteredUsers?.length
         ? changeConnectionNotification({
             variables: { showConnectionNotificationBadge: true }
           })
         : changeConnectionNotification({
             variables: { showConnectionNotificationBadge: false }
           }).then(refetch);
-    }, [filterConnectionRequests?.length])
+    }, [filteredUsers?.length])
   );
 
   return (
@@ -168,14 +182,14 @@ export default function ConnectionRequestScreen(
                 size={RFValue(25)}
                 color={colors.PRIMARY_TEXT}
               />
-              {filterConnectionRequests?.length ? <MenuBadgeWrapper /> : null}
+              {filteredUsers?.length ? <MenuBadgeWrapper /> : null}
             </Fragment>
           </TouchableHighlight>
         )}
         style={{ paddingTop: top }}
       />
       <Container>
-        {filterConnectionRequests?.length ? (
+        {filteredUsers?.length ? (
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
@@ -190,10 +204,10 @@ export default function ConnectionRequestScreen(
           </Title>
         ) : null}
 
-        {filterConnectionRequests ? (
+        {filteredUsers ? (
           <FlatList
             refreshing={refreshing}
-            data={filterConnectionRequests}
+            data={filteredUsers}
             onRefresh={handleRefresh}
             ListFooterComponent={_renderFooter}
             contentContainerStyle={{
@@ -219,8 +233,7 @@ export default function ConnectionRequestScreen(
             onEndReached={() => {
               if (
                 connectionRequests &&
-                connectionRequests?.metadata?.totalCount >
-                  filterConnectionRequests.length
+                connectionRequests?.metadata?.totalCount > filteredUsers.length
               ) {
                 setCallOnScrollEnd(true);
               }

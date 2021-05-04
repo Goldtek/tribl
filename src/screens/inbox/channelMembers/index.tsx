@@ -5,7 +5,10 @@ import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import SearchInput, { createFilter } from 'react-native-search-filter';
 import { useThemeContext } from '../../../theme';
-import { GET_CHANNEL_MEMBERS } from '../../../graphql/server/query';
+import {
+  GET_CHANNEL_MEMBERS,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
 import ActiveMember from './widget';
 import Skeleton from './widget/skeleton';
 import {
@@ -39,6 +42,9 @@ export default function ChannelMembers(props: ChannelMembersProp) {
     variables: { input: { channelId: channel.id } }
   });
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+
   useEffect(() => {
     Mixpanel.track('User Views Channel Members', {
       info: `User Views Channel Members`,
@@ -49,6 +55,11 @@ export default function ChannelMembers(props: ChannelMembersProp) {
   const channelMembers = channelData?.channelMembers;
 
   const filterMembers = removeDuplicateMembers(channelMembers?.data?.slice());
+  const filteredUsers = filterMembers?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -122,8 +133,8 @@ export default function ChannelMembers(props: ChannelMembersProp) {
   const keysToFilter = ['firstName', 'lastName'];
 
   const filteredWords =
-    filterMembers &&
-    filterMembers?.filter(createFilter(search.searchTerm, keysToFilter));
+    filteredUsers &&
+    filteredUsers?.filter(createFilter(search.searchTerm, keysToFilter));
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
@@ -144,7 +155,7 @@ export default function ChannelMembers(props: ChannelMembersProp) {
           marginHorizontal: 15
         }}
       />
-      {filterMembers ? (
+      {filteredUsers ? (
         <FlatList
           data={filteredWords}
           ListEmptyComponent={

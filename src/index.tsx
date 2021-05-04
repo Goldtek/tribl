@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import DrawerStackNavigator from './navigator/sideNavigator';
+import TriblPayNavigator from './navigator/triblPayNavigator';
 import SignupNavigator from './navigator/signupNavigator';
 import { navigationRef } from './constants';
 import { useThemeContext } from './theme';
@@ -13,14 +14,20 @@ import AccountNavigator from './navigator/accountNavigator';
 import { Linking } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { LinkingOptions } from '@react-navigation/native';
-import { NotificationMessage } from './graphql/types';
+import { NotificationMessage, IFCMMessageTypes } from './graphql/types';
 import { DEVICE_OS } from './utils/device';
 import { crashlytics } from './firebase/config';
+import { useMutation } from '@apollo/react-hooks';
+import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from './graphql/cache/mutations';
 
 const RootStack = createStackNavigator();
 
 export default function AppNavigator() {
   const { fonts, colors } = useThemeContext();
+
+  const [changeConnectionNotification] = useMutation(
+    CHANGE_CONNECTION_NOTIFICATION_BADGE
+  );
 
   // Deep links
   const deepLinksConfig = {
@@ -109,14 +116,9 @@ export default function AppNavigator() {
 
       AsyncStorage.removeItem('BACK_GROUND_MESSAGE');
 
-      if (
-        data.link_url === 'deep_link_direct_chats_screen' ||
-        data.link_url === 'deep_link_channel_chat_screen'
-      ) {
-        // Get deep link from data
-        // if this is undefined, the app will open the default/home page
-        return `${linking.prefixes[0]}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`;
-      }
+      // Get deep link from data
+      // if this is undefined, the app will open the default/home page
+      return constructLinkParams(data);
     },
 
     subscribe(listener) {
@@ -138,16 +140,9 @@ export default function AppNavigator() {
                 (message?.body as NotificationMessage)
               : (message?.data as NotificationMessage);
 
-          if (
-            data.link_url === 'deep_link_direct_chats_screen' ||
-            data.link_url === 'deep_link_channel_chat_screen'
-          ) {
-            // Any custom logic to check whether the URL needs to be handled
-            // Call the listener to let React Navigation handle the URL
-            listener(
-              `${linking.prefixes[0]}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`
-            );
-          }
+          // Any custom logic to check whether the URL needs to be handled
+          // Call the listener to let React Navigation handle the URL
+          listener(constructLinkParams(data));
         }
       );
 
@@ -156,6 +151,33 @@ export default function AppNavigator() {
         Linking.removeEventListener('url', onReceiveURL);
         unsubscribeNotification();
       };
+    }
+  };
+
+  const constructLinkParams = (data: NotificationMessage) => {
+    const defaultUrl = linking.prefixes[0];
+
+    switch (data.type) {
+      case IFCMMessageTypes.CHANNEL_MESSAGE_RECEIVED:
+        return `${defaultUrl}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`;
+
+      case IFCMMessageTypes.DIRECT_MESSAGE_RECEIVED:
+        return `${defaultUrl}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`;
+
+      case IFCMMessageTypes.THREAD_MESSAGE_RECEIVED:
+        return `${defaultUrl}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`;
+
+      case IFCMMessageTypes.CONNECTION_REQUEST_ACCEPTED:
+        return `${defaultUrl}/connection_chat_screen`;
+
+      case IFCMMessageTypes.CONNECTION_REQUEST_RECEIVED:
+        changeConnectionNotification({
+          variables: { showConnectionNotificationBadge: true }
+        });
+        return `${defaultUrl}/connection_request_screen`;
+
+      default:
+        return `${defaultUrl}/${data.link_url}`;
     }
   };
 
@@ -188,6 +210,7 @@ export default function AppNavigator() {
           name="DrawerScreen"
           component={DrawerStackNavigator}
         />
+        <RootStack.Screen name="TriblPayScreen" component={TriblPayNavigator} />
 
         <RootStack.Screen
           name="AccountSettingScreen"

@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { DEVICE_ID } from '../../utils/device';
 import {
-  USER_FIRST_LAUNCH,
+  USER_EULA,
+  SHOW_MODAL,
   USER_REG_INFO,
   USER_PASSPORT_INFO,
-  SHOW_MODAL,
+  USER_FIRST_LAUNCH,
   LOCAL_GIPHY_CACHE
 } from '../../constants';
 import {
@@ -20,12 +21,20 @@ class Storage {
     return AsyncStorage.getItem(USER_FIRST_LAUNCH);
   }
 
+  async checkEULA() {
+    return AsyncStorage.getItem(USER_EULA);
+  }
+
   async clearStorage() {
     return AsyncStorage.clear();
   }
 
   async setInitialLaunch() {
     return AsyncStorage.setItem(USER_FIRST_LAUNCH, '1');
+  }
+
+  async setEULA() {
+    return AsyncStorage.setItem(USER_EULA, '1');
   }
 
   async getUserCredentials() {

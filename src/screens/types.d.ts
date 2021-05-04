@@ -10,6 +10,7 @@ interface ChatScreenProps extends PassportInterface {
   receiverId: string;
   newly_created_group?: boolean;
   channel?: { community: string; name: string };
+  moderators?: PassportInterface[];
 }
 
 interface MessageRequestScreenProps extends PassportInterface {
@@ -99,6 +100,20 @@ export type RootStackParamList = {
   ChannelInformationScreen?: Object;
   InviteToTribeFromProfileScreen?: Object;
   InviteToChannelFromProfileScreen?: Object;
+  ActivateWalletScreen?: Object;
+  TriblPayScreen?: Object;
+  BankCountryScreen?: Object;
+  CountryIdScreen?: Object;
+  VerifyIdentityScreen?: Object;
+  LinkAccountScreen?: Object;
+  WalletScreen?: Object;
+  AddCashScreen?: Object;
+  CreateChannelTribeScreen?: Object;
+  CreateChannelNameScreen?: Object;
+  CreateChannelParticipant?: Object;
+  BlockedAccountScreen?: Object;
+  ChannelRequestScreen?: Object;
+  TribeRequestScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -178,7 +193,21 @@ export type RootStackParamScreensList =
   | 'InvitationToChannelScreen'
   | 'ChannelInformationScreen'
   | 'InviteToTribeFromProfileScreen'
-  | 'InviteToChannelFromProfileScreen';
+  | 'InviteToChannelFromProfileScreen'
+  | 'ActivateWalletScreen'
+  | 'TriblPayScreen'
+  | 'BankCountryScreen'
+  | 'CountryIdScreen'
+  | 'VerifyIdentityScreen'
+  | 'LinkAccountScreen'
+  | 'WalletScreen'
+  | 'AddCashScreen'
+  | 'CreateChannelTribeScreen'
+  | 'CreateChannelNameScreen'
+  | 'CreateChannelParticipant'
+  | 'BlockedAccountScreen'
+  | 'ChannelRequestScreen'
+  | 'TribeRequestScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

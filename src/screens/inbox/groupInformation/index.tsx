@@ -71,10 +71,10 @@ export default function GroupInformation(props: GroupInformationProp) {
     });
   }, []);
 
-  const getMuteStatus = channel.muteStatus().muted;
+  const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
 
-  const channelMembers = Object.values(channel.state.members);
+  const channelMembers = Object?.values(channel?.state?.members);
 
   const [images] = useState([
     {

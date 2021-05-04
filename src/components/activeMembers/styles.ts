@@ -1,5 +1,4 @@
 import styled from 'styled-components/native';
-import { BlurView } from '@react-native-community/blur';
 import { Surface } from 'react-native-paper';
 
 export const Container = styled.View`

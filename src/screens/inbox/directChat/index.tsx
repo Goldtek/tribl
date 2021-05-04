@@ -26,6 +26,7 @@ import CustomDirectMessage from '../../../components/customDirectMessage';
 import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { chatClient, ThreadType } from '../../../stream/types';
+import { IFCMMessageTypes } from '../../../graphql/types';
 
 import {
   Container,
@@ -43,18 +44,16 @@ export default function DirectChatScreen(props: ScreenProp) {
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
   const { channel, setThread, setActivityScreen } = useStreamContext();
-
-  const receiverId = Object.keys(channel.state.members).find(
+  const receiverId = Object.keys(channel?.state?.members).find(
     (userId: string) => userId !== chatClient.user?.id
   );
 
-  const receiver = channel.state.members[`${receiverId}`].user;
+  const receiver = channel?.state?.members[`${receiverId}`].user;
 
   useEffect(() => {
     tagScreenName('DirectChatScreen');
     setActivityScreen('directMessage');
   }, []);
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Container>
@@ -93,7 +92,9 @@ export default function DirectChatScreen(props: ScreenProp) {
                 <TouchableRipple
                   borderless
                   onPress={() =>
-                    navigation.navigate('DirectMessageInformation')
+                    navigation.navigate('DirectMessageInformation', {
+                      details: { id: receiverId }
+                    })
                   }
                   style={{
                     height: RFValue(40),
@@ -126,7 +127,11 @@ export default function DirectChatScreen(props: ScreenProp) {
               icon={(iconProps) => (
                 <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
               )}
-              onPress={() => navigation.navigate('DirectMessageInformation')}
+              onPress={() =>
+                navigation.navigate('DirectMessageInformation', {
+                  details: { id: receiverId }
+                })
+              }
             />
           </Fragment>
         </HeaderContainer>
@@ -140,12 +145,17 @@ export default function DirectChatScreen(props: ScreenProp) {
             //@ts-ignore
             channel={channel}
             KeyboardCompatibleView={CustomKeyboardCompatibleView}
-            doSendMessageRequest={(_cid, message) =>
-              channel.sendMessage({
+            doSendMessageRequest={(_cid, message) => {
+              if (Boolean(channel.data?.isNew)) {
+                channel.updatePartial({ set: { isNew: false } });
+              }
+
+              return channel.sendMessage({
                 ...message,
-                link_url: 'deep_link_direct_chats_screen'
-              })
-            }
+                link_url: 'deep_link_direct_chats_screen',
+                message_type: IFCMMessageTypes.DIRECT_MESSAGE_RECEIVED
+              });
+            }}
           >
             <MessageListContainer>
               <MessageList

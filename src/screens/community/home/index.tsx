@@ -10,7 +10,7 @@ import { NavigationInterface } from '../../types';
 import { useThemeContext } from '../../../theme';
 import * as Location from 'expo-location';
 import { Title, ActivityIndicator } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
+import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import Swiper from 'react-native-swiper';
@@ -31,8 +31,7 @@ import {
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
   USER_CHANNELS,
-  GET_USER_PASSPORT,
-  GET_FIREBASE_TOKEN
+  GET_USER_PASSPORT
 } from '../../../graphql/server/query';
 import { UPDATE_PASSPORT } from '../../../graphql/server/mutations';
 import MyChannel from '../../../components/channelCard';
@@ -46,8 +45,7 @@ import {
   RecommendedCommunitiesRequestInterface,
   CommunityInterface,
   ChannelInterface,
-  MyChannelRequestInterface,
-  GenerateFirebaseTokenIT
+  MyChannelRequestInterface
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -56,10 +54,9 @@ import { PAGINATION_DEFAULT } from '../../../constants';
 import GradientButton from '../../../components/gradientButton';
 import { useIsFocused } from '@react-navigation/native';
 import MyCommunity from '../../../components/myCommunities';
-import Storage from '../../../libs/storage';
-import Firechat from '../../../firebase';
 import CheckAppUpdates from '../../../libs/updates';
 import { crashlytics } from '../../../firebase/config';
+import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -68,8 +65,8 @@ import {
   RecommendedListHeader,
   RecommendedCommunityContainer,
   RecentActivitiesList,
-  CommunityCover
-  // ButtonWrapper
+  CommunityCover,
+  ButtonWrapper
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -92,10 +89,6 @@ export default function HomeScreen(props: ScreenProp) {
 
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
 
-  const { data: firebase, loading: firebaseLoading } = useQuery<
-    GenerateFirebaseTokenIT
-  >(GET_FIREBASE_TOKEN);
-
   const {
     data: myCommunityData,
     refetch: myCommunityRefetch,
@@ -109,7 +102,10 @@ export default function HomeScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
-  const [getUserPassport, { data: userData }] = useLazyQuery(GET_USER_PASSPORT);
+  const [
+    getUserPassport,
+    { data: userData, refetch: passportRefetch }
+  ] = useLazyQuery(GET_USER_PASSPORT);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
@@ -144,13 +140,6 @@ export default function HomeScreen(props: ScreenProp) {
     checkUpdate();
   }, []);
 
-  useEffect(() => {
-    if (firebase?.generateFirebaseToken) {
-      Storage.setUserCredentials(firebase?.generateFirebaseToken);
-      Firechat.signIn(firebase?.generateFirebaseToken.firebase_token);
-    }
-  }, [firebaseLoading]);
-
   const {
     loading: recommendedCommunityLoading,
     data: communityData
@@ -166,11 +155,14 @@ export default function HomeScreen(props: ScreenProp) {
     }
   });
 
-  const { data: membersData } = useQuery(GET_RECOMMENDED_MEMBERS, {
-    variables: {
-      input: { limit: PAGINATION_DEFAULT / 2 }
+  const { data: membersData, refetch: recommendedRefetch } = useQuery(
+    GET_RECOMMENDED_MEMBERS,
+    {
+      variables: {
+        input: { limit: PAGINATION_DEFAULT / 2 }
+      }
     }
-  });
+  );
 
   const userDetails = userData?.myPassport;
   const currentLocation = userDetails?.currentLocation;
@@ -240,9 +232,25 @@ export default function HomeScreen(props: ScreenProp) {
     }
   });
 
+  const navigateToCreateNewTribeScreen = () => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'CreateTribeScreen'
+    });
+  };
+
   const myChannels = myChannelsData?.myChannels;
   const myCommunities = myCommunityData?.myCommunities;
   const recommendedMembers = membersData?.recommendedMembers?.data;
+  const filterRecommendedMebers = removeDuplicateMembers(
+    recommendedMembers?.slice()
+  );
+  const blockedUsers = userDetails?.privacy?.blocked;
+  const filteredUsers = filterRecommendedMebers?.filter(function (users) {
+    return !blockedUsers?.some(function (userTwo: any) {
+      return users.id == userTwo.id;
+    });
+  });
+
   const communities = communityData?.recommendedCommunities?.data
     .slice()
     .sort((a) => {
@@ -251,8 +259,10 @@ export default function HomeScreen(props: ScreenProp) {
     });
 
   useEffect(() => {
+    userDetails && passportRefetch();
     myCommunities && myCommunityRefetch();
     myChannels && refetchMyChannels();
+    recommendedMembers && recommendedRefetch();
   }, [isFocused]);
 
   const navigateToSearch = (index: number) => {
@@ -533,7 +543,7 @@ export default function HomeScreen(props: ScreenProp) {
             </GradientButton>
           </RecommendedListHeader>
           <FlatList
-            data={recommendedMembers}
+            data={filteredUsers}
             horizontal={true}
             renderItem={_renderRecommendedMember}
             ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
@@ -542,7 +552,7 @@ export default function HomeScreen(props: ScreenProp) {
             contentContainerStyle={{
               marginTop: 20,
               paddingLeft: 15,
-              paddingBottom: 20
+              paddingBottom: RFValue(50)
             }}
           />
         </RecommendedList>
@@ -572,25 +582,33 @@ export default function HomeScreen(props: ScreenProp) {
         ) : null}
       </ScrollView>
 
-      {/* <ButtonWrapper>
-        <Button
+      <ButtonWrapper>
+        <GradientButton
           onPress={navigateToCreateNewTribeScreen}
-          mode="contained"
           labelStyle={{
             fontSize: RFValue(fonts.MEDIUM_SIZE),
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            color: colors.WHITE,
-            textTransform: 'capitalize'
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            textTransform: 'capitalize',
+            color: colors.WHITE
+          }}
+          gradientContainerstyle={{
+            height: RFValue(30),
+            width: RFPercentage(25),
+            borderRadius: RFValue(15)
+          }}
+          contentStyle={{
+            width: '100%',
+            height: '100%',
+            borderRadius: RFValue(15)
           }}
           style={{
-            backgroundColor: colors.PRIMARY_TEXT,
-            width: RFPercentage(25),
-            borderRadius: RFValue(50)
+            height: RFValue(30),
+            borderRadius: RFValue(15)
           }}
         >
           {t(`community.createTribe.buttonText`)}
-        </Button>
-      </ButtonWrapper> */}
+        </GradientButton>
+      </ButtonWrapper>
 
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />

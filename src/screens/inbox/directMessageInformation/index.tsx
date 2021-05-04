@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState, useCallback } from 'react';
 import { NavigationInterface } from '../../types';
 import {
   Text,
@@ -19,6 +19,7 @@ import { tagScreenName } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
 import { chatClient } from '../../../stream/types';
 import { Mixpanel } from '../../../config';
+import ReportModal from '../../../components/reportModal';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -39,8 +40,7 @@ const H_MAX_HEIGHT = 300;
 const H_MIN_HEIGHT = 70;
 
 export default function DirectMessageInformation(props: GroupInformationProp) {
-  const { navigation } = props;
-
+  const { navigation, route } = props;
   const { t } = useTranslation();
   const { channel } = useStreamContext();
   const { colors, fonts } = useThemeContext();
@@ -54,10 +54,10 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
     });
   }, []);
 
-  const getMuteStatus = channel.muteStatus().muted;
+  const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
 
-  const user = Object.values(channel.state.members).find(
+  const user = Object?.values(channel?.state?.members).find(
     ({ user }) => user?.id !== chatClient.user?.id
   );
 
@@ -116,31 +116,15 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
     });
   };
 
-  // const handleBlockDM = async () => {
-  //   Alert.alert('Block user', `Are you sure you want to block this user`, [
-  //     {
-  //       text: 'Cancel',
-  //       onPress: () => {},
-  //       style: 'cancel'
-  //     },
-  //     {
-  //       text: 'Block',
-  //       onPress: async () => {
-  //         try {
-  //           navigation.navigate('InboxScreen');
-  //         } catch (error) {
-  //           crashlytics.recordError(new Error(error));
-  crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-  //         }
-  //       }
-  //     }
-  //   ]);
-  // };
+  const [reportModalVisible, setReportModalVisible] = useState(false);
 
-  const handleReportGroup = async () => {
-    // await leaveChannel({ variables: { payload: { channelId: channel.id } } });
-    // navigation.goBack();
-  };
+  const showReportModal = useCallback(
+    (visible: boolean) => () => {
+      setReportModalVisible(visible);
+      return true;
+    },
+    []
+  );
 
   return (
     <Container>
@@ -174,7 +158,6 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
               borderless
               onPress={navigation.goBack}
             />
-
             <Text
               numberOfLines={1}
               style={{
@@ -307,7 +290,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
           </OptionWrapper> */}
 
           <Divider style={{ backgroundColor: colors.INPUT }} />
-          <OptionWrapper onPress={handleReportGroup}>
+          <OptionWrapper onPress={showReportModal(true)}>
             <LeftCover>
               <Entypo
                 name="thumbs-down"
@@ -337,6 +320,11 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
           </ModalContentWrapper>
         </Overlay>
       </Modal>
+      <ReportModal
+        data={route?.params}
+        closeReportModal={showReportModal(false)}
+        isVisible={reportModalVisible}
+      />
     </Container>
   );
 }
