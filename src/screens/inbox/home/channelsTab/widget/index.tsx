@@ -58,11 +58,7 @@ export default function CustomChannelPreview(
     latestMessageLength = 40
   } = props;
 
-  if (
-    Boolean(channel.data?.isDm) ||
-    Boolean(channel.data?.isNew) ||
-    Boolean(channel.data?.isGroup)
-  ) {
+  if (Boolean(channel.data?.isDm) || Boolean(channel.data?.isGroup)) {
     return null;
   }
 

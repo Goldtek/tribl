@@ -48,9 +48,17 @@ export const HeaderTitleContainer = styled.View`
 `;
 
 export const ChannelInformationContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   margin-vertical: 10px;
   padding-horizontal: 10px;
+  padding-right: 20px;
 `;
+
+export const InfoWrapper = styled.View`
+ 
+`
 
 export const HeaderImageContainer = styled.View`
   flex-direction: row;

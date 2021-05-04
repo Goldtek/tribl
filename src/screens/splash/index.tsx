@@ -14,10 +14,10 @@ import {
 } from '../../graphql/server/query';
 import { tagScreenName } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
-import { refreshToken } from '../../network/query';
 import { NavigationInterface } from '../types';
 import Storage from '../../libs/storage';
 import { PAGINATION_DEFAULT } from '../../constants';
+import checkRefreshToken from '../../utils/checkRefreshToken';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container } from './styles';
@@ -80,8 +80,16 @@ export default function SplashScreen(props: ScreenProp) {
         });
       }
 
-      const { data } = await refreshToken(credentials.refresh_token);
-      await Storage.setUserCredentials(data.refreshToken);
+      await checkRefreshToken(credentials);
+
+      getAllMembers();
+      getMyChannels();
+      getUserPassport();
+      getMyCommunities();
+      getNearbyMembers();
+      getRecommendedMembers();
+      getPopularCommunities();
+      getRecommendedCommunities();
       navigation.replace(userRegistration.route);
     } catch (error) {
       crashlytics.recordError(new Error(error));
@@ -93,14 +101,6 @@ export default function SplashScreen(props: ScreenProp) {
   useEffect(() => {
     tagScreenName('SplashScreen');
     handleAuthentication();
-    getUserPassport();
-    getMyCommunities();
-    getMyChannels();
-    getRecommendedCommunities();
-    getRecommendedMembers();
-    getPopularCommunities();
-    getAllMembers();
-    getNearbyMembers();
   }, []);
 
   return (

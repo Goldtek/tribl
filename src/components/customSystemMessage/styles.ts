@@ -8,6 +8,13 @@ export const Container = styled(TouchableRipple)`
   background-color: ${({ theme }) => theme.colors.SYSTEM_COLOR};
 `;
 
+export const InvitationContainer = styled.View`
+  padding: 10px;
+  margin-vertical: 3px;
+  border-radius: 3px;
+  background-color: ${({ theme }) => theme.colors.SYSTEM_COLOR};
+`;
+
 export const DateText = styled.Text`
   color: rgba(0, 0, 0, 0.5);
   font-size: 8px;
@@ -17,12 +24,12 @@ export const DateText = styled.Text`
   ${({ theme }) => theme.messageList.messageSystem.dateText.css}
 `;
 
-export const Text = styled.Text<{ firstName?: string }>`
+export const Text = styled.Text<{ clickable?: boolean }>`
   font-size: ${({ theme }) => theme.fonts.SMALL_SIZE + 1}px;
   font-weight: bold;
   text-align: center;
-  color: ${({ theme, firstName }) =>
-    firstName ? theme.colors.PRIMARY : ' rgba(0, 0, 0, 0.5)'};
+  color: ${({ theme, clickable }) =>
+    clickable ? theme.colors.PRIMARY : ' rgba(0, 0, 0, 0.5)'};
   text-transform: uppercase;
   margin-horizontal: 2px;
   ${({ theme }) => theme.messageList.messageSystem.text.css}
