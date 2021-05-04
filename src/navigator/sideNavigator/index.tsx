@@ -22,6 +22,7 @@ import MemberDetailScreen from '../../screens/community/memberPassport';
 import InvitationScreen from '../../screens/community/invitationToTribe';
 import InviteToTribeFromProfileScreen from '../../screens/community/inviteToTribeFromProfile';
 import CreateNewTribeScreen from '../../screens/community/home/widget/createTribe';
+import NewTribeScreen from '../../screens/community/home/widget/newTribe';
 import CommunityListScreen from '../../screens/passport/communityListScreen';
 import UserConnectionListScreen from '../../screens/passport/userConnectionListScreen';
 import CommunityDetailScreen from '../../screens/community/detail';
@@ -1142,6 +1143,8 @@ export default function DrawerStackNavigator() {
           headerStyle: GLOBAL_HEADER_STYLE
         })}
       />
+
+      <DrawerStack.Screen name="NewTribeScreen" component={NewTribeScreen} />
     </DrawerStack.Navigator>
   );
 }

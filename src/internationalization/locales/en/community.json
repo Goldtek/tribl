@@ -209,7 +209,7 @@
     "interestPlaceholder": "Add tribe tag",
     "create": "create",
     "invite": "invite members",
-    "inviteText": "Add your first 3 members to unlock your channel",
+    "inviteText": "Invite members to join your tribe",
     "nameError": "Name field is required",
     "avatarError": "Community photo is required",
     "descrptionError": "Description field is required",
