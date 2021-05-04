@@ -113,10 +113,9 @@ export default function NewChannelParticipants(props: ScreenProp) {
       const { data } = await createChannel();
       if (data) {
         navigation.navigate('ChannelChatScreen', {
-          params: {
-            title: `#${channelName}`,
-            channelId: data?.addChannelToCommunity?.id
-          }
+          title: `#${channelName}`,
+          channelId: data?.addChannelToCommunity?.id,
+          newly_created_group: true
         });
       }
     } catch (error) {
@@ -286,16 +285,12 @@ export default function NewChannelParticipants(props: ScreenProp) {
           </Button>
         </HeaderContainer>
         <InstantSearch
-          indexName={ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME}
+          indexName={ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME}
           searchState={state.search}
           searchClient={searchClient}
           onSearchStateChange={onSearchStateChange}
         >
-          <Configure
-            filters={`"communityId": ${id}`}
-            hitsPerPage={8}
-            distinct
-          />
+          <Configure hitsPerPage={8} distinct />
           <SearchInputWrapper>
             <AlgoliaSearchBox />
             <FlatList
