@@ -24,6 +24,7 @@ import { useThemeContext } from '../../theme';
 import { getSupportedReactions } from '../../utils/supportedReactions';
 
 import { AvatarContainer, Container, Edited } from './styles';
+import SimpleMarkdown from 'simple-markdown';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -144,6 +145,16 @@ function CustomDirectMessage(props: MessageProps) {
           mentions: { color: colors.PRIMARY }
         }
       : {};
+    const markdownRules = props.theme
+      ? {
+          ...props.theme.message.content.markdown,
+          heading: {
+            match: SimpleMarkdown.blockRegex(
+              /^ *(##{1,6}) *([^\n]+?) *#* *(?:\n *)+/
+            )
+          }
+        }
+      : {};
 
     const createdAt = new Date(props.message.created_at);
     const updatedAt = new Date(props.message.updated_at);
@@ -151,7 +162,11 @@ function CustomDirectMessage(props: MessageProps) {
 
     return (
       <Container>
-        {props.renderText({ message: props.message, markdownStyles })}
+        {props.renderText({
+          message: props.message,
+          markdownStyles,
+          markdownRules
+        })}
         {updated && <Edited>(edited)</Edited>}
       </Container>
     );
