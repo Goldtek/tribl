@@ -32,6 +32,7 @@ import {
   MessageHeader,
   AvatarContainer
 } from './styles';
+import SimpleMarkdown from 'simple-markdown';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -196,6 +197,16 @@ function CustomChannelMessage(props: MessageProps) {
           mentions: { color: colors.PRIMARY }
         }
       : {};
+    const markdownRules = props.theme
+      ? {
+          ...props.theme.message.content.markdown,
+          heading: {
+            match: SimpleMarkdown.blockRegex(
+              /^ *(##{1,6}) *([^\n]+?) *#* *(?:\n *)+/
+            )
+          }
+        }
+      : {};
 
     const createdAt = new Date(props.message.created_at);
     const updatedAt = new Date(props.message.updated_at);
@@ -209,7 +220,11 @@ function CustomChannelMessage(props: MessageProps) {
             <Time>{Dayjs(props.message.created_at).format('hh:ss A')}</Time>
           </MessageHeader>
         ) : null}
-        {props.renderText({ message: props.message, markdownStyles })}
+        {props.renderText({
+          message: props.message,
+          markdownStyles,
+          markdownRules
+        })}
         {updated && <Edited>(edited)</Edited>}
       </Container>
     );
