@@ -8,9 +8,9 @@ import FastImage from 'react-native-fast-image';
 import { useThemeContext } from '../../../../../theme';
 import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
 import {
-  GET_SINGLE_COMMUNITY,
+  GET_NOAUTH_SINGLE_COMMUNITY,
   GET_COMMUNITY_MEMBERS,
-  GET_NEARBY_MEMBERS_OF_A_COMMUNITY
+  GET_NOAUTH_NEARYBY_MEMBERS
 } from '../../../../../graphql/server/query';
 import {
   CommunityInterface,
@@ -37,18 +37,10 @@ function RecommendedCommunity(props: ScreenProp) {
   const [loading, setLoading] = useState(false);
   const [community, setCommunity] = useState({ ...props });
 
-  const {
-    id,
-    name,
-    avatar,
-    isMember,
-    isPrivate,
-    isRequested,
-    membersCount
-  } = community;
+  const { id, name, avatar, isPrivate, membersCount } = community;
 
-  const { data, refetch } = useQuery<SingleCommunityRequestInterface>(
-    GET_SINGLE_COMMUNITY,
+  const { data } = useQuery<SingleCommunityRequestInterface>(
+    GET_NOAUTH_SINGLE_COMMUNITY,
     { variables: { input: { filter: { id } } } }
   );
 
@@ -56,7 +48,7 @@ function RecommendedCommunity(props: ScreenProp) {
     variables: { input: { filter: { communityId: id } } }
   });
 
-  useQuery(GET_NEARBY_MEMBERS_OF_A_COMMUNITY, {
+  useQuery(GET_NOAUTH_NEARYBY_MEMBERS, {
     variables: { input: { communityId: id } }
   });
 
