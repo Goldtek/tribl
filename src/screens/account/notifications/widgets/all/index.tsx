@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import SearchInput, { createFilter } from 'react-native-search-filter';
+import React, { useEffect } from 'react';
 //@ts-ignore
 import { FlatFeed, Activity } from 'expo-activity-feed';
-import { useThemeContext } from '../../../../../theme';
 import { NavigationInterface } from '../../../../types';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
 import { chatClient } from '../../../../../stream/types';
@@ -16,15 +13,9 @@ import { Container } from './styles';
 interface GeneralSlideProp extends NavigationInterface {}
 
 export default function GeneralSlide(props: GeneralSlideProp) {
-  const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
-
-  const [search, setSearch] = useState({ searchTerm: '' });
   useEffect(() => {
     tagScreenName('NotificationScreen');
   }, []);
-
-  const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const CustomActivity = (props: any) => {
     return (
@@ -38,6 +29,14 @@ export default function GeneralSlide(props: GeneralSlideProp) {
             activityType={props?.activity?.activityType}
             userAvatar={props?.activity?.passport?.avatar}
             tribeAvatar={props?.activity?.community?.avatar}
+            messageType={props?.activity?.messageType}
+            channelName={props?.activity?.channel?.name}
+            tribeName={props?.activity?.community?.name}
+            userName={props?.activity?.passport?.name}
+            userID={props?.activity?.passport?.id}
+            tribeID={props?.activity?.community?.id}
+            count={props?.activity?.count}
+            channelID={props?.activity?.channel?.id}
           />
         }
       />
@@ -46,22 +45,6 @@ export default function GeneralSlide(props: GeneralSlideProp) {
 
   return (
     <Container>
-      {/* <SearchInput
-        onChangeText={searchUpdated}
-        placeholder={t(`community.notification.placeholder`)}
-        placeholderTextColor={colors.PRIMARY_TEXT}
-        style={{
-          height: RFValue(40),
-          color: colors.PRIMARY_TEXT,
-          alignItems: 'center',
-          elevation: 0,
-          borderWidth: 1,
-          borderColor: colors.INACTIVE,
-          borderRadius: 4,
-          paddingHorizontal: 10,
-          marginHorizontal: 15
-        }}
-      /> */}
       <FlatFeed
         feedGroup="timeline"
         userId={chatClient.user?.id}
