@@ -338,7 +338,12 @@ export type GenerateStreamsTokenRequestInterface = {
 
 // SERVER CREATE ACCOUNT (RESPONSE) TYPE
 export type CreateAccountInterface = {
-  createPassport: { success: boolean; _id: string };
+  createPassport: {
+    success: boolean;
+    _id: string;
+    place_in_line: number;
+    invite_url: string;
+  };
 };
 
 // USER PASSPORT (RESPONSE) TYPE
