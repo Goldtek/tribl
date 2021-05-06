@@ -86,6 +86,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   const { data: communityMembersData } = useQuery(GET_NOAUTH_NEARYBY_MEMBERS, {
     variables: {
       input: {
+        limit: 8,
         communityId: id,
         currentLocation: {
           lat: location?.lat,
@@ -101,6 +102,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   const { data: NearbyMembers } = useQuery(GET_NOAUTH_NEARYBY_MEMBERS, {
     variables: {
       input: {
+        limit: 8,
         currentLocation: {
           lat: location?.lat,
           long: location?.long,
@@ -282,7 +284,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                 contentContainerStyle={{
                   marginTop: 5,
                   paddingHorizontal: 15,
-                  paddingBottom: RFValue(100)
+                  paddingBottom: visible ? RFValue(100) : RFValue(20)
                 }}
               />
             </Card.Content>

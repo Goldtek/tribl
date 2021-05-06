@@ -354,7 +354,7 @@ export default function HomeScreen(props: ScreenProp) {
             contentContainerStyle={{
               marginTop: 20,
               paddingLeft: 15,
-              paddingBottom: RFValue(100)
+              paddingBottom: visible ? RFValue(100) : RFValue(20)
             }}
           />
         </RecommendedList>
