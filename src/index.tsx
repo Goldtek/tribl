@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import DrawerStackNavigator from './navigator/sideNavigator';
+import PreviewNavigator from './navigator/previewNavigator';
 import TriblPayNavigator from './navigator/triblPayNavigator';
 import SignupNavigator from './navigator/signupNavigator';
 import { navigationRef } from './constants';
@@ -203,6 +204,8 @@ export default function AppNavigator() {
           name="WalkThroughScreen"
           component={Screens.WalkThroughScreen}
         />
+
+        <RootStack.Screen name="PreviewScreen" component={PreviewNavigator} />
 
         <RootStack.Screen name="SignupScreen" component={SignupNavigator} />
 
