@@ -64,7 +64,7 @@ export default function SplashScreen(props: ScreenProp) {
       const userRegStorageData = await Storage.getUserRegistration();
 
       if (!userCredStorageData || !userRegStorageData) {
-        return navigation.replace('SignupScreen');
+        return navigation.replace('PreviewScreen');
       }
 
       const credentials = JSON.parse(userCredStorageData) as VerifyOTPIT;
