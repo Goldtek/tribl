@@ -37,6 +37,8 @@ export const CREATE_USER_PASSPORT = gql`
   mutation createPassport($payload: CreatePassportInput!) {
     createPassport(input: $payload) {
       success
+      place_in_line
+      invite_url
     }
   }
 `;
