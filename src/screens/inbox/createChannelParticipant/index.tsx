@@ -86,8 +86,6 @@ export default function NewChannelParticipants(props: ScreenProp) {
     setState({ ...state, search });
   };
 
-  const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME;
-
   const selectedParticipant = [Object.values(tribeMembers)];
 
   const channelParticipant = selectedParticipant[0]?.map((item) => item.id);
@@ -113,7 +111,7 @@ export default function NewChannelParticipants(props: ScreenProp) {
       const { data } = await createChannel();
       if (data) {
         navigation.navigate('ChannelChatScreen', {
-          title: `#${channelName}`,
+          title: `${channelName}`,
           channelId: data?.addChannelToCommunity?.id,
           newly_created_group: true
         });
@@ -187,42 +185,6 @@ export default function NewChannelParticipants(props: ScreenProp) {
   );
 
   const AlgoliaSearchBox = useMemo(() => connectSearchBox(_searchBox), []);
-
-  const _memberList = (props: any) => {
-    const { hits, hasMore, refineNext } = props;
-    const filterHits = removeDuplicateMembers(hits?.slice());
-    const filteredUsers = filterHits?.filter(function (users) {
-      return !blockedUsers?.some(function (userTwo: any) {
-        return users.id == userTwo.id;
-      });
-    });
-
-    return (
-      <Results>
-        <FlatList
-          data={filteredUsers}
-          keyExtractor={(item) => item.id}
-          ItemSeparatorComponent={() => (
-            <Divider
-              style={{
-                height: 1.5,
-                backgroundColor: hexToRGB(colors.INACTIVE, 0.5)
-              }}
-            />
-          )}
-          onEndReached={() => hasMore && refineNext()}
-          renderItem={_renderItem}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingTop: 20,
-            paddingBottom: RFValue(60)
-          }}
-        />
-      </Results>
-    );
-  };
-
-  const AlgoliaMemberList = useMemo(() => connectInfiniteHits(_memberList), []);
 
   const _renderSeparator = ({ leadingItem }: any) => {
     const user = leadingItem as PassportInterface;
