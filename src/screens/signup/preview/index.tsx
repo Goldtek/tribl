@@ -50,8 +50,6 @@ import {
 interface ScreenProp extends NavigationInterface {}
 
 export default function HomeScreen(props: ScreenProp) {
-  const { navigation } = props;
-
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const isFocused = useIsFocused();
@@ -84,9 +82,7 @@ export default function HomeScreen(props: ScreenProp) {
   }, []);
 
   const handleLocation = async () => {
-    console.tron('a');
     try {
-      console.tron('b');
       await Location.requestPermissionsAsync();
 
       const { coords } = await Location.getLastKnownPositionAsync();
@@ -95,7 +91,6 @@ export default function HomeScreen(props: ScreenProp) {
         latitude: coords.latitude,
         longitude: coords.longitude
       });
-      console.tron('c');
       const { city, region: state, country } = currentLocation;
       setLocation({
         ...location,
@@ -105,19 +100,15 @@ export default function HomeScreen(props: ScreenProp) {
         state,
         country
       });
-      console.tron('d');
       Mixpanel.track('Get UserLocation', {
         info: `User  updates location`,
         'Activity Screen': 'Preview screen'
       });
     } catch (error) {
-      console.tron('e', error);
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
-
-  console.tron('location', location);
 
   const {
     loading: recommendedCommunityLoading,
@@ -152,7 +143,7 @@ export default function HomeScreen(props: ScreenProp) {
     {
       variables: {
         input: {
-          limit: PAGINATION_DEFAULT / 2,
+          limit: 8,
           currentLocation: {
             lat: location?.lat,
             long: location?.long,
@@ -166,7 +157,6 @@ export default function HomeScreen(props: ScreenProp) {
   );
 
   useEffect(() => {
-    console.tron('reload');
     communityRefetch();
     recommendedRefetch();
   }, [location]);
