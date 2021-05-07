@@ -584,7 +584,7 @@ export default function ActivityCard(props: ActivityCardProps) {
     <Container>
       <LeftCover>
         <FastImage
-          resizeMode={FastImage.resizeMode.contain}
+          resizeMode={FastImage.resizeMode.cover}
           source={{
             uri: avatar,
             priority: FastImage.priority.high
@@ -593,6 +593,7 @@ export default function ActivityCard(props: ActivityCardProps) {
             width: RFValue(50),
             height: RFValue(50),
             borderWidth: 1,
+            borderColor: colors.INACTIVE,
             borderRadius: RFValue(50)
           }}
         />
