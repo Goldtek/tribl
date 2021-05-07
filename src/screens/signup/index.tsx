@@ -6,6 +6,10 @@ import UserLocationScreen from './userLocation';
 import GetStartedScreen from './getStarted';
 import PassportScreen from './passport';
 import OTPScreen from './otp';
+import PreviewScreen from './preview';
+import TribeDetailScreen from './tribeDetail';
+import MemberPassportDetailScreen from './memberPassport';
+import WaitlistScreen from './waitlistScreen';
 
 export default {
   CreateAccountScreen,
@@ -15,5 +19,9 @@ export default {
   UserLocationScreen,
   GetStartedScreen,
   PassportScreen,
-  OTPScreen
+  OTPScreen,
+  PreviewScreen,
+  TribeDetailScreen,
+  MemberPassportDetailScreen,
+  WaitlistScreen
 };

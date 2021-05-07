@@ -114,6 +114,10 @@ export type RootStackParamList = {
   BlockedAccountScreen?: Object;
   ChannelRequestScreen?: Object;
   TribeRequestScreen?: Object;
+  PreviewScreen?: Object;
+  TribeDetailScreen?: Object;
+  MemberPassportDetailScreen?: Object;
+  WaitlistScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -207,7 +211,11 @@ export type RootStackParamScreensList =
   | 'CreateChannelParticipant'
   | 'BlockedAccountScreen'
   | 'ChannelRequestScreen'
-  | 'TribeRequestScreen';
+  | 'TribeRequestScreen'
+  | 'PreviewScreen'
+  | 'TribeDetailScreen'
+  | 'MemberPassportDetailScreen'
+  | 'WaitlistScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

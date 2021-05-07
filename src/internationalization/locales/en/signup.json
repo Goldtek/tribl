@@ -25,7 +25,8 @@
     "accept": "accept",
     "acceptLicence": "Accept EULA to proceed",
     "inputError": "Provide a valid number",
-    "loading": "loading..."
+    "loading": "loading...",
+    "signup": "Sign-Up"
   },
 
   "selectCountry": {
@@ -43,6 +44,13 @@
     "submit": "submit",
     "inputError": "Provide a valid OTP",
     "loading": "loading..."
+  },
+
+  "waitListScreen": {
+    "title": " Thank You! You're officially on the list!",
+    "waitlistNumber": "You’re place in line:",
+    "earlyAccess": "Get early access by referring your friends to move up the list. The more friends that join, the faster you'll get access. The culture is waiting...",
+    "invite": " Invite Friends"
   },
 
   "createAccountScreen": {

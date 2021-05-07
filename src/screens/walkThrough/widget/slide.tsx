@@ -59,7 +59,7 @@ function Slide(props: SlideProp) {
         )}
         {slideIndex === 2 && (
           <Image
-            source={require('../../../../assets/images/sliderOneImage.png')}
+            source={require('../../../../assets/images/sliderFiveImage.png')}
             style={{
               resizeMode: 'cover',
               width: '100%',

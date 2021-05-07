@@ -13,11 +13,19 @@ export default function General() {
           Header={null}
           Content={
             <ActivityCard
+              message={props.activity.message}
+              timeStamp={props.activity.time}
               activityType={props?.activity?.activityType}
               userAvatar={props?.activity?.passport?.avatar}
               tribeAvatar={props?.activity?.community?.avatar}
-              message={props.activity.message}
-              timeStamp={props.activity.time}
+              messageType={props?.activity?.messageType}
+              channelName={props?.activity?.channel?.name}
+              tribeName={props?.activity?.community?.name}
+              userName={props?.activity?.passport?.name}
+              userID={props?.activity?.passport?.id}
+              tribeID={props?.activity?.community?.id}
+              count={props?.activity?.count}
+              channelID={props?.activity?.channel?.id}
             />
           }
         />
