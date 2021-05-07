@@ -248,6 +248,90 @@ export const GET_RECOMMENDED_MEMBERS = gql`
   }
 `;
 
+// GET  RECOMMENDED MEMBERS FOR UNAUTHORIZED USERS
+export const GET_NOAUTH_RECOMMENDED_MEMBERS = gql`
+  query noAuthRecommendedMembers($input: RecommendationPassportArgsInput) {
+    noAuthRecommendedMembers(input: $input) {
+      data {
+        id
+        bio
+        email
+        firstName
+        lastName
+        avatar
+        verified
+        connected
+        connectionCount
+        communityCount
+        citizenship {
+          name
+          flag
+        }
+        birthPlace {
+          country
+          state
+          city
+        }
+        currentLocation {
+          country
+          state
+          city
+          lat
+          long
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
+      }
+    }
+  }
+`;
+
+// GET  NEARBY MEMBERS FOR UNAUTHORIZED USERS
+export const GET_NOAUTH_NEARYBY_MEMBERS = gql`
+  query noAuthNearbyMembers($input: RecommendationPassportArgsInput) {
+    noAuthNearbyMembers(input: $input) {
+      data {
+        id
+        bio
+        email
+        firstName
+        lastName
+        avatar
+        verified
+        connected
+        connectionCount
+        communityCount
+        citizenship {
+          name
+          flag
+        }
+        birthPlace {
+          country
+          state
+          city
+        }
+        currentLocation {
+          country
+          state
+          city
+          lat
+          long
+        }
+        identity {
+          name
+        }
+        interest {
+          name
+        }
+      }
+    }
+  }
+`;
+
 // GET  NEARBY MEMBERS
 export const GET_NEARBY_MEMBERS = gql`
   query nearbyMembers($input: RecommendationPassportArgsInput) {
@@ -540,6 +624,22 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
           name
           id
         }
+      }
+    }
+  }
+`;
+
+// GET  NO AUTH RECOMMENDED COMMUNITIES
+export const GET_NOAUTH_RECOMMENDED_COMMUNITIES = gql`
+  query noAuthRecommendedCommunities($input: RecommendationCommunityArgsInput) {
+    noAuthRecommendedCommunities(input: $input) {
+      data {
+        id
+        avatar
+        name
+        membersCount
+        description
+        isPrivate
       }
     }
   }
@@ -896,10 +996,117 @@ export const GET_SINGLE_COMMUNITY = gql`
   }
 `;
 
+//GET ONE COMMUNITY FOR NOAUTH USERS
+export const GET_NOAUTH_SINGLE_COMMUNITY = gql`
+  query noAuthSingleCommunity($id: String!) {
+    noAuthSingleCommunity(id: $id) {
+      id
+      name
+      avatar
+      isPrivate
+      description
+      description
+      membersCount
+      tags {
+        id
+        name
+      }
+      uniqueInterests {
+        name
+        id
+      }
+    }
+  }
+`;
+
 // GET ONE PASSPORT
 export const GET_SINGLE_PASSPORT = gql`
   query singlePassport($id: String!) {
     singlePassport(id: $id) {
+      id
+      bio
+      email
+      firstName
+      lastName
+      avatar
+      verified
+      phoneNumber
+      connected
+      connectionCount
+      communityCount
+      pending
+      myConnections {
+        data {
+          id
+          bio
+          email
+          avatar
+          pending
+          verified
+          lastName
+          connected
+          firstName
+          phoneNumber
+          communityCount
+          connectionCount
+          currentLocation {
+            country
+            state
+            city
+          }
+        }
+      }
+      privacy {
+        blocked {
+          id
+          firstName
+          lastName
+        }
+      }
+      blocked {
+        blocked {
+          id
+          firstName
+          lastName
+        }
+      }
+      citizenship {
+        name
+        flag
+      }
+      connectionDetails {
+        status
+      }
+      moderatorOf {
+        isModerator
+        id
+      }
+      birthPlace {
+        country
+        state
+        city
+      }
+      currentLocation {
+        country
+        state
+        city
+        lat
+        long
+      }
+      identity {
+        name
+      }
+      interest {
+        name
+      }
+    }
+  }
+`;
+
+// GET ONE PASSPORT FOR NOAUTH USERS
+export const GET_NOAUTH_SINGLE_PASSPORT = gql`
+  query noAuthSinglePassport($id: String!) {
+    noAuthSinglePassport(id: $id) {
       id
       bio
       email
@@ -1641,6 +1848,7 @@ export const GET_TRENDING_CHANNELS = gql`
   query trendingChannels($input: ChannelArgsInput!) {
     trendingChannels(input: $input) {
       data {
+        messageCount
         channel {
           id
           name

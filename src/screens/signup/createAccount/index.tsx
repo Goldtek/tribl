@@ -18,11 +18,7 @@ import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import Storage from '../../../libs/storage';
 import LoadingModal from '../../../components/loadingModal';
 import { validateEmailInput } from '../../../utils/validateEmailInput';
-import {
-  tagScreenName,
-  logEvent,
-  hideSensitiveView
-} from '../../../utils/uxcamHelper';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
@@ -42,6 +38,8 @@ export default function CreateAccountScreen(props: ScreenProp) {
     firstName: '',
     lastName: '',
     email: '',
+    placeInLine: 0,
+    inviteURL: '',
     isModalVisible: false
   });
 
@@ -92,7 +90,6 @@ export default function CreateAccountScreen(props: ScreenProp) {
 
     try {
       const { data } = await createPassport();
-
       if (data?.createPassport.success) {
         setState({ ...state, isModalVisible: true });
 
@@ -125,12 +122,33 @@ export default function CreateAccountScreen(props: ScreenProp) {
           addUserDetails();
         }, 3500);
       }
+      if (data?.createPassport?.place_in_line) {
+        setState({
+          ...state,
+          placeInLine: data?.createPassport?.place_in_line,
+          inviteURL: data?.createPassport?.invite_url
+        });
+        return navigation.navigate('PreviewScreen', {
+          screen: 'WaitlistScreen',
+          params: {
+            placeInLine:
+              state?.placeInLine || data?.createPassport?.place_in_line,
+            inviteURL: state?.inviteURL || data?.createPassport?.invite_url
+          }
+        });
+      }
     } catch (error) {
       if (
         error?.message ==
         'GraphQL error: Cannot perform action, you need to be referred to join the app'
       ) {
-        return handleInputError('inviteError');
+        return navigation.navigate('PreviewScreen', {
+          screen: 'WaitlistScreen',
+          params: {
+            placeInLine: state?.placeInLine,
+            inviteURL: state?.inviteURL
+          }
+        });
       }
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);

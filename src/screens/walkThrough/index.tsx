@@ -47,7 +47,7 @@ export default function WalkThroughScreen(props: ScreenProp) {
 
   const handleDoneButton = useCallback(async () => {
     await Storage.setInitialLaunch();
-    return navigation.replace('SignupScreen');
+    return navigation.navigate('PreviewScreen');
   }, []);
 
   const renderPagination = (_index: number, total: number) => (

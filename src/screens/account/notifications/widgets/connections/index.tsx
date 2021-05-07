@@ -33,6 +33,14 @@ export default function ConnectionSlide(props: ConnectionSlideProp) {
               activityType={props?.activity?.activityType}
               userAvatar={props?.activity?.passport?.avatar}
               tribeAvatar={props?.activity?.community?.avatar}
+              messageType={props?.activity?.messageType}
+              channelName={props?.activity?.channel?.name}
+              tribeName={props?.activity?.community?.name}
+              userName={props?.activity?.passport?.name}
+              userID={props?.activity?.passport?.id}
+              tribeID={props?.activity?.community?.id}
+              count={props?.activity?.count}
+              channelID={props?.activity?.channel?.id}
             />
           }
         />
