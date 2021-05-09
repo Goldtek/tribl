@@ -179,7 +179,7 @@
     "update": "this update",
     "version": "found new version",
     "title": "limited update release",
-    "update_info": "Fix channel message for new users; Fix channel messages not loading up"
+    "update_info": "Fix channel message for new users; Fix connection request deep link bug; Fix duplicate tribes in pagination; Fix channel user invitation system message; Fix Tribe creation stuck bug; Fix Edit Group name"
   },
   "addTags": {
     "title": "Looks like you’re visiting for the first time.",
