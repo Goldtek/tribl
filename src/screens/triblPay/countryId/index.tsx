@@ -150,6 +150,32 @@ export default function CountryIdScreen(props: ScreenProp) {
           />
         </View>
         <Text>{message}</Text>
+        {document && (
+          <View
+            style={{
+              position: 'absolute',
+              height: RFValue(200),
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 2,
+              borderColor: colors.ONLINE,
+              width: '100%'
+            }}
+          >
+            <TouchableRipple
+              onPress={() => {
+                setDocument(null);
+                cameraRef.current.restart();
+              }}
+            >
+              <MaterialCommunityIcons
+                name="camera-retake"
+                size={RFValue(30)}
+                color={colors.ONLINE}
+              />
+            </TouchableRipple>
+          </View>
+        )}
       </View>
 
       {document ? (
