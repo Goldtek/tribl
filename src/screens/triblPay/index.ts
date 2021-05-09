@@ -5,13 +5,15 @@ import VerifyIdentityScreen from './verifyIdentity';
 import LinkAccountScreen from './linkedAccount';
 import WalletScreen from './wallet';
 import AddCashScreen from './addCash';
+import DocumentTypeSelectionScreen from './documentTypeSelection';
 
 export default {
-  ActivateWalletScreen,
-  BankCountryScreen,
-  CountryIdScreen,
-  VerifyIdentityScreen,
-  LinkAccountScreen,
   WalletScreen,
-  AddCashScreen
+  AddCashScreen,
+  CountryIdScreen,
+  LinkAccountScreen,
+  BankCountryScreen,
+  ActivateWalletScreen,
+  VerifyIdentityScreen,
+  DocumentTypeSelectionScreen
 };
