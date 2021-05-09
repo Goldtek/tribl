@@ -124,6 +124,25 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         }}
       />
       <TriblpayStack.Screen
+        name="DocumentTypeSelectionScreen"
+        component={Screens.DocumentTypeSelectionScreen}
+        options={{
+          headerTitle: `2 of 3 ${t(`community.passport.steps`)}`,
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.SECONDARY_TEXT,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+            fontFamily: fonts.WORK_SANS_REGULAR
+          }
+        }}
+      />
+      <TriblpayStack.Screen
         name="LinkAccountScreen"
         component={Screens.LinkAccountScreen}
         options={{
