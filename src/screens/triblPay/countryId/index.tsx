@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { PermissionsAndroid, Platform, View } from 'react-native';
 import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { VouchedIdCamera } from '@vouched.id/vouched-react-native';
+
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import GradientButton from '../../../components/gradientButton';
 
 import { Container, HeaderCover, IconCover } from './styles';
-import { PermissionsAndroid, Platform, View } from 'react-native';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -18,11 +20,12 @@ export default function CountryIdScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const [message, setMessage] = useState('loading...');
+  const [document, setDocument] = useState(null);
+  const cameraRef = useRef<typeof VouchedIdCamera>(null);
   const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
   const details = props.route?.params?.details;
   const { name, iso2, emoji, number } = details;
-
-  const [document, setDocument] = useState('');
 
   useEffect(() => {
     // assume all iOS users except permissions
@@ -112,19 +115,44 @@ export default function CountryIdScreen(props: ScreenProp) {
           {t(`community.passport.capture`)}
         </Text>
       </HeaderCover>
-      <TouchableRipple
+
+      <View
         style={{
-          height: RFValue(200),
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: 2,
-          borderColor: colors.PRIMARY,
           marginHorizontal: RFValue(15)
         }}
       >
-        <Feather name="camera" size={RFValue(25)} color={colors.PRIMARY} />
-      </TouchableRipple>
-      {!document?.length ? (
+        <View
+          style={{
+            height: RFValue(200),
+            borderWidth: 2,
+            borderColor: colors.PRIMARY
+          }}
+        >
+          <VouchedIdCamera
+            ref={cameraRef}
+            enableDistanceCheck={false}
+            onIdStream={async (cardDetectionResult: any) => {
+              const { instruction, step } = cardDetectionResult;
+
+              if (step === 'POSTABLE') {
+                cameraRef.current.stop();
+                setMessage('Processing');
+                try {
+                  setMessage('Please continue to next step');
+                  setDocument(cardDetectionResult);
+                } catch (e) {
+                  console.error(e);
+                }
+              } else {
+                setMessage(instruction);
+              }
+            }}
+          />
+        </View>
+        <Text>{message}</Text>
+      </View>
+
+      {document ? (
         <GradientButton
           onPress={handleNavigation}
           style={{ height: 50 }}
@@ -135,12 +163,10 @@ export default function CountryIdScreen(props: ScreenProp) {
           }}
           contentStyle={{ height: 50 }}
         >
-          {t(`community.passport.submit`)}
+          Scan back
         </GradientButton>
       ) : (
-        <IconCover>
-          <Feather name="camera" size={RFValue(25)} color={colors.WHITE} />
-        </IconCover>
+        <View style={{ height: 100 }}></View>
       )}
     </Container>
   );
