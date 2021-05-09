@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
 import FastImage from 'react-native-fast-image';
-import { Share, SafeAreaView } from 'react-native';
+import { Share, SafeAreaView, Alert } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
 import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -31,7 +31,6 @@ import {
   GET_RECOMMENDED_MEMBERS,
   USER_CHANNELS
 } from '../../graphql/server/query';
-import { MyPassportInterface, PassportInterface } from '../../graphql/types';
 import {
   UPDATE_PASSPORT,
   GENERATE_INVITE_LINK
@@ -162,35 +161,9 @@ export default function PassportScreen(props: ScreenProp) {
   });
 
   const userDetails = userData?.myPassport;
-
   const currentLocation = userDetails?.currentLocation?.country
     ? userDetails?.currentLocation
     : cache?.currentLocation;
-
-  const [generateInviteLink] = useMutation(GENERATE_INVITE_LINK, {
-    variables: { payload: { passportId: userDetails?.id } }
-  });
-
-  const handleGenerateLink = async () => {
-    logEvent('generate invite link', { from: 'passport' });
-    try {
-      Mixpanel.track('Generate Invite Link', {
-        info: `Generate Invite Link`,
-        'Activity Screen': 'Passport Screen'
-      });
-      await generateInviteLink();
-      refetch();
-    } catch (error) {
-      crashlytics.recordError(new Error(error));
-    }
-  };
-
-  useEffect(() => {
-    if (userDetails && !userDetails?.invite_url?.length) {
-      handleGenerateLink();
-      refetch();
-    }
-  }, [userDetails]);
 
   useEffect(() => {
     if (userDetails) {
@@ -341,7 +314,6 @@ export default function PassportScreen(props: ScreenProp) {
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -450,7 +422,6 @@ export default function PassportScreen(props: ScreenProp) {
       // PROFILE SHARED HERE
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -489,7 +460,6 @@ export default function PassportScreen(props: ScreenProp) {
       setUpdate(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
       setUpdate(true);
     }
   };
@@ -535,15 +505,45 @@ export default function PassportScreen(props: ScreenProp) {
       ImagePicker.clean();
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
   const [triblPay, setTriblPay] = useState(false);
+  const [emptyFields, setEmptyFields] = useState<[]>([]);
 
   const handleActivateWallet = () => {
+    const updateFields = [];
+    const { phoneNumber, email, lastName, firstName, dob } = userDetails;
+    if (phoneNumber === null) updateFields.push('phone');
+    if (email === null) updateFields.push('email');
+    if (lastName === null) updateFields.push('last name');
+    if (firstName === null) updateFields.push('first name');
+    if (dob === null) updateFields.push('dob');
+    setEmptyFields(updateFields);
+    if (updateFields.length > 0) {
+      return Alert.alert(
+        'Update Profile',
+        `Update ${
+          updateFields.length > 1
+            ? updateFields.map((x) => `${x}, `)
+            : `${updateFields}`
+        } fields before you can proceed `,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {},
+            style: 'cancel'
+          },
+          {
+            text: 'Update',
+            onPress: () => setUpdate(false)
+          }
+        ]
+      );
+    }
+
     navigation.navigate('TriblPayScreen', {
-      screen: 'ActivateWalletScreen'
+      screen: 'BankCountryScreen'
     });
   };
 
@@ -841,17 +841,18 @@ export default function PassportScreen(props: ScreenProp) {
                   }}
                   contentStyle={{
                     height: RFValue(50),
-                    backgroundColor: colors.PRIMARY_LIGHT
+                    backgroundColor: colors.PRIMARY_LIGHT,
+                    paddingLeft: RFValue(5)
                   }}
                   style={{
                     height: RFValue(50),
-                    width: '100%'
+                    width: '49%'
                   }}
                   onPress={onShare}
                 >
-                  {t(`community.passport.shareInvite`)}
+                  {t(`community.passport.share`)}
                 </Button>
-                {/* <Button
+                <Button
                   onPress={triblPay ? handleViewWallet : handleActivateWallet}
                   labelStyle={{
                     color: colors.PRIMARY,
@@ -871,7 +872,7 @@ export default function PassportScreen(props: ScreenProp) {
                   {triblPay
                     ? t(`community.passport.viewWallet`)
                     : t(`community.passport.activate`)}
-                </Button> */}
+                </Button>
               </ButtonHeaderCover>
             </HeaderContainer>
             <TabCover>
