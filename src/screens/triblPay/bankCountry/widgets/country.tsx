@@ -17,11 +17,16 @@ const CountryCard = (props: CountryCardProps) => {
   const { name, iso2, emoji, navigation } = props;
 
   const handleSelect = () => {
-    navigation.navigate('VerifyIdentityScreen', {
+    if (name === 'United States of America' || iso2 === 'US') {
+      return navigation.navigate('VerifyIdentityScreen', {
+        details: { name, iso2, emoji }
+      });
+    }
+
+    navigation.navigate('DocumentTypeSelectionScreen', {
       details: { name, iso2, emoji }
     });
   };
-
   return (
     <TouchableOpacity
       onPress={handleSelect}
