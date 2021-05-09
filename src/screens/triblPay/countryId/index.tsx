@@ -9,6 +9,7 @@ import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import GradientButton from '../../../components/gradientButton';
 
 import { Container, HeaderCover, IconCover } from './styles';
+import { PermissionsAndroid, Platform } from 'react-native';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -17,12 +18,27 @@ export default function CountryIdScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
   const details = props.route?.params?.details;
   const { name, iso2, emoji, number } = details;
 
   const [document, setDocument] = useState('');
 
   useEffect(() => {
+    // assume all iOS users except permissions
+    if (Platform.OS === 'ios') {
+      setPermissions(true);
+      return;
+    }
+
+    const checkAndroidPermissions = async () => {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA
+      );
+      setPermissions(granted === PermissionsAndroid.RESULTS.GRANTED);
+    };
+
+    checkAndroidPermissions();
     tagScreenName('CountryIdScreen');
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
