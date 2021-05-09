@@ -26,6 +26,7 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
   const [docType, setDocType] = useState('');
 
   useEffect(() => {
+    tagScreenName('DocumentTypeSelectionScreen');
     logEvent('Select document type', { from: 'passport' });
   }, []);
 
