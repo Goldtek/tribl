@@ -9,7 +9,7 @@ import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import GradientButton from '../../../components/gradientButton';
 
 import { Container, HeaderCover, IconCover } from './styles';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { PermissionsAndroid, Platform, View } from 'react-native';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -42,6 +42,21 @@ export default function CountryIdScreen(props: ScreenProp) {
     tagScreenName('CountryIdScreen');
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
+
+  if (hasCameraPermissions === undefined) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <Text> Waiting on Camera Permissions... </Text>
+      </View>
+    );
+  }
 
   const handleNavigation = () => {
     navigation.navigate('WalletScreen');
