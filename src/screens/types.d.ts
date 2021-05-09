@@ -118,6 +118,7 @@ export type RootStackParamList = {
   TribeDetailScreen?: Object;
   MemberPassportDetailScreen?: Object;
   WaitlistScreen?: Object;
+  DocumentTypeSelectionScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -215,7 +216,8 @@ export type RootStackParamScreensList =
   | 'PreviewScreen'
   | 'TribeDetailScreen'
   | 'MemberPassportDetailScreen'
-  | 'WaitlistScreen';
+  | 'WaitlistScreen'
+  | 'DocumentTypeSelectionScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
@@ -223,7 +225,7 @@ interface StackNavigationInterface extends StackActionHelpers {
 
 interface StackScreenInterface {
   navigation: StackNavigationProp<RootStackParamList, string> &
-    StackNavigationInterface;
+  StackNavigationInterface;
   route: RouteProp<RootStackParamList, string>;
 }
 
