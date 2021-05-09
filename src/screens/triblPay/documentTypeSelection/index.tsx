@@ -1,18 +1,11 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import {
-  Title,
-  Text,
-  ProgressBar,
-  Paragraph,
-  TouchableRipple
-} from 'react-native-paper';
+import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import ENVIRONMENT_VARIABLES from 'react-native-config';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
-import Input from '../../../components/input';
 import GradientButton from '../../../components/gradientButton';
 
 import { Container, HeaderCover } from './styles';
@@ -20,12 +13,9 @@ import { View } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 
-import { initSession } from '../../../vouched/session';
-
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-initSession(ENVIRONMENT_VARIABLES.PUBLIC_KEY);
 export default function DocumentTypeSelectionScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
@@ -36,7 +26,6 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
   const [docType, setDocType] = useState('');
 
   useEffect(() => {
-    tagScreenName('DocumentTypeSelectionScreen');
     logEvent('Select document type', { from: 'passport' });
   }, []);
 
@@ -45,9 +34,6 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
       return navigation.navigate('CountryIdScreen', {
         details: { docType, name, iso2, emoji }
       });
-    navigation.navigate('PassportIdScreen', {
-      details: { docType, name, iso2, emoji }
-    });
   };
 
   const handleDocSelection = (doc: string) => setDocType(doc);
