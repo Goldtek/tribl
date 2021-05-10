@@ -156,6 +156,25 @@ export const GET_USER_PASSPORT = gql`
         locality
         visibility
       }
+      wallet {
+        id
+        status
+        currencies {
+          id
+          currentBalance
+          ledgerBalance
+          status
+          name
+          entityName
+        }
+        entityName
+        activities {
+          entityName
+          description
+          visible
+          id
+        }
+      }
     }
   }
 `;
