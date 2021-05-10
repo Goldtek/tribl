@@ -205,9 +205,9 @@ export default function AppNavigator() {
           component={Screens.WalkThroughScreen}
         />
 
-        <RootStack.Screen name="PreviewScreen" component={PreviewNavigator} />
-
         <RootStack.Screen name="SignupScreen" component={SignupNavigator} />
+
+        <RootStack.Screen name="PreviewScreen" component={PreviewNavigator} />
 
         <RootStack.Screen
           name="DrawerScreen"

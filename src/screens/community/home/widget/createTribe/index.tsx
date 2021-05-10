@@ -3,14 +3,13 @@ import { ScrollView, Switch, TouchableHighlight } from 'react-native';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
 import { Title, Text, Divider } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
-import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import { CloudinaryUploadType } from '../../../../../utils/cloudinaryUpload';
 import { Toast } from '../../../../../components/rootToaster';
 import Input from '../../../../../components/input';
-import ImageResizer from 'react-native-image-resizer';
 import FastImage from 'react-native-fast-image';
 import { Feather } from '@expo/vector-icons';
 import GradientButton from '../../../../../components/gradientButton';
@@ -31,19 +30,20 @@ type StateType = {
 };
 
 export default function CreateTribeScreen(props: ScreenProp) {
-  const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
   const { navigation } = props;
+
+  const { t } = useTranslation();
+  const [name, setName] = useState('');
+  const { colors, fonts } = useThemeContext();
+  const [isEnabled, setIsEnabled] = useState(false);
 
   const [avatar, setAvatar] = useState<StateType>({
     uri: '',
     secure_url: '',
+    loading: false,
     formData: null,
-    imageData: { uri: '', mime: '', filename: '', cropRect: null },
-    loading: false
+    imageData: { uri: '', mime: undefined, cropRect: null }
   });
-
-  const [isEnabled, setIsEnabled] = useState(false);
 
   const toggleSwitch = async () => {
     setIsEnabled((previousState) => !previousState);
@@ -55,50 +55,22 @@ export default function CreateTribeScreen(props: ScreenProp) {
 
   const handleAvatar = async () => {
     try {
-      let divider = 0;
-
-      const { size, height, width, path } = (await ImagePicker.openPicker({
-        cropping: false,
-        mediaType: 'photo'
-      })) as Image;
-
-      if (size > 900000) divider = size / 900000;
-
-      const { uri: resizedImage } = await ImageResizer.createResizedImage(
-        path,
-        width / divider,
-        height / divider,
-        'PNG',
-        100,
-        0,
-        undefined
-      );
-
-      const { mime, data, filename, cropRect } = await ImagePicker.openCropper({
-        path: resizedImage,
-        cropping: true,
-        mediaType: 'photo',
-        includeBase64: true,
-        width: RFValue(200),
-        height: RFValue(200),
-        compressImageMaxWidth: RFValue(200),
-        compressImageMaxHeight: RFValue(200),
-        cropperStatusBarColor: colors.STATUS_BAR_COLOR,
-        cropperCircleOverlay: false,
-        freeStyleCropEnabled: true
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1
       });
-      const uri = `data:${mime};base64,${data}`;
-      const imageData = { mime, filename, cropRect, uri };
-      setAvatar({ ...avatar, uri, imageData });
 
-      ImagePicker.clean();
+      if (result.cancelled) return;
+      const { type, uri, width, height } = result;
+      const imageData = { uri, mime: type, cropRect: { width, height } };
+      setAvatar({ ...avatar, uri, imageData });
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
-
-  const [name, setName] = useState('');
 
   const handleNavigation = async () => {
     if (!name) {
@@ -108,6 +80,7 @@ export default function CreateTribeScreen(props: ScreenProp) {
     if (!avatar?.uri) {
       return handleInputError('avatarError');
     }
+
     navigation.navigate('AddAdminScreen', {
       name: name,
       image: avatar,

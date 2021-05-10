@@ -2,8 +2,8 @@ import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 export const ScrollView = styled.ScrollView`
-  padding-top: 6px;
-  background-color: ${({ theme }) => theme.colors.GREY};
+  margin-top: 6px;
+  background-color: ${({ theme }) => theme.colors.WHITE};
 `;
 
 export const RecommendedList = styled.View`

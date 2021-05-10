@@ -58,6 +58,8 @@
 	<string>Share your geo-location and more to connect with strangers nearby</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow access to share photos with your community</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Give $(PRODUCT_NAME) permission to use your microphone</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

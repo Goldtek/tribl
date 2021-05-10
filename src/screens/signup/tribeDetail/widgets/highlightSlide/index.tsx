@@ -31,6 +31,7 @@ import removeDuplicateMembers from '../../../../../utils/removeDuplicatePassport
 import SignupModal from '../../../../../components/signupModal';
 
 import {
+  Hr,
   Tags,
   TagText,
   Container,
@@ -146,155 +147,152 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   );
 
   return (
-    <Fragment>
-      <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
-        <Container>
-          <Fragment>
-            <Card style={{ height: RFValue(230) }}>
-              <Card.Content
+    <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
+      <Hr />
+      <Container>
+        <Fragment>
+          <Card style={{ height: RFValue(230), backgroundColor: colors.WHITE }}>
+            <Card.Content
+              style={{
+                paddingHorizontal: RFValue(5),
+                paddingVertical: RFValue(5)
+              }}
+            >
+              <FastImage
+                resizeMode={FastImage.resizeMode.stretch}
+                source={{
+                  uri: avatar,
+                  priority: FastImage.priority.high
+                }}
+                style={{ width: '100%', height: '100%', borderRadius: 4 }}
+              />
+              <Text
                 style={{
-                  paddingHorizontal: RFValue(5),
-                  paddingVertical: RFValue(5)
+                  fontSize: RFValue(fonts.LARGE_SIZE - 1),
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  color: colors.BLACK,
+                  backgroundColor: hexToRGB(colors.WHITE, 0.3),
+                  position: 'absolute',
+                  right: RFValue(15),
+                  paddingHorizontal: RFValue(10),
+                  paddingVertical: RFValue(5),
+                  marginTop: RFValue(10),
+                  textTransform: 'capitalize'
                 }}
               >
-                <FastImage
-                  resizeMode={FastImage.resizeMode.stretch}
-                  source={{
-                    uri: avatar,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{ width: '100%', height: '100%', borderRadius: 4 }}
-                />
-                <Text
+                {isPrivate ? 'Private' : 'Public'}
+              </Text>
+            </Card.Content>
+          </Card>
+          <Card style={{ marginTop: RFValue(5) }}>
+            <CardContainer>
+              <FastImage
+                resizeMode={FastImage.resizeMode.stretch}
+                source={{
+                  uri: avatar,
+                  priority: FastImage.priority.high
+                }}
+                style={{
+                  width: RFValue(50),
+                  height: RFValue(50),
+                  borderRadius: 4
+                }}
+              />
+              <TextContainer>
+                <Title
                   style={{
-                    fontSize: RFValue(fonts.LARGE_SIZE - 1),
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    color: colors.BLACK,
-                    backgroundColor: hexToRGB(colors.WHITE, 0.3),
-                    position: 'absolute',
-                    right: RFValue(15),
-                    paddingHorizontal: RFValue(10),
-                    paddingVertical: RFValue(5),
-                    marginTop: RFValue(10),
-                    textTransform: 'capitalize'
+                    color: colors.PRIMARY_TEXT,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+                    lineHeight: RFValue(19)
                   }}
                 >
-                  {isPrivate ? 'Private' : 'Public'}
-                </Text>
-              </Card.Content>
-            </Card>
-            <Card style={{ marginTop: RFValue(5) }}>
-              <CardContainer>
-                <FastImage
-                  resizeMode={FastImage.resizeMode.stretch}
-                  source={{
-                    uri: avatar,
-                    priority: FastImage.priority.high
-                  }}
+                  {name}
+                </Title>
+                <Paragraph
                   style={{
-                    width: RFValue(50),
-                    height: RFValue(50),
-                    borderRadius: 4
+                    fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    lineHeight: RFValue(10),
+                    color: colors.SECONDARY_TEXT
                   }}
-                />
-                <TextContainer>
-                  <Title
-                    style={{
-                      color: colors.PRIMARY_TEXT,
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
-                      lineHeight: RFValue(19)
-                    }}
-                  >
-                    {name}
-                  </Title>
+                >
+                  {membersCount <= 1
+                    ? `${membersCount} ${t('community.tabPanel.member')}`
+                    : `${membersCount} ${t('community.tabPanel.member')}s`}
+                </Paragraph>
+                {description ? (
                   <Paragraph
                     style={{
                       fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
                       fontFamily: fonts.WORK_SANS_REGULAR,
-                      lineHeight: RFValue(10),
-                      color: colors.SECONDARY_TEXT
+                      lineHeight: 18,
+                      color: colors.PRIMARY_TEXT
                     }}
                   >
-                    {membersCount <= 1
-                      ? `${membersCount} ${t('community.tabPanel.member')}`
-                      : `${membersCount} ${t('community.tabPanel.member')}s`}
+                    {description}
                   </Paragraph>
-                  {description ? (
-                    <Paragraph
-                      style={{
-                        fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        lineHeight: 18,
-                        color: colors.PRIMARY_TEXT
-                      }}
-                    >
-                      {description}
-                    </Paragraph>
-                  ) : null}
-                </TextContainer>
-              </CardContainer>
+                ) : null}
+              </TextContainer>
+            </CardContainer>
 
-              {tags?.length ? (
-                <TagContainer>
-                  <Title
-                    style={{
-                      fontFamily: fonts.WORK_SANS_BOLD,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
-                    }}
-                  >
-                    {t(`community.tabPanel.tag`)}
-                  </Title>
+            {tags?.length ? (
+              <TagContainer>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {t(`community.tabPanel.tag`)}
+                </Title>
 
-                  <Tags>
-                    {tags.map((identity: any) => (
-                      <TagText key={identity.id}>{identity.name}</TagText>
-                    ))}
-                  </Tags>
-                </TagContainer>
-              ) : null}
-            </Card>
-          </Fragment>
-          <Card style={{ marginTop: RFValue(5) }}>
-            <Card.Content style={{ paddingLeft: 0 }}>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  marginTop: 0,
-                  marginBottom: 0,
-                  paddingLeft: 15
-                }}
-              >
-                {t(`community.tabPanel.nearby`)}
-              </Title>
-
-              <FlatList
-                data={nearbyMembers}
-                horizontal={true}
-                renderItem={_renderRecommendedMember}
-                ListEmptyComponent={
-                  <RecommendedUserSkeleton skeletonSize={4} />
-                }
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  marginTop: 5,
-                  paddingHorizontal: 15,
-                  paddingBottom: visible ? RFValue(100) : RFValue(20)
-                }}
-              />
-            </Card.Content>
+                <Tags>
+                  {tags.map((identity: any) => (
+                    <TagText key={identity.id}>{identity.name}</TagText>
+                  ))}
+                </Tags>
+              </TagContainer>
+            ) : null}
           </Card>
-        </Container>
-        <SignupModal
-          closeSignupModal={showSignupModal(false)}
-          isVisible={visible}
-        />
-      </ScrollView>
-    </Fragment>
+        </Fragment>
+        <Card style={{ marginTop: RFValue(5) }}>
+          <Card.Content style={{ paddingLeft: 0 }}>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                marginTop: 0,
+                marginBottom: 0,
+                paddingLeft: 15
+              }}
+            >
+              {t(`community.tabPanel.nearby`)}
+            </Title>
+
+            <FlatList
+              data={nearbyMembers}
+              horizontal={true}
+              renderItem={_renderRecommendedMember}
+              ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                marginTop: 5,
+                paddingHorizontal: 15,
+                paddingBottom: visible ? RFValue(100) : RFValue(20)
+              }}
+            />
+          </Card.Content>
+        </Card>
+      </Container>
+      <SignupModal
+        closeSignupModal={showSignupModal(false)}
+        isVisible={visible}
+      />
+    </ScrollView>
   );
 }
