@@ -1,0 +1,1 @@
+declare module '@vouched.id/vouched-react-native';
