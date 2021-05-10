@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import ENVIRONMENT_VARIABLES from 'react-native-config';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
@@ -25,7 +24,7 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
   const details = props.route?.params?.details;
   const { name, iso2, emoji } = details;
 
-  const [docType, setDocType] = useState('');
+  const [docType, setDocType] = useState('id');
 
   useEffect(() => {
     tagScreenName('DocumentTypeSelectionScreen');
@@ -93,7 +92,7 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
           and make sure is in good condition.
         </Text>
 
-        <TouchableRipple
+        {/* <TouchableRipple
           onPress={() => handleDocSelection('passport')}
           style={{
             flexDirection: 'row',
@@ -141,7 +140,7 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
               style={{ width: RFValue(20), height: RFValue(20) }}
             />
           </Fragment>
-        </TouchableRipple>
+        </TouchableRipple> */}
 
         <TouchableRipple
           onPress={() => handleDocSelection('id')}
