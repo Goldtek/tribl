@@ -54,6 +54,26 @@ export default function AvatarUploadScreen(props: ScreenProp) {
     imageData: { uri: '', mime: undefined, cropRect: null }
   });
 
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== 'web') {
+        const {
+          status
+          // @ts-ignore
+        } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    })();
+    tagScreenName('AvatarUploadScreen');
+    logEvent('avatar upload', { from: 'signup' });
+    Mixpanel.track('Avatar Upload', {
+      info: 'User on upload avatar screen',
+      'Activity Screen': 'Avatar Upload Screen'
+    });
+  }, []);
+
   const [addUserImage] = useMutation(ADD_USER_DETAILS, {
     variables: { details: { avatar: avatar.secure_url } }
   });
@@ -96,15 +116,6 @@ export default function AvatarUploadScreen(props: ScreenProp) {
 
   const handleAvatar = async () => {
     try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (!permission.granted) {
-        Alert.alert(
-          'Sorry, we need camera roll permissions to make this work!'
-        );
-        return;
-      }
-
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
@@ -123,15 +134,6 @@ export default function AvatarUploadScreen(props: ScreenProp) {
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
-
-  useEffect(() => {
-    tagScreenName('AvatarUploadScreen');
-    logEvent('avatar upload', { from: 'signup' });
-    Mixpanel.track('Avatar Upload', {
-      info: 'User on upload avatar screen',
-      'Activity Screen': 'Avatar Upload Screen'
-    });
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.WHITE }}>
