@@ -12,10 +12,12 @@ import { Container, HeaderCover } from './styles';
 import { View } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import { initSession } from '../../../vouched/vouched';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
+initSession();
 export default function DocumentTypeSelectionScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
