@@ -41,7 +41,7 @@ PODS:
     - UMCore
     - UMPermissionsInterface
     - UMTaskManagerInterface
-  - EXPermissions (12.0.1):
+  - EXPermissions (10.0.0):
     - UMCore
     - UMPermissionsInterface
   - EXSecureStore (9.3.0):
@@ -597,7 +597,7 @@ DEPENDENCIES:
   - EXKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - EXLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - EXLocation (from `../node_modules/expo-location/ios`)
-  - EXPermissions (from `../node_modules/expo-permissions/ios`)
+  - EXPermissions (from `../node_modules/react-native-unimodules/node_modules/expo-permissions/ios`)
   - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
   - EXSplashScreen (from `../node_modules/expo/node_modules/expo-splash-screen/ios`)
   - EXSQLite (from `../node_modules/expo-sqlite/ios`)
@@ -761,7 +761,7 @@ EXTERNAL SOURCES:
   EXLocation:
     :path: "../node_modules/expo-location/ios"
   EXPermissions:
-    :path: "../node_modules/expo-permissions/ios"
+    :path: "../node_modules/react-native-unimodules/node_modules/expo-permissions/ios"
   EXSecureStore:
     :path: "../node_modules/expo-secure-store/ios"
   EXSplashScreen:
@@ -921,7 +921,7 @@ SPEC CHECKSUMS:
   EXKeepAwake: 8b0f68242f036b971f9f8976341823cbe6f50812
   EXLinearGradient: c803fbd1aa974be038177b1e45524bc35759fe9c
   EXLocation: e93020e255f52a1cc031e0f45b0a24eb20fc4b55
-  EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
+  EXPermissions: 17d4846ad1880f6891c74ae58ca1acb43e47ed47
   EXSecureStore: 1b571851e6068b30b8ec097be848a04603c03bae
   EXSplashScreen: 9423d258b71afa5bf128a83dcb57b636d9900a74
   EXSQLite: 64611c1b369c0f1e9cae4e551d0aa4478a58cadf
