@@ -4,7 +4,10 @@ import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { VouchedIdCamera } from '@vouched.id/vouched-react-native';
+import {
+  VouchedIdCamera,
+  VouchedSession
+} from '@vouched.id/vouched-react-native';
 
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
@@ -16,12 +19,14 @@ import { Container, HeaderCover, IconCover } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
+const session = new VouchedSession('M!k9d!xD#pW#a.21mnFPIAkRww~Plh');
 export default function CountryIdScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [message, setMessage] = useState('loading...');
   const [document, setDocument] = useState(null);
+  const [job, setJob] = useState(null);
   const cameraRef = useRef<typeof VouchedIdCamera>(null);
   const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
   const details = props.route?.params?.details;
@@ -139,7 +144,9 @@ export default function CountryIdScreen(props: ScreenProp) {
                 setMessage('Processing');
                 try {
                   setMessage('Please continue to next step');
+                  const job = await session.postFrontId(cardDetectionResult);
                   setDocument(cardDetectionResult);
+                  setJob(job);
                 } catch (e) {
                   console.error(e);
                 }
