@@ -4,7 +4,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets
 } from 'react-native-safe-area-context';
-import { Title, Subheading, Paragraph, IconButton } from 'react-native-paper';
+import { Title, Subheading, Paragraph } from 'react-native-paper';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -22,6 +22,7 @@ import { SEND_USER_OTP } from '../../../graphql/server/mutations';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import HTML from 'react-native-render-html';
+import { AntDesign } from '@expo/vector-icons';
 import {
   StoreInterface,
   OTPInterface,
@@ -30,6 +31,8 @@ import {
 import { DEVICE_ID, APP_VERSION } from '../../../utils/device';
 import GradientButton from '../../../components/gradientButton';
 import { htmlContent } from './licence';
+import hexToRGB from '../../../utils/hexToRGB';
+import { StatusBar } from 'expo-status-bar';
 import {
   tagScreenName,
   logEvent,
@@ -38,9 +41,7 @@ import {
 import { crashlytics } from '../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container } from './styles';
-import hexToRGB from '../../../utils/hexToRGB';
-import { StatusBar } from 'expo-status-bar';
+import { Container, IconContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -96,9 +97,12 @@ export default function getStartedScreenScreen(props: ScreenProp) {
   };
 
   const handleSubmit = async () => {
+    if (phoneNumber.length === country?.phoneCode.length) {
+      return;
+    }
+
     if (!licenceAccepted) return openModal();
     if (!phoneNumber) return handleInputError();
-
     try {
       await sendOtp();
       navigation.navigate('OTPScreen');
@@ -126,6 +130,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
     if (country?.phoneCode) {
       setPhoneNumber(country?.phoneCode);
     }
+    openModal();
   }, [country.phoneCode]);
 
   const handleAccept = async () => {
@@ -263,19 +268,20 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                   }}
                 >
                   <StatusBar style="light" />
-                  <Container
+                  <TouchableOpacity
+                    onPress={closeModal}
                     style={{ flexDirection: 'row', alignItems: 'center' }}
                   >
-                    <IconButton
-                      borderless
-                      icon="close"
-                      size={RFValue(20)}
-                      color={colors.RED}
-                      onPress={closeModal}
-                      style={{ backgroundColor: hexToRGB(colors.RED, 0.3) }}
-                    />
+                    <IconContainer>
+                      <AntDesign
+                        name="close"
+                        size={RFValue(20)}
+                        color={colors.RED}
+                      />
+                    </IconContainer>
                     <Title
                       style={{
+                        marginHorizontal: 10,
                         color: colors.PRIMARY_TEXT,
                         fontFamily: fonts.WORK_SANS_REGULAR,
                         fontSize: RFValue(Math.ceil(fonts.MEDIUM_SIZE))
@@ -283,7 +289,7 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                     >
                       {t(`signup.getStartedScreen.decline`)}
                     </Title>
-                  </Container>
+                  </TouchableOpacity>
 
                   <Title
                     style={{
@@ -295,11 +301,13 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                   >
                     {t(`signup.getStartedScreen.EULA`)}
                   </Title>
-                  <Container
+                  <TouchableOpacity
+                    onPress={handleAccept}
                     style={{ flexDirection: 'row', alignItems: 'center' }}
                   >
                     <Title
                       style={{
+                        marginHorizontal: 10,
                         color: colors.PRIMARY_TEXT,
                         fontFamily: fonts.WORK_SANS_REGULAR,
                         fontSize: RFValue(Math.ceil(fonts.MEDIUM_SIZE))
@@ -307,15 +315,16 @@ export default function getStartedScreenScreen(props: ScreenProp) {
                     >
                       {t(`signup.getStartedScreen.accept`)}
                     </Title>
-                    <IconButton
-                      borderless
-                      icon="check"
-                      size={RFValue(20)}
-                      color={colors.ONLINE}
-                      onPress={handleAccept}
+                    <IconContainer
                       style={{ backgroundColor: hexToRGB(colors.ONLINE, 0.3) }}
-                    />
-                  </Container>
+                    >
+                      <AntDesign
+                        name="check"
+                        size={RFValue(20)}
+                        color={colors.ONLINE}
+                      />
+                    </IconContainer>
+                  </TouchableOpacity>
                 </Container>
               }
             >

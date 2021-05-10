@@ -45,7 +45,6 @@ export default function SignupNavigator() {
 
   return (
     <SignupStack.Navigator
-      initialRouteName="AvatarUploadScreen"
       screenOptions={({ route, navigation }) => {
         const headerTitle = t(`signup.userRegSteps.${[route.name]}`);
 
