@@ -1,3 +1,4 @@
+// @ts-ignore
 import { VouchedSession } from '@vouched.id/vouched-react-native';
 import ENVIRONMENT_VARIABLES from 'react-native-config';
 
