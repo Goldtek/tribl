@@ -1,34 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PermissionsAndroid, Platform, View } from 'react-native';
 import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
-import {
-  VouchedIdCamera,
-  VouchedSession
-} from '@vouched.id/vouched-react-native';
+import { VouchedIdCamera } from '@vouched.id/vouched-react-native';
+
+import { getSession } from '../../../vouched/vouched';
 
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import GradientButton from '../../../components/gradientButton';
 
-import { Container, HeaderCover, IconCover } from './styles';
+import { Container, HeaderCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-const session = new VouchedSession('M!k9d!xD#pW#a.21mnFPIAkRww~Plh');
 export default function CountryIdScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const cameraRef = useRef<typeof VouchedIdCamera>(null);
+
+  const [session] = useState(getSession());
   const [message, setMessage] = useState('loading...');
   const [document, setDocument] = useState(null);
   const [job, setJob] = useState(null);
-  const cameraRef = useRef<typeof VouchedIdCamera>(null);
   const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
+
   const details = props.route?.params?.details;
   const { name, iso2, emoji, number } = details;
 
@@ -196,7 +197,7 @@ export default function CountryIdScreen(props: ScreenProp) {
           }}
           contentStyle={{ height: 50 }}
         >
-          Scan back
+          {t(`community.passport.activateWallet`)}
         </GradientButton>
       ) : (
         <View style={{ height: 100 }}></View>
