@@ -4,6 +4,7 @@ import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
+//@ts-ignore
 import { VouchedIdCamera } from '@vouched.id/vouched-react-native';
 
 import { getSession } from '../../../vouched/vouched';
