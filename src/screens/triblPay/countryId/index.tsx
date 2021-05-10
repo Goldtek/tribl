@@ -28,7 +28,7 @@ export default function CountryIdScreen(props: ScreenProp) {
   const [session] = useState(getSession());
   const [message, setMessage] = useState('loading...');
   const [document, setDocument] = useState(null);
-  const [job, setJob] = useState(null);
+  const [job, setJob] = useState<any>(null);
   const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
 
   const details = props.route?.params?.details;
@@ -70,6 +70,27 @@ export default function CountryIdScreen(props: ScreenProp) {
 
   const handleNavigation = () => {
     navigation.navigate('WalletScreen');
+  };
+
+  const refinedInstructions = (instruction: string) => {
+    switch (instruction) {
+      case 'ONLY_ONE':
+        return 'Only One';
+      case 'HOLD_STEADY':
+        return 'Hold Steady';
+      case 'MOVE_CLOSER':
+        return 'Move Closer';
+      case 'MOVE_AWAY':
+        return 'Move Away';
+
+      default:
+        return 'No Card or Document detected';
+    }
+  };
+  const rescan = () => {
+    cameraRef.current.restart();
+    setJob(null);
+    setDocument(null);
   };
 
   return (
@@ -145,15 +166,20 @@ export default function CountryIdScreen(props: ScreenProp) {
                 cameraRef.current.stop();
                 setMessage('Processing');
                 try {
-                  setMessage('Please continue to next step');
+                  setMessage('Processing...');
                   const job = await session.postFrontId(cardDetectionResult);
+                  setMessage(
+                    job.result.success || job.errors
+                      ? 'Document Processing failed, rescan'
+                      : 'Please continue to next step'
+                  );
                   setDocument(cardDetectionResult);
                   setJob(job);
                 } catch (e) {
                   console.error(e);
                 }
               } else {
-                setMessage(instruction);
+                setMessage(refinedInstructions(instruction));
               }
             }}
           />
@@ -171,12 +197,7 @@ export default function CountryIdScreen(props: ScreenProp) {
               width: '100%'
             }}
           >
-            <TouchableRipple
-              onPress={() => {
-                setDocument(null);
-                cameraRef.current.restart();
-              }}
-            >
+            <TouchableRipple onPress={rescan}>
               <MaterialCommunityIcons
                 name="camera-retake"
                 size={RFValue(30)}
@@ -187,9 +208,15 @@ export default function CountryIdScreen(props: ScreenProp) {
         )}
       </View>
 
-      {document ? (
+      {job ? (
         <GradientButton
-          onPress={handleNavigation}
+          onPress={
+            job
+              ? job.result.success || job.errors
+                ? rescan
+                : handleNavigation
+              : undefined
+          }
           style={{ height: 50 }}
           gradientContainerstyle={{
             height: 50,
@@ -198,7 +225,11 @@ export default function CountryIdScreen(props: ScreenProp) {
           }}
           contentStyle={{ height: 50 }}
         >
-          {t(`community.passport.activateWallet`)}
+          {job
+            ? job.result.success || job.errors
+              ? 'Rescan document'
+              : 'submit'
+            : null}
         </GradientButton>
       ) : (
         <View style={{ height: 100 }}></View>
