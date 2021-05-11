@@ -513,7 +513,7 @@ export default function PassportScreen(props: ScreenProp) {
 
   const handleActivateWallet = () => {
     const updateFields = [];
-    const { phoneNumber, email, lastName, firstName, dob } = userDetails;
+    const { phoneNumber, email, lastName, firstName, dob } = cache;
     if (phoneNumber === null) updateFields.push('phone');
     if (email === null) updateFields.push('email');
     if (lastName === null) updateFields.push('last name');
@@ -543,7 +543,8 @@ export default function PassportScreen(props: ScreenProp) {
     }
 
     navigation.navigate('TriblPayScreen', {
-      screen: 'BankCountryScreen'
+      screen: 'BankCountryScreen',
+      params: { userDetails: cache }
     });
   };
 
