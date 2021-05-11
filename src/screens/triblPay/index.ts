@@ -6,6 +6,7 @@ import LinkAccountScreen from './linkedAccount';
 import WalletStatusScreen from './walletStatus';
 import VerifyIdentityScreen from './verifyIdentity';
 import ActivateWalletScreen from './activateWallet';
+import BillingDetailsScreen from './billingDetails';
 import DocumentTypeSelectionScreen from './documentTypeSelection';
 
 export default {
@@ -17,5 +18,6 @@ export default {
   WalletStatusScreen,
   ActivateWalletScreen,
   VerifyIdentityScreen,
+  BillingDetailsScreen,
   DocumentTypeSelectionScreen
 };
