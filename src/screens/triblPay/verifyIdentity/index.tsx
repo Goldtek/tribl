@@ -9,16 +9,21 @@ import Input from '../../../components/input';
 import GradientButton from '../../../components/gradientButton';
 
 import { Container, HeaderCover } from './styles';
+import { MyPassportInterface } from '../../../graphql/types';
+import { CountryInterface } from '../../../libs/countries';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: {
+    params: { userDetails: MyPassportInterface; details: CountryInterface };
+  };
+}
 
 export default function VerifyIdentityScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const details = props.route?.params?.details;
-  const { name, iso2, emoji } = details;
+  const { details, userDetails } = props.route?.params;
 
   const [number, setNumber] = useState('');
 
@@ -29,7 +34,8 @@ export default function VerifyIdentityScreen(props: ScreenProp) {
 
   const handleNavigation = () => {
     navigation.navigate('CountryIdScreen', {
-      details: { number, name, iso2, emoji }
+      details,
+      userDetails
     });
   };
 
