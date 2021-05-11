@@ -31,6 +31,9 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import io.intercom.android.sdk.Intercom;
+import com.robinpowered.react.Intercom.IntercomPackage;
+
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList()
@@ -48,6 +51,7 @@ public class MainApplication extends Application implements ReactApplication {
       packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
       packages.add(new LottiePackage());
       packages.add(new ShadowViewPackage());
+      packages.add(new IntercomPackage());
       return packages;
     }
 
@@ -86,6 +90,9 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+
+    // INITIALIZE INTERCOM
+    Intercom.initialize(this, "android_sdk-de88531fb4e71fe866266c15e5978adcbaa02e2c", "wdkifq7f");
 
     if (!BuildConfig.DEBUG) {
       UpdatesController.initialize(this);
