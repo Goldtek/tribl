@@ -181,6 +181,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.4.0):
     - GoogleUtilities/Logger
+  - Intercom (9.0.0)
   - libwebp (1.2.0):
     - libwebp/demux (= 1.2.0)
     - libwebp/mux (= 1.2.0)
@@ -380,6 +381,9 @@ PODS:
     - React-Core
   - react-native-image-resizer (1.4.3):
     - React-Core
+  - react-native-intercom (20.0.0):
+    - Intercom (~> 9.0.0)
+    - React
   - react-native-mixpanel (1.2.5):
     - Mixpanel (~> 3.6.0)
     - React
@@ -605,6 +609,7 @@ DEPENDENCIES:
   - react-native-config (from `../node_modules/react-native-config`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
+  - react-native-intercom (from `../node_modules/react-native-intercom`)
   - react-native-mixpanel (from `../node_modules/react-native-mixpanel`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -676,6 +681,7 @@ SPEC REPOS:
     - FlipperKit
     - GoogleDataTransport
     - GoogleUtilities
+    - Intercom
     - libwebp
     - Mixpanel
     - nanopb
@@ -767,6 +773,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
+  react-native-intercom:
+    :path: "../node_modules/react-native-intercom"
   react-native-mixpanel:
     :path: "../node_modules/react-native-mixpanel"
   react-native-netinfo:
@@ -908,6 +916,7 @@ SPEC CHECKSUMS:
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   GoogleDataTransport: cd9db2180fcecd8da1b561aea31e3e56cf834aa7
   GoogleUtilities: 284cddc7fffc14ae1907efb6f78ab95c1fccaedc
+  Intercom: 695fe2012198727fd0013c0d3b328a73886110ff
   libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   lottie-react-native: 1fb4ce21d6ad37dab8343eaff8719df76035bd93
@@ -929,6 +938,7 @@ SPEC CHECKSUMS:
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-get-random-values: f0fc24a5887a3341589515a86282a574407b59e4
   react-native-image-resizer: 5dfbf934fe5788c11ed06ebbcdb6e6fb6beec20c
+  react-native-intercom: cd0c650cac80685a1a461f8f5bf21ac78839a169
   react-native-mixpanel: 5d0bcea791fd938c35138be2d00e50e19b9de601
   react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
