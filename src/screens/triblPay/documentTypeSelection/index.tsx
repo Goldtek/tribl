@@ -51,7 +51,7 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={2 / 3}
+          progress={3 / 5}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
@@ -72,7 +72,7 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
           }}
         >
           {' '}
-          {t(`community.passport.step`)} 2
+          {t(`community.passport.step`)} 3
         </Text>
         <Title
           style={{
