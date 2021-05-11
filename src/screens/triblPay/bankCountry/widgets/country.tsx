@@ -8,23 +8,27 @@ import { NavigationInterface } from '../../../types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { CountryCardCover } from '../styles';
+import { MyPassportInterface } from '../../../../graphql/types';
 
-interface CountryCardProps extends CountryInterface, NavigationInterface {}
+interface CountryCardProps extends CountryInterface, NavigationInterface {
+  userDetails: MyPassportInterface;
+}
 
 const CountryCard = (props: CountryCardProps) => {
   const { colors, fonts } = useThemeContext();
-
-  const { name, iso2, emoji, navigation } = props;
+  const { name, iso2, emoji, navigation, userDetails } = props;
 
   const handleSelect = () => {
     if (name === 'United States of America' || iso2 === 'US') {
       return navigation.navigate('VerifyIdentityScreen', {
-        details: { name, iso2, emoji }
+        details: { name, iso2, emoji },
+        userDetails
       });
     }
 
     navigation.navigate('DocumentTypeSelectionScreen', {
-      details: { name, iso2, emoji }
+      details: { name, iso2, emoji },
+      userDetails
     });
   };
   return (
