@@ -70,7 +70,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="BankCountryScreen"
         component={Screens.BankCountryScreen}
         options={{
-          headerTitle: `1 of 3 ${t(`community.passport.steps`)}`,
+          headerTitle: `1 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -89,7 +89,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="CountryIdScreen"
         component={Screens.CountryIdScreen}
         options={{
-          headerTitle: `3 of 3 ${t(`community.passport.steps`)}`,
+          headerTitle: `4 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -108,7 +108,47 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="VerifyIdentityScreen"
         component={Screens.VerifyIdentityScreen}
         options={{
-          headerTitle: `2 of 3 ${t(`community.passport.steps`)}`,
+          headerTitle: `2 of 5 ${t(`community.passport.steps`)}`,
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.SECONDARY_TEXT,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+            fontFamily: fonts.WORK_SANS_REGULAR
+          }
+        }}
+      />
+
+      <TriblpayStack.Screen
+        name="DocumentTypeSelectionScreen"
+        component={Screens.DocumentTypeSelectionScreen}
+        options={{
+          headerTitle: `3 of 5 ${t(`community.passport.steps`)}`,
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.SECONDARY_TEXT,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+            fontFamily: fonts.WORK_SANS_REGULAR
+          }
+        }}
+      />
+
+      <TriblpayStack.Screen
+        name="BillingDetailsScreen"
+        component={Screens.BillingDetailsScreen}
+        options={{
+          headerTitle: `5 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -132,25 +172,6 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         }}
       />
 
-      <TriblpayStack.Screen
-        name="DocumentTypeSelectionScreen"
-        component={Screens.DocumentTypeSelectionScreen}
-        options={{
-          headerTitle: `2 of 3 ${t(`community.passport.steps`)}`,
-          headerTitleContainerStyle: { alignItems: 'center' },
-          headerLeftContainerStyle: { marginLeft: 5 },
-          headerRightContainerStyle: {
-            marginRight: 10
-          },
-          headerBackTitleVisible: false,
-          headerTintColor: colors.PRIMARY,
-          headerTitleStyle: {
-            color: colors.SECONDARY_TEXT,
-            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-            fontFamily: fonts.WORK_SANS_REGULAR
-          }
-        }}
-      />
       <TriblpayStack.Screen
         name="LinkAccountScreen"
         component={Screens.LinkAccountScreen}
