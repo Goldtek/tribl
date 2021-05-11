@@ -172,7 +172,9 @@
     "channelNamePlaceholder": "#channelname",
     "next": "next",
     "addParticipant": "Add Participants",
-    "selectTribe": "select tribe"
+    "selectTribe": "select tribe",
+    "createNewGroup": "create a group message",
+    "createNewChannel": "create a channel"
   },
   "update": {
     "new": "new",
