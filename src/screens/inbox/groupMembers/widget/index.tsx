@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { Button, Text, TouchableRipple } from 'react-native-paper';
+import { Button, Text, TouchableRipple, Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
@@ -33,6 +33,10 @@ export default function GroupMember(props: ChannelUserProp) {
   const memberRole = groupAdmin?.id === user?.id ? 'admin' : 'member';
   const isAdmin = groupAdmin?.id === chatClient.user?.id ? true : false;
   const displayDelete = user?.id !== chatClient.user?.id ? true : false;
+  //@ts-ignore
+  const citizenship = user?.citizenship?.length
+    ? JSON.parse(user?.citizenship)
+    : [];
 
   const { data } = useQuery<SinglePassportRequestInterface>(
     GET_SINGLE_PASSPORT,
@@ -139,6 +143,16 @@ export default function GroupMember(props: ChannelUserProp) {
           >
             {memberRole}
           </Text>
+          {citizenship?.length ? (
+            <Title
+              style={{
+                fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                lineHeight: RFValue(18)
+              }}
+            >
+              {citizenship?.map((country: any) => country?.flag)}
+            </Title>
+          ) : null}
         </TextContainer>
 
         {isAdmin && displayDelete ? (
