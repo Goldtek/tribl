@@ -43,7 +43,7 @@ export default function VerifyIdentityScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={2 / 3}
+          progress={2 / 5}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
