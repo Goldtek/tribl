@@ -9,7 +9,6 @@ import { useThemeContext } from '../../../../../theme';
 import { DEVICE_FULL_WIDTH } from '../../../../../utils/device';
 import {
   GET_NOAUTH_SINGLE_COMMUNITY,
-  GET_COMMUNITY_MEMBERS,
   GET_NOAUTH_NEARYBY_MEMBERS
 } from '../../../../../graphql/server/query';
 import {
@@ -34,18 +33,12 @@ function RecommendedCommunity(props: ScreenProp) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
-  const [loading, setLoading] = useState(false);
   const [community, setCommunity] = useState({ ...props });
 
   const { id, name, avatar, isPrivate, membersCount } = community;
 
-  const { data } = useQuery<SingleCommunityRequestInterface>(
-    GET_NOAUTH_SINGLE_COMMUNITY,
-    { variables: { input: { filter: { id } } } }
-  );
-
-  useQuery(GET_COMMUNITY_MEMBERS, {
-    variables: { input: { filter: { communityId: id } } }
+  useQuery<SingleCommunityRequestInterface>(GET_NOAUTH_SINGLE_COMMUNITY, {
+    variables: { id: id }
   });
 
   useQuery(GET_NOAUTH_NEARYBY_MEMBERS, {
@@ -58,12 +51,6 @@ function RecommendedCommunity(props: ScreenProp) {
       details: props
     });
   };
-
-  useEffect(() => {
-    if (data?.Community.data || props) {
-      setCommunity({ ...community, ...props, ...data?.Community.data });
-    }
-  }, [props.isMember, data?.Community.data]);
 
   return (
     <Card
