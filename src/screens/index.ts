@@ -1,11 +1,11 @@
-import WalkThroughScreen from './walkThrough';
-import PassportScreen from './passport';
-import UpcomingScreen from './upcoming';
 import SplashScreen from './splash';
+import UpcomingScreen from './upcoming';
+import PassportScreen from './passport';
+import WalkThroughScreen from './walkThrough';
 
 export default {
-  WalkThroughScreen,
+  SplashScreen,
   PassportScreen,
   UpcomingScreen,
-  SplashScreen
+  WalkThroughScreen,
 };
