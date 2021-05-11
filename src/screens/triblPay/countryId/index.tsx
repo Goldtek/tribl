@@ -15,11 +15,26 @@ import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import GradientButton from '../../../components/gradientButton';
 
 import { Container, HeaderCover } from './styles';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { ONBOARD_USER } from '../../../graphql/server/mutations';
+// import { GET_USER_PASSPORT } from '../../../graphql/server/query';
+// import { MyPassportInterface } from '../../../graphql/types';
+import { userDetails as cacheData } from '../../../graphql/cache';
+import { MyPassportInterface, PassportInterface } from '../../../graphql/types';
+import { CountryInterface } from '../../../libs/countries';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: {
+    params: { userDetails: MyPassportInterface; details: CountryInterface };
+  };
+}
 
 export default function CountryIdScreen(props: ScreenProp) {
+  const [verifyKyc, { data, loading }] = useMutation(ONBOARD_USER);
+  // const { data: myUserData, loading: userLoading } = useQuery<
+  //   MyPassportInterface
+  // >(GET_USER_PASSPORT);
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
@@ -31,10 +46,10 @@ export default function CountryIdScreen(props: ScreenProp) {
   const [job, setJob] = useState<any>(null);
   const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
 
-  const details = props.route?.params?.details;
-  const { name, iso2, emoji, number } = details;
+  const { details, userDetails } = props.route.params;
 
   useEffect(() => {
+    console.tron('userDetails', props);
     // assume all iOS users except permissions
     if (Platform.OS === 'ios') {
       setPermissions(true);
@@ -69,7 +84,11 @@ export default function CountryIdScreen(props: ScreenProp) {
   }
 
   const handleNavigation = () => {
-    navigation.navigate('WalletScreen');
+    // navigation.navigate('WalletScreen');
+
+    navigation.navigate('TriblPayScreen', {
+      screen: 'WalletStatusScreen'
+    });
   };
 
   const refinedInstructions = (instruction: string) => {
@@ -87,10 +106,29 @@ export default function CountryIdScreen(props: ScreenProp) {
         return 'No Card or Document detected';
     }
   };
+
   const rescan = () => {
     cameraRef.current.restart();
     setJob(null);
     setDocument(null);
+  };
+
+  const submitKyc = () => {
+    verifyKyc({
+      variables: {
+        payload: {
+          address: {
+            addressLine: '1717 E Test St Richmond VA 23220 US',
+            addressCity: 'Hatfield',
+            addressState: 'VA',
+            addressPostalCode: 'AL10 9RH',
+            addressCountryCode: 'US'
+          },
+          jobId: job.id,
+          isLocal: true
+        }
+      }
+    });
   };
 
   return (
@@ -210,13 +248,14 @@ export default function CountryIdScreen(props: ScreenProp) {
 
       {job ? (
         <GradientButton
-          onPress={
-            job
-              ? job.result.success || job.errors
-                ? rescan
-                : handleNavigation
-              : undefined
-          }
+          // onPress={
+          //   job
+          //     ? job.result.success || job.errors
+          //       ? rescan
+          //       : handleNavigation
+          //     : undefined
+          // }
+          onPress={handleNavigation}
           style={{ height: 50 }}
           gradientContainerstyle={{
             height: 50,
