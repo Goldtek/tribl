@@ -13,12 +13,15 @@ import { getCountryLayout } from '../../../utils/LayoutUtil';
 import Input from '../../../components/input';
 
 import { Container, SearchCover, HeaderCover } from './styles';
+import { MyPassportInterface } from '../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: { params: { userDetails: MyPassportInterface } };
+}
 
 export default function BankCountryScreen(props: ScreenProp) {
-  const { navigation } = props;
+  const { userDetails } = props.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -50,7 +53,7 @@ export default function BankCountryScreen(props: ScreenProp) {
       );
     }
 
-    return <CountryCard {...data} {...props} />;
+    return <CountryCard {...data} {...props} userDetails={userDetails} />;
   };
 
   const handleSearch = (value: string) => {
