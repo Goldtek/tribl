@@ -76,7 +76,7 @@ export default function BankCountryScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={1 / 3}
+          progress={1 / 5}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
