@@ -12,10 +12,9 @@ import GradientButton from '../../../components/gradientButton';
 
 import {
   ContactContainer,
-  FirstNameContainer,
+  LabelContainer,
   HeaderCover,
-  InputContainer,
-  LastNameContainer
+  InputContainer
 } from './styles';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -138,7 +137,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
 
         <ContactContainer>
           <InputContainer>
-            <FirstNameContainer>
+            <LabelContainer>
               <Title
                 style={{
                   fontFamily: fonts.WORK_SANS_BOLD,
@@ -149,7 +148,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               >
                 address
               </Title>
-            </FirstNameContainer>
+            </LabelContainer>
             <TextInput
               multiline={true}
               dense={true}
@@ -170,7 +169,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           </InputContainer>
 
           <InputContainer>
-            <LastNameContainer>
+            <LabelContainer>
               <Title
                 style={{
                   fontFamily: fonts.WORK_SANS_BOLD,
@@ -181,7 +180,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               >
                 City
               </Title>
-            </LastNameContainer>
+            </LabelContainer>
             <TextInput
               value={addressCity}
               onChangeText={(addressCity: string) =>
@@ -200,7 +199,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           </InputContainer>
 
           <InputContainer>
-            <LastNameContainer>
+            <LabelContainer>
               <Title
                 style={{
                   fontFamily: fonts.WORK_SANS_BOLD,
@@ -211,7 +210,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               >
                 State
               </Title>
-            </LastNameContainer>
+            </LabelContainer>
             <TextInput
               value={addressState}
               onChangeText={(addressState: string) =>
@@ -230,7 +229,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           </InputContainer>
 
           <InputContainer>
-            <LastNameContainer>
+            <LabelContainer>
               <Title
                 style={{
                   fontFamily: fonts.WORK_SANS_BOLD,
@@ -241,7 +240,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               >
                 Postal Code
               </Title>
-            </LastNameContainer>
+            </LabelContainer>
             <TextInput
               value={addressPostalCode}
               onChangeText={(addressPostalCode: string) =>
@@ -259,7 +258,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
             />
           </InputContainer>
           <InputContainer>
-            <LastNameContainer>
+            <LabelContainer>
               <Title
                 style={{
                   fontFamily: fonts.WORK_SANS_BOLD,
@@ -270,7 +269,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               >
                 Country code
               </Title>
-            </LastNameContainer>
+            </LabelContainer>
             <TextInput
               value={addressCountryCode}
               onChangeText={(addressCountryCode: string) =>
