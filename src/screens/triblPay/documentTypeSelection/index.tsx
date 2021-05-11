@@ -12,21 +12,27 @@ import { View } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import { initSession } from '../../../vouched/vouched';
+import { MyPassportInterface } from '../../../graphql/types';
+import { CountryInterface } from '../../../libs/countries';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: {
+    params: { userDetails: MyPassportInterface; details: CountryInterface };
+  };
+}
 
 initSession();
 export default function DocumentTypeSelectionScreen(props: ScreenProp) {
   const { navigation } = props;
+  const { userDetails, details } = props.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const details = props.route?.params?.details;
-  const { name, iso2, emoji } = details;
 
   const [docType, setDocType] = useState('id');
 
   useEffect(() => {
+    console.tron('props', props);
     tagScreenName('DocumentTypeSelectionScreen');
     logEvent('Select document type', { from: 'passport' });
   }, []);
@@ -34,7 +40,8 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
   const handleNavigation = () => {
     if (docType === 'id')
       return navigation.navigate('CountryIdScreen', {
-        details: { docType, name, iso2, emoji }
+        details,
+        userDetails
       });
   };
 
