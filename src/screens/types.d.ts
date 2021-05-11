@@ -119,6 +119,7 @@ export type RootStackParamList = {
   MemberPassportDetailScreen?: Object;
   WaitlistScreen?: Object;
   DocumentTypeSelectionScreen?: Object;
+  WalletStatusScreen: ?Object;
 };
 
 export type RootStackParamScreensList =
@@ -217,6 +218,7 @@ export type RootStackParamScreensList =
   | 'TribeDetailScreen'
   | 'MemberPassportDetailScreen'
   | 'WaitlistScreen'
+  | 'WalletStatusScreen'
   | 'DocumentTypeSelectionScreen';
 
 interface StackNavigationInterface extends StackActionHelpers {
