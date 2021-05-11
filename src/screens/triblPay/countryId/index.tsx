@@ -15,7 +15,7 @@ import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import GradientButton from '../../../components/gradientButton';
 
 import { Container, HeaderCover } from './styles';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import { ONBOARD_USER } from '../../../graphql/server/mutations';
 // import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 // import { MyPassportInterface } from '../../../graphql/types';
@@ -31,7 +31,6 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function CountryIdScreen(props: ScreenProp) {
-  const [verifyKyc, { data, loading }] = useMutation(ONBOARD_USER);
   // const { data: myUserData, loading: userLoading } = useQuery<
   //   MyPassportInterface
   // >(GET_USER_PASSPORT);
@@ -84,10 +83,10 @@ export default function CountryIdScreen(props: ScreenProp) {
   }
 
   const handleNavigation = () => {
-    // navigation.navigate('WalletScreen');
-
-    navigation.navigate('TriblPayScreen', {
-      screen: 'WalletStatusScreen'
+    navigation.navigate('BillingDetailsScreen', {
+      details,
+      userDetails,
+      job
     });
   };
 
@@ -113,29 +112,11 @@ export default function CountryIdScreen(props: ScreenProp) {
     setDocument(null);
   };
 
-  const submitKyc = () => {
-    verifyKyc({
-      variables: {
-        payload: {
-          address: {
-            addressLine: '1717 E Test St Richmond VA 23220 US',
-            addressCity: 'Hatfield',
-            addressState: 'VA',
-            addressPostalCode: 'AL10 9RH',
-            addressCountryCode: 'US'
-          },
-          jobId: job.id,
-          isLocal: true
-        }
-      }
-    });
-  };
-
   return (
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={3 / 3}
+          progress={4 / 5}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
@@ -156,7 +137,7 @@ export default function CountryIdScreen(props: ScreenProp) {
           }}
         >
           {' '}
-          {t(`community.passport.step`)} 3
+          {t(`community.passport.step`)} 4
         </Text>
         <Title
           style={{
@@ -246,33 +227,33 @@ export default function CountryIdScreen(props: ScreenProp) {
         )}
       </View>
 
-      {job ? (
-        <GradientButton
-          // onPress={
-          //   job
-          //     ? job.result.success || job.errors
-          //       ? rescan
-          //       : handleNavigation
-          //     : undefined
-          // }
-          onPress={handleNavigation}
-          style={{ height: 50 }}
-          gradientContainerstyle={{
-            height: 50,
-            marginBottom: RFValue(30),
-            marginHorizontal: RFValue(15)
-          }}
-          contentStyle={{ height: 50 }}
-        >
-          {job
-            ? job.result.success || job.errors
-              ? 'Rescan document'
-              : 'submit'
-            : null}
-        </GradientButton>
-      ) : (
+      {/* {job ? ( */}
+      <GradientButton
+        // onPress={
+        //   job
+        //     ? job.result.success || job.errors
+        //       ? rescan
+        //       : handleNavigation
+        //     : undefined
+        // }
+        onPress={handleNavigation}
+        style={{ height: 50 }}
+        gradientContainerstyle={{
+          height: 50,
+          marginBottom: RFValue(30),
+          marginHorizontal: RFValue(15)
+        }}
+        contentStyle={{ height: 50 }}
+      >
+        {job
+          ? job.result.success || job.errors
+            ? 'Rescan document'
+            : 'submit'
+          : null}
+      </GradientButton>
+      {/* ) : (
         <View style={{ height: 100 }}></View>
-      )}
+      )} */}
     </Container>
   );
 }
