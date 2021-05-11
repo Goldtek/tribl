@@ -123,6 +123,15 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           }
         }}
       />
+
+      <TriblpayStack.Screen
+        name="WalletStatusScreen"
+        component={Screens.WalletStatusScreen}
+        options={{
+          headerShown: false
+        }}
+      />
+
       <TriblpayStack.Screen
         name="DocumentTypeSelectionScreen"
         component={Screens.DocumentTypeSelectionScreen}
