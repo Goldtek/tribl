@@ -3,35 +3,39 @@ import { Title } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-import { useThemeContext } from '../../../../theme';
-import { NavigationInterface } from '../../../types';
-import { CountryInterface } from '../../../../libs/countries';
-import { MyPassportInterface } from '../../../../graphql/types';
+import { useThemeContext } from '../../../../../../theme';
+import { NavigationInterface } from '../../../../../types';
+import { CountryInterface } from '../../../../../../libs/countries';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { CountryCardCover } from '../styles';
 
 interface CountryCardProps extends CountryInterface, NavigationInterface {
-  userDetails: MyPassportInterface;
+  modalizeRef: any;
+  billingDetails: any;
+  setBillingDetails: any;
+  setIsLocal: any;
 }
 
 const CountryCard = (props: CountryCardProps) => {
   const { colors, fonts } = useThemeContext();
-  const { name, iso2, emoji, navigation, userDetails } = props;
+  const {
+    name,
+    iso2,
+    emoji,
+    billingDetails,
+    setBillingDetails,
+    setIsLocal
+  } = props;
+
+  const closeModal = () => props.modalizeRef.current?.close();
 
   const handleSelect = () => {
-    if (name === 'United States of America' || iso2 === 'US') {
-      return navigation.navigate('VerifyIdentityScreen', {
-        details: { name, iso2, emoji },
-        userDetails
-      });
-    }
-
-    navigation.navigate('DocumentTypeSelectionScreen', {
-      details: { name, iso2, emoji },
-      userDetails
-    });
+    setBillingDetails({ ...billingDetails, addressCountryCode: iso2 });
+    iso2 === 'US' ? setIsLocal(true) : setIsLocal(false);
+    closeModal();
   };
+
   return (
     <TouchableOpacity
       onPress={handleSelect}

@@ -308,3 +308,21 @@ export const APPROVE_REJECT_NEW_CHANNEL = gql`
     }
   }
 `;
+
+// ONBOARD USER
+export const ONBOARD_USER = gql`
+  mutation onBoardUser($payload: OnBoardUserInput!) {
+    onBoardUser(input: $payload) {
+      status
+      tags
+      required{
+        message
+        tags
+      }
+      optional{
+        message
+        tags
+      }
+    }
+  }
+`;

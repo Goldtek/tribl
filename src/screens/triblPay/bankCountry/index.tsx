@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Title, ProgressBar, Text } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useTranslation } from 'react-i18next';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { AntDesign } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Title, ProgressBar, Text } from 'react-native-paper';
+import { DataProvider, RecyclerListView } from 'recyclerlistview';
+
+import CountryCard from './widgets/country';
+import Input from '../../../components/input';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
-import CountryCard from './widgets/country';
-import countriesDB, { CountryInterface } from '../../../libs/countries';
 import { getCountryLayout } from '../../../utils/LayoutUtil';
-import Input from '../../../components/input';
+import { MyPassportInterface } from '../../../graphql/types';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import countriesDB, { CountryInterface } from '../../../libs/countries';
 
 import { Container, SearchCover, HeaderCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: { params: { userDetails: MyPassportInterface } };
+}
 
 export default function BankCountryScreen(props: ScreenProp) {
-  const { navigation } = props;
+  const { userDetails } = props.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -50,7 +54,7 @@ export default function BankCountryScreen(props: ScreenProp) {
       );
     }
 
-    return <CountryCard {...data} {...props} />;
+    return <CountryCard {...data} {...props} userDetails={userDetails} />;
   };
 
   const handleSearch = (value: string) => {
@@ -73,7 +77,7 @@ export default function BankCountryScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={1 / 3}
+          progress={1 / 5}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),

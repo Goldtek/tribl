@@ -3,35 +3,30 @@ import { Title } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-import { useThemeContext } from '../../../../theme';
-import { NavigationInterface } from '../../../types';
-import { CountryInterface } from '../../../../libs/countries';
-import { MyPassportInterface } from '../../../../graphql/types';
+import { useThemeContext } from '../../../../../../theme';
+import { NavigationInterface } from '../../../../../types';
+import { USStatesInterface } from '../../../../../../libs/states';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { CountryCardCover } from '../styles';
 
-interface CountryCardProps extends CountryInterface, NavigationInterface {
-  userDetails: MyPassportInterface;
+interface CountryCardProps extends USStatesInterface, NavigationInterface {
+  modalizeStateRef: any;
+  billingDetails: any;
+  setBillingDetails: any;
 }
 
 const CountryCard = (props: CountryCardProps) => {
   const { colors, fonts } = useThemeContext();
-  const { name, iso2, emoji, navigation, userDetails } = props;
+  const { name, alphaCode, billingDetails, setBillingDetails } = props;
+
+  const closeModal = () => props.modalizeStateRef.current?.close();
 
   const handleSelect = () => {
-    if (name === 'United States of America' || iso2 === 'US') {
-      return navigation.navigate('VerifyIdentityScreen', {
-        details: { name, iso2, emoji },
-        userDetails
-      });
-    }
-
-    navigation.navigate('DocumentTypeSelectionScreen', {
-      details: { name, iso2, emoji },
-      userDetails
-    });
+    setBillingDetails({ ...billingDetails, addressState: alphaCode });
+    closeModal();
   };
+
   return (
     <TouchableOpacity
       onPress={handleSelect}
@@ -48,16 +43,6 @@ const CountryCard = (props: CountryCardProps) => {
     >
       <Fragment>
         <CountryCardCover>
-          <Title
-            style={{
-              fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.6)),
-              marginVertical: 0,
-              paddingVertical: 0
-            }}
-          >
-            {emoji}
-          </Title>
-
           <Title
             style={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,

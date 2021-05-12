@@ -1,41 +1,112 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { PermissionsAndroid, Platform, View } from 'react-native';
+//@ts-ignore
+import { VouchedIdCamera } from '@vouched.id/vouched-react-native';
+import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
+
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { getSession } from '../../../vouched/vouched';
+import { CountryInterface } from '../../../libs/countries';
+import { MyPassportInterface } from '../../../graphql/types';
 import GradientButton from '../../../components/gradientButton';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
-import { Container, HeaderCover, IconCover } from './styles';
+import { Container, HeaderCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: {
+    params: { userDetails: MyPassportInterface; details: CountryInterface };
+  };
+}
 
 export default function CountryIdScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const details = props.route?.params?.details;
-  const { name, iso2, emoji, number } = details;
+  const cameraRef = useRef<typeof VouchedIdCamera>(null);
 
-  const [document, setDocument] = useState('');
+  const [session] = useState(getSession());
+  const [message, setMessage] = useState('loading...');
+  const [document, setDocument] = useState(null);
+  const [job, setJob] = useState<any>(null);
+  const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
+
+  const { details, userDetails } = props.route.params;
 
   useEffect(() => {
+    // assume all iOS users except permissions
+    if (Platform.OS === 'ios') {
+      setPermissions(true);
+      return;
+    }
+
+    const checkAndroidPermissions = async () => {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA
+      );
+      setPermissions(granted === PermissionsAndroid.RESULTS.GRANTED);
+    };
+
+    checkAndroidPermissions();
     tagScreenName('CountryIdScreen');
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
 
+  if (hasCameraPermissions === undefined) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <Text> Waiting on Camera Permissions... </Text>
+      </View>
+    );
+  }
+
   const handleNavigation = () => {
-    navigation.navigate('WalletScreen');
+    navigation.navigate('BillingDetailsScreen', {
+      details,
+      userDetails,
+      job
+    });
+  };
+
+  const refinedInstructions = (instruction: string) => {
+    switch (instruction) {
+      case 'ONLY_ONE':
+        return 'Only One';
+      case 'HOLD_STEADY':
+        return 'Hold Steady';
+      case 'MOVE_CLOSER':
+        return 'Move Closer';
+      case 'MOVE_AWAY':
+        return 'Move Away';
+
+      default:
+        return 'No Card or Document detected';
+    }
+  };
+
+  const rescan = () => {
+    cameraRef.current.restart();
+    setJob(null);
+    setDocument(null);
   };
 
   return (
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={3 / 3}
+          progress={4 / 5}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
@@ -56,7 +127,7 @@ export default function CountryIdScreen(props: ScreenProp) {
           }}
         >
           {' '}
-          {t(`community.passport.step`)} 3
+          {t(`community.passport.step`)} 4
         </Text>
         <Title
           style={{
@@ -81,20 +152,81 @@ export default function CountryIdScreen(props: ScreenProp) {
           {t(`community.passport.capture`)}
         </Text>
       </HeaderCover>
-      <TouchableRipple
+
+      <View
         style={{
-          height: RFValue(200),
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: 2,
-          borderColor: colors.PRIMARY,
           marginHorizontal: RFValue(15)
         }}
       >
-        <Feather name="camera" size={RFValue(25)} color={colors.PRIMARY} />
-      </TouchableRipple>
-      {!document?.length ? (
+        <View
+          style={{
+            height: RFValue(200),
+            borderWidth: 2,
+            borderColor: colors.PRIMARY
+          }}
+        >
+          <VouchedIdCamera
+            ref={cameraRef}
+            enableDistanceCheck={false}
+            onIdStream={async (cardDetectionResult: any) => {
+              const { instruction, step } = cardDetectionResult;
+
+              if (step === 'POSTABLE') {
+                cameraRef.current.stop();
+                setMessage('Processing');
+                try {
+                  setMessage('Processing...');
+                  const job = await session.postFrontId(cardDetectionResult);
+                  // setMessage(
+                  //   job.result.success || job.errors
+                  //     ? 'Document Processing failed, rescan'
+                  //     : 'Please continue to next step'
+                  // );
+                  setMessage('Please continue to next step');
+                  setDocument(cardDetectionResult);
+                  setJob(job);
+                } catch (e) {
+                  console.error(e);
+                }
+              } else {
+                setMessage(refinedInstructions(instruction));
+              }
+            }}
+          />
+        </View>
+        <Text>{message}</Text>
+        {document && (
+          <View
+            style={{
+              position: 'absolute',
+              height: RFValue(200),
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 2,
+              borderColor: colors.ONLINE,
+              width: '100%'
+            }}
+          >
+            <TouchableRipple onPress={rescan}>
+              <MaterialCommunityIcons
+                name="camera-retake"
+                size={RFValue(30)}
+                color={colors.ONLINE}
+              />
+            </TouchableRipple>
+          </View>
+        )}
+      </View>
+
+      {job ? (
         <GradientButton
+          // onPress={
+          //   job
+          //     ? job.result.success || job.errors
+          //       ? rescan
+          //       : handleNavigation
+          //     : undefined
+          // }
           onPress={handleNavigation}
           style={{ height: 50 }}
           gradientContainerstyle={{
@@ -104,12 +236,15 @@ export default function CountryIdScreen(props: ScreenProp) {
           }}
           contentStyle={{ height: 50 }}
         >
-          {t(`community.passport.submit`)}
+          {/* {job
+          ? job.result.success || job.errors
+            ? 'Rescan document'
+            : 'submit'
+          : null} */}
+          Proceed
         </GradientButton>
       ) : (
-        <IconCover>
-          <Feather name="camera" size={RFValue(25)} color={colors.WHITE} />
-        </IconCover>
+        <View style={{ height: 100 }}></View>
       )}
     </Container>
   );

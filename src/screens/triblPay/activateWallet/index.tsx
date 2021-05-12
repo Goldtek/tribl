@@ -1,11 +1,12 @@
 import React from 'react';
+import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Title, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useTranslation } from 'react-i18next';
-import { Feather } from '@expo/vector-icons';
-import GradientButton from '../../../components/gradientButton';
+
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
+import GradientButton from '../../../components/gradientButton';
 
 import { Container, BalanceCover } from './styles';
 
@@ -58,7 +59,8 @@ export default function ActivateWalletScreen(props: ScreenProp) {
         </Text>
       </BalanceCover>
       <GradientButton
-        onPress={() => navigation.navigate('LinkAccountScreen')}
+        // onPress={() => navigation.navigate('LinkAccountScreen')}
+        onPress={() => navigation.navigate('PassportScreen')}
         style={{
           height: 50,
           width: '100%'

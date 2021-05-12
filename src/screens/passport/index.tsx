@@ -30,7 +30,6 @@ import {
   GET_RECOMMENDED_MEMBERS,
   USER_CHANNELS
 } from '../../graphql/server/query';
-import { MyPassportInterface, PassportInterface } from '../../graphql/types';
 import {
   UPDATE_PASSPORT,
   GENERATE_INVITE_LINK
@@ -162,35 +161,9 @@ export default function PassportScreen(props: ScreenProp) {
   });
 
   const userDetails = userData?.myPassport;
-
   const currentLocation = userDetails?.currentLocation?.country
     ? userDetails?.currentLocation
     : cache?.currentLocation;
-
-  const [generateInviteLink] = useMutation(GENERATE_INVITE_LINK, {
-    variables: { payload: { passportId: userDetails?.id } }
-  });
-
-  const handleGenerateLink = async () => {
-    logEvent('generate invite link', { from: 'passport' });
-    try {
-      Mixpanel.track('Generate Invite Link', {
-        info: `Generate Invite Link`,
-        'Activity Screen': 'Passport Screen'
-      });
-      await generateInviteLink();
-      refetch();
-    } catch (error) {
-      crashlytics.recordError(new Error(error));
-    }
-  };
-
-  useEffect(() => {
-    if (userDetails && !userDetails?.invite_url?.length) {
-      handleGenerateLink();
-      refetch();
-    }
-  }, [userDetails]);
 
   useEffect(() => {
     if (userDetails) {
@@ -355,7 +328,6 @@ export default function PassportScreen(props: ScreenProp) {
       }
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -464,7 +436,6 @@ export default function PassportScreen(props: ScreenProp) {
       // PROFILE SHARED HERE
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
@@ -503,7 +474,6 @@ export default function PassportScreen(props: ScreenProp) {
       setUpdate(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
       setUpdate(true);
     }
   };
@@ -525,20 +495,60 @@ export default function PassportScreen(props: ScreenProp) {
       setAvatar({ ...avatar, uri, imageData });
     } catch (error) {
       crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
 
-  const handleActivateWallet = () => {
-    navigation.navigate('TriblPayScreen', {
-      screen: 'ActivateWalletScreen'
-    });
-  };
+  const handleWalletAction = () => {
+    const status = cache?.wallet?.status;
 
-  const handleViewWallet = () => {
-    navigation.navigate('TriblPayScreen', {
-      screen: 'WalletScreen'
-    });
+    if (status === 'ACTIVE') {
+      return navigation.navigate('TriblPayScreen', {
+        screen: 'WalletScreen'
+      });
+    }
+
+    if (status === 'PENDING') {
+      return navigation.navigate('TriblPayScreen', {
+        screen: 'WalletStatusScreen'
+      });
+    }
+
+    if (status === 'IN_ACTIVE' || 'DEACTIVATED') {
+      const updateFields = [];
+      const { phoneNumber, email, lastName, firstName, dob } = cache;
+      if (phoneNumber === null) updateFields.push('phone');
+      if (email === null) updateFields.push('email');
+      if (lastName === null) updateFields.push('last name');
+      if (firstName === null) updateFields.push('first name');
+      if (dob === null) updateFields.push('dob');
+
+      if (updateFields.length > 0) {
+        return Alert.alert(
+          'Update Profile',
+          `Update ${
+            updateFields.length > 1
+              ? updateFields.map((x) => `${x}, `)
+              : `${updateFields}`
+          } fields before you can proceed `,
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {},
+              style: 'cancel'
+            },
+            {
+              text: 'Update',
+              onPress: () => setUpdate(false)
+            }
+          ]
+        );
+      }
+
+      return navigation.navigate('TriblPayScreen', {
+        screen: 'BankCountryScreen',
+        params: { userDetails: cache }
+      });
+    }
   };
 
   return (
@@ -829,18 +839,19 @@ export default function PassportScreen(props: ScreenProp) {
                   }}
                   contentStyle={{
                     height: RFValue(50),
-                    backgroundColor: colors.PRIMARY_LIGHT
+                    backgroundColor: colors.PRIMARY_LIGHT,
+                    paddingLeft: RFValue(5)
                   }}
                   style={{
                     height: RFValue(50),
-                    width: '100%'
+                    width: '49%'
                   }}
                   onPress={onShare}
                 >
-                  {t(`community.passport.shareInvite`)}
+                  {t(`community.passport.share`)}
                 </Button>
-                {/* <Button
-                  onPress={triblPay ? handleViewWallet : handleActivateWallet}
+                <Button
+                  onPress={handleWalletAction}
                   labelStyle={{
                     color: colors.PRIMARY,
                     fontFamily: fonts.WORK_SANS_BOLD,
@@ -856,10 +867,10 @@ export default function PassportScreen(props: ScreenProp) {
                     width: '49%'
                   }}
                 >
-                  {triblPay
+                  {cache?.wallet?.status === 'ACTIVE'
                     ? t(`community.passport.viewWallet`)
                     : t(`community.passport.activate`)}
-                </Button> */}
+                </Button>
               </ButtonHeaderCover>
             </HeaderContainer>
             <TabCover>

@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Title, Text } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { Image, TextInput, Keyboard } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import GradientButton from '../../../components/gradientButton';
+import { Title, Text } from 'react-native-paper';
+import { Image, TextInput, Keyboard } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
+
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
+import GradientButton from '../../../components/gradientButton';
 
 import { Container, Cover, LogoCover, CashCover } from './styles';
 

@@ -7,6 +7,7 @@ import { Button } from 'react-native-paper';
 import { Container } from './styles';
 
 type GradientButtonProps = {
+  disabled?: boolean;
   loading?: boolean;
   uppercase?: boolean;
   color?: string;
@@ -21,6 +22,7 @@ type GradientButtonProps = {
 const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
   const {
     children,
+    disabled,
     loading,
     color,
     mode,
@@ -60,6 +62,7 @@ const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
         contentStyle={[{ height: RFValue(55) }, contentStyle]}
         style={[{ width: '100%', height: RFValue(55) }, style]}
         onPress={onPress}
+        disabled={disabled}
       >
         {children}
       </Button>

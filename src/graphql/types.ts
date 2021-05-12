@@ -174,6 +174,41 @@ type PassportPrivacy = {
   blocked: PassportInterface[];
 };
 
+enum CurrencyStatus {
+  ACTIVE = 'ACTIVE',
+  IN_ACTIVE = 'IN_ACTIVE',
+  PENDING = 'PENDING',
+  DEACTIVATED = 'DEACTIVATED',
+  FROZEN = 'FROZEN'
+}
+
+type WalletActivity = {
+  id: string;
+  description: string;
+  entityName: string;
+  visible: boolean;
+  wallet: Wallet;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type Wallet = {
+  id: string;
+  status: string;
+  currencies: {
+    id: string;
+    currentBalance: string;
+    ledgerBalance: string;
+    status: CurrencyStatus;
+    name: string;
+    entityName: string;
+  };
+  entityName: string;
+  passport: PassportInterface;
+  community: CommunityInterface;
+  activities: WalletActivity;
+};
+
 export interface PassportInterface {
   id: string;
   bio: string;
@@ -211,6 +246,7 @@ export interface PassportInterface {
   pending: string;
   privacy: PassportPrivacy;
   blocked: PassportPrivacy;
+  wallet: Wallet;
 }
 
 export interface ConnectionStatusInterface {

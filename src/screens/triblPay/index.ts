@@ -1,17 +1,23 @@
-import ActivateWalletScreen from './activateWallet';
-import BankCountryScreen from './bankCountry';
 import CountryIdScreen from './countryId';
-import VerifyIdentityScreen from './verifyIdentity';
-import LinkAccountScreen from './linkedAccount';
 import WalletScreen from './wallet';
 import AddCashScreen from './addCash';
+import BankCountryScreen from './bankCountry';
+import LinkAccountScreen from './linkedAccount';
+import WalletStatusScreen from './walletStatus';
+import VerifyIdentityScreen from './verifyIdentity';
+import ActivateWalletScreen from './activateWallet';
+import BillingDetailsScreen from './billingDetails';
+import DocumentTypeSelectionScreen from './documentTypeSelection';
 
 export default {
-  ActivateWalletScreen,
-  BankCountryScreen,
-  CountryIdScreen,
-  VerifyIdentityScreen,
-  LinkAccountScreen,
   WalletScreen,
-  AddCashScreen
+  AddCashScreen,
+  CountryIdScreen,
+  LinkAccountScreen,
+  BankCountryScreen,
+  WalletStatusScreen,
+  ActivateWalletScreen,
+  VerifyIdentityScreen,
+  BillingDetailsScreen,
+  DocumentTypeSelectionScreen
 };

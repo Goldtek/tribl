@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Title, Text, ProgressBar, Paragraph } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Title, Text, ProgressBar, Paragraph } from 'react-native-paper';
+
+import Input from '../../../components/input';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
-import Input from '../../../components/input';
+import { CountryInterface } from '../../../libs/countries';
+import { MyPassportInterface } from '../../../graphql/types';
 import GradientButton from '../../../components/gradientButton';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import { Container, HeaderCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: {
+    params: { userDetails: MyPassportInterface; details: CountryInterface };
+  };
+}
 
 export default function VerifyIdentityScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const details = props.route?.params?.details;
-  const { name, iso2, emoji } = details;
+  const { details, userDetails } = props.route?.params;
 
   const [number, setNumber] = useState('');
 
@@ -29,7 +35,8 @@ export default function VerifyIdentityScreen(props: ScreenProp) {
 
   const handleNavigation = () => {
     navigation.navigate('CountryIdScreen', {
-      details: { number, name, iso2, emoji }
+      details,
+      userDetails
     });
   };
 
@@ -37,7 +44,7 @@ export default function VerifyIdentityScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={2 / 3}
+          progress={2 / 5}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),

@@ -290,7 +290,7 @@
     "securityNumber": "Social Security Number",
     "idNumber": "Passport/ID Number",
     "countryId": "Country ID",
-    "capture": "Take a picture of your Driver’s License, Passport, or relevant form of identification.",
+    "capture": "Scan your Driver’s License, Passport, or relevant form of identification.",
     "submit": "submit",
     "pay": "pay",
     "balance": "cash balance",

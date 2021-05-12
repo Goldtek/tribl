@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
-import { Title, Text, TouchableRipple } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { Feather, FontAwesome } from '@expo/vector-icons';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Title, Text, TouchableRipple } from 'react-native-paper';
+
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 
