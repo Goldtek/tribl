@@ -51,7 +51,7 @@ export default function Notification(props: NotificationProp) {
     DECLINED
   }
 
-  let timeStamp = formatMessageTime(Number(createdAt));
+  const timeStamp = formatMessageTime(Number(createdAt));
 
   const handleMemberNavigation = () => {
     navigation.navigate('MemberDetailScreen', {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { NavigationInterface } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -64,19 +64,21 @@ export default function SearchScreen(props: ScreenProp) {
 
   const renderScene = SceneMap({ highlightSlide });
 
-  const getTitleColor = (focused: boolean) => {
-    const style = {
-      fontFamily: focused ? fonts.WORK_SANS_SEMI_BOLD : fonts.WORK_SANS_REGULAR,
-      fontSize: RFValue(fonts.LARGE_SIZE + 1),
-      color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
-      textTransform: 'capitalize',
-      marginTop: 0,
-      marginBottom: 0,
-      width: '105%'
-    };
+  const getTitleColor = useCallback(
+    (focused: boolean) => {
+      const style = {
+        fontFamily: focused
+          ? fonts.WORK_SANS_SEMI_BOLD
+          : fonts.WORK_SANS_REGULAR,
+        fontSize: RFValue(fonts.LARGE_SIZE),
+        color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
+        textTransform: 'capitalize'
+      };
 
-    return style;
-  };
+      return style;
+    },
+    [id]
+  );
 
   const renderLabel = ({
     route,
@@ -98,15 +100,17 @@ export default function SearchScreen(props: ScreenProp) {
       <TabBar
         {...props}
         indicatorStyle={{
-          backgroundColor: colors.PRIMARY,
-          height: RFValue(4)
+          left: 30,
+          width: '40%',
+          height: RFValue(3),
+          backgroundColor: colors.PRIMARY
         }}
+        tabStyle={{ width: 'auto' }}
         renderLabel={renderLabel}
         style={{
           ...GLOBAL_HEADER_STYLE,
           backgroundColor: colors.WHITE,
-          marginBottom: 10,
-          paddingBottom: 10
+          marginBottom: 10
         }}
       />
     );
@@ -120,12 +124,12 @@ export default function SearchScreen(props: ScreenProp) {
     <Container>
       <StatusBar translucent animated style="dark" />
       <TabView
-        navigationState={{ index: tabIndex, routes }}
+        swipeEnabled={true}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
         onIndexChange={handleIndexChange}
         initialLayout={{ width: DEVICE_FULL_WIDTH }}
-        swipeEnabled={true}
+        navigationState={{ index: tabIndex, routes }}
       />
     </Container>
   );

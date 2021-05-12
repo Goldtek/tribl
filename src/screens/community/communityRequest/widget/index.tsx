@@ -45,7 +45,7 @@ export default function TribeRequest(props: TribeRequestProp) {
     refetch
   } = props;
 
-  let timeStamp = formatMessageTime(Number(createdAt));
+  const timeStamp = formatMessageTime(Number(createdAt));
 
   const handleMemberNavigation = () => {
     navigation.navigate('MemberDetailScreen', {

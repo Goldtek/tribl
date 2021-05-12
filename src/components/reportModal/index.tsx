@@ -7,8 +7,9 @@ import { useMutation } from '@apollo/react-hooks';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { useThemeContext } from '../../theme';
-import { DEVICE_FULL_HEIGHT, DEVICE_OS } from '../../utils/device';
+import { DEVICE_FULL_HEIGHT } from '../../utils/device';
 import GradientButton from '../gradientButton';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Input from '../input';
 import { BLOCK_REPORT_USER } from '../../graphql/server/mutations';
 import { Mixpanel } from '../../config';
@@ -26,6 +27,7 @@ interface ModalProp {
 function ReportModal(props: ModalProp) {
   const { isVisible, closeReportModal, data } = props;
   const { colors, fonts } = useThemeContext();
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   enum status {
     REPORT
@@ -54,6 +56,8 @@ function ReportModal(props: ModalProp) {
   });
 
   const handleReport = async () => {
+    if (!note.length) return;
+
     try {
       Mixpanel.track('Report User', {
         info: `Report ${data?.title}`,
@@ -72,14 +76,8 @@ function ReportModal(props: ModalProp) {
       <Modalize
         ref={modalizeRef}
         onClose={closeReportModal}
-        avoidKeyboardLikeIOS={true}
-        keyboardAvoidingBehavior={DEVICE_OS == 'ios' ? 'padding' : 'height'}
-        modalStyle={{
-          height: DEVICE_FULL_HEIGHT / 2,
-          paddingTop: RFValue(20),
-          paddingBottom: RFValue(20),
-          marginTop: RFValue(320)
-        }}
+        adjustToContentHeight={true}
+        modalStyle={{ height: DEVICE_FULL_HEIGHT / 2, paddingTop: RFValue(20) }}
         HeaderComponent={
           <HeaderContainer>
             <Title
@@ -119,19 +117,19 @@ function ReportModal(props: ModalProp) {
         </Title>
         <Text
           style={{
-            fontFamily: fonts.WORK_SANS_REGULAR,
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
             color: colors.PRIMARY_TEXT,
+            marginVertical: RFValue(5),
             paddingHorizontal: RFValue(15),
-            marginVertical: RFValue(5)
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            fontSize: RFValue(fonts.MEDIUM_SIZE)
           }}
         >
           {t(`community.memberPassport.reportText`)}
         </Text>
         <Input
           placeholder={t(`community.memberPassport.reportHeader`)}
-          defaultValue={note}
           multiline={true}
+          value={note}
           onChangeText={(note) => setNote(note)}
           textInputStyle={{
             paddingLeft: 20,
@@ -140,7 +138,6 @@ function ReportModal(props: ModalProp) {
             fontFamily: fonts.WORK_SANS_REGULAR
           }}
           contanierStyle={{
-            height: RFValue(40),
             width: '92%',
             marginLeft: 'auto',
             marginRight: 'auto',
@@ -150,17 +147,14 @@ function ReportModal(props: ModalProp) {
         <ButtonCover>
           <GradientButton
             loading={loading}
-            onPress={note?.length ? handleReport : () => {}}
-            style={{
-              height: 50
-            }}
+            onPress={handleReport}
+            style={{ height: 50 }}
             gradientContainerstyle={{
               height: 50,
+              marginBottom: insets.bottom,
               opacity: note?.length ? 1 : 0.7
             }}
-            contentStyle={{
-              height: 50
-            }}
+            contentStyle={{ height: 50 }}
           >
             {t(`community.memberPassport.report`)}
           </GradientButton>

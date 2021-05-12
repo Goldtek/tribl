@@ -4,6 +4,12 @@ import { RFValue } from 'react-native-responsive-fontsize';
 export const Container = styled.View`
   flex: 1;
   flex-direction: column;
+  background-color: ${({ theme }) => theme.colors.GREY};
+`;
+
+export const Hr = styled.View`
+  background-color: ${({ theme }) => theme.colors.GREY};
+  padding: 6px;
 `;
 
 export const CardContainer = styled.View`

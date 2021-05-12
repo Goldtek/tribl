@@ -48,7 +48,7 @@ export default function AddAdmin(props: addAdminScreenProp) {
     });
   };
 
-  const selectedAmins = [...Array.from(admin.selectedAdmin.values())];
+  const selectedAdmins = [...Array.from(admin.selectedAdmin.values())];
 
   useEffect(() => {
     tagScreenName('AddAdminScreen');
@@ -66,12 +66,9 @@ export default function AddAdmin(props: addAdminScreenProp) {
   });
 
   const myConnection = data?.myConnections?.data;
-
   const filterConnections = myConnection?.slice().sort(function (a, b) {
     if (a.firstName < b.firstName) return -1;
-
     if (a.firstName > b.firstName) return 1;
-
     return 0;
   });
 
@@ -132,7 +129,7 @@ export default function AddAdmin(props: addAdminScreenProp) {
   const handleNavigation = () => {
     navigation.navigate('TribeDetailScreen', {
       details: props.route.params,
-      admins: selectedAmins
+      admins: selectedAdmins
     });
   };
 
@@ -220,7 +217,7 @@ export default function AddAdmin(props: addAdminScreenProp) {
           marginBottom: RFValue(15)
         }}
       >
-        {selectedAmins?.length
+        {selectedAdmins?.length
           ? t(`community.createTribe.selectAdmin`)
           : t(`community.createTribe.skip`)}
       </GradientButton>

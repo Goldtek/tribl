@@ -7,6 +7,9 @@ import { useTranslation } from 'react-i18next';
 import CustomChannelPreview from './widget';
 import { NavigationInterface } from '../../../types';
 import { tagScreenName } from '../../../../utils/uxcamHelper';
+import EmptyMessageState from '../../../../components/emptyMessageState';
+import LoadingIndicatorState from '../../../../components/loadingIndicatorState';
+import LoadingErrorIndicator from '../../../../components/loadingErrorIndicatorState';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -71,6 +74,9 @@ function DirectMessageTab(props: ScreenProp) {
           filters={filters}
           options={options}
           Preview={CustomChannelPreview}
+          EmptyStateIndicator={EmptyMessageState}
+          LoadingIndicator={LoadingIndicatorState}
+          LoadingErrorIndicator={LoadingErrorIndicator}
           additionalFlatListProps={{ showsVerticalScrollIndicator: false }}
         />
       </Container>
@@ -78,14 +84,14 @@ function DirectMessageTab(props: ScreenProp) {
         <GradientButton
           onPress={navigateToCreateNewGroupScreen}
           labelStyle={{
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            fontSize: RFValue(fonts.SMALL_SIZE + 1),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            textTransform: 'capitalize',
+            textTransform: 'none',
             color: colors.WHITE
           }}
           gradientContainerstyle={{
             height: RFValue(30),
-            width: RFPercentage(35),
+            width: RFPercentage(25),
             borderRadius: RFValue(15)
           }}
           contentStyle={{
@@ -98,7 +104,7 @@ function DirectMessageTab(props: ScreenProp) {
             borderRadius: RFValue(15)
           }}
         >
-          {t(`community.chat.createNewGroup`)}
+          + {t(`community.chat.createNewGroup`)}
         </GradientButton>
       </ButtonWrapper>
     </Chat>

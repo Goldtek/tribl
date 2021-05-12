@@ -103,11 +103,7 @@ export default function SelectCountryScreen(props: ScreenProp) {
           defaultValue=""
           onChangeText={handleSearch}
           textInputStyle={{ fontFamily: fonts.WORK_SANS_SEMI_BOLD }}
-          contanierStyle={{
-            height: RFValue(50),
-            width: '92%',
-            alignSelf: 'center'
-          }}
+          contanierStyle={{ height: RFValue(50) }}
         >
           <Container style={{ paddingLeft: 15, paddingRight: 15 }}>
             <AntDesign
