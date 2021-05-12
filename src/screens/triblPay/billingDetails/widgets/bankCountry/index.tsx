@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Title } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useTranslation } from 'react-i18next';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { AntDesign } from '@expo/vector-icons';
-import { useThemeContext } from '../../../../../theme';
-import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
+import { useTranslation } from 'react-i18next';
+import { Portal } from 'react-native-portalize';
+import { Modalize } from 'react-native-modalize';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import CountryCard from './widgets/country';
-import countriesDB, { CountryInterface } from '../../../../../libs/countries';
-import { getCountryLayout } from '../../../../../utils/LayoutUtil';
 import Input from '../../../../../components/input';
+import { useThemeContext } from '../../../../../theme';
+import { DEVICE_FULL_HEIGHT } from '../../../../../utils/device';
+import { DataProvider, RecyclerListView } from 'recyclerlistview';
+import { getCountryLayout } from '../../../../../utils/LayoutUtil';
+import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
+import countriesDB, { CountryInterface } from '../../../../../libs/countries';
 
 import { Container, SearchCover, HeaderCover } from './styles';
-import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
-import { DEVICE_FULL_HEIGHT } from '../../../../../utils/device';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // DEFINE SCREEN PROP TYPES
 

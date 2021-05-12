@@ -1,13 +1,14 @@
 import React, { Fragment } from 'react';
 import { Title } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableOpacity } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
+
 import { useThemeContext } from '../../../../../../theme';
+import { NavigationInterface } from '../../../../../types';
 import { CountryInterface } from '../../../../../../libs/countries';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { CountryCardCover } from '../styles';
-import { NavigationInterface } from '../../../../../types';
 
 interface CountryCardProps extends CountryInterface, NavigationInterface {
   modalizeRef: any;

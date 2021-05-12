@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react';
-
-import { Title, Text } from 'react-native-paper';
-
 import { useTranslation } from 'react-i18next';
+import { Title, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 import GradientButton from '../../../components/gradientButton';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import { Container, HeaderCover } from './styles';
 

@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Title } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { AntDesign } from '@expo/vector-icons';
-import { useThemeContext } from '../../../../../theme';
-import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
-import CountryCard from './widgets/country';
-import statesDB, { USStatesInterface } from '../../../../../libs/states';
-import { getCountryLayout } from '../../../../../utils/LayoutUtil';
-import Input from '../../../../../components/input';
-
-import { Container, SearchCover, HeaderCover } from './styles';
-import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
-import { DEVICE_FULL_HEIGHT } from '../../../../../utils/device';
+import { Modalize } from 'react-native-modalize';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import CountryCard from './widgets/country';
+import Input from '../../../../../components/input';
+import { useThemeContext } from '../../../../../theme';
+import { DEVICE_FULL_HEIGHT } from '../../../../../utils/device';
+import { DataProvider, RecyclerListView } from 'recyclerlistview';
+import { getCountryLayout } from '../../../../../utils/LayoutUtil';
+import statesDB, { USStatesInterface } from '../../../../../libs/states';
+import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
+
 // DEFINE SCREEN PROP TYPES
+import { Container, SearchCover, HeaderCover } from './styles';
 
 export default function LocalStates(props: any) {
   const insets = useSafeAreaInsets();

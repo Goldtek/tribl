@@ -1,14 +1,20 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-
-import { Title, Text, ProgressBar, TextInput } from 'react-native-paper';
-
 import { useTranslation } from 'react-i18next';
+import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Title, Text, ProgressBar, TextInput } from 'react-native-paper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import Countries from './widgets/bankCountry';
+import LocalStates from './widgets/localStates';
+import { Modalize } from 'react-native-modalize';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { crashlytics } from '../../../firebase/config';
 import GradientButton from '../../../components/gradientButton';
+import { ONBOARD_USER } from '../../../graphql/server/mutations';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import {
   ContactContainer,
@@ -16,14 +22,6 @@ import {
   HeaderCover,
   InputContainer
 } from './styles';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useMutation } from '@apollo/react-hooks';
-import { ONBOARD_USER } from '../../../graphql/server/mutations';
-import { crashlytics } from '../../../firebase/config';
-import Countries from './widgets/bankCountry';
-import { Modalize } from 'react-native-modalize';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import LocalStates from './widgets/localStates';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}

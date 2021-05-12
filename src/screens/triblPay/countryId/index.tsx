@@ -1,27 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PermissionsAndroid, Platform, View } from 'react-native';
-import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { PermissionsAndroid, Platform, View } from 'react-native';
 //@ts-ignore
 import { VouchedIdCamera } from '@vouched.id/vouched-react-native';
-
-import { getSession } from '../../../vouched/vouched';
+import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
 
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { getSession } from '../../../vouched/vouched';
+import { CountryInterface } from '../../../libs/countries';
+import { MyPassportInterface } from '../../../graphql/types';
 import GradientButton from '../../../components/gradientButton';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import { Container, HeaderCover } from './styles';
-import { useQuery } from '@apollo/react-hooks';
-import { ONBOARD_USER } from '../../../graphql/server/mutations';
-// import { GET_USER_PASSPORT } from '../../../graphql/server/query';
-// import { MyPassportInterface } from '../../../graphql/types';
-import { userDetails as cacheData } from '../../../graphql/cache';
-import { MyPassportInterface, PassportInterface } from '../../../graphql/types';
-import { CountryInterface } from '../../../libs/countries';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
@@ -31,9 +25,6 @@ interface ScreenProp extends NavigationInterface {
 }
 
 export default function CountryIdScreen(props: ScreenProp) {
-  // const { data: myUserData, loading: userLoading } = useQuery<
-  //   MyPassportInterface
-  // >(GET_USER_PASSPORT);
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();

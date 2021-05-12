@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Title, ProgressBar, Text } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useTranslation } from 'react-i18next';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { AntDesign } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Title, ProgressBar, Text } from 'react-native-paper';
+import { DataProvider, RecyclerListView } from 'recyclerlistview';
+
+import CountryCard from './widgets/country';
+import Input from '../../../components/input';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
-import CountryCard from './widgets/country';
-import countriesDB, { CountryInterface } from '../../../libs/countries';
 import { getCountryLayout } from '../../../utils/LayoutUtil';
-import Input from '../../../components/input';
+import { MyPassportInterface } from '../../../graphql/types';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import countriesDB, { CountryInterface } from '../../../libs/countries';
 
 import { Container, SearchCover, HeaderCover } from './styles';
-import { MyPassportInterface } from '../../../graphql/types';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {

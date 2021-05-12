@@ -1,8 +1,9 @@
 import React from 'react';
-import { Title, Text } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import { Title, Text } from 'react-native-paper';
 import { Feather, FontAwesome } from '@expo/vector-icons';
+import { RFValue } from 'react-native-responsive-fontsize';
+
 import GradientButton from '../../../components/gradientButton';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';

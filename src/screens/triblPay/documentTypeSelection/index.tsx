@@ -1,19 +1,20 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
+import { View } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import CheckBox from '@react-native-community/checkbox';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
+
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { initSession } from '../../../vouched/vouched';
+import { CountryInterface } from '../../../libs/countries';
+import { MyPassportInterface } from '../../../graphql/types';
 import GradientButton from '../../../components/gradientButton';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import { Container, HeaderCover } from './styles';
-import { View } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
-import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
-import { initSession } from '../../../vouched/vouched';
-import { MyPassportInterface } from '../../../graphql/types';
-import { CountryInterface } from '../../../libs/countries';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {

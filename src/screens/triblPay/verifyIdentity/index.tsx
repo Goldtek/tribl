@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Title, Text, ProgressBar, Paragraph } from 'react-native-paper';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Title, Text, ProgressBar, Paragraph } from 'react-native-paper';
+
+import Input from '../../../components/input';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
-import Input from '../../../components/input';
+import { CountryInterface } from '../../../libs/countries';
+import { MyPassportInterface } from '../../../graphql/types';
 import GradientButton from '../../../components/gradientButton';
+import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import { Container, HeaderCover } from './styles';
-import { MyPassportInterface } from '../../../graphql/types';
-import { CountryInterface } from '../../../libs/countries';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
