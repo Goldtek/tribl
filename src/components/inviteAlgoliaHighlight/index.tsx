@@ -1,12 +1,14 @@
 import React, { Fragment } from 'react';
 import { connectHighlight } from 'react-instantsearch-native';
 import { TouchableOpacity } from 'react-native';
-import { Divider, Text } from 'react-native-paper';
+import { Divider, Text, Title } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../theme';
 import { PassportInterface } from '../../graphql/types';
 import hexToRGB from '../../utils/hexToRGB';
+
+import { NameContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface HighlightProp extends PassportInterface {
@@ -14,7 +16,7 @@ interface HighlightProp extends PassportInterface {
 }
 
 const InviteAlgoliaHighlight = (props: HighlightProp) => {
-  const { firstName, lastName, id, avatar, handleSelect } = props;
+  const { firstName, lastName, id, avatar, handleSelect, citizenship } = props;
   const { colors, fonts } = useThemeContext();
 
   if (
@@ -57,16 +59,29 @@ const InviteAlgoliaHighlight = (props: HighlightProp) => {
               marginRight: RFValue(7)
             }}
           />
-          <Text
-            style={{
-              fontFamily: fonts.WORK_SANS_MEDIUM,
-              fontSize: RFValue(fonts.LARGE_SIZE - 2),
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize'
-            }}
-          >
-            {`${firstName} ${lastName}`}
-          </Text>
+          <NameContainer>
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_MEDIUM,
+                fontSize: RFValue(fonts.LARGE_SIZE - 2),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize'
+              }}
+            >
+              {`${firstName} ${lastName}`}
+            </Text>
+
+            {citizenship?.length ? (
+              <Title
+                style={{
+                  fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                  lineHeight: RFValue(16)
+                }}
+              >
+                {citizenship?.map((country) => country.flag)}
+              </Title>
+            ) : null}
+          </NameContainer>
         </Fragment>
       </TouchableOpacity>
       <Divider

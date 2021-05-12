@@ -51,13 +51,14 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
 
   const handleSelect = (user: PassportInterface) => {
     dismissKeyboard();
-    const { firstName, lastName, id, avatar } = user;
+    const { firstName, lastName, id, avatar, citizenship } = user;
 
     const payload = {
       id,
       avatar,
       lastName,
-      firstName
+      firstName,
+      citizenship
     } as PassportInterface;
 
     if (!group[id]) {

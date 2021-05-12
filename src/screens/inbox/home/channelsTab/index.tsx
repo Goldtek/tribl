@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
+import { useTranslation } from 'react-i18next';
+import { ChannelSort } from 'stream-chat';
+import { ChannelList, Chat, DefaultCommandType } from 'stream-chat-expo';
 import CustomChannelPreview from './widget';
 import { NavigationInterface } from '../../../types';
 import { tagScreenName } from '../../../../utils/uxcamHelper';
-import { ChannelList, Chat, DefaultCommandType } from 'stream-chat-expo';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -13,14 +16,19 @@ import {
   LocalUserType,
   chatClient
 } from '../../../../stream/types';
-import { ChannelSort } from 'stream-chat';
+import GradientButton from '../../../../components/gradientButton';
+import { useThemeContext } from '../../../../theme';
 
-import { Container } from './styles';
+import { Container, ButtonWrapper } from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 function ChannelsTab(props: ScreenProp) {
+  const { navigation } = props;
+  const { fonts, colors } = useThemeContext();
+  const { t } = useTranslation();
+
   const filters = {
     type: 'team',
     members: { $in: [chatClient.user?.id] },
@@ -34,6 +42,12 @@ function ChannelsTab(props: ScreenProp) {
   useEffect(() => {
     tagScreenName('ChannelsTab');
   }, []);
+
+  const navigateToCreateNewChannelScreen = () => {
+    navigation.navigate('DrawerScreen', {
+      screen: 'CreateChannelTribeScreen'
+    });
+  };
 
   return (
     <Chat
@@ -59,6 +73,33 @@ function ChannelsTab(props: ScreenProp) {
           additionalFlatListProps={{ showsVerticalScrollIndicator: false }}
         />
       </Container>
+      <ButtonWrapper>
+        <GradientButton
+          onPress={navigateToCreateNewChannelScreen}
+          labelStyle={{
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+            textTransform: 'capitalize',
+            color: colors.WHITE
+          }}
+          gradientContainerstyle={{
+            height: RFValue(30),
+            width: RFPercentage(30),
+            borderRadius: RFValue(15)
+          }}
+          contentStyle={{
+            width: '100%',
+            height: '100%',
+            borderRadius: RFValue(15)
+          }}
+          style={{
+            height: RFValue(30),
+            borderRadius: RFValue(15)
+          }}
+        >
+          {t(`community.chat.createNewChannel`)}
+        </GradientButton>
+      </ButtonWrapper>
     </Chat>
   );
 }

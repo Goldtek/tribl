@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import Intercom from 'react-native-intercom';
 import { TouchableOpacity, View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Modal from 'react-native-modal';
@@ -72,6 +73,19 @@ export default function CustomDrawerComponent() {
   const changeSideMenu = (menu: string) => {
     changeSideMenuState({ variables: { activeSideMenu: menu } });
   };
+
+  //@ts-ignore
+  Intercom.registerIdentifiedUser({ userId: userDetails?.id });
+
+  Intercom.updateUser({
+    // Pre-defined user attributes
+    email: userDetails?.email,
+    user_id: userDetails?.id,
+    name: `${userDetails?.firstName} ${userDetails?.lastName}`,
+    phone: userDetails?.phoneNumber,
+    language_override: 'language_override',
+    unsubscribed_from_emails: true
+  });
 
   const sideMenuScreens = [
     {
@@ -179,6 +193,21 @@ export default function CustomDrawerComponent() {
       },
       drawerIcon: (
         <Feather name="settings" size={24} color={colors.PRIMARY_TEXT} />
+      )
+    },
+    {
+      key: 'drawer_support_key',
+      name: `community.sideNav.support`,
+      onPress: () => {
+        Intercom.displayMessageComposer();
+        toggleMenu();
+      },
+      drawerIcon: (
+        <AntDesign
+          name="customerservice"
+          size={24}
+          color={colors.PRIMARY_TEXT}
+        />
       )
     },
     {

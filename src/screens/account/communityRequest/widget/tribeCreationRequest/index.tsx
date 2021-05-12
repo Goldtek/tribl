@@ -21,6 +21,7 @@ interface TribeRequestProp {
   avatar: string;
   moderators: [{ firstName: string; lastName: string; id: string }];
   refetch: VoidFunction;
+  creator: { firstName: string; lastName: string; id: string };
 }
 
 export default function TribeRequest(props: TribeRequestProp) {
@@ -28,16 +29,16 @@ export default function TribeRequest(props: TribeRequestProp) {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { id, avatar, name, moderators, refetch } = props;
+  const { id, avatar, name, creator, refetch } = props;
 
   const handleMemberNavigation = () => {
     navigation.navigate('MemberDetailScreen', {
       details: {
-        id: moderators[0]?.id,
-        firstName: moderators[0]?.firstName,
-        lastName: moderators[0]?.lastName
+        id: creator?.id,
+        firstName: creator?.firstName,
+        lastName: creator?.lastName
       },
-      title: `${moderators[0]?.firstName} ${moderators[0]?.lastName}`
+      title: `${creator?.firstName} ${creator?.lastName}`
     });
   };
 
@@ -97,7 +98,7 @@ export default function TribeRequest(props: TribeRequestProp) {
   };
 
   const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id: moderators[0]?.id }
+    variables: { id: creator?.id }
   });
 
   useEffect(() => {
@@ -140,7 +141,7 @@ export default function TribeRequest(props: TribeRequestProp) {
             }}
             onPress={handleMemberNavigation}
           >
-            {`${moderators[0]?.firstName} ${moderators[0]?.lastName}`}
+            {`${creator?.firstName} ${creator?.lastName}`}
             {'  '}
           </Text>
           {t(`community.invitation.newTribeRequest`)} -{' '}

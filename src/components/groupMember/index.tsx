@@ -27,7 +27,14 @@ function GroupMemberCard(props: ConnectionCardProp) {
   const { colors, fonts } = useThemeContext();
 
   const { selected, handleSelect, ...user } = props;
-  const { id, avatar, lastName, firstName, currentLocation } = user;
+  const {
+    id,
+    avatar,
+    lastName,
+    firstName,
+    currentLocation,
+    citizenship
+  } = user;
 
   if (
     (id === chatClient.user?.id ||
@@ -89,6 +96,16 @@ function GroupMemberCard(props: ConnectionCardProp) {
                 ? `${currentLocation?.city}, ${currentLocation?.state}`
                 : `${currentLocation?.state}, ${currentLocation?.country}`}
             </Text>
+            {citizenship?.length ? (
+              <Title
+                style={{
+                  fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.1)),
+                  lineHeight: RFValue(17)
+                }}
+              >
+                {citizenship?.map((country) => country.flag)}
+              </Title>
+            ) : null}
           </NameContainer>
           <CheckBox
             disabled={true}
