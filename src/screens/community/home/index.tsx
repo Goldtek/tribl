@@ -228,12 +228,7 @@ export default function HomeScreen(props: ScreenProp) {
     });
   });
 
-  const communities = communityData?.recommendedCommunities?.data
-    .slice()
-    .sort((a) => {
-      if (a.name.includes('REFitness Group')) return -1;
-      return 0;
-    });
+  const communities = communityData?.recommendedCommunities?.data;
 
   useEffect(() => {
     if (connectionRequestData?.connectionRequests.length) {
