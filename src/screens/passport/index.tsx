@@ -574,7 +574,7 @@ export default function PassportScreen(props: ScreenProp) {
                   }}
                   labelStyle={{
                     color: colors.SECONDARY_TEXT,
-                    fontSize: RFValue(fonts.SMALL_SIZE + 1),
+                    fontSize: RFValue(fonts.SMALL_SIZE + 2),
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     textTransform: 'uppercase',
                     textAlign: 'center'
@@ -594,7 +594,7 @@ export default function PassportScreen(props: ScreenProp) {
                   }}
                   labelStyle={{
                     color: colors.SECONDARY_TEXT,
-                    fontSize: RFValue(fonts.SMALL_SIZE + 1),
+                    fontSize: RFValue(fonts.SMALL_SIZE + 5),
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     textTransform: 'uppercase',
                     textAlign: 'center'
@@ -697,7 +697,7 @@ export default function PassportScreen(props: ScreenProp) {
                     >
                       {`${currentLocation?.city}, ${currentLocation?.state}`}
                     </Paragraph>
-                  ) : (
+                  ) : currentLocation?.country !== undefined ? (
                     <Paragraph
                       style={{
                         fontFamily: fonts.WORK_SANS_REGULAR,
@@ -710,7 +710,7 @@ export default function PassportScreen(props: ScreenProp) {
                     >
                       {`${currentLocation?.state}, ${currentLocation?.country}`}
                     </Paragraph>
-                  )}
+                  ) : null}
                   {cache?.citizenship?.length ? (
                     <Title
                       style={{

@@ -116,7 +116,9 @@ const Highlight = (props: HighlightProp) => {
                 >
                   {hit.currentLocation?.city
                     ? `${hit.currentLocation?.city}, ${hit.currentLocation?.state}`
-                    : `${hit.currentLocation?.state}, ${hit.currentLocation?.country}`}
+                    : hit.currentLocation?.country !== undefined
+                    ? `${hit.currentLocation?.state}, ${hit.currentLocation?.country}`
+                    : null}
                 </Text>
                 {hit?.citizenship?.length ? (
                   <Title

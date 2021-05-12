@@ -122,7 +122,7 @@ export default function PreviewRecommendedUser(
             >
               {`${currentLocation?.city}, ${currentLocation?.state}`}
             </Paragraph>
-          ) : (
+          ) : currentLocation?.country !== undefined ? (
             <Paragraph
               numberOfLines={1}
               style={{
@@ -137,7 +137,7 @@ export default function PreviewRecommendedUser(
             >
               {`${currentLocation?.state}, ${currentLocation?.country}`}
             </Paragraph>
-          )}
+          ) : null}
           {citizenship?.length ? (
             <Title
               style={{

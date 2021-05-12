@@ -14,9 +14,9 @@ export default function EmptyMessageState() {
   const activeTab = routeNames[index];
 
   const showSearchScreen = () => {
-    navigation.navigate('DrawerScreen', {
-      screen: 'CommunityAlgoliaScreen',
-      params: { indexName: ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_INDEX_NAME }
+    navigation.navigate('CommunityScreen', {
+      screen: 'CommunitySearchScreen',
+      params: { index: 1 }
     });
 
     Mixpanel.track('User Taps Chat Button', {

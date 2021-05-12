@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Title, Text, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Entypo, Feather } from '@expo/vector-icons';
@@ -11,10 +11,12 @@ import {
   PassportInterface,
   SinglePassportRequestInterface
 } from '../../../../../../../graphql/types';
-import { GET_SINGLE_PASSPORT } from '../../../../../../../graphql/server/query';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
 import { crashlytics } from '../../../../../../../firebase/config';
-import { chatClient } from '../../../../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
@@ -27,8 +29,7 @@ function Member(props: MemberProp) {
   const navigation = useNavigation();
 
   const { avatar, firstName, lastName, id } = props;
-
-  if (id === chatClient.user?.id) return null;
+  const [user, setUser] = useState(false);
 
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
@@ -39,6 +40,8 @@ function Member(props: MemberProp) {
     { variables: { id } }
   );
 
+  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const userId = userData?.myPassport?.id;
   const singlePassport = singlePassportData?.singlePassport;
   const location = singlePassport?.currentLocation;
   const citizenship = singlePassport?.citizenship;
@@ -48,6 +51,12 @@ function Member(props: MemberProp) {
     singlePassport?.connected === 'ACCEPTED'
       ? true
       : false;
+
+  useEffect(() => {
+    if (userId === id) {
+      setUser(true);
+    }
+  }, [userId]);
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
@@ -79,13 +88,15 @@ function Member(props: MemberProp) {
         padding: 10
       }}
       onPress={() =>
-        navigation.navigate('DrawerScreen', {
-          screen: 'MemberDetailScreen',
-          params: {
-            title: `${firstName} ${lastName}`,
-            details: { ...props, ...singlePassport }
-          }
-        })
+        user
+          ? {}
+          : navigation.navigate('DrawerScreen', {
+              screen: 'MemberDetailScreen',
+              params: {
+                title: `${firstName} ${lastName}`,
+                details: { ...props, ...singlePassport }
+              }
+            })
       }
     >
       <Fragment>
@@ -122,7 +133,9 @@ function Member(props: MemberProp) {
             >
               {location?.city
                 ? `${location?.city}, ${location?.state}`
-                : `${location?.state}, ${location?.country}`}
+                : location?.country !== undefined
+                ? `${location?.state}, ${location?.country}`
+                : null}
             </Text>
           )}
           {citizenship?.length ? (
@@ -136,31 +149,32 @@ function Member(props: MemberProp) {
             </Title>
           ) : null}
         </NameContainer>
-
-        <TouchableRipple
-          style={{
-            marginLeft: 'auto',
-            width: RFValue(50),
-            height: RFValue(35),
-            backgroundColor: connectedUsers ? colors.WHITE : colors.PRIMARY,
-            borderWidth: connectedUsers ? 1 : 0,
-            borderColor: connectedUsers ? colors.INPUT : colors.TRANSPARENT,
-            borderRadius: 4,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-          onPress={
-            singlePassport?.connectionDetails?.status == 'ACCEPTED'
-              ? handleMessageNavigation
-              : handleRequest
-          }
-        >
-          {singlePassport?.connectionDetails?.status == 'ACCEPTED' ? (
-            <Entypo name="new-message" size={20} color={colors.WHITE} />
-          ) : (
-            <Feather name="plus" size={20} color={colors.WHITE} />
-          )}
-        </TouchableRipple>
+        {user ? null : (
+          <TouchableRipple
+            style={{
+              marginLeft: 'auto',
+              width: RFValue(50),
+              height: RFValue(35),
+              backgroundColor: connectedUsers ? colors.WHITE : colors.PRIMARY,
+              borderWidth: connectedUsers ? 1 : 0,
+              borderColor: connectedUsers ? colors.INPUT : colors.TRANSPARENT,
+              borderRadius: 4,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            onPress={
+              singlePassport?.connectionDetails?.status == 'ACCEPTED'
+                ? handleMessageNavigation
+                : handleRequest
+            }
+          >
+            {singlePassport?.connectionDetails?.status == 'ACCEPTED' ? (
+              <Entypo name="new-message" size={20} color={colors.WHITE} />
+            ) : (
+              <Feather name="plus" size={20} color={colors.WHITE} />
+            )}
+          </TouchableRipple>
+        )}
       </Fragment>
     </TouchableRipple>
   );

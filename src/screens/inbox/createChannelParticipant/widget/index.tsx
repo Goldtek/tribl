@@ -78,7 +78,9 @@ function Member(props: MemberProp) {
             >
               {currentLocation?.city
                 ? `${currentLocation?.city}, ${currentLocation?.state}`
-                : `${currentLocation?.state}, ${currentLocation?.country}`}
+                : currentLocation?.country !== undefined
+                ? `${currentLocation?.state}, ${currentLocation?.country}`
+                : null}
             </Text>
           </NameContainer>
           <CheckBox

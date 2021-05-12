@@ -130,7 +130,7 @@ function NearbyModal(props: NearbyUserProp) {
             >
               {`${city}, ${state}`}
             </Paragraph>
-          ) : (
+          ) : country !== undefined ? (
             <Paragraph
               style={{
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
@@ -142,7 +142,7 @@ function NearbyModal(props: NearbyUserProp) {
             >
               {`${state}, ${country}`}
             </Paragraph>
-          )}
+          ) : null}
           {citizenship?.length ? (
             <Title
               style={{

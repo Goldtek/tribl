@@ -18,7 +18,8 @@ import RecommendedMembers from '../../../../../components/recommendedUser';
 import {
   GET_NEARBY_MEMBERS,
   GET_RECOMMENDED_MEMBERS,
-  GET_USER_PASSPORT
+  GET_USER_PASSPORT,
+  GET_TRENDING_CHANNELS
 } from '../../../../../graphql/server/query';
 import NearbyModal from '../../../../../components/nearby';
 import ActiveModal from '../../../../../components/activeMembers';
@@ -31,10 +32,10 @@ import {
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../../../../constants';
 import removeDuplicateMembers from '../../../../../utils/removeDuplicatePassports';
+import MyChannel from '../../../../../components/channelCard';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { Container, RecommendedList, RecommendedListHeader } from './styles';
-import { userDetails } from '../../../../../graphql/cache';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -100,6 +101,17 @@ function MemberSTabScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
   });
 
+  const {
+    data: trendingChannelData,
+    refetch: refetchTrendingChannels
+  } = useQuery(GET_TRENDING_CHANNELS, {
+    variables: {
+      input: { limit: PAGINATION_DEFAULT * (PAGINATION_DEFAULT / 2), skip: 0 }
+    }
+  });
+
+  const trendingChannels = trendingChannelData?.trendingChannels;
+
   const nearbyMembers = nearbyData?.nearbyMembers?.data;
 
   const filterNearbyMebers = removeDuplicateMembers(nearbyMembers?.slice());
@@ -116,6 +128,7 @@ function MemberSTabScreen(props: ScreenProp) {
     userDetails && passportRefetch();
     recommendedMembers && recommendedRefetch();
     nearbyMembers && nearbyRefetch();
+    trendingChannels && refetchTrendingChannels();
   }, [isFocused]);
 
   const _renderNearbyMember = useMemo(
@@ -132,6 +145,10 @@ function MemberSTabScreen(props: ScreenProp) {
     []
   );
 
+  const _renderMyChannelItem = ({ item }: { item: any }) => (
+    <MyChannel key={item.id} {...item.channel} />
+  );
+
   return (
     <ScrollView
       bounces={false}
@@ -140,6 +157,38 @@ function MemberSTabScreen(props: ScreenProp) {
       style={{ flexGrow: 1 }}
     >
       <Container>
+        {trendingChannels?.data?.length ? (
+          <RecommendedList
+            style={{
+              paddingBottom: RFValue(15)
+            }}
+          >
+            <RecommendedListHeader style={{ paddingLeft: 15 }}>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: 20,
+                  marginTop: 0,
+                  marginBottom: 0
+                }}
+              >
+                {t(`community.recommended.trendingChannel`)}
+              </Title>
+            </RecommendedListHeader>
+            <FlatList
+              data={trendingChannels.data}
+              horizontal={true}
+              renderItem={_renderMyChannelItem}
+              ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(channel) => channel.id}
+              contentContainerStyle={{ paddingLeft: 15, marginTop: 20 }}
+            />
+          </RecommendedList>
+        ) : null}
         <RecommendedList>
           <RecommendedListHeader>
             <Title

@@ -165,7 +165,11 @@ const Highlight = (props: HighlightProp) => {
                   textTransform: 'capitalize'
                 }}
               >
-                {city ? `${city}, ${state}` : `${state}, ${country}`}
+                {city
+                  ? `${city}, ${state}`
+                  : country !== undefined
+                  ? `${state}, ${country}`
+                  : null}
               </Text>
               {hit?.citizenship?.length ? (
                 <Title

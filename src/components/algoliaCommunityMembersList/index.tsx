@@ -35,7 +35,7 @@ function AlgoliaList(props: any) {
   );
 
   const _renderItem = useMemo(
-    () => ({ item }: any) => <HighLight attribute="id" hit={item} />,
+    () => ({ item }: any) => <HighLight attribute="objectID" hit={item} />,
     []
   );
 

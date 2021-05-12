@@ -168,7 +168,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               >
                 {`${currentLocation?.city}, ${currentLocation?.state}`}
               </Paragraph>
-            ) : (
+            ) : currentLocation?.country !== undefined ? (
               <Paragraph
                 style={{
                   fontFamily: fonts.WORK_SANS_REGULAR,
@@ -181,7 +181,7 @@ export default function PassportDetail(props: MemberDetailProps) {
               >
                 {`${currentLocation?.state}, ${currentLocation?.country}`}
               </Paragraph>
-            )}
+            ) : null}
             <HeaderCover
               style={{
                 flexDirection: citizenship?.length > 2 ? 'column' : 'row',

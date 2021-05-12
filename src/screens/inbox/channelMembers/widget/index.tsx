@@ -125,9 +125,9 @@ function ChannelMember(props: ChannelUserProp) {
                 textTransform: 'capitalize'
               }}
             >
-              {`${state}, ${country}`}
+              {`${city}, ${state}`}
             </Paragraph>
-          ) : (
+          ) : country !== undefined ? (
             <Paragraph
               style={{
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
@@ -137,9 +137,9 @@ function ChannelMember(props: ChannelUserProp) {
                 textTransform: 'capitalize'
               }}
             >
-              {`${city}, ${state}`}
+              {`${state}, ${country}`}
             </Paragraph>
-          )}
+          ) : null}
           {citizenship?.length ? (
             <Title
               style={{

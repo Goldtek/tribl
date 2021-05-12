@@ -23,7 +23,6 @@ import ENVIRONMENT_VARIABLES, {
 } from '../../../../../config';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
 import hexToRGB from '../../../../../utils/hexToRGB';
-import removeDuplicateMembers from '../../../../../utils/removeDuplicatePassports';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_USER_PASSPORT } from '../../../../../graphql/server/query';
 
@@ -63,12 +62,12 @@ export default function MemberSlide(props: MemberSlideProp) {
 
   const _memberList = (props: any) => {
     const { hits, hasMore, refineNext } = props;
-    const filterHits = removeDuplicateMembers(hits?.slice());
-    const filteredUsers = filterHits?.filter(function (users) {
+    const filteredUsers = hits?.filter(function (users: any) {
       return !blockedUsers?.some(function (userTwo: any) {
         return users.id == userTwo.id;
       });
     });
+    console.tron('filteredUsers', filteredUsers);
 
     return (
       <Results>
