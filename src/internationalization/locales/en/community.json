@@ -101,7 +101,8 @@
     "policy": "privacy policy",
     "version": "version 1.0.0",
     "company": "silicon jungle labs",
-    "activities": "activities"
+    "activities": "activities",
+    "support": "help desk"
   },
 
   "accountSettings": {
@@ -178,7 +179,10 @@
     "channelText": "Name your channel around a topic, chapter, or interests that resonates with members of the community",
     "channelNamePlaceholder": "#channelname",
     "next": "next",
-    "addParticipant": "Add Participants"
+    "addParticipant": "Add Participants",
+    "selectTribe": "select tribe",
+    "createNewGroup": "create a group message",
+    "createNewChannel": "create a channel"
   },
   "update": {
     "new": "new",

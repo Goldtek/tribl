@@ -115,12 +115,6 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     }
   });
 
-  const { data: communityMembers } = useQuery<CommunityMembersRequestInterface>(
-    GET_COMMUNITY_MEMBERS,
-    { variables: { input: { filter: { communityId: id } } } }
-  );
-
-  const participants = communityMembers?.communityMembers?.data;
   const communityNearbyMembers =
     communityMembersData?.noAuthNearbyMembers?.data;
   const nearbyMembersData = NearbyMembers?.noAuthNearbyMembers?.data;
@@ -131,12 +125,8 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     communityNearbyMembers?.slice()
   );
 
-  const filterParticiant = removeDuplicateMembers(participants?.slice());
-
   const nearbyMembers = filterCommunityNearbyMembers?.length
     ? filterCommunityNearbyMembers
-    : filterParticiant?.length
-    ? filterParticiant
     : filterNearbyMebers;
 
   const _renderRecommendedMember = useMemo(

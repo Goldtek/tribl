@@ -38,6 +38,7 @@
     android:usesCleartextTraffic="true"
     android:hardwareAccelerated="false"
     android:largeHeap="true"
+    xmlns:tools="http://schemas.android.com/tools"
   >
     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@josemak25/Tribl" />
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="38.0.0" />
@@ -60,6 +61,8 @@
 
       <service
             android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
+            android:name=".MainMessagingService"
+            android:enabled="true"
             android:exported="true" >
           <intent-filter>
               <action android:name="com.google.firebase.MESSAGING_EVENT" />

@@ -147,7 +147,7 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
               color={colors.PRIMARY}
             />
           </TouchableRipple>
-          <HeaderTitle> {t(`community.chat.createChannel`)}</HeaderTitle>
+          <HeaderTitle> {t(`community.chat.selectTribe`)}</HeaderTitle>
         </HeaderContainer>
 
         <FilterContainer>
