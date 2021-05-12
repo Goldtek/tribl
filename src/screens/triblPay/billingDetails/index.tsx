@@ -84,13 +84,13 @@ export default function BillingDetailsScreen(props: ScreenProp) {
 
   const submitKyc = async () => {
     if (countWords(addressLine)) return alert('Address field is compulsory');
-    if (countWords(addressCity)) return alert('City field is compulsory');
-    if (countWords(addressState)) return alert('State field is compulsory');
     if (countWords(addressPostalCode))
       return alert('Postal code field is compulsory');
     if (countWords(addressCountryCode))
       return alert('Country code field is compulsory');
-
+    if (countWords(addressState) || addressState.trim() === 'Select')
+      return alert('State field is compulsory');
+    if (countWords(addressCity)) return alert('City field is compulsory');
     try {
       const { data } = await verifyKyc();
 
@@ -101,6 +101,12 @@ export default function BillingDetailsScreen(props: ScreenProp) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
+  };
+
+  const handleStateValue = () => {
+    if (isLocal && addressState === '')
+      setBillingDetails({ ...billingDetails, addressState: 'Select' });
+    return addressState;
   };
 
   return (
@@ -199,6 +205,36 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               />
             </InputContainer>
 
+            <InputContainer>
+              <LabelContainer>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  Postal Code
+                </Title>
+              </LabelContainer>
+              <TextInput
+                value={addressPostalCode}
+                onChangeText={(addressPostalCode: string) =>
+                  setBillingDetails({ ...billingDetails, addressPostalCode })
+                }
+                style={{
+                  height: 30,
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                  color: colors.PRIMARY_TEXT,
+                  backgroundColor: colors.WHITE,
+                  borderColor: colors.PRIMARY,
+                  textTransform: 'capitalize'
+                }}
+              />
+            </InputContainer>
+
             <TouchableOpacity onPress={openModal}>
               <InputContainer>
                 <LabelContainer>
@@ -223,9 +259,9 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                     fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                     color: colors.PRIMARY_TEXT,
                     backgroundColor: colors.WHITE,
-                    borderColor: colors.PRIMARY,
+                    borderColor: colors.DISABLED,
                     textTransform: 'capitalize',
-                    marginBottom: 10
+                    borderBottomWidth: isLocal ? 1 : 0
                   }}
                 />
               </InputContainer>
@@ -246,7 +282,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                   </Title>
                 </LabelContainer>
                 <TextInput
-                  value={addressState}
+                  value={handleStateValue()}
                   disabled={isLocal}
                   onChangeText={(addressState: string) =>
                     setBillingDetails({ ...billingDetails, addressState })
@@ -257,8 +293,9 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                     fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                     color: colors.PRIMARY_TEXT,
                     backgroundColor: colors.WHITE,
-                    borderColor: colors.PRIMARY,
-                    textTransform: 'capitalize'
+                    borderColor: colors.DISABLED,
+                    textTransform: 'capitalize',
+                    borderBottomWidth: isLocal ? 1 : 0
                   }}
                 />
               </InputContainer>
@@ -289,37 +326,8 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                   color: colors.PRIMARY_TEXT,
                   backgroundColor: colors.WHITE,
                   borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  Postal Code
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
+                  textTransform: 'capitalize',
+                  marginBottom: 10
                 }}
               />
             </InputContainer>
