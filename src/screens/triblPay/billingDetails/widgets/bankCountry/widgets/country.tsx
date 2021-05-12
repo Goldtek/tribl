@@ -13,17 +13,28 @@ interface CountryCardProps extends CountryInterface, NavigationInterface {
   modalizeRef: any;
   billingDetails: any;
   setBillingDetails: any;
+  setIsLocal: any;
 }
 
 const CountryCard = (props: CountryCardProps) => {
   const { colors, fonts } = useThemeContext();
-  const { name, iso2, emoji, billingDetails, setBillingDetails } = props;
+  const {
+    name,
+    iso2,
+    emoji,
+    billingDetails,
+    setBillingDetails,
+    setIsLocal
+  } = props;
 
   const closeModal = () => props.modalizeRef.current?.close();
+
   const handleSelect = () => {
     setBillingDetails({ ...billingDetails, addressCountryCode: iso2 });
+    iso2 === 'US' ? setIsLocal(true) : setIsLocal(false);
     closeModal();
   };
+
   return (
     <TouchableOpacity
       onPress={handleSelect}
