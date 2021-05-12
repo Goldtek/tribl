@@ -29,6 +29,7 @@ import RecommendedCommunitySkeleton from '../../../components/recommendedCommuni
 import ComingSoonCommunities from './widget/recommendedCommunity/comingSoon';
 import { PassportInterface } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import hexToRGB from '../../../utils/hexToRGB';
 import { tagScreenName } from '../../../utils/uxcamHelper';
 import { PAGINATION_DEFAULT } from '../../../constants';
@@ -52,6 +53,7 @@ interface ScreenProp extends NavigationInterface {}
 export default function HomeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const inset = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const [visible, setVisible] = useState(false);
   const [location, setLocation] = useState({
@@ -91,7 +93,9 @@ export default function HomeScreen(props: ScreenProp) {
         latitude: coords.latitude,
         longitude: coords.longitude
       });
+
       const { city, region: state, country } = currentLocation;
+
       setLocation({
         ...location,
         lat: coords.latitude,
@@ -100,6 +104,7 @@ export default function HomeScreen(props: ScreenProp) {
         state,
         country
       });
+
       Mixpanel.track('Get UserLocation', {
         info: `User  updates location`,
         'Activity Screen': 'Preview screen'
@@ -131,11 +136,9 @@ export default function HomeScreen(props: ScreenProp) {
 
   const {
     data: trendingChannelData,
-    refetch: refetchtrendingChannels
+    refetch: refetchTrendingChannels
   } = useQuery(GET_TRENDING_CHANNELS, {
-    variables: {
-      input: { limit: PAGINATION_DEFAULT * (PAGINATION_DEFAULT / 2), skip: 0 }
-    }
+    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
   const { data: membersData, refetch: recommendedRefetch } = useQuery(
@@ -163,7 +166,7 @@ export default function HomeScreen(props: ScreenProp) {
 
   const trendingChannels = trendingChannelData?.trendingChannels;
   const recommendedMembers = membersData?.noAuthRecommendedMembers?.data;
-  const filterRecommendedMebers = removeDuplicateMembers(
+  const filterRecommendedMembers = removeDuplicateMembers(
     recommendedMembers?.slice()
   );
 
@@ -175,7 +178,7 @@ export default function HomeScreen(props: ScreenProp) {
     });
 
   useEffect(() => {
-    trendingChannels && refetchtrendingChannels();
+    trendingChannels && refetchTrendingChannels();
     recommendedMembers && recommendedRefetch();
   }, [isFocused]);
 
@@ -195,66 +198,15 @@ export default function HomeScreen(props: ScreenProp) {
   );
 
   return (
-    <Fragment>
-      <ScrollView
-        bounces={false}
-        nestedScrollEnabled
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
-        <StatusBar translucent animated style="dark" />
-        {trendingChannels?.data?.length ? (
-          <RecommendedList
-            style={{
-              paddingBottom: RFValue(15)
-            }}
-          >
-            <RecommendedListHeader style={{ paddingLeft: 15 }}>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize'
-                }}
-              >
-                {t(`community.recommended.trendingChannel`)}
-              </Title>
-
-              <GradientButton
-                gradientContainerstyle={{
-                  height: RFValue(0),
-                  paddingVertical: 15,
-                  marginTop: 0
-                }}
-                labelStyle={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  textTransform: 'capitalize'
-                }}
-                mode="text"
-                onPress={showSignupModal(true)}
-              >
-                {t(`community.recommended.view`)}
-              </GradientButton>
-            </RecommendedListHeader>
-            <RecommendedCommunityContainer>
-              <FlatList
-                data={trendingChannels.data}
-                horizontal={true}
-                renderItem={_renderMyChannelItem}
-                ListEmptyComponent={
-                  <RecommendedUserSkeleton skeletonSize={4} />
-                }
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(channel) => channel.id}
-                contentContainerStyle={{ paddingLeft: 15 }}
-              />
-            </RecommendedCommunityContainer>
-          </RecommendedList>
-        ) : null}
-
-        <RecommendedList>
+    <ScrollView
+      bounces={false}
+      nestedScrollEnabled
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ flexGrow: 1, paddingBottom: inset.bottom }}
+    >
+      <StatusBar translucent animated style="dark" />
+      {trendingChannels?.data?.length ? (
+        <RecommendedList style={{ paddingBottom: RFValue(15) }}>
           <RecommendedListHeader style={{ paddingLeft: 15 }}>
             <Title
               style={{
@@ -264,7 +216,7 @@ export default function HomeScreen(props: ScreenProp) {
                 textTransform: 'capitalize'
               }}
             >
-              {t(`community.recommended.community`)}
+              {t(`community.recommended.trendingChannel`)}
             </Title>
 
             <GradientButton
@@ -285,84 +237,127 @@ export default function HomeScreen(props: ScreenProp) {
             </GradientButton>
           </RecommendedListHeader>
           <RecommendedCommunityContainer>
-            {recommendedCommunityLoading ? (
-              <RecommendedCommunitySkeleton />
-            ) : communities?.length ? (
-              <Swiper
-                loop={false}
-                scrollEnabled={true}
-                containerStyle={{ height: RFValue(300) }}
-                paginationStyle={{
-                  position: 'absolute',
-                  left: DEVICE_FULL_WIDTH / 2 + 60,
-                  bottom: 300 / 3
-                }}
-                activeDotColor={colors.WHITE}
-                dotColor={hexToRGB(colors.WHITE, 0.6)}
-              >
-                {communities.map((community: any) => (
-                  <RecommendedCommunity
-                    key={community.id}
-                    {...community}
-                    location={location}
-                  />
-                ))}
-              </Swiper>
-            ) : (
-              <ComingSoonCommunities />
-            )}
+            <FlatList
+              horizontal={true}
+              data={trendingChannels.data}
+              renderItem={_renderMyChannelItem}
+              ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(channel) => channel.id}
+              contentContainerStyle={{ paddingLeft: 15 }}
+            />
           </RecommendedCommunityContainer>
         </RecommendedList>
+      ) : null}
 
-        <RecommendedList>
-          <RecommendedListHeader>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.recommended.members`)}
-            </Title>
-
-            <GradientButton
-              gradientContainerstyle={{
-                height: RFValue(0),
-                paddingVertical: 15,
-                marginTop: 0
-              }}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                textTransform: 'capitalize'
-              }}
-              mode="text"
-              onPress={showSignupModal(true)}
-            >
-              {t(`community.recommended.view`)}
-            </GradientButton>
-          </RecommendedListHeader>
-          <FlatList
-            data={filterRecommendedMebers}
-            horizontal={true}
-            renderItem={_renderRecommendedMember}
-            ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(member) => member.id}
-            contentContainerStyle={{
-              marginTop: 20,
-              paddingLeft: 15,
-              paddingBottom: visible ? RFValue(100) : RFValue(20)
+      <RecommendedList>
+        <RecommendedListHeader style={{ paddingLeft: 15 }}>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'capitalize'
             }}
-          />
-        </RecommendedList>
-        <SignupModal
-          closeSignupModal={showSignupModal(false)}
-          isVisible={visible}
+          >
+            {t(`community.recommended.community`)}
+          </Title>
+
+          <GradientButton
+            gradientContainerstyle={{
+              height: RFValue(0),
+              paddingVertical: 15,
+              marginTop: 0
+            }}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'capitalize'
+            }}
+            mode="text"
+            onPress={showSignupModal(true)}
+          >
+            {t(`community.recommended.view`)}
+          </GradientButton>
+        </RecommendedListHeader>
+        <RecommendedCommunityContainer>
+          {recommendedCommunityLoading ? (
+            <RecommendedCommunitySkeleton />
+          ) : communities?.length ? (
+            <Swiper
+              loop={false}
+              scrollEnabled={true}
+              containerStyle={{ height: RFValue(300) }}
+              paginationStyle={{
+                position: 'absolute',
+                left: DEVICE_FULL_WIDTH / 2 + 60,
+                bottom: 300 / 3
+              }}
+              activeDotColor={colors.WHITE}
+              dotColor={hexToRGB(colors.WHITE, 0.6)}
+            >
+              {communities.map((community: any) => (
+                <RecommendedCommunity
+                  key={community.id}
+                  {...community}
+                  location={location}
+                />
+              ))}
+            </Swiper>
+          ) : (
+            <ComingSoonCommunities />
+          )}
+        </RecommendedCommunityContainer>
+      </RecommendedList>
+
+      <RecommendedList>
+        <RecommendedListHeader>
+          <Title
+            style={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              color: colors.PRIMARY_TEXT,
+              textTransform: 'capitalize'
+            }}
+          >
+            {t(`community.recommended.members`)}
+          </Title>
+
+          <GradientButton
+            gradientContainerstyle={{
+              height: RFValue(0),
+              paddingVertical: 15,
+              marginTop: 0
+            }}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_BOLD,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              textTransform: 'capitalize'
+            }}
+            mode="text"
+            onPress={showSignupModal(true)}
+          >
+            {t(`community.recommended.view`)}
+          </GradientButton>
+        </RecommendedListHeader>
+        <FlatList
+          horizontal={true}
+          data={filterRecommendedMembers}
+          renderItem={_renderRecommendedMember}
+          ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(member) => member.id}
+          contentContainerStyle={{
+            marginTop: 20,
+            paddingLeft: 15,
+            paddingBottom: visible ? RFValue(100) : RFValue(20)
+          }}
         />
-      </ScrollView>
-    </Fragment>
+      </RecommendedList>
+      <SignupModal
+        closeSignupModal={showSignupModal(false)}
+        isVisible={visible}
+      />
+    </ScrollView>
   );
 }

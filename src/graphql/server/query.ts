@@ -279,7 +279,6 @@ export const GET_NOAUTH_RECOMMENDED_MEMBERS = gql`
         lastName
         avatar
         verified
-        connected
         connectionCount
         communityCount
         citizenship {
@@ -321,7 +320,6 @@ export const GET_NOAUTH_NEARYBY_MEMBERS = gql`
         lastName
         avatar
         verified
-        connected
         connectionCount
         communityCount
         citizenship {
@@ -1030,10 +1028,6 @@ export const GET_NOAUTH_SINGLE_COMMUNITY = gql`
         id
         name
       }
-      uniqueInterests {
-        name
-        id
-      }
     }
   }
 `;
@@ -1133,56 +1127,11 @@ export const GET_NOAUTH_SINGLE_PASSPORT = gql`
       lastName
       avatar
       verified
-      phoneNumber
-      connected
       connectionCount
       communityCount
-      pending
-      myConnections {
-        data {
-          id
-          bio
-          email
-          avatar
-          pending
-          verified
-          lastName
-          connected
-          firstName
-          phoneNumber
-          communityCount
-          connectionCount
-          currentLocation {
-            country
-            state
-            city
-          }
-        }
-      }
-      privacy {
-        blocked {
-          id
-          firstName
-          lastName
-        }
-      }
-      blocked {
-        blocked {
-          id
-          firstName
-          lastName
-        }
-      }
       citizenship {
         name
         flag
-      }
-      connectionDetails {
-        status
-      }
-      moderatorOf {
-        isModerator
-        id
       }
       birthPlace {
         country
@@ -1899,6 +1848,11 @@ export const GET_COMMUNITY_CREATION_REQUEST = gql`
         isDefault
         isPrivate
         description
+        creator {
+          id
+          firstName
+          lastName
+        }
         moderators {
           id
           firstName

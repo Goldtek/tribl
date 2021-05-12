@@ -137,7 +137,7 @@ export default function ConnectionRequestScreen(
       filteredUsers?.length
         ? changeConnectionNotification({
             variables: { showConnectionNotificationBadge: true }
-          })
+          }).then(refetch)
         : changeConnectionNotification({
             variables: { showConnectionNotificationBadge: false }
           }).then(refetch);

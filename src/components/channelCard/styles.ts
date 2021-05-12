@@ -11,7 +11,7 @@ export const Cover = styled.View`
 export const LeftCover = styled.View`
   padding: 3px;
   border-radius: 4px;
-  background-color: ${({ theme }) => hexToRGB(theme.colors.WHITE, 0.3)};
+  background-color: ${({ theme }) => hexToRGB(theme.colors.BLACK, 0.3)};
 `;
 
 export const RightCover = styled.View`

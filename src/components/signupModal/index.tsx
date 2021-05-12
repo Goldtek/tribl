@@ -19,14 +19,12 @@ interface ModalProp {
 
 function SignupModal(props: ModalProp) {
   const { isVisible, closeSignupModal } = props;
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
 
   const modalizeRef = useRef<Modalize>(null);
-
   const openModal = () => modalizeRef.current?.open();
-
   const closeModal = () => modalizeRef.current?.close();
 
   useEffect(() => {
@@ -41,7 +39,6 @@ function SignupModal(props: ModalProp) {
   return (
     <Portal>
       <StatusBar translucent animated style="light" />
-
       <Modalize
         ref={modalizeRef}
         onClose={closeSignupModal}
@@ -50,6 +47,9 @@ function SignupModal(props: ModalProp) {
           justifyContent: 'center',
           marginTop: RFValue(600)
         }}
+        handlePosition="inside"
+        overlayStyle={{ backgroundColor: 'transparent' }}
+        handleStyle={{ backgroundColor: colors.PRIMARY_LIGHT }}
       >
         <GradientContainer
           colors={[colors.PRIMARY, colors.SECONDARY]}

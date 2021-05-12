@@ -101,7 +101,8 @@
     "policy": "privacy policy",
     "version": "version 1.0.0",
     "company": "silicon jungle labs",
-    "activities": "activities"
+    "activities": "activities",
+    "support": "help desk"
   },
 
   "accountSettings": {
@@ -163,14 +164,25 @@
     "removeUser": "remove",
     "addingMembers": "adding members",
     "create": "create",
+    "loadingDMs": "Loading direct messages ...",
+    "errorLoadingDMs": "Error loading direct messages list ...",
+    "loadingChannels": "Loading channel messages ...",
+    "errorLoadingChannels": "Error loading channel list ...",
     "newGroup": "new Group",
     "newChannel": "new channel",
     "newChat": "new chat",
+    "newMessage": "start a new message",
+    "startChannel": "join a new channel",
+    "emptyMessage": "No new Messages \nAny new messages will appear here",
+    "emptyChannel": "No channels Messages \nAny new channel messages will appear here",
     "createChannel": "create channel",
     "channelText": "Name your channel around a topic, chapter, or interests that resonates with members of the community",
     "channelNamePlaceholder": "#channelname",
     "next": "next",
-    "addParticipant": "Add Participants"
+    "addParticipant": "Add Participants",
+    "selectTribe": "select tribe",
+    "createNewGroup": "create a group message",
+    "createNewChannel": "create a channel"
   },
   "update": {
     "new": "new",

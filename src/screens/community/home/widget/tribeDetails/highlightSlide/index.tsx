@@ -56,9 +56,7 @@ export default function newTribe(props: newTribeDetailsScreenProp) {
   const avatarUpload = async () => {
     if (detail?.details.image.uri.length) {
       const formData = await cloudinaryUpload(detail?.details.image.imageData);
-
       const { secure_url } = (await formData.json()) as CloudinaryResponseType;
-
       setAvatar(secure_url);
     }
   };

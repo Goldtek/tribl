@@ -299,7 +299,7 @@ export default function GroupInformation(props: GroupInformationProp) {
                 textTransform: 'capitalize'
               }}
             >
-              {`#${channel.data?.name}`}
+              {`${channel.data?.name}`}
             </Text>
 
             <Paragraph

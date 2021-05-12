@@ -5,6 +5,7 @@ import React, {
   useCallback,
   FunctionComponent
 } from 'react';
+import Intercom from 'react-native-intercom';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
@@ -20,8 +21,7 @@ import {
   GenerateStreamsTokenRequestInterface,
   PassportInterface,
   IFCMMessageTypes,
-  VerifyOTPIT,
-  Citizenship
+  VerifyOTPIT
 } from '../graphql/types';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
@@ -170,6 +170,10 @@ const StreamProvider: FunctionComponent = ({ children }) => {
                 variables: { payload: { fcm: fcmToken } }
               });
             }
+          }
+
+          if (os === 'android') {
+            Intercom.sendTokenToIntercom(fcmToken);
           }
 
           await chatClient.addDevice(

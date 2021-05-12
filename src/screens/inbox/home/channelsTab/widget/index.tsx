@@ -81,7 +81,7 @@ export default function CustomChannelPreview(
   }
 
   const channelTitle = channel.data?.community
-    ? `#${channel.data?.community.name.split(' ').join('')}-${displayName}`
+    ? `${channel.data?.community.name.split(' ').join('')}-${displayName}`
     : null;
 
   const handleDeleteAction = async () => {

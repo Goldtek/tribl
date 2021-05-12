@@ -108,14 +108,17 @@ export default function AppNavigator() {
 
       if (!localMessage) return null;
 
-      const pushData = JSON.parse(localMessage) as {
+      const message = JSON.parse(localMessage) as {
         data: NotificationMessage;
         body: NotificationMessage;
       };
 
-      const data = DEVICE_OS === 'ios' ? pushData?.body : pushData?.data;
+      const data =
+        DEVICE_OS === 'ios'
+          ? ((message?.body || message.data) as NotificationMessage)
+          : (message?.data as NotificationMessage);
 
-      AsyncStorage.removeItem('BACK_GROUND_MESSAGE');
+      await AsyncStorage.removeItem('BACK_GROUND_MESSAGE');
 
       // Get deep link from data
       // if this is undefined, the app will open the default/home page
@@ -138,7 +141,7 @@ export default function AppNavigator() {
           const data =
             DEVICE_OS === 'ios'
               ? //@ts-ignore
-                (message?.body as NotificationMessage)
+                ((message?.body || message.data) as NotificationMessage)
               : (message?.data as NotificationMessage);
 
           // Any custom logic to check whether the URL needs to be handled
@@ -175,7 +178,7 @@ export default function AppNavigator() {
         changeConnectionNotification({
           variables: { showConnectionNotificationBadge: true }
         });
-        return `${defaultUrl}`;
+        return `${defaultUrl}/connection_request_screen`;
 
       default:
         return `${defaultUrl}`;
@@ -205,9 +208,9 @@ export default function AppNavigator() {
           component={Screens.WalkThroughScreen}
         />
 
-        <RootStack.Screen name="PreviewScreen" component={PreviewNavigator} />
-
         <RootStack.Screen name="SignupScreen" component={SignupNavigator} />
+
+        <RootStack.Screen name="PreviewScreen" component={PreviewNavigator} />
 
         <RootStack.Screen
           name="DrawerScreen"
