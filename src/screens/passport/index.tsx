@@ -508,9 +508,6 @@ export default function PassportScreen(props: ScreenProp) {
     }
   };
 
-  const [triblPay, setTriblPay] = useState(false);
-  const [emptyFields, setEmptyFields] = useState<[]>([]);
-
   const handleWalletAction = () => {
     const status = cache?.wallet?.status;
 
@@ -534,7 +531,7 @@ export default function PassportScreen(props: ScreenProp) {
       if (lastName === null) updateFields.push('last name');
       if (firstName === null) updateFields.push('first name');
       if (dob === null) updateFields.push('dob');
-      setEmptyFields(updateFields);
+
       if (updateFields.length > 0) {
         return Alert.alert(
           'Update Profile',
