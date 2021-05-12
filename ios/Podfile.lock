@@ -208,10 +208,10 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.4.0):
     - GoogleUtilities/Logger
-  - Intercom (9.0.0)
   - GoogleUtilitiesComponents (1.0.0):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.5.0)
+  - Intercom (9.0.0)
   - libevent (2.1.12)
   - libwebp (1.2.0):
     - libwebp/demux (= 1.2.0)
@@ -731,9 +731,9 @@ SPEC REPOS:
     - GoogleMLKit
     - GoogleToolboxForMac
     - GoogleUtilities
-    - Intercom
     - GoogleUtilitiesComponents
     - GTMSessionFetcher
+    - Intercom
     - libevent
     - libwebp
     - Mixpanel
@@ -974,9 +974,9 @@ SPEC CHECKSUMS:
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
   GoogleToolboxForMac: 471e0c05d39506e50e6398f46fa9a12ae0efeff9
   GoogleUtilities: 284cddc7fffc14ae1907efb6f78ab95c1fccaedc
-  Intercom: 695fe2012198727fd0013c0d3b328a73886110ff
   GoogleUtilitiesComponents: a69c0b3b369ba443e988141e75ef49d9010b1c80
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
+  Intercom: 695fe2012198727fd0013c0d3b328a73886110ff
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
