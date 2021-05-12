@@ -73,7 +73,7 @@ export default function InviteToTribe(props: InviteToTribeProp) {
               textTransform: 'capitalize'
             }}
           >
-            #{name}
+            {name}
           </Title>
         </NameContainer>
         <CheckboxCover>

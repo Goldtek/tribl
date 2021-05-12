@@ -84,14 +84,14 @@ function DirectMessageTab(props: ScreenProp) {
         <GradientButton
           onPress={navigateToCreateNewGroupScreen}
           labelStyle={{
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            fontSize: RFValue(fonts.SMALL_SIZE + 2),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            textTransform: 'capitalize',
+            textTransform: 'none',
             color: colors.WHITE
           }}
           gradientContainerstyle={{
             height: RFValue(30),
-            width: RFPercentage(35),
+            width: RFPercentage(25),
             borderRadius: RFValue(15)
           }}
           contentStyle={{
@@ -104,7 +104,7 @@ function DirectMessageTab(props: ScreenProp) {
             borderRadius: RFValue(15)
           }}
         >
-          {t(`community.chat.createNewGroup`)}
+          + {t(`community.chat.createNewGroup`)}
         </GradientButton>
       </ButtonWrapper>
     </Chat>

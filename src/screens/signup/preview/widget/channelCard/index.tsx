@@ -41,7 +41,7 @@ export default function MyChannel(props: MyChannelProp) {
                 textTransform: 'capitalize'
               }}
             >
-              #{name?.length < 10 ? name : `${name?.substr(0, 10)}...`}
+              {name?.length < 10 ? name : `${name?.substr(0, 10)}...`}
             </Text>
           </LeftCover>
           {/* <RightCover>

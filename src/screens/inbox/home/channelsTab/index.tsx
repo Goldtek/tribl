@@ -83,14 +83,14 @@ function ChannelsTab(props: ScreenProp) {
         <GradientButton
           onPress={navigateToCreateNewChannelScreen}
           labelStyle={{
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            fontSize: RFValue(fonts.SMALL_SIZE + 2),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
             textTransform: 'capitalize',
             color: colors.WHITE
           }}
           gradientContainerstyle={{
             height: RFValue(30),
-            width: RFPercentage(30),
+            width: RFPercentage(25),
             borderRadius: RFValue(15)
           }}
           contentStyle={{
@@ -103,7 +103,7 @@ function ChannelsTab(props: ScreenProp) {
             borderRadius: RFValue(15)
           }}
         >
-          {t(`community.chat.createNewChannel`)}
+          + {t(`community.chat.createNewChannel`)}
         </GradientButton>
       </ButtonWrapper>
     </Chat>
