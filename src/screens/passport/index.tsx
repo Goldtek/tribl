@@ -586,7 +586,7 @@ export default function PassportScreen(props: ScreenProp) {
                   }}
                   labelStyle={{
                     color: colors.SECONDARY_TEXT,
-                    fontSize: RFValue(fonts.SMALL_SIZE + 1),
+                    fontSize: RFValue(fonts.SMALL_SIZE + 2),
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     textTransform: 'uppercase',
                     textAlign: 'center'
@@ -606,7 +606,7 @@ export default function PassportScreen(props: ScreenProp) {
                   }}
                   labelStyle={{
                     color: colors.SECONDARY_TEXT,
-                    fontSize: RFValue(fonts.SMALL_SIZE + 1),
+                    fontSize: RFValue(fonts.SMALL_SIZE + 5),
                     fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     textTransform: 'uppercase',
                     textAlign: 'center'
