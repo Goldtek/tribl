@@ -1858,6 +1858,11 @@ export const GET_CHANNEL_CREATION_REQUEST = gql`
           firstName
           lastName
         }
+        creator {
+          id
+          firstName
+          lastName
+        }
         community {
           id
           name
