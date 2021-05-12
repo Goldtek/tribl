@@ -84,7 +84,7 @@ function DirectMessageTab(props: ScreenProp) {
         <GradientButton
           onPress={navigateToCreateNewGroupScreen}
           labelStyle={{
-            fontSize: RFValue(fonts.SMALL_SIZE + 2),
+            fontSize: RFValue(fonts.SMALL_SIZE + 1),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
             textTransform: 'none',
             color: colors.WHITE

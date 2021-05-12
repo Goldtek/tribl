@@ -581,9 +581,9 @@ export default function HomeScreen(props: ScreenProp) {
         <GradientButton
           onPress={navigateToCreateNewTribeScreen}
           labelStyle={{
-            fontSize: RFValue(fonts.SMALL_SIZE + 2),
+            fontSize: RFValue(fonts.SMALL_SIZE + 1),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            textTransform: 'capitalize',
+            textTransform: 'none',
             color: colors.WHITE
           }}
           gradientContainerstyle={{

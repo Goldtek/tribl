@@ -83,9 +83,9 @@ function ChannelsTab(props: ScreenProp) {
         <GradientButton
           onPress={navigateToCreateNewChannelScreen}
           labelStyle={{
-            fontSize: RFValue(fonts.SMALL_SIZE + 2),
+            fontSize: RFValue(fonts.SMALL_SIZE + 1),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            textTransform: 'capitalize',
+            textTransform: 'none',
             color: colors.WHITE
           }}
           gradientContainerstyle={{
