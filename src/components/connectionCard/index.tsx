@@ -113,7 +113,9 @@ function ConnectionCard(props: ConnectionCardProp) {
           >
             {currentLocation?.city
               ? `${currentLocation?.city}, ${currentLocation?.state}`
-              : `${currentLocation?.state}, ${currentLocation?.country}`}
+              : currentLocation?.country !== undefined
+              ? `${currentLocation?.state}, ${currentLocation?.country}`
+              : null}
           </Text>
           {citizenship?.length ? (
             <Title

@@ -139,7 +139,9 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
           >
             {currentLocation?.city
               ? `${currentLocation?.city}, ${currentLocation?.state}`
-              : `${currentLocation?.state}, ${currentLocation?.country}`}
+              : currentLocation?.country !== undefined
+              ? `${currentLocation?.state}, ${currentLocation?.country}`
+              : null}
           </Text>
           {citizenship?.length ? (
             <Title

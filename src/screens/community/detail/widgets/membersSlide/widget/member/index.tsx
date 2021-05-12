@@ -122,7 +122,9 @@ function Member(props: MemberProp) {
             >
               {location?.city
                 ? `${location?.city}, ${location?.state}`
-                : `${location?.state}, ${location?.country}`}
+                : location?.country !== undefined
+                ? `${location?.state}, ${location?.country}`
+                : null}
             </Text>
           )}
           {citizenship?.length ? (

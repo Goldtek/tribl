@@ -142,12 +142,12 @@ export default function PassportScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
-  const [
-    getConnectionRequest,
-    { data: connectionRequestData }
-  ] = useLazyQuery(GET_CONNECTION_REQUEST, {
-    variables: { input: { limit: PAGINATION_DEFAULT } }
-  });
+  const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
+    GET_CONNECTION_REQUEST,
+    {
+      variables: { input: { limit: PAGINATION_DEFAULT } }
+    }
+  );
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: 8 } }
@@ -709,7 +709,7 @@ export default function PassportScreen(props: ScreenProp) {
                     >
                       {`${currentLocation?.city}, ${currentLocation?.state}`}
                     </Paragraph>
-                  ) : (
+                  ) : currentLocation?.country !== undefined ? (
                     <Paragraph
                       style={{
                         fontFamily: fonts.WORK_SANS_REGULAR,
@@ -722,7 +722,7 @@ export default function PassportScreen(props: ScreenProp) {
                     >
                       {`${currentLocation?.state}, ${currentLocation?.country}`}
                     </Paragraph>
-                  )}
+                  ) : null}
                   {cache?.citizenship?.length ? (
                     <Title
                       style={{
