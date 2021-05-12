@@ -41,7 +41,7 @@ export default function WalletStatusScreen(props: ScreenProp) {
             marginTop: RFValue(150)
           }}
         >
-          Pending
+          Failed
         </Title>
         <Text
           style={{
@@ -53,8 +53,9 @@ export default function WalletStatusScreen(props: ScreenProp) {
             lineHeight: RFValue(19)
           }}
         >
-          Thanks for submitting your information. We are working to verify your
-          identity and will update you as soon as possible.
+          Sorry, we could not verify your identity with your current photos.
+          Please try again, making sure your identity document is fully visible
+          and readable and the photo is not too dark or too bright.
         </Text>
       </HeaderCover>
 
