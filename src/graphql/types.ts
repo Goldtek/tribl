@@ -390,6 +390,14 @@ export type CommunityCreationRequestInterface = {
   };
 };
 
+// USER CHANNEL CREATION REQUEST (RESPONSE) TYPE
+export type ChannelCreationRequestInterface = {
+  channelCreationRequests: {
+    data: CommunityInterface[];
+    metadata: QueryMetadata;
+  };
+};
+
 // COMMUNITY USER SINGLE PASSPORT (RESPONSE) TYPE
 export type UserPassportInterface = { singlePassport: PassportInterface };
 
