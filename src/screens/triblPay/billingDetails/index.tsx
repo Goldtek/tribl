@@ -17,10 +17,10 @@ import { ONBOARD_USER } from '../../../graphql/server/mutations';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import {
-  ContactContainer,
-  LabelContainer,
   HeaderCover,
-  InputContainer
+  LabelContainer,
+  InputContainer,
+  ContactContainer
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
