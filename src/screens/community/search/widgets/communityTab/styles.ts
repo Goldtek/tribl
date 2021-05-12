@@ -19,3 +19,14 @@ export const PopularContainer = styled.View`
   flex-direction: column;
   padding-top: ${RFValue(20)}px;
 `;
+
+export const RecommendedList = styled.View`
+  padding-top: ${RFValue(5)}px;
+`;
+
+export const RecommendedListHeader = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 15px;
+`;

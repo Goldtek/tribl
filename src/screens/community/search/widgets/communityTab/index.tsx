@@ -18,7 +18,8 @@ import RecommendedCommunity from '../../../../../components/recommendedCommunity
 import JoinCommunity from '../../../../../components/joinCommunity';
 import {
   GET_RECOMMENDED_COMMUNITIES,
-  GET_POPULAR_COMMUNITIES
+  GET_POPULAR_COMMUNITIES,
+  GET_TRENDING_CHANNELS
 } from '../../../../../graphql/server/query';
 import { PopularCommunitiesRequestInterface } from '../../../../../graphql/types';
 import PopularCommunitySkeleton from '../../../../../components/popularCommunitySkeleton';
@@ -26,9 +27,17 @@ import RecommendedCommunitySkeleton from '../../../../../components/recommendedC
 import ComingSoonCommunities from '../../../../../components/recommendedCommunity/comingSoon';
 import { PAGINATION_DEFAULT } from '../../../../../constants';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
+import MyChannel from '../../../../../components/channelCard';
+import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 
 // IMPORT FOR ALL CUSTOM STYLES
-import { Container, CommunityWrapper, PopularContainer } from './styles';
+import {
+  Container,
+  CommunityWrapper,
+  PopularContainer,
+  RecommendedList,
+  RecommendedListHeader
+} from './styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -54,6 +63,13 @@ function CommunityTabScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
   });
 
+  const { data: trendingChannelData } = useQuery(GET_TRENDING_CHANNELS, {
+    variables: {
+      input: { limit: PAGINATION_DEFAULT * (PAGINATION_DEFAULT / 2), skip: 0 }
+    }
+  });
+
+  const trendingChannels = trendingChannelData?.trendingChannels;
   const randomCommunity = communityData?.recommendedCommunities?.data[0];
   const popularCommunity = popularData?.popularCommunities;
   const sort = popularCommunity?.data;
@@ -96,6 +112,10 @@ function CommunityTabScreen(props: ScreenProp) {
     []
   );
 
+  const _renderMyChannelItem = ({ item }: { item: any }) => (
+    <MyChannel key={item.id} {...item.channel} />
+  );
+
   const _renderFooter = useCallback(
     () => (callOnScrollEnd ? <ActivityIndicator /> : null),
     [callOnScrollEnd]
@@ -112,6 +132,40 @@ function CommunityTabScreen(props: ScreenProp) {
       >
         <StatusBar translucent animated style="dark" />
         <Container>
+          {trendingChannels?.data?.length ? (
+            <RecommendedList
+              style={{
+                paddingBottom: RFValue(20)
+              }}
+            >
+              <RecommendedListHeader style={{ paddingLeft: 15 }}>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.LARGE_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize',
+                    lineHeight: 20,
+                    marginTop: 0,
+                    marginBottom: 0
+                  }}
+                >
+                  {t(`community.recommended.trendingChannel`)}
+                </Title>
+              </RecommendedListHeader>
+              <FlatList
+                data={trendingChannels.data}
+                horizontal={true}
+                renderItem={_renderMyChannelItem}
+                ListEmptyComponent={
+                  <RecommendedUserSkeleton skeletonSize={4} />
+                }
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(channel) => channel.id}
+                contentContainerStyle={{ paddingLeft: 15, marginTop: 20 }}
+              />
+            </RecommendedList>
+          ) : null}
           <Title
             style={{
               color: colors.PRIMARY_TEXT,
