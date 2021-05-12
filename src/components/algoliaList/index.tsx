@@ -49,7 +49,7 @@ const _defaultSeparator = ({ leadingItem }: any) => {
 };
 
 const _defaultRenderItem = ({ item }: { item: PassportInterface }) => (
-  <Highlight attribute="id" hit={item} key={item.id} />
+  <Highlight attribute="objectID" hit={item} key={item.id} />
 );
 
 function AlgoliaList(props: AlgoliaListProps) {

@@ -38,7 +38,7 @@ function AlgoliaList(props: any) {
   const _renderItem = useMemo(
     () => ({ item }: any) => (
       <HighLight
-        attribute="id"
+        attribute="objectID"
         hit={item}
         //@ts-ignore
         closeModal={closeModal}
