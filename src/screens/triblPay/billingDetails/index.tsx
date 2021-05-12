@@ -23,6 +23,7 @@ import { crashlytics } from '../../../firebase/config';
 import Countries from './widgets/bankCountry';
 import { Modalize } from 'react-native-modalize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import LocalStates from './widgets/localStates';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -33,8 +34,10 @@ export default function BillingDetailsScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const modalizeRef = useRef<Modalize>(null);
+  const modalizeStateRef = useRef<Modalize>(null);
 
   const openModal = () => modalizeRef.current?.open();
+  const openStateModal = () => modalizeStateRef.current?.open();
 
   const [billingDetails, setBillingDetails] = useState({
     addressLine: '',
@@ -43,6 +46,9 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     addressPostalCode: '',
     addressCountryCode: details.iso2
   });
+
+  const [isLocal, setIsLocal] = useState(false);
+
   const {
     addressLine,
     addressCity,
@@ -67,7 +73,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           addressCountryCode
         },
         jobId: job.id,
-        isLocal: true
+        isLocal
       }
     }
   });
@@ -193,6 +199,71 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               />
             </InputContainer>
 
+            <TouchableOpacity onPress={openModal}>
+              <InputContainer>
+                <LabelContainer>
+                  <Title
+                    style={{
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    Country code
+                  </Title>
+                </LabelContainer>
+
+                <TextInput
+                  value={addressCountryCode}
+                  disabled={true}
+                  style={{
+                    height: 30,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT,
+                    backgroundColor: colors.WHITE,
+                    borderColor: colors.PRIMARY,
+                    textTransform: 'capitalize',
+                    marginBottom: 10
+                  }}
+                />
+              </InputContainer>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={isLocal ? openStateModal : () => {}}>
+              <InputContainer>
+                <LabelContainer>
+                  <Title
+                    style={{
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    State
+                  </Title>
+                </LabelContainer>
+                <TextInput
+                  value={addressState}
+                  disabled={isLocal}
+                  onChangeText={(addressState: string) =>
+                    setBillingDetails({ ...billingDetails, addressState })
+                  }
+                  style={{
+                    height: 30,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT,
+                    backgroundColor: colors.WHITE,
+                    borderColor: colors.PRIMARY,
+                    textTransform: 'capitalize'
+                  }}
+                />
+              </InputContainer>
+            </TouchableOpacity>
+
             <InputContainer>
               <LabelContainer>
                 <Title
@@ -210,36 +281,6 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                 value={addressCity}
                 onChangeText={(addressCity: string) =>
                   setBillingDetails({ ...billingDetails, addressCity })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  State
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={addressState}
-                onChangeText={(addressState: string) =>
-                  setBillingDetails({ ...billingDetails, addressState })
                 }
                 style={{
                   height: 30,
@@ -282,38 +323,6 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                 }}
               />
             </InputContainer>
-
-            <TouchableOpacity onPress={openModal}>
-              <InputContainer>
-                <LabelContainer>
-                  <Title
-                    style={{
-                      fontFamily: fonts.WORK_SANS_BOLD,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
-                    }}
-                  >
-                    Country code
-                  </Title>
-                </LabelContainer>
-
-                <TextInput
-                  value={addressCountryCode}
-                  disabled={true}
-                  style={{
-                    height: 30,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT,
-                    backgroundColor: colors.WHITE,
-                    borderColor: colors.PRIMARY,
-                    textTransform: 'capitalize',
-                    marginBottom: 10
-                  }}
-                />
-              </InputContainer>
-            </TouchableOpacity>
           </ContactContainer>
 
           <GradientButton
@@ -335,6 +344,13 @@ export default function BillingDetailsScreen(props: ScreenProp) {
 
       <Countries
         modalizeRef={modalizeRef}
+        billingDetails={billingDetails}
+        setBillingDetails={setBillingDetails}
+        setIsLocal={setIsLocal}
+      />
+
+      <LocalStates
+        modalizeStateRef={modalizeStateRef}
         billingDetails={billingDetails}
         setBillingDetails={setBillingDetails}
       />
