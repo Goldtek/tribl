@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
 import FastImage from 'react-native-fast-image';
-import { Share, Platform, SafeAreaView } from 'react-native';
+import { Share, Platform, SafeAreaView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
@@ -500,6 +500,7 @@ export default function PassportScreen(props: ScreenProp) {
 
   const handleWalletAction = () => {
     const status = cache?.wallet?.status;
+    console.tron('cache', cache);
 
     if (status === 'ACTIVE') {
       return navigation.navigate('TriblPayScreen', {
@@ -516,20 +517,22 @@ export default function PassportScreen(props: ScreenProp) {
     if (status === 'IN_ACTIVE' || 'DEACTIVATED') {
       const updateFields = [];
       const { phoneNumber, email, lastName, firstName, dob } = cache;
-      if (phoneNumber === null) updateFields.push('phone');
-      if (email === null) updateFields.push('email');
-      if (lastName === null) updateFields.push('last name');
-      if (firstName === null) updateFields.push('first name');
-      if (dob === null) updateFields.push('dob');
+      if (phoneNumber === null || phoneNumber === '')
+        updateFields.push('phone');
+      if (email === null || email === '') updateFields.push('email');
+      if (lastName === null || lastName === '') updateFields.push('last name');
+      if (firstName === null || firstName === '')
+        updateFields.push('first name');
+      if (dob === null || dob === '') updateFields.push('dob');
 
       if (updateFields.length > 0) {
         return Alert.alert(
           'Update Profile',
           `Update ${
             updateFields.length > 1
-              ? updateFields.map((x) => `${x}, `)
+              ? updateFields.map((x) => ` ${x}`)
               : `${updateFields}`
-          } fields before you can proceed `,
+          } fields before you can proceed`,
           [
             {
               text: 'Cancel',
