@@ -26,7 +26,7 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function BillingDetailsScreen(props: ScreenProp) {
   const { navigation } = props;
-  const { job } = props.route.params;
+  const { job, details } = props.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [billingDetails, setBillingDetails] = useState({
@@ -34,7 +34,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     addressCity: '',
     addressState: '',
     addressPostalCode: '',
-    addressCountryCode: ''
+    addressCountryCode: details.name
   });
   const {
     addressLine,
