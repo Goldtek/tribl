@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Title, Paragraph } from 'react-native-paper';
+import { Button, Title, Paragraph } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { Mixpanel } from '../../config';
 import { useTranslation } from 'react-i18next';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../theme';
-import { DEVICE_FULL_WIDTH } from '../../utils/device';
 import { useNavigation } from '@react-navigation/native';
-import hexToRGB from '../../utils/hexToRGB';
 import {
   REQUEST_CONNECTION,
   BLOCK_REPORT_USER
@@ -216,7 +214,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             >
               {`${currentLocation?.city}, ${currentLocation?.state}`}
             </Paragraph>
-          ) : (
+          ) : currentLocation?.country !== undefined ? (
             <Paragraph
               numberOfLines={1}
               style={{
@@ -231,7 +229,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
             >
               {`${currentLocation?.state}, ${currentLocation?.country}`}
             </Paragraph>
-          )}
+          ) : null}
           {citizenship?.length ? (
             <Title
               style={{

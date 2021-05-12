@@ -127,7 +127,7 @@ export default function BlockedAccount(props: BlockedAccountProp) {
             >
               {`${city}, ${state}`}
             </Paragraph>
-          ) : (
+          ) : country !== undefined ? (
             <Paragraph
               style={{
                 fontSize: RFValue(fonts.LARGE_SIZE - 2),
@@ -139,7 +139,7 @@ export default function BlockedAccount(props: BlockedAccountProp) {
             >
               {`${state}, ${country}`}
             </Paragraph>
-          )}
+          ) : null}
           {citizenship?.length ? (
             <Title
               style={{

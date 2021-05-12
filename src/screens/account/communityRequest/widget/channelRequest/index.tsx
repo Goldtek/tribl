@@ -1,15 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { NavigationInterface } from '../../types';
+import { NavigationInterface } from '../../../../types';
 import { Title, Text, Divider } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlatList } from 'react-native';
 import SearchInput, { createFilter } from 'react-native-search-filter';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useQuery } from '@apollo/react-hooks';
-import { useThemeContext } from '../../../theme';
+import { useThemeContext } from '../../../../../theme';
 import ChannelRequestCard from './widget';
-import { GET_CHANNEL_CREATION_REQUEST } from '../../../graphql/server/query';
-import hexToRGB from '../../../utils/hexToRGB';
+import { GET_CHANNEL_CREATION_REQUEST } from '../../../../../graphql/server/query';
+import hexToRGB from '../../../../../utils/hexToRGB';
 
 import { Container, TitleCover } from './styles';
 
@@ -24,26 +24,15 @@ export default function NewChannelRequestScreen(
 
   const [search, setSearch] = useState({ searchTerm: '' });
 
-  const { data: requestData, refetch } = useQuery(
-    GET_CHANNEL_CREATION_REQUEST,
-    {
-      variables: {
-        input: {
-          filter: {
-            communityId
-          }
-        }
-      }
-    }
-  );
+  const { data: requestData, refetch } = useQuery(GET_CHANNEL_CREATION_REQUEST);
 
   const channelRequest = requestData?.channelCreationRequests?.data;
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const KeysToFilter = [
-    'creator.firstName',
-    'creator.lastName',
+    'moderators.firstName',
+    'moderators.lastName',
     'name',
     'community.name'
   ];
@@ -60,7 +49,7 @@ export default function NewChannelRequestScreen(
         name={item.name}
         firstName={item.creator?.firstName}
         lastName={item.creator?.lastName}
-        avatar={item.community?.avatar}
+        avatar={item.community.avatar}
         refetch={refetch}
         userId={item.creator?.id}
         {...item}

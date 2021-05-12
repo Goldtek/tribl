@@ -88,7 +88,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
   const _renderItem = ({ item }: any) => (
     <GroupMemberCard
       {...item}
-      attribute="id"
+      attribute="objectID"
       key={item.id}
       handleSelect={handleSelect}
       selected={Boolean(group[item.id])}

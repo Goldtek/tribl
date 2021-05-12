@@ -191,10 +191,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
 
   const nearbyMembers = filterUnblockedCommunityNearbyMembers?.length
     ? filterUnblockedCommunityNearbyMembers
-    : filterUnblockedParticiant?.length
-    ? filterUnblockedParticiant
-    : filterUnblockedNearbyMebers;
-
+    : [];
   const handleJoinCommunity = () => {
     setState({
       ...state,
@@ -434,31 +431,37 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
           </Fragment>
           <Card style={{ marginTop: RFValue(5) }}>
             <Card.Content style={{ paddingLeft: 0 }}>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize',
-                  marginTop: 0,
-                  marginBottom: 0,
-                  paddingLeft: 15
-                }}
-              >
-                {t(`community.tabPanel.nearby`)}
-              </Title>
+              {nearbyMembers?.length ? (
+                <Fragment>
+                  <Title
+                    style={{
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize',
+                      marginTop: 0,
+                      marginBottom: 0,
+                      paddingLeft: 15
+                    }}
+                  >
+                    {t(`community.tabPanel.nearby`)}
+                  </Title>
 
-              <FlatList
-                data={nearbyMembers}
-                horizontal={true}
-                renderItem={_renderRecommendedMember}
-                ListEmptyComponent={
-                  <RecommendedUserSkeleton skeletonSize={4} />
-                }
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ marginTop: 5, paddingHorizontal: 15 }}
-              />
-
+                  <FlatList
+                    data={nearbyMembers}
+                    horizontal={true}
+                    renderItem={_renderRecommendedMember}
+                    ListEmptyComponent={
+                      <RecommendedUserSkeleton skeletonSize={4} />
+                    }
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{
+                      marginTop: 5,
+                      paddingHorizontal: 15
+                    }}
+                  />
+                </Fragment>
+              ) : null}
               {!isPrivate ? (
                 <Fragment>
                   <Title

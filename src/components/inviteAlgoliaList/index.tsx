@@ -24,7 +24,7 @@ function AlgoliaList(props: AlgoliaListProps) {
   const { hits, hasMore, refineNext } = props;
 
   const _defaultRenderItem = ({ item }: { item: PassportInterface }) => {
-    return <Highlight attribute="id" hit={item} key={item.id} />;
+    return <Highlight attribute="objectID" hit={item} key={item.id} />;
   };
 
   const Results = connectStateResults(({ searchState }: any) => (

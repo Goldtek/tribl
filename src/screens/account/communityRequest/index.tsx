@@ -21,7 +21,8 @@ import { FontAwesome, Feather } from '@expo/vector-icons';
 import {
   GET_TRIBE_INVITES,
   GET_COMMUNITY_CREATION_REQUEST,
-  GET_USER_PASSPORT
+  GET_USER_PASSPORT,
+  GET_CHANNEL_CREATION_REQUEST
 } from '../../../graphql/server/query';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import {
@@ -32,7 +33,8 @@ import {
   ShowSideMenu,
   ShowConnectionNotificationBadge,
   CommunityInviteInterface,
-  CommunityCreationRequestInterface
+  CommunityCreationRequestInterface,
+  ChannelCreationRequestInterface
 } from '../../../graphql/types';
 import { TOGGLE_SIDE_MENU } from '../../../graphql/cache/mutations';
 import { useThemeContext } from '../../../theme';
@@ -42,6 +44,7 @@ import hexToRGB from '../../../utils/hexToRGB';
 import Header from '../../../components/header';
 import TribeCreationRequestCard from './widget/tribeCreationRequest';
 import TribeInviteCard from './widget/tribeInvite';
+import ChannelCreationRequestCard from './widget/channelRequest';
 import GradientButton from '../../../components/gradientButton';
 import Skeleton from './widget/tribeRequestSkeleton';
 
@@ -60,7 +63,14 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
   const [refreshing, setRefreshing] = useState(false);
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
   const [requestRefreshing, setRequestRefreshing] = useState(false);
+  const [channelRequestRefreshing, setChannelRequestRefreshing] = useState(
+    false
+  );
   const [requestCallOnScrollEnd, setRequestCallOnScrollEnd] = useState(false);
+  const [
+    channelRequestCallOnScrollEnd,
+    setChannelRequestCallOnScrollEnd
+  ] = useState(false);
 
   const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
@@ -99,10 +109,20 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     }
   );
 
+  // const {
+  //   data: channelRequestData,
+  //   refetch: channelRequestRefetch,
+  //   fetchMore: channelRequestFetchMore
+  // } = useQuery<ChannelCreationRequestInterface>(GET_CHANNEL_CREATION_REQUEST, {
+  //   variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
+  // });
+
   const { data: userData } = useQuery(GET_USER_PASSPORT);
 
   const tribeInvites = inviteData?.communityInvites;
   const tribeRequest = requestData?.communityCreationRequests;
+  // const channelRequest = channelRequestData?.channelCreationRequests;
+
   const userDetails = userData?.myPassport;
   const blockedUsers = userDetails?.privacy?.blocked;
   const moderator = userDetails?.isAdmin;
@@ -113,6 +133,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     });
   });
   const filteredRequest = tribeRequest?.data;
+  // const filteredChannelRequest = channelRequest?.data;
 
   const _renderFooter = useCallback(
     () => (callOnScrollEnd ? <ActivityIndicator /> : null),
@@ -128,6 +149,16 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
       setRefreshing(false);
     }
   };
+
+  // const handleChannelRequestRefresh = async () => {
+  //   try {
+  //     setChannelRequestRefreshing(true);
+  //     await channelRequestRefetch();
+  //     setChannelRequestRefreshing(false);
+  //   } catch (error) {
+  //     setChannelRequestRefreshing(false);
+  //   }
+  // };
 
   const handleRequestRefresh = async () => {
     try {
@@ -195,6 +226,34 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     });
   };
 
+  // const handleChannelRequestEndReach = async () => {
+  //   if (!channelRequestCallOnScrollEnd) return;
+
+  //   channelRequestFetchMore({
+  //     variables: {
+  //       input: {
+  //         skip: filteredChannelRequest?.length,
+  //         limit: PAGINATION_DEFAULT
+  //       }
+  //     },
+  //     updateQuery: (prev, { fetchMoreResult }) => {
+  //       setChannelRequestCallOnScrollEnd(false);
+
+  //       if (!fetchMoreResult) return prev;
+
+  //       return Object.assign({}, prev, {
+  //         channelCreationRequests: {
+  //           ...prev?.channelCreationRequests,
+  //           data: [
+  //             ...prev?.channelCreationRequests.data,
+  //             ...fetchMoreResult?.channelCreationRequests.data
+  //           ]
+  //         }
+  //       });
+  //     }
+  //   });
+  // };
+
   const _renderCommunityInviteCard = useMemo(
     () => ({ item }: { item: any }) => (
       <TribeInviteCard
@@ -228,6 +287,23 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     ),
     []
   );
+
+  // const _renderRequestTribe = useMemo(
+  //   () => ({ item }: { item: any }) => (
+  //     <ChannelCreationRequestCard
+  //       key={item.id}
+  //       id={item.id}
+  //       name={item.name}
+  //       firstName={item.creator?.firstName}
+  //       lastName={item.creator?.lastName}
+  //       avatar={item.community.avatar}
+  //       refetch={channelRequestRefetch}
+  //       userId={item.creator?.id}
+  //       {...item}
+  //     />
+  //   ),
+  //   []
+  // );
 
   useEffect(() => {
     tagScreenName('TribeRequestScreen');
@@ -359,6 +435,52 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
             )}
           </Fragment>
         ) : (
+          // moderator ? (
+          //   <Fragment>
+          //     {filteredChannelRequest ? (
+          //       <FlatList
+          //         data={filteredChannelRequest}
+          //         refreshing={channelRequestRefreshing}
+          //         onRefresh={handleChannelRequestRefresh}
+          //         ListFooterComponent={_renderFooter}
+          //         onEndReachedThreshold={0.5}
+          //         onEndReached={() => {
+          //           if (
+          //             channelRequest &&
+          //             channelRequest?.metadata?.totalCount >
+          //               filteredChannelRequest?.length
+          //           ) {
+          //             setChannelRequestCallOnScrollEnd(true);
+          //           }
+          //         }}
+          //         onMomentumScrollEnd={handleChannelRequestEndReach}
+          //         contentContainerStyle={{
+          //           flexGrow: 1,
+          //           marginTop: RFValue(10),
+          //           paddingBottom: RFValue(60)
+          //         }}
+          //         ListEmptyComponent={
+          //           <Text
+          //             style={{
+          //               fontSize: RFValue(fonts.LARGE_SIZE),
+          //               fontFamily: fonts.WORK_SANS_BOLD,
+          //               margin: RFValue(20),
+          //               textAlign: 'center'
+          //             }}
+          //           >
+          //             You currently don't have any channel request
+          //           </Text>
+          //         }
+          //         showsVerticalScrollIndicator={false}
+          //         renderItem={_renderRequestTribe}
+          //         keyExtractor={({ id }) => id}
+          //       />
+          //     ) : (
+          //       <Skeleton />
+          //     )}
+          //   </Fragment>
+          // )
+          // :
           <Fragment>
             {filteredInvite ? (
               <FlatList

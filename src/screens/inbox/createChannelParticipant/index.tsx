@@ -124,7 +124,7 @@ export default function NewChannelParticipants(props: ScreenProp) {
   const _renderItem = ({ item }: any) => (
     <TribeMembersMemberCard
       {...item}
-      attribute="id"
+      attribute="objectID"
       key={item.id}
       handleSelect={handleSelect}
       selected={Boolean(tribeMembers[item.id])}

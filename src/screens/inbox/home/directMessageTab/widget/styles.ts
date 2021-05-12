@@ -79,3 +79,8 @@ export const GroupImageContainer = styled.View`
   overflow: hidden;
   background-color: ${({ theme }) => theme.colors.INACTIVE};
 `;
+
+export const LeftCover = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;

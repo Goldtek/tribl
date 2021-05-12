@@ -183,7 +183,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
     return (
       <GroupMemberCard
         {...item}
-        attribute="id"
+        attribute="objectID"
         key={item.id}
         handleSelect={handleSelect}
         selected={Boolean(group[item.id])}
