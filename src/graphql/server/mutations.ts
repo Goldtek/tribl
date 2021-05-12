@@ -315,13 +315,13 @@ export const ONBOARD_USER = gql`
     onBoardUser(input: $payload) {
       status
       tags
-      optional {
-        tags
+      required{
         message
+        tags
       }
-      required {
-        tags
+      optional{
         message
+        tags
       }
     }
   }
