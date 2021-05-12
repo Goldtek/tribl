@@ -38,12 +38,12 @@ export default function NewChannelRequestScreen(
   );
 
   const channelRequest = requestData?.channelCreationRequests?.data;
-  
+
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const KeysToFilter = [
-    'moderators.firstName',
-    'moderators.lastName',
+    'creator.firstName',
+    'creator.lastName',
     'name',
     'community.name'
   ];
@@ -58,11 +58,11 @@ export default function NewChannelRequestScreen(
         key={item.id}
         id={item.id}
         name={item.name}
-        firstName={item.moderators[0]?.firstName}
-        lastName={item.moderators[0]?.lastName}
-        avatar={item.community.avatar}
+        firstName={item.creator?.firstName}
+        lastName={item.creator?.lastName}
+        avatar={item.community?.avatar}
         refetch={refetch}
-        userId={item.moderators[0]?.id}
+        userId={item.creator?.id}
         {...item}
       />
     ),
