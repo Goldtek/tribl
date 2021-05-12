@@ -24,7 +24,7 @@ export default function MyChannel(props: MyChannelProp) {
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
       screen: 'DeepLinkChannelChatScreen',
-      params: { channelId: id, title: `#${name}`, moderators, isPrivate }
+      params: { channelId: id, title: `${name}`, moderators, isPrivate }
     });
   };
 
@@ -57,7 +57,7 @@ export default function MyChannel(props: MyChannelProp) {
                 textTransform: 'capitalize'
               }}
             >
-              #{name.length < 10 ? name : `${name.substr(0, 10)}...`}
+              {name.length < 10 ? name : `${name.substr(0, 10)}...`}
             </Text>
           </LeftCover>
           {/* <RightCover>

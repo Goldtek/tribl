@@ -5,11 +5,11 @@ import {
   DefaultUserType,
   MessageSimpleProps,
   DefaultChannelType,
-  DefaultAttachmentType,
-  MarkdownStyle
+  DefaultAttachmentType
 } from 'stream-chat-expo';
-import { Alert, View, Text } from 'react-native';
+import { Alert } from 'react-native';
 import { Title } from 'react-native-paper';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { logEvent } from '../../utils/uxcamHelper';
 import Dayjs from 'dayjs';
 import { Mixpanel } from '../../config';
@@ -25,6 +25,7 @@ import CustomGiphy from '../customGiphy';
 import { useThemeContext } from '../../theme';
 import { CustomUrlPreview } from '../customUrlPreview';
 import { getSupportedReactions } from '../../utils/supportedReactions';
+import makeMarkDownRules from '../../utils/markDownRules';
 
 import {
   Time,
@@ -34,9 +35,6 @@ import {
   MessageHeader,
   AvatarContainer
 } from './styles';
-import SimpleMarkdown from 'simple-markdown';
-import { head, includes, map } from 'lodash';
-import { RFValue } from 'react-native-responsive-fontsize';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -198,99 +196,14 @@ function CustomChannelMessage(props: MessageProps) {
   };
 
   const MessageTextWithName = (props: any) => {
-    const styles: MarkdownStyle = {};
     const markdownStyles = props.theme
       ? {
           ...props.theme.message.content.markdown,
           mentions: { color: colors.PRIMARY }
         }
       : {};
-    const markdownRules = props.theme
-      ? {
-          ...props.theme.message.content.markdown,
-          heading: {
-            match: SimpleMarkdown.blockRegex(
-              /^ *(##{1,6}) *([^\n]+?) *#* *(?:\n *)+/
-            )
-          },
-          list: {
-            react: function (node: any, output: any, { ...state }) {
-              var numberIndex = 1;
-              var items = map(node.items, function (item, i) {
-                var bullet;
-                state.withinList = false;
 
-                if (node.ordered) {
-                  bullet = React.createElement(
-                    Text,
-                    { key: 0, style: styles.listItemNumber },
-                    numberIndex + '. '
-                  );
-                } else {
-                  bullet = React.createElement(
-                    Text,
-                    { key: 0, style: styles.listItemBullet },
-                    '\u2022 '
-                  );
-                }
-
-                if (item.length > 1) {
-                  if (item[1].type == 'list') {
-                    state.withinList = true;
-                  }
-                }
-
-                var content = output(item, state);
-                var listItem;
-                if (
-                  includes(
-                    ['text', 'paragraph', 'strong'],
-                    (((head(item) as unknown) as any) || {}).type
-                  ) &&
-                  state.withinList == false
-                ) {
-                  state.withinList = true;
-                  listItem = React.createElement(
-                    Text,
-                    {
-                      style: [styles.listItemText, { marginBottom: 0 }],
-                      key: 1
-                    },
-                    content
-                  );
-                } else {
-                  listItem = React.createElement(
-                    View,
-                    {
-                      style: styles.listItemText,
-                      key: 1
-                    },
-                    content
-                  );
-                }
-                state.withinList = false;
-                numberIndex++;
-
-                return React.createElement(
-                  Text,
-                  {
-                    key: i,
-                    style: styles.listRow
-                  },
-                  [bullet, listItem]
-                );
-              });
-
-              return React.createElement(
-                View,
-                { key: state.key, style: styles.list },
-                items
-              );
-            }
-          }
-        }
-      : {};
-
+    const markdownRules = makeMarkDownRules(props);
     const createdAt = new Date(props.message.created_at);
     const updatedAt = new Date(props.message.updated_at);
     const updated = updatedAt.getTime() > createdAt.getTime();

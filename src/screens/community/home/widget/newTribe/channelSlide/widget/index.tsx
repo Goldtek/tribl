@@ -31,7 +31,7 @@ export default function ChannelCard(props: ChannelCardProp) {
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
       screen: 'DeepLinkChannelChatScreen',
-      params: { title: `#${name}`, channelId: id, moderators, isPrivate }
+      params: { title: `${name}`, channelId: id, moderators, isPrivate }
     });
   };
 
@@ -57,7 +57,7 @@ export default function ChannelCard(props: ChannelCardProp) {
               color: colors.PRIMARY_TEXT
             }}
           >
-            #{name}
+            {name}
           </Paragraph>
           {/* <Text numberOfLines={1}>
             <Text style={{ fontFamily: fonts.WORK_SANS_SEMI_BOLD }}>

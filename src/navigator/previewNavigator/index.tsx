@@ -15,18 +15,19 @@ export default function GetStartedNavigator() {
   return (
     <PreviewStack.Navigator
       headerMode="screen"
-      screenOptions={{ headerStyle: { height: RFValue(90) } }}
+      screenOptions={{ headerStyle: { height: RFValue(80) } }}
     >
       <PreviewStack.Screen
         name="PreviewScreen"
         options={{
           headerShown: true,
+          headerLeft: () => null,
           headerTitle: () => (
             <Image
               source={require('../../../assets/images/logo.png')}
               style={{
-                width: RFValue(50),
-                height: RFValue(50),
+                width: RFValue(40),
+                height: RFValue(40),
                 resizeMode: 'contain'
               }}
             />

@@ -1,42 +1,38 @@
 import ENVIRONMENT_VARIABLES from '../config';
-
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${ENVIRONMENT_VARIABLES.CLOUDINARY_NAME}/image/upload`;
 
 export interface CloudinaryUploadType {
   uri: string;
-  mime: string;
-  filename?: string;
+  mime: 'image' | 'video' | undefined;
   cropRect?: { width: number; height: number } | null;
 }
 
 export interface CloudinaryResponseType {
-  asset_id: string;
-  public_id: string;
-  version: number;
-  version_id: string;
-  signature: string;
-  width: number;
-  height: number;
-  format: string;
-  resource_type: string;
-  created_at: Date;
-  tags: string[];
-  bytes: number;
+  url: string;
   type: string;
   etag: string;
-  placeholder: boolean;
-  url: string;
+  bytes: number;
+  width: number;
+  height: number;
+  tags: string[];
+  format: string;
+  version: number;
+  asset_id: string;
+  created_at: Date;
+  public_id: string;
+  signature: string;
+  version_id: string;
   secure_url: string;
   access_mode: string;
+  placeholder: boolean;
+  resource_type: string;
 }
 
 const cloudinaryUpload = async (payload: CloudinaryUploadType) => {
-  const { uri, mime, filename, cropRect } = payload;
-
+  const { uri, mime, cropRect } = payload;
   const data = new FormData();
   data.append('file', uri);
-  data.append('mimetype', mime);
-  data.append('name', `${filename}`);
+  data.append('mimetype', `${mime!!}`);
   data.append('width', String(cropRect?.width));
   data.append('height', String(cropRect?.height));
   data.append('upload_preset', ENVIRONMENT_VARIABLES.CLOUDINARY_PRESET);

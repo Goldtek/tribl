@@ -4,9 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
 import FastImage from 'react-native-fast-image';
-import { Share, SafeAreaView } from 'react-native';
-import ImageResizer from 'react-native-image-resizer';
-import ImagePicker, { Image } from 'react-native-image-crop-picker';
+import { Share, Platform, SafeAreaView } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
 // @ts-ignore
@@ -96,6 +95,7 @@ export default function PassportScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [update, setUpdate] = useState(true);
+  const [triblPay, setTriblPay] = useState(false);
 
   const selectedCountries = props?.route?.params?.selectedCountries;
 
@@ -113,9 +113,9 @@ export default function PassportScreen(props: ScreenProp) {
   const [avatar, setAvatar] = useState<StateType>({
     uri: cache?.avatar,
     secure_url: '',
+    loading: false,
     formData: null,
-    imageData: { uri: '', mime: '', filename: '', cropRect: null },
-    loading: false
+    imageData: { uri: '', mime: undefined, cropRect: null }
   });
 
   const { data: userData, refetch } = useQuery<MyPassportInterface>(
@@ -280,6 +280,20 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     if (!userDetails) getCacheData();
+
+    const grantMediaPermission = async () => {
+      if (Platform.OS !== 'web') {
+        // @ts-ignore
+        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permission.granted) {
+          Alert.alert(
+            'Sorry, we need camera roll permissions to make this work!'
+          );
+        }
+      }
+    };
+
+    grantMediaPermission();
   }, []);
 
   useEffect(() => {
@@ -496,50 +510,24 @@ export default function PassportScreen(props: ScreenProp) {
 
   const handleAvatar = async () => {
     try {
-      let divider = 1;
-
-      const { size, height, width, path } = (await ImagePicker.openPicker({
-        cropping: false,
-        mediaType: 'photo'
-      })) as Image;
-
-      if (size > 900000) divider = size / 900000;
-
-      const { uri: resizedImage } = await ImageResizer.createResizedImage(
-        path,
-        width / divider,
-        height / divider,
-        'JPEG',
-        100,
-        0,
-        undefined
-      );
-
-      const { mime, data, filename, cropRect } = await ImagePicker.openCropper({
-        path: resizedImage,
-        cropping: true,
-        mediaType: 'photo',
-        includeBase64: true,
-        width: RFValue(200),
-        height: RFValue(200),
-        compressImageMaxWidth: RFValue(200),
-        compressImageMaxHeight: RFValue(200),
-        cropperStatusBarColor: colors.STATUS_BAR_COLOR,
-        cropperCircleOverlay: true,
-        freeStyleCropEnabled: true
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+        base64: true
       });
 
-      const uri = `data:${mime};base64,${data}`;
-      const imageData = { mime, filename, cropRect, uri };
+      if (result.cancelled) return;
+      const { type, width, height, base64 } = result;
+      const uri = `data:${type}/jpg;base64,${base64}`;
+      const imageData = { uri, mime: type, cropRect: { width, height } };
       setAvatar({ ...avatar, uri, imageData });
-      ImagePicker.clean();
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
   };
-
-  const [triblPay, setTriblPay] = useState(false);
 
   const handleActivateWallet = () => {
     navigation.navigate('TriblPayScreen', {

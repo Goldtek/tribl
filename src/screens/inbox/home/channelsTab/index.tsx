@@ -7,6 +7,9 @@ import { ChannelList, Chat, DefaultCommandType } from 'stream-chat-expo';
 import CustomChannelPreview from './widget';
 import { NavigationInterface } from '../../../types';
 import { tagScreenName } from '../../../../utils/uxcamHelper';
+import EmptyMessageState from '../../../../components/emptyMessageState';
+import LoadingIndicatorState from '../../../../components/loadingIndicatorState';
+import LoadingErrorIndicator from '../../../../components/loadingErrorIndicatorState';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -70,6 +73,9 @@ function ChannelsTab(props: ScreenProp) {
           filters={filters}
           options={options}
           Preview={CustomChannelPreview}
+          EmptyStateIndicator={EmptyMessageState}
+          LoadingIndicator={LoadingIndicatorState}
+          LoadingErrorIndicator={LoadingErrorIndicator}
           additionalFlatListProps={{ showsVerticalScrollIndicator: false }}
         />
       </Container>
@@ -77,14 +83,14 @@ function ChannelsTab(props: ScreenProp) {
         <GradientButton
           onPress={navigateToCreateNewChannelScreen}
           labelStyle={{
-            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            fontSize: RFValue(fonts.SMALL_SIZE + 1),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            textTransform: 'capitalize',
+            textTransform: 'none',
             color: colors.WHITE
           }}
           gradientContainerstyle={{
             height: RFValue(30),
-            width: RFPercentage(30),
+            width: RFPercentage(25),
             borderRadius: RFValue(15)
           }}
           contentStyle={{
@@ -97,7 +103,7 @@ function ChannelsTab(props: ScreenProp) {
             borderRadius: RFValue(15)
           }}
         >
-          {t(`community.chat.createNewChannel`)}
+          + {t(`community.chat.createNewChannel`)}
         </GradientButton>
       </ButtonWrapper>
     </Chat>

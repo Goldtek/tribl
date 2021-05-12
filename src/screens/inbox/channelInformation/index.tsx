@@ -164,7 +164,7 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
               textTransform: 'capitalize'
             }}
           >
-            {`#${channel.data?.name}`}
+            {`${channel.data?.name}`}
           </Text>
           <Paragraph
             style={{

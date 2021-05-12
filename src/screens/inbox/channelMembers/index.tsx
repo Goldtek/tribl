@@ -22,6 +22,7 @@ import { Mixpanel } from '../../../config';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStreamContext } from '../../../stream';
 import hexToRGB from '../../../utils/hexToRGB';
+import { useIsFocused } from '@react-navigation/core';
 
 // DEFINE SCREEN PROP TYPES
 interface ChannelMembersProp {
@@ -30,8 +31,8 @@ interface ChannelMembersProp {
 
 export default function ChannelMembers(props: ChannelMembersProp) {
   const { colors, fonts } = useThemeContext();
-
   const { channel } = useStreamContext();
+  const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState({ searchTerm: '' });
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
@@ -50,15 +51,15 @@ export default function ChannelMembers(props: ChannelMembersProp) {
       info: `User Views Channel Members`,
       'Activity Screen': 'Channel Screen'
     });
-  }, []);
+
+    if (isFocused) refetch();
+  }, [isFocused]);
 
   const channelMembers = channelData?.channelMembers;
 
   const filterMembers = removeDuplicateMembers(channelMembers?.data?.slice());
-  const filteredUsers = filterMembers?.filter(function (users) {
-    return !blockedUsers?.some(function (userTwo: any) {
-      return users.id == userTwo.id;
-    });
+  const filteredUsers = filterMembers?.filter((users) => {
+    return !blockedUsers?.some((userTwo: any) => users.id == userTwo.id);
   });
 
   const handleRefresh = async () => {
