@@ -9,6 +9,7 @@ import {
   MarkdownStyle
 } from 'stream-chat-expo';
 import { Alert, View, Text } from 'react-native';
+import { Title } from 'react-native-paper';
 import { logEvent } from '../../utils/uxcamHelper';
 import Dayjs from 'dayjs';
 import { Mixpanel } from '../../config';
@@ -35,6 +36,7 @@ import {
 } from './styles';
 import SimpleMarkdown from 'simple-markdown';
 import { head, includes, map } from 'lodash';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 // DEFINE SCREEN PROP TYPES
 type MessageProps = MessageSimpleProps<
@@ -51,7 +53,7 @@ let lastTap = 0;
 
 function CustomChannelMessage(props: MessageProps) {
   const navigation = useNavigation();
-  const { colors } = useThemeContext();
+  const { colors, fonts } = useThemeContext();
   const { channel, activityScreen } = useStreamContext();
 
   const visible =
@@ -70,6 +72,9 @@ function CustomChannelMessage(props: MessageProps) {
       });
     }
   };
+
+  //@ts-ignore
+  const citizenship = JSON.parse(props?.message?.user?.citizenship || []);
 
   const handleDelete = async () => {
     setTimeout(
@@ -321,6 +326,18 @@ function CustomChannelMessage(props: MessageProps) {
         alignment={avatarProps.alignment}
       >
         <MessageAvatar {...avatarProps} />
+        {citizenship?.length &&
+        props.message?.user?.id !== chatClient?.user?.id ? (
+          <Title
+            style={{
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              lineHeight: RFValue(18),
+              marginLeft: RFValue(5)
+            }}
+          >
+            {citizenship?.map((country: any) => country.flag)}
+          </Title>
+        ) : null}
       </AvatarContainer>
     ),
     [data]

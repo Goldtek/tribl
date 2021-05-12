@@ -35,7 +35,8 @@ import {
   DetailsBottom,
   StyledMessage,
   GroupImageContainer,
-  NotificationContainer
+  NotificationContainer,
+  LeftCover
 } from './styles';
 
 export default function CustomDirectMessagePreview(
@@ -62,7 +63,7 @@ export default function CustomDirectMessagePreview(
   // }
 
   const navigation = useNavigation();
-  const { colors } = useThemeContext();
+  const { colors, fonts } = useThemeContext();
   const { setChannel } = useStreamContext();
   const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
@@ -144,6 +145,11 @@ export default function CustomDirectMessagePreview(
     });
     setChannel(channel as any);
   };
+
+  //@ts-ignore
+  const citizenship = channelDetails?.citizenship?.length
+    ? JSON.parse(channelDetails?.citizenship)
+    : [];
 
   return (
     <Swipeable
@@ -273,9 +279,22 @@ export default function CustomDirectMessagePreview(
 
           <Details ref={hideSensitiveView}>
             <DetailsTop>
-              <Title ellipsizeMode="tail" numberOfLines={1}>
-                {channelDetails?.name}
-              </Title>
+              <LeftCover>
+                <Title ellipsizeMode="tail" numberOfLines={1}>
+                  {channelDetails?.name}
+                </Title>
+                {citizenship?.length ? (
+                  <Title
+                    style={{
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      lineHeight: RFValue(18),
+                      marginLeft: RFValue(5)
+                    }}
+                  >
+                    {citizenship?.map((country: any) => country.flag)}
+                  </Title>
+                ) : null}
+              </LeftCover>
               <Date>
                 {formatLatestMessageDate && latestMessageDate
                   ? formatLatestMessageDate(latestMessageDate)
