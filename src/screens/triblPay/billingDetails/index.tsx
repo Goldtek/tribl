@@ -91,10 +91,13 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     if (countWords(addressState) || addressState.trim() === 'Select')
       return alert('State field is compulsory');
     if (countWords(addressCity)) return alert('City field is compulsory');
+
     try {
       const { data } = await verifyKyc();
-
-      if (data) {
+      if (data.onBoardUser.status === 'APPROVED') {
+        navigation.navigate('ActivateWalletScreen', {});
+      }
+      if (data.onBoardUser.status === 'FAILED') {
         navigation.navigate('WalletStatusScreen', {});
       }
     } catch (error) {
