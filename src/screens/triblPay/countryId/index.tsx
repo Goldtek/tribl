@@ -48,7 +48,6 @@ export default function CountryIdScreen(props: ScreenProp) {
   const { details, userDetails } = props.route.params;
 
   useEffect(() => {
-    console.tron('userDetails', props);
     // assume all iOS users except permissions
     if (Platform.OS === 'ios') {
       setPermissions(true);
@@ -227,33 +226,34 @@ export default function CountryIdScreen(props: ScreenProp) {
         )}
       </View>
 
-      {/* {job ? ( */}
-      <GradientButton
-        // onPress={
-        //   job
-        //     ? job.result.success || job.errors
-        //       ? rescan
-        //       : handleNavigation
-        //     : undefined
-        // }
-        onPress={handleNavigation}
-        style={{ height: 50 }}
-        gradientContainerstyle={{
-          height: 50,
-          marginBottom: RFValue(30),
-          marginHorizontal: RFValue(15)
-        }}
-        contentStyle={{ height: 50 }}
-      >
-        {job
+      {job ? (
+        <GradientButton
+          // onPress={
+          //   job
+          //     ? job.result.success || job.errors
+          //       ? rescan
+          //       : handleNavigation
+          //     : undefined
+          // }
+          onPress={handleNavigation}
+          style={{ height: 50 }}
+          gradientContainerstyle={{
+            height: 50,
+            marginBottom: RFValue(30),
+            marginHorizontal: RFValue(15)
+          }}
+          contentStyle={{ height: 50 }}
+        >
+          {/* {job
           ? job.result.success || job.errors
             ? 'Rescan document'
             : 'submit'
-          : null}
-      </GradientButton>
-      {/* ) : (
+          : null} */}
+          Proceed
+        </GradientButton>
+      ) : (
         <View style={{ height: 100 }}></View>
-      )} */}
+      )}
     </Container>
   );
 }
