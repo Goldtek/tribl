@@ -186,11 +186,12 @@ export default function CountryIdScreen(props: ScreenProp) {
                 try {
                   setMessage('Processing...');
                   const job = await session.postFrontId(cardDetectionResult);
-                  setMessage(
-                    job.result.success || job.errors
-                      ? 'Document Processing failed, rescan'
-                      : 'Please continue to next step'
-                  );
+                  // setMessage(
+                  //   job.result.success || job.errors
+                  //     ? 'Document Processing failed, rescan'
+                  //     : 'Please continue to next step'
+                  // );
+                  setMessage('Please continue to next step');
                   setDocument(cardDetectionResult);
                   setJob(job);
                 } catch (e) {
