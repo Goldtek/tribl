@@ -141,12 +141,12 @@ export default function PassportScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
-  const [
-    getConnectionRequest,
-    { data: connectionRequestData }
-  ] = useLazyQuery(GET_CONNECTION_REQUEST, {
-    variables: { input: { limit: PAGINATION_DEFAULT } }
-  });
+  const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
+    GET_CONNECTION_REQUEST,
+    {
+      variables: { input: { limit: PAGINATION_DEFAULT } }
+    }
+  );
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: 8 } }
@@ -511,47 +511,57 @@ export default function PassportScreen(props: ScreenProp) {
   const [triblPay, setTriblPay] = useState(false);
   const [emptyFields, setEmptyFields] = useState<[]>([]);
 
-  const handleActivateWallet = () => {
-    const updateFields = [];
-    const { phoneNumber, email, lastName, firstName, dob } = cache;
-    if (phoneNumber === null) updateFields.push('phone');
-    if (email === null) updateFields.push('email');
-    if (lastName === null) updateFields.push('last name');
-    if (firstName === null) updateFields.push('first name');
-    if (dob === null) updateFields.push('dob');
-    setEmptyFields(updateFields);
-    if (updateFields.length > 0) {
-      return Alert.alert(
-        'Update Profile',
-        `Update ${
-          updateFields.length > 1
-            ? updateFields.map((x) => `${x}, `)
-            : `${updateFields}`
-        } fields before you can proceed `,
-        [
-          {
-            text: 'Cancel',
-            onPress: () => {},
-            style: 'cancel'
-          },
-          {
-            text: 'Update',
-            onPress: () => setUpdate(false)
-          }
-        ]
-      );
+  const handleWalletAction = () => {
+    const status = cache?.wallet?.status;
+
+    if (status === 'ACTIVE') {
+      return navigation.navigate('TriblPayScreen', {
+        screen: 'WalletScreen'
+      });
     }
 
-    navigation.navigate('TriblPayScreen', {
-      screen: 'BankCountryScreen',
-      params: { userDetails: cache }
-    });
-  };
+    if (status === 'PENDING') {
+      return navigation.navigate('TriblPayScreen', {
+        screen: 'WalletStatusScreen'
+      });
+    }
 
-  const handleViewWallet = () => {
-    navigation.navigate('TriblPayScreen', {
-      screen: 'WalletScreen'
-    });
+    if (status === 'IN_ACTIVE' || 'DEACTIVATED') {
+      const updateFields = [];
+      const { phoneNumber, email, lastName, firstName, dob } = cache;
+      if (phoneNumber === null) updateFields.push('phone');
+      if (email === null) updateFields.push('email');
+      if (lastName === null) updateFields.push('last name');
+      if (firstName === null) updateFields.push('first name');
+      if (dob === null) updateFields.push('dob');
+      setEmptyFields(updateFields);
+      if (updateFields.length > 0) {
+        return Alert.alert(
+          'Update Profile',
+          `Update ${
+            updateFields.length > 1
+              ? updateFields.map((x) => `${x}, `)
+              : `${updateFields}`
+          } fields before you can proceed `,
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {},
+              style: 'cancel'
+            },
+            {
+              text: 'Update',
+              onPress: () => setUpdate(false)
+            }
+          ]
+        );
+      }
+
+      return navigation.navigate('TriblPayScreen', {
+        screen: 'BankCountryScreen',
+        params: { userDetails: cache }
+      });
+    }
   };
 
   return (
@@ -854,7 +864,7 @@ export default function PassportScreen(props: ScreenProp) {
                   {t(`community.passport.share`)}
                 </Button>
                 <Button
-                  onPress={triblPay ? handleViewWallet : handleActivateWallet}
+                  onPress={handleWalletAction}
                   labelStyle={{
                     color: colors.PRIMARY,
                     fontFamily: fonts.WORK_SANS_BOLD,
@@ -870,7 +880,7 @@ export default function PassportScreen(props: ScreenProp) {
                     width: '49%'
                   }}
                 >
-                  {triblPay
+                  {cache?.wallet?.status === 'ACTIVE'
                     ? t(`community.passport.viewWallet`)
                     : t(`community.passport.activate`)}
                 </Button>
