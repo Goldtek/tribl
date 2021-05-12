@@ -17,8 +17,9 @@ import {
   InputContainer
 } from './styles';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { ONBOARD_USER } from '../../../graphql/server/mutations';
+import { crashlytics } from '../../../firebase/config';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -43,34 +44,50 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     addressCountryCode
   } = billingDetails;
 
-  const [verifyKyc, { data, loading }] = useMutation(ONBOARD_USER);
   useEffect(() => {
     tagScreenName('BillingDetailsScreen');
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
 
-  const handleNavigation = () => {
-    navigation.navigate('WalletStatusScreen', {});
+  const [verifyKyc, { loading }] = useMutation(ONBOARD_USER, {
+    variables: {
+      payload: {
+        address: {
+          addressLine,
+          addressCity,
+          addressState,
+          addressPostalCode,
+          addressCountryCode
+        },
+        jobId: job.id,
+        isLocal: true
+      }
+    }
+  });
+
+  const countWords = (word: string) => {
+    return word.trim().split('').length < 1;
   };
 
-  const submitKyc = () => {
-    verifyKyc({
-      variables: {
-        payload: {
-          address: {
-            addressLine,
-            addressCity,
-            addressState,
-            addressPostalCode,
-            addressCountryCode
-          },
-          jobId: job.id,
-          isLocal: true
-        }
-      }
-    });
+  const submitKyc = async () => {
+    if (countWords(addressLine)) return alert('Address field is compulsory');
+    if (countWords(addressCity)) return alert('City field is compulsory');
+    if (countWords(addressState)) return alert('State field is compulsory');
+    if (countWords(addressPostalCode))
+      return alert('Postal code field is compulsory');
+    if (countWords(addressCountryCode))
+      return alert('Country code field is compulsory');
 
-    handleNavigation();
+    try {
+      const { data } = await verifyKyc();
+
+      if (data) {
+        navigation.navigate('WalletStatusScreen', {});
+      }
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+    }
   };
 
   return (
@@ -290,6 +307,8 @@ export default function BillingDetailsScreen(props: ScreenProp) {
         </ContactContainer>
 
         <GradientButton
+          disabled={loading}
+          loading={loading}
           onPress={submitKyc}
           style={{ height: 50 }}
           gradientContainerstyle={{
@@ -299,7 +318,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           }}
           contentStyle={{ height: 50 }}
         >
-          Submit
+          {loading ? 'loading...' : 'Submit'}
         </GradientButton>
       </Fragment>
     </KeyboardAwareScrollView>
