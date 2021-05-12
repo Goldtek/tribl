@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ScrollView, Switch, TouchableHighlight } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Platform, ScrollView, Switch, TouchableHighlight } from 'react-native';
 import { NavigationInterface } from '../../../../types';
 import { useThemeContext } from '../../../../../theme';
 import { Title, Text, Divider } from 'react-native-paper';
@@ -23,9 +23,9 @@ interface ScreenProp extends NavigationInterface {}
 
 type StateType = {
   uri: string;
+  loading: boolean;
   secure_url: string;
   formData: FormData | null;
-  loading: boolean;
   imageData: CloudinaryUploadType;
 };
 
@@ -53,17 +53,33 @@ export default function CreateTribeScreen(props: ScreenProp) {
     Toast.show(t(`community.createTribe.${error}`));
   };
 
+  useEffect(() => {
+    const grantMediaPermission = async () => {
+      if (Platform.OS !== 'web') {
+        // @ts-ignore
+        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permission.granted) {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    };
+
+    grantMediaPermission();
+  }, []);
+
   const handleAvatar = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 1
+        quality: 1,
+        base64: true
       });
 
       if (result.cancelled) return;
-      const { type, uri, width, height } = result;
+      const { type, width, height, base64 } = result;
+      const uri = `data:${type}/jpg;base64,${base64}`;
       const imageData = { uri, mime: type, cropRect: { width, height } };
       setAvatar({ ...avatar, uri, imageData });
     } catch (error) {
@@ -72,7 +88,7 @@ export default function CreateTribeScreen(props: ScreenProp) {
     }
   };
 
-  const handleNavigation = async () => {
+  const handleNavigation = () => {
     if (!name) {
       return handleInputError('nameError');
     }
@@ -199,10 +215,7 @@ export default function CreateTribeScreen(props: ScreenProp) {
                 priority: FastImage.priority.high
               }}
               resizeMode={FastImage.resizeMode.cover}
-              style={{
-                width: '100%',
-                height: '100%'
-              }}
+              style={{ width: '100%', height: '100%' }}
             />
           ) : (
             <Container

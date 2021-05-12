@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
 import FastImage from 'react-native-fast-image';
-import { Share, SafeAreaView } from 'react-native';
+import { Share, Platform, SafeAreaView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTranslation } from 'react-i18next';
@@ -280,6 +280,20 @@ export default function PassportScreen(props: ScreenProp) {
 
   useEffect(() => {
     if (!userDetails) getCacheData();
+
+    const grantMediaPermission = async () => {
+      if (Platform.OS !== 'web') {
+        // @ts-ignore
+        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permission.granted) {
+          Alert.alert(
+            'Sorry, we need camera roll permissions to make this work!'
+          );
+        }
+      }
+    };
+
+    grantMediaPermission();
   }, []);
 
   useEffect(() => {
@@ -500,11 +514,13 @@ export default function PassportScreen(props: ScreenProp) {
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 1
+        quality: 1,
+        base64: true
       });
 
       if (result.cancelled) return;
-      const { type, uri, width, height } = result;
+      const { type, width, height, base64 } = result;
+      const uri = `data:${type}/jpg;base64,${base64}`;
       const imageData = { uri, mime: type, cropRect: { width, height } };
       setAvatar({ ...avatar, uri, imageData });
     } catch (error) {

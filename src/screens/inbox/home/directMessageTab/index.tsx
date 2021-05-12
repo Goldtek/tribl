@@ -4,6 +4,9 @@ import CustomChannelPreview from './widget';
 import { NavigationInterface } from '../../../types';
 import { tagScreenName } from '../../../../utils/uxcamHelper';
 import { ChannelList, Chat, DefaultCommandType } from 'stream-chat-expo';
+import EmptyMessageState from '../../../../components/emptyMessageState';
+import LoadingIndicatorState from '../../../../components/loadingIndicatorState';
+import LoadingErrorIndicator from '../../../../components/loadingErrorIndicatorState';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -57,6 +60,9 @@ function DirectMessageTab(props: ScreenProp) {
           filters={filters}
           options={options}
           Preview={CustomChannelPreview}
+          EmptyStateIndicator={EmptyMessageState}
+          LoadingIndicator={LoadingIndicatorState}
+          LoadingErrorIndicator={LoadingErrorIndicator}
           additionalFlatListProps={{ showsVerticalScrollIndicator: false }}
         />
       </Container>

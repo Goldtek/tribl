@@ -10,7 +10,6 @@ import { useMutation } from '@apollo/react-hooks';
 import FastImage from 'react-native-fast-image';
 import * as ImagePicker from 'expo-image-picker';
 import { Mixpanel } from '../../../config';
-import * as Permissions from 'expo-permissions';
 import { Toast } from '../../../components/rootToaster';
 import { RFValue } from 'react-native-responsive-fontsize';
 import GradientButton from '../../../components/gradientButton';
@@ -54,18 +53,20 @@ export default function AvatarUploadScreen(props: ScreenProp) {
     imageData: { uri: '', mime: undefined, cropRect: null }
   });
 
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS !== 'web') {
-        const {
-          status
-          // @ts-ignore
-        } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!');
-        }
+  const grantMediaPermission = async () => {
+    if (Platform.OS !== 'web') {
+      // @ts-ignore
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          'Sorry, we need camera roll permissions to make this work!'
+        );
       }
-    })();
+    }
+  };
+
+  useEffect(() => {
+    grantMediaPermission();
     tagScreenName('AvatarUploadScreen');
     logEvent('avatar upload', { from: 'signup' });
     Mixpanel.track('Avatar Upload', {
@@ -120,16 +121,16 @@ export default function AvatarUploadScreen(props: ScreenProp) {
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 1
+        quality: 1,
+        base64: true
       });
 
       if (result.cancelled) return;
-      const { type, uri, width, height } = result;
+      const { type, width, height, base64 } = result;
+      const uri = `data:${type}/jpg;base64,${base64}`;
       const imageData = { uri, mime: type, cropRect: { width, height } };
       setAvatar({ ...avatar, uri, imageData });
     } catch (error) {
-      console.log(error);
-
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }

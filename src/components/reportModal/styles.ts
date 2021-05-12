@@ -7,5 +7,5 @@ export const HeaderContainer = styled.View`
 `;
 
 export const ButtonCover = styled.View`
-  margin: ${RFValue(100)}px ${RFValue(15)}px ${RFValue(15)}px;
+  margin: ${RFValue(50)}px ${RFValue(15)}px ${RFValue(15)}px;
 `;
