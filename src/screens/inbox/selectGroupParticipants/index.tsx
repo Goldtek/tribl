@@ -37,7 +37,7 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface { }
 
 export default function SelectGroupParticipantsScreen(props: ScreenProp) {
   const { navigation } = props;
@@ -77,7 +77,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
     setState({ ...state, search });
   };
 
-  const participants = Object.values(group);
+  const participants = Object.values(group || {});
 
   const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
@@ -96,7 +96,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
   );
 
   const _renderSelectedItem = ({ item }: { item: PassportInterface }) => (
-    <TouchableWithoutFeedback onPress={() => {}}>
+    <TouchableWithoutFeedback onPress={() => { }}>
       <SelectedMemberWrapper ref={hideSensitiveView}>
         <CloseIcon onPress={() => handleSelect(item)}>
           <Ionicons name="md-close" size={15} color={colors.GREY} />
@@ -159,7 +159,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
         user.lastName == null ||
         user.firstName == null ||
         user.currentLocation?.city == null,
-      user.currentLocation?.state == null)
+        user.currentLocation?.state == null)
     ) {
       return null;
     }
@@ -233,7 +233,7 @@ export default function SelectGroupParticipantsScreen(props: ScreenProp) {
                 scrollEnabled={true}
                 onEndReachedThreshold={0.5}
                 scrollEventThrottle={16}
-                data={Object.values(group)}
+                data={Object.values(group || {})}
                 renderItem={_renderSelectedItem}
                 keyExtractor={(item) => item.id}
                 showsHorizontalScrollIndicator={false}
