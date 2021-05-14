@@ -34,7 +34,7 @@ import InviteAlgoliaHighlight from '../../../components/inviteAlgoliaHighlight';
 import { Container, ButtonCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface InviteFriendsScreenProp extends NavigationInterface {}
+interface InviteFriendsScreenProp extends NavigationInterface { }
 
 export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
   let numColumns = 2;
@@ -53,7 +53,7 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
 
   const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
-  const participants = Object.values(selected);
+  const participants = Object.values(selected || {});
 
   const [inviteToChannel, { loading }] = useMutation(INVITE_TO_CHANNEL, {
     variables: {

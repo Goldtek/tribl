@@ -103,7 +103,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     const TagInfo = await storage.getTagModal();
     const info = JSON.parse(TagInfo!);
     const filteredTag = info?.community?.filter((tag: any) => tag == id);
-    if (filteredTag.length && uniqueInterests.length > 0) {
+    if (filteredTag?.length && uniqueInterests?.length > 0) {
       setState({ ...state, tagModal: true });
     }
   };

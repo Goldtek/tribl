@@ -90,7 +90,7 @@ export default function CustomDirectMessagePreview(
   }
 
   if (Boolean(channel?.data?.isGroup)) {
-    const members = Object?.values(channel?.state?.members);
+    const members = Object.values(channel?.state?.members || {});
 
     for (let index = 0; index < members.length; index++) {
       const member = members[index];

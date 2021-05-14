@@ -156,7 +156,7 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
     }
   }, [route.params.channelId, chatClient?.user?.id]);
 
-  const members = Object?.values(channelMembers);
+  const members = Object.values(channelMembers || {});
 
   const addUserToChannel = async () => {
     try {

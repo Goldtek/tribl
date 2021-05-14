@@ -5,7 +5,6 @@ import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import checkRefreshToken from '../utils/checkRefreshToken';
 import { getMainDefinition } from 'apollo-utilities';
 import { crashlytics } from '../firebase/config';
-import { WebSocketLink } from 'apollo-link-ws';
 import { RetryLink } from 'apollo-link-retry';
 import ENVIRONMENT_VARIABLES from '../config';
 import { ApolloClient } from 'apollo-client';
@@ -19,12 +18,6 @@ import cache from './cache';
 // Create a Http link:
 const httpLink = new HttpLink({
   uri: ENVIRONMENT_VARIABLES.TRIBL_SERVER_BASE_URI
-});
-
-// Create a WebSocket link:
-const wsLink = new WebSocketLink({
-  uri: ENVIRONMENT_VARIABLES.TRIBL_WSS_SERVER_BASE_URI,
-  options: { reconnect: true }
 });
 
 const retryLink = new RetryLink({
@@ -42,12 +35,8 @@ const link = split(
   // split based on operation type
   ({ query }) => {
     const definition = getMainDefinition(query);
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    );
+    return definition.kind === 'OperationDefinition';
   },
-  wsLink,
   httpLink
 );
 

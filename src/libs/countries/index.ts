@@ -20,7 +20,7 @@ class Country {
   getAllCountries(): CountryInterface[] {
     if (!this.countries) {
       const allCountries = countryList.getAllCountries();
-      this.countries = Object.values(allCountries).sort(
+      this.countries = Object.values(allCountries || {}).sort(
         (a: any, b: any) => b.name - a.name
       ) as CountryInterface[];
     }
