@@ -60,14 +60,13 @@ interface ScreenProp extends NavigationInterface {
   route: { params: ChatScreenProps };
 }
 
-const tracker: { [key: string]: string } = {};
-
 export default function DeepLinkChannelChatScreen(props: ScreenProp) {
   const { navigation, route } = props;
   const [text, setText] = useState('');
   const { bottom } = useSafeAreaInsets();
   const chatStyles = useStreamChatTheme();
   const { colors, fonts } = useThemeContext();
+  const tracker: { [key: string]: string } = {};
 
   const {
     setThread,
@@ -139,8 +138,8 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
 
       if (channelExists?.id) {
         setChannel(channelExists);
-        setChannelMembers(channelExists.state.members);
         streamSetChannel(channelExists);
+        setChannelMembers(channelExists.state.members);
       } else if (!tracker['addUserToChannel']) {
         addUserToChannel();
       }
