@@ -28,7 +28,7 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function BillingDetailsScreen(props: ScreenProp) {
   const { navigation } = props;
-  const { job, details } = props.route.params;
+  const { idJob, selfieJob, details, document } = props.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const modalizeRef = useRef<Modalize>(null);
@@ -70,7 +70,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           addressPostalCode,
           addressCountryCode
         },
-        jobId: job.id,
+        jobId: idJob.id,
         isLocal
       }
     }
@@ -97,7 +97,12 @@ export default function BillingDetailsScreen(props: ScreenProp) {
       if (data.onBoardUser.status === 'MANUAL_REVIEW')
         return navigation.navigate('PendingWalletStatusScreen', { data });
 
-      navigation.navigate('FailedWalletStatusScreen', { data });
+      navigation.navigate('FailedWalletStatusScreen', {
+        data,
+        selfieJob,
+        idJob,
+        document
+      });
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
