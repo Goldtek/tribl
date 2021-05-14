@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { Badge, TouchableRipple } from 'react-native-paper';
+import { Badge, TouchableRipple, Paragraph } from 'react-native-paper';
 import truncate from 'lodash/truncate';
 import { useThemeContext } from '../../../../../theme';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
@@ -11,14 +11,14 @@ import {
 import { useChannelPreviewDisplayName } from 'stream-chat-react-native-core/src/components/ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { useChannelPreviewDisplayAvatar } from 'stream-chat-react-native-core/src/components/ChannelPreview/hooks/useChannelPreviewDisplayAvatar';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Feather } from '@expo/vector-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useNavigation } from '@react-navigation/native';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import ChannelActions from './channelActions';
 import { useStreamContext } from '../../../../../stream';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
-import { GET_SINGLE_COMMUNITY } from '../../../../../graphql/server/query';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -72,6 +72,8 @@ export default function CustomChannelPreview(
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const message = latestMessagePreview?.messageObject;
   const latestMessageDate = message?.created_at.asMutable();
+  const isPrivate = channel.data?.isPrivate;
+
   let messageText: string = `${latestMessagePreview?.text}`;
 
   if (message?.type === 'system') {
@@ -138,9 +140,20 @@ export default function CustomChannelPreview(
           />
           <Details ref={hideSensitiveView}>
             <DetailsTop>
-              <Title ellipsizeMode="tail" numberOfLines={1}>
-                {channelTitle}
-              </Title>
+              <Paragraph>
+                {isPrivate ? (
+                  <Fragment>
+                    <Feather
+                      name="lock"
+                      size={12}
+                      color={colors.PRIMARY_TEXT}
+                    />
+                  </Fragment>
+                ) : null}
+                <Title ellipsizeMode="tail" numberOfLines={1}>
+                  {channelTitle}
+                </Title>
+              </Paragraph>
               <Date>
                 {formatLatestMessageDate && latestMessageDate
                   ? formatLatestMessageDate(latestMessageDate)

@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { Paragraph, TouchableRipple } from 'react-native-paper';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { NavigationInterface } from '../../../../../types';
 import { useThemeContext } from '../../../../../../theme';
 import {
@@ -57,6 +57,9 @@ export default function ChannelCard(props: ChannelCardProp) {
               color: colors.PRIMARY_TEXT
             }}
           >
+            {isPrivate ? (
+              <Feather name="lock" size={18} color={colors.PRIMARY_TEXT} />
+            ) : null}
             {name}
           </Paragraph>
           {/* <Text numberOfLines={1}>
