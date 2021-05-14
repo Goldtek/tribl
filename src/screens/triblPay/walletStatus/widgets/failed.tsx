@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import FastImage from 'react-native-fast-image';
 import { Title, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 
@@ -8,13 +10,24 @@ import { NavigationInterface } from '../../../types';
 import GradientButton from '../../../../components/gradientButton';
 import { tagScreenName, logEvent } from '../../../../utils/uxcamHelper';
 
-import { Container, HeaderCover } from '../styles';
+import {
+  Container,
+  HeaderCover,
+  ImageErrorContainer,
+  ErrorContainer
+} from '../styles';
+import { AntDesign } from '@expo/vector-icons';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function FailedScreen(props: ScreenProp) {
   const { navigation } = props;
+  const {
+    data: { countryIdResponse },
+    idJob,
+    document
+  } = props?.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -56,6 +69,14 @@ export default function FailedScreen(props: ScreenProp) {
           and readable and the photo is not too dark or too bright.
         </Text>
       </HeaderCover>
+      <ErrorContainer>
+        {idJob.errors.map((error: any) => (
+          <ImageErrorContainer>
+            <Text style={{ marginVertical: 10 }}>{error.message}</Text>
+            <AntDesign name="closecircle" size={25} color={colors.RED} />
+          </ImageErrorContainer>
+        ))}
+      </ErrorContainer>
 
       <GradientButton
         onPress={handleNavigation}
@@ -67,7 +88,7 @@ export default function FailedScreen(props: ScreenProp) {
         }}
         contentStyle={{ height: 50 }}
       >
-        Retry
+        Try Again
       </GradientButton>
     </Container>
   );
