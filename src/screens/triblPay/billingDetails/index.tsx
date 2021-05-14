@@ -119,8 +119,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
         keyboardShouldPersistTaps={'always'}
         enableOnAndroid={true}
         contentContainerStyle={{
-          backgroundColor: colors.WHITE,
-          flex: 1
+          backgroundColor: colors.WHITE
         }}
       >
         <Fragment>
