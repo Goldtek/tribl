@@ -20,7 +20,11 @@ import { Container, HeaderCover } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
   route: {
-    params: { userDetails: MyPassportInterface; details: CountryInterface };
+    params: {
+      userDetails: MyPassportInterface;
+      details: CountryInterface;
+      selfieJob: any;
+    };
   };
 }
 
@@ -36,7 +40,7 @@ export default function CountryIdScreen(props: ScreenProp) {
   const [job, setJob] = useState<any>(null);
   const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
 
-  const { details, userDetails } = props.route.params;
+  const { details, userDetails, selfieJob } = props.route.params;
 
   useEffect(() => {
     // assume all iOS users except permissions
