@@ -10,3 +10,13 @@ export const Container = styled.View`
 export const HeaderCover = styled.View`
   padding: 0 ${RFValue(15)}px;
 `;
+
+export const ErrorContainer = styled(HeaderCover)`
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+`;
+
+export const ImageErrorContainer = styled.View`
+  align-items: center;
+`;
