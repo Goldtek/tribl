@@ -22,7 +22,7 @@ import {
   GET_TRIBE_INVITES,
   GET_COMMUNITY_CREATION_REQUEST,
   GET_USER_PASSPORT,
-  GET_CHANNEL_CREATION_REQUEST
+  GET_ALL_CHANNEL_CREATION_REQUEST
 } from '../../../graphql/server/query';
 import { PAGINATION_DEFAULT } from '../../../constants';
 import {
@@ -34,7 +34,7 @@ import {
   ShowConnectionNotificationBadge,
   CommunityInviteInterface,
   CommunityCreationRequestInterface,
-  ChannelCreationRequestInterface
+  AllChannelCreationRequestInterface
 } from '../../../graphql/types';
 import { TOGGLE_SIDE_MENU } from '../../../graphql/cache/mutations';
 import { useThemeContext } from '../../../theme';
@@ -44,7 +44,7 @@ import hexToRGB from '../../../utils/hexToRGB';
 import Header from '../../../components/header';
 import TribeCreationRequestCard from './widget/tribeCreationRequest';
 import TribeInviteCard from './widget/tribeInvite';
-import ChannelCreationRequestCard from './widget/channelRequest';
+import ChannelCreationRequestCard from './widget/channelCreationRequest';
 import GradientButton from '../../../components/gradientButton';
 import Skeleton from './widget/tribeRequestSkeleton';
 
@@ -59,7 +59,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
   const { t } = useTranslation();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState('invite');
   const [refreshing, setRefreshing] = useState(false);
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
   const [requestRefreshing, setRequestRefreshing] = useState(false);
@@ -109,19 +109,22 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     }
   );
 
-  // const {
-  //   data: channelRequestData,
-  //   refetch: channelRequestRefetch,
-  //   fetchMore: channelRequestFetchMore
-  // } = useQuery<ChannelCreationRequestInterface>(GET_CHANNEL_CREATION_REQUEST, {
-  //   variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
-  // });
+  const {
+    data: channelRequestData,
+    refetch: channelRequestRefetch,
+    fetchMore: channelRequestFetchMore
+  } = useQuery<AllChannelCreationRequestInterface>(
+    GET_ALL_CHANNEL_CREATION_REQUEST,
+    {
+      variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
+    }
+  );
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
 
   const tribeInvites = inviteData?.communityInvites;
   const tribeRequest = requestData?.communityCreationRequests;
-  // const channelRequest = channelRequestData?.channelCreationRequests;
+  const channelRequest = channelRequestData?.myChannelCreationRequests;
 
   const userDetails = userData?.myPassport;
   const blockedUsers = userDetails?.privacy?.blocked;
@@ -133,7 +136,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     });
   });
   const filteredRequest = tribeRequest?.data;
-  // const filteredChannelRequest = channelRequest?.data;
+  const filteredChannelRequest = channelRequest?.data;
 
   const _renderFooter = useCallback(
     () => (callOnScrollEnd ? <ActivityIndicator /> : null),
@@ -150,15 +153,15 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     }
   };
 
-  // const handleChannelRequestRefresh = async () => {
-  //   try {
-  //     setChannelRequestRefreshing(true);
-  //     await channelRequestRefetch();
-  //     setChannelRequestRefreshing(false);
-  //   } catch (error) {
-  //     setChannelRequestRefreshing(false);
-  //   }
-  // };
+  const handleChannelRequestRefresh = async () => {
+    try {
+      setChannelRequestRefreshing(true);
+      await channelRequestRefetch();
+      setChannelRequestRefreshing(false);
+    } catch (error) {
+      setChannelRequestRefreshing(false);
+    }
+  };
 
   const handleRequestRefresh = async () => {
     try {
@@ -226,33 +229,33 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     });
   };
 
-  // const handleChannelRequestEndReach = async () => {
-  //   if (!channelRequestCallOnScrollEnd) return;
+  const handleChannelRequestEndReach = async () => {
+    if (!channelRequestCallOnScrollEnd) return;
 
-  //   channelRequestFetchMore({
-  //     variables: {
-  //       input: {
-  //         skip: filteredChannelRequest?.length,
-  //         limit: PAGINATION_DEFAULT
-  //       }
-  //     },
-  //     updateQuery: (prev, { fetchMoreResult }) => {
-  //       setChannelRequestCallOnScrollEnd(false);
+    channelRequestFetchMore({
+      variables: {
+        input: {
+          skip: filteredChannelRequest?.length,
+          limit: PAGINATION_DEFAULT
+        }
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setChannelRequestCallOnScrollEnd(false);
 
-  //       if (!fetchMoreResult) return prev;
+        if (!fetchMoreResult) return prev;
 
-  //       return Object.assign({}, prev, {
-  //         channelCreationRequests: {
-  //           ...prev?.channelCreationRequests,
-  //           data: [
-  //             ...prev?.channelCreationRequests.data,
-  //             ...fetchMoreResult?.channelCreationRequests.data
-  //           ]
-  //         }
-  //       });
-  //     }
-  //   });
-  // };
+        return Object.assign({}, prev, {
+          myChannelCreationRequests: {
+            ...prev?.myChannelCreationRequests,
+            data: [
+              ...prev?.myChannelCreationRequests.data,
+              ...fetchMoreResult?.myChannelCreationRequests.data
+            ]
+          }
+        });
+      }
+    });
+  };
 
   const _renderCommunityInviteCard = useMemo(
     () => ({ item }: { item: any }) => (
@@ -288,22 +291,22 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     []
   );
 
-  // const _renderRequestTribe = useMemo(
-  //   () => ({ item }: { item: any }) => (
-  //     <ChannelCreationRequestCard
-  //       key={item.id}
-  //       id={item.id}
-  //       name={item.name}
-  //       firstName={item.creator?.firstName}
-  //       lastName={item.creator?.lastName}
-  //       avatar={item.community.avatar}
-  //       refetch={channelRequestRefetch}
-  //       userId={item.creator?.id}
-  //       {...item}
-  //     />
-  //   ),
-  //   []
-  // );
+  const _renderRequestTribe = useMemo(
+    () => ({ item }: { item: any }) => (
+      <ChannelCreationRequestCard
+        key={item.id}
+        id={item.id}
+        name={item.name}
+        firstName={item.moderators[0]?.firstName}
+        lastName={item.moderators[0]?.lastName}
+        avatar={item.community.avatar}
+        refetch={channelRequestRefetch}
+        userId={item.creator?.id}
+        {...item}
+      />
+    ),
+    []
+  );
 
   useEffect(() => {
     tagScreenName('TribeRequestScreen');
@@ -375,8 +378,10 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
                 marginLeft: 'auto'
               }}
             >
-              {isAdmin
+              {isAdmin == 'tribe'
                 ? t(`community.notification.communityRequest`)
+                : isAdmin == 'channel'
+                ? t(`community.notification.channelRequest`)
                 : t(`community.notification.communityInvite`)}
             </Text>
             <FontAwesome
@@ -391,7 +396,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
           </TouchableOpacity>
         ) : null}
 
-        {isAdmin ? (
+        {isAdmin == 'tribe' ? (
           <Fragment>
             {filteredRequest ? (
               <FlatList
@@ -434,53 +439,51 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
               <Skeleton />
             )}
           </Fragment>
+        ) : isAdmin == 'channel' ? (
+          <Fragment>
+            {filteredChannelRequest ? (
+              <FlatList
+                data={filteredChannelRequest}
+                refreshing={channelRequestRefreshing}
+                onRefresh={handleChannelRequestRefresh}
+                ListFooterComponent={_renderFooter}
+                onEndReachedThreshold={0.5}
+                onEndReached={() => {
+                  if (
+                    channelRequest &&
+                    channelRequest?.metadata?.totalCount >
+                      filteredChannelRequest?.length
+                  ) {
+                    setChannelRequestCallOnScrollEnd(true);
+                  }
+                }}
+                onMomentumScrollEnd={handleChannelRequestEndReach}
+                contentContainerStyle={{
+                  flexGrow: 1,
+                  marginTop: RFValue(10),
+                  paddingBottom: RFValue(60)
+                }}
+                ListEmptyComponent={
+                  <Text
+                    style={{
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      margin: RFValue(20),
+                      textAlign: 'center'
+                    }}
+                  >
+                    You currently don't have any channel request
+                  </Text>
+                }
+                showsVerticalScrollIndicator={false}
+                renderItem={_renderRequestTribe}
+                keyExtractor={({ id }) => id}
+              />
+            ) : (
+              <Skeleton />
+            )}
+          </Fragment>
         ) : (
-          // moderator ? (
-          //   <Fragment>
-          //     {filteredChannelRequest ? (
-          //       <FlatList
-          //         data={filteredChannelRequest}
-          //         refreshing={channelRequestRefreshing}
-          //         onRefresh={handleChannelRequestRefresh}
-          //         ListFooterComponent={_renderFooter}
-          //         onEndReachedThreshold={0.5}
-          //         onEndReached={() => {
-          //           if (
-          //             channelRequest &&
-          //             channelRequest?.metadata?.totalCount >
-          //               filteredChannelRequest?.length
-          //           ) {
-          //             setChannelRequestCallOnScrollEnd(true);
-          //           }
-          //         }}
-          //         onMomentumScrollEnd={handleChannelRequestEndReach}
-          //         contentContainerStyle={{
-          //           flexGrow: 1,
-          //           marginTop: RFValue(10),
-          //           paddingBottom: RFValue(60)
-          //         }}
-          //         ListEmptyComponent={
-          //           <Text
-          //             style={{
-          //               fontSize: RFValue(fonts.LARGE_SIZE),
-          //               fontFamily: fonts.WORK_SANS_BOLD,
-          //               margin: RFValue(20),
-          //               textAlign: 'center'
-          //             }}
-          //           >
-          //             You currently don't have any channel request
-          //           </Text>
-          //         }
-          //         showsVerticalScrollIndicator={false}
-          //         renderItem={_renderRequestTribe}
-          //         keyExtractor={({ id }) => id}
-          //       />
-          //     ) : (
-          //       <Skeleton />
-          //     )}
-          //   </Fragment>
-          // )
-          // :
           <Fragment>
             {filteredInvite ? (
               <FlatList
@@ -529,7 +532,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
           <ModalCover>
             <GradientButton
               onPress={() => {
-                setIsAdmin(false);
+                setIsAdmin('invite');
                 setModalVisible(false);
               }}
               style={{ width: '100%' }}
@@ -543,7 +546,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
             </GradientButton>
             <GradientButton
               onPress={() => {
-                setIsAdmin(true);
+                setIsAdmin('tribe');
                 setModalVisible(false);
               }}
               style={{ width: '100%' }}
@@ -554,6 +557,20 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
               }}
             >
               {t(`community.notification.communityRequest`)}
+            </GradientButton>
+            <GradientButton
+              onPress={() => {
+                setIsAdmin('channel');
+                setModalVisible(false);
+              }}
+              style={{ width: '100%' }}
+              gradientContainerstyle={{
+                width: '100%',
+                height: RFValue(45),
+                marginTop: RFValue(5)
+              }}
+            >
+              {t(`community.notification.channelRequest`)}
             </GradientButton>
             <Button
               uppercase={false}

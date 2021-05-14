@@ -63,6 +63,9 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
     channel.data?.created_at as string
   ).toDateString();
 
+  const role = channel?.state?.membership?.role;
+  const channelId = channel?.id;
+
   const toggleMute = async () => {
     try {
       if (muted) {
@@ -211,7 +214,9 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
         <Divider style={{ backgroundColor: colors.INPUT }} />
 
         <OptionWrapper
-          onPress={() => navigation.navigate('ChannelMembersScreen')}
+          onPress={() =>
+            navigation.navigate('ChannelMembersScreen', { role, channelId })
+          }
         >
           <Fragment>
             <LeftCover>

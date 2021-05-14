@@ -1,5 +1,6 @@
-import React from 'react';
-import { TouchableRipple } from 'react-native-paper';
+import React, { Fragment } from 'react';
+import { TouchableRipple, Paragraph } from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import { ChannelInterface } from '../../../../../graphql/types';
@@ -13,7 +14,7 @@ interface MyChannelProp extends ChannelInterface {
 }
 
 export default function MyChannel(props: MyChannelProp) {
-  const { name, community, showModal } = props;
+  const { name, community, showModal, isPrivate } = props;
 
   const { colors, fonts } = useThemeContext();
 
@@ -33,16 +34,23 @@ export default function MyChannel(props: MyChannelProp) {
       >
         <Cover>
           <LeftCover>
-            <Text
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.SMALL_SIZE),
-                color: colors.WHITE,
-                textTransform: 'capitalize'
-              }}
-            >
-              {name?.length < 10 ? name : `${name?.substr(0, 10)}...`}
-            </Text>
+            <Paragraph>
+              {isPrivate ? (
+                <Fragment>
+                  <Feather name="lock" size={12} color={colors.WHITE} />
+                </Fragment>
+              ) : null}
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.SMALL_SIZE),
+                  color: colors.WHITE,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {name?.length < 10 ? name : `${name?.substr(0, 10)}...`}
+              </Text>
+            </Paragraph>
           </LeftCover>
           {/* <RightCover>
             <MaterialIcons

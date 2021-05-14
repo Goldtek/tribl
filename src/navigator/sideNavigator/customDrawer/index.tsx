@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import Intercom from 'react-native-intercom';
-import { TouchableOpacity, View, Text } from 'react-native';
+import { Text } from 'react-native-paper';
+import { TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Modal from 'react-native-modal';
 import {
@@ -286,9 +287,12 @@ export default function CustomDrawerComponent() {
         <MenuContainer>
           {sideMenuScreens.map((item, index) => {
             return (
-              <View
+              <TouchableOpacity
                 key={item.key}
+                onPress={item.onPress}
+                activeOpacity={0.9}
                 style={{
+                  width: '100%',
                   flexDirection: 'row',
                   marginVertical: 5,
                   paddingHorizontal: 10,
@@ -299,9 +303,7 @@ export default function CustomDrawerComponent() {
                   borderRadius: 3
                 }}
               >
-                <TouchableOpacity
-                  key={item.key}
-                  activeOpacity={0.9}
+                <View
                   style={{
                     flex: 1,
                     flexDirection: 'row',
@@ -309,10 +311,10 @@ export default function CustomDrawerComponent() {
                     paddingVertical: 10,
                     paddingHorizontal: 10
                   }}
-                  onPress={item.onPress}
                 >
                   {item.drawerIcon}
                   <Text
+                    onPress={item.onPress}
                     style={{
                       marginLeft: 20,
                       color: colors.PRIMARY_TEXT,
@@ -323,8 +325,8 @@ export default function CustomDrawerComponent() {
                   >
                     {t(item.name)}
                   </Text>
-                </TouchableOpacity>
-              </View>
+                </View>
+              </TouchableOpacity>
             );
           })}
         </MenuContainer>

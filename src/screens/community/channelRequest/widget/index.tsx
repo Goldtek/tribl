@@ -104,9 +104,10 @@ export default function NewChannelRequest(props: TribeRequestProp) {
           priority: FastImage.priority.high
         }}
         style={{
-          width: RFValue(35),
-          height: RFValue(35),
-          borderRadius: RFValue(4)
+          width: RFValue(60),
+          height: RFValue(60),
+          borderRadius: RFValue(4),
+          marginTop: RFValue(5)
         }}
       />
       <RightCover>

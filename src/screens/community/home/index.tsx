@@ -555,7 +555,7 @@ export default function HomeScreen(props: ScreenProp) {
           labelStyle={{
             fontSize: RFValue(fonts.SMALL_SIZE + 1),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            textTransform: 'none',
+            textTransform: 'capitalize',
             color: colors.WHITE
           }}
           gradientContainerstyle={{

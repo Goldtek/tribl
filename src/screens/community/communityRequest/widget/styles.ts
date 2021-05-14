@@ -4,6 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 export const Container = styled.View`
   flex-direction: row;
   width: 100%;
+  margin-bottom: ${RFValue(15)}px;
 `;
 
 export const RightCover = styled.View`

@@ -1,10 +1,13 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation } from '@apollo/react-hooks';
 import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
-import { REQUEST_CONNECTION } from '../../../../graphql/server/mutations';
+import {
+  REQUEST_CONNECTION,
+  REMOVE_USER_FROM_CHANNEL
+} from '../../../../graphql/server/mutations';
 import { crashlytics } from '../../../../firebase/config';
 import { PassportInterface } from '../../../../graphql/types';
 import { logEvent } from '../../../../utils/uxcamHelper';
@@ -15,13 +18,19 @@ import { chatClient } from '../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { TextContainer } from './styles';
+import { Alert } from 'react-native';
 
 // DEFINE SCREEN PROP TYPES
-interface ChannelUserProp extends PassportInterface {}
+interface ChannelUserProp extends PassportInterface {
+  role: string;
+  channelId: string;
+  refetch: VoidFunction;
+}
 
 function ChannelMember(props: ChannelUserProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const [user, setUser] = useState(false);
 
   const {
     id,
@@ -30,18 +39,31 @@ function ChannelMember(props: ChannelUserProp) {
     firstName,
     currentLocation,
     connectionDetails,
-    citizenship
+    citizenship,
+    role,
+    channelId,
+    refetch
   } = props;
 
-  if (id === chatClient.user?.id) {
-    return null;
-  }
+  const userId = chatClient.user?.id;
+  useEffect(() => {
+    if (userId === id) {
+      setUser(true);
+    }
+  }, [userId]);
 
   const [pending, setPending] = useState(false);
 
   const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
   });
+
+  const [removeMember, { loading: removeLoading }] = useMutation(
+    REMOVE_USER_FROM_CHANNEL,
+    {
+      variables: { payload: { channelId: channelId, participants: [id] } }
+    }
+  );
 
   const handleRequest = async () => {
     logEvent('request connection', { from: 'passport' });
@@ -74,13 +96,41 @@ function ChannelMember(props: ChannelUserProp) {
     });
   };
 
+  const handleRemoveUser = () => {
+    if (role == 'owner' && !user) {
+      Alert.alert(
+        'Remove user from channel',
+        `Are you sure you want to remove ${firstName} ${lastName} from this channel`,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {},
+            style: 'cancel'
+          },
+          {
+            text: 'Delete',
+            onPress: async () => {
+              try {
+                await removeMember();
+                refetch();
+              } catch (error) {
+                crashlytics.recordError(new Error(error));
+                crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+              }
+            }
+          }
+        ]
+      );
+    }
+  };
+
   const state = currentLocation?.state;
   const country = currentLocation?.country;
   const city = currentLocation?.city;
 
   return (
     <TouchableRipple
-      onPress={handleNavigation}
+      onPress={user ? () => {} : handleNavigation}
       rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
       style={{
         flex: 1,
@@ -151,69 +201,99 @@ function ChannelMember(props: ChannelUserProp) {
             </Title>
           ) : null}
         </TextContainer>
-        {connectionDetails?.status == 'PENDING' || pending ? (
-          <Button
-            mode="text"
-            disabled={true}
-            uppercase={false}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.SMALL_SIZE),
-              textTransform: 'capitalize',
-              color: colors.PRIMARY_TEXT,
-              marginHorizontal: 0
-            }}
-            contentStyle={{
-              backgroundColor: colors.DISABLED,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-            style={{ borderRadius: 5, width: RFValue(60) }}
-          >
-            {t(`community.recommended.pending`)}
-          </Button>
-        ) : connectionDetails?.status == 'ACCEPTED' ? (
+        {role == 'owner' && !user ? (
           <Button
             mode="text"
             uppercase={false}
+            loading={removeLoading}
+            onPress={handleRemoveUser}
             labelStyle={{
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.SMALL_SIZE),
               textTransform: 'capitalize',
               color: colors.WHITE,
-              marginHorizontal: 0
+              marginHorizontal: removeLoading ? 10 : 0
             }}
             contentStyle={{
               backgroundColor: colors.PRIMARY,
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            style={{ borderRadius: 5, width: RFValue(60) }}
-            onPress={handleMessageNavigation}
+            style={{ width: RFValue(60), borderRadius: 5 }}
           >
-            {t(`community.recommended.message`)}
+            {t(`community.chat.removeUser`)}
           </Button>
         ) : (
-          <Button
-            loading={loading}
-            mode="contained"
-            uppercase={false}
-            labelStyle={{
-              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-              fontSize: RFValue(fonts.SMALL_SIZE),
-              textTransform: 'capitalize',
-              color: colors.WHITE
-            }}
-            contentStyle={{
-              backgroundColor: colors.PRIMARY,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-            style={{ borderRadius: 5, width: RFValue(60) }}
-            onPress={handleRequest}
-          >
-            {t(`community.recommended.add`)}+
-          </Button>
+          <Fragment>
+            {user ? null : (
+              <Fragment>
+                {connectionDetails?.status == 'PENDING' || pending ? (
+                  <Button
+                    mode="text"
+                    disabled={true}
+                    uppercase={false}
+                    labelStyle={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.SMALL_SIZE),
+                      textTransform: 'capitalize',
+                      color: colors.PRIMARY_TEXT,
+                      marginHorizontal: 0
+                    }}
+                    contentStyle={{
+                      backgroundColor: colors.DISABLED,
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                    style={{ borderRadius: 5, width: RFValue(60) }}
+                  >
+                    {t(`community.recommended.pending`)}
+                  </Button>
+                ) : connectionDetails?.status == 'ACCEPTED' ? (
+                  <Button
+                    mode="text"
+                    uppercase={false}
+                    labelStyle={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.SMALL_SIZE),
+                      textTransform: 'capitalize',
+                      color: colors.WHITE,
+                      marginHorizontal: 0
+                    }}
+                    contentStyle={{
+                      backgroundColor: colors.PRIMARY,
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                    style={{ borderRadius: 5, width: RFValue(60) }}
+                    onPress={handleMessageNavigation}
+                  >
+                    {t(`community.recommended.message`)}
+                  </Button>
+                ) : (
+                  <Button
+                    loading={loading}
+                    mode="contained"
+                    uppercase={false}
+                    labelStyle={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.SMALL_SIZE),
+                      textTransform: 'capitalize',
+                      color: colors.WHITE
+                    }}
+                    contentStyle={{
+                      backgroundColor: colors.PRIMARY,
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                    style={{ borderRadius: 5, width: RFValue(60) }}
+                    onPress={handleRequest}
+                  >
+                    {t(`community.recommended.add`)}+
+                  </Button>
+                )}
+              </Fragment>
+            )}
+          </Fragment>
         )}
       </Fragment>
     </TouchableRipple>
