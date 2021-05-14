@@ -145,7 +145,7 @@ export default function SelfieScreen(props: ScreenProp) {
             lineHeight: RFValue(30)
           }}
         >
-          {t(`community.passport.countryId`)}
+          Take a Selfie
         </Title>
         <Text
           style={{
@@ -156,9 +156,7 @@ export default function SelfieScreen(props: ScreenProp) {
             marginBottom: RFValue(10),
             lineHeight: RFValue(19)
           }}
-        >
-          {t(`community.passport.capture`)}
-        </Text>
+        ></Text>
       </HeaderCover>
 
       <View
