@@ -40,9 +40,14 @@ export default function MemberSlide(props: MemberSlideProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const [state, setState] = useState({ search: {} });
+  const [refresh, setRefresh] = useState(false);
 
   const onSearchStateChange = (search: string) => {
     setState({ ...state, search });
+  };
+
+  const refreshChange = () => {
+    setRefresh(true);
   };
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
@@ -57,7 +62,13 @@ export default function MemberSlide(props: MemberSlideProp) {
   }, []);
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <MemberCard key={item.id} {...item} />
+    <MemberCard
+      key={item.id}
+      {...item}
+      isModerotor={communityDetails?.isModerator}
+      refresh={refreshChange}
+      tribeId={communityDetails?.id}
+    />
   );
 
   const _memberList = (props: any) => {
@@ -67,7 +78,6 @@ export default function MemberSlide(props: MemberSlideProp) {
         return users.id == userTwo.id;
       });
     });
-    console.tron('filteredUsers', filteredUsers);
 
     return (
       <Results>
@@ -119,6 +129,7 @@ export default function MemberSlide(props: MemberSlideProp) {
     <Container>
       <InstantSearch
         searchClient={searchClient}
+        refresh={refresh}
         indexName={ENVIRONMENT_VARIABLES.ALGOLIA_COMMUNITY_MEMBERS_INDEX_NAME}
         searchState={state.search}
         onSearchStateChange={onSearchStateChange}
