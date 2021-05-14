@@ -17,8 +17,14 @@ import { useQuery } from '@apollo/react-hooks';
 import { chatClient } from '../../stream/types';
 import { useStreamContext } from '../../stream';
 import { useNavigation } from '@react-navigation/native';
-import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
-import { SinglePassportRequestInterface } from '../../graphql/types';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../graphql/server/query';
+import {
+  MyPassportInterface,
+  SinglePassportRequestInterface
+} from '../../graphql/types';
 import { MessageActionSheet } from '../streamActionSheet';
 import CustomMessageFooter from '../customMessageFooter';
 import CustomGiphy from '../customGiphy';
@@ -50,20 +56,27 @@ type MessageProps = MessageSimpleProps<
 let lastTap = 0;
 
 function CustomChannelMessage(props: MessageProps) {
+  const { message, groupStyles } = props;
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
   const { channel, activityScreen } = useStreamContext();
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+  const blockedUser = blockedUsers?.some(
+    (user) => message.user?.id === user.id
+  );
 
-  const visible =
-    props.groupStyles[0] === 'single' || props.groupStyles[0] === 'top';
+  if (Boolean(blockedUser)) return null;
+
+  const visible = groupStyles[0] === 'single' || groupStyles[0] === 'top';
 
   const { data } = useQuery<SinglePassportRequestInterface>(
     GET_SINGLE_PASSPORT,
-    { variables: { id: props.message.user?.id } }
+    { variables: { id: message.user?.id } }
   );
 
   const handleNavigation = () => {
-    if (props.message.user?.id !== chatClient.user?.id) {
+    if (message.user?.id !== chatClient.user?.id) {
       navigation.navigate('MemberDetailScreen', {
         title: `${data?.singlePassport.firstName} ${data?.singlePassport.lastName}`,
         details: { ...data?.singlePassport }
@@ -71,8 +84,7 @@ function CustomChannelMessage(props: MessageProps) {
     }
   };
 
-  //@ts-ignore
-  const citizenship = JSON.parse(props?.message?.user?.citizenship || []);
+  const citizenship = JSON.parse(`${message?.user?.citizenship}` || '[]');
 
   const handleDelete = async () => {
     setTimeout(
@@ -204,20 +216,20 @@ function CustomChannelMessage(props: MessageProps) {
       : {};
 
     const markdownRules = makeMarkDownRules(props);
-    const createdAt = new Date(props.message.created_at);
-    const updatedAt = new Date(props.message.updated_at);
+    const createdAt = new Date(`${message.created_at}`);
+    const updatedAt = new Date(`${message.updated_at}`);
     const updated = updatedAt.getTime() > createdAt.getTime();
 
     return (
       <Container>
-        {props.message.user?.id !== chatClient.user?.id && visible ? (
+        {message.user?.id !== chatClient.user?.id && visible ? (
           <MessageHeader>
-            <UserName>{props.message.user.name}</UserName>
-            <Time>{Dayjs(props.message.created_at).format('hh:ss A')}</Time>
+            <UserName>{message.user?.name}</UserName>
+            <Time>{Dayjs(`${message?.created_at}`).format('hh:ss A')}</Time>
           </MessageHeader>
         ) : null}
         {props.renderText({
-          message: props.message,
+          message,
           markdownStyles,
           markdownRules
         })}
@@ -239,8 +251,7 @@ function CustomChannelMessage(props: MessageProps) {
         alignment={avatarProps.alignment}
       >
         <MessageAvatar {...avatarProps} />
-        {citizenship?.length &&
-        props.message?.user?.id !== chatClient?.user?.id ? (
+        {citizenship?.length && message?.user?.id !== chatClient?.user?.id ? (
           <Title
             style={{
               fontSize: RFValue(fonts.MEDIUM_SIZE),

@@ -270,6 +270,7 @@ export type ChannelInterface = {
   updatedAt: string;
   isDefault: boolean;
   isPrivate: boolean;
+  creator: PassportInterface;
   community: CommunityInterface;
   participants: PassportInterface[];
   moderators: PassportInterface[];
@@ -429,7 +430,15 @@ export type CommunityCreationRequestInterface = {
 // USER CHANNEL CREATION REQUEST (RESPONSE) TYPE
 export type ChannelCreationRequestInterface = {
   channelCreationRequests: {
-    data: CommunityInterface[];
+    data: ChannelInterface[];
+    metadata: QueryMetadata;
+  };
+};
+
+//GET ALL CHANNEL CREATION REQUEST (RESPONSE) TYPE
+export type AllChannelCreationRequestInterface = {
+  myChannelCreationRequests: {
+    data: ChannelInterface[];
     metadata: QueryMetadata;
   };
 };

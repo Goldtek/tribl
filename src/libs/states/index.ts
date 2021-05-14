@@ -20,7 +20,7 @@ class State {
   getAllStates(): USStatesInterface[] {
     if (!this.states) {
       const allstates = data.states;
-      this.states = Object.values(allstates).sort(
+      this.states = Object.values(allstates || {}).sort(
         (a: any, b: any) => b.name - a.name
       ) as USStatesInterface[];
     }

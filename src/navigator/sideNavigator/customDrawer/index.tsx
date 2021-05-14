@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import Intercom from 'react-native-intercom';
-import { TouchableOpacity, View, Text } from 'react-native';
+import { Text } from 'react-native-paper';
+import { TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Modal from 'react-native-modal';
 import {
@@ -38,8 +39,7 @@ import {
   DrawerFooter,
   MenuContainer,
   ProfileContainer,
-  ConnectionBadgeWrapper,
-  TransferCover
+  ConnectionBadgeWrapper
 } from './styles';
 
 export default function CustomDrawerComponent() {
@@ -56,7 +56,6 @@ export default function CustomDrawerComponent() {
   );
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-
   const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
   const userDetails = userData?.myPassport;
@@ -74,18 +73,18 @@ export default function CustomDrawerComponent() {
     changeSideMenuState({ variables: { activeSideMenu: menu } });
   };
 
-  //@ts-ignore
-  Intercom.registerIdentifiedUser({ userId: userDetails?.id });
-
-  Intercom.updateUser({
-    // Pre-defined user attributes
-    email: userDetails?.email,
-    user_id: userDetails?.id,
-    name: `${userDetails?.firstName} ${userDetails?.lastName}`,
-    phone: userDetails?.phoneNumber,
-    language_override: 'language_override',
-    unsubscribed_from_emails: true
-  });
+  if (userDetails?.id) {
+    Intercom.registerIdentifiedUser({ userId: userDetails?.id });
+    Intercom.updateUser({
+      // Pre-defined user attributes
+      email: userDetails?.email,
+      user_id: userDetails?.id,
+      name: `${userDetails?.firstName} ${userDetails?.lastName}`,
+      phone: userDetails?.phoneNumber,
+      language_override: 'language_override',
+      unsubscribed_from_emails: true
+    });
+  }
 
   const sideMenuScreens = [
     {
@@ -131,9 +130,7 @@ export default function CustomDrawerComponent() {
             size={24}
             color={colors.PRIMARY_TEXT}
           />
-          {data?.showConnectionNotificationBadge ? (
-            <ConnectionBadgeWrapper />
-          ) : null}
+          {data?.showConnectionNotificationBadge && <ConnectionBadgeWrapper />}
         </Fragment>
       )
     },
@@ -174,9 +171,7 @@ export default function CustomDrawerComponent() {
       drawerIcon: (
         <Fragment>
           <SimpleLineIcons name="bell" size={24} color={colors.PRIMARY_TEXT} />
-          {data?.showConnectionNotificationBadge ? (
-            <ConnectionBadgeWrapper />
-          ) : null}
+          {data?.showConnectionNotificationBadge && <ConnectionBadgeWrapper />}
         </Fragment>
       )
     },
@@ -292,9 +287,12 @@ export default function CustomDrawerComponent() {
         <MenuContainer>
           {sideMenuScreens.map((item, index) => {
             return (
-              <View
+              <TouchableOpacity
                 key={item.key}
+                onPress={item.onPress}
+                activeOpacity={0.9}
                 style={{
+                  width: '100%',
                   flexDirection: 'row',
                   marginVertical: 5,
                   paddingHorizontal: 10,
@@ -305,9 +303,7 @@ export default function CustomDrawerComponent() {
                   borderRadius: 3
                 }}
               >
-                <TouchableOpacity
-                  key={item.key}
-                  activeOpacity={0.9}
+                <View
                   style={{
                     flex: 1,
                     flexDirection: 'row',
@@ -315,10 +311,10 @@ export default function CustomDrawerComponent() {
                     paddingVertical: 10,
                     paddingHorizontal: 10
                   }}
-                  onPress={item.onPress}
                 >
                   {item.drawerIcon}
                   <Text
+                    onPress={item.onPress}
                     style={{
                       marginLeft: 20,
                       color: colors.PRIMARY_TEXT,
@@ -329,8 +325,8 @@ export default function CustomDrawerComponent() {
                   >
                     {t(item.name)}
                   </Text>
-                </TouchableOpacity>
-              </View>
+                </View>
+              </TouchableOpacity>
             );
           })}
         </MenuContainer>

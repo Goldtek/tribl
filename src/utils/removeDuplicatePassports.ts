@@ -1,10 +1,7 @@
 import { PassportInterface } from '../graphql/types';
-import { chatClient } from '../stream/types';
 
 const removeDuplicateMembers = (members?: PassportInterface[]) => {
   if (!members) return;
-
-  const userId = chatClient.user?.id;
 
   const uniqueMembers: PassportInterface[] = [];
   const hashMap: { [key: string]: string } = {};
@@ -14,7 +11,7 @@ const removeDuplicateMembers = (members?: PassportInterface[]) => {
     const member = members[index];
     if (!hashMap[member.id]) {
       hashMap[member.id] = member.id;
-      if (member.id !== userId && member.verified) {
+      if (member.verified) {
         uniqueMembers.push(member);
       }
     }
