@@ -22,10 +22,10 @@ const httpLink = new HttpLink({
 });
 
 // Create a WebSocket link:
-const wsLink = new WebSocketLink({
-  uri: ENVIRONMENT_VARIABLES.TRIBL_WSS_SERVER_BASE_URI,
-  options: { reconnect: true }
-});
+// const wsLink = new WebSocketLink({
+//   uri: ENVIRONMENT_VARIABLES.TRIBL_WSS_SERVER_BASE_URI,
+//   options: { reconnect: true }
+// });
 
 const retryLink = new RetryLink({
   delay: {
@@ -43,11 +43,9 @@ const link = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
     return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
+      definition.kind === 'OperationDefinition'
     );
   },
-  wsLink,
   httpLink
 );
 

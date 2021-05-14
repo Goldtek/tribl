@@ -174,7 +174,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
   };
 
   const _renderItem = ({ item }: any) => {
-    if (channel.state?.members[item.id]) {
+    if (channel?.state?.members[item?.id]) {
       return null;
     }
 
