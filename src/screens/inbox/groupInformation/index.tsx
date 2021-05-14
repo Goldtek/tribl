@@ -45,7 +45,7 @@ import { useNavigation } from '@react-navigation/native';
 // DEFINE SCREEN PROP TYPES
 // interface GroupInformationProp extends NavigationInterface {}
 
-interface GroupInformationProp extends LocalUserType {}
+interface GroupInformationProp extends LocalUserType { }
 
 export default function GroupInformation(props: GroupInformationProp) {
   const user = props;
@@ -74,7 +74,7 @@ export default function GroupInformation(props: GroupInformationProp) {
   const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
 
-  const channelMembers = Object?.values(channel?.state?.members);
+  const channelMembers = Object.values(channel?.state?.members || {});
 
   const [images] = useState([
     {
@@ -219,7 +219,7 @@ export default function GroupInformation(props: GroupInformationProp) {
     Alert.alert('Leave group', `Are you sure you want to leave this group`, [
       {
         text: 'Cancel',
-        onPress: () => {},
+        onPress: () => { },
         style: 'cancel'
       },
       {

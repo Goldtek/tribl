@@ -450,7 +450,7 @@ index 03eff3b..e625b44 100644
      <Markdown
        onLink={onLink}
 diff --git a/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx b/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
-index aafb6ee..3856958 100644
+index aafb6ee..0b0cf43 100644
 --- a/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
 +++ b/node_modules/stream-chat-react-native-core/src/components/MessageList/MessageList.tsx
 @@ -104,113 +104,113 @@ export type MessageListProps<
@@ -684,12 +684,11 @@ index aafb6ee..3856958 100644
      if (message.type !== 'message.read') {
        return (
          <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-@@ -396,8 +399,19 @@ export const MessageList = <
+@@ -396,8 +399,18 @@ export const MessageList = <
    // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
    // https://github.com/facebook/react-native/issues/21196
    if (messageList.length === 0 && !threadList) {
-+
-+    if (channel.id === "default_channel") {
++    if (!channel?.id) {
 +      return (
 +        <View style={{ flex: 1 }} testID='loading-state'>
 +          <LoadingIndicator listType='message' />

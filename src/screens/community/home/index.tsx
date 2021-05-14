@@ -26,7 +26,6 @@ import {
   GET_RECOMMENDED_MEMBERS,
   GET_MY_COMMUNITIES,
   GET_ALL_MEMBERS,
-  GET_CONNECTION_REQUEST,
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
   GET_POPULAR_COMMUNITIES,
@@ -34,7 +33,6 @@ import {
   GET_USER_PASSPORT
 } from '../../../graphql/server/query';
 import { UPDATE_PASSPORT } from '../../../graphql/server/mutations';
-import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from '../../../graphql/cache/mutations';
 import MyChannel from '../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../components/recommendedUserSkeleton';
 import MyCommunitySkeleton from '../../../components/myCommunitiesSkeleton';
@@ -100,17 +98,6 @@ export default function HomeScreen(props: ScreenProp) {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
-  const [changeConnectionNotification] = useMutation(
-    CHANGE_CONNECTION_NOTIFICATION_BADGE
-  );
-
-  const [
-    getConnectionRequest,
-    { data: connectionRequestData, refetch: refreshConnectionRequest }
-  ] = useLazyQuery(GET_CONNECTION_REQUEST, {
-    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
-  });
-
   const [
     getUserPassport,
     { data: userData, refetch: passportRefetch }
@@ -140,7 +127,6 @@ export default function HomeScreen(props: ScreenProp) {
   useEffect(() => {
     tagScreenName('TriblScreen');
     getPopularCommunities();
-    getConnectionRequest();
     getNearbyMembers();
     getMyConnections();
     getUserPassport();
@@ -231,19 +217,10 @@ export default function HomeScreen(props: ScreenProp) {
   const communities = communityData?.recommendedCommunities?.data;
 
   useEffect(() => {
-    if (connectionRequestData?.connectionRequests.length) {
-      changeConnectionNotification({
-        variables: { showConnectionNotificationBadge: true }
-      });
-    }
-  }, [connectionRequestData?.connectionRequests.length]);
-
-  useEffect(() => {
     userDetails && passportRefetch();
     myCommunities && myCommunityRefetch();
     myChannels && refetchMyChannels();
     recommendedMembers && recommendedRefetch();
-    connectionRequestData && refreshConnectionRequest();
   }, [isFocused]);
 
   const navigateToSearch = (index: number) => {
