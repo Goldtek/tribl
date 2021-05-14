@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import FastImage from 'react-native-fast-image';
 import { Title, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { DEVICE_FULL_WIDTH } from '../../../../utils/device';
 
 import { useThemeContext } from '../../../../theme';
 import { NavigationInterface } from '../../../types';
@@ -70,12 +71,19 @@ export default function FailedScreen(props: ScreenProp) {
         </Text>
       </HeaderCover>
       <ErrorContainer>
-        {idJob.errors.map((error: any) => (
-          <ImageErrorContainer>
-            <Text style={{ marginVertical: 10 }}>{error.message}</Text>
-            <AntDesign name="closecircle" size={25} color={colors.RED} />
-          </ImageErrorContainer>
-        ))}
+        <ImageErrorContainer>
+          <FastImage
+            resizeMode={FastImage.resizeMode.contain}
+            source={require('../../../../../assets/images/failedReasons.png')}
+            style={{
+              width: DEVICE_FULL_WIDTH,
+              height: RFValue(250),
+              borderRadius: 4
+            }}
+          />
+
+          {/* <AntDesign name="closecircle" size={25} color={colors.RED} /> */}
+        </ImageErrorContainer>
       </ErrorContainer>
 
       <GradientButton
