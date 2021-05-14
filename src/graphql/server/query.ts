@@ -1863,10 +1863,40 @@ export const GET_COMMUNITY_CREATION_REQUEST = gql`
   }
 `;
 
-//GET COMMUNITY CREATION REQUEST
+//GET CHANNEl CREATION REQUEST
 export const GET_CHANNEL_CREATION_REQUEST = gql`
   query channelCreationRequests($input: ChannelRequestInput) {
     channelCreationRequests(input: $input) {
+      data {
+        id
+        name
+        status
+        isPrivate
+        moderators {
+          id
+          firstName
+          lastName
+        }
+        creator {
+          id
+          firstName
+          lastName
+        }
+        community {
+          id
+          name
+          avatar
+          isModerator
+        }
+      }
+    }
+  }
+`;
+
+//GET ALL CHANNEl CREATION REQUEST
+export const GET_ALL_CHANNEL_CREATION_REQUEST = gql`
+  query myChannelCreationRequests($input: ChannelRequestInput) {
+    myChannelCreationRequests(input: $input) {
       data {
         id
         name
