@@ -34,7 +34,7 @@ export default function VerifyIdentityScreen(props: ScreenProp) {
   }, []);
 
   const handleNavigation = () => {
-    navigation.navigate('CountryIdScreen', {
+    navigation.navigate('SelfieScreen', {
       details,
       userDetails
     });
