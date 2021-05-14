@@ -80,7 +80,9 @@ export default function CountryIdScreen(props: ScreenProp) {
     navigation.navigate('BillingDetailsScreen', {
       details,
       userDetails,
-      job
+      idJob: job,
+      selfieJob,
+      document
     });
   };
 
