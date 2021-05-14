@@ -17,7 +17,6 @@ import {
 } from '../../../graphql/types';
 import { ChatScreenProps } from '../../types';
 import { PAGINATION_DEFAULT } from '../../../constants';
-import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 import { Mixpanel } from '../../../config';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStreamContext } from '../../../stream';
@@ -30,13 +29,13 @@ interface ChannelMembersProp {
 }
 
 export default function ChannelMembers(props: ChannelMembersProp) {
+  const { role, channelId } = props?.route?.params;
   const { colors, fonts } = useThemeContext();
   const { channel } = useStreamContext();
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState({ searchTerm: '' });
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
-
   const { data: channelData, refetch, fetchMore } = useQuery<
     ChannelMembersRequestInterface
   >(GET_CHANNEL_MEMBERS, {
@@ -56,9 +55,7 @@ export default function ChannelMembers(props: ChannelMembersProp) {
   }, [isFocused]);
 
   const channelMembers = channelData?.channelMembers;
-
-  const filterMembers = removeDuplicateMembers(channelMembers?.data?.slice());
-  const filteredUsers = filterMembers?.filter((users) => {
+  const filteredUsers = channelMembers?.data?.filter((users) => {
     return !blockedUsers?.some((userTwo: any) => users.id == userTwo.id);
   });
 
@@ -100,7 +97,7 @@ export default function ChannelMembers(props: ChannelMembersProp) {
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <ActiveMember key={item.id} {...item} />
+    <ActiveMember key={item.id} role={role} channelId={channelId} refetch={refetch} {...item} />
   );
 
   const _renderFooter = useCallback(
