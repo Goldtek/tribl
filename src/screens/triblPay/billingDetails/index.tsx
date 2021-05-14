@@ -92,12 +92,12 @@ export default function BillingDetailsScreen(props: ScreenProp) {
 
     try {
       const { data } = await verifyKyc();
-      if (data.onBoardUser.status === 'APPROVED') {
-        navigation.navigate('ActivateWalletScreen', {});
-      }
-      if (data.onBoardUser.status === 'FAILED') {
-        navigation.navigate('WalletStatusScreen', {});
-      }
+      if (data.onBoardUser.status === 'APPROVED')
+        return navigation.navigate('ActivateWalletScreen', {});
+      if (data.onBoardUser.status === 'MANUAL_REVIEW')
+        return navigation.navigate('PendingWalletStatusScreen', { data });
+
+      navigation.navigate('FailedWalletStatusScreen', { data });
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
