@@ -41,18 +41,18 @@ type MessageProps = MessageSimpleProps<
 let lastTap = 0;
 
 function CustomDirectMessage(props: MessageProps) {
+  const { message } = props;
   const navigation = useNavigation();
   const { colors } = useThemeContext();
-
   const { channel, activityScreen } = useStreamContext();
 
   const { data } = useQuery<SinglePassportRequestInterface>(
     GET_SINGLE_PASSPORT,
-    { variables: { id: props.message.user?.id } }
+    { variables: { id: message.user?.id } }
   );
 
   const handleNavigation = () => {
-    if (props.message.user?.id !== chatClient.user?.id) {
+    if (message.user?.id !== chatClient.user?.id) {
       navigation.navigate('MemberDetailScreen', {
         title: `${data?.singlePassport.firstName} ${data?.singlePassport.lastName}`,
         details: { ...data?.singlePassport }
@@ -147,14 +147,14 @@ function CustomDirectMessage(props: MessageProps) {
         }
       : {};
     const markdownRules = makeMarkDownRules(props);
-    const createdAt = new Date(props.message.created_at);
-    const updatedAt = new Date(props.message.updated_at);
+    const createdAt = new Date(`${message?.created_at}`);
+    const updatedAt = new Date(`${message?.updated_at}`);
     const updated = updatedAt.getTime() > createdAt.getTime();
 
     return (
       <Container>
         {props.renderText({
-          message: props.message,
+          message,
           markdownStyles,
           markdownRules
         })}

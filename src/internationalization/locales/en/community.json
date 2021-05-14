@@ -177,7 +177,7 @@
     "emptyChannel": "No channels Messages \nAny new channel messages will appear here",
     "createChannel": "create channel",
     "channelText": "Name your channel around a topic, chapter, or interests that resonates with members of the community",
-    "channelNamePlaceholder": "#channelname",
+    "channelNamePlaceholder": "channelname",
     "next": "next",
     "addParticipant": "Add Participants",
     "selectTribe": "select tribe",
@@ -244,7 +244,8 @@
     "adminTribe": "admin tribes",
     "cancel": "cancel",
     "communityInvite": "tribe invite",
-    "communityRequest": "new tribe request"
+    "communityRequest": "new tribe request",
+    "channelRequest": "new channel request"
   },
   "invitation": {
     "title": "Invite friends to community",

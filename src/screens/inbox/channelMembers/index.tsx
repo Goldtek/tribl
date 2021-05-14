@@ -13,11 +13,11 @@ import ActiveMember from './widget';
 import Skeleton from './widget/skeleton';
 import {
   PassportInterface,
-  ChannelMembersRequestInterface
+  ChannelMembersRequestInterface,
+  MyPassportInterface
 } from '../../../graphql/types';
 import { ChatScreenProps } from '../../types';
 import { PAGINATION_DEFAULT } from '../../../constants';
-import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
 import { Mixpanel } from '../../../config';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStreamContext } from '../../../stream';
@@ -30,20 +30,20 @@ interface ChannelMembersProp {
 }
 
 export default function ChannelMembers(props: ChannelMembersProp) {
+  const { role, channelId } = props?.route?.params;
   const { colors, fonts } = useThemeContext();
   const { channel } = useStreamContext();
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState({ searchTerm: '' });
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
-
   const { data: channelData, refetch, fetchMore } = useQuery<
     ChannelMembersRequestInterface
   >(GET_CHANNEL_MEMBERS, {
     variables: { input: { channelId: channel.id } }
   });
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const blockedUsers = userData?.myPassport?.privacy?.blocked;
 
   useEffect(() => {
@@ -56,10 +56,8 @@ export default function ChannelMembers(props: ChannelMembersProp) {
   }, [isFocused]);
 
   const channelMembers = channelData?.channelMembers;
-
-  const filterMembers = removeDuplicateMembers(channelMembers?.data?.slice());
-  const filteredUsers = filterMembers?.filter((users) => {
-    return !blockedUsers?.some((userTwo: any) => users.id == userTwo.id);
+  const filteredUsers = channelMembers?.data?.filter((users) => {
+    return !blockedUsers?.some((blockedUser) => users.id === blockedUser.id);
   });
 
   const handleRefresh = async () => {
@@ -75,8 +73,8 @@ export default function ChannelMembers(props: ChannelMembersProp) {
       variables: {
         input: {
           channelId: channel.id,
-          skip: channelMembers?.data?.length,
-          limit: PAGINATION_DEFAULT
+          limit: PAGINATION_DEFAULT,
+          skip: channelMembers?.data?.length
         }
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -100,7 +98,13 @@ export default function ChannelMembers(props: ChannelMembersProp) {
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <ActiveMember key={item.id} {...item} />
+    <ActiveMember
+      key={item.id}
+      role={role}
+      channelId={channelId}
+      refetch={refetch}
+      {...item}
+    />
   );
 
   const _renderFooter = useCallback(

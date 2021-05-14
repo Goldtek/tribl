@@ -4,6 +4,7 @@ import { StackActionHelpers } from '@react-navigation/native';
 import { PassportInterface } from '../graphql/types';
 
 interface ChatScreenProps extends PassportInterface {
+  role: any;
   title: string;
   chatId: string;
   channelId: string;
@@ -229,7 +230,7 @@ interface StackNavigationInterface extends StackActionHelpers {
 
 interface StackScreenInterface {
   navigation: StackNavigationProp<RootStackParamList, string> &
-  StackNavigationInterface;
+    StackNavigationInterface;
   route: RouteProp<RootStackParamList, string>;
 }
 

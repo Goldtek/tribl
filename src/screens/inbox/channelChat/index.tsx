@@ -60,7 +60,7 @@ export default function ChannelChatScreen(props: ScreenProp) {
     }
   };
 
-  const channelMembers = Object?.values(channel?.state?.members.asMutable());
+  const channelMembers = Object.values(channel?.state?.members?.asMutable() || {});
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

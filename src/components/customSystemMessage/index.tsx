@@ -7,6 +7,7 @@ import {
   useTranslationContext,
   DefaultAttachmentType
 } from 'stream-chat-expo';
+import { useQuery } from '@apollo/react-hooks';
 import {
   chatClient,
   LocalUserType,
@@ -16,8 +17,14 @@ import {
 } from '../../stream/types';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
-import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
-import { SinglePassportRequestInterface } from '../../graphql/types';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../graphql/server/query';
+import {
+  MyPassportInterface,
+  SinglePassportRequestInterface
+} from '../../graphql/types';
 
 import {
   Text,
@@ -48,8 +55,14 @@ function CustomSystemMessage(props: MessageSystemProps) {
   const { formatDate, message } = props;
 
   const { tDateTimeParser } = useTranslationContext();
-
+  const { data: userOfflineData } = useQuery<MyPassportInterface>(
+    GET_USER_PASSPORT
+  );
+  const blockedUsers = userOfflineData?.myPassport?.privacy?.blocked;
   const user = Boolean(message.group_system) ? message.receiver : message.user;
+  const blockedUser = blockedUsers?.some((user) => user?.id === user.id);
+
+  if (Boolean(blockedUser)) return null;
 
   const [getUserPassport, { data: userData }] = useLazyQuery<
     SinglePassportRequestInterface
@@ -85,7 +98,8 @@ function CustomSystemMessage(props: MessageSystemProps) {
     formatDate && createdAt
       ? formatDate(createdAt)
       : parsedDate && isDayOrMoment(parsedDate)
-      ? parsedDate.calendar().toUpperCase()
+      ? //@ts-ignore
+        parsedDate.calendar().toUpperCase()
       : parsedDate;
 
   let text: string = '';

@@ -54,7 +54,7 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface { }
 
 export default function AddGroupParticipantsScreen(props: ScreenProp) {
   const { navigation } = props;
@@ -94,7 +94,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
     setState({ ...state, search });
   };
 
-  const participants = Object.values(group);
+  const participants = Object.values(group || {});
 
   const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
@@ -103,7 +103,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
 
     const members = [
       ...participants.map(({ id }) => id),
-      ...Object?.values(channel?.state?.members)
+      ...Object.values(channel?.state?.members || {})
     ];
 
     if (members.length > 30) {
@@ -113,12 +113,12 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
         [
           {
             text: 'Cancel',
-            onPress: () => {},
+            onPress: () => { },
             style: 'cancel'
           },
           {
             text: 'Ok',
-            onPress: () => {}
+            onPress: () => { }
           }
         ]
       );
@@ -126,13 +126,12 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
 
     Alert.alert(
       'Add member to group',
-      `Are you sure you want to add the selected ${
-        participants.length === 1 ? 'member' : 'members'
+      `Are you sure you want to add the selected ${participants.length === 1 ? 'member' : 'members'
       } this group`,
       [
         {
           text: 'Cancel',
-          onPress: () => {},
+          onPress: () => { },
           style: 'cancel'
         },
         {
@@ -146,9 +145,8 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
               const channelMessages = participants.map(
                 ({ firstName, lastName, avatar, id }) =>
                   channel.sendMessage({
-                    text: `${firstName} was added by ${
-                      chatClient.user?.name?.split(' ')[0]
-                    }`,
+                    text: `${firstName} was added by ${chatClient.user?.name?.split(' ')[0]
+                      }`,
                     group_system: true,
                     receiver: {
                       id,
@@ -176,7 +174,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
   };
 
   const _renderItem = ({ item }: any) => {
-    if (channel.state?.members[item.id]) {
+    if (channel?.state?.members[item?.id]) {
       return null;
     }
 
@@ -192,7 +190,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
   };
 
   const _renderSelectedItem = ({ item }: { item: PassportInterface }) => (
-    <TouchableWithoutFeedback onPress={() => {}}>
+    <TouchableWithoutFeedback onPress={() => { }}>
       <SelectedMemberWrapper ref={hideSensitiveView}>
         <CloseIcon onPress={() => handleSelect(item)}>
           <Ionicons name="md-close" size={15} color={colors.GREY} />
@@ -256,7 +254,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
         user.lastName == null ||
         user.firstName == null ||
         user.currentLocation?.city == null,
-      user.currentLocation?.state == null)
+        user.currentLocation?.state == null)
     ) {
       return null;
     }
@@ -330,7 +328,7 @@ export default function AddGroupParticipantsScreen(props: ScreenProp) {
                 scrollEnabled={true}
                 onEndReachedThreshold={0.5}
                 scrollEventThrottle={16}
-                data={Object.values(group)}
+                data={Object.values(group || {})}
                 renderItem={_renderSelectedItem}
                 keyExtractor={(item) => item.id}
                 showsHorizontalScrollIndicator={false}

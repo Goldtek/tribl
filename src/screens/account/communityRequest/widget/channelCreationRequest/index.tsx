@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import { Text, Paragraph, Button } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useThemeContext } from '../../../../../../theme';
-import { GET_SINGLE_PASSPORT } from '../../../../../../graphql/server/query';
+import { useThemeContext } from '../../../../../theme';
+import { GET_SINGLE_PASSPORT } from '../../../../../graphql/server/query';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import { logEvent } from '../../../../../../utils/uxcamHelper';
-import GradientButton from '../../../../../../components/gradientButton';
-import { APPROVE_REJECT_NEW_CHANNEL } from '../../../../../../graphql/server/mutations';
-import { Mixpanel } from '../../../../../../config';
+import { logEvent } from '../../../../../utils/uxcamHelper';
+import GradientButton from '../../../../../components/gradientButton';
+import { APPROVE_REJECT_NEW_CHANNEL } from '../../../../../graphql/server/mutations';
+import { Mixpanel } from '../../../../../config';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { crashlytics } from '../../../../../../firebase/config';
+import { crashlytics } from '../../../../../firebase/config';
 
 import { Container, RightCover, ButtonCover } from './styles';
 
@@ -104,9 +104,10 @@ export default function NewChannelRequest(props: TribeRequestProp) {
           priority: FastImage.priority.high
         }}
         style={{
-          width: RFValue(35),
-          height: RFValue(35),
-          borderRadius: RFValue(4)
+          width: RFValue(60),
+          height: RFValue(60),
+          borderRadius: RFValue(4),
+          marginTop: RFValue(5)
         }}
       />
       <RightCover>

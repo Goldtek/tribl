@@ -34,7 +34,7 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface GroupInformationProp extends NavigationInterface {}
+interface GroupInformationProp extends NavigationInterface { }
 
 const H_MAX_HEIGHT = 300;
 const H_MIN_HEIGHT = 70;
@@ -57,7 +57,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
   const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
 
-  const user = Object?.values(channel?.state?.members).find(
+  const user = Object.values(channel?.state?.members || {}).find(
     ({ user }) => user?.id !== chatClient.user?.id
   );
 
@@ -82,7 +82,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
       [
         {
           text: 'Cancel',
-          onPress: () => {},
+          onPress: () => { },
           style: 'cancel'
         },
         {

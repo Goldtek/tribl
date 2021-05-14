@@ -21,7 +21,6 @@ import { userDetails as cacheData } from '../../graphql/cache';
 import {
   GET_USER_PASSPORT,
   GET_ALL_MEMBERS,
-  GET_CONNECTION_REQUEST,
   GET_MY_CONNECTIONS,
   GET_NEARBY_MEMBERS,
   GET_MY_COMMUNITIES,
@@ -35,10 +34,7 @@ import {
   GENERATE_INVITE_LINK
 } from '../../graphql/server/mutations';
 import Storage from '../../libs/storage';
-import {
-  CHANGE_ACTIVE_SIDE_MENU_STATE,
-  CHANGE_CONNECTION_NOTIFICATION_BADGE
-} from '../../graphql/cache/mutations';
+import { CHANGE_ACTIVE_SIDE_MENU_STATE } from '../../graphql/cache/mutations';
 import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
@@ -123,10 +119,6 @@ export default function PassportScreen(props: ScreenProp) {
 
   const [changeSideMenuState] = useMutation(CHANGE_ACTIVE_SIDE_MENU_STATE);
 
-  const [changeConnectionNotification] = useMutation(
-    CHANGE_CONNECTION_NOTIFICATION_BADGE
-  );
-
   const [getMyCommunities] = useLazyQuery(GET_MY_COMMUNITIES);
 
   const [getMyChannels] = useLazyQuery(USER_CHANNELS);
@@ -140,13 +132,6 @@ export default function PassportScreen(props: ScreenProp) {
   const [getPopularCommunities] = useLazyQuery(GET_POPULAR_COMMUNITIES, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
-
-  const [getConnectionRequest, { data: connectionRequestData }] = useLazyQuery(
-    GET_CONNECTION_REQUEST,
-    {
-      variables: { input: { limit: PAGINATION_DEFAULT } }
-    }
-  );
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: 8 } }
@@ -220,14 +205,6 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   useEffect(() => {
-    if (connectionRequestData?.connectionRequests.length) {
-      changeConnectionNotification({
-        variables: { showConnectionNotificationBadge: true }
-      });
-    }
-  }, [connectionRequestData?.connectionRequests.length]);
-
-  useEffect(() => {
     setCache({ ...cache, ...userDetails });
     setAvatar({ ...avatar, uri: userDetails?.avatar });
 
@@ -273,7 +250,6 @@ export default function PassportScreen(props: ScreenProp) {
     getRecommendedCommunities();
     getRecommendedMembers();
     getPopularCommunities();
-    getConnectionRequest();
     getMyCommunities();
     getNearbyMembers();
     getMyConnections();
@@ -500,7 +476,6 @@ export default function PassportScreen(props: ScreenProp) {
 
   const handleWalletAction = () => {
     const status = cache?.wallet?.status;
-    console.tron('cache', cache);
 
     if (status === 'ACTIVE') {
       return navigation.navigate('TriblPayScreen', {

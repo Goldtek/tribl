@@ -81,7 +81,7 @@ const handleDefaultEmoji = (data: any[], blackList: _.Dictionary<any> | null | u
 };
 
 const emojiCategory = handleDefaultEmoji(emojiSource, defaultProps.blackList)
-const values = Object.values(emojiCategory)
+const values = Object.values(emojiCategory || {})
 
 let emojiData = [];
 for (const value of values) {

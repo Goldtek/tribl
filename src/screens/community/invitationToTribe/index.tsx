@@ -46,7 +46,7 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface InviteFriendsScreenProp extends NavigationInterface {}
+interface InviteFriendsScreenProp extends NavigationInterface { }
 
 export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
   const { navigation, route } = props;
@@ -97,7 +97,7 @@ export default function InviteFriendsToTribe(props: InviteFriendsScreenProp) {
 
   const indexName = ENVIRONMENT_VARIABLES.ALGOLIA_PASSPORT_INDEX_NAME;
 
-  const participants = Object.values(selected);
+  const participants = Object.values(selected || {});
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;

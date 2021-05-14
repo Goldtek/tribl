@@ -69,7 +69,7 @@ function TribeCard(props: TribeCardProp) {
               color: colors.PRIMARY_TEXT,
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               fontSize: RFValue(fonts.LARGE_SIZE - 2),
-              textTransform: 'capitalize',
+              textTransform: 'none',
               lineHeight: RFValue(18)
             }}
           >
