@@ -38,8 +38,7 @@ import {
   DrawerFooter,
   MenuContainer,
   ProfileContainer,
-  ConnectionBadgeWrapper,
-  TransferCover
+  ConnectionBadgeWrapper
 } from './styles';
 
 export default function CustomDrawerComponent() {
@@ -56,7 +55,6 @@ export default function CustomDrawerComponent() {
   );
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
-
   const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
   const userDetails = userData?.myPassport;
@@ -74,18 +72,18 @@ export default function CustomDrawerComponent() {
     changeSideMenuState({ variables: { activeSideMenu: menu } });
   };
 
-  //@ts-ignore
-  Intercom.registerIdentifiedUser({ userId: userDetails?.id });
-
-  Intercom.updateUser({
-    // Pre-defined user attributes
-    email: userDetails?.email,
-    user_id: userDetails?.id,
-    name: `${userDetails?.firstName} ${userDetails?.lastName}`,
-    phone: userDetails?.phoneNumber,
-    language_override: 'language_override',
-    unsubscribed_from_emails: true
-  });
+  if (userDetails?.id) {
+    Intercom.registerIdentifiedUser({ userId: userDetails?.id });
+    Intercom.updateUser({
+      // Pre-defined user attributes
+      email: userDetails?.email,
+      user_id: userDetails?.id,
+      name: `${userDetails?.firstName} ${userDetails?.lastName}`,
+      phone: userDetails?.phoneNumber,
+      language_override: 'language_override',
+      unsubscribed_from_emails: true
+    });
+  }
 
   const sideMenuScreens = [
     {
@@ -131,9 +129,7 @@ export default function CustomDrawerComponent() {
             size={24}
             color={colors.PRIMARY_TEXT}
           />
-          {data?.showConnectionNotificationBadge ? (
-            <ConnectionBadgeWrapper />
-          ) : null}
+          {data?.showConnectionNotificationBadge && <ConnectionBadgeWrapper />}
         </Fragment>
       )
     },
@@ -174,9 +170,7 @@ export default function CustomDrawerComponent() {
       drawerIcon: (
         <Fragment>
           <SimpleLineIcons name="bell" size={24} color={colors.PRIMARY_TEXT} />
-          {data?.showConnectionNotificationBadge ? (
-            <ConnectionBadgeWrapper />
-          ) : null}
+          {data?.showConnectionNotificationBadge && <ConnectionBadgeWrapper />}
         </Fragment>
       )
     },

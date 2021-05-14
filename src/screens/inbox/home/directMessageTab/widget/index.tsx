@@ -16,6 +16,7 @@ import ChannelActions from './channelActions';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
 import { USER_DEFAULT_AVATAR } from '../../../../../constants';
 import { useStreamContext } from '../../../../../stream';
+import { useQuery } from '@apollo/react-hooks';
 import {
   chatClient,
   LocalAttachmentType,
@@ -25,6 +26,8 @@ import {
   LocalReactionType,
   LocalUserType
 } from '../../../../../stream/types';
+import { MyPassportInterface } from '../../../../../graphql/types';
+import { GET_USER_PASSPORT } from '../../../../../graphql/server/query';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -50,6 +53,8 @@ export default function CustomDirectMessagePreview(
     LocalUserType
   >
 ) {
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
   const {
     unread,
     channel,
@@ -57,10 +62,6 @@ export default function CustomDirectMessagePreview(
     formatLatestMessageDate,
     latestMessageLength = 40
   } = props;
-
-  // if (!Boolean(channel.state.last_message_at)) {
-  //   return null;
-  // }
 
   const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
@@ -70,6 +71,12 @@ export default function CustomDirectMessagePreview(
   const message = latestMessagePreview?.messageObject;
   const latestMessageDate = message?.created_at.asMutable();
   let messageText: string = `${latestMessagePreview?.text}`;
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+  const blockedUser = blockedUsers?.some(
+    (user) => message?.user?.id === user.id
+  );
+
+  if (Boolean(blockedUser)) return null;
 
   let receiverId: any = null;
   let channelDetails: any = null;

@@ -67,7 +67,6 @@ export default function MemberSlide(props: MemberSlideProp) {
         return users.id == userTwo.id;
       });
     });
-    console.tron('filteredUsers', filteredUsers);
 
     return (
       <Results>

@@ -2,14 +2,16 @@ import React, {
   useState,
   useEffect,
   useContext,
-  useCallback,
   FunctionComponent
 } from 'react';
 import Intercom from 'react-native-intercom';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
-import { GET_USER_PASSPORT } from '../graphql/server/query';
+import {
+  GET_CONNECTION_REQUEST,
+  GET_USER_PASSPORT
+} from '../graphql/server/query';
 import {
   UPDATE_USER_PASSPORT,
   GENERATE_STREAMS_TOKEN
@@ -21,7 +23,8 @@ import {
   GenerateStreamsTokenRequestInterface,
   PassportInterface,
   IFCMMessageTypes,
-  VerifyOTPIT
+  VerifyOTPIT,
+  ConnectionRequestsInterface
 } from '../graphql/types';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
@@ -32,6 +35,7 @@ import fcmMessaging, {
 } from '@react-native-firebase/messaging';
 import { UserResponse } from 'stream-chat';
 import Storage from '../libs/storage';
+import { PAGINATION_DEFAULT } from '../constants';
 
 import {
   ThreadType,
@@ -53,6 +57,13 @@ const StreamProvider: FunctionComponent = ({ children }) => {
 
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const [updatePassportFCM] = useMutation(UPDATE_USER_PASSPORT);
+  const { data: connectionRequestData } = useQuery<ConnectionRequestsInterface>(
+    GET_CONNECTION_REQUEST,
+    { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
+  );
+
+  const connectionRequests = connectionRequestData?.connectionRequests;
+
   const [changeMessageNotification] = useMutation(
     CHANGE_MESSAGE_NOTIFICATION_BADGE
   );
@@ -60,16 +71,6 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
   );
-
-  useEffect(() => {
-    // Register foreground handler
-    const unsubscribe = messaging.onMessage(presentNotification);
-
-    // Check whether an initial notification is available
-    messaging.getInitialNotification().then(presentNotification);
-
-    return unsubscribe;
-  }, []);
 
   const presentNotification = async (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
@@ -104,32 +105,38 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     crashlytics.log('USER SINGED IN SUCCESSFULLY.');
   };
 
-  const initChat = useCallback(async () => {
+  const initChat = async (passport: PassportInterface) => {
     if (
-      !userData?.myPassport.id &&
-      !userData?.myPassport.avatar &&
-      !userData?.myPassport.firstName &&
-      !userData?.myPassport.lastName
+      !passport.id &&
+      !passport.avatar &&
+      !passport.firstName &&
+      !passport.lastName
     ) {
       return;
     }
 
     const user: UserResponse<LocalUserType> = {
-      id: `${userData?.myPassport.id}`,
-      image: `${userData?.myPassport.avatar}`,
-      citizenship: JSON.stringify(userData?.myPassport.citizenship),
-      name: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`,
-      value: `${userData?.myPassport.firstName} ${userData?.myPassport.lastName}`
+      id: `${passport.id}`,
+      image: `${passport.avatar}`,
+      citizenship: JSON.stringify(passport.citizenship),
+      name: `${passport.firstName} ${passport.lastName}`,
+      value: `${passport.firstName} ${passport.lastName}`
     };
 
     try {
       await chatClient.disconnect();
-      const streamUser = await chatClient.connectUser(user, async () => {
-        const { data } = await authenticateStream();
-        return `${data?.generateStreamsToken.streams_token}`;
-      });
+      const userCredStorage = await Storage.getUserCredentials();
+      const credentials = JSON.parse(userCredStorage || '{}') as VerifyOTPIT;
+      let streams_token = credentials?.streams_token;
 
-      onSignIn(userData?.myPassport);
+      if (!streams_token) {
+        const { data } = await authenticateStream();
+        streams_token = `${data?.generateStreamsToken.streams_token}`;
+        Storage.setUserCredentials(data?.generateStreamsToken);
+      }
+
+      const streamUser = await chatClient.connectUser(user, streams_token);
+      onSignIn(passport);
 
       if (streamUser && streamUser.me?.total_unread_count) {
         changeMessageNotification({
@@ -160,16 +167,10 @@ const StreamProvider: FunctionComponent = ({ children }) => {
         // (optional) Called when Token is generated (iOS and Android)
         onRegister: async ({ token, os }) => {
           const fcmToken = await messaging.getToken();
-          const userCredStorageData = await Storage.getUserCredentials();
-
-          if (userCredStorageData) {
-            const credentials = JSON.parse(userCredStorageData) as VerifyOTPIT;
-
-            if (credentials.id_token) {
-              updatePassportFCM({
-                variables: { payload: { fcm: fcmToken } }
-              });
-            }
+          if (credentials.id_token) {
+            updatePassportFCM({
+              variables: { payload: { fcm: fcmToken } }
+            });
           }
 
           if (os === 'android') {
@@ -179,7 +180,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
           await chatClient.addDevice(
             os === 'ios' ? token : fcmToken,
             os === 'ios' ? 'apn' : 'firebase',
-            userData?.myPassport.id
+            passport.id
           );
 
           const { devices } = await chatClient.getDevices();
@@ -212,17 +213,35 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     }
-  }, [userData?.myPassport.id]);
+  };
 
   useEffect(() => {
     if (userData?.myPassport.id) {
       // Initializes Stream's chat client.
       // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
       if (!chatClient.user?.id) {
-        initChat();
+        initChat(userData?.myPassport);
       }
     }
   }, [userData?.myPassport.id]);
+
+  useEffect(() => {
+    connectionRequests?.data.length
+      ? changeConnectionNotification({
+          variables: { showConnectionNotificationBadge: true }
+        })
+      : changeConnectionNotification({
+          variables: { showConnectionNotificationBadge: false }
+        });
+  }, [connectionRequests?.data.length]);
+
+  useEffect(() => {
+    // Register foreground handler
+    const unsubscribe = messaging.onMessage(presentNotification);
+    // Check whether an initial notification is available
+    messaging.getInitialNotification().then(presentNotification);
+    return unsubscribe;
+  }, []);
 
   return (
     <StreamContext.Provider
