@@ -120,8 +120,10 @@ export type RootStackParamList = {
   MemberPassportDetailScreen?: Object;
   WaitlistScreen?: Object;
   DocumentTypeSelectionScreen?: Object;
-  WalletStatusScreen?: Object;
+  FailedWalletStatusScreen?: Object;
+  PendingWalletStatusScreen?: Object;
   BillingDetailsScreen?: Object;
+  SelfieScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -220,9 +222,11 @@ export type RootStackParamScreensList =
   | 'TribeDetailScreen'
   | 'MemberPassportDetailScreen'
   | 'WaitlistScreen'
-  | 'WalletStatusScreen'
   | 'BillingDetailsScreen'
-  | 'DocumentTypeSelectionScreen';
+  | 'DocumentTypeSelectionScreen'
+  | 'SelfieScreen'
+  | 'FailedWalletStatusScreen'
+  | 'PendingWalletStatusScreen'
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;

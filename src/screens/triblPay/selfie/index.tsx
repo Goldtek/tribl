@@ -4,7 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PermissionsAndroid, Platform, View } from 'react-native';
 //@ts-ignore
-import { VouchedIdCamera } from '@vouched.id/vouched-react-native';
+import { VouchedFaceCamera } from '@vouched.id/vouched-react-native';
 import { Title, Text, ProgressBar, TouchableRipple } from 'react-native-paper';
 
 import { useThemeContext } from '../../../theme';
@@ -20,19 +20,15 @@ import { Container, HeaderCover } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
   route: {
-    params: {
-      userDetails: MyPassportInterface;
-      details: CountryInterface;
-      selfieJob: any;
-    };
+    params: { userDetails: MyPassportInterface; details: CountryInterface };
   };
 }
 
-export default function CountryIdScreen(props: ScreenProp) {
+export default function SelfieScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const cameraRef = useRef<typeof VouchedIdCamera>(null);
+  const cameraRef = useRef<typeof VouchedFaceCamera>(null);
 
   const [session] = useState(getSession());
   const [message, setMessage] = useState('loading...');
@@ -40,7 +36,7 @@ export default function CountryIdScreen(props: ScreenProp) {
   const [job, setJob] = useState<any>(null);
   const [hasCameraPermissions, setPermissions] = useState<unknown>(undefined);
 
-  const { details, userDetails, selfieJob } = props.route.params;
+  const { details, userDetails } = props.route.params;
 
   useEffect(() => {
     // assume all iOS users except permissions
@@ -77,12 +73,10 @@ export default function CountryIdScreen(props: ScreenProp) {
   }
 
   const handleNavigation = () => {
-    navigation.navigate('BillingDetailsScreen', {
+    navigation.navigate('DocumentTypeSelectionScreen', {
       details,
       userDetails,
-      idJob: job,
-      selfieJob,
-      document
+      job
     });
   };
 
@@ -96,9 +90,17 @@ export default function CountryIdScreen(props: ScreenProp) {
         return 'Move Closer';
       case 'MOVE_AWAY':
         return 'Move Away';
+      case 'OPEN_MOUTH':
+        return 'Open Mouth';
+      case 'CLOSE_MOUTH':
+        return 'Close Mouth';
+      case 'LOOK_FORWARD':
+        return 'Look Forward';
+      case 'BLINK_EYES':
+        return 'Blink Eyes';
 
       default:
-        return 'No Card or Document detected';
+        return 'No face detected';
     }
   };
 
@@ -112,7 +114,7 @@ export default function CountryIdScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={5 / 6}
+          progress={3 / 6}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
@@ -133,7 +135,7 @@ export default function CountryIdScreen(props: ScreenProp) {
           }}
         >
           {' '}
-          {t(`community.passport.step`)} 5
+          {t(`community.passport.step`)} 2
         </Text>
         <Title
           style={{
@@ -143,7 +145,7 @@ export default function CountryIdScreen(props: ScreenProp) {
             lineHeight: RFValue(30)
           }}
         >
-          {t(`community.passport.countryId`)}
+          Take a Selfie
         </Title>
         <Text
           style={{
@@ -154,42 +156,36 @@ export default function CountryIdScreen(props: ScreenProp) {
             marginBottom: RFValue(10),
             lineHeight: RFValue(19)
           }}
-        >
-          {t(`community.passport.capture`)}
-        </Text>
+        ></Text>
       </HeaderCover>
 
       <View
         style={{
-          marginHorizontal: RFValue(15)
+          marginHorizontal: RFValue(15),
+          flex: 3
         }}
       >
         <View
           style={{
-            height: RFValue(200),
+            flex: 1,
+            overflow: 'hidden',
             borderWidth: 2,
             borderColor: colors.PRIMARY
           }}
         >
-          <VouchedIdCamera
+          <VouchedFaceCamera
             ref={cameraRef}
-            enableDistanceCheck={false}
-            onIdStream={async (cardDetectionResult: any) => {
-              const { instruction, step } = cardDetectionResult;
-
+            livenessMode="DISTANCE"
+            onFaceStream={async (faceDetectionResult: any) => {
+              const { instruction, step } = faceDetectionResult;
               if (step === 'POSTABLE') {
                 cameraRef.current.stop();
-                setMessage('Processing');
+                setMessage('Processing...');
+
                 try {
-                  setMessage('Processing...');
-                  const job = await session.postFrontId(cardDetectionResult);
-                  // setMessage(
-                  //   job.result.success || job.errors
-                  //     ? 'Document Processing failed, rescan'
-                  //     : 'Please continue to next step'
-                  // );
+                  const job = await session.postFace(faceDetectionResult);
                   setMessage('Please continue to next step');
-                  setDocument(cardDetectionResult);
+                  setDocument(faceDetectionResult);
                   setJob(job);
                 } catch (e) {
                   console.error(e);
@@ -199,29 +195,30 @@ export default function CountryIdScreen(props: ScreenProp) {
               }
             }}
           />
+          {document && (
+            <View
+              style={{
+                position: 'absolute',
+                height: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 2,
+                borderColor: colors.ONLINE,
+                width: '100%'
+              }}
+            >
+              <TouchableRipple onPress={rescan}>
+                <MaterialCommunityIcons
+                  name="camera-retake"
+                  size={RFValue(30)}
+                  color={colors.ONLINE}
+                />
+              </TouchableRipple>
+            </View>
+          )}
         </View>
+
         <Text>{message}</Text>
-        {document && (
-          <View
-            style={{
-              position: 'absolute',
-              height: RFValue(200),
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderWidth: 2,
-              borderColor: colors.ONLINE,
-              width: '100%'
-            }}
-          >
-            <TouchableRipple onPress={rescan}>
-              <MaterialCommunityIcons
-                name="camera-retake"
-                size={RFValue(30)}
-                color={colors.ONLINE}
-              />
-            </TouchableRipple>
-          </View>
-        )}
       </View>
 
       {job ? (

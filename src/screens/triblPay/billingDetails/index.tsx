@@ -28,7 +28,7 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function BillingDetailsScreen(props: ScreenProp) {
   const { navigation } = props;
-  const { job, details } = props.route.params;
+  const { idJob, selfieJob, details, document } = props.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const modalizeRef = useRef<Modalize>(null);
@@ -70,7 +70,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           addressPostalCode,
           addressCountryCode
         },
-        jobId: job.id,
+        jobId: idJob.id,
         isLocal
       }
     }
@@ -92,12 +92,17 @@ export default function BillingDetailsScreen(props: ScreenProp) {
 
     try {
       const { data } = await verifyKyc();
-      if (data.onBoardUser.status === 'APPROVED') {
-        navigation.navigate('ActivateWalletScreen', {});
-      }
-      if (data.onBoardUser.status === 'FAILED') {
-        navigation.navigate('WalletStatusScreen', {});
-      }
+      if (data.onBoardUser.status === 'APPROVED')
+        return navigation.navigate('ActivateWalletScreen', {});
+      if (data.onBoardUser.status === 'MANUAL_REVIEW')
+        return navigation.navigate('PendingWalletStatusScreen', { data });
+
+      navigation.navigate('FailedWalletStatusScreen', {
+        data,
+        selfieJob,
+        idJob,
+        document
+      });
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
@@ -119,14 +124,13 @@ export default function BillingDetailsScreen(props: ScreenProp) {
         keyboardShouldPersistTaps={'always'}
         enableOnAndroid={true}
         contentContainerStyle={{
-          backgroundColor: colors.WHITE,
-          flex: 1
+          backgroundColor: colors.WHITE
         }}
       >
         <Fragment>
           <HeaderCover>
             <ProgressBar
-              progress={5 / 5}
+              progress={6 / 6}
               color={colors.PRIMARY}
               style={{
                 height: RFValue(5),
@@ -147,7 +151,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               }}
             >
               {' '}
-              {t(`community.passport.step`)} 5
+              {t(`community.passport.step`)} 6
             </Text>
             <Title
               style={{

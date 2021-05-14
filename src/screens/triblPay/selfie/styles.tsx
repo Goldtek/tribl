@@ -11,12 +11,13 @@ export const HeaderCover = styled.View`
   padding: 0 ${RFValue(15)}px;
 `;
 
-export const ErrorContainer = styled(HeaderCover)`
-  flex-direction: row;
-  justify-content: space-around;
-  flex-wrap: wrap;
-`;
-
-export const ImageErrorContainer = styled.View`
+export const IconCover = styled.View`
+  background-color: ${({ theme }) => theme.colors.PRIMARY};
+  width: ${RFValue(50)}px;
+  height: ${RFValue(50)}px;
+  justify-content: center;
   align-items: center;
+  align-self: center;
+  border-radius: 50px;
+  margin-bottom: ${RFValue(30)}px;
 `;

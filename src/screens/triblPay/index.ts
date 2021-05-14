@@ -1,6 +1,7 @@
-import CountryIdScreen from './countryId';
 import WalletScreen from './wallet';
+import SelfieScreen from './selfie';
 import AddCashScreen from './addCash';
+import CountryIdScreen from './countryId';
 import BankCountryScreen from './bankCountry';
 import LinkAccountScreen from './linkedAccount';
 import WalletStatusScreen from './walletStatus';
@@ -11,6 +12,7 @@ import DocumentTypeSelectionScreen from './documentTypeSelection';
 
 export default {
   WalletScreen,
+  SelfieScreen,
   AddCashScreen,
   CountryIdScreen,
   LinkAccountScreen,

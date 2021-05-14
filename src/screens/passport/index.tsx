@@ -485,7 +485,7 @@ export default function PassportScreen(props: ScreenProp) {
 
     if (status === 'PENDING') {
       return navigation.navigate('TriblPayScreen', {
-        screen: 'WalletStatusScreen'
+        screen: 'PendingWalletStatusScreen'
       });
     }
 

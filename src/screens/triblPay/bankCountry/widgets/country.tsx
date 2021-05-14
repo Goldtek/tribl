@@ -27,7 +27,7 @@ const CountryCard = (props: CountryCardProps) => {
       });
     }
 
-    navigation.navigate('DocumentTypeSelectionScreen', {
+    navigation.navigate('SelfieScreen', {
       details: { name, iso2, emoji },
       userDetails
     });

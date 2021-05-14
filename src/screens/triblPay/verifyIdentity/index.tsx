@@ -34,7 +34,7 @@ export default function VerifyIdentityScreen(props: ScreenProp) {
   }, []);
 
   const handleNavigation = () => {
-    navigation.navigate('CountryIdScreen', {
+    navigation.navigate('SelfieScreen', {
       details,
       userDetails
     });
@@ -44,7 +44,7 @@ export default function VerifyIdentityScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={2 / 5}
+          progress={2 / 6}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
