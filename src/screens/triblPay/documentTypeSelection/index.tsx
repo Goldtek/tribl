@@ -19,14 +19,22 @@ import { Container, HeaderCover } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {
   route: {
-    params: { userDetails: MyPassportInterface; details: CountryInterface };
+    params: {
+      userDetails: MyPassportInterface;
+      details: CountryInterface;
+      job: any;
+    };
   };
 }
 
 initSession();
 export default function DocumentTypeSelectionScreen(props: ScreenProp) {
   const { navigation } = props;
-  const { userDetails, details } = props.route.params;
+  const {
+    userDetails,
+    details,
+    job: { selfieJob }
+  } = props.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
@@ -41,7 +49,8 @@ export default function DocumentTypeSelectionScreen(props: ScreenProp) {
     if (docType === 'id')
       return navigation.navigate('CountryIdScreen', {
         details,
-        userDetails
+        userDetails,
+        selfieJob
       });
   };
 
