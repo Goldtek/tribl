@@ -3,28 +3,28 @@ import { useTranslation } from 'react-i18next';
 import { Title, Text } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-import { useThemeContext } from '../../../theme';
-import { NavigationInterface } from '../../types';
-import GradientButton from '../../../components/gradientButton';
-import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { useThemeContext } from '../../../../theme';
+import { NavigationInterface } from '../../../types';
+import GradientButton from '../../../../components/gradientButton';
+import { tagScreenName, logEvent } from '../../../../utils/uxcamHelper';
 
-import { Container, HeaderCover } from './styles';
+import { Container, HeaderCover } from '../styles';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function WalletStatusScreen(props: ScreenProp) {
+export default function FailedScreen(props: ScreenProp) {
   const { navigation } = props;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
   useEffect(() => {
-    tagScreenName('WalletStatusScreen');
+    tagScreenName('FailedWalletStatusScreen');
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
 
   const handleNavigation = () => {
-    navigation.navigate('PassportScreen');
+    navigation.navigate('BankCountryScreen');
   };
 
   return (
@@ -67,7 +67,7 @@ export default function WalletStatusScreen(props: ScreenProp) {
         }}
         contentStyle={{ height: 50 }}
       >
-        Back To Passport
+        Retry
       </GradientButton>
     </Container>
   );
