@@ -130,7 +130,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
         <Fragment>
           <HeaderCover>
             <ProgressBar
-              progress={5 / 5}
+              progress={6 / 6}
               color={colors.PRIMARY}
               style={{
                 height: RFValue(5),
@@ -151,7 +151,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
               }}
             >
               {' '}
-              {t(`community.passport.step`)} 5
+              {t(`community.passport.step`)} 6
             </Text>
             <Title
               style={{

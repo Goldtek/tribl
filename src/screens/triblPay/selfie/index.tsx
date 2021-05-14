@@ -114,7 +114,7 @@ export default function SelfieScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={4 / 5}
+          progress={3 / 6}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
@@ -135,7 +135,7 @@ export default function SelfieScreen(props: ScreenProp) {
           }}
         >
           {' '}
-          {t(`community.passport.step`)} 4
+          {t(`community.passport.step`)} 2
         </Text>
         <Title
           style={{

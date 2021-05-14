@@ -112,7 +112,7 @@ export default function CountryIdScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={4 / 5}
+          progress={5 / 6}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),
@@ -133,7 +133,7 @@ export default function CountryIdScreen(props: ScreenProp) {
           }}
         >
           {' '}
-          {t(`community.passport.step`)} 4
+          {t(`community.passport.step`)} 5
         </Text>
         <Title
           style={{
