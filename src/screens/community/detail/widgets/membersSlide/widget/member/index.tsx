@@ -1,12 +1,16 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Title, Text, TouchableRipple } from 'react-native-paper';
+import { Title, Text, TouchableRipple, Button } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Entypo, Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../../../../../theme';
-import { REQUEST_CONNECTION } from '../../../../../../../graphql/server/mutations';
+import {
+  REQUEST_CONNECTION,
+  REMOVE_USER_FROM_TRIBE
+} from '../../../../../../../graphql/server/mutations';
 import {
   PassportInterface,
   SinglePassportRequestInterface
@@ -20,17 +24,30 @@ import { crashlytics } from '../../../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
+import { Alert } from 'react-native';
 
 // DEFINE SCREEN PROP TYPES
-interface MemberProp extends PassportInterface {}
+interface MemberProp extends PassportInterface {
+  isModerotor: boolean;
+  refresh: VoidFunction;
+  tribeId: string;
+}
 
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
-  const { avatar, firstName, lastName, id } = props;
+  const {
+    avatar,
+    firstName,
+    lastName,
+    id,
+    isModerotor,
+    refresh,
+    tribeId
+  } = props;
   const [user, setUser] = useState(false);
-
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
   });
@@ -38,6 +55,13 @@ function Member(props: MemberProp) {
   const { data: singlePassportData } = useQuery<SinglePassportRequestInterface>(
     GET_SINGLE_PASSPORT,
     { variables: { id } }
+  );
+
+  const [removeMember, { loading: removeLoading }] = useMutation(
+    REMOVE_USER_FROM_TRIBE,
+    {
+      variables: { payload: { communityId: tribeId, receipientIds: [id] } }
+    }
   );
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
@@ -57,6 +81,34 @@ function Member(props: MemberProp) {
       setUser(true);
     }
   }, [userId]);
+
+  const handleRemoveUser = () => {
+    if (!isModerotor && !user) {
+      Alert.alert(
+        'Remove user from tribe',
+        `Are you sure you want to remove ${firstName} ${lastName} from this tribe`,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {},
+            style: 'cancel'
+          },
+          {
+            text: 'Delete',
+            onPress: async () => {
+              try {
+                await removeMember();
+                refresh();
+              } catch (error) {
+                crashlytics.recordError(new Error(error));
+                crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+              }
+            }
+          }
+        ]
+      );
+    }
+  };
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
@@ -149,31 +201,62 @@ function Member(props: MemberProp) {
             </Title>
           ) : null}
         </NameContainer>
-        {user ? null : (
-          <TouchableRipple
-            style={{
-              marginLeft: 'auto',
-              width: RFValue(50),
+        {!isModerotor && !user ? (
+          <Button
+            mode="text"
+            uppercase={false}
+            loading={removeLoading}
+            onPress={handleRemoveUser}
+            labelStyle={{
+              fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+              fontSize: RFValue(fonts.SMALL_SIZE + 2),
+              textTransform: 'capitalize',
+              color: colors.WHITE,
+              marginHorizontal: removeLoading ? 10 : 0
+            }}
+            contentStyle={{
+              backgroundColor: colors.PRIMARY,
               height: RFValue(35),
-              backgroundColor: connectedUsers ? colors.WHITE : colors.PRIMARY,
-              borderWidth: connectedUsers ? 1 : 0,
-              borderColor: connectedUsers ? colors.INPUT : colors.TRANSPARENT,
-              borderRadius: 4,
               justifyContent: 'center',
               alignItems: 'center'
             }}
-            onPress={
-              singlePassport?.connectionDetails?.status == 'ACCEPTED'
-                ? handleMessageNavigation
-                : handleRequest
-            }
+            style={{ width: RFValue(60), borderRadius: 5, marginLeft: 'auto' }}
           >
-            {singlePassport?.connectionDetails?.status == 'ACCEPTED' ? (
-              <Entypo name="new-message" size={20} color={colors.WHITE} />
-            ) : (
-              <Feather name="plus" size={20} color={colors.WHITE} />
+            {t(`community.chat.removeUser`)}
+          </Button>
+        ) : (
+          <Fragment>
+            {user ? null : (
+              <TouchableRipple
+                style={{
+                  marginLeft: 'auto',
+                  width: RFValue(50),
+                  height: RFValue(35),
+                  backgroundColor: connectedUsers
+                    ? colors.WHITE
+                    : colors.PRIMARY,
+                  borderWidth: connectedUsers ? 1 : 0,
+                  borderColor: connectedUsers
+                    ? colors.INPUT
+                    : colors.TRANSPARENT,
+                  borderRadius: 4,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+                onPress={
+                  singlePassport?.connectionDetails?.status == 'ACCEPTED'
+                    ? handleMessageNavigation
+                    : handleRequest
+                }
+              >
+                {singlePassport?.connectionDetails?.status == 'ACCEPTED' ? (
+                  <Entypo name="new-message" size={20} color={colors.WHITE} />
+                ) : (
+                  <Feather name="plus" size={20} color={colors.WHITE} />
+                )}
+              </TouchableRipple>
             )}
-          </TouchableRipple>
+          </Fragment>
         )}
       </Fragment>
     </TouchableRipple>
