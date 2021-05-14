@@ -187,8 +187,16 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
       />
 
       <TriblpayStack.Screen
-        name="WalletStatusScreen"
-        component={Screens.WalletStatusScreen.FailedScreen}
+        name="FailedWalletStatusScreen"
+        component={Screens.WalletStatusScreen.Failed}
+        options={{
+          headerShown: false
+        }}
+      />
+
+      <TriblpayStack.Screen
+        name="PendingWalletStatusScreen"
+        component={Screens.WalletStatusScreen.Pending}
         options={{
           headerShown: false
         }}
