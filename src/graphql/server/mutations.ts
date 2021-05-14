@@ -315,14 +315,32 @@ export const ONBOARD_USER = gql`
     onBoardUser(input: $payload) {
       status
       tags
-      required{
+      required {
         message
         tags
       }
-      optional{
+      optional {
         message
         tags
       }
+    }
+  }
+`;
+
+// REMOVE USER FROM CHANNEL
+export const REMOVE_USER_FROM_CHANNEL = gql`
+  mutation removeUserFromChannel($payload: RemoveUserFromChannelInput!) {
+    removeUserFromChannel(input: $payload) {
+      success
+    }
+  }
+`;
+
+// REMOVE USER FROM TRIBE
+export const REMOVE_USER_FROM_TRIBE = gql`
+  mutation removeUserFromCommunity($payload: LeaveCommunityInput!) {
+    removeUserFromCommunity(input: $payload) {
+      success
     }
   }
 `;
