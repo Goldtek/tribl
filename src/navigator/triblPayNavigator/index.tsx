@@ -85,6 +85,27 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           }
         }}
       />
+
+      <TriblpayStack.Screen
+        name="SelfieScreen"
+        component={Screens.SelfieScreen}
+        options={{
+          headerTitle: `4 of 5 ${t(`community.passport.steps`)}`,
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.SECONDARY_TEXT,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+            fontFamily: fonts.WORK_SANS_REGULAR
+          }
+        }}
+      />
+
       <TriblpayStack.Screen
         name="CountryIdScreen"
         component={Screens.CountryIdScreen}
@@ -104,6 +125,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           }
         }}
       />
+
       <TriblpayStack.Screen
         name="VerifyIdentityScreen"
         component={Screens.VerifyIdentityScreen}
@@ -166,7 +188,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
 
       <TriblpayStack.Screen
         name="WalletStatusScreen"
-        component={Screens.WalletStatusScreen}
+        component={Screens.WalletStatusScreen.FailedScreen}
         options={{
           headerShown: false
         }}
