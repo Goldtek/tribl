@@ -1,23 +1,39 @@
 // @ts-nocheck
 import React, { useState, Fragment, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Mixpanel } from '../../config';
 import * as Location from 'expo-location';
-import FastImage from 'react-native-fast-image';
-import { Share, Platform, SafeAreaView, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { StatusBar } from 'expo-status-bar';
+import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-// @ts-ignore
-import SingleImage from '../../libs/react-native-zoom-lightbox';
-import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
+import FastImage from 'react-native-fast-image';
+import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NavigationInterface } from '../types';
-import { useThemeContext } from '../../theme';
+import { Share, Platform, SafeAreaView, Alert } from 'react-native';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+// @ts-ignore
+import { Mixpanel } from '../../config';
+import Storage from '../../libs/storage';
 import TabViewSlider from './widgets/tabs';
+import { useThemeContext } from '../../theme';
+import { NavigationInterface } from '../types';
+import { crashlytics } from '../../firebase/config';
+import { countWords } from '../../utils/countWords';
+import { PAGINATION_DEFAULT } from '../../constants';
 import { userDetails as cacheData } from '../../graphql/cache';
+import SingleImage from '../../libs/react-native-zoom-lightbox';
+import { CHANGE_ACTIVE_SIDE_MENU_STATE } from '../../graphql/cache/mutations';
+
+import {
+  tagScreenName,
+  addUserIdentity,
+  logEvent,
+  hideSensitiveView
+} from '../../utils/uxcamHelper';
+
 import {
   GET_USER_PASSPORT,
   GET_ALL_MEMBERS,
@@ -29,27 +45,13 @@ import {
   GET_RECOMMENDED_MEMBERS,
   USER_CHANNELS
 } from '../../graphql/server/query';
-import {
-  UPDATE_PASSPORT,
-  GENERATE_INVITE_LINK
-} from '../../graphql/server/mutations';
-import Storage from '../../libs/storage';
-import { CHANGE_ACTIVE_SIDE_MENU_STATE } from '../../graphql/cache/mutations';
+
 import cloudinaryUpload, {
   CloudinaryUploadType,
   CloudinaryResponseType
 } from '../../utils/cloudinaryUpload';
-import { Feather } from '@expo/vector-icons';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
-import {
-  tagScreenName,
-  addUserIdentity,
-  logEvent,
-  hideSensitiveView
-} from '../../utils/uxcamHelper';
-import { PAGINATION_DEFAULT } from '../../constants';
-import { crashlytics } from '../../firebase/config';
+
+import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -491,23 +493,22 @@ export default function PassportScreen(props: ScreenProp) {
 
     if (status === 'IN_ACTIVE' || 'DEACTIVATED') {
       const updateFields = [];
-      const { phoneNumber, email, lastName, firstName, dob } = cache;
-      if (phoneNumber === null || phoneNumber === '')
-        updateFields.push('phone');
-      if (email === null || email === '') updateFields.push('email');
-      if (lastName === null || lastName === '') updateFields.push('last name');
-      if (firstName === null || firstName === '')
-        updateFields.push('first name');
-      if (dob === null || dob === '') updateFields.push('dob');
+      const { phoneNumber, email, lastName, firstName, dob } =
+        userDetails || cache;
+      if (countWords(phoneNumber)) updateFields.push('phone');
+      if (countWords(email)) updateFields.push('email');
+      if (countWords(lastName)) updateFields.push('last name');
+      if (countWords(firstName)) updateFields.push('first name');
+      if (countWords(dob)) updateFields.push('dob');
 
       if (updateFields.length > 0) {
         return Alert.alert(
           'Update Profile',
-          `Update ${
+          `Update your ${
             updateFields.length > 1
               ? updateFields.map((x) => ` ${x}`)
               : `${updateFields}`
-          } fields before you can proceed`,
+          } before you can proceed`,
           [
             {
               text: 'Cancel',
