@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { Title, Text, TouchableRipple, Button } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
 import { Entypo, Feather } from '@expo/vector-icons';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useNavigation } from '@react-navigation/native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Alert } from 'react-native';
 import { useThemeContext } from '../../../../../../../theme';
 import {
   REQUEST_CONNECTION,
@@ -15,16 +16,13 @@ import {
   PassportInterface,
   SinglePassportRequestInterface
 } from '../../../../../../../graphql/types';
-import {
-  GET_SINGLE_PASSPORT,
-  GET_USER_PASSPORT
-} from '../../../../../../../graphql/server/query';
+import { GET_SINGLE_PASSPORT } from '../../../../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../../../../utils/uxcamHelper';
 import { crashlytics } from '../../../../../../../firebase/config';
+import { chatClient } from '../../../../../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer } from './styles';
-import { Alert } from 'react-native';
 
 // DEFINE SCREEN PROP TYPES
 interface MemberProp extends PassportInterface {
@@ -39,15 +37,15 @@ function Member(props: MemberProp) {
   const { t } = useTranslation();
 
   const {
-    avatar,
-    firstName,
-    lastName,
     id,
-    isModerotor,
+    avatar,
+    tribeId,
     refresh,
-    tribeId
+    lastName,
+    firstName,
+    isModerotor
   } = props;
-  const [user, setUser] = useState(false);
+
   const [requestConnection] = useMutation(REQUEST_CONNECTION, {
     variables: { payload: { id } }
   });
@@ -64,8 +62,7 @@ function Member(props: MemberProp) {
     }
   );
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
-  const userId = userData?.myPassport?.id;
+  const userId = chatClient.user?.id;
   const singlePassport = singlePassportData?.singlePassport;
   const location = singlePassport?.currentLocation;
   const citizenship = singlePassport?.citizenship;
@@ -76,14 +73,8 @@ function Member(props: MemberProp) {
       ? true
       : false;
 
-  useEffect(() => {
-    if (userId === id) {
-      setUser(true);
-    }
-  }, [userId]);
-
   const handleRemoveUser = () => {
-    if (!isModerotor && !user) {
+    if (isModerotor && userId !== id) {
       Alert.alert(
         'Remove user from tribe',
         `Are you sure you want to remove ${firstName} ${lastName} from this tribe`,
@@ -132,6 +123,17 @@ function Member(props: MemberProp) {
     }
   };
 
+  const handleNavigation = () => {
+    if (userId === id) return;
+    navigation.navigate('DrawerScreen', {
+      screen: 'MemberDetailScreen',
+      params: {
+        title: `${firstName} ${lastName}`,
+        details: { ...props, ...singlePassport }
+      }
+    });
+  };
+
   return (
     <TouchableRipple
       style={{
@@ -139,17 +141,8 @@ function Member(props: MemberProp) {
         alignItems: 'center',
         padding: 10
       }}
-      onPress={() =>
-        user
-          ? {}
-          : navigation.navigate('DrawerScreen', {
-              screen: 'MemberDetailScreen',
-              params: {
-                title: `${firstName} ${lastName}`,
-                details: { ...props, ...singlePassport }
-              }
-            })
-      }
+      disabled={userId === id}
+      onPress={handleNavigation}
     >
       <Fragment>
         <FastImage
@@ -201,7 +194,8 @@ function Member(props: MemberProp) {
             </Title>
           ) : null}
         </NameContainer>
-        {!isModerotor && !user ? (
+
+        {isModerotor && userId !== id && (
           <Button
             mode="text"
             uppercase={false}
@@ -224,39 +218,33 @@ function Member(props: MemberProp) {
           >
             {t(`community.chat.removeUser`)}
           </Button>
-        ) : (
-          <Fragment>
-            {user ? null : (
-              <TouchableRipple
-                style={{
-                  marginLeft: 'auto',
-                  width: RFValue(50),
-                  height: RFValue(35),
-                  backgroundColor: connectedUsers
-                    ? colors.WHITE
-                    : colors.PRIMARY,
-                  borderWidth: connectedUsers ? 1 : 0,
-                  borderColor: connectedUsers
-                    ? colors.INPUT
-                    : colors.TRANSPARENT,
-                  borderRadius: 4,
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-                onPress={
-                  singlePassport?.connectionDetails?.status == 'ACCEPTED'
-                    ? handleMessageNavigation
-                    : handleRequest
-                }
-              >
-                {singlePassport?.connectionDetails?.status == 'ACCEPTED' ? (
-                  <Entypo name="new-message" size={20} color={colors.WHITE} />
-                ) : (
-                  <Feather name="plus" size={20} color={colors.WHITE} />
-                )}
-              </TouchableRipple>
+        )}
+
+        {!isModerotor && userId !== id && (
+          <TouchableRipple
+            style={{
+              marginLeft: 'auto',
+              width: RFValue(50),
+              height: RFValue(35),
+              backgroundColor: connectedUsers ? colors.WHITE : colors.PRIMARY,
+              borderWidth: connectedUsers ? 1 : 0,
+              borderColor: connectedUsers ? colors.INPUT : colors.TRANSPARENT,
+              borderRadius: 4,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            onPress={
+              singlePassport?.connectionDetails?.status == 'ACCEPTED'
+                ? handleMessageNavigation
+                : handleRequest
+            }
+          >
+            {singlePassport?.connectionDetails?.status == 'ACCEPTED' ? (
+              <Entypo name="new-message" size={20} color={colors.WHITE} />
+            ) : (
+              <Feather name="plus" size={20} color={colors.WHITE} />
             )}
-          </Fragment>
+          </TouchableRipple>
         )}
       </Fragment>
     </TouchableRipple>
