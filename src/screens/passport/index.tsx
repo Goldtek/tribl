@@ -14,7 +14,28 @@ import { Share, Platform, SafeAreaView, Alert } from 'react-native';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { Title, Paragraph, Button, TouchableRipple } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-// @ts-ignore
+
+import {
+  logEvent,
+  tagScreenName,
+  addUserIdentity,
+  hideSensitiveView
+} from '../../utils/uxcamHelper';
+import {
+  USER_CHANNELS,
+  GET_ALL_MEMBERS,
+  GET_USER_PASSPORT,
+  GET_MY_CONNECTIONS,
+  GET_NEARBY_MEMBERS,
+  GET_MY_COMMUNITIES,
+  GET_POPULAR_COMMUNITIES,
+  GET_RECOMMENDED_MEMBERS,
+  GET_RECOMMENDED_COMMUNITIES
+} from '../../graphql/server/query';
+import cloudinaryUpload, {
+  CloudinaryUploadType,
+  CloudinaryResponseType
+} from '../../utils/cloudinaryUpload';
 import { Mixpanel } from '../../config';
 import Storage from '../../libs/storage';
 import TabViewSlider from './widgets/tabs';
@@ -25,46 +46,21 @@ import { countWords } from '../../utils/countWords';
 import { PAGINATION_DEFAULT } from '../../constants';
 import { userDetails as cacheData } from '../../graphql/cache';
 import SingleImage from '../../libs/react-native-zoom-lightbox';
-import { CHANGE_ACTIVE_SIDE_MENU_STATE } from '../../graphql/cache/mutations';
-
-import {
-  tagScreenName,
-  addUserIdentity,
-  logEvent,
-  hideSensitiveView
-} from '../../utils/uxcamHelper';
-
-import {
-  GET_USER_PASSPORT,
-  GET_ALL_MEMBERS,
-  GET_MY_CONNECTIONS,
-  GET_NEARBY_MEMBERS,
-  GET_MY_COMMUNITIES,
-  GET_POPULAR_COMMUNITIES,
-  GET_RECOMMENDED_COMMUNITIES,
-  GET_RECOMMENDED_MEMBERS,
-  USER_CHANNELS
-} from '../../graphql/server/query';
-
-import cloudinaryUpload, {
-  CloudinaryUploadType,
-  CloudinaryResponseType
-} from '../../utils/cloudinaryUpload';
-
 import { UPDATE_PASSPORT } from '../../graphql/server/mutations';
+import { CHANGE_ACTIVE_SIDE_MENU_STATE } from '../../graphql/cache/mutations';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
-  HeaderContainer,
-  ImageContainer,
-  ImageTextContainer,
-  ConnectionCover,
   Cover,
   TabCover,
   ScreenCover,
-  ButtonHeaderCover
+  ImageContainer,
+  ConnectionCover,
+  HeaderContainer,
+  ButtonHeaderCover,
+  ImageTextContainer
+  // SocialMediaButton,
   // ImageIconContainer,
-  // SocialMediaButton
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
@@ -491,43 +487,40 @@ export default function PassportScreen(props: ScreenProp) {
       });
     }
 
-    if (status === 'IN_ACTIVE' || 'DEACTIVATED') {
-      const updateFields = [];
-      const { phoneNumber, email, lastName, firstName, dob } =
-        userDetails || cache;
-      if (countWords(phoneNumber)) updateFields.push('phone');
-      if (countWords(email)) updateFields.push('email');
-      if (countWords(lastName)) updateFields.push('last name');
-      if (countWords(firstName)) updateFields.push('first name');
-      if (countWords(dob)) updateFields.push('dob');
+    const updateFields = [];
+    const { phoneNumber, email, lastName, firstName, dob } = userDetails;
+    if (countWords(firstName)) updateFields.push('First name');
+    if (countWords(lastName)) updateFields.push('Last Name');
+    if (countWords(phoneNumber)) updateFields.push('Phone Number');
+    if (countWords(email)) updateFields.push('Email Address');
+    if (countWords(dob)) updateFields.push('Date of Birth');
 
-      if (updateFields.length > 0) {
-        return Alert.alert(
-          'Update Profile',
-          `Update your ${
-            updateFields.length > 1
-              ? updateFields.map((x) => ` ${x}`)
-              : `${updateFields}`
-          } before you can proceed`,
-          [
-            {
-              text: 'Cancel',
-              onPress: () => {},
-              style: 'cancel'
-            },
-            {
-              text: 'Update',
-              onPress: () => setUpdate(false)
-            }
-          ]
-        );
-      }
-
-      return navigation.navigate('TriblPayScreen', {
-        screen: 'BankCountryScreen',
-        params: { userDetails: cache }
-      });
+    if (updateFields.length > 0) {
+      return Alert.alert(
+        'Update Profile',
+        `Update your ${
+          updateFields.length > 1
+            ? updateFields.map((x) => ` ${x}`)
+            : `${updateFields}`
+        } before you can proceed`,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {},
+            style: 'cancel'
+          },
+          {
+            text: 'Update',
+            onPress: () => setUpdate(false)
+          }
+        ]
+      );
     }
+
+    return navigation.navigate('TriblPayScreen', {
+      screen: 'BankCountryScreen',
+      params: { userDetails: cache }
+    });
   };
 
   return (
