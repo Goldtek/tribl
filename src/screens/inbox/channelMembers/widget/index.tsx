@@ -221,7 +221,7 @@ function ChannelMember(props: ChannelUserProp) {
           </Button>
         )}
 
-        {connectionDetails?.status == 'PENDING' ||
+        {(!isAdmin && connectionDetails?.status == 'PENDING') ||
           (pending && (
             <Button
               mode="text"
@@ -245,7 +245,7 @@ function ChannelMember(props: ChannelUserProp) {
             </Button>
           ))}
 
-        {connectionDetails?.status == 'ACCEPTED' && (
+        {!isAdmin && connectionDetails?.status == 'ACCEPTED' && (
           <Button
             mode="text"
             uppercase={false}
@@ -268,7 +268,8 @@ function ChannelMember(props: ChannelUserProp) {
           </Button>
         )}
 
-        {connectionDetails?.status != 'ACCEPTED' &&
+        {!isAdmin &&
+          connectionDetails?.status != 'ACCEPTED' &&
           connectionDetails?.status != 'PENDING' &&
           userId !== id && (
             <Button

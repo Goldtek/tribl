@@ -220,7 +220,7 @@ function Member(props: MemberProp) {
           </Button>
         )}
 
-        {userId !== id && (
+        {!isModerotor && userId !== id && (
           <TouchableRipple
             style={{
               marginLeft: 'auto',
