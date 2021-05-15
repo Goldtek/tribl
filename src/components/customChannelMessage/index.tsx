@@ -85,7 +85,7 @@ function CustomChannelMessage(props: MessageProps) {
   };
 
   const citizenship = JSON.parse(
-    ((message?.user?.citizenship as unknown) as string) || '{}'
+    ((message?.user?.citizenship as unknown) as string) || '[]'
   );
 
   const handleDelete = async () => {

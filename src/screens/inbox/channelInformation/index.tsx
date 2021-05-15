@@ -45,7 +45,6 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
   const { channel } = useStreamContext();
   const { colors, fonts } = useThemeContext();
   const [loading, setLoading] = useState(false);
-
   const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
 
   useEffect(() => {
@@ -62,9 +61,6 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
   const channelCreationDate = new Date(
     channel.data?.created_at as string
   ).toDateString();
-
-  const role = channel?.state?.membership?.role;
-  const channelId = channel?.id;
 
   const toggleMute = async () => {
     try {
@@ -214,9 +210,7 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
         <Divider style={{ backgroundColor: colors.INPUT }} />
 
         <OptionWrapper
-          onPress={() =>
-            navigation.navigate('ChannelMembersScreen', { role, channelId })
-          }
+          onPress={() => navigation.navigate('ChannelMembersScreen')}
         >
           <Fragment>
             <LeftCover>

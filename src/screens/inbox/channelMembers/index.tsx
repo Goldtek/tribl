@@ -30,20 +30,19 @@ interface ChannelMembersProp {
 }
 
 export default function ChannelMembers(props: ChannelMembersProp) {
-  const { role, channelId } = props?.route?.params;
-  const { colors, fonts } = useThemeContext();
-  const { channel } = useStreamContext();
   const isFocused = useIsFocused();
+  const { channel } = useStreamContext();
+  const { colors, fonts } = useThemeContext();
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState({ searchTerm: '' });
   const [callOnScrollEnd, setCallOnScrollEnd] = useState(false);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const { data: channelData, refetch, fetchMore } = useQuery<
     ChannelMembersRequestInterface
   >(GET_CHANNEL_MEMBERS, {
     variables: { input: { channelId: channel.id } }
   });
 
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const blockedUsers = userData?.myPassport?.privacy?.blocked;
 
   useEffect(() => {
@@ -98,13 +97,7 @@ export default function ChannelMembers(props: ChannelMembersProp) {
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 
   const _renderItem = ({ item }: { item: PassportInterface }) => (
-    <ActiveMember
-      key={item.id}
-      role={role}
-      channelId={channelId}
-      refetch={refetch}
-      {...item}
-    />
+    <ActiveMember key={item.id} {...item} refetch={refetch} />
   );
 
   const _renderFooter = useCallback(
