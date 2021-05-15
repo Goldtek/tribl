@@ -41,7 +41,7 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface { }
+interface ScreenProp extends NavigationInterface {}
 
 export default function NewChannelParticipants(props: ScreenProp) {
   const { navigation, route } = props;
@@ -57,7 +57,6 @@ export default function NewChannelParticipants(props: ScreenProp) {
   const [state, setState] = useState({ search: {} });
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
-
 
   // This needs to be implented, users should not see users they blocked when adding users.
 
@@ -78,15 +77,12 @@ export default function NewChannelParticipants(props: ScreenProp) {
       return setTribeMembers({ ...tribeMembers, [id]: payload });
     }
 
-
-
     const { [id]: _, ...restUsers } = { ...tribeMembers };
 
     // Check that the rest users actually exists
     if (restUsers) {
       setTribeMembers(restUsers);
     }
-
   };
 
   useEffect(() => {
@@ -97,12 +93,9 @@ export default function NewChannelParticipants(props: ScreenProp) {
     setState({ ...state, search });
   };
 
-  console.tron({ tribeMembers });
-
   const selectedParticipant = [Object.values(tribeMembers || {})];
 
   const channelParticipant = selectedParticipant[0]?.map((item) => item.id);
-
 
   const [createChannel, { loading }] = useMutation(CREATE_NEW_CHANNEL);
 
@@ -148,7 +141,7 @@ export default function NewChannelParticipants(props: ScreenProp) {
   );
 
   const _renderSelectedItem = ({ item }: { item: PassportInterface }) => (
-    <TouchableWithoutFeedback onPress={() => { }}>
+    <TouchableWithoutFeedback onPress={() => {}}>
       <SelectedMemberWrapper ref={hideSensitiveView}>
         <CloseIcon onPress={() => handleSelect(item)}>
           <Ionicons name="md-close" size={15} color={colors.GREY} />
@@ -210,7 +203,7 @@ export default function NewChannelParticipants(props: ScreenProp) {
         user.lastName == null ||
         user.firstName == null ||
         user.currentLocation?.city == null,
-        user.currentLocation?.state == null)
+      user.currentLocation?.state == null)
     ) {
       return null;
     }
