@@ -22,21 +22,18 @@ interface ChannelUserProp extends LocalUserType {}
 
 export default function GroupMember(props: ChannelUserProp) {
   const user = props;
-  const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { channel } = useStreamContext();
-
+  const { colors, fonts } = useThemeContext();
   const [loading, setLoading] = useState(false);
 
   const groupAdmin = channel.data?.created_by;
-
   const memberRole = groupAdmin?.id === user?.id ? 'admin' : 'member';
   const isAdmin = groupAdmin?.id === chatClient.user?.id ? true : false;
   const displayDelete = user?.id !== chatClient.user?.id ? true : false;
-  //@ts-ignore
-  const citizenship = user?.citizenship?.length
-    ? JSON.parse(user?.citizenship)
-    : [];
+  const citizenship = JSON.parse(
+    ((user?.citizenship as unknown) as string) || '[]'
+  );
 
   const { data } = useQuery<SinglePassportRequestInterface>(
     GET_SINGLE_PASSPORT,
@@ -155,7 +152,7 @@ export default function GroupMember(props: ChannelUserProp) {
           ) : null}
         </TextContainer>
 
-        {isAdmin && displayDelete ? (
+        {isAdmin && displayDelete && (
           <Button
             mode="text"
             uppercase={false}
@@ -177,7 +174,7 @@ export default function GroupMember(props: ChannelUserProp) {
           >
             {t(`community.chat.removeUser`)}
           </Button>
-        ) : null}
+        )}
       </Fragment>
     </TouchableRipple>
   );
