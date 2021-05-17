@@ -16,7 +16,6 @@ export const ProfileContainer = styled.View`
 `;
 
 export const MenuContainer = styled.View`
-  flex: 1;
   margin: 0px 10px;
   align-items: center;
 `;

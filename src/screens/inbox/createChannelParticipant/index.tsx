@@ -55,12 +55,13 @@ export default function NewChannelParticipants(props: ScreenProp) {
     [key: string]: PassportInterface;
   }>({});
   const [state, setState] = useState({ search: {} });
+  const [userId, setUserId] = useState('');
 
   const { data: userData } = useQuery(GET_USER_PASSPORT);
 
-  // This needs to be implented, users should not see users they blocked when adding users.
-
-  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+  useEffect(() => {
+    setUserId(userData?.myPassport?.id);
+  }, [userData?.myPassport]);
 
   const handleSelect = (user: PassportInterface) => {
     dismissKeyboard();
@@ -113,7 +114,7 @@ export default function NewChannelParticipants(props: ScreenProp) {
             name: channelName,
             participants: channelParticipant,
             isPrivate: privateStatus,
-            moderators: [userData?.myPassport?.id]
+            moderators: [userId]
           }
         }
       });
