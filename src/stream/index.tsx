@@ -42,7 +42,6 @@ import fcmMessaging, {
 } from '@react-native-firebase/messaging';
 import { UserResponse } from 'stream-chat';
 import Storage from '../libs/storage';
-import { PAGINATION_DEFAULT } from '../constants';
 import { decodeToken } from '../utils/decodeToken';
 
 import {
@@ -63,28 +62,23 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     'channelScreen'
   );
 
-  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const [updatePassportFCM] = useMutation(UPDATE_USER_PASSPORT);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const { data: connectionRequestData } = useQuery<ConnectionRequestsInterface>(
-    GET_CONNECTION_REQUEST,
-    { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
+    GET_CONNECTION_REQUEST
   );
 
   const { data: inviteData } = useQuery<CommunityInviteInterface>(
-    GET_TRIBE_INVITES,
-    { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
+    GET_TRIBE_INVITES
   );
 
   const { data: requestData } = useQuery<CommunityCreationRequestInterface>(
-    GET_COMMUNITY_CREATION_REQUEST,
-    { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
+    GET_COMMUNITY_CREATION_REQUEST
   );
 
   const { data: channelRequestData } = useQuery<
     AllChannelCreationRequestInterface
-  >(GET_ALL_CHANNEL_CREATION_REQUEST, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
-  });
+  >(GET_ALL_CHANNEL_CREATION_REQUEST);
 
   const tribeInvites = inviteData?.communityInvites;
   const tribeRequest = requestData?.communityCreationRequests;
