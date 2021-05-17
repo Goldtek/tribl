@@ -197,7 +197,7 @@ type Wallet = {
   status: string;
   currencies: {
     id: string;
-    currentBalance: string;
+    availableBalance: string;
     ledgerBalance: string;
     status: CurrencyStatus;
     name: string;
