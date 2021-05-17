@@ -49,6 +49,17 @@ export const CHANGE_CONNECTION_NOTIFICATION_BADGE = gql`
   }
 `;
 
+// SHOW TRIBE REQUEST NOTIFICATION BADGE
+export const CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE = gql`
+  mutation changeTribeRequestNotificationBadge(
+    $showTribeRequestNotificationBadge: Boolean!
+  ) {
+    changeTribeRequestNotificationBadge(
+      showTribeRequestNotificationBadge: $showTribeRequestNotificationBadge
+    ) @client
+  }
+`;
+
 // CHANGE ACTIVE SIDE MENU STATE
 export const CHANGE_ACTIVE_SIDE_MENU_STATE = gql`
   mutation changeActiveSideMenuState($activeSideMenu: String!) {

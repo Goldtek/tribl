@@ -3,7 +3,7 @@ import { USER_DEFAULT_AVATAR } from '../../constants';
 import { DEVICE_DEFAULT_COUNTRY } from '../../utils/device';
 import { StoreInterface } from '../types';
 
-const cache = new InMemoryCache({ freezeResults: true });
+const cache = new InMemoryCache();
 
 /*
  ****************************************************************
@@ -88,11 +88,12 @@ cache.writeData<StoreInterface>({
   data: {
     //@ts-ignore
     userDetails,
+    showSideMenu: false,
     communitySearchIndex: 0,
     showMessageNotificationBadge: false,
-    showSideMenu: false,
     activeSideMenu: 'drawer_community_key',
-    showConnectionNotificationBadge: false
+    showConnectionNotificationBadge: false,
+    showTribeRequestNotificationBadge: false
   }
 });
 

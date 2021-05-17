@@ -28,12 +28,11 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function CreateChannelTribeScreen(props: ScreenProp) {
   const { navigation, route } = props;
-  const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
+  const { colors, fonts } = useThemeContext();
   const { name, id, avatar } = route?.params;
 
   const [channelName, setChannelName] = useState('');
-
   const [isEnabled, setIsEnabled] = useState(false);
 
   const toggleSwitch = async () => {
@@ -45,6 +44,7 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
   }, []);
 
   const handleNavigation = () => {
+    if (!channelName?.length) return;
     navigation.navigate('CreateChannelParticipant', {
       id,
       name,
@@ -151,7 +151,7 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
           </TopCover>
           <GradientButton
             style={{ height: 50 }}
-            onPress={channelName?.length ? handleNavigation : () => {}}
+            onPress={handleNavigation}
             contentStyle={{ height: 50 }}
             gradientContainerstyle={{
               height: 50,

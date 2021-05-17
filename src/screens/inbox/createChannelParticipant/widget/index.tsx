@@ -5,16 +5,22 @@ import { useQuery } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import CheckBox from '@react-native-community/checkbox';
 import { useThemeContext } from '../../../../theme';
-import { PassportInterface } from '../../../../graphql/types';
-import { GET_SINGLE_PASSPORT } from '../../../../graphql/server/query';
+import {
+  MyPassportInterface,
+  PassportInterface
+} from '../../../../graphql/types';
+import {
+  GET_SINGLE_PASSPORT,
+  GET_USER_PASSPORT
+} from '../../../../graphql/server/query';
 import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 import { chatClient } from '../../../../stream/types';
 import hexToRGB from '../../../../utils/hexToRGB';
 import { USER_DEFAULT_AVATAR } from '../../../../constants';
+import { connectHighlight } from 'react-instantsearch-native';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import { NameContainer, ActionContainer } from './styles';
-import { connectHighlight } from 'react-instantsearch-native';
 
 // DEFINE SCREEN PROP TYPES
 interface MemberProp extends PassportInterface {
@@ -25,13 +31,16 @@ interface MemberProp extends PassportInterface {
 
 function Member(props: MemberProp) {
   const { colors, fonts } = useThemeContext();
-
   const { selected, handleSelect, ...user } = props;
   const { id, avatar, lastName, firstName, currentLocation } = user;
 
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
   if (id === chatClient.user?.id) return null;
 
-  const onPress = () => handleSelect(user);
+  const blockedUsers = userData?.myPassport?.privacy?.blocked;
+  const blockedUser = blockedUsers?.find((user) => user.id === id);
+  if (blockedUser) return null;
 
   if (id) {
     useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
@@ -47,7 +56,7 @@ function Member(props: MemberProp) {
         paddingHorizontal: RFValue(20)
       }}
       rippleColor={hexToRGB(colors.PRIMARY, 0.1)}
-      onPress={onPress}
+      onPress={() => handleSelect(user)}
     >
       <Fragment>
         <FastImage
