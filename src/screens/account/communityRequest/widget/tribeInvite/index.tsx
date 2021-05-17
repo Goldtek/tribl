@@ -66,20 +66,10 @@ export default function Notification(props: NotificationProp) {
     });
   };
 
-  const [acceptInvite, { loading }] = useMutation(TRIBE_INVITE_ACTION, {
-    variables: {
-      payload: { id: id, action: InvitationStatus[0] }
-    }
-  });
+  const [acceptInvite, { loading }] = useMutation(TRIBE_INVITE_ACTION);
 
   const [declineInvite, { loading: declineLoading }] = useMutation(
-    TRIBE_INVITE_ACTION,
-    {
-      variables: {
-        payload: { id: id, action: InvitationStatus[2] }
-      }
-    }
-  );
+    TRIBE_INVITE_ACTION);
 
   const handleAcceptInvitation = async () => {
     logEvent('accept tribe invite', { from: 'passport' });
@@ -88,7 +78,11 @@ export default function Notification(props: NotificationProp) {
         info: `User accepts tribe invite`,
         'Activity Screen': 'Tribe Request Screen'
       });
-      await acceptInvite();
+      await acceptInvite({
+        variables: {
+          payload: { id: id, action: InvitationStatus[0] }
+        }
+      });
       props.refetch();
     } catch (error) {
       crashlytics.recordError(error);
@@ -102,19 +96,25 @@ export default function Notification(props: NotificationProp) {
         info: `User declines tribe invite`,
         'Activity Screen': 'Tribe Request Screen'
       });
-      await declineInvite();
+      await declineInvite({
+        variables: {
+          payload: { id: id, action: InvitationStatus[2] }
+        }
+      });
       props.refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   useEffect(() => {
-    getUserPassport();
+    if (id) {
+      getUserPassport({
+        variables: { id }
+      });
+    }
   }, []);
 
   return (

@@ -459,8 +459,8 @@ export default function HomeScreen(props: ScreenProp) {
                   left: DEVICE_FULL_WIDTH / 2 + 60,
                   bottom: 300 / 3
                 }}
-                activeDotColor={colors.WHITE}
-                dotColor={hexToRGB(colors.WHITE, 0.6)}
+                activeDotColor={colors.BLACK}
+                dotColor={hexToRGB(colors.BLACK, 0.6)}
               >
                 {communities.map((community) => (
                   <RecommendedCommunity key={community.id} {...community} />

@@ -43,6 +43,7 @@ import fcmMessaging, {
 import { UserResponse } from 'stream-chat';
 import Storage from '../libs/storage';
 import { PAGINATION_DEFAULT } from '../constants';
+import { decodeToken } from '../utils/decodeToken';
 
 import {
   ThreadType,
@@ -111,7 +112,7 @@ const StreamProvider: FunctionComponent = ({ children }) => {
 
     const data = (remoteMessage?.data as unknown) as NotificationMessage;
 
-    if (data.type === IFCMMessageTypes.CONNECTION_REQUEST_RECEIVED) {
+    if (data?.type === IFCMMessageTypes.CONNECTION_REQUEST_RECEIVED) {
       changeConnectionNotification({
         variables: { showConnectionNotificationBadge: true }
       });
@@ -159,20 +160,24 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       const credentials = JSON.parse(userCredStorage || '{}') as VerifyOTPIT;
       let streams_token = credentials?.streams_token;
 
-      if (!streams_token) {
+      const decodedToken = decodeToken(streams_token) as { id: string };
+
+      // add check for token expiry here in future.
+      if (!streams_token || decodedToken?.id != user.id) {
         const { data } = await authenticateStream();
         streams_token = `${data?.generateStreamsToken.streams_token}`;
         Storage.setUserCredentials(data?.generateStreamsToken);
       }
 
       const streamUser = await chatClient.connectUser(user, streams_token);
-      onSignIn(passport);
 
       if (streamUser && streamUser.me?.total_unread_count) {
         changeMessageNotification({
           variables: { showMessageNotificationBadge: true }
         });
       }
+
+      onSignIn(passport);
 
       chatClient.on((event) => {
         if (

@@ -86,7 +86,7 @@ function RecommendedCommunity(props: ScreenProp) {
             fontSize: fonts.LARGE_SIZE - 1,
             fontFamily: fonts.WORK_SANS_BOLD,
             color: colors.WHITE,
-            backgroundColor: hexToRGB(colors.WHITE, 0.3),
+            backgroundColor: hexToRGB(colors.BLACK, 0.2),
             position: 'absolute',
             left: 15,
             top: 1,

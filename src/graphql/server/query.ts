@@ -161,7 +161,7 @@ export const GET_USER_PASSPORT = gql`
         status
         currencies {
           id
-          currentBalance
+          availableBalance
           ledgerBalance
           status
           name
