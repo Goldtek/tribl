@@ -51,9 +51,7 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
 
   const { data, loading, fetchMore } = useQuery<MyCommunitiesRequestInterface>(
     GET_MY_COMMUNITIES,
-    {
-      variables: { input: { skip: 0, limit: PAGINATION_DEFAULT } }
-    }
+    { variables: { input: { skip: 0, limit: PAGINATION_DEFAULT / 2 } } }
   );
 
   const myCommunities = data?.myCommunities;
@@ -186,7 +184,9 @@ export default function CreateChannelTribeScreen(props: ScreenProp) {
                   textAlign: 'center'
                 }}
               >
-                You have to join a tribe for you to be able to create a channel.
+                {filteredCommunities?.length
+                  ? `${search.searchTerm} is not found`
+                  : 'You have to join a tribe for you to be able to create a channel.'}
               </Text>
             }
             showsVerticalScrollIndicator={false}

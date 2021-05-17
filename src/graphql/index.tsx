@@ -1,13 +1,18 @@
-import React, { FunctionComponent } from 'react';
-import { ApolloLink, Observable, Operation, split } from 'apollo-link';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { ApolloLink, Observable, Operation } from 'apollo-link';
 import { ApolloProvider as Provider } from '@apollo/react-hooks';
+import AsyncStorage from '@react-native-community/async-storage';
+import { CachePersistor } from 'apollo-cache-persist';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import checkRefreshToken from '../utils/checkRefreshToken';
-import { getMainDefinition } from 'apollo-utilities';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { crashlytics } from '../firebase/config';
 import { RetryLink } from 'apollo-link-retry';
+import QueueLink from 'apollo-link-queue';
 import ENVIRONMENT_VARIABLES from '../config';
 import { ApolloClient } from 'apollo-client';
+import { SCHEMA_VERSION_KEY } from '../constants';
+import { APP_VERSION } from '../utils/device';
 import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import resolvers from './cache/resolvers';
@@ -20,25 +25,11 @@ const httpLink = new HttpLink({
   uri: ENVIRONMENT_VARIABLES.TRIBL_SERVER_BASE_URI
 });
 
+const queueLink = new QueueLink();
 const retryLink = new RetryLink({
-  delay: {
-    max: 2000,
-    initial: 100,
-    jitter: true
-  },
+  delay: { max: 2000, initial: 100, jitter: true },
   attempts: { max: 3, retryIf: (error, _operation) => !!error }
 });
-
-// using the ability to split links, you can send data to each link
-// depending on what kind of operation is being sent
-const link = split(
-  // split based on operation type
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return definition.kind === 'OperationDefinition';
-  },
-  httpLink
-);
 
 const request = async (operation: Operation) => {
   const storageData = await Storage.getUserCredentials();
@@ -52,7 +43,7 @@ const request = async (operation: Operation) => {
   checkRefreshToken(credentials);
 };
 
-const requestLink = new ApolloLink(
+const authLink = new ApolloLink(
   (operation, forward) =>
     new Observable((observer) => {
       let handle: any = undefined;
@@ -89,13 +80,64 @@ const handleErrors = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-export const client = new ApolloClient<NormalizedCacheObject>({
-  link: ApolloLink.from([handleErrors, requestLink, retryLink, link]),
-  cache,
-  resolvers
-});
+const link = ApolloLink.from([
+  handleErrors,
+  authLink,
+  //@ts-ignore
+  queueLink,
+  retryLink,
+  httpLink
+]);
 
 const ApolloProvider: FunctionComponent = ({ children }) => {
+  const SCHEMA_VERSION = APP_VERSION;
+
+  const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>(
+    {} as ApolloClient<NormalizedCacheObject>
+  );
+
+  const { isConnected } = useNetInfo();
+
+  useEffect(() => {
+    async function setupApollo() {
+      const persistor = new CachePersistor({
+        cache,
+        //@ts-ignore
+        storage: AsyncStorage
+      });
+
+      // Read the current schema version from AsyncStorage.
+      const currentVersion = await AsyncStorage.getItem(SCHEMA_VERSION_KEY);
+
+      if (currentVersion === SCHEMA_VERSION) {
+        // If the current version matches the latest version,
+        // we're good to go and can restore the cache.
+        await persistor.restore();
+      } else {
+        // Otherwise, we'll want to purge the outdated persisted cache
+        // and mark ourselves as having updated to the latest version.
+        await persistor.purge();
+        await AsyncStorage.setItem(SCHEMA_VERSION_KEY, SCHEMA_VERSION);
+      }
+
+      const client = new ApolloClient<NormalizedCacheObject>({
+        link,
+        cache,
+        resolvers
+      });
+
+      setClient(client);
+    }
+
+    if (!client.version) setupApollo();
+  }, []);
+
+  useEffect(() => {
+    isConnected ? queueLink.open() : queueLink.close();
+  }, [isConnected]);
+
+  if (!client.version) return null;
+
   return <Provider client={client}>{children}</Provider>;
 };
 

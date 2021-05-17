@@ -9,7 +9,10 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import {
+  GET_ALL_CHANNEL_CREATION_REQUEST,
+  GET_COMMUNITY_CREATION_REQUEST,
   GET_CONNECTION_REQUEST,
+  GET_TRIBE_INVITES,
   GET_USER_PASSPORT
 } from '../graphql/server/query';
 import {
@@ -24,11 +27,15 @@ import {
   PassportInterface,
   IFCMMessageTypes,
   VerifyOTPIT,
-  ConnectionRequestsInterface
+  ConnectionRequestsInterface,
+  CommunityInviteInterface,
+  CommunityCreationRequestInterface,
+  AllChannelCreationRequestInterface
 } from '../graphql/types';
 import {
   CHANGE_CONNECTION_NOTIFICATION_BADGE,
-  CHANGE_MESSAGE_NOTIFICATION_BADGE
+  CHANGE_MESSAGE_NOTIFICATION_BADGE,
+  CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE
 } from '../graphql/cache/mutations';
 import fcmMessaging, {
   FirebaseMessagingTypes
@@ -62,10 +69,33 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
   );
 
+  const { data: inviteData } = useQuery<CommunityInviteInterface>(
+    GET_TRIBE_INVITES,
+    { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
+  );
+
+  const { data: requestData } = useQuery<CommunityCreationRequestInterface>(
+    GET_COMMUNITY_CREATION_REQUEST,
+    { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
+  );
+
+  const { data: channelRequestData } = useQuery<
+    AllChannelCreationRequestInterface
+  >(GET_ALL_CHANNEL_CREATION_REQUEST, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
+  });
+
+  const tribeInvites = inviteData?.communityInvites;
+  const tribeRequest = requestData?.communityCreationRequests;
   const connectionRequests = connectionRequestData?.connectionRequests;
+  const channelRequest = channelRequestData?.myChannelCreationRequests;
 
   const [changeMessageNotification] = useMutation(
     CHANGE_MESSAGE_NOTIFICATION_BADGE
+  );
+
+  const [changeTribeRequestNotification] = useMutation(
+    CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE
   );
 
   const [changeConnectionNotification] = useMutation(
@@ -233,6 +263,20 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       : changeConnectionNotification({
           variables: { showConnectionNotificationBadge: false }
         });
+
+    if (
+      tribeInvites?.data.length ||
+      tribeRequest?.data.length ||
+      channelRequest?.data.length
+    ) {
+      changeTribeRequestNotification({
+        variables: { showTribeRequestNotificationBadge: true }
+      });
+    } else {
+      changeTribeRequestNotification({
+        variables: { showTribeRequestNotificationBadge: false }
+      });
+    }
   }, [connectionRequests?.data.length]);
 
   useEffect(() => {

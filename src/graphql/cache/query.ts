@@ -103,6 +103,13 @@ export const GET_CONNECTION_NOTIFICATION_BADGE = gql`
   }
 `;
 
+// SHOW CONNECTION NOTIFICATION BADGE
+export const GET_TRIBE_REQUEST_NOTIFICATION_BADGE = gql`
+  query GetTribeRequestNotificationBadge {
+    showTribeRequestNotificationBadge @client
+  }
+`;
+
 // GET ACTIVE SIDE MENU STATE
 export const GET_ACTIVE_SIDE_MENU_STATE = gql`
   query ActiveSideMenuState {

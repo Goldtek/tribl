@@ -34,9 +34,13 @@ import {
   ShowConnectionNotificationBadge,
   CommunityInviteInterface,
   CommunityCreationRequestInterface,
-  AllChannelCreationRequestInterface
+  AllChannelCreationRequestInterface,
+  MyPassportInterface
 } from '../../../graphql/types';
-import { TOGGLE_SIDE_MENU } from '../../../graphql/cache/mutations';
+import {
+  CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE,
+  TOGGLE_SIDE_MENU
+} from '../../../graphql/cache/mutations';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
@@ -49,6 +53,7 @@ import GradientButton from '../../../components/gradientButton';
 import Skeleton from './widget/tribeRequestSkeleton';
 
 import { Container, ModalCover, MenuBadgeWrapper } from './styles';
+import { useFocusEffect } from '@react-navigation/core';
 
 // DEFINE SCREEN PROP TYPES
 interface TribeRequestScreenProp extends NavigationInterface {}
@@ -75,6 +80,10 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
   const { data: drawerData } = useQuery<ShowSideMenu>(GET_SIDE_MENU);
 
   const [toggleSideMenu] = useMutation(TOGGLE_SIDE_MENU);
+
+  const [changeTribeRequestNotification] = useMutation(
+    CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE
+  );
 
   const toggleMenu = () => {
     toggleSideMenu({
@@ -120,7 +129,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     }
   );
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const tribeInvites = inviteData?.communityInvites;
   const tribeRequest = requestData?.communityCreationRequests;
@@ -130,17 +139,46 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
   const blockedUsers = userDetails?.privacy?.blocked;
   const moderator = userDetails?.isAdmin;
 
-  const filteredInvite = tribeInvites?.data?.filter(function (users) {
-    return !blockedUsers?.some(function (userTwo: any) {
-      return users?.sender?.id == userTwo.id;
-    });
-  });
+  const filteredInvite = tribeInvites?.data?.filter(
+    (users) => !blockedUsers?.some((userTwo) => users?.sender?.id == userTwo.id)
+  );
+
   const filteredRequest = tribeRequest?.data;
   const filteredChannelRequest = channelRequest?.data;
 
   const _renderFooter = useCallback(
     () => (callOnScrollEnd ? <ActivityIndicator /> : null),
     [callOnScrollEnd]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        tribeInvites?.data.length ||
+        tribeRequest?.data.length ||
+        channelRequest?.data.length
+      ) {
+        changeTribeRequestNotification({
+          variables: { showTribeRequestNotificationBadge: true }
+        }).then(() => {
+          inviteRefetch();
+          requestRefetch();
+          channelRequestRefetch();
+        });
+      } else {
+        changeTribeRequestNotification({
+          variables: { showTribeRequestNotificationBadge: false }
+        }).then(() => {
+          inviteRefetch();
+          requestRefetch();
+          channelRequestRefetch();
+        });
+      }
+    }, [
+      tribeInvites?.data.length,
+      tribeRequest?.data.length,
+      channelRequest?.data.length
+    ])
   );
 
   const handleRefresh = async () => {
@@ -311,6 +349,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
   useEffect(() => {
     tagScreenName('TribeRequestScreen');
   }, []);
+
   return (
     <Fragment>
       <StatusBar translucent barStyle="dark-content" />

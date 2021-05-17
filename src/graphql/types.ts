@@ -558,6 +558,11 @@ export type ShowConnectionNotificationBadge = {
   showConnectionNotificationBadge: boolean;
 };
 
+// SHOW SHOW TRIBE REQUEST (RESPONSE) TYPE
+export type ShowTribeRequestNotificationBadge = {
+  showTribeRequestNotificationBadge: boolean;
+};
+
 // USER COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE
 export type MyChannelRequestInterface = {
   myChannels: { data: ChannelInterface[]; metadata: QueryMetadata };
