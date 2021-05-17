@@ -141,7 +141,7 @@ export default function AppNavigator() {
           const data =
             DEVICE_OS === 'ios'
               ? //@ts-ignore
-                ((message?.body || message.data) as NotificationMessage)
+              ((message?.body || message.data) as NotificationMessage)
               : (message?.data as NotificationMessage);
 
           // Any custom logic to check whether the URL needs to be handled
@@ -161,7 +161,7 @@ export default function AppNavigator() {
   const constructLinkParams = (data: NotificationMessage) => {
     const defaultUrl = linking.prefixes[0];
 
-    switch (data.type) {
+    switch (data?.type) {
       case IFCMMessageTypes.CHANNEL_MESSAGE_RECEIVED:
         return `${defaultUrl}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`;
 

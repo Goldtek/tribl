@@ -12,7 +12,7 @@ import { hideSensitiveView } from '../../../../utils/uxcamHelper';
 
 import { NameContainer } from './styles';
 
-interface ConnectionProp extends PassportInterface {}
+interface ConnectionProp extends PassportInterface { }
 
 export default function Connection(props: ConnectionProp) {
   const { colors, fonts } = useThemeContext();
@@ -28,7 +28,10 @@ export default function Connection(props: ConnectionProp) {
     citizenship
   } = props;
 
-  useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+  if (id) {
+    useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+  }
+
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
@@ -96,8 +99,8 @@ export default function Connection(props: ConnectionProp) {
             {currentLocation?.city
               ? `${currentLocation?.city}, ${currentLocation?.state}`
               : currentLocation?.country !== undefined
-              ? `${currentLocation?.state}, ${currentLocation?.country}`
-              : null}
+                ? `${currentLocation?.state}, ${currentLocation?.country}`
+                : null}
           </Text>
           {citizenship?.length ? (
             <Title

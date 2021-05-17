@@ -33,12 +33,14 @@ const Highlight = (props: HighlightProp) => {
 
   const { colors, fonts } = useThemeContext();
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id: hit.id }
-  });
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   useEffect(() => {
-    getUserPassport();
+    if (hit.id) {
+      getUserPassport({
+        variables: { id: hit.id }
+      });
+    }
   }, []);
 
   const handleNavigation = () => {
@@ -117,8 +119,8 @@ const Highlight = (props: HighlightProp) => {
                   {hit.currentLocation?.city
                     ? `${hit.currentLocation?.city}, ${hit.currentLocation?.state}`
                     : hit.currentLocation?.country !== undefined
-                    ? `${hit.currentLocation?.state}, ${hit.currentLocation?.country}`
-                    : null}
+                      ? `${hit.currentLocation?.state}, ${hit.currentLocation?.country}`
+                      : null}
                 </Text>
                 {hit?.citizenship?.length ? (
                   <Title

@@ -18,7 +18,7 @@ import { crashlytics } from '../../../../firebase/config';
 import { TextContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ChannelUserProp extends LocalUserType {}
+interface ChannelUserProp extends LocalUserType { }
 
 export default function GroupMember(props: ChannelUserProp) {
   const user = props;
@@ -35,10 +35,16 @@ export default function GroupMember(props: ChannelUserProp) {
     ((user?.citizenship as unknown) as string) || '[]'
   );
 
-  const { data } = useQuery<SinglePassportRequestInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: user?.id } }
-  );
+  let data: SinglePassportRequestInterface | undefined;
+
+  if (user?.id) {
+    const result = useQuery<SinglePassportRequestInterface>(GET_SINGLE_PASSPORT, {
+      variables: { id: user?.id }
+    });
+
+    data = result?.data;
+  }
+
 
   const handleNavigation = () => {
     if (chatClient.user?.id === user?.id) {
@@ -59,7 +65,7 @@ export default function GroupMember(props: ChannelUserProp) {
         [
           {
             text: 'Cancel',
-            onPress: () => {},
+            onPress: () => { },
             style: 'cancel'
           },
           {
@@ -69,9 +75,8 @@ export default function GroupMember(props: ChannelUserProp) {
                 setLoading(true);
                 await channel.removeMembers([`${user?.id}`]);
                 await channel.sendMessage({
-                  text: `${`${user?.name}`?.split(' ')[0]} was removed by ${
-                    chatClient.user?.name?.split(' ')[0]
-                  }`,
+                  text: `${`${user?.name}`?.split(' ')[0]} was removed by ${chatClient.user?.name?.split(' ')[0]
+                    }`,
                   group_system: true,
                   receiver: {
                     id: `${user?.id}`,

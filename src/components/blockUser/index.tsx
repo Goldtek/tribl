@@ -41,8 +41,7 @@ export default function BlockUserModal(props: BlockUserProps) {
   });
 
   const [getUserPassport] = useLazyQuery<UserPassportInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: data?.details?.id } }
+    GET_SINGLE_PASSPORT
   );
 
   useEffect(() => {
@@ -77,7 +76,9 @@ export default function BlockUserModal(props: BlockUserProps) {
       setBlock(true);
       closeModal();
       refetch();
-      getUserPassport();
+      if (data?.details?.id) {
+        getUserPassport({ variables: { id: data?.details?.id } });
+      }
     } catch (error) {
       crashlytics.recordError(error);
     }

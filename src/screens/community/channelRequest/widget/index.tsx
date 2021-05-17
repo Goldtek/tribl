@@ -87,12 +87,14 @@ export default function NewChannelRequest(props: TribeRequestProp) {
     }
   };
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id: userId }
-  });
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   useEffect(() => {
-    getUserPassport();
+    if (userId) {
+      getUserPassport({
+        variables: { id: userId }
+      });
+    }
   }, []);
 
   return (
