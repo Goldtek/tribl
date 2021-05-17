@@ -41,20 +41,18 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
   const [acceptLoading, setAcceptLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
 
-  const [acceptConnection] = useMutation(ACCEPT_CONNECTION, {
-    variables: { payload: { id } }
-  });
+  const [acceptConnection] = useMutation(ACCEPT_CONNECTION);
 
-  const [declineConnection] = useMutation(REJECT_CONNECTION, {
-    variables: { payload: { id } }
-  });
+  const [declineConnection] = useMutation(REJECT_CONNECTION);
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   useEffect(() => {
-    getUserPassport();
+    if (id) {
+      getUserPassport({
+        variables: { id }
+      });
+    }
   }, []);
 
   const handleAcceptConnection = async () => {
@@ -65,7 +63,9 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
         info: `User accepts connection request from ${firstName} ${lastName}`,
         'Activity Screen': 'Connection Request Screen'
       });
-      await acceptConnection();
+      await acceptConnection({
+        variables: { payload: { id } }
+      });
       refetch();
       setAcceptLoading(false);
     } catch (error) {
@@ -79,7 +79,9 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
     setRejectLoading(true);
     logEvent('rejects connection request', { from: 'passport' });
     try {
-      await declineConnection();
+      await declineConnection({
+        variables: { payload: { id } }
+      });
       refetch();
       setRejectLoading(false);
     } catch (error) {
@@ -140,8 +142,8 @@ const ConnectionRequest = (props: ConnectionRequestProp) => {
             {currentLocation?.city
               ? `${currentLocation?.city}, ${currentLocation?.state}`
               : currentLocation?.country !== undefined
-              ? `${currentLocation?.state}, ${currentLocation?.country}`
-              : null}
+                ? `${currentLocation?.state}, ${currentLocation?.country}`
+                : null}
           </Text>
           {citizenship?.length ? (
             <Title

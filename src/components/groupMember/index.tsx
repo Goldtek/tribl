@@ -42,14 +42,18 @@ function GroupMemberCard(props: ConnectionCardProp) {
       lastName == null ||
       firstName == null ||
       currentLocation?.city == null,
-    currentLocation?.state == null)
+      currentLocation?.state == null)
   ) {
     return null;
   }
 
   const onPress = () => handleSelect(user);
 
-  useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+  if (id) {
+    useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+  }
+
+
 
   return (
     <TouchableRipple
@@ -95,8 +99,8 @@ function GroupMemberCard(props: ConnectionCardProp) {
               {currentLocation?.city
                 ? `${currentLocation?.city}, ${currentLocation?.state}`
                 : currentLocation?.country !== undefined
-                ? `${currentLocation?.state}, ${currentLocation?.country}`
-                : null}
+                  ? `${currentLocation?.state}, ${currentLocation?.country}`
+                  : null}
             </Text>
             {citizenship?.length ? (
               <Title

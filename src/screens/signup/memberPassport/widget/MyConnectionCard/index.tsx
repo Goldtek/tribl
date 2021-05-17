@@ -29,9 +29,16 @@ export default function MyConnectionCard(props: MyConnectionProp) {
   const { singlePassport, lastIndex, ...user } = props;
   const { avatar, firstName, lastName, id } = user;
 
-  const { data } = useQuery<UserPassportInterface>(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
+  let data: UserPassportInterface | undefined;
+
+  if (id) {
+    const result = useQuery<UserPassportInterface>(GET_SINGLE_PASSPORT, {
+      variables: { id }
+    });
+
+    data = result?.data;
+  }
+
 
   const handleNavigation = () => {
     navigation.navigate('MemberPassportDetailScreen', {

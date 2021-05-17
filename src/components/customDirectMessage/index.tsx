@@ -46,10 +46,15 @@ function CustomDirectMessage(props: MessageProps) {
   const { colors } = useThemeContext();
   const { channel, activityScreen } = useStreamContext();
 
-  const { data } = useQuery<SinglePassportRequestInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: message.user?.id } }
-  );
+  let data: SinglePassportRequestInterface | undefined;
+  if (message.user?.id) {
+    const result = useQuery<SinglePassportRequestInterface>(
+      GET_SINGLE_PASSPORT,
+      { variables: { id: message.user?.id } }
+    );
+    data = result?.data;
+  }
+
 
   const handleNavigation = () => {
     if (message.user?.id !== chatClient.user?.id) {
@@ -73,7 +78,7 @@ function CustomDirectMessage(props: MessageProps) {
           [
             {
               text: 'Cancel',
-              onPress: () => {},
+              onPress: () => { },
               style: 'cancel'
             },
             {
@@ -142,9 +147,9 @@ function CustomDirectMessage(props: MessageProps) {
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
       ? {
-          ...props.theme.message.content.markdown,
-          mentions: { color: colors.PRIMARY }
-        }
+        ...props.theme.message.content.markdown,
+        mentions: { color: colors.PRIMARY }
+      }
       : {};
     const markdownRules = makeMarkDownRules(props);
     const createdAt = new Date(`${message?.created_at}`);
