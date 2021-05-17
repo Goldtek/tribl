@@ -97,7 +97,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         was created by{' '}
         <Text
           style={{
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }}
           onPress={handleUserNavigation}
         >
@@ -137,7 +138,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         <Text
           onPress={handleUserNavigation}
           style={{
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }}
         >
           {userName}{' '}
@@ -176,7 +178,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         <Text
           onPress={handleUserNavigation}
           style={{
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }}
         >
           {userName}
@@ -247,7 +250,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         <Text
           onPress={handleUserNavigation}
           style={{
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }}
         >
           {userName}
@@ -278,7 +282,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         <Text
           onPress={handleUserNavigation}
           style={{
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }}
         >
           {userName}
@@ -431,7 +436,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         <Text
           onPress={handleUserNavigation}
           style={{
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }}
         >
           {userName}
@@ -461,7 +467,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         <Text
           onPress={handleUserNavigation}
           style={{
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }}
         >
           {userName}
@@ -500,7 +507,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         <Text
           onPress={handleUserNavigation}
           style={{
-            fontFamily: fonts.WORK_SANS_BOLD
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
           }}
         >
           {userName}
@@ -539,7 +547,10 @@ export default function ActivityCard(props: ActivityCardProps) {
         Your connection{' '}
         <Text
           onPress={handleUserNavigation}
-          style={{ fontFamily: fonts.WORK_SANS_BOLD }}
+          style={{
+            fontFamily: fonts.WORK_SANS_BOLD,
+            textTransform: 'capitalize'
+          }}
         >
           {userName}
         </Text>{' '}
