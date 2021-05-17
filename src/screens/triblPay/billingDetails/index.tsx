@@ -11,6 +11,7 @@ import LocalStates from './widgets/localStates';
 import { Modalize } from 'react-native-modalize';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
+import { countWords } from '../../../utils/countWords';
 import { crashlytics } from '../../../firebase/config';
 import GradientButton from '../../../components/gradientButton';
 import { ONBOARD_USER } from '../../../graphql/server/mutations';
@@ -75,10 +76,6 @@ export default function BillingDetailsScreen(props: ScreenProp) {
       }
     }
   });
-
-  const countWords = (word: string) => {
-    return word.trim().split('').length < 1;
-  };
 
   const submitKyc = async () => {
     if (countWords(addressLine)) return alert('Address field is compulsory');

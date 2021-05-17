@@ -94,8 +94,6 @@ export default function NewChannelParticipants(props: ScreenProp) {
     setState({ ...state, search });
   };
 
-  console.tron({ tribeMembers });
-
   const selectedParticipant = [Object.values(tribeMembers || {})];
 
   const channelParticipant = selectedParticipant[0]?.map((item) => item.id);
