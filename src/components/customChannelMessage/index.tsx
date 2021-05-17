@@ -23,6 +23,7 @@ import {
 } from '../../graphql/server/query';
 import {
   MyPassportInterface,
+  PassportInterface,
   SinglePassportRequestInterface
 } from '../../graphql/types';
 import { MessageActionSheet } from '../streamActionSheet';
@@ -69,11 +70,16 @@ function CustomChannelMessage(props: MessageProps) {
   if (Boolean(blockedUser)) return null;
 
   const visible = groupStyles[0] === 'single' || groupStyles[0] === 'top';
+  
+  let data: SinglePassportRequestInterface | undefined ;
+  if (message.user?.id) {
+    const result = useQuery<SinglePassportRequestInterface>(
+      GET_SINGLE_PASSPORT,
+      { variables: { id: message.user?.id } }
+    );
+    data = result?.data;
+  }
 
-  const { data } = useQuery<SinglePassportRequestInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id: message.user?.id } }
-  );
 
   const handleNavigation = () => {
     if (message.user?.id !== chatClient.user?.id) {
@@ -97,7 +103,7 @@ function CustomChannelMessage(props: MessageProps) {
           [
             {
               text: 'Cancel',
-              onPress: () => {},
+              onPress: () => { },
               style: 'cancel'
             },
             {
@@ -212,9 +218,9 @@ function CustomChannelMessage(props: MessageProps) {
   const MessageTextWithName = (props: any) => {
     const markdownStyles = props.theme
       ? {
-          ...props.theme.message.content.markdown,
-          mentions: { color: colors.PRIMARY }
-        }
+        ...props.theme.message.content.markdown,
+        mentions: { color: colors.PRIMARY }
+      }
       : {};
 
     const markdownRules = makeMarkDownRules(props);

@@ -33,7 +33,9 @@ function Member(props: MemberProp) {
 
   const onPress = () => handleSelect(user);
 
-  useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+  if (id) {
+    useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+  }
 
   return (
     <TouchableRipple
@@ -79,8 +81,8 @@ function Member(props: MemberProp) {
               {currentLocation?.city
                 ? `${currentLocation?.city}, ${currentLocation?.state}`
                 : currentLocation?.country !== undefined
-                ? `${currentLocation?.state}, ${currentLocation?.country}`
-                : null}
+                  ? `${currentLocation?.state}, ${currentLocation?.country}`
+                  : null}
             </Text>
           </NameContainer>
           <CheckBox

@@ -16,7 +16,7 @@ import { chatClient } from '../../stream/types';
 import { NameContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ConnectionCardProp extends PassportInterface {}
+interface ConnectionCardProp extends PassportInterface { }
 
 function ConnectionCard(props: ConnectionCardProp) {
   const navigation = useNavigation();
@@ -38,12 +38,15 @@ function ConnectionCard(props: ConnectionCardProp) {
       lastName == null ||
       firstName == null ||
       currentLocation?.city == null,
-    currentLocation?.state == null)
+      currentLocation?.state == null)
   ) {
     return null;
   }
 
-  useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+  if (id) {
+    useQuery(GET_SINGLE_PASSPORT, { variables: { id } });
+  }
+
 
   const handleMessageNavigation = async () => {
     navigation.navigate('DrawerScreen', {
@@ -114,8 +117,8 @@ function ConnectionCard(props: ConnectionCardProp) {
             {currentLocation?.city
               ? `${currentLocation?.city}, ${currentLocation?.state}`
               : currentLocation?.country !== undefined
-              ? `${currentLocation?.state}, ${currentLocation?.country}`
-              : null}
+                ? `${currentLocation?.state}, ${currentLocation?.country}`
+                : null}
           </Text>
           {citizenship?.length ? (
             <Title

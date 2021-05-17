@@ -46,14 +46,18 @@ function Member(props: MemberProp) {
     isModerotor
   } = props;
 
-  const [requestConnection] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { id } }
-  });
+  const [requestConnection] = useMutation(REQUEST_CONNECTION);
 
-  const { data: singlePassportData } = useQuery<SinglePassportRequestInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id } }
-  );
+  let singlePassportData: SinglePassportRequestInterface | undefined;
+
+  if (id) {
+    const result = useQuery<SinglePassportRequestInterface>(GET_SINGLE_PASSPORT, {
+      variables: { id }
+    });
+
+    singlePassportData = result?.data;
+  }
+
 
   const [removeMember, { loading: removeLoading }] = useMutation(
     REMOVE_USER_FROM_TRIBE,
@@ -69,7 +73,7 @@ function Member(props: MemberProp) {
 
   const connectedUsers =
     singlePassport?.connected === 'CONNECTED' ||
-    singlePassport?.connected === 'ACCEPTED'
+      singlePassport?.connected === 'ACCEPTED'
       ? true
       : false;
 
@@ -81,7 +85,7 @@ function Member(props: MemberProp) {
         [
           {
             text: 'Cancel',
-            onPress: () => {},
+            onPress: () => { },
             style: 'cancel'
           },
           {
@@ -116,7 +120,9 @@ function Member(props: MemberProp) {
 
   const handleRequest = async () => {
     try {
-      await requestConnection();
+      await requestConnection({
+        variables: { payload: { id } }
+      });
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
@@ -179,8 +185,8 @@ function Member(props: MemberProp) {
               {location?.city
                 ? `${location?.city}, ${location?.state}`
                 : location?.country !== undefined
-                ? `${location?.state}, ${location?.country}`
-                : null}
+                  ? `${location?.state}, ${location?.country}`
+                  : null}
             </Text>
           )}
           {citizenship?.length ? (
