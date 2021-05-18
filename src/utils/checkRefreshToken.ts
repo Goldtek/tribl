@@ -19,6 +19,7 @@ const checkRefreshToken = async (credentials: VerifyOTPIT) => {
   try {
     const { data } = await refreshToken(credentials.refresh_token);
     await Storage.setUserCredentials(data?.refreshToken);
+    return data;
   } catch (error) {
     crashlytics.recordError(new Error(`[GraphQL error]: Message: ${error}`));
   }

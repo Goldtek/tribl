@@ -23,13 +23,7 @@ export default function TribeRequestScreen(props: tribeRequestScreenProp) {
   const [search, setSearch] = useState({ searchTerm: '' });
 
   const { data: requestData, refetch } = useQuery(GET_TRIBE_REQUESTS, {
-    variables: {
-      input: {
-        filter: {
-          communityId
-        }
-      }
-    }
+    variables: { input: { filter: { communityId } } }
   });
 
   const tribeRequest = requestData?.communityRequests?.data;

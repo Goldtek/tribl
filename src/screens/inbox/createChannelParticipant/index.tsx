@@ -7,14 +7,13 @@ import { Divider, TouchableRipple, Title } from 'react-native-paper';
 import {
   InstantSearch,
   connectSearchBox,
-  Configure,
-  connectInfiniteHits
+  Configure
 } from 'react-instantsearch-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useKeyboardContext } from 'stream-chat-react-native-core';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import TribeMembersMemberCard from './widget';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -26,9 +25,7 @@ import { USER_DEFAULT_AVATAR } from '../../../constants';
 import { CREATE_NEW_CHANNEL } from '../../../graphql/server/mutations';
 import AlgoliaList from '../../../components/algoliaList';
 import { crashlytics } from '../../../firebase/config';
-import removeDuplicateMembers from '../../../utils/removeDuplicatePassports';
-import { Results } from '../../../components/algoliaCommunityMembersList';
-import { GET_USER_PASSPORT } from '../../../graphql/server/query';
+import { chatClient } from '../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -45,22 +42,17 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function NewChannelParticipants(props: ScreenProp) {
   const { navigation, route } = props;
-  const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const { id, name, channelName, privateStatus } = route?.params;
-  const selecteduserRef = useRef<any>(null);
+  const { colors, fonts } = useThemeContext();
+  const selectedUserRef = useRef<FlatList>(null);
   const { dismissKeyboard } = useKeyboardContext();
+  const { id, name, channelName, privateStatus } = route?.params;
 
+  const [createChannel, { loading }] = useMutation(CREATE_NEW_CHANNEL);
+  const [state, setState] = useState({ search: {} });
   const [tribeMembers, setTribeMembers] = useState<{
     [key: string]: PassportInterface;
   }>({});
-  const [state, setState] = useState({ search: {} });
-
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
-
-  // This needs to be implented, users should not see users they blocked when adding users.
-
-  const blockedUsers = userData?.myPassport?.privacy?.blocked;
 
   const handleSelect = (user: PassportInterface) => {
     dismissKeyboard();
@@ -87,17 +79,14 @@ export default function NewChannelParticipants(props: ScreenProp) {
 
   useEffect(() => {
     tagScreenName('CreateChannelParticipant');
-  }, [tribeMembers]);
+  }, []);
 
   const onSearchStateChange = (search: string) => {
     setState({ ...state, search });
   };
 
   const selectedParticipant = [Object.values(tribeMembers || {})];
-
   const channelParticipant = selectedParticipant[0]?.map((item) => item.id);
-
-  const [createChannel, { loading }] = useMutation(CREATE_NEW_CHANNEL);
 
   const handleCreateChannel = async () => {
     try {
@@ -111,18 +100,18 @@ export default function NewChannelParticipants(props: ScreenProp) {
           payload: {
             communityId: id,
             name: channelName,
-            participants: channelParticipant,
             isPrivate: privateStatus,
-            moderators: [userData?.myPassport?.id]
+            participants: channelParticipant,
+            moderators: [chatClient.user?.id]
           }
         }
       });
 
       if (data) {
-        navigation.navigate('ChannelChatScreen', {
+        navigation.navigate('DeepLinkChannelChatScreen', {
           title: `${channelName}`,
-          channelId: data?.addChannelToCommunity?.id,
-          newly_created_group: true
+          newly_created_group: true,
+          channelId: data?.addChannelToCommunity?.id
         });
       }
     } catch (error) {
@@ -265,16 +254,12 @@ export default function NewChannelParticipants(props: ScreenProp) {
           <SearchInputWrapper>
             <AlgoliaSearchBox />
             <FlatList
-              ref={selecteduserRef}
+              ref={selectedUserRef}
               onContentSizeChange={() =>
-                selecteduserRef.current.scrollToEnd({
-                  animated: true
-                })
+                selectedUserRef.current?.scrollToEnd({ animated: true })
               }
               onLayout={() =>
-                selecteduserRef.current.scrollToEnd({
-                  animated: true
-                })
+                selectedUserRef.current?.scrollToEnd({ animated: true })
               }
               bounces={false}
               horizontal={true}

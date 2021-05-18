@@ -197,7 +197,7 @@ type Wallet = {
   status: string;
   currencies: {
     id: string;
-    currentBalance: string;
+    availableBalance: string;
     ledgerBalance: string;
     status: CurrencyStatus;
     name: string;
@@ -556,6 +556,11 @@ export type ActiveSideMenuRequestInterface = {
 // SHOW NOTIFICATION REQUEST (RESPONSE) TYPE
 export type ShowConnectionNotificationBadge = {
   showConnectionNotificationBadge: boolean;
+};
+
+// SHOW SHOW TRIBE REQUEST (RESPONSE) TYPE
+export type ShowTribeRequestNotificationBadge = {
+  showTribeRequestNotificationBadge: boolean;
 };
 
 // USER COMMUNITY CHANNEL REQUEST LIST (RESPONSE) TYPE

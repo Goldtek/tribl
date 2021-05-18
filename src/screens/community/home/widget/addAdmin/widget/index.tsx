@@ -33,12 +33,14 @@ export default function AddAdmin(props: AddAdminProp) {
 
   const onPress = () => handleSelect(id);
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   useEffect(() => {
-    getUserPassport();
+    if (id) {
+      getUserPassport({
+        variables: { id }
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -59,7 +61,7 @@ export default function AddAdmin(props: AddAdminProp) {
         paddingLeft: RFValue(10),
         paddingRight: RFValue(10)
       }}
-      onPress={() => {}}
+      onPress={() => { }}
     >
       <Fragment>
         <FastImage
@@ -96,8 +98,8 @@ export default function AddAdmin(props: AddAdminProp) {
             {currentLocation?.city
               ? `${currentLocation?.city}, ${currentLocation?.state}`
               : currentLocation?.country !== undefined
-              ? `${currentLocation?.state}, ${currentLocation?.country}`
-              : null}
+                ? `${currentLocation?.state}, ${currentLocation?.country}`
+                : null}
           </Text>
         </NameContainer>
         <CheckboxCover>

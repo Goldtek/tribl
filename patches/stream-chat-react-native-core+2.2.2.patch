@@ -182,6 +182,23 @@ index 3a5429a..4c49c1a 100644
                />
              )}
            </ImageContainer>
+diff --git a/node_modules/stream-chat-react-native-core/src/components/AutoCompleteInput/MentionsItem.tsx b/node_modules/stream-chat-react-native-core/src/components/AutoCompleteInput/MentionsItem.tsx
+index 0fad490..5bc4008 100644
+--- a/node_modules/stream-chat-react-native-core/src/components/AutoCompleteInput/MentionsItem.tsx
++++ b/node_modules/stream-chat-react-native-core/src/components/AutoCompleteInput/MentionsItem.tsx
+@@ -36,10 +36,10 @@ export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
+  * @example ./MentionsItem.md
+  */
+ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
+-  item: { id, image, name },
++  item: {image, name },
+ }: MentionsItemProps<Us>) => (
+   <Container>
+     <Avatar image={image} name={name} />
+-    <Name testID='mentions-item-name'>{name || id}</Name>
++    <Name testID='mentions-item-name'>{name}</Name>
+   </Container>
+ );
 diff --git a/node_modules/stream-chat-react-native-core/src/components/Avatar/Avatar.tsx b/node_modules/stream-chat-react-native-core/src/components/Avatar/Avatar.tsx
 index d3b5017..3e09bd6 100644
 --- a/node_modules/stream-chat-react-native-core/src/components/Avatar/Avatar.tsx
@@ -869,3 +886,46 @@ index 4981e30..daa2d3d 100644
            }}
          >
            {supportedReactions.map(({ icon, id }) => {
+diff --git a/node_modules/stream-chat-react-native-core/src/contexts/suggestionsContext/SuggestionsList.tsx b/node_modules/stream-chat-react-native-core/src/contexts/suggestionsContext/SuggestionsList.tsx
+index 51bb084..864d977 100644
+--- a/node_modules/stream-chat-react-native-core/src/contexts/suggestionsContext/SuggestionsList.tsx
++++ b/node_modules/stream-chat-react-native-core/src/contexts/suggestionsContext/SuggestionsList.tsx
+@@ -110,21 +110,21 @@ export const SuggestionsList = <
+       switch (Component) {
+         case 'MentionsItem':
+           if (isSuggestionUser(item)) {
+-            return (
++            return item.name ? (
+               <SuggestionsItem onPress={() => onSelect(item)}>
+                 <MentionsItem item={item} />
+               </SuggestionsItem>
+-            );
++            ): null;
+           }
+           return null;
+         case 'CommandsItem':
+-          if (!isSuggestionUser(item)) {
+-            return (
+-              <SuggestionsItem onPress={() => onSelect(item)}>
+-                <CommandsItem item={item} />
+-              </SuggestionsItem>
+-            );
+-          }
++          // if (!isSuggestionUser(item)) {
++          //   return (
++          //     <SuggestionsItem onPress={() => onSelect(item)}>
++          //       <CommandsItem item={item} />
++          //     </SuggestionsItem>
++          //   );
++          // }
+           return null;
+         default:
+           return null;
+@@ -139,6 +139,7 @@ export const SuggestionsList = <
+   };
+ 
+   if (!active || data.length === 0) return null;
++  if (Component === "CommandsItem") return null;
+ 
+   return (
+     <Wrapper onPress={handleDismiss} style={{ height: backdropHeight }}>

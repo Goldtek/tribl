@@ -54,19 +54,10 @@ export default function TribeRequest(props: TribeRequestProp) {
     DECLINED
   }
 
-  const [acceptRequest, { loading }] = useMutation(APPROVE_REJECT_NEW_TRIBE, {
-    variables: {
-      payload: { id: id, action: StatusOptions[0] }
-    }
-  });
+  const [acceptRequest, { loading }] = useMutation(APPROVE_REJECT_NEW_TRIBE);
 
   const [declineRequest, { loading: declineLoading }] = useMutation(
-    APPROVE_REJECT_NEW_TRIBE,
-    {
-      variables: {
-        payload: { id: id, action: StatusOptions[1] }
-      }
-    }
+    APPROVE_REJECT_NEW_TRIBE
   );
 
   const handleAcceptInvitation = async () => {
@@ -76,7 +67,11 @@ export default function TribeRequest(props: TribeRequestProp) {
         info: `Admin accepts tribe creation`,
         'Activity Screen': 'Tribe Request Screen'
       });
-      await acceptRequest();
+      await acceptRequest({
+        variables: {
+          payload: { id: id, action: StatusOptions[0] }
+        }
+      });
       refetch();
     } catch (error) {
       crashlytics.recordError(error);
@@ -90,19 +85,26 @@ export default function TribeRequest(props: TribeRequestProp) {
         info: `Admin declines tribe invicreationte`,
         'Activity Screen': 'Tribe Request Screen'
       });
-      await declineRequest();
+      await declineRequest({
+        variables: {
+          payload: { id: id, action: StatusOptions[1] }
+        }
+      });
       refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id: creator?.id }
-  });
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   useEffect(() => {
-    getUserPassport();
+    if (creator?.id) {
+      getUserPassport({
+        variables: { id: creator?.id }
+      });
+    }
+
   }, []);
 
   return (

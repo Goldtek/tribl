@@ -27,6 +27,7 @@ const CURRENTLY_USED_DEVELOPMENT_CHANNEL: string = `development_channel_with_ota
 // ALL PAGE LOGICAL CONSTANTS
 export const PAGINATION_DEFAULT: number = 20;
 export const LANGUAGE_DEFAULT: string = 'en';
+export const SCHEMA_VERSION_KEY = 'APOLLO-SCHEMA-VERSION';
 
 // APP HEADER SETTING
 export const GLOBAL_HEADER_STYLE = {

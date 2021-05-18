@@ -27,7 +27,7 @@ import { TouchableOpacity } from 'react-native';
 import { TextContainer, Container, AvatarContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface RecommendedUserProp extends PassportInterface {}
+interface RecommendedUserProp extends PassportInterface { }
 
 export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
@@ -51,21 +51,14 @@ export default function RecommendedUser(props: RecommendedUserProp) {
   } = member;
 
   const [getUserPassport, { data }] = useLazyQuery<UserPassportInterface>(
-    GET_SINGLE_PASSPORT,
-    { variables: { id } }
+    GET_SINGLE_PASSPORT
   );
 
-  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
+  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS);
 
-  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
+  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS);
 
-  const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION, {
-    variables: { payload: { id } }
-  });
+  const [requestConnection, { loading }] = useMutation(REQUEST_CONNECTION);
 
   const [unblock, setUnblock] = useState(blocked?.blocked);
 
@@ -96,7 +89,7 @@ export default function RecommendedUser(props: RecommendedUserProp) {
       pending == 'PENDING' ||
       pending == 'REQUESTED'
     ) {
-      getUserPassport();
+      getUserPassport({ variables: { id } });
     }
 
     if (data?.singlePassport) {
@@ -113,8 +106,12 @@ export default function RecommendedUser(props: RecommendedUserProp) {
       await unBlockUser();
       setUnblock([]);
       getUserPassport();
-      getRecommendedMembers();
-      getNearbyMembers();
+      getRecommendedMembers({
+        variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+      });
+      getNearbyMembers({
+        variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
+      });
     } catch (error) {
       crashlytics.recordError(error);
     }
@@ -127,7 +124,9 @@ export default function RecommendedUser(props: RecommendedUserProp) {
         info: `User adds ${firstName} ${lastName} as a connection`,
         'Activity Screen': 'Recommended member passport card'
       });
-      await requestConnection();
+      await requestConnection({
+        variables: { payload: { id } }
+      });
       setRequest(true);
     } catch (error) {
       crashlytics.recordError(new Error(error));
@@ -242,9 +241,9 @@ export default function RecommendedUser(props: RecommendedUserProp) {
           ) : null}
         </TextContainer>
         {connectionDetails?.status == 'PENDING' ||
-        pending == 'PENDING' ||
-        pending == 'REQUESTED' ||
-        request ? (
+          pending == 'PENDING' ||
+          pending == 'REQUESTED' ||
+          request ? (
           <Button
             disabled={true}
             mode="contained"

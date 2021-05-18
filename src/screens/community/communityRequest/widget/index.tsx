@@ -109,12 +109,14 @@ export default function TribeRequest(props: TribeRequestProp) {
     }
   };
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id }
-  });
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   useEffect(() => {
-    getUserPassport();
+    if (id) {
+      getUserPassport({
+        variables: { id }
+      });
+    }
   }, []);
 
   return (
