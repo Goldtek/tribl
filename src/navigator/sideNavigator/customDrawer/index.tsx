@@ -125,7 +125,7 @@ export default function CustomDrawerComponent() {
             color={colors.PRIMARY_TEXT}
           />
           {tribeRequest?.showTribeRequestNotificationBadge && (
-            <ConnectionBadgeWrapper />
+            <ConnectionBadgeWrapper style={{ top: 25, right: -10 }} />
           )}
         </Fragment>
       )

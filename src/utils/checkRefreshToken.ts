@@ -1,15 +1,12 @@
-import jsonwebtoken from 'jwt-decode';
 import Storage from '../libs/storage';
 import { VerifyOTPIT } from '../graphql/types';
 import { refreshToken } from '../network/query';
 import { crashlytics } from '../firebase/config';
 import { addMinutes, fromUnixTime } from 'date-fns';
+import { decodeToken } from './decodeToken';
 
 const checkRefreshToken = async (credentials: VerifyOTPIT) => {
-  const payload: null | { [key: string]: any } | any = jsonwebtoken(
-    credentials.id_token
-  );
-
+  const payload = decodeToken(credentials.id_token);
   const tokenExpiryTime = fromUnixTime(payload?.exp);
   const tokenExpiryMinute = addMinutes(new Date(), 30);
   const expiryHour = tokenExpiryTime.getTime() <= tokenExpiryMinute.getTime();
