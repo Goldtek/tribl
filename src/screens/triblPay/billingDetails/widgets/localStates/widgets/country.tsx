@@ -23,7 +23,11 @@ const CountryCard = (props: CountryCardProps) => {
   const closeModal = () => props.modalizeStateRef.current?.close();
 
   const handleSelect = () => {
-    setBillingDetails({ ...billingDetails, addressState: alphaCode });
+    setBillingDetails({
+      ...billingDetails,
+      addressState: name,
+      addressStateCode: alphaCode
+    });
     closeModal();
   };
 

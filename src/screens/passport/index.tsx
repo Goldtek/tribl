@@ -488,7 +488,8 @@ export default function PassportScreen(props: ScreenProp) {
     }
 
     const updateFields = [];
-    const { phoneNumber, email, lastName, firstName, dob } = userDetails;
+    const { phoneNumber, email, lastName, firstName, dob } =
+      userDetails || cache;
     if (countWords(firstName)) updateFields.push('First name');
     if (countWords(lastName)) updateFields.push('Last Name');
     if (countWords(phoneNumber)) updateFields.push('Phone Number');
