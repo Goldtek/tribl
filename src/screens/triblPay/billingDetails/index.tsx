@@ -61,6 +61,14 @@ export default function BillingDetailsScreen(props: ScreenProp) {
   } = billingDetails;
 
   useEffect(() => {
+    if (isLocal === false && addressCountryCode === 'US') {
+      setBillingDetails({
+        ...billingDetails,
+        addressState: 'Select'
+      });
+      setIsLocal(true);
+    }
+
     tagScreenName('BillingDetailsScreen');
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
@@ -293,7 +301,11 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                   value={handleStateValue()}
                   disabled={isLocal}
                   onChangeText={(addressState: string) =>
-                    setBillingDetails({ ...billingDetails, addressState })
+                    setBillingDetails({
+                      ...billingDetails,
+                      addressState,
+                      addressStateCode: addressState
+                    })
                   }
                   style={{
                     height: 30,
