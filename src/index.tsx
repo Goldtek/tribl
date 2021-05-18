@@ -7,7 +7,6 @@ import TriblPayNavigator from './navigator/triblPayNavigator';
 import SignupNavigator from './navigator/signupNavigator';
 import { navigationRef } from './constants';
 import { useThemeContext } from './theme';
-import AsyncStorage from '@react-native-community/async-storage';
 import Screens from './screens';
 import BottomNavigator from './navigator/bottomNavigator';
 import CustomDrawer from './navigator/sideNavigator/customDrawer';
@@ -104,21 +103,11 @@ export default function AppNavigator() {
 
       if (url != null) return url;
 
-      const localMessage = await AsyncStorage.getItem('BACK_GROUND_MESSAGE');
+      // Check whether an initial notification is available
+      const remoteMessage = await messaging().getInitialNotification();
 
-      if (!localMessage) return null;
-
-      const message = JSON.parse(localMessage) as {
-        data: NotificationMessage;
-        body: NotificationMessage;
-      };
-
-      const data =
-        DEVICE_OS === 'ios'
-          ? ((message?.body || message.data) as NotificationMessage)
-          : (message?.data as NotificationMessage);
-
-      await AsyncStorage.removeItem('BACK_GROUND_MESSAGE');
+      if (!remoteMessage) return null;
+      const data = remoteMessage.data as NotificationMessage;
 
       // Get deep link from data
       // if this is undefined, the app will open the default/home page
@@ -141,7 +130,7 @@ export default function AppNavigator() {
           const data =
             DEVICE_OS === 'ios'
               ? //@ts-ignore
-              ((message?.body || message.data) as NotificationMessage)
+                ((message?.body || message.data) as NotificationMessage)
               : (message?.data as NotificationMessage);
 
           // Any custom logic to check whether the URL needs to be handled

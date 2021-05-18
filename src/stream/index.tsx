@@ -281,8 +281,6 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   useEffect(() => {
     // Register foreground handler
     const unsubscribe = messaging.onMessage(presentNotification);
-    // Check whether an initial notification is available
-    messaging.getInitialNotification().then(presentNotification);
     return unsubscribe;
   }, []);
 
