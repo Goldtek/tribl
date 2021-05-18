@@ -104,7 +104,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
     refetch: inviteRefetch,
     fetchMore: inviteFetchMore
   } = useQuery<CommunityInviteInterface>(GET_TRIBE_INVITES, {
-    variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
   const {
@@ -114,7 +114,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
   } = useQuery<CommunityCreationRequestInterface>(
     GET_COMMUNITY_CREATION_REQUEST,
     {
-      variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
+      variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
     }
   );
 
@@ -125,7 +125,7 @@ export default function TribeRequestScreen(props: TribeRequestScreenProp) {
   } = useQuery<AllChannelCreationRequestInterface>(
     GET_ALL_CHANNEL_CREATION_REQUEST,
     {
-      variables: { input: { limit: PAGINATION_DEFAULT, skip: 0 } }
+      variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
     }
   );
 

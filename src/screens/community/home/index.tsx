@@ -44,7 +44,8 @@ import {
   RecommendedCommunitiesRequestInterface,
   CommunityInterface,
   ChannelInterface,
-  MyChannelRequestInterface
+  MyChannelRequestInterface,
+  MyPassportInterface
 } from '../../../graphql/types';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
 import hexToRGB from '../../../utils/hexToRGB';
@@ -101,7 +102,7 @@ export default function HomeScreen(props: ScreenProp) {
   const [
     getUserPassport,
     { data: userData, refetch: passportRefetch }
-  ] = useLazyQuery(GET_USER_PASSPORT);
+  ] = useLazyQuery<MyPassportInterface>(GET_USER_PASSPORT);
 
   const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
@@ -124,16 +125,21 @@ export default function HomeScreen(props: ScreenProp) {
     setOTAUpdate(update.isAvailable);
   };
 
+  const userDetails = userData?.myPassport;
+
   useEffect(() => {
     tagScreenName('TriblScreen');
     getPopularCommunities();
     getNearbyMembers();
     getMyConnections();
     getUserPassport();
-    handleLocation();
     getAllMembers();
     checkUpdate();
   }, []);
+
+  useEffect(() => {
+    userDetails?.id && handleLocation();
+  }, [userDetails?.id]);
 
   const {
     loading: recommendedCommunityLoading,
@@ -157,36 +163,34 @@ export default function HomeScreen(props: ScreenProp) {
     }
   );
 
-  const userDetails = userData?.myPassport;
-
   const handleLocation = async () => {
     try {
+      if (!userDetails?.id) return;
+
+      const userLocation = userDetails.currentLocation;
       await Location.requestPermissionsAsync();
-
       const { coords } = await Location.getLastKnownPositionAsync();
-
       const [currentLocation] = await Location.reverseGeocodeAsync({
         latitude: coords.latitude,
         longitude: coords.longitude
       });
 
-      const { city, region: state, country } = currentLocation;
       await updatePassport({
         variables: {
           payload: {
             currentLocation: {
-              city,
-              state,
-              country,
               lat: coords.latitude,
-              long: coords.longitude
+              long: coords.longitude,
+              city: currentLocation.city || userLocation.city,
+              state: currentLocation.region || userLocation.state,
+              country: currentLocation.country || userLocation.country
             }
           }
         }
       });
 
       Mixpanel.track('User Update Location', {
-        info: `User ${userDetails.firstName} ${userDetails.lastName} updates location`,
+        info: `User ${userDetails?.firstName} ${userDetails?.lastName} updates location`,
         'Activity Screen': 'Community screen'
       });
     } catch (error) {
