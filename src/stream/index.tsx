@@ -43,6 +43,7 @@ import fcmMessaging, {
 import { UserResponse } from 'stream-chat';
 import Storage from '../libs/storage';
 import { decodeToken } from '../utils/decodeToken';
+import { PAGINATION_DEFAULT } from '../constants';
 
 import {
   ThreadType,
@@ -69,16 +70,20 @@ const StreamProvider: FunctionComponent = ({ children }) => {
   );
 
   const { data: inviteData } = useQuery<CommunityInviteInterface>(
-    GET_TRIBE_INVITES
+    GET_TRIBE_INVITES,
+    { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
   );
 
   const { data: requestData } = useQuery<CommunityCreationRequestInterface>(
-    GET_COMMUNITY_CREATION_REQUEST
+    GET_COMMUNITY_CREATION_REQUEST,
+    { variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } } }
   );
 
   const { data: channelRequestData } = useQuery<
     AllChannelCreationRequestInterface
-  >(GET_ALL_CHANNEL_CREATION_REQUEST);
+  >(GET_ALL_CHANNEL_CREATION_REQUEST, {
+    variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
+  });
 
   const tribeInvites = inviteData?.communityInvites;
   const tribeRequest = requestData?.communityCreationRequests;
@@ -153,11 +158,14 @@ const StreamProvider: FunctionComponent = ({ children }) => {
       const userCredStorage = await Storage.getUserCredentials();
       const credentials = JSON.parse(userCredStorage || '{}') as VerifyOTPIT;
       let streams_token = credentials?.streams_token;
+      let decodedToken: { [key: string]: any } | null = null;
 
-      const decodedToken = decodeToken(streams_token) as { id: string };
+      if (streams_token) {
+        decodedToken = decodeToken(streams_token);
+      }
 
       // add check for token expiry here in future.
-      if (!streams_token || decodedToken?.id != user.id) {
+      if (!streams_token || decodedToken?.user_id !== user.id) {
         const { data } = await authenticateStream();
         streams_token = `${data?.generateStreamsToken.streams_token}`;
         Storage.setUserCredentials(data?.generateStreamsToken);
@@ -276,7 +284,12 @@ const StreamProvider: FunctionComponent = ({ children }) => {
         variables: { showTribeRequestNotificationBadge: false }
       });
     }
-  }, [connectionRequests?.data.length]);
+  }, [
+    tribeInvites?.data.length,
+    tribeRequest?.data.length,
+    channelRequest?.data.length,
+    connectionRequests?.data.length
+  ]);
 
   useEffect(() => {
     // Register foreground handler
