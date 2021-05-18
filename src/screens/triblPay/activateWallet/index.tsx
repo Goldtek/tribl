@@ -59,8 +59,7 @@ export default function ActivateWalletScreen(props: ScreenProp) {
         </Text>
       </BalanceCover>
       <GradientButton
-        // onPress={() => navigation.navigate('LinkAccountScreen')}
-        onPress={() => navigation.navigate('PassportScreen')}
+        onPress={() => navigation.navigate('LinkAccountScreen')}
         style={{
           height: 50,
           width: '100%'
