@@ -42,6 +42,8 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     addressLine: '',
     addressCity: '',
     addressState: '',
+    addressCountry: details.name,
+    addressStateCode: '',
     addressPostalCode: '',
     addressCountryCode: details.iso2
   });
@@ -52,6 +54,8 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     addressLine,
     addressCity,
     addressState,
+    addressCountry,
+    addressStateCode,
     addressPostalCode,
     addressCountryCode
   } = billingDetails;
@@ -68,6 +72,8 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           addressLine,
           addressCity,
           addressState,
+          addressCountry,
+          addressStateCode,
           addressPostalCode,
           addressCountryCode
         },
@@ -248,12 +254,12 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                       textTransform: 'uppercase'
                     }}
                   >
-                    Country code
+                    Country
                   </Title>
                 </LabelContainer>
 
                 <TextInput
-                  value={addressCountryCode}
+                  value={addressCountry}
                   disabled={true}
                   style={{
                     height: 30,
