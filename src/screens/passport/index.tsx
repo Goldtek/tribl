@@ -473,6 +473,7 @@ export default function PassportScreen(props: ScreenProp) {
   };
 
   const handleWalletAction = () => {
+    if (!userDetails) return;
     const status = cache?.wallet?.status;
 
     if (status === 'ACTIVE') {
