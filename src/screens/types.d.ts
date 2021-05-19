@@ -125,6 +125,7 @@ export type RootStackParamList = {
   BillingDetailsScreen?: Object;
   SelfieScreen?: Object;
   CreditCardScreen?: Object;
+  BankAccountScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -228,7 +229,8 @@ export type RootStackParamScreensList =
   | 'SelfieScreen'
   | 'FailedWalletStatusScreen'
   | 'PendingWalletStatusScreen'
-  | CreditCardScreen
+  | 'CreditCardScreen'
+  | 'BankAccountScreen'
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
