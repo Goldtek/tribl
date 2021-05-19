@@ -60,7 +60,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerTitleStyle: {
-            textTransform: 'uppercase',
+            textTransform: 'capitalize',
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD
           }
@@ -264,7 +264,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
                   color: colors.PRIMARY,
                   fontSize: RFValue(fonts.LARGE_SIZE + 2),
                   fontFamily: fonts.WORK_SANS_BOLD,
-                  textTransform: 'uppercase'
+                  textTransform: 'capitalize'
                 }}
               >
                 {t(`community.passport.pay`)}
@@ -279,7 +279,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           headerBackTitleVisible: false,
           headerTintColor: colors.PRIMARY,
           headerTitleStyle: {
-            textTransform: 'uppercase',
+            textTransform: 'capitalize',
             fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD
           }
