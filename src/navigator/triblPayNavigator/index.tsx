@@ -222,6 +222,28 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           }
         }}
       />
+
+      <TriblpayStack.Screen
+        name="CreditCardScreen"
+        component={Screens.CreditCardScreen}
+        options={{
+          headerTitle: 'Link Credit Card',
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            textTransform: 'capitalize'
+          }
+        }}
+      />
+
       <TriblpayStack.Screen
         name="WalletScreen"
         component={Screens.WalletScreen}
