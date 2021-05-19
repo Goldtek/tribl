@@ -124,6 +124,7 @@ export type RootStackParamList = {
   PendingWalletStatusScreen?: Object;
   BillingDetailsScreen?: Object;
   SelfieScreen?: Object;
+  CreditCardScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -227,6 +228,7 @@ export type RootStackParamScreensList =
   | 'SelfieScreen'
   | 'FailedWalletStatusScreen'
   | 'PendingWalletStatusScreen'
+  | CreditCardScreen
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
@@ -234,7 +236,7 @@ interface StackNavigationInterface extends StackActionHelpers {
 
 interface StackScreenInterface {
   navigation: StackNavigationProp<RootStackParamList, string> &
-    StackNavigationInterface;
+  StackNavigationInterface;
   route: RouteProp<RootStackParamList, string>;
 }
 
