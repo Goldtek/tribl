@@ -353,3 +353,12 @@ export const SAVE_CARD_DETAILS = gql`
     }
   }
 `;
+
+export const SAVE_BANK_DETAILS = gql`
+  mutation saveBankDetails($payload: BankDetailsInput!) {
+    saveBankDetails(input: $payload) {
+      success
+      errorCode
+    }
+  }
+`;
