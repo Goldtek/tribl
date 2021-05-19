@@ -4,6 +4,7 @@ import AddCashScreen from './addCash';
 import CountryIdScreen from './countryId';
 import CreditCardScreen from './creditCard';
 import BankCountryScreen from './bankCountry';
+import BankAccountScreen from './bankAccount';
 import LinkAccountScreen from './linkedAccount';
 import WalletStatusScreen from './walletStatus';
 import VerifyIdentityScreen from './verifyIdentity';
@@ -18,6 +19,7 @@ export default {
   CountryIdScreen,
   CreditCardScreen,
   LinkAccountScreen,
+  BankAccountScreen,
   BankCountryScreen,
   WalletStatusScreen,
   ActivateWalletScreen,
