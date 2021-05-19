@@ -192,6 +192,67 @@ type WalletActivity = {
   updatedAt: Date;
 };
 
+type FundingBillingAddress = {
+  id: string;
+  addressLine: string;
+  addressLine2: string;
+  countryCode: string;
+  stateCode: string;
+  city: string;
+  postCode: string;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+  wallet: Wallet
+}
+
+type FundingCard = {
+  id: string;
+  billingDetails: FundingBillingAddress;
+  network: string;
+  source: FundingSource;
+  last4: string;
+  expYear: string;
+  expMonth: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+enum FundingBankType {
+  WIRE = 'WIRE',
+  ACH = 'ACH'
+}
+
+type FundingBank = {
+  id: string;
+  description: string;
+  type: FundingBankType;
+  trackingRef: string;
+  billingDetails: FundingBillingAddress;
+  bankAddress: FundingBillingAddress;
+  source: FundingSource;
+  createdAt: string;
+  updatedAt: string;
+}
+
+enum FundingSourceType {
+  CARD = 'CARD',
+  BANK = 'BANK'
+}
+
+type FundingSource = {
+  id: string;
+  entityName: string;
+  wallet: Wallet;
+  card: FundingCard;
+  bank: FundingBank;
+  status: string;
+  errorCode: string;
+  type: FundingSourceType;
+  createdAt: string;
+  updatedAt: string;
+}
+
 type Wallet = {
   id: string;
   status: string;
@@ -207,6 +268,7 @@ type Wallet = {
   passport: PassportInterface;
   community: CommunityInterface;
   activities: WalletActivity;
+  fundingSources: FundingSource;
 };
 
 export interface PassportInterface {
@@ -600,3 +662,4 @@ export type SingleCommunityRequestInterface = {
     data: CommunityInterface[];
   };
 };
+
