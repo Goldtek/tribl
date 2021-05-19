@@ -174,6 +174,10 @@ export const GET_USER_PASSPORT = gql`
           visible
           id
         }
+        fundingSources {
+          id
+          entityName
+        }
       }
     }
   }
