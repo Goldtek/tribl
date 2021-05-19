@@ -45,7 +45,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
                   color: colors.PRIMARY,
                   fontSize: RFValue(fonts.LARGE_SIZE + 2),
                   fontFamily: fonts.WORK_SANS_BOLD,
-                  textTransform: 'uppercase'
+                  textTransform: 'capitalize'
                 }}
               >
                 {t(`community.passport.pay`)}
