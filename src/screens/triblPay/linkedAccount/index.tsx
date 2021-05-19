@@ -37,7 +37,7 @@ export default function LinkAccountScreen(props: ScreenProp) {
           alignItems: 'center',
           marginTop: RFValue(30)
         }}
-        onPress={() => {}}
+        onPress={() => navigation.navigate('CreditCardScreen')}
       >
         <Fragment>
           <Feather name="plus" size={22} color={colors.PRIMARY_TEXT} />
@@ -60,7 +60,7 @@ export default function LinkAccountScreen(props: ScreenProp) {
           alignItems: 'center',
           marginTop: RFValue(30)
         }}
-        onPress={() => navigation.navigate('BankCountryScreen')}
+        // onPress={() => navigation.navigate('BankCountryScreen')}
       >
         <Fragment>
           <FontAwesome name="bank" size={22} color={colors.PRIMARY_TEXT} />
