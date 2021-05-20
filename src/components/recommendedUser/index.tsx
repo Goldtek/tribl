@@ -27,7 +27,7 @@ import { TouchableOpacity } from 'react-native';
 import { TextContainer, Container, AvatarContainer } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface RecommendedUserProp extends PassportInterface { }
+interface RecommendedUserProp extends PassportInterface {}
 
 export default function RecommendedUser(props: RecommendedUserProp) {
   const { colors, fonts } = useThemeContext();
@@ -241,9 +241,9 @@ export default function RecommendedUser(props: RecommendedUserProp) {
           ) : null}
         </TextContainer>
         {connectionDetails?.status == 'PENDING' ||
-          pending == 'PENDING' ||
-          pending == 'REQUESTED' ||
-          request ? (
+        pending == 'PENDING' ||
+        pending == 'REQUESTED' ||
+        request ? (
           <Button
             disabled={true}
             mode="contained"
