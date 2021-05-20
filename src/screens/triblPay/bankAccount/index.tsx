@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -39,14 +40,18 @@ export default function BankAccountScreen(props: ScreenProp) {
   const openModal = () => modalizeRef.current?.open();
   const openStateModal = () => modalizeStateRef.current?.open();
 
-  const [billingDetails, setBillingDetails] = useState({
-    addressLine: '',
-    addressCity: '',
-    addressState: '',
-    addressCountry: '',
-    addressStateCode: '',
-    addressPostalCode: '',
-    addressCountryCode: ''
+  const [accountDetails, setAccountDetails] = useState({
+    accountNumber: '',
+    routingNumber: '',
+    iBan: '',
+    name: '',
+    line1: '',
+    line2: '',
+    city: '',
+    district: '',
+    postalCode: '',
+    country: '',
+    billingId: ''
   });
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const toggleSwitch = () => setIsSwitchOn((previousState) => !previousState);
@@ -54,20 +59,22 @@ export default function BankAccountScreen(props: ScreenProp) {
   const [isLocal, setIsLocal] = useState(false);
 
   const {
-    addressLine,
-    addressCity,
-    addressState,
-    addressCountry,
-    addressStateCode,
-    addressPostalCode,
-    addressCountryCode
-  } = billingDetails;
-
+    accountNumber,
+    routingNumber,
+    iBan,
+    name,
+    line1,
+    line2,
+    city,
+    district,
+    postalCode,
+    country
+  } = accountDetails;
   useEffect(() => {
-    if (isLocal === false && addressCountryCode === 'US') {
-      setBillingDetails({
-        ...billingDetails,
-        addressState: 'Select'
+    if (isLocal === false && country === 'United States of America') {
+      setAccountDetails({
+        ...accountDetails,
+        district: 'Select'
       });
       setIsLocal(true);
     }
@@ -77,9 +84,9 @@ export default function BankAccountScreen(props: ScreenProp) {
   }, []);
 
   const handleStateValue = () => {
-    if (isLocal && addressState === '')
-      setBillingDetails({ ...billingDetails, addressState: 'Select' });
-    return addressState;
+    if (isLocal && district === '')
+      setAccountDetails({ ...accountDetails, district: 'Select' });
+    return district;
   };
 
   return (
@@ -160,9 +167,9 @@ export default function BankAccountScreen(props: ScreenProp) {
                   <TextInput
                     multiline={true}
                     dense={true}
-                    value={addressLine}
-                    onChangeText={(addressLine: string) =>
-                      setBillingDetails({ ...billingDetails, addressLine })
+                    value={accountNumber}
+                    onChangeText={(accountNumber: string) =>
+                      setAccountDetails({ ...accountDetails, accountNumber })
                     }
                     style={{
                       height: 30,
@@ -190,12 +197,9 @@ export default function BankAccountScreen(props: ScreenProp) {
                     </Title>
                   </LabelContainer>
                   <TextInput
-                    value={addressPostalCode}
-                    onChangeText={(addressPostalCode: string) =>
-                      setBillingDetails({
-                        ...billingDetails,
-                        addressPostalCode
-                      })
+                    value={routingNumber}
+                    onChangeText={(routingNumber: string) =>
+                      setAccountDetails({ ...accountDetails, routingNumber })
                     }
                     style={{
                       height: 30,
@@ -225,9 +229,9 @@ export default function BankAccountScreen(props: ScreenProp) {
                   </Title>
                 </LabelContainer>
                 <TextInput
-                  value={addressPostalCode}
-                  onChangeText={(addressPostalCode: string) =>
-                    setBillingDetails({ ...billingDetails, addressPostalCode })
+                  value={iBan}
+                  onChangeText={(iBan: string) =>
+                    setAccountDetails({ ...accountDetails, iBan })
                   }
                   style={{
                     height: 30,
@@ -256,9 +260,9 @@ export default function BankAccountScreen(props: ScreenProp) {
                 </Title>
               </LabelContainer>
               <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
+                value={name}
+                onChangeText={(name: string) =>
+                  setAccountDetails({ ...accountDetails, name })
                 }
                 style={{
                   height: 30,
@@ -302,9 +306,9 @@ export default function BankAccountScreen(props: ScreenProp) {
                 </Title>
               </LabelContainer>
               <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
+                value={line1}
+                onChangeText={(line1: string) =>
+                  setAccountDetails({ ...accountDetails, line1 })
                 }
                 style={{
                   height: 30,
@@ -332,9 +336,9 @@ export default function BankAccountScreen(props: ScreenProp) {
                 </Title>
               </LabelContainer>
               <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
+                value={line2}
+                onChangeText={(line2: string) =>
+                  setAccountDetails({ ...accountDetails, line2 })
                 }
                 style={{
                   height: 30,
@@ -364,7 +368,7 @@ export default function BankAccountScreen(props: ScreenProp) {
                 </LabelContainer>
 
                 <TextInput
-                  value={addressCountry}
+                  value={country}
                   disabled={true}
                   style={{
                     height: 30,
@@ -397,12 +401,8 @@ export default function BankAccountScreen(props: ScreenProp) {
                 <TextInput
                   value={handleStateValue()}
                   disabled={isLocal}
-                  onChangeText={(addressState: string) =>
-                    setBillingDetails({
-                      ...billingDetails,
-                      addressState,
-                      addressStateCode: addressState
-                    })
+                  onChangeText={(district: string) =>
+                    setAccountDetails({ ...accountDetails, district })
                   }
                   style={{
                     height: 30,
@@ -432,9 +432,9 @@ export default function BankAccountScreen(props: ScreenProp) {
                 </Title>
               </LabelContainer>
               <TextInput
-                value={addressCity}
-                onChangeText={(addressCity: string) =>
-                  setBillingDetails({ ...billingDetails, addressCity })
+                value={city}
+                onChangeText={(city: string) =>
+                  setAccountDetails({ ...accountDetails, city })
                 }
                 style={{
                   height: 30,
@@ -463,9 +463,9 @@ export default function BankAccountScreen(props: ScreenProp) {
                 </Title>
               </LabelContainer>
               <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
+                value={postalCode}
+                onChangeText={(postalCode: string) =>
+                  setAccountDetails({ ...accountDetails, postalCode })
                 }
                 style={{
                   height: 30,
@@ -483,7 +483,8 @@ export default function BankAccountScreen(props: ScreenProp) {
           <GradientButton
             // disabled={loading}
             // loading={loading}
-            onPress={() => navigation.navigate('WalletScreen')}
+            // onPress={() => navigation.navigate('WalletScreen')}
+            onPress={() => console.tron('account details', accountDetails)}
             style={{ height: 50 }}
             gradientContainerstyle={{
               height: 50,
@@ -499,15 +500,15 @@ export default function BankAccountScreen(props: ScreenProp) {
 
       <Countries
         modalizeRef={modalizeRef}
-        billingDetails={billingDetails}
-        setBillingDetails={setBillingDetails}
+        accountDetails={accountDetails}
+        setAccountDetails={setAccountDetails}
         setIsLocal={setIsLocal}
       />
 
       <LocalStates
         modalizeStateRef={modalizeStateRef}
-        billingDetails={billingDetails}
-        setBillingDetails={setBillingDetails}
+        accountDetails={accountDetails}
+        setAccountDetails={setAccountDetails}
       />
     </Fragment>
   );
