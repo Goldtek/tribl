@@ -191,19 +191,25 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
     }
   };
 
+  const handleBack = () => {
+    if (Boolean(route?.params?.newly_created_group)) {
+      return navigation.navigate('InboxScreen');
+    }
+
+    if (navigation.canGoBack()) {
+      return navigation.goBack();
+    }
+
+    navigation.navigate('InboxScreen');
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ChatContainer style={{ paddingBottom: bottom }}>
         <StatusBar style="dark" animated />
         <HeaderContainer>
           <TouchableRipple
-            onPress={() => {
-              if (Boolean(route?.params?.newly_created_group)) {
-                navigation.navigate('InboxScreen');
-              } else {
-                navigation.goBack();
-              }
-            }}
+            onPress={handleBack}
             style={{
               height: 40,
               width: 40,

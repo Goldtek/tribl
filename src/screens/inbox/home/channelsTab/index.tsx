@@ -74,8 +74,8 @@ function ChannelsTab(props: ScreenProp) {
           options={options}
           Preview={CustomChannelPreview}
           EmptyStateIndicator={EmptyMessageState}
-          LoadingIndicator={LoadingIndicatorState}
           LoadingErrorIndicator={LoadingErrorIndicator}
+          LoadingIndicator={() => <LoadingIndicatorState />}
           additionalFlatListProps={{ showsVerticalScrollIndicator: false }}
         />
       </Container>

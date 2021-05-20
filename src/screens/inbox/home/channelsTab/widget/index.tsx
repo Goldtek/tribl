@@ -1,5 +1,11 @@
 import React, { Fragment, useState } from 'react';
-import { Badge, TouchableRipple, Paragraph } from 'react-native-paper';
+import {
+  Badge,
+  TouchableRipple,
+  Paragraph,
+  ActivityIndicator
+} from 'react-native-paper';
+import { Alert, Modal } from 'react-native';
 import truncate from 'lodash/truncate';
 import { useThemeContext } from '../../../../../theme';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
@@ -19,6 +25,7 @@ import ChannelActions from './channelActions';
 import { useStreamContext } from '../../../../../stream';
 import { LEAVE_COMMUNITY_CHANNEL } from '../../../../../graphql/server/mutations';
 import MuteIcon from '../../../../../../assets/icons/muteIcon';
+import { crashlytics } from '../../../../../firebase/config';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -33,9 +40,12 @@ import {
   Date,
   Title,
   Details,
+  Overlay,
   DetailsTop,
   DetailsBottom,
   StyledMessage,
+  LoaderMessage,
+  ModalContentWrapper,
   NotificationContainer
 } from './styles';
 
@@ -68,7 +78,7 @@ export default function CustomChannelPreview(
   const getMuteStatus = channel?.muteStatus().muted;
   const [muted, setMuted] = useState(getMuteStatus);
   const displayName = useChannelPreviewDisplayName(channel);
-  const [leaveChannel] = useMutation(LEAVE_COMMUNITY_CHANNEL);
+  const [leaveChannel, { loading }] = useMutation(LEAVE_COMMUNITY_CHANNEL);
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const message = latestMessagePreview?.messageObject;
   const latestMessageDate = message?.created_at.asMutable();
@@ -87,21 +97,58 @@ export default function CustomChannelPreview(
     : null;
 
   const handleDeleteAction = async () => {
-    await leaveChannel({ variables: { payload: { channelId: channel.id } } });
+    Alert.alert(
+      'Leave channel',
+      `Are you sure you want to leave this channel`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel'
+        },
+        {
+          text: 'Leave',
+          onPress: async () => {
+            try {
+              leaveChannel({
+                variables: { payload: { channelId: channel.id } }
+              });
+            } catch (error) {
+              crashlytics.recordError(new Error(error));
+              crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const toggleMuteAction = async () => {
-    try {
-      if (muted) {
-        await channel.unmute();
-        setMuted(false);
-      } else {
-        await channel.mute();
-        setMuted(true);
+    Alert.alert('Mute channel', `Are you sure you want to mute this channel`, [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'cancel'
+      },
+      {
+        text: 'Mute',
+        onPress: async () => {
+          try {
+            if (muted) {
+              await channel.unmute();
+              setMuted(false);
+            } else {
+              await channel.mute();
+              setMuted(true);
+            }
+          } catch (error) {
+            setMuted(getMuteStatus);
+            crashlytics.recordError(new Error(error));
+            crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+          }
+        }
       }
-    } catch {
-      setMuted(getMuteStatus);
-    }
+    ]);
   };
 
   return (
@@ -181,6 +228,15 @@ export default function CustomChannelPreview(
           </Details>
         </Fragment>
       </TouchableRipple>
+
+      <Modal animationType="fade" visible={loading} transparent>
+        <Overlay>
+          <ModalContentWrapper>
+            <ActivityIndicator size="small" color={colors.BLACK} />
+            <LoaderMessage>Leaving channel...</LoaderMessage>
+          </ModalContentWrapper>
+        </Overlay>
+      </Modal>
     </Swipeable>
   );
 }

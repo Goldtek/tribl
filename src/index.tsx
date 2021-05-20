@@ -18,7 +18,10 @@ import { NotificationMessage, IFCMMessageTypes } from './graphql/types';
 import { DEVICE_OS } from './utils/device';
 import { crashlytics } from './firebase/config';
 import { useMutation } from '@apollo/react-hooks';
-import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from './graphql/cache/mutations';
+import {
+  CHANGE_CONNECTION_NOTIFICATION_BADGE,
+  CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE
+} from './graphql/cache/mutations';
 
 const RootStack = createStackNavigator();
 
@@ -27,6 +30,10 @@ export default function AppNavigator() {
 
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
+  );
+
+  const [changeTribeRequestNotification] = useMutation(
+    CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE
   );
 
   // Deep links
@@ -57,6 +64,7 @@ export default function AppNavigator() {
           CreateTribeScreen: 'create_tribe_screen',
           ChannelChatScreen: 'channel_chat_screen',
           TribeDetailScreen: 'tribe_detail_screen',
+          TribeRequestScreen: 'tribe_request_screen',
           MyNotifications: 'my_notifications_screen',
           MemberDetailScreen: 'member_detail_screen',
           CommunityListScreen: 'community_list_screen',
@@ -161,13 +169,33 @@ export default function AppNavigator() {
         return `${defaultUrl}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`;
 
       case IFCMMessageTypes.CONNECTION_REQUEST_ACCEPTED:
-        return `${defaultUrl}`;
+        return `${defaultUrl}/member_detail_screen?connectionAccepted=${true}&id=${
+          data.senderId
+        }&title=${data.senderName}`;
 
       case IFCMMessageTypes.CONNECTION_REQUEST_RECEIVED:
         changeConnectionNotification({
           variables: { showConnectionNotificationBadge: true }
         });
         return `${defaultUrl}/connection_request_screen`;
+
+      case IFCMMessageTypes.CHANNEL_INVITATION_RECEIVED:
+        return `${defaultUrl}/tribe_request_screen`;
+
+      case IFCMMessageTypes.COMMUNITY_REQUEST_ACCEPTED:
+        return `${defaultUrl}/tribe_request_screen`;
+
+      case IFCMMessageTypes.COMMUNITY_INVITE_ACCEPTED:
+        // return `${defaultUrl}/tribe_request_screen?tribeAccepted=${true}&id=${
+        //   data.channelId
+        // }&title=${data.senderName}`;
+        return `${defaultUrl}`;
+
+      case IFCMMessageTypes.COMMUNITY_INVITE_RECEIVED:
+        changeTribeRequestNotification({
+          variables: { showTribeRequestNotificationBadge: true }
+        });
+        return `${defaultUrl}/tribe_request_screen`;
 
       default:
         return `${defaultUrl}`;

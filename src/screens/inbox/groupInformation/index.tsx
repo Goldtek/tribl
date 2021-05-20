@@ -45,7 +45,7 @@ import { useNavigation } from '@react-navigation/native';
 // DEFINE SCREEN PROP TYPES
 // interface GroupInformationProp extends NavigationInterface {}
 
-interface GroupInformationProp extends LocalUserType { }
+interface GroupInformationProp extends LocalUserType {}
 
 export default function GroupInformation(props: GroupInformationProp) {
   const user = props;
@@ -202,24 +202,38 @@ export default function GroupInformation(props: GroupInformationProp) {
   ).toDateString();
 
   const toggleMute = async () => {
-    try {
-      if (muted) {
-        await channel.unmute();
-        setMuted(false);
-      } else {
-        await channel.mute();
-        setMuted(true);
+    Alert.alert('Mute group', `Are you sure you want to mute this group`, [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'cancel'
+      },
+      {
+        text: 'Mute',
+        onPress: async () => {
+          try {
+            if (muted) {
+              await channel.unmute();
+              setMuted(false);
+            } else {
+              await channel.mute();
+              setMuted(true);
+            }
+          } catch (error) {
+            setMuted(getMuteStatus);
+            crashlytics.recordError(new Error(error));
+            crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+          }
+        }
       }
-    } catch {
-      setMuted(getMuteStatus);
-    }
+    ]);
   };
 
   const handleLeaveGroup = async () => {
     Alert.alert('Leave group', `Are you sure you want to leave this group`, [
       {
         text: 'Cancel',
-        onPress: () => { },
+        onPress: () => {},
         style: 'cancel'
       },
       {
