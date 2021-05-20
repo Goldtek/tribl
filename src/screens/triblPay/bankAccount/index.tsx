@@ -4,7 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Title, Text, TextInput, Divider } from 'react-native-paper';
+import {
+  Title,
+  Text,
+  TextInput,
+  Divider,
+  ProgressBar
+} from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Countries from './widgets/bankCountry';
@@ -12,10 +18,7 @@ import LocalStates from './widgets/localStates';
 import { Modalize } from 'react-native-modalize';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { countWords } from '../../../utils/countWords';
-import { crashlytics } from '../../../firebase/config';
 import GradientButton from '../../../components/gradientButton';
-import { ONBOARD_USER } from '../../../graphql/server/mutations';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
 
 import {
@@ -102,6 +105,54 @@ export default function BankAccountScreen(props: ScreenProp) {
         }}
       >
         <Fragment>
+          <HeaderCover>
+            <ProgressBar
+              progress={1 / 2}
+              color={colors.PRIMARY}
+              style={{
+                height: RFValue(5),
+                backgroundColor: '#F2F2F7',
+                borderRadius: 4,
+                marginBottom: 10
+              }}
+            />
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.LARGE_SIZE - 1),
+                color: colors.PRIMARY,
+                textTransform: 'capitalize',
+                marginBottom: RFValue(10),
+                marginTop: RFValue(15),
+                lineHeight: RFValue(19)
+              }}
+            >
+              {' '}
+              {t(`community.passport.step`)} 1
+            </Text>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                color: colors.PRIMARY_TEXT,
+                lineHeight: RFValue(30)
+              }}
+            >
+              Enter Account Details
+            </Title>
+            <Text
+              style={{
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+                color: colors.SECONDARY_TEXT,
+                textTransform: 'capitalize',
+                marginBottom: RFValue(10),
+                lineHeight: RFValue(19)
+              }}
+            >
+              Please fill in bank information.
+            </Text>
+          </HeaderCover>
           <HeaderCover>
             <View
               style={{
@@ -481,10 +532,11 @@ export default function BankAccountScreen(props: ScreenProp) {
           </ContactContainer>
 
           <GradientButton
-            // disabled={loading}
-            // loading={loading}
-            // onPress={() => navigation.navigate('WalletScreen')}
-            onPress={() => console.tron('account details', accountDetails)}
+            onPress={() =>
+              navigation.navigate('BankBillingDetailsScreen', {
+                accountDetails
+              })
+            }
             style={{ height: 50 }}
             gradientContainerstyle={{
               height: 50,
@@ -493,7 +545,7 @@ export default function BankAccountScreen(props: ScreenProp) {
             }}
             contentStyle={{ height: 50 }}
           >
-            Submit
+            Next
           </GradientButton>
         </Fragment>
       </KeyboardAwareScrollView>
