@@ -104,7 +104,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     try {
       const { data } = await verifyKyc();
       if (data.onBoardUser.status === 'APPROVED')
-        return navigation.navigate('ActivateWalletScreen', {});
+        return navigation.navigate('ActivateWalletScreen', { billingDetails });
       if (data.onBoardUser.status === 'MANUAL_REVIEW')
         return navigation.navigate('PendingWalletStatusScreen', { data });
 
