@@ -29,6 +29,7 @@ import {
   InputContainer,
   LabelContainer
 } from './styles';
+import ErrorModal from '../../../components/errorModal';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -53,19 +54,14 @@ export default function CreditCardScreen(props: ScreenProp) {
 
   const scrollRef = useRef<KeyboardAwareScrollView>(null);
   const modalizeRef = useRef<Modalize>(null);
-  const modalizeCardRef = useRef<Modalize>(null);
+  const modalizeErrorRef = useRef<Modalize>(null);
   const modalizeStateRef = useRef<Modalize>(null);
 
-  const openCardModal = () => modalizeCardRef.current?.open();
+  const openErrorModal = () => modalizeErrorRef.current?.open();
 
-  const openStateModal = () => {
-    modalizeCardRef.current?.close();
-    modalizeStateRef.current?.open();
-  };
-  const openModal = () => {
-    modalizeCardRef.current?.close();
-    modalizeRef.current?.open();
-  };
+  const openStateModal = () => modalizeStateRef.current?.open();
+
+  const openModal = () => modalizeRef.current?.open();
 
   const [billingDetailsType, setBillingDetailsType] = useState('old');
   const [billingDetails, setBillingDetails] = useState({
@@ -393,7 +389,8 @@ export default function CreditCardScreen(props: ScreenProp) {
         <GradientButton
           // disabled={loading}
           // loading={loading}
-          onPress={() => navigation.navigate('WalletScreen')}
+          // onPress={() => navigation.navigate('WalletScreen')}
+          onPress={() => openErrorModal()}
           style={{ height: 50 }}
           gradientContainerstyle={{
             height: 50,
@@ -407,7 +404,6 @@ export default function CreditCardScreen(props: ScreenProp) {
       </KeyboardAwareScrollView>
 
       <Countries
-        modalizeCardRef={modalizeCardRef}
         modalizeRef={modalizeRef}
         billingDetails={billingDetails}
         setBillingDetails={setBillingDetails}
@@ -415,11 +411,11 @@ export default function CreditCardScreen(props: ScreenProp) {
       />
 
       <LocalStates
-        modalizeCardRef={modalizeCardRef}
         modalizeStateRef={modalizeStateRef}
         billingDetails={billingDetails}
         setBillingDetails={setBillingDetails}
       />
+      <ErrorModal modalizeErrorRef={modalizeErrorRef} />
     </Container>
   );
 }
