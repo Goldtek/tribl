@@ -14,7 +14,7 @@ import { NavigationInterface } from '../../../types';
 import { countWords } from '../../../../utils/countWords';
 import { crashlytics } from '../../../../firebase/config';
 import GradientButton from '../../../../components/gradientButton';
-import { ONBOARD_USER } from '../../../../graphql/server/mutations';
+import { SAVE_BANK_DETAILS } from '../../../../graphql/server/mutations';
 import { tagScreenName, logEvent } from '../../../../utils/uxcamHelper';
 
 import {
@@ -29,6 +29,21 @@ interface ScreenProp extends NavigationInterface {}
 
 export default function BankBillingDetailsScreen(props: ScreenProp) {
   const { navigation } = props;
+  const {
+    accountNumber,
+    routingNumber,
+    iBan,
+    name,
+    line1,
+    line2,
+    city,
+    district,
+    postalCode,
+    country
+  } = props.route.params.accountDetails;
+
+  const { isSwitchOn } = props.route.params;
+
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const modalizeRef = useRef<Modalize>(null);
@@ -74,10 +89,54 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
 
-  const [verifyKyc, { loading }] = useMutation(ONBOARD_USER, {
+  const Payload = {
+    payload: {
+      accountDetails: {
+        accountNumber: isSwitchOn ? '' : accountNumber,
+        routingNumber: isSwitchOn ? '' : routingNumber
+      },
+      iBan: isSwitchOn ? iBan : '',
+      bankAddress: {
+        name,
+        line1,
+        line2,
+        city,
+        district,
+        postalCode,
+        country
+      },
+      billingId: '',
+      billingAddress: {
+        addressLine,
+        addressLine2,
+        addressCity,
+        addressState,
+        addressCountry,
+        addressStateCode,
+        addressPostalCode,
+        addressCountryCode
+      }
+    }
+  };
+  const [saveBankDetails, { loading }] = useMutation(SAVE_BANK_DETAILS, {
     variables: {
       payload: {
-        address: {
+        accountDetails: {
+          accountNumber: isSwitchOn ? '' : accountNumber,
+          routingNumber: isSwitchOn ? '' : routingNumber
+        },
+        iBan: isSwitchOn ? iBan : '',
+        bankAddress: {
+          name,
+          line1,
+          line2,
+          city,
+          district,
+          postalCode,
+          country
+        },
+        billingId: '',
+        billingAddress: {
           addressLine,
           addressLine2,
           addressCity,
@@ -91,27 +150,20 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
     }
   });
 
-  const submitKyc = async () => {
-    if (countWords(addressLine)) return alert('Address field is compulsory');
-    if (countWords(addressPostalCode))
-      return alert('Postal code field is compulsory');
-    if (countWords(addressCountryCode))
-      return alert('Country code field is compulsory');
-    if (countWords(addressState) || addressState.trim() === 'Select')
-      return alert('State field is compulsory');
-    if (countWords(addressCity)) return alert('City field is compulsory');
+  const submitBankDetails = async () => {
+    return console.tron('variables', Payload);
+    // if (countWords(addressLine)) return alert('Address field is compulsory');
+    // if (countWords(addressPostalCode))
+    //   return alert('Postal code field is compulsory');
+    // if (countWords(addressCountryCode))
+    //   return alert('Country code field is compulsory');
+    // if (countWords(addressState) || addressState.trim() === 'Select')
+    //   return alert('State field is compulsory');
+    // if (countWords(addressCity)) return alert('City field is compulsory');
 
     try {
-      const { data } = await verifyKyc();
-      if (data.onBoardUser.status === 'APPROVED')
-        return navigation.navigate('ActivateWalletScreen', { billingDetails });
-      if (data.onBoardUser.status === 'MANUAL_REVIEW')
-        return navigation.navigate('PendingWalletStatusScreen', { data });
-
-      navigation.navigate('FailedWalletStatusScreen', {
-        data,
-        document
-      });
+      const { data } = await saveBankDetails();
+      console.tron('data', data);
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
@@ -384,9 +436,9 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
           </ContactContainer>
 
           <GradientButton
-            disabled={loading}
-            loading={loading}
-            onPress={submitKyc}
+            // disabled={loading}
+            // loading={loading}
+            onPress={submitBankDetails}
             style={{ height: 50 }}
             gradientContainerstyle={{
               height: 50,
@@ -395,7 +447,8 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
             }}
             contentStyle={{ height: 50 }}
           >
-            {loading ? 'loading...' : 'Submit'}
+            {/* {loading ? 'loading...' : 'Submit'} */}
+            Submit
           </GradientButton>
         </Fragment>
       </KeyboardAwareScrollView>
