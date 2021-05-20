@@ -14,7 +14,6 @@ interface CountryCardProps extends USStatesInterface, NavigationInterface {
   modalizeStateRef: any;
   billingDetails: any;
   setBillingDetails: any;
-  modalizeCardRef: any;
 }
 
 const CountryCard = (props: CountryCardProps) => {
@@ -22,7 +21,6 @@ const CountryCard = (props: CountryCardProps) => {
   const { name, alphaCode, billingDetails, setBillingDetails } = props;
 
   const closeModal = () => props.modalizeStateRef.current?.close();
-  const openCardModal = () => props.modalizeCardRef.current?.open();
 
   const handleSelect = () => {
     setBillingDetails({
@@ -31,7 +29,6 @@ const CountryCard = (props: CountryCardProps) => {
       addressStateCode: alphaCode
     });
     closeModal();
-    openCardModal();
   };
 
   return (

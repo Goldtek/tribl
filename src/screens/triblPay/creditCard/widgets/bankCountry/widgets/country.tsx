@@ -15,7 +15,6 @@ interface CountryCardProps extends CountryInterface, NavigationInterface {
   billingDetails: any;
   setBillingDetails: any;
   setIsLocal: any;
-  modalizeCardRef: any;
 }
 
 const CountryCard = (props: CountryCardProps) => {
@@ -30,7 +29,6 @@ const CountryCard = (props: CountryCardProps) => {
   } = props;
 
   const closeModal = () => props.modalizeRef.current?.close();
-  const openCardModal = () => props.modalizeCardRef.current?.open();
 
   const handleSelect = () => {
     setBillingDetails({
@@ -40,7 +38,6 @@ const CountryCard = (props: CountryCardProps) => {
     });
     iso2 === 'US' ? setIsLocal(true) : setIsLocal(false);
     closeModal();
-    openCardModal();
   };
 
   return (
