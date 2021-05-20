@@ -355,7 +355,7 @@ export const SAVE_CARD_DETAILS = gql`
 `;
 
 export const SAVE_BANK_DETAILS = gql`
-  mutation saveBankDetails($payload: BankDetailsInput!) {
+  mutation saveBankDetails($payload:  SaveBankDetailsInput!) {
     saveBankDetails(input: $payload) {
       success
       errorCode
