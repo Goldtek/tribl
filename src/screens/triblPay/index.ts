@@ -11,6 +11,7 @@ import VerifyIdentityScreen from './verifyIdentity';
 import ActivateWalletScreen from './activateWallet';
 import BillingDetailsScreen from './billingDetails';
 import DocumentTypeSelectionScreen from './documentTypeSelection';
+import BankBillingDetailsScreen from './bankAccount/bankBillingDetails'
 
 export default {
   WalletScreen,
@@ -25,5 +26,6 @@ export default {
   ActivateWalletScreen,
   VerifyIdentityScreen,
   BillingDetailsScreen,
+  BankBillingDetailsScreen,
   DocumentTypeSelectionScreen
 };
