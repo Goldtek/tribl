@@ -3,13 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  Title,
-  Text,
-  ProgressBar,
-  TextInput,
-  Divider
-} from 'react-native-paper';
+import { Title, Text, TextInput, Divider } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Countries from './widgets/bankCountry';
@@ -29,6 +23,8 @@ import {
   InputContainer,
   ContactContainer
 } from './styles';
+import { View, Switch } from 'react-native';
+import hexToRGB from '../../../utils/hexToRGB';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -52,6 +48,8 @@ export default function BankAccountScreen(props: ScreenProp) {
     addressPostalCode: '',
     addressCountryCode: ''
   });
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const toggleSwitch = () => setIsSwitchOn((previousState) => !previousState);
 
   const [isLocal, setIsLocal] = useState(false);
 
@@ -98,15 +96,48 @@ export default function BankAccountScreen(props: ScreenProp) {
       >
         <Fragment>
           <HeaderCover>
-            <Title
+            <View
               style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 5),
-                color: colors.PRIMARY
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between'
               }}
             >
-              Account Details
-            </Title>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                  color: colors.PRIMARY
+                }}
+              >
+                Account Details
+              </Title>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text
+                  style={{
+                    marginRight: 10,
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT
+                  }}
+                >
+                  use iBan
+                </Text>
+                <Switch
+                  trackColor={{
+                    false: colors.INACTIVE,
+                    true: hexToRGB(colors.PRIMARY_LIGHT, 0.7)
+                  }}
+                  thumbColor={
+                    isSwitchOn ? hexToRGB(colors.PRIMARY, 6) : colors.INACTIVE
+                  }
+                  ios_backgroundColor={colors.INACTIVE}
+                  onValueChange={toggleSwitch}
+                  value={isSwitchOn}
+                />
+              </View>
+            </View>
           </HeaderCover>
 
           <Divider />
@@ -115,10 +146,10 @@ export default function BankAccountScreen(props: ScreenProp) {
               <LabelContainer>
                 <Title
                   style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   Account Number
@@ -147,10 +178,10 @@ export default function BankAccountScreen(props: ScreenProp) {
               <LabelContainer>
                 <Title
                   style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   Routing Number
@@ -177,13 +208,42 @@ export default function BankAccountScreen(props: ScreenProp) {
               <LabelContainer>
                 <Title
                   style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    color: colors.PRIMARY_TEXT
                   }}
                 >
                   iBan
+                </Title>
+              </LabelContainer>
+              <TextInput
+                value={addressPostalCode}
+                onChangeText={(addressPostalCode: string) =>
+                  setBillingDetails({ ...billingDetails, addressPostalCode })
+                }
+                style={{
+                  height: 30,
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                  color: colors.PRIMARY_TEXT,
+                  backgroundColor: colors.WHITE,
+                  borderColor: colors.PRIMARY,
+                  textTransform: 'capitalize'
+                }}
+              />
+            </InputContainer>
+
+            <InputContainer>
+              <LabelContainer>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  Account Name
                 </Title>
               </LabelContainer>
               <TextInput
@@ -208,11 +268,11 @@ export default function BankAccountScreen(props: ScreenProp) {
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 5),
+                fontSize: RFValue(fonts.LARGE_SIZE + 2),
                 color: colors.PRIMARY
               }}
             >
-              Bank Address
+              Bank Details
             </Title>
           </HeaderCover>
 
@@ -223,40 +283,10 @@ export default function BankAccountScreen(props: ScreenProp) {
               <LabelContainer>
                 <Title
                   style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  Name
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   Address Line 1
@@ -283,10 +313,10 @@ export default function BankAccountScreen(props: ScreenProp) {
               <LabelContainer>
                 <Title
                   style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   Address Line 2
@@ -314,10 +344,10 @@ export default function BankAccountScreen(props: ScreenProp) {
                 <LabelContainer>
                   <Title
                     style={{
-                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                       fontSize: RFValue(fonts.MEDIUM_SIZE),
                       color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
+                      textTransform: 'capitalize'
                     }}
                   >
                     Country
@@ -346,10 +376,10 @@ export default function BankAccountScreen(props: ScreenProp) {
                 <LabelContainer>
                   <Title
                     style={{
-                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                       fontSize: RFValue(fonts.MEDIUM_SIZE),
                       color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
+                      textTransform: 'capitalize'
                     }}
                   >
                     State
@@ -383,10 +413,10 @@ export default function BankAccountScreen(props: ScreenProp) {
               <LabelContainer>
                 <Title
                   style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   City
@@ -414,40 +444,10 @@ export default function BankAccountScreen(props: ScreenProp) {
               <LabelContainer>
                 <Title
                   style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  District
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   Postal Code
