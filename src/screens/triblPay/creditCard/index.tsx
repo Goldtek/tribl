@@ -1,24 +1,27 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  Feather,
-  FontAwesome,
-  SimpleLineIcons,
-  Octicons
-} from '@expo/vector-icons';
-import { RFValue } from 'react-native-responsive-fontsize';
 import {
   Title,
   Text,
   TouchableRipple,
-  Portal,
   Divider,
   TextInput
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import OpenPGP from 'react-native-fast-openpgp';
+import { Modalize } from 'react-native-modalize';
+import { TouchableOpacity, View } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { SimpleLineIcons, Octicons } from '@expo/vector-icons';
 import { CreditCardInput } from 'react-native-input-credit-card';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import Countries from './widgets/bankCountry';
+import LocalStates from './widgets/localStates';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
+import GradientButton from '../../../components/gradientButton';
 
 import {
   ContactContainer,
@@ -26,19 +29,21 @@ import {
   InputContainer,
   LabelContainer
 } from './styles';
-import { Modalize } from 'react-native-modalize';
-import { DEVICE_FULL_HEIGHT } from '../../../utils/device';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Keyboard, TouchableOpacity, View } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
-import Countries from './widgets/bankCountry';
-import LocalStates from './widgets/localStates';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import GradientButton from '../../../components/gradientButton';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
+
+// Object to be encrypted
+interface CardDetails {
+  number?: string; // required when storing card details
+  cvv?: string; // required when cardVerification is set to cvv
+}
+
+// Encrypted result
+interface EncryptedValue {
+  encryptedData: string;
+  keyId: string;
+}
 
 export default function CreditCardScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
@@ -85,8 +90,11 @@ export default function CreditCardScreen(props: ScreenProp) {
     addressCountryCode
   } = billingDetails;
 
-  const handleInput = (form: any) => {
-    console.tron('form', form);
+  const handleInput = async (form: any) => {
+    const publicKey =
+      'mQENBF0Tpe0BCADm+ja4vMKuodkQEhLm/092M/6gt4TaKwzv8QcA53/FrM3g8wabD4m65Neoc7DBEdvzgK9IUMpwG5N0t+0pfWLhs8AZdMxE7RbP=kbtq';
+    const encrypted = await OpenPGP.encrypt(form.values.number, publicKey);
+    console.tron('form', encrypted);
   };
 
   useEffect(() => {
