@@ -8,7 +8,7 @@ import React, {
 import { NavigationInterface } from '../../../../types';
 import { ActivityIndicator, Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { ScrollView, FlatList } from 'react-native';
+import { FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/react-hooks';
 import { StatusBar } from 'expo-status-bar';
@@ -21,7 +21,10 @@ import {
   GET_POPULAR_COMMUNITIES,
   GET_TRENDING_CHANNELS
 } from '../../../../../graphql/server/query';
-import { PopularCommunitiesRequestInterface } from '../../../../../graphql/types';
+import {
+  CommunityInterface,
+  PopularCommunitiesRequestInterface
+} from '../../../../../graphql/types';
 import PopularCommunitySkeleton from '../../../../../components/popularCommunitySkeleton';
 import RecommendedCommunitySkeleton from '../../../../../components/recommendedCommunitySkeleton';
 import ComingSoonCommunities from '../../../../../components/recommendedCommunity/comingSoon';
@@ -29,6 +32,7 @@ import { PAGINATION_DEFAULT } from '../../../../../constants';
 import { tagScreenName } from '../../../../../utils/uxcamHelper';
 import MyChannel from '../../../../../components/channelCard';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
+import { crashlytics } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -53,8 +57,8 @@ function CommunityTabScreen(props: ScreenProp) {
   }, []);
 
   const {
-    loading: recommendedCommunityLoading,
-    data: communityData
+    data: communityData,
+    loading: recommendedCommunityLoading
   } = useQuery(GET_RECOMMENDED_COMMUNITIES);
 
   const { data: popularData, fetchMore, refetch } = useQuery<
@@ -69,13 +73,24 @@ function CommunityTabScreen(props: ScreenProp) {
     }
   });
 
+  const removeDuplicates = (communities?: CommunityInterface[]) => {
+    if (!communities) return;
+    const uniqueMap: { [key: string]: CommunityInterface } = {};
+    for (let index = 0; index < communities.length; index++) {
+      const community = communities[index];
+      if (!uniqueMap[community.id]) {
+        uniqueMap[community.id] = community;
+      }
+    }
+    return Object.values(uniqueMap).sort(
+      (a, b) => b.membersCount - a.membersCount
+    );
+  };
+
   const trendingChannels = trendingChannelData?.trendingChannels;
   const randomCommunity = communityData?.recommendedCommunities?.data[0];
   const popularCommunity = popularData?.popularCommunities;
-  const sort = popularCommunity?.data;
-  const sortPopularCommunity = sort?.slice().sort(function (a, b) {
-    return b.membersCount - a.membersCount;
-  });
+  const sortPopularCommunity = removeDuplicates(popularCommunity?.data);
 
   const handleEndReach = async () => {
     if (!callOnScrollEnd) return;
@@ -102,12 +117,36 @@ function CommunityTabScreen(props: ScreenProp) {
           }
         });
       }
+    }).catch((error) => {
+      crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
     });
   };
 
   const _renderPopularCommunityItem = useMemo(
-    () => ({ item }: any) => (
-      <PopularCommunity key={item.id} {...item} refetchCommunity={refetch} />
+    () => ({ item, index }: any) => (
+      <Fragment key={item.id}>
+        {index === 0 && popularCommunity?.data?.length && (
+          <PopularContainer>
+            <CommunityWrapper>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize',
+                  lineHeight: 20,
+                  marginTop: 0,
+                  marginBottom: 0
+                }}
+              >
+                {t(`community.tabPanel.popular`)}
+              </Title>
+            </CommunityWrapper>
+          </PopularContainer>
+        )}
+        <PopularCommunity {...item} refetchCommunity={refetch} />
+      </Fragment>
     ),
     []
   );
@@ -123,112 +162,88 @@ function CommunityTabScreen(props: ScreenProp) {
 
   const handleJoinCommunity = () => setShowModal(!showModal);
 
-  return (
+  const ListHeaderComponent = (
     <Fragment>
-      <ScrollView
-        bounces={false}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      >
-        <StatusBar translucent animated style="dark" />
-        <Container>
-          {trendingChannels?.data?.length ? (
-            <RecommendedList
+      {trendingChannels?.data?.length ? (
+        <RecommendedList style={{ paddingBottom: RFValue(20) }}>
+          <RecommendedListHeader style={{ paddingLeft: 15 }}>
+            <Title
               style={{
-                paddingBottom: RFValue(20)
+                fontFamily: fonts.WORK_SANS_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                color: colors.PRIMARY_TEXT,
+                textTransform: 'capitalize',
+                lineHeight: 20,
+                marginTop: 0,
+                marginBottom: 0
               }}
             >
-              <RecommendedListHeader style={{ paddingLeft: 15 }}>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize',
-                    lineHeight: 20,
-                    marginTop: 0,
-                    marginBottom: 0
-                  }}
-                >
-                  {t(`community.recommended.trendingChannel`)}
-                </Title>
-              </RecommendedListHeader>
-              <FlatList
-                data={trendingChannels.data}
-                horizontal={true}
-                renderItem={_renderMyChannelItem}
-                ListEmptyComponent={
-                  <RecommendedUserSkeleton skeletonSize={4} />
-                }
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(channel) => channel.id}
-                contentContainerStyle={{ paddingLeft: 15, marginTop: 20 }}
-              />
-            </RecommendedList>
-          ) : null}
-          <Title
-            style={{
-              color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              fontFamily: fonts.WORK_SANS_BOLD,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              paddingLeft: RFValue(15),
-              marginBottom: RFValue(15)
-            }}
-          >
-            {t(`community.tabPanel.featured`)}
-          </Title>
-          {recommendedCommunityLoading ? (
-            <RecommendedCommunitySkeleton />
-          ) : randomCommunity ? (
-            <RecommendedCommunity {...randomCommunity} />
-          ) : (
-            <ComingSoonCommunities />
-          )}
+              {t(`community.recommended.trendingChannel`)}
+            </Title>
+          </RecommendedListHeader>
+          <FlatList
+            horizontal={true}
+            data={trendingChannels.data}
+            renderItem={_renderMyChannelItem}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(channel) => channel.id}
+            ListEmptyComponent={<RecommendedUserSkeleton skeletonSize={4} />}
+            contentContainerStyle={{ paddingLeft: 15, marginTop: 20 }}
+          />
+        </RecommendedList>
+      ) : null}
 
-          <PopularContainer>
-            {popularCommunity?.data?.length ? (
-              <CommunityWrapper>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize',
-                    lineHeight: 20,
-                    marginTop: 0,
-                    marginBottom: 0
-                  }}
-                >
-                  {t(`community.tabPanel.popular`)}
-                </Title>
-              </CommunityWrapper>
-            ) : null}
+      <Title
+        style={{
+          color: colors.PRIMARY_TEXT,
+          textTransform: 'capitalize',
+          fontFamily: fonts.WORK_SANS_BOLD,
+          fontSize: RFValue(fonts.LARGE_SIZE),
+          paddingLeft: RFValue(15),
+          marginBottom: RFValue(15)
+        }}
+      >
+        {t(`community.tabPanel.featured`)}
+      </Title>
+      {recommendedCommunityLoading ? (
+        <RecommendedCommunitySkeleton />
+      ) : randomCommunity ? (
+        <RecommendedCommunity {...randomCommunity} />
+      ) : (
+        <ComingSoonCommunities />
+      )}
+    </Fragment>
+  );
 
-            <FlatList
-              data={sortPopularCommunity}
-              renderItem={_renderPopularCommunityItem}
-              ListEmptyComponent={<PopularCommunitySkeleton skeletonSize={3} />}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item) => item.id}
-              scrollEventThrottle={16}
-              onEndReachedThreshold={0.5}
-              removeClippedSubviews={true}
-              ListFooterComponent={_renderFooter}
-              onMomentumScrollEnd={handleEndReach}
-              onEndReached={() => {
-                if (
-                  popularCommunity &&
-                  popularCommunity?.metadata.totalCount >
-                    popularCommunity.data.length
-                ) {
-                  setCallOnScrollEnd(true);
-                }
-              }}
-            />
-          </PopularContainer>
-        </Container>
-      </ScrollView>
+  return (
+    <Fragment>
+      <StatusBar translucent animated style="dark" />
+      <Container>
+        <FlatList
+          data={sortPopularCommunity}
+          renderItem={_renderPopularCommunityItem}
+          ListEmptyComponent={<PopularCommunitySkeleton skeletonSize={3} />}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          scrollEventThrottle={16}
+          onEndReachedThreshold={0.5}
+          removeClippedSubviews={true}
+          bounces={false}
+          ListHeaderComponent={ListHeaderComponent}
+          ListFooterComponent={_renderFooter}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          onMomentumScrollEnd={handleEndReach}
+          onEndReached={() => {
+            if (
+              popularCommunity &&
+              popularCommunity?.metadata.totalCount >
+                popularCommunity.data.length
+            ) {
+              setCallOnScrollEnd(true);
+            }
+          }}
+        />
+      </Container>
       {showModal ? <JoinCommunity onPress={handleJoinCommunity} /> : null}
     </Fragment>
   );
