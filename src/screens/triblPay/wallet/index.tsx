@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Title, Text } from 'react-native-paper';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Title, Text, Button, Divider } from 'react-native-paper';
+import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 import GradientButton from '../../../components/gradientButton';
@@ -14,8 +14,11 @@ import {
   ButtonCover,
   Cover,
   LeftCover,
-  RightCover
+  RightCover,
+  Overlay
 } from './styles';
+import { Modal, TouchableOpacity, View } from 'react-native';
+import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -24,6 +27,7 @@ export default function WalletScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
+  const [modalState, setModalState] = useState(false);
 
   return (
     <Container>
@@ -97,36 +101,92 @@ export default function WalletScreen(props: ScreenProp) {
       >
         {t(`community.passport.linkedAccounts`)}
       </Title>
-      <Cover>
-        <LeftCover>
-          <FontAwesome name="bank" size={22} color={colors.PRIMARY_TEXT} />
-          <Text
-            style={{
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              lineHeight: RFValue(17),
-              textTransform: 'capitalize',
-              marginLeft: RFValue(10)
-            }}
-          >
-            Bank of America
-          </Text>
-        </LeftCover>
-        <RightCover>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              lineHeight: RFValue(17),
-              textTransform: 'capitalize'
-            }}
-          >
-            ...12345
-          </Text>
-        </RightCover>
-      </Cover>
+      <Divider />
+
+      <TouchableOpacity onPress={() => setModalState(!modalState)}>
+        <Cover>
+          <LeftCover>
+            <FontAwesome name="bank" size={22} color={colors.PRIMARY_TEXT} />
+            <Text
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                lineHeight: RFValue(17),
+                textTransform: 'capitalize',
+                marginLeft: RFValue(10)
+              }}
+            >
+              Bank of America
+            </Text>
+          </LeftCover>
+          <RightCover>
+            <Text
+              style={{
+                color: colors.SECONDARY_TEXT,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                lineHeight: RFValue(17),
+                textTransform: 'capitalize'
+              }}
+            >
+              ...12345
+            </Text>
+          </RightCover>
+        </Cover>
+      </TouchableOpacity>
+      <Divider />
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate('LinkAccountScreen')}
+      >
+        <Cover>
+          <LeftCover>
+            <AntDesign name="plus" size={22} color={colors.PRIMARY_TEXT} />
+            <Text
+              style={{
+                color: colors.PRIMARY_TEXT,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                lineHeight: RFValue(17),
+                textTransform: 'capitalize',
+                marginLeft: RFValue(10)
+              }}
+            >
+              Add a payment method
+            </Text>
+          </LeftCover>
+          <RightCover>
+            <Text
+              style={{
+                color: colors.SECONDARY_TEXT,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                lineHeight: RFValue(17),
+                textTransform: 'capitalize'
+              }}
+            >
+              <Button
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.WHITE,
+                  textTransform: 'uppercase'
+                }}
+                contentStyle={{ justifyContent: 'flex-start' }}
+                style={{
+                  width: '40%',
+                  backgroundColor: colors.ONLINE
+                }}
+              >
+                Add
+              </Button>
+            </Text>
+          </RightCover>
+        </Cover>
+      </TouchableOpacity>
+
+      <Divider />
       <Title
         style={{
           fontFamily: fonts.WORK_SANS_SEMI_BOLD,
@@ -259,6 +319,59 @@ export default function WalletScreen(props: ScreenProp) {
       >
         {t(`community.passport.learn`)}
       </Text>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalState}
+        onRequestClose={() => setModalState(!modalState)}
+      >
+        <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: DEVICE_FULL_HEIGHT / 2.5
+            }}
+          >
+            <View
+              style={{
+                margin: 20,
+                backgroundColor: colors.WHITE,
+                borderRadius: 10,
+                padding: 20,
+                width: DEVICE_FULL_WIDTH * 0.9,
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5
+              }}
+            >
+              <FontAwesome name="bank" size={60} color={colors.PRIMARY} />
+              <Title>Bank of America</Title>
+              <Text>xxx 12345</Text>
+              <Button
+                style={{ marginTop: 50 }}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.RED,
+                  textTransform: 'uppercase'
+                }}
+                contentStyle={{ justifyContent: 'flex-start' }}
+              >
+                Remove Bank
+              </Button>
+            </View>
+          </View>
+        </Overlay>
+      </Modal>
     </Container>
   );
 }
