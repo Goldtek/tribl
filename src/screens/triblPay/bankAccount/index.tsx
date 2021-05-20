@@ -534,7 +534,8 @@ export default function BankAccountScreen(props: ScreenProp) {
           <GradientButton
             onPress={() =>
               navigation.navigate('BankBillingDetailsScreen', {
-                accountDetails
+                accountDetails,
+                isSwitchOn
               })
             }
             style={{ height: 50 }}
