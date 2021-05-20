@@ -142,96 +142,105 @@ export default function BankAccountScreen(props: ScreenProp) {
 
           <Divider />
           <ContactContainer>
-            <InputContainer>
-              <LabelContainer>
-                <Title
+            {!isSwitchOn && (
+              <Fragment>
+                <InputContainer>
+                  <LabelContainer>
+                    <Title
+                      style={{
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      Account Number
+                    </Title>
+                  </LabelContainer>
+                  <TextInput
+                    multiline={true}
+                    dense={true}
+                    value={addressLine}
+                    onChangeText={(addressLine: string) =>
+                      setBillingDetails({ ...billingDetails, addressLine })
+                    }
+                    style={{
+                      height: 30,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      backgroundColor: colors.WHITE,
+                      borderColor: colors.PRIMARY,
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                </InputContainer>
+
+                <InputContainer>
+                  <LabelContainer>
+                    <Title
+                      style={{
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      Routing Number
+                    </Title>
+                  </LabelContainer>
+                  <TextInput
+                    value={addressPostalCode}
+                    onChangeText={(addressPostalCode: string) =>
+                      setBillingDetails({
+                        ...billingDetails,
+                        addressPostalCode
+                      })
+                    }
+                    style={{
+                      height: 30,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      backgroundColor: colors.WHITE,
+                      borderColor: colors.PRIMARY,
+                      textTransform: 'capitalize'
+                    }}
+                  />
+                </InputContainer>
+              </Fragment>
+            )}
+
+            {isSwitchOn && (
+              <InputContainer>
+                <LabelContainer>
+                  <Title
+                    style={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      color: colors.PRIMARY_TEXT
+                    }}
+                  >
+                    iBan
+                  </Title>
+                </LabelContainer>
+                <TextInput
+                  value={addressPostalCode}
+                  onChangeText={(addressPostalCode: string) =>
+                    setBillingDetails({ ...billingDetails, addressPostalCode })
+                  }
                   style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    height: 30,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                     color: colors.PRIMARY_TEXT,
+                    backgroundColor: colors.WHITE,
+                    borderColor: colors.PRIMARY,
                     textTransform: 'capitalize'
                   }}
-                >
-                  Account Number
-                </Title>
-              </LabelContainer>
-              <TextInput
-                multiline={true}
-                dense={true}
-                value={addressLine}
-                onChangeText={(addressLine: string) =>
-                  setBillingDetails({ ...billingDetails, addressLine })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  Routing Number
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT
-                  }}
-                >
-                  iBan
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={addressPostalCode}
-                onChangeText={(addressPostalCode: string) =>
-                  setBillingDetails({ ...billingDetails, addressPostalCode })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
+                />
+              </InputContainer>
+            )}
 
             <InputContainer>
               <LabelContainer>
