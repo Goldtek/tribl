@@ -12,8 +12,8 @@ import { CountryCardCover } from '../styles';
 
 interface CountryCardProps extends CountryInterface, NavigationInterface {
   modalizeRef: any;
-  billingDetails: any;
-  setBillingDetails: any;
+  accountDetails: any;
+  setAccountDetails: any;
   setIsLocal: any;
 }
 
@@ -23,18 +23,17 @@ const CountryCard = (props: CountryCardProps) => {
     name,
     iso2,
     emoji,
-    billingDetails,
-    setBillingDetails,
+    accountDetails,
+    setAccountDetails,
     setIsLocal
   } = props;
 
   const closeModal = () => props.modalizeRef.current?.close();
 
   const handleSelect = () => {
-    setBillingDetails({
-      ...billingDetails,
-      addressCountry: name,
-      addressCountryCode: iso2
+    setAccountDetails({
+      ...accountDetails,
+      country: name
     });
     iso2 === 'US' ? setIsLocal(true) : setIsLocal(false);
     closeModal();
