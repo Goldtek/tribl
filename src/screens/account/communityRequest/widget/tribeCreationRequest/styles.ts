@@ -2,13 +2,16 @@ import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 export const Container = styled.View`
-  flex-direction: row;
   width: 100%;
-  margin-bottom: ${RFValue(15)}px;
+  flex-direction: row;
+  align-items: center;
+  margin-vertical: 5px;
 `;
 
 export const RightCover = styled.View`
-  margin: 0 ${RFValue(15)}px 0 ${RFValue(10)}px;
+  flex: 1;
+  margin-left: ${RFValue(10)}px;
+  padding-right: ${RFValue(10)}px;
 `;
 
 export const TextContainer = styled.View`
@@ -18,5 +21,5 @@ export const TextContainer = styled.View`
 
 export const ButtonCover = styled.View`
   flex-direction: row;
-  margin-top: ${RFValue(5)}px;
+  margin-top: ${RFValue(7)}px;
 `;

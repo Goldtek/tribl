@@ -17,15 +17,15 @@ import formatMessageTime from '../../../../../utils/timesince';
 import { Container, RightCover, ButtonCover } from './styles';
 
 interface NotificationProp {
-  name: string;
   id: string;
+  name: string;
   avatar: string;
-  firstName: string;
-  lastName: string;
-  refetch: VoidFunction;
   userId: string;
   tribeId: string;
+  lastName: string;
+  firstName: string;
   createdAt: string;
+  refetch: VoidFunction;
 }
 
 export default function Notification(props: NotificationProp) {
@@ -62,6 +62,7 @@ export default function Notification(props: NotificationProp) {
 
   const handleTribeNavigation = () => {
     navigation.navigate('CommunityDetailScreen', {
+      title: name,
       details: { id: tribeId }
     });
   };
@@ -69,7 +70,8 @@ export default function Notification(props: NotificationProp) {
   const [acceptInvite, { loading }] = useMutation(TRIBE_INVITE_ACTION);
 
   const [declineInvite, { loading: declineLoading }] = useMutation(
-    TRIBE_INVITE_ACTION);
+    TRIBE_INVITE_ACTION
+  );
 
   const handleAcceptInvitation = async () => {
     logEvent('accept tribe invite', { from: 'passport' });
@@ -83,7 +85,7 @@ export default function Notification(props: NotificationProp) {
           payload: { id: id, action: InvitationStatus[0] }
         }
       });
-      props.refetch();
+      refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
@@ -101,7 +103,7 @@ export default function Notification(props: NotificationProp) {
           payload: { id: id, action: InvitationStatus[2] }
         }
       });
-      props.refetch();
+      refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
@@ -111,9 +113,7 @@ export default function Notification(props: NotificationProp) {
 
   useEffect(() => {
     if (id) {
-      getUserPassport({
-        variables: { id }
-      });
+      getUserPassport({ variables: { id } });
     }
   }, []);
 
@@ -128,8 +128,7 @@ export default function Notification(props: NotificationProp) {
         style={{
           width: RFValue(60),
           height: RFValue(60),
-          borderRadius: RFValue(4),
-          marginTop: RFValue(10)
+          borderRadius: RFValue(4)
         }}
       />
       <RightCover>
@@ -137,10 +136,7 @@ export default function Notification(props: NotificationProp) {
           style={{
             fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
             fontFamily: fonts.WORK_SANS_REGULAR,
-            color: colors.PRIMARY_TEXT,
-            flexWrap: 'wrap',
-            marginRight: RFValue(15),
-            paddingRight: RFValue(15)
+            color: colors.PRIMARY_TEXT
           }}
         >
           <Text
@@ -148,8 +144,7 @@ export default function Notification(props: NotificationProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE),
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              flexWrap: 'wrap'
+              textTransform: 'capitalize'
             }}
             onPress={handleMemberNavigation}
           >{`${firstName} ${lastName}`}</Text>{' '}
@@ -159,13 +154,11 @@ export default function Notification(props: NotificationProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE),
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              flexWrap: 'wrap'
+              textTransform: 'capitalize'
             }}
             onPress={handleTribeNavigation}
           >
             {name}
-            {'  '}
           </Text>
           <Text
             style={{

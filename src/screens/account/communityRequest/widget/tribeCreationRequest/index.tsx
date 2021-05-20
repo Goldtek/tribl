@@ -100,11 +100,8 @@ export default function TribeRequest(props: TribeRequestProp) {
 
   useEffect(() => {
     if (creator?.id) {
-      getUserPassport({
-        variables: { id: creator?.id }
-      });
+      getUserPassport({ variables: { id: creator?.id } });
     }
-
   }, []);
 
   return (
@@ -118,8 +115,7 @@ export default function TribeRequest(props: TribeRequestProp) {
         style={{
           width: RFValue(60),
           height: RFValue(60),
-          borderRadius: RFValue(4),
-          marginTop: RFValue(5)
+          borderRadius: RFValue(4)
         }}
       />
       <RightCover>
@@ -127,10 +123,7 @@ export default function TribeRequest(props: TribeRequestProp) {
           style={{
             fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
             fontFamily: fonts.WORK_SANS_REGULAR,
-            color: colors.PRIMARY_TEXT,
-            flexWrap: 'wrap',
-            marginRight: RFValue(15),
-            paddingRight: RFValue(15)
+            color: colors.PRIMARY_TEXT
           }}
         >
           <Text
@@ -152,13 +145,11 @@ export default function TribeRequest(props: TribeRequestProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE),
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              flexWrap: 'wrap'
+              textTransform: 'capitalize'
             }}
             onPress={handleTribeNavigation}
           >
             {name}
-            {'  '}
           </Text>
         </Paragraph>
         <ButtonCover>
