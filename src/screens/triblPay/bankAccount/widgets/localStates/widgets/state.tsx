@@ -12,21 +12,20 @@ import { CountryCardCover } from '../styles';
 
 interface CountryCardProps extends USStatesInterface, NavigationInterface {
   modalizeStateRef: any;
-  billingDetails: any;
-  setBillingDetails: any;
+  accountDetails: any;
+  setAccountDetails: any;
 }
 
 const CountryCard = (props: CountryCardProps) => {
   const { colors, fonts } = useThemeContext();
-  const { name, alphaCode, billingDetails, setBillingDetails } = props;
+  const { name, alphaCode, accountDetails, setAccountDetails } = props;
 
   const closeModal = () => props.modalizeStateRef.current?.close();
 
   const handleSelect = () => {
-    setBillingDetails({
-      ...billingDetails,
-      addressState: name,
-      addressStateCode: alphaCode
+    setAccountDetails({
+      ...accountDetails,
+      district: name
     });
     closeModal();
   };
