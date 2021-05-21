@@ -5,7 +5,8 @@ import FastImage from 'react-native-fast-image';
 import {
   MaterialIcons,
   FontAwesome,
-  MaterialCommunityIcons
+  MaterialCommunityIcons,
+  AntDesign
 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from '../../../../../theme';
@@ -27,6 +28,7 @@ interface ActivityCardProps {
   tribeID: string;
   count: string;
   channelID: string;
+  payment: { amount: string; asset: string; type: string };
 }
 
 export default function ActivityCard(props: ActivityCardProps) {
@@ -44,7 +46,8 @@ export default function ActivityCard(props: ActivityCardProps) {
     tribeID,
     userID,
     count,
-    channelID
+    channelID,
+    payment
   } = props;
   const { colors, fonts } = useThemeContext();
 
@@ -77,6 +80,28 @@ export default function ActivityCard(props: ActivityCardProps) {
   };
 
   const messageBody = {
+    USER_FUND_WALLET: (
+      <Paragraph
+        style={{
+          width: '80%',
+          fontFamily: fonts.WORK_SANS_MEDIUM,
+          fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+          color: colors.PRIMARY_TEXT
+        }}
+      >
+        You just initiated a funding of {payment?.amount} {payment?.asset}
+        <Text
+          style={{
+            fontFamily: fonts.WORK_SANS_MEDIUM,
+            fontSize: RFValue(fonts.MEDIUM_SIZE),
+            color: colors.SECONDARY_TEXT
+          }}
+        >
+          {'  '}
+          {formatMessageTime(timeStamp)}
+        </Text>
+      </Paragraph>
+    ),
     NEW_CHANNEL_CREATED: (
       <Paragraph
         style={{
@@ -627,6 +652,8 @@ export default function ActivityCard(props: ActivityCardProps) {
             <MaterialIcons name="person" size={18} color={colors.WHITE} />
           ) : activityType == 'INVITE' ? (
             <FontAwesome name="user-plus" size={15} color={colors.WHITE} />
+          ) : activityType == 'PAYMENT' ? (
+            <AntDesign name="creditcard" size={17} color={colors.WHITE} />
           ) : (
             <MaterialCommunityIcons
               name="clipboard-text"
@@ -666,6 +693,8 @@ export default function ActivityCard(props: ActivityCardProps) {
         messageBody?.CONNECTION_ADDED_THIS_WEEK
       ) : messageType === 'NEW_CONNECTIONS_THIS_WEEK' ? (
         messageBody?.NEW_CONNECTIONS_THIS_WEEK
+      ) : messageType === 'USER_FUND_WALLET' ? (
+        messageBody?.USER_FUND_WALLET
       ) : (
         <Paragraph
           style={{
