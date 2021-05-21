@@ -242,6 +242,7 @@
     "tribes": "tribes",
     "connections": "connections",
     "adminTribe": "admin tribes",
+    "wallet": "wallet",
     "cancel": "cancel",
     "communityInvite": "tribe invite",
     "communityRequest": "new tribe request",
