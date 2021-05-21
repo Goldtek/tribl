@@ -15,7 +15,6 @@ import { Linking } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { LinkingOptions } from '@react-navigation/native';
 import { NotificationMessage, IFCMMessageTypes } from './graphql/types';
-import { DEVICE_OS } from './utils/device';
 import { crashlytics } from './firebase/config';
 import { useMutation } from '@apollo/react-hooks';
 import {
@@ -115,7 +114,7 @@ export default function AppNavigator() {
       const remoteMessage = await messaging().getInitialNotification();
 
       if (!remoteMessage) return null;
-      const data = remoteMessage.data as NotificationMessage;
+      const data = (remoteMessage.data as unknown) as NotificationMessage;
 
       // Get deep link from data
       // if this is undefined, the app will open the default/home page
@@ -135,11 +134,7 @@ export default function AppNavigator() {
             `DEEP LINK NOTIFICATION MESSAGE, ${JSON.stringify(message)}`
           );
 
-          const data =
-            DEVICE_OS === 'ios'
-              ? //@ts-ignore
-                ((message?.body || message.data) as NotificationMessage)
-              : (message?.data as NotificationMessage);
+          const data = (message?.data as unknown) as NotificationMessage;
 
           // Any custom logic to check whether the URL needs to be handled
           // Call the listener to let React Navigation handle the URL
@@ -180,7 +175,7 @@ export default function AppNavigator() {
         return `${defaultUrl}/connection_request_screen`;
 
       case IFCMMessageTypes.CHANNEL_INVITATION_RECEIVED:
-        return `${defaultUrl}/tribe_request_screen`;
+        return `${defaultUrl}/deep_link_channel_chat_screen?channelId=${data.channelId}&title=${data.channelName}`;
 
       case IFCMMessageTypes.COMMUNITY_REQUEST_ACCEPTED:
         return `${defaultUrl}/tribe_request_screen`;

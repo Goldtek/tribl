@@ -165,9 +165,7 @@ export default function CustomChannelPreview(
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          borderBottomColor: colors.light,
           backgroundColor: colors.WHITE,
-          borderBottomWidth: 1,
           padding: 10
         }}
         onPress={() => {

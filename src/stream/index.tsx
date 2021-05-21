@@ -6,8 +6,6 @@ import React, {
 } from 'react';
 import Intercom from 'react-native-intercom';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import PushNotification from 'react-native-push-notification';
 import {
   GET_ALL_CHANNEL_CREATION_REQUEST,
   GET_COMMUNITY_CREATION_REQUEST,
@@ -40,10 +38,15 @@ import {
 import fcmMessaging, {
   FirebaseMessagingTypes
 } from '@react-native-firebase/messaging';
-import { UserResponse } from 'stream-chat';
+import {
+  ConnectionOpen,
+  LiteralStringForUnion,
+  UserResponse
+} from 'stream-chat';
 import Storage from '../libs/storage';
 import { decodeToken } from '../utils/decodeToken';
 import { PAGINATION_DEFAULT } from '../constants';
+import { DEVICE_OS } from '../utils/device';
 
 import {
   ThreadType,
@@ -51,7 +54,8 @@ import {
   ChannelType,
   StreamContext,
   LocalUserType,
-  ActivityScreenType
+  ActivityScreenType,
+  LocalChannelType
 } from './types';
 
 const messaging = fcmMessaging();
@@ -85,6 +89,18 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     variables: { input: { limit: PAGINATION_DEFAULT / 2, skip: 0 } }
   });
 
+  // Request Push Notification permission from device.
+  const requestPermission = async () => {
+    const authStatus = await messaging.requestPermission();
+    const enabled =
+      authStatus === fcmMessaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === fcmMessaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      crashlytics.log(`NOTIFICATION AUTHORIZATION STATUS, ${authStatus}`);
+    }
+  };
+
   const tribeInvites = inviteData?.communityInvites;
   const tribeRequest = requestData?.communityCreationRequests;
   const connectionRequests = connectionRequestData?.connectionRequests;
@@ -108,7 +124,6 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     crashlytics.log(
       `PRESENT NOTIFICATION MESSAGE, ${JSON.stringify(remoteMessage)}`
     );
-
     const data = (remoteMessage?.data as unknown) as NotificationMessage;
 
     if (data?.type === IFCMMessageTypes.CONNECTION_REQUEST_RECEIVED) {
@@ -135,132 +150,124 @@ const StreamProvider: FunctionComponent = ({ children }) => {
     crashlytics.log('USER SINGED IN SUCCESSFULLY.');
   };
 
-  const initChat = async (passport: PassportInterface) => {
-    if (
-      !passport.id &&
-      !passport.avatar &&
-      !passport.firstName &&
-      !passport.lastName
-    ) {
-      return;
-    }
+  useEffect(() => {
+    let unsubscribe: () => void;
 
-    const user: UserResponse<LocalUserType> = {
-      id: `${passport.id}`,
-      image: `${passport.avatar}`,
-      citizenship: JSON.stringify(passport.citizenship),
-      name: `${passport.firstName} ${passport.lastName}`,
-      value: `${passport.firstName} ${passport.lastName}`
+    const initChat = async (passport: PassportInterface) => {
+      if (
+        !passport.id &&
+        !passport.avatar &&
+        !passport.firstName &&
+        !passport.lastName
+      ) {
+        return;
+      }
+
+      const user: UserResponse<LocalUserType> = {
+        id: `${passport.id}`,
+        image: `${passport.avatar}`,
+        citizenship: JSON.stringify(passport.citizenship),
+        name: `${passport.firstName} ${passport.lastName}`,
+        value: `${passport.firstName} ${passport.lastName}`
+      };
+
+      try {
+        const userCredStorage = await Storage.getUserCredentials();
+        const credentials = JSON.parse(userCredStorage || '{}') as VerifyOTPIT;
+        let streams_token = credentials?.streams_token;
+        let decodedToken: { [key: string]: any } | null = null;
+
+        if (streams_token) {
+          decodedToken = decodeToken(streams_token);
+        }
+
+        // add check for token expiry here in future.
+        if (!streams_token || decodedToken?.user_id !== user.id) {
+          const { data } = await authenticateStream();
+          streams_token = `${data?.generateStreamsToken.streams_token}`;
+          Storage.setUserCredentials(data?.generateStreamsToken);
+        }
+
+        await requestPermission();
+        const streamUser = await chatClient.connectUser(user, streams_token);
+        unsubscribe = await registerPushToken(credentials);
+        subscribeToStreams(streamUser);
+        onSignIn(passport);
+      } catch (error) {
+        crashlytics.recordError(new Error(error));
+        crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+      }
     };
 
-    try {
-      await chatClient.disconnect();
-      const userCredStorage = await Storage.getUserCredentials();
-      const credentials = JSON.parse(userCredStorage || '{}') as VerifyOTPIT;
-      let streams_token = credentials?.streams_token;
-      let decodedToken: { [key: string]: any } | null = null;
+    if (userData?.myPassport.id && !chatClient.user?.id) {
+      initChat(userData?.myPassport);
+    }
 
-      if (streams_token) {
-        decodedToken = decodeToken(streams_token);
+    return () => {
+      chatClient?.disconnect().then(unsubscribe);
+    };
+  }, [userData?.myPassport.id]);
+
+  // Register FCM token with stream chat server.
+  const registerPushToken = async (credentials: VerifyOTPIT) => {
+    const token = await messaging.getToken();
+    if (credentials?.id_token) {
+      updatePassportFCM({ variables: { payload: { fcm: token } } });
+    }
+    if (DEVICE_OS === 'android') {
+      Intercom.sendTokenToIntercom(token);
+    }
+    await chatClient.addDevice(token, 'firebase');
+    return messaging.onTokenRefresh(
+      async (newToken) => await chatClient.addDevice(newToken, 'firebase')
+    );
+  };
+
+  const subscribeToStreams = async (
+    streamUser: ConnectionOpen<
+      LocalChannelType,
+      LiteralStringForUnion,
+      LocalUserType
+    > | void
+  ) => {
+    if (!streamUser) return;
+
+    const { devices } = await chatClient.getDevices();
+
+    devices?.forEach((device) => {
+      if (device.disabled) {
+        chatClient.removeDevice(`${device?.id}`);
       }
+    });
 
-      // add check for token expiry here in future.
-      if (!streams_token || decodedToken?.user_id !== user.id) {
-        const { data } = await authenticateStream();
-        streams_token = `${data?.generateStreamsToken.streams_token}`;
-        Storage.setUserCredentials(data?.generateStreamsToken);
-      }
+    if (streamUser && streamUser.me?.total_unread_count) {
+      changeMessageNotification({
+        variables: { showMessageNotificationBadge: true }
+      });
+    } else {
+      changeMessageNotification({
+        variables: { showMessageNotificationBadge: false }
+      });
+    }
 
-      const streamUser = await chatClient.connectUser(user, streams_token);
-
-      if (streamUser && streamUser.me?.total_unread_count) {
+    chatClient.on((event) => {
+      if (
+        event.total_unread_count !== undefined &&
+        event.total_unread_count >= 1
+      ) {
         changeMessageNotification({
           variables: { showMessageNotificationBadge: true }
         });
+      } else if (
+        event.total_unread_count !== undefined &&
+        event.total_unread_count === 0
+      ) {
+        changeMessageNotification({
+          variables: { showMessageNotificationBadge: false }
+        });
       }
-
-      onSignIn(passport);
-
-      chatClient.on((event) => {
-        if (
-          event.total_unread_count !== undefined &&
-          event.total_unread_count >= 1
-        ) {
-          changeMessageNotification({
-            variables: { showMessageNotificationBadge: true }
-          });
-        } else if (
-          event.total_unread_count !== undefined &&
-          event.total_unread_count === 0
-        ) {
-          changeMessageNotification({
-            variables: { showMessageNotificationBadge: false }
-          });
-        }
-      });
-
-      // Must be outside of any component LifeCycle (such as `componentDidMount`).
-      PushNotification.configure({
-        // (optional) Called when Token is generated (iOS and Android)
-        onRegister: async ({ token, os }) => {
-          const fcmToken = await messaging.getToken();
-          if (credentials.id_token) {
-            updatePassportFCM({
-              variables: { payload: { fcm: fcmToken } }
-            });
-          }
-
-          if (os === 'android') {
-            Intercom.sendTokenToIntercom(fcmToken);
-          }
-
-          await chatClient.addDevice(
-            os === 'ios' ? token : fcmToken,
-            os === 'ios' ? 'apn' : 'firebase',
-            passport.id
-          );
-
-          const { devices } = await chatClient.getDevices();
-
-          devices?.forEach((device) => {
-            if (device.disabled) {
-              chatClient.removeDevice(`${device?.id}`);
-            }
-          });
-        },
-
-        // (required) Called when a remote is received or opened, or local notification is opened
-        onNotification: (notification) => {
-          // (required) Called when a remote is received or opened, or local notification is opened
-          notification.finish(PushNotificationIOS.FetchResult.NoData);
-        },
-
-        // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-        onRegistrationError: (error) => {
-          crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-          return crashlytics.recordError(new Error(error));
-        },
-
-        // IOS ONLY (optional): default: all - Permissions to register.
-        permissions: { alert: true, badge: true, sound: true },
-
-        requestPermissions: true
-      });
-    } catch (error) {
-      crashlytics.recordError(new Error(error));
-      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-    }
+    });
   };
-
-  useEffect(() => {
-    if (userData?.myPassport.id) {
-      // Initializes Stream's chat client.
-      // Documentation: https://getstream.io/chat/docs/init_and_users/?language=js
-      if (!chatClient.user?.id) {
-        initChat(userData?.myPassport);
-      }
-    }
-  }, [userData?.myPassport.id]);
 
   useEffect(() => {
     connectionRequests?.data.length

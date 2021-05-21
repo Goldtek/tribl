@@ -153,7 +153,6 @@ export default function CustomDirectMessagePreview(
               setLoading(true);
               await channel.removeMembers([`${chatClient.user?.id}`]);
               setLoading(false);
-              navigation.navigate('InboxScreen');
             } catch (error) {
               setLoading(false);
               crashlytics.recordError(new Error(error));
@@ -230,9 +229,7 @@ export default function CustomDirectMessagePreview(
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          borderBottomColor: colors.light,
           backgroundColor: colors.WHITE,
-          borderBottomWidth: 1,
           padding: 10
         }}
         onPress={handleNavigate}

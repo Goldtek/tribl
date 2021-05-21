@@ -4,6 +4,7 @@ import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
 import { useTranslation } from 'react-i18next';
 import { ChannelSort } from 'stream-chat';
 import { ChannelList, Chat, DefaultCommandType } from 'stream-chat-expo';
+import { Divider } from 'react-native-paper';
 import CustomChannelPreview from './widget';
 import { NavigationInterface } from '../../../types';
 import { tagScreenName } from '../../../../utils/uxcamHelper';
@@ -76,7 +77,11 @@ function ChannelsTab(props: ScreenProp) {
           EmptyStateIndicator={EmptyMessageState}
           LoadingErrorIndicator={LoadingErrorIndicator}
           LoadingIndicator={() => <LoadingIndicatorState />}
-          additionalFlatListProps={{ showsVerticalScrollIndicator: false }}
+          additionalFlatListProps={{
+            showsVerticalScrollIndicator: false,
+            ItemSeparatorComponent: () => <Divider />,
+            contentContainerStyle: { paddingBottom: 70, flexGrow: 1 }
+          }}
         />
       </Container>
       <ButtonWrapper>
