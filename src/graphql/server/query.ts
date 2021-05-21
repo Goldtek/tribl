@@ -1926,3 +1926,13 @@ export const GET_ALL_CHANNEL_CREATION_REQUEST = gql`
     }
   }
 `;
+
+//GET CARD PCI OUTPUT
+export const GET_CARD_PCI_OUTPUT = gql`
+  query getCardPciKey {
+    getCardPciKey {
+        success
+        key
+    }
+  }
+`;
