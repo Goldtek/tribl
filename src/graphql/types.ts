@@ -144,12 +144,18 @@ export type NotificationMessage = {
   sender_id: string;
   receiverId: string;
   senderName: string;
+  communityId: string;
   channelType: string;
+  channelName: string;
   sender_image: string;
   sender_title: string;
   receiverName: string;
   senderAvatar: string;
+  communityName: string;
   receiverAvatar: string;
+  communityAvatar: string;
+  channelIsPrivate: boolean;
+  communityIsPrivate: boolean;
   type: NotificationMessageType;
 };
 

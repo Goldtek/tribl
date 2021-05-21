@@ -113,7 +113,7 @@ export default function Notification(props: NotificationProp) {
 
   useEffect(() => {
     if (id) {
-      getUserPassport({ variables: { id } });
+      getUserPassport({ variables: { id: userId } });
     }
   }, []);
 
