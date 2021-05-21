@@ -84,7 +84,7 @@ export default function NotificationScreen(props: ScreenProp) {
         fontFamily: focused
           ? fonts.WORK_SANS_SEMI_BOLD
           : fonts.WORK_SANS_REGULAR,
-        fontSize: fonts.MEDIUM_SIZE,
+        fontSize: RFValue(fonts.LARGE_SIZE),
         color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
         textTransform: 'capitalize',
         marginTop: 0,
@@ -100,6 +100,7 @@ export default function NotificationScreen(props: ScreenProp) {
     return (
       <TabBar
         {...props}
+        scrollEnabled={true}
         indicatorStyle={{
           backgroundColor: colors.PRIMARY,
           height: RFValue(4)
