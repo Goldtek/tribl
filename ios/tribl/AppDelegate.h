@@ -1,4 +1,3 @@
-#import <UserNotifications/UNUserNotificationCenter.h>
 #import <Foundation/Foundation.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 #import <React/RCTBridgeDelegate.h>
@@ -6,6 +5,6 @@
 
 #import <UMCore/UMAppDelegateWrapper.h>
 
-@interface AppDelegate : UMAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate, EXUpdatesAppControllerDelegate, UNUserNotificationCenterDelegate>
+@interface AppDelegate : UMAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate, EXUpdatesAppControllerDelegate>
 
 @end
