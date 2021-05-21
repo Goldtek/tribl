@@ -1,12 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Title } from 'react-native-paper';
+import { RFValue } from 'react-native-responsive-fontsize';
 //@ts-ignore
 import { FlatFeed, Activity } from 'expo-activity-feed';
-import ActivityCard from '../../activityCard';
-import { chatClient } from '../../../../../../stream/types';
+import { useThemeContext } from '../../../../../theme';
+import { NavigationInterface } from '../../../../types';
+import { tagScreenName } from '../../../../../utils/uxcamHelper';
+import { chatClient } from '../../../../../stream/types';
+import ActivityCard from '../activityCard';
 
-export default function General() {
+// IMPORT FOR ALL CUSTOM STYLES
+import { Container } from './styles';
+
+// DEFINE SCREEN PROP TYPES
+interface ConnectionSlideProp extends NavigationInterface {}
+
+export default function ConnectionSlide(props: ConnectionSlideProp) {
+  useEffect(() => {
+    tagScreenName('NotificationScreen');
+  }, []);
+
   const CustomActivity = (props: any) => {
-    if (props?.activity?.tab === 'COMMUNITY') {
+    if (props?.activity?.tab === 'PAYMENT') {
       return (
         <Activity
           {...props}
@@ -35,11 +50,14 @@ export default function General() {
       return null;
     }
   };
+
   return (
-    <FlatFeed
-      feedGroup="timeline"
-      userId={chatClient.user?.id}
-      Activity={CustomActivity}
-    />
+    <Container>
+      <FlatFeed
+        feedGroup="timeline"
+        userId={chatClient.user?.id}
+        Activity={CustomActivity}
+      />
+    </Container>
   );
 }

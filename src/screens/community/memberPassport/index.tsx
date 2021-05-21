@@ -192,6 +192,7 @@ export default function PassportDetail(props: MemberDetailProps) {
         <Header>
           <SingleImage
             uri={avatar}
+            userId={passport?.id}
             style={{
               width: RFValue(100),
               height: citizenship?.length > 2 ? RFValue(110) : RFValue(80),
