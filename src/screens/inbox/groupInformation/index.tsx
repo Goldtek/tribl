@@ -243,7 +243,7 @@ export default function GroupInformation(props: GroupInformationProp) {
             setLoading(true);
             await channel.removeMembers([`${chatClient.user?.id}`]);
             setLoading(false);
-            navigation.navigate('InboxScreen');
+            navigation.navigate('CommunityScreen', { screen: 'InboxScreen' });
           } catch (error) {
             setLoading(false);
             crashlytics.recordError(new Error(error));
@@ -292,7 +292,7 @@ export default function GroupInformation(props: GroupInformationProp) {
 
       <ScrollView
         bounces={false}
-        contentContainerStyle={{ paddingVertical: 70 }}
+        contentContainerStyle={{ paddingVertical: RFValue(40) }}
         showsVerticalScrollIndicator={false}
       >
         <HeaderImageContainer>

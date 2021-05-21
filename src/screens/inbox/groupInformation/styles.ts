@@ -31,8 +31,9 @@ export const RightCover = styled.View`
 
 export const HeaderContainer = styled.View`
   width: 100%;
-  height: 70px;
+  height: ${RFValue(40)}px;
   margin-top: ${Constants.statusBarHeight}px;
+  padding-bottom: 10px;
   flex-direction: row;
   align-items: center;
   z-index: 999;
@@ -56,9 +57,7 @@ export const ChannelInformationContainer = styled.View`
   padding-right: 20px;
 `;
 
-export const InfoWrapper = styled.View`
- 
-`
+export const InfoWrapper = styled.View``;
 
 export const HeaderImageContainer = styled.View`
   flex-direction: row;
@@ -73,9 +72,10 @@ export const Overlay = styled.View`
   background-color: ${({ theme }) => hexToRGB(theme.colors.BLACK, 0.7)};
 `;
 
-export const CoverImageOverlay = styled(Overlay) <{ color: string }>`
+export const CoverImageOverlay = styled(Overlay)<{ color: string }>`
   position: absolute;
-  background-color: ${({ theme, color }) => color ? hexToRGB(color, 0.5) : hexToRGB(theme.colors.PRIMARY_LIGHT, 0.5)};
+  background-color: ${({ theme, color }) =>
+    color ? hexToRGB(color, 0.5) : hexToRGB(theme.colors.PRIMARY_LIGHT, 0.5)};
   width: 100%;
   height: 100%;
 `;

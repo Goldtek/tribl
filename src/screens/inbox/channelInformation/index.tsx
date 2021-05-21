@@ -108,7 +108,7 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
                 variables: { payload: { channelId: channel.id } }
               });
               setLoading(false);
-              navigation.navigate('InboxScreen');
+              navigation.replace('CommunityScreen', { screen: 'InboxScreen' });
             } catch (error) {
               setLoading(false);
               crashlytics.recordError(new Error(error));
@@ -158,7 +158,7 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
 
       <ScrollView
         bounces={false}
-        contentContainerStyle={{ paddingVertical: 70 }}
+        contentContainerStyle={{ paddingVertical: RFValue(40) }}
         showsVerticalScrollIndicator={false}
       >
         <FastImage

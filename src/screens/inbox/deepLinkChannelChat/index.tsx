@@ -45,7 +45,6 @@ import { Mixpanel } from '../../../config';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { JOIN_COMMUNITY_CHANNEL } from '../../../graphql/server/mutations';
 import { crashlytics } from '../../../firebase/config';
-import { IFCMMessageTypes } from '../../../graphql/types';
 
 import {
   CountBadge,
@@ -193,14 +192,13 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
 
   const handleBack = () => {
     if (Boolean(route?.params?.newly_created_group)) {
-      return navigation.navigate('InboxScreen');
+      return navigation.replace('CommunityScreen', { screen: 'InboxScreen' });
     }
 
-    if (navigation.canGoBack()) {
-      return navigation.goBack();
-    }
-
-    navigation.navigate('InboxScreen');
+    const canGoBack = navigation.canGoBack();
+    return canGoBack
+      ? navigation.goBack()
+      : navigation.replace('CommunityScreen', { screen: 'InboxScreen' });
   };
 
   return (
@@ -222,25 +220,23 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
             <Ionicons name="md-arrow-back" size={24} color={colors.PRIMARY} />
           </TouchableRipple>
 
-          <Fragment>
-            {members && members?.length === 1 ? (
-              <TouchableRipple
-                onPress={handleChannelNavigation}
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-              >
+          <TouchableRipple
+            onPress={handleChannelNavigation}
+            style={{
+              width: '20%',
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
+          >
+            <Fragment>
+              {members && members?.length === 1 && (
                 <Surface
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: RFValue(35),
+                    height: RFValue(35),
+                    borderRadius: RFValue(35 / 2),
                     justifyContent: 'center',
-                    top: 1,
-                    right: 10,
-                    elevation: 4,
-                    borderRadius: 4
+                    elevation: 4
                   }}
                 >
                   <FastImage
@@ -250,9 +246,9 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
                       priority: FastImage.priority.high
                     }}
                     style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 4
+                      height: RFValue(35),
+                      width: RFValue(35),
+                      borderRadius: RFValue(35 / 2)
                     }}
                   />
                   <CountBadge style={{ elevation: 4 }}>
@@ -268,25 +264,16 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
                     </Paragraph>
                   </CountBadge>
                 </Surface>
-              </TouchableRipple>
-            ) : null}
+              )}
 
-            {members && members?.length >= 2 ? (
-              <TouchableRipple
-                onPress={handleChannelNavigation}
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-              >
+              {members && members?.length === 2 && (
                 <Fragment>
                   <Surface
                     style={{
-                      width: 40,
-                      height: 40,
+                      width: RFValue(35),
+                      height: RFValue(35),
                       elevation: 4,
-                      borderRadius: 4
+                      borderRadius: RFValue(35 / 2)
                     }}
                   >
                     <FastImage
@@ -298,9 +285,9 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
                         priority: FastImage.priority.high
                       }}
                       style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 4,
+                        height: RFValue(35),
+                        width: RFValue(35),
+                        borderRadius: RFValue(35 / 2),
                         borderColor: colors.PRIMARY,
                         borderWidth: 1
                       }}
@@ -308,13 +295,12 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
                   </Surface>
                   <Surface
                     style={{
-                      width: 40,
-                      height: 40,
-                      justifyContent: 'center',
-                      top: 1,
-                      right: 10,
+                      width: RFValue(35),
+                      height: RFValue(35),
                       elevation: 4,
-                      borderRadius: 4
+                      borderRadius: RFValue(35 / 2),
+                      justifyContent: 'center',
+                      right: 25
                     }}
                   >
                     <FastImage
@@ -326,9 +312,9 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
                         priority: FastImage.priority.high
                       }}
                       style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 4,
+                        height: RFValue(35),
+                        width: RFValue(35),
+                        borderRadius: RFValue(35 / 2),
                         borderColor: colors.PRIMARY,
                         borderWidth: 1
                       }}
@@ -347,31 +333,132 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
                     </CountBadge>
                   </Surface>
                 </Fragment>
-              </TouchableRipple>
-            ) : null}
+              )}
 
-            <HeaderTitleContainer>
-              <Paragraph
-                numberOfLines={1}
-                style={{
-                  fontSize: fonts.MEDIUM_SIZE + 2,
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  marginLeft: 10
-                }}
-              >
-                {route.params?.title}
-              </Paragraph>
-            </HeaderTitleContainer>
+              {members && members?.length >= 3 && (
+                <Fragment>
+                  <Surface
+                    style={{
+                      width: RFValue(35),
+                      height: RFValue(35),
+                      elevation: 4,
+                      borderRadius: RFValue(35 / 2)
+                    }}
+                  >
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri:
+                          members[members?.length - 3]?.user?.image ||
+                          USER_DEFAULT_AVATAR,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        height: RFValue(35),
+                        width: RFValue(35),
+                        borderRadius: RFValue(35 / 2),
+                        borderColor: colors.PRIMARY,
+                        borderWidth: 1
+                      }}
+                    />
+                  </Surface>
+                  <Surface
+                    style={{
+                      width: RFValue(35),
+                      height: RFValue(35),
+                      elevation: 4,
+                      borderRadius: RFValue(35 / 2),
+                      justifyContent: 'center',
+                      right: 25
+                    }}
+                  >
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri:
+                          members[members?.length - 2]?.user?.image ||
+                          USER_DEFAULT_AVATAR,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        height: RFValue(35),
+                        width: RFValue(35),
+                        borderRadius: RFValue(35 / 2),
+                        borderColor: colors.PRIMARY,
+                        borderWidth: 1
+                      }}
+                    />
+                  </Surface>
+                  <Surface
+                    style={{
+                      width: RFValue(35),
+                      height: RFValue(35),
+                      borderRadius: RFValue(35 / 2),
+                      justifyContent: 'center',
+                      elevation: 4,
+                      right: 50
+                    }}
+                  >
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={{
+                        uri:
+                          members[members?.length - 1]?.user?.image ||
+                          USER_DEFAULT_AVATAR,
+                        priority: FastImage.priority.high
+                      }}
+                      style={{
+                        height: RFValue(35),
+                        width: RFValue(35),
+                        borderRadius: RFValue(35 / 2),
+                        borderColor: colors.PRIMARY,
+                        borderWidth: 1
+                      }}
+                    />
+                    <CountBadge style={{ elevation: 4 }}>
+                      <Paragraph
+                        style={{
+                          fontSize: RFValue(fonts.MEDIUM_SIZE),
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          fontWeight: 'bold',
+                          color: colors.WHITE
+                        }}
+                      >
+                        {`${channel.data?.member_count}+`}
+                      </Paragraph>
+                    </CountBadge>
+                  </Surface>
+                </Fragment>
+              )}
+            </Fragment>
+          </TouchableRipple>
 
-            {Boolean(channel.data) && (
-              <IconButton
-                icon={(iconProps) => (
-                  <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
-                )}
-                onPress={handleChannelNavigation}
-              />
-            )}
-          </Fragment>
+          <HeaderTitleContainer count={members?.length}>
+            <Paragraph
+              numberOfLines={1}
+              style={{
+                fontSize: fonts.MEDIUM_SIZE + 2,
+                fontFamily: fonts.WORK_SANS_BOLD
+              }}
+            >
+              {route.params?.title}
+            </Paragraph>
+          </HeaderTitleContainer>
+
+          {Boolean(channel.data) && (
+            <IconButton
+              style={{ borderWidth: 1, borderColor: colors.PRIMARY_TEXT }}
+              size={RFValue(15)}
+              color={colors.PRIMARY_TEXT}
+              icon={(iconProps) => (
+                <MaterialCommunityIcons
+                  {...iconProps}
+                  name="information-variant"
+                />
+              )}
+              onPress={handleChannelNavigation}
+            />
+          )}
         </HeaderContainer>
 
         <Chat
@@ -387,7 +474,7 @@ export default function DeepLinkChannelChatScreen(props: ScreenProp) {
               channel.sendMessage({
                 ...message,
                 link_url: 'deep_link_channel_chat_screen',
-                message_type: IFCMMessageTypes.CHANNEL_MESSAGE_RECEIVED
+                message_type: 'CHANNEL_MESSAGE_RECEIVED'
               })
             }
           >

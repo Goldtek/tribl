@@ -1,10 +1,10 @@
-import Constants from 'expo-constants';
 import styled from 'styled-components/native';
 import { TouchableRipple } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { EdgeInsets } from 'react-native-safe-area-context';
+import hexToRGB from '../../../utils/hexToRGB';
 
-export const Container = styled(SafeAreaView)`
+export const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.WHITE};
 `;
@@ -28,7 +28,8 @@ export const RightCover = styled.View`
   padding-right: ${RFValue(20)}px;
 `;
 
-export const HeaderContainer = styled.View`
+export const HeaderContainer = styled.View<{ inset: EdgeInsets }>`
+  margin-top: ${({ inset }) => RFValue(inset.top)}px;
   flex-direction: row;
   align-items: center;
 `;
