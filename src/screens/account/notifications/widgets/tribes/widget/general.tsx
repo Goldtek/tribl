@@ -26,6 +26,7 @@ export default function General() {
               tribeID={props?.activity?.community?.id}
               count={props?.activity?.count}
               channelID={props?.activity?.channel?.id}
+              payment={props?.activity?.payment}
             />
           }
         />
