@@ -22,7 +22,7 @@ import { Container } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
-export default function SearchScreen(props: ScreenProp) {
+export default function NewTribeScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { navigation } = props;
   const { t } = useTranslation();

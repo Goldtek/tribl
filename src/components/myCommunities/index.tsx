@@ -27,10 +27,7 @@ export default function MyCommunity(props: MyCommunityProp) {
   const handleNavigation = () => {
     navigation.navigate('DrawerScreen', {
       screen: 'CommunityDetailScreen',
-      params: {
-        title: name,
-        details: { ...community }
-      }
+      params: { title: name, details: { ...community } }
     });
   };
 

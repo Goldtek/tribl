@@ -33,12 +33,11 @@ function ReportModal(props: ModalProp) {
     REPORT
   }
 
+  const passport = { ...data, ...data.details };
+
   const [note, setNote] = useState('');
-
   const modalizeRef = useRef<Modalize>(null);
-
   const openModal = () => modalizeRef.current?.open();
-
   const closeModal = () => modalizeRef.current?.close();
 
   useEffect(() => {
@@ -48,7 +47,7 @@ function ReportModal(props: ModalProp) {
   const [reportUser, { loading }] = useMutation(BLOCK_REPORT_USER, {
     variables: {
       payload: {
-        passportId: data?.details?.id,
+        passportId: passport?.id,
         status: status[0],
         notes: note
       }
@@ -60,7 +59,7 @@ function ReportModal(props: ModalProp) {
 
     try {
       Mixpanel.track('Report User', {
-        info: `Report ${data?.title}`,
+        info: `Report ${passport?.title}`,
         'Activity Screen': 'Member details screen'
       });
       await reportUser();

@@ -33,6 +33,7 @@ import { StatusBar } from 'expo-status-bar';
 import MyConnectionCard from '../../../components/MyConnectionCard';
 import MyCommunity from '../../../components/myCommunities';
 import TransferModal from '../../../components/transferModal';
+import LoadingIndicatorState from '../../../components/loadingIndicatorState';
 
 import {
   ContactContainer,
@@ -52,7 +53,13 @@ import {
 } from './styles';
 
 interface MemberDetailProps extends NavigationInterface {
-  route: { params: { details: PassportInterface } };
+  route: {
+    params: {
+      id?: string;
+      details: PassportInterface;
+      connectionAccepted?: boolean;
+    };
+  };
 }
 
 export default function PassportDetail(props: MemberDetailProps) {
@@ -61,8 +68,8 @@ export default function PassportDetail(props: MemberDetailProps) {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [state, setState] = useState({ loading: false, pending: false });
-  const passport = { ...props.route.params.details };
-  const [data, setData] = useState({ ...passport });
+  const passport = { ...props.route.params, ...props.route.params.details };
+  const [data, setData] = useState({ ...passport.details });
   const isFocused = useIsFocused();
 
   const {
@@ -188,149 +195,153 @@ export default function PassportDetail(props: MemberDetailProps) {
       style={{ backgroundColor: colors.WHITE }}
     >
       <StatusBar style="dark" animated />
-      <ContactContainer>
-        <Header>
-          <SingleImage
-            uri={avatar}
-            userId={passport?.id}
-            style={{
-              width: RFValue(100),
-              height: citizenship?.length > 2 ? RFValue(110) : RFValue(80),
-              borderRadius: 4
-            }}
-          />
 
-          <ConnectionCover>
-            <Paragraph
+      {passport?.connectionAccepted && !singlePassport ? (
+        <LoadingIndicatorState showLoading={passport?.connectionAccepted} />
+      ) : (
+        <ContactContainer>
+          <Header>
+            <SingleImage
+              uri={avatar}
+              userId={passport?.id}
               style={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE - 2),
-                paddingRight: 20,
-                lineHeight: 19,
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize'
+                width: RFValue(100),
+                height: citizenship?.length > 2 ? RFValue(110) : RFValue(80),
+                borderRadius: 4
               }}
-            >
-              {firstName} {lastName}
-            </Paragraph>
-            {currentLocation?.city ? (
+            />
+
+            <ConnectionCover>
               <Paragraph
                 style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE - 2),
                   paddingRight: 20,
-                  lineHeight: 15,
+                  lineHeight: 19,
                   color: colors.PRIMARY_TEXT,
                   textTransform: 'capitalize'
                 }}
               >
-                {`${currentLocation?.city}, ${currentLocation?.state}`}
+                {firstName} {lastName}
               </Paragraph>
-            ) : currentLocation?.country !== undefined ? (
-              <Paragraph
-                style={{
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  paddingRight: 20,
-                  lineHeight: 15,
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'capitalize'
-                }}
-              >
-                {`${currentLocation?.state}, ${currentLocation?.country}`}
-              </Paragraph>
-            ) : null}
-            <HeaderCover
-              style={{
-                flexDirection: citizenship?.length > 2 ? 'column' : 'row',
-                flexWrap: citizenship?.length > 2 ? 'wrap' : 'nowrap'
-              }}
-            >
-              {citizenship?.length ? (
-                <Title
+              {currentLocation?.city ? (
+                <Paragraph
                   style={{
-                    fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.5)),
-                    marginTop: RFValue(2),
-                    marginRight: RFValue(5)
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    paddingRight: 20,
+                    lineHeight: 15,
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize'
                   }}
                 >
-                  {citizenship?.map((country) => country.flag)}
-                </Title>
+                  {`${currentLocation?.city}, ${currentLocation?.state}`}
+                </Paragraph>
+              ) : currentLocation?.country !== undefined ? (
+                <Paragraph
+                  style={{
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    paddingRight: 20,
+                    lineHeight: 15,
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {`${currentLocation?.state}, ${currentLocation?.country}`}
+                </Paragraph>
               ) : null}
-              <HeaderBottomWrapper>
-                <Connection style={{ marginRight: RFValue(10) }}>
-                  <Paragraph
+              <HeaderCover
+                style={{
+                  flexDirection: citizenship?.length > 2 ? 'column' : 'row',
+                  flexWrap: citizenship?.length > 2 ? 'wrap' : 'nowrap'
+                }}
+              >
+                {citizenship?.length ? (
+                  <Title
                     style={{
-                      color: colors.PRIMARY_TEXT,
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: fonts.LARGE_SIZE
+                      fontSize: RFValue(Math.ceil(fonts.LARGE_SIZE * 1.5)),
+                      marginTop: RFValue(2),
+                      marginRight: RFValue(5)
                     }}
                   >
-                    {connectionCount}
-                  </Paragraph>
-                  <Paragraph
-                    style={{
-                      fontSize: fonts.MEDIUM_SIZE,
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
-                    }}
-                  >
-                    {t(`community.memberPassport.connection`)}
-                  </Paragraph>
-                </Connection>
-                <Connection>
-                  <Paragraph
-                    style={{
-                      color: colors.PRIMARY_TEXT,
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: fonts.LARGE_SIZE
-                    }}
-                  >
-                    {communityCount}
-                  </Paragraph>
-                  <Paragraph
-                    style={{
-                      fontSize: fonts.MEDIUM_SIZE,
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
-                    }}
-                  >
-                    {t(`community.memberPassport.community`)}
-                  </Paragraph>
-                </Connection>
-              </HeaderBottomWrapper>
-            </HeaderCover>
-          </ConnectionCover>
-        </Header>
+                    {citizenship?.map((country) => country.flag)}
+                  </Title>
+                ) : null}
+                <HeaderBottomWrapper>
+                  <Connection style={{ marginRight: RFValue(10) }}>
+                    <Paragraph
+                      style={{
+                        color: colors.PRIMARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: fonts.LARGE_SIZE
+                      }}
+                    >
+                      {connectionCount}
+                    </Paragraph>
+                    <Paragraph
+                      style={{
+                        fontSize: fonts.MEDIUM_SIZE,
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      {t(`community.memberPassport.connection`)}
+                    </Paragraph>
+                  </Connection>
+                  <Connection>
+                    <Paragraph
+                      style={{
+                        color: colors.PRIMARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: fonts.LARGE_SIZE
+                      }}
+                    >
+                      {communityCount}
+                    </Paragraph>
+                    <Paragraph
+                      style={{
+                        fontSize: fonts.MEDIUM_SIZE,
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      {t(`community.memberPassport.community`)}
+                    </Paragraph>
+                  </Connection>
+                </HeaderBottomWrapper>
+              </HeaderCover>
+            </ConnectionCover>
+          </Header>
 
-        {data?.connectionDetails?.status === 'ACCEPTED' ? (
-          <ButtonCover>
-            <Button
-              onPress={handleMessageNavigation}
-              mode="outlined"
-              color={colors.PRIMARY}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{
-                height: RFValue(55),
-                borderColor: colors.PRIMARY_TEXT
-              }}
-              style={{
-                width: '100%',
-                height: RFValue(55),
-                borderRadius: 4,
-                marginTop: RFValue(20),
-                borderColor: colors.PRIMARY_TEXT
-              }}
-            >
-              {t(`community.memberPassport.message`)}
-            </Button>
-            {/* <Button
+          {data?.connectionDetails?.status === 'ACCEPTED' ? (
+            <ButtonCover>
+              <Button
+                onPress={handleMessageNavigation}
+                mode="outlined"
+                color={colors.PRIMARY}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{
+                  height: RFValue(55),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+                style={{
+                  width: '100%',
+                  height: RFValue(55),
+                  borderRadius: 4,
+                  marginTop: RFValue(20),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+              >
+                {t(`community.memberPassport.message`)}
+              </Button>
+              {/* <Button
               onPress={showTransferModal(true)}
               mode="contained"
               labelStyle={{
@@ -356,56 +367,56 @@ export default function PassportDetail(props: MemberDetailProps) {
               {'\u0024'}
             </Button>
           */}
-          </ButtonCover>
-        ) : pending ||
-          data?.connectionDetails?.status === 'PENDING' ||
-          data?.pending == 'PENDING' ||
-          data?.pending == 'REQUESTED' ? (
-          <ButtonCover>
-            <Button
-              disabled={true}
-              mode="contained"
-              color={colors.PRIMARY_TEXT}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{ height: RFValue(55) }}
-              style={{
-                width: DEVICE_FULL_WIDTH / 2 - 30,
-                height: RFValue(55),
-                borderRadius: 4,
-                marginTop: RFValue(20),
-                backgroundColor: colors.DISABLED
-              }}
-            >
-              {t(`community.memberPassport.requested`)}
-            </Button>
-            <Button
-              onPress={handleMessageNavigation}
-              mode="outlined"
-              color={colors.PRIMARY}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{
-                height: RFValue(55),
-                borderColor: colors.PRIMARY_TEXT
-              }}
-              style={{
-                width: DEVICE_FULL_WIDTH / 2 - 30,
-                height: RFValue(55),
-                borderRadius: 4,
-                marginTop: RFValue(20),
-                borderColor: colors.PRIMARY_TEXT
-              }}
-            >
-              {t(`community.memberPassport.message`)}
-            </Button>
-            {/* <Button
+            </ButtonCover>
+          ) : pending ||
+            data?.connectionDetails?.status === 'PENDING' ||
+            data?.pending == 'PENDING' ||
+            data?.pending == 'REQUESTED' ? (
+            <ButtonCover>
+              <Button
+                disabled={true}
+                mode="contained"
+                color={colors.PRIMARY_TEXT}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{ height: RFValue(55) }}
+                style={{
+                  width: DEVICE_FULL_WIDTH / 2 - 30,
+                  height: RFValue(55),
+                  borderRadius: 4,
+                  marginTop: RFValue(20),
+                  backgroundColor: colors.DISABLED
+                }}
+              >
+                {t(`community.memberPassport.requested`)}
+              </Button>
+              <Button
+                onPress={handleMessageNavigation}
+                mode="outlined"
+                color={colors.PRIMARY}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{
+                  height: RFValue(55),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+                style={{
+                  width: DEVICE_FULL_WIDTH / 2 - 30,
+                  height: RFValue(55),
+                  borderRadius: 4,
+                  marginTop: RFValue(20),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+              >
+                {t(`community.memberPassport.message`)}
+              </Button>
+              {/* <Button
               onPress={showTransferModal(true)}
               mode="contained"
               labelStyle={{
@@ -430,40 +441,40 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {'\u0024'}
             </Button> */}
-          </ButtonCover>
-        ) : (
-          <ButtonCover>
-            <GradientButton
-              onPress={handleRequest}
-              loading={loading}
-              style={{ width: DEVICE_FULL_WIDTH / 2 - 30 }}
-            >
-              {t(`community.memberPassport.connect`)}
-            </GradientButton>
-            <Button
-              onPress={handleMessageNavigation}
-              mode="outlined"
-              color={colors.PRIMARY}
-              labelStyle={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                textTransform: 'capitalize'
-              }}
-              contentStyle={{
-                height: RFValue(55),
-                borderColor: colors.PRIMARY_TEXT
-              }}
-              style={{
-                width: DEVICE_FULL_WIDTH / 2 - 30,
-                height: RFValue(55),
-                borderRadius: 4,
-                marginTop: RFValue(20),
-                borderColor: colors.PRIMARY_TEXT
-              }}
-            >
-              {t(`community.memberPassport.message`)}
-            </Button>
-            {/* <Button
+            </ButtonCover>
+          ) : (
+            <ButtonCover>
+              <GradientButton
+                onPress={handleRequest}
+                loading={loading}
+                style={{ width: DEVICE_FULL_WIDTH / 2 - 30 }}
+              >
+                {t(`community.memberPassport.connect`)}
+              </GradientButton>
+              <Button
+                onPress={handleMessageNavigation}
+                mode="outlined"
+                color={colors.PRIMARY}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  textTransform: 'capitalize'
+                }}
+                contentStyle={{
+                  height: RFValue(55),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+                style={{
+                  width: DEVICE_FULL_WIDTH / 2 - 30,
+                  height: RFValue(55),
+                  borderRadius: 4,
+                  marginTop: RFValue(20),
+                  borderColor: colors.PRIMARY_TEXT
+                }}
+              >
+                {t(`community.memberPassport.message`)}
+              </Button>
+              {/* <Button
               onPress={showTransferModal(true)}
               mode="contained"
               labelStyle={{
@@ -488,245 +499,281 @@ export default function PassportDetail(props: MemberDetailProps) {
             >
               {'\u0024'}
             </Button> */}
-          </ButtonCover>
-        )}
+            </ButtonCover>
+          )}
 
-        {data?.bio ? (
-          <Cover ref={hideSensitiveView}>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginBottom: 5,
-                marginTop: 40
-              }}
-            >
-              {t(`community.memberPassport.bio`)}
-            </Title>
-            <Text
-              style={{
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'capitalize'
-              }}
-            >
-              {data?.bio}
-            </Text>
-          </Cover>
-        ) : null}
+          {data?.bio ? (
+            <Cover ref={hideSensitiveView}>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase',
+                  marginBottom: 5,
+                  marginTop: 40
+                }}
+              >
+                {t(`community.memberPassport.bio`)}
+              </Title>
+              <Text
+                style={{
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {data?.bio}
+              </Text>
+            </Cover>
+          ) : null}
 
-        {data?.birthPlace || data?.currentLocation ? (
-          <LocationContainer>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginBottom: 5,
-                marginTop: 30
-              }}
-            >
-              {t(`signup.passportScreen.locality`)}
-            </Title>
+          {data?.birthPlace || data?.currentLocation ? (
+            <LocationContainer>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase',
+                  marginBottom: 5,
+                  marginTop: 30
+                }}
+              >
+                {t(`signup.passportScreen.locality`)}
+              </Title>
 
-            {data?.birthPlace?.country ? (
-              <Location ref={hideSensitiveView}>
-                <AntDesign
-                  name="home"
-                  color="#CACEE5"
-                  size={20}
-                  style={{
-                    padding: RFValue(12),
-                    borderRadius: 4,
-                    margin: 0,
-                    marginRight: 10,
-                    backgroundColor: colors.ACTION
-                  }}
-                />
-                {data?.birthPlace?.city ? (
-                  <Paragraph
+              {data?.birthPlace?.country ? (
+                <Location ref={hideSensitiveView}>
+                  <AntDesign
+                    name="home"
+                    color="#CACEE5"
+                    size={20}
                     style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
+                      padding: RFValue(12),
+                      borderRadius: 4,
+                      margin: 0,
+                      marginRight: 10,
+                      backgroundColor: colors.ACTION
                     }}
-                  >
-                    {`${data?.birthPlace?.city}, ${data?.birthPlace?.state}`}
-                  </Paragraph>
-                ) : (
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${data?.birthPlace?.state}, ${data?.birthPlace?.country}`}
-                  </Paragraph>
-                )}
-              </Location>
-            ) : null}
-
-            {currentLocation.country ? (
-              <Location ref={hideSensitiveView}>
-                <SimpleLineIcons
-                  name="location-pin"
-                  color="#CACEE5"
-                  size={20}
-                  style={{
-                    padding: RFValue(12),
-                    borderRadius: 4,
-                    margin: 0,
-                    marginRight: 10,
-                    backgroundColor: colors.ACTION
-                  }}
-                />
-                {currentLocation?.city ? (
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${currentLocation?.city}, ${currentLocation?.state}`}
-                  </Paragraph>
-                ) : (
-                  <Paragraph
-                    style={{
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize',
-                      marginBottom: 10
-                    }}
-                  >
-                    {`${currentLocation?.state}, ${currentLocation?.country}`}
-                  </Paragraph>
-                )}
-              </Location>
-            ) : null}
-          </LocationContainer>
-        ) : null}
-
-        {data?.identity?.length ? (
-          <IdentityContainer>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase',
-                marginBottom: 10
-              }}
-            >
-              {t(`signup.passportScreen.identity`)}
-            </Title>
-
-            <Identities>
-              {data?.identity?.map((identity: any) => (
-                <IdentityText key={identity.id}>{identity.name}</IdentityText>
-              ))}
-            </Identities>
-          </IdentityContainer>
-        ) : null}
-
-        {data?.interest?.length ? (
-          <InterestContainer>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase'
-              }}
-            >
-              {t(`signup.passportScreen.interest`)}
-            </Title>
-            <Identities>
-              {data?.interest?.length > 8 ? (
-                <Fragment>
-                  {data?.interest.slice(0, 8).map((interest: any) => (
-                    <IdentityText key={interest.id}>
-                      {interest.name}
-                    </IdentityText>
-                  ))}
-                  <TouchableHighlight
-                    onPress={() => setDisplayInterest(true)}
-                    underlayColor={colors.TRANSPARENT}
-                    style={{
-                      position: 'relative',
-                      top: RFValue(20)
-                    }}
-                  >
-                    <Text
+                  />
+                  {data?.birthPlace?.city ? (
+                    <Paragraph
                       style={{
-                        display: displayInterest ? 'none' : 'flex',
-                        color: colors.PRIMARY,
-                        fontSize: fonts.LARGE_SIZE - 2,
-                        fontFamily: fonts.WORK_SANS_BOLD
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize',
+                        marginBottom: 10
                       }}
                     >
-                      View more
-                    </Text>
-                  </TouchableHighlight>
-                  {displayInterest ? (
-                    <Fragment>
-                      {data?.interest
-                        .slice(8, data?.interest.length - 1)
-                        .map((interest: any) => (
-                          <IdentityText key={interest.id}>
-                            {interest.name}
-                          </IdentityText>
-                        ))}
-                      <TouchableHighlight
-                        onPress={() => setDisplayInterest(false)}
-                        underlayColor={colors.TRANSPARENT}
+                      {`${data?.birthPlace?.city}, ${data?.birthPlace?.state}`}
+                    </Paragraph>
+                  ) : (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize',
+                        marginBottom: 10
+                      }}
+                    >
+                      {`${data?.birthPlace?.state}, ${data?.birthPlace?.country}`}
+                    </Paragraph>
+                  )}
+                </Location>
+              ) : null}
+
+              {currentLocation.country ? (
+                <Location ref={hideSensitiveView}>
+                  <SimpleLineIcons
+                    name="location-pin"
+                    color="#CACEE5"
+                    size={20}
+                    style={{
+                      padding: RFValue(12),
+                      borderRadius: 4,
+                      margin: 0,
+                      marginRight: 10,
+                      backgroundColor: colors.ACTION
+                    }}
+                  />
+                  {currentLocation?.city ? (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize',
+                        marginBottom: 10
+                      }}
+                    >
+                      {`${currentLocation?.city}, ${currentLocation?.state}`}
+                    </Paragraph>
+                  ) : (
+                    <Paragraph
+                      style={{
+                        fontFamily: fonts.WORK_SANS_REGULAR,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize',
+                        marginBottom: 10
+                      }}
+                    >
+                      {`${currentLocation?.state}, ${currentLocation?.country}`}
+                    </Paragraph>
+                  )}
+                </Location>
+              ) : null}
+            </LocationContainer>
+          ) : null}
+
+          {data?.identity?.length ? (
+            <IdentityContainer>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase',
+                  marginBottom: 10
+                }}
+              >
+                {t(`signup.passportScreen.identity`)}
+              </Title>
+
+              <Identities>
+                {data?.identity?.map((identity: any) => (
+                  <IdentityText key={identity.id}>{identity.name}</IdentityText>
+                ))}
+              </Identities>
+            </IdentityContainer>
+          ) : null}
+
+          {data?.interest?.length ? (
+            <InterestContainer>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.PRIMARY_TEXT,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {t(`signup.passportScreen.interest`)}
+              </Title>
+              <Identities>
+                {data?.interest?.length > 8 ? (
+                  <Fragment>
+                    {data?.interest.slice(0, 8).map((interest: any) => (
+                      <IdentityText key={interest.id}>
+                        {interest.name}
+                      </IdentityText>
+                    ))}
+                    <TouchableHighlight
+                      onPress={() => setDisplayInterest(true)}
+                      underlayColor={colors.TRANSPARENT}
+                      style={{
+                        position: 'relative',
+                        top: RFValue(20)
+                      }}
+                    >
+                      <Text
                         style={{
-                          marginTop: RFValue(10),
-                          position: 'relative',
-                          top: RFValue(10)
+                          display: displayInterest ? 'none' : 'flex',
+                          color: colors.PRIMARY,
+                          fontSize: fonts.LARGE_SIZE - 2,
+                          fontFamily: fonts.WORK_SANS_BOLD
                         }}
                       >
-                        <Text
+                        View more
+                      </Text>
+                    </TouchableHighlight>
+                    {displayInterest ? (
+                      <Fragment>
+                        {data?.interest
+                          .slice(8, data?.interest.length - 1)
+                          .map((interest: any) => (
+                            <IdentityText key={interest.id}>
+                              {interest.name}
+                            </IdentityText>
+                          ))}
+                        <TouchableHighlight
+                          onPress={() => setDisplayInterest(false)}
+                          underlayColor={colors.TRANSPARENT}
                           style={{
-                            color: colors.PRIMARY,
-                            fontSize: fonts.LARGE_SIZE - 2,
-                            fontFamily: fonts.WORK_SANS_BOLD
+                            marginTop: RFValue(10),
+                            position: 'relative',
+                            top: RFValue(10)
                           }}
                         >
-                          View less
-                        </Text>
-                      </TouchableHighlight>
-                    </Fragment>
-                  ) : null}
-                </Fragment>
-              ) : (
-                <Fragment>
-                  {data?.interest?.map((interest: any) => (
-                    <IdentityText key={interest.id}>
-                      {interest.name}
-                    </IdentityText>
-                  ))}
-                </Fragment>
-              )}
-            </Identities>
-          </InterestContainer>
-        ) : null}
+                          <Text
+                            style={{
+                              color: colors.PRIMARY,
+                              fontSize: fonts.LARGE_SIZE - 2,
+                              fontFamily: fonts.WORK_SANS_BOLD
+                            }}
+                          >
+                            View less
+                          </Text>
+                        </TouchableHighlight>
+                      </Fragment>
+                    ) : null}
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {data?.interest?.map((interest: any) => (
+                      <IdentityText key={interest.id}>
+                        {interest.name}
+                      </IdentityText>
+                    ))}
+                  </Fragment>
+                )}
+              </Identities>
+            </InterestContainer>
+          ) : null}
 
-        {community?.length ? (
-          <Fragment>
-            <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+          {community?.length ? (
+            <Fragment>
+              <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {t(`community.memberPassport.tribe`)}
+                </Title>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY,
+                    marginHorizontal: 2
+                  }}
+                >
+                  ({community?.length})
+                </Title>
+              </Cover>
+              <FlatList
+                data={community
+                  ?.slice(0, 10)
+                  ?.concat([{ lastIndex: true } as any])}
+                horizontal={true}
+                keyExtractor={(community) => community.id}
+                renderItem={_renderMyCommunityItem}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ alignItems: 'center' }}
+              />
+            </Fragment>
+          ) : null}
+
+          {channels?.length ? (
+            <Cover style={{ marginTop: 10 }}>
               <Title
                 style={{
                   fontFamily: fonts.WORK_SANS_BOLD,
@@ -735,91 +782,56 @@ export default function PassportDetail(props: MemberDetailProps) {
                   textTransform: 'uppercase'
                 }}
               >
-                {t(`community.memberPassport.tribe`)}
+                {t(`community.memberPassport.channels`)}
               </Title>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY,
-                  marginHorizontal: 2
-                }}
-              >
-                ({community?.length})
-              </Title>
+              <FlatList
+                data={channels}
+                horizontal={true}
+                renderItem={_renderMyChannelItem}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ alignItems: 'center' }}
+              />
             </Cover>
-            <FlatList
-              data={community
-                ?.slice(0, 10)
-                ?.concat([{ lastIndex: true } as any])}
-              horizontal={true}
-              keyExtractor={(community) => community.id}
-              renderItem={_renderMyCommunityItem}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ alignItems: 'center' }}
-            />
-          </Fragment>
-        ) : null}
+          ) : null}
 
-        {channels?.length ? (
-          <Cover style={{ marginTop: 10 }}>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                color: colors.PRIMARY_TEXT,
-                textTransform: 'uppercase'
-              }}
-            >
-              {t(`community.memberPassport.channels`)}
-            </Title>
-            <FlatList
-              data={channels}
-              horizontal={true}
-              renderItem={_renderMyChannelItem}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ alignItems: 'center' }}
-            />
-          </Cover>
-        ) : null}
-
-        {connections?.length ? (
-          <Cover ref={hideSensitiveView}>
-            <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
-                }}
-              >
-                {t(`community.memberPassport.connection`)}
-              </Title>
-              <Title
-                style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE),
-                  color: colors.PRIMARY,
-                  marginHorizontal: 2
-                }}
-              >
-                ({connections?.length})
-              </Title>
+          {connections?.length ? (
+            <Cover ref={hideSensitiveView}>
+              <Cover style={{ flexDirection: 'row', marginTop: 10 }}>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY_TEXT,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {t(`community.memberPassport.connection`)}
+                </Title>
+                <Title
+                  style={{
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    color: colors.PRIMARY,
+                    marginHorizontal: 2
+                  }}
+                >
+                  ({connections?.length})
+                </Title>
+              </Cover>
+              <FlatList
+                data={connections
+                  ?.slice(0, 10)
+                  ?.concat([{ lastIndex: true } as any])}
+                horizontal={true}
+                keyExtractor={(passport) => passport.id}
+                renderItem={_renderMyConnectionItem}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ alignItems: 'center' }}
+              />
             </Cover>
-            <FlatList
-              data={connections
-                ?.slice(0, 10)
-                ?.concat([{ lastIndex: true } as any])}
-              horizontal={true}
-              keyExtractor={(passport) => passport.id}
-              renderItem={_renderMyConnectionItem}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ alignItems: 'center' }}
-            />
-          </Cover>
-        ) : null}
-      </ContactContainer>
+          ) : null}
+        </ContactContainer>
+      )}
       <TransferModal
         closeTranferModal={showTransferModal(false)}
         isVisible={visible}

@@ -7,7 +7,11 @@ import { RFValue } from 'react-native-responsive-fontsize';
 
 import { Text, Container } from './styles';
 
-export default function LoadingIndicatorState() {
+export default function LoadingIndicatorState({
+  showLoading
+}: {
+  showLoading?: boolean;
+}) {
   const { t } = useTranslation();
   const { colors } = useThemeContext();
 
@@ -17,13 +21,17 @@ export default function LoadingIndicatorState() {
   return (
     <Container>
       <ActivityIndicator size={RFValue(25)} color={colors.PRIMARY} />
-      <Text>
-        {t(
-          `community.chat.${
-            activeTab === 'DirectMessageTab' ? 'loadingDMs' : 'loadingChannels'
-          }`
-        )}
-      </Text>
+      {!showLoading && (
+        <Text>
+          {t(
+            `community.chat.${
+              activeTab === 'DirectMessageTab'
+                ? 'loadingDMs'
+                : 'loadingChannels'
+            }`
+          )}
+        </Text>
+      )}
     </Container>
   );
 }

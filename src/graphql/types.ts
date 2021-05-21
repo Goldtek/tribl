@@ -119,7 +119,6 @@ type Connection = {
 
 export enum IFCMMessageTypes {
   TRIBE_INVITE_ACCEPTED = 'TRIBE_INVITE_ACCEPTED',
-  TRIBE_INVITE_REQUESTED = 'TRIBE_INVITE_REQUESTED',
   CHANNEL_INVITE_ACCEPTED = 'CHANNEL_INVITE_ACCEPTED',
   DIRECT_MESSAGE_RECEIVED = 'DIRECT_MESSAGE_RECEIVED',
   THREAD_MESSAGE_RECEIVED = 'THREAD_MESSAGE_RECEIVED',
@@ -138,13 +137,25 @@ export enum IFCMMessageTypes {
 export type NotificationMessageType = keyof typeof IFCMMessageTypes;
 
 export type NotificationMessage = {
-  channelType: string;
-  channelId: string;
-  sender_id: string;
-  sender_image: string;
-  sender_title: string;
   message: string;
   link_url: string;
+  senderId: string;
+  channelId: string;
+  sender_id: string;
+  receiverId: string;
+  senderName: string;
+  communityId: string;
+  channelType: string;
+  channelName: string;
+  sender_image: string;
+  sender_title: string;
+  receiverName: string;
+  senderAvatar: string;
+  communityName: string;
+  receiverAvatar: string;
+  communityAvatar: string;
+  channelIsPrivate: boolean;
+  communityIsPrivate: boolean;
   type: NotificationMessageType;
 };
 

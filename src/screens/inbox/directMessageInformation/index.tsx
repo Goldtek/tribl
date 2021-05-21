@@ -20,6 +20,7 @@ import { useStreamContext } from '../../../stream';
 import { chatClient } from '../../../stream/types';
 import { Mixpanel } from '../../../config';
 import ReportModal from '../../../components/reportModal';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -34,14 +35,15 @@ import {
 } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface GroupInformationProp extends NavigationInterface { }
+interface GroupInformationProp extends NavigationInterface {}
 
 const H_MAX_HEIGHT = 300;
-const H_MIN_HEIGHT = 70;
+const H_MIN_HEIGHT = 40;
 
 export default function DirectMessageInformation(props: GroupInformationProp) {
   const { navigation, route } = props;
   const { t } = useTranslation();
+  const inset = useSafeAreaInsets();
   const { channel } = useStreamContext();
   const { colors, fonts } = useThemeContext();
   const [loading, setLoading] = useState(false);
@@ -82,7 +84,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
       [
         {
           text: 'Cancel',
-          onPress: () => { },
+          onPress: () => {},
           style: 'cancel'
         },
         {
@@ -92,7 +94,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
               setLoading(true);
               await channel.removeMembers([`${chatClient.user?.id}`]);
               setLoading(false);
-              navigation.navigate('InboxScreen');
+              navigation.replace('CommunityScreen', { screen: 'InboxScreen' });
             } catch (error) {
               setLoading(false);
               crashlytics.recordError(new Error(error));
@@ -129,8 +131,8 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
   return (
     <Container>
       <ImageHeaderScrollView
-        maxHeight={H_MAX_HEIGHT}
-        minHeight={H_MIN_HEIGHT}
+        maxHeight={RFValue(H_MAX_HEIGHT)}
+        minHeight={RFValue(H_MIN_HEIGHT)}
         headerImage={{ uri: user?.user?.image }}
         maxOverlayOpacity={0.6}
         minOverlayOpacity={0.3}
@@ -146,7 +148,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
           />
         )}
         renderForeground={() => (
-          <HeaderContainer>
+          <HeaderContainer inset={inset}>
             <IconButton
               icon={(iconProps) => (
                 <Ionicons

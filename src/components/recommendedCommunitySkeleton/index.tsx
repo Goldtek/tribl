@@ -19,6 +19,7 @@ function RecommendedCommunitySkeleton({
     <Fragment>
       {[...Array(skeletonSize)].map((_, index) => (
         <Card
+          key={index.toString()}
           style={{
             width: '100%',
             height: RFValue(300),

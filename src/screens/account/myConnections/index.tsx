@@ -25,6 +25,7 @@ import {
   ShowSideMenu
 } from '../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../utils/uxcamHelper';
+import { useIsFocused } from '@react-navigation/core';
 import {
   GET_CONNECTION_NOTIFICATION_BADGE,
   GET_SIDE_MENU
@@ -41,6 +42,7 @@ interface MyConnectionScreenProp extends NavigationInterface {}
 export default function ProfileScreen(props: MyConnectionScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { top } = useSafeAreaInsets();
+  const isFocused = useIsFocused();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -114,6 +116,10 @@ export default function ProfileScreen(props: MyConnectionScreenProp) {
       }
     });
   };
+
+  useEffect(() => {
+    isFocused && handleRefresh();
+  }, [isFocused]);
 
   const searchUpdated = (text: string) => setSearch({ searchTerm: text });
 

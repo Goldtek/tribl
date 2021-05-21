@@ -26,15 +26,7 @@ export default function NewChannelRequestScreen(
 
   const { data: requestData, refetch } = useQuery(
     GET_CHANNEL_CREATION_REQUEST,
-    {
-      variables: {
-        input: {
-          filter: {
-            communityId
-          }
-        }
-      }
-    }
+    { variables: { input: { filter: { communityId } } } }
   );
 
   const channelRequest = requestData?.channelCreationRequests?.data;

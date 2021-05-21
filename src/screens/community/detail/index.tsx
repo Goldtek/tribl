@@ -3,7 +3,7 @@ import { NavigationInterface } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { DEVICE_FULL_WIDTH } from '../../../utils/device';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { Title } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useThemeContext } from '../../../theme';
@@ -13,6 +13,7 @@ import memberSlide from './widgets/membersSlide';
 import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 import { GET_SINGLE_COMMUNITY } from '../../../graphql/server/query';
+import LoadingIndicatorState from '../../../components/loadingIndicatorState';
 import {
   CommunityInterface,
   SingleCommunityRequestInterface
@@ -22,9 +23,18 @@ import {
 import { Container } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface {
+  route: {
+    params: {
+      id?: string;
+      tribeAccepted?: boolean;
+      details?: CommunityInterface;
+      communityHit?: CommunityInterface;
+    };
+  };
+}
 
-export default function SearchScreen(props: ScreenProp) {
+export default function CommunityDetailScreen(props: ScreenProp) {
   const details = props.route.params;
 
   const { t } = useTranslation();
@@ -33,17 +43,22 @@ export default function SearchScreen(props: ScreenProp) {
   const [isPrivate, setIsPrivate] = useState(false);
   const [tabIndex, setTabIndex] = React.useState(0);
 
-  const id = details?.details?.id || details?.communityHit?.id;
+  const id = details?.id || details?.details?.id || details?.communityHit?.id;
 
-  const { data, refetch } = useQuery<SingleCommunityRequestInterface>(
-    GET_SINGLE_COMMUNITY,
-    { variables: { input: { filter: { id } } } }
-  );
+  const [getCommunity, { data, refetch }] = useLazyQuery<
+    SingleCommunityRequestInterface
+  >(GET_SINGLE_COMMUNITY);
 
-  const communityDetails: CommunityInterface = {
+  useEffect(() => {
+    if (id) {
+      getCommunity({ variables: { input: { filter: { id } } } });
+    }
+  }, [id]);
+
+  const communityDetails = ({
     ...details?.details,
     ...details?.communityHit
-  };
+  } as unknown) as CommunityInterface;
 
   const [routes, setRoutes] = React.useState([
     {
@@ -70,6 +85,7 @@ export default function SearchScreen(props: ScreenProp) {
 
       const newHighlightScreenData = {
         ...highlightScreenData,
+        communityRefetch: refetch,
         communityDetails: {
           ...highlightScreenData.communityDetails,
           ...data?.Community.data[0]
@@ -151,14 +167,18 @@ export default function SearchScreen(props: ScreenProp) {
   return (
     <Container>
       <StatusBar translucent animated style="dark" />
-      <TabView
-        navigationState={{ index: tabIndex, routes }}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={handleIndexChange}
-        initialLayout={{ width: DEVICE_FULL_WIDTH }}
-        swipeEnabled={!isPrivate || isMember ? true : false}
-      />
+      {details?.tribeAccepted && !data ? (
+        <LoadingIndicatorState showLoading={details?.tribeAccepted} />
+      ) : (
+        <TabView
+          navigationState={{ index: tabIndex, routes }}
+          renderScene={renderScene}
+          renderTabBar={renderTabBar}
+          onIndexChange={handleIndexChange}
+          initialLayout={{ width: DEVICE_FULL_WIDTH }}
+          swipeEnabled={!isPrivate || isMember ? true : false}
+        />
+      )}
     </Container>
   );
 }

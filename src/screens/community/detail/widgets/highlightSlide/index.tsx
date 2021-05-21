@@ -155,35 +155,26 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   const communityNearbyMembers = communityMembersData?.nearbyMembers?.data;
   const nearbyMembersData = NearbyMembers?.nearbyMembers?.data;
 
-  const filterNearbyMebers = removeDuplicateMembers(nearbyMembersData?.slice());
+  const filterNearbyMembers = removeDuplicateMembers(
+    nearbyMembersData?.slice()
+  );
 
-  const filterUnblockedNearbyMebers = filterNearbyMebers?.filter(function (
-    users
-  ) {
-    return !blockedUsers?.some(function (userTwo: any) {
-      return users.id == userTwo.id;
-    });
-  });
+  const filterUnblockedNearbyMembers = filterNearbyMembers?.filter(
+    (users) => !blockedUsers?.some((userTwo: any) => users.id == userTwo.id)
+  );
 
   const filterCommunityNearbyMembers = removeDuplicateMembers(
     communityNearbyMembers?.slice()
   );
 
   const filterUnblockedCommunityNearbyMembers = filterCommunityNearbyMembers?.filter(
-    function (users) {
-      return !blockedUsers?.some(function (userTwo: any) {
-        return users.id == userTwo.id;
-      });
-    }
+    (users) => !blockedUsers?.some((userTwo: any) => users.id == userTwo.id)
   );
 
-  const filterParticiant = removeDuplicateMembers(participants?.slice());
-
-  const filterUnblockedParticiant = filterParticiant?.filter(function (users) {
-    return !blockedUsers?.some(function (userTwo: any) {
-      return users.id == userTwo.id;
-    });
-  });
+  const filterParticipant = removeDuplicateMembers(participants?.slice());
+  const filterUnblockedParticipant = filterParticipant?.filter(
+    (users) => !blockedUsers?.some((userTwo: any) => users.id == userTwo.id)
+  );
 
   const filteredParticipants = participants?.filter(
     (member) => member.id !== userId
@@ -192,6 +183,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   const nearbyMembers = filterUnblockedCommunityNearbyMembers?.length
     ? filterUnblockedCommunityNearbyMembers
     : [];
+
   const handleJoinCommunity = () => {
     setState({
       ...state,
@@ -239,10 +231,10 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
         info: `User Joins ${name} Tribe`,
         'Activity Screen': 'Recommended Community Card'
       });
-
       setLoading(true);
       await joinCommunity();
-      communityRefetch().then(() => setLoading(false));
+      await communityRefetch();
+      setLoading(false);
       if (uniqueInterests.length) {
         setState({ ...state, tagModal: true });
       }
@@ -260,10 +252,10 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
         info: `User Request To Join ${name} Tribe`,
         'Activity Screen': 'HignlightScreen'
       });
-
       setLoading(true);
       await joinPrivateCommunity();
-      communityRefetch().then(() => setLoading(false));
+      await communityRefetch();
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       crashlytics.recordError(error);
@@ -275,7 +267,8 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     try {
       setLoading(true);
       await leaveCommunity();
-      communityRefetch().then(() => setLoading(false));
+      await communityRefetch();
+      setLoading(false);
       clearTagModal();
       setState({ ...state, tagModal: false });
     } catch (error) {

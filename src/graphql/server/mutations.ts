@@ -81,7 +81,7 @@ export const JOIN_PRIVATE_COMMUNITY = gql`
 
 //LEAVE COMMUNITY
 export const LEAVE_COMMUNITY = gql`
-  mutation leaveCommunity($payload: JoinCommunityInput!) {
+  mutation leaveCommunity($payload: LeaveCommunityInput!) {
     leaveCommunity(input: $payload) {
       success
     }

@@ -19,7 +19,6 @@ import { tagScreenName } from '../../../utils/uxcamHelper';
 import { useStreamContext } from '../../../stream';
 import { crashlytics } from '../../../firebase/config';
 import { Mixpanel } from '../../../config';
-import { chatClient } from '../../../stream/types';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
@@ -63,45 +62,62 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
   ).toDateString();
 
   const toggleMute = async () => {
-    try {
-      if (muted) {
-        await channel.unmute();
-        setMuted(false);
-      } else {
-        await channel.mute();
-        setMuted(true);
-      }
-    } catch {
-      setMuted(getMuteStatus);
-    }
-  };
-
-  const handleLeaveChannel = async () => {
-    Alert.alert('Leave group', `Are you sure you want to leave this group`, [
+    Alert.alert('Mute channel', `Are you sure you want to mute this channel`, [
       {
         text: 'Cancel',
         onPress: () => {},
         style: 'cancel'
       },
       {
-        text: 'Leave',
+        text: 'Mute',
         onPress: async () => {
           try {
-            setLoading(true);
-            await channel.removeMembers([`${chatClient.user?.id}`]);
-            setLoading(false);
-            navigation.navigate('InboxScreen');
-            leaveChannel({
-              variables: { payload: { channelId: channel.id } }
-            });
+            if (muted) {
+              await channel.unmute();
+              setMuted(false);
+            } else {
+              await channel.mute();
+              setMuted(true);
+            }
           } catch (error) {
-            setLoading(false);
+            setMuted(getMuteStatus);
             crashlytics.recordError(new Error(error));
             crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
           }
         }
       }
     ]);
+  };
+
+  const handleLeaveChannel = async () => {
+    Alert.alert(
+      'Leave channel',
+      `Are you sure you want to leave this channel`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel'
+        },
+        {
+          text: 'Leave',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await leaveChannel({
+                variables: { payload: { channelId: channel.id } }
+              });
+              setLoading(false);
+              navigation.replace('CommunityScreen', { screen: 'InboxScreen' });
+            } catch (error) {
+              setLoading(false);
+              crashlytics.recordError(new Error(error));
+              crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleReportChannel = async () => {
@@ -142,7 +158,7 @@ export default function ChannelInformation(props: MyChannelInformationProp) {
 
       <ScrollView
         bounces={false}
-        contentContainerStyle={{ paddingVertical: 70 }}
+        contentContainerStyle={{ paddingVertical: RFValue(40) }}
         showsVerticalScrollIndicator={false}
       >
         <FastImage

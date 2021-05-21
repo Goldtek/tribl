@@ -26,7 +26,6 @@ import CustomDirectMessage from '../../../components/customDirectMessage';
 import CustomKeyboardCompatibleView from '../../../components/customKeyboardCompatibleView';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { chatClient, ThreadType } from '../../../stream/types';
-import { IFCMMessageTypes } from '../../../graphql/types';
 
 import {
   Container,
@@ -54,6 +53,7 @@ export default function DirectChatScreen(props: ScreenProp) {
     tagScreenName('DirectChatScreen');
     setActivityScreen('directMessage');
   }, []);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Container>
@@ -76,10 +76,10 @@ export default function DirectChatScreen(props: ScreenProp) {
           <Fragment>
             <Surface
               style={{
-                width: 40,
-                height: 40,
+                width: RFValue(35),
+                height: RFValue(35),
                 elevation: 4,
-                borderRadius: 40 / 2,
+                borderRadius: RFValue(35 / 2),
                 marginRight: channel.data?.isGroup ? 10 : 0,
                 justifyContent: 'center'
               }}
@@ -97,15 +97,15 @@ export default function DirectChatScreen(props: ScreenProp) {
                     })
                   }
                   style={{
-                    height: RFValue(40),
-                    width: RFValue(40),
-                    borderRadius: 40 / 2
+                    height: RFValue(35),
+                    width: RFValue(35),
+                    borderRadius: RFValue(35 / 2)
                   }}
                 >
                   <Avatar
                     image={receiver?.image}
                     name={receiver?.name}
-                    size={RFValue(40)}
+                    size={RFValue(35)}
                   />
                 </TouchableRipple>
               </Chat>
@@ -124,8 +124,14 @@ export default function DirectChatScreen(props: ScreenProp) {
             </HeaderTitleContainer>
 
             <IconButton
+              style={{ borderWidth: 1, borderColor: colors.PRIMARY_TEXT }}
+              size={RFValue(15)}
+              color={colors.PRIMARY_TEXT}
               icon={(iconProps) => (
-                <MaterialCommunityIcons {...iconProps} name="dots-vertical" />
+                <MaterialCommunityIcons
+                  {...iconProps}
+                  name="information-variant"
+                />
               )}
               onPress={() =>
                 navigation.navigate('DirectMessageInformation', {
@@ -149,7 +155,7 @@ export default function DirectChatScreen(props: ScreenProp) {
               channel.sendMessage({
                 ...message,
                 link_url: 'deep_link_direct_chats_screen',
-                message_type: IFCMMessageTypes.DIRECT_MESSAGE_RECEIVED
+                message_type: 'DIRECT_MESSAGE_RECEIVED'
               })
             }
           >
