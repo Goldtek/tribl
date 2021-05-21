@@ -12,6 +12,7 @@ import { useThemeContext } from '../../../theme';
 import tribeSlide from './widgets/tribes';
 import allSlide from './widgets/all';
 import connectionSlide from './widgets/connections';
+import walletSlide from './widgets/wallet';
 import { StatusBar } from 'expo-status-bar';
 import { GLOBAL_HEADER_STYLE } from '../../../constants';
 import { GET_SIDE_MENU } from '../../../graphql/cache/query';
@@ -60,10 +61,16 @@ export default function NotificationScreen(props: ScreenProp) {
     {
       key: 'connectionSlide',
       title: `${t(`community.notification.connections`)}`
-    }
+    },
+    { key: 'walletSlide', title: `${t(`community.notification.wallet`)}` }
   ]);
 
-  const renderScene = SceneMap({ allSlide, tribeSlide, connectionSlide });
+  const renderScene = SceneMap({
+    allSlide,
+    tribeSlide,
+    connectionSlide,
+    walletSlide
+  });
 
   const renderLabel = ({
     route,
@@ -77,7 +84,7 @@ export default function NotificationScreen(props: ScreenProp) {
         fontFamily: focused
           ? fonts.WORK_SANS_SEMI_BOLD
           : fonts.WORK_SANS_REGULAR,
-        fontSize: RFValue(fonts.LARGE_SIZE - 1),
+        fontSize: fonts.MEDIUM_SIZE,
         color: focused ? colors.PRIMARY : colors.PRIMARY_TEXT,
         textTransform: 'capitalize',
         marginTop: 0,
