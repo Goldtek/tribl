@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,16 @@ import {
   ScrollView,
   Modal,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import SwipeableViews from 'react-swipeable-views-native';
 import PropTypes from 'prop-types';
 import ImageCustom from '../ImageCustom';
 import { USER_DEFAULT_AVATAR } from '../../../../constants';
+import { chatClient } from '../../../../stream/types';
 
 const ANIM_CONFIG = { duration: 200 };
 const { width, height } = Dimensions.get('window');
@@ -22,7 +26,11 @@ const { width, height } = Dimensions.get('window');
 export default class SingleImage extends PureComponent {
   static propTypes = {
     uri: PropTypes.string,
-    style: PropTypes.object
+    style: PropTypes.object,
+    update: PropTypes.func,
+    getAvatarDetails: PropTypes.func,
+    loading: PropTypes.bool,
+    userId: PropTypes.string
   };
 
   static defaultProps = { uri: USER_DEFAULT_AVATAR };
@@ -46,7 +54,15 @@ export default class SingleImage extends PureComponent {
       animating: false,
       panning: false,
       selectedImageHidden: false,
-      slidesDown: false
+      slidesDown: false,
+      avatar: {
+        uri: '',
+        secure_url: '',
+        loading: false,
+        formData: null,
+        imageData: { uri: '', mime: undefined, cropRect: null }
+      },
+      loggedUserId: chatClient.user?.id
     };
     this.openAnim = new Animated.Value(0);
     this.pan = new Animated.Value(0);
@@ -72,6 +88,12 @@ export default class SingleImage extends PureComponent {
     });
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState?.avatar?.uri !== this.state?.avatar?.uri) {
+      this.props.getAvatarDetails(this.state.avatar, this.close);
+    }
+  }
+
   animateOpenAnimToValue = (toValue, onComplete) =>
     Animated.timing(this.openAnim, {
       ...ANIM_CONFIG,
@@ -82,6 +104,7 @@ export default class SingleImage extends PureComponent {
         onComplete();
       }
     });
+
   open = (index) => () => {
     const activeComponent = this.carouselItems[index].carouselItems[index];
     activeComponent.measure((rx, ry, width, height, x, y) => {
@@ -119,6 +142,7 @@ export default class SingleImage extends PureComponent {
       });
     });
   };
+
   handlePanEnd = (evt, gestureState) => {
     if (Math.abs(gestureState.dy) > 50) {
       this.setState({
@@ -153,9 +177,11 @@ export default class SingleImage extends PureComponent {
           })
     };
   };
+
   captureCarouselItem = (ref, idx) => {
     this.carouselItems[idx] = ref;
   };
+
   handleModalShow = () => {
     const { animating, selectedImageHidden } = this.state;
 
@@ -163,6 +189,7 @@ export default class SingleImage extends PureComponent {
       this.setState({ selectedImageHidden: true });
     }
   };
+
   getSwipeableStyle = () => {
     const { fullscreen, origin, slidesDown, target } = this.state;
 
@@ -202,21 +229,82 @@ export default class SingleImage extends PureComponent {
         };
   };
 
+  handleAvatar = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+        base64: true
+      });
+
+      if (result.cancelled) return;
+      const { type, width, height, base64 } = result;
+      const uri = `data:${type}/jpg;base64,${base64}`;
+      const imageData = {
+        uri,
+        mime: type,
+        cropRect: { width, height }
+      };
+      this.setState({ avatar: { uri, imageData } });
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+    }
+  };
+
   renderDefaultHeader = () => (
-    <TouchableWithoutFeedback onPress={this.close}>
-      <View>
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 80,
+        marginHorizontal: 20
+      }}
+    >
+      <TouchableWithoutFeedback onPress={this.close}>
         <Text
           style={{
+            fontSize: 18,
             color: 'white',
-            textAlign: 'right',
-            padding: 10,
-            margin: 30
+            fontWeight: 'bold'
           }}
         >
           Close
         </Text>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+
+      {this.state?.loggedUserId === this.props?.userId ? (
+        <TouchableOpacity
+          onPress={
+            this.state?.avatar?.uri ? this.props?.update : this.handleAvatar
+          }
+        >
+          <Text
+            style={{
+              fontSize: 18,
+              color: 'white',
+              fontWeight: 'bold'
+            }}
+          >
+            <Fragment>
+              {this.props?.loading == true ? (
+                <ActivityIndicator
+                  size="small"
+                  color="blue"
+                  style={{
+                    marginLeft: 'auto',
+                    marginRight: 5
+                  }}
+                />
+              ) : null}
+              {this.state?.avatar?.uri ? 'Done' : 'Edit'}
+            </Fragment>
+          </Text>
+        </TouchableOpacity>
+      ) : null}
+    </View>
   );
 
   renderFullscreenContent = (url) => () => {
@@ -246,10 +334,12 @@ export default class SingleImage extends PureComponent {
       </Animated.View>
     );
   };
+
   renderFullscreen = () => {
-    const { animating, panning, fullscreen } = this.state;
+    const { animating, panning, fullscreen, avatar } = this.state;
     const opacity = this.getFullscreenOpacity();
     const { uri } = this.props;
+    const image = avatar?.uri?.length ? avatar?.uri : uri;
     return (
       <Modal
         transparent
@@ -275,7 +365,7 @@ export default class SingleImage extends PureComponent {
             });
           }}
         >
-          {this.renderFullscreenContent(uri)()}
+          {this.renderFullscreenContent(image)()}
         </SwipeableViews>
         <Animated.View
           style={[
@@ -295,17 +385,18 @@ export default class SingleImage extends PureComponent {
   };
 
   render() {
-    const { fullscreen, selectedImageHidden, index } = this.state;
+    const { fullscreen, selectedImageHidden, index, avatar } = this.state;
     const { uri, style } = this.props;
     const getOpacity = () => ({
       opacity: selectedImageHidden ? 0 : 1
     });
+
     return (
       <View>
         <TouchableWithoutFeedback onPress={this.open(1)}>
           <View style={index + 1 === 1 ? getOpacity() : null}>
             <ImageCustom
-              url={uri}
+              url={avatar?.uri?.length ? avatar?.uri : uri}
               style={[
                 {
                   resizeMode: 'cover',
