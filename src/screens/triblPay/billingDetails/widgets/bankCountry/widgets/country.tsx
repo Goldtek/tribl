@@ -31,7 +31,11 @@ const CountryCard = (props: CountryCardProps) => {
   const closeModal = () => props.modalizeRef.current?.close();
 
   const handleSelect = () => {
-    setBillingDetails({ ...billingDetails, addressCountryCode: iso2 });
+    setBillingDetails({
+      ...billingDetails,
+      addressCountry: name,
+      addressCountryCode: iso2
+    });
     iso2 === 'US' ? setIsLocal(true) : setIsLocal(false);
     closeModal();
   };

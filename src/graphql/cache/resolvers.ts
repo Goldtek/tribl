@@ -4,7 +4,8 @@ import {
   GET_COMMUNITY_SEARCH_INDEX,
   GET_ACTIVE_SIDE_MENU_STATE,
   GET_MESSAGE_NOTIFICATION_BADGE,
-  GET_CONNECTION_NOTIFICATION_BADGE
+  GET_CONNECTION_NOTIFICATION_BADGE,
+  GET_TRIBE_REQUEST_NOTIFICATION_BADGE
 } from './query';
 import { StoreInterface, AppResolvers } from '../types';
 
@@ -119,6 +120,27 @@ const cacheResolvers: AppResolvers = {
       } as StoreInterface;
 
       cache.writeQuery({ query: GET_CONNECTION_NOTIFICATION_BADGE, data });
+      return null;
+    },
+
+    // SHOW TRIBE REQUEST NOTIFICATION BADGE
+    changeTribeRequestNotificationBadge: (
+      _,
+      {
+        showTribeRequestNotificationBadge
+      }: { showTribeRequestNotificationBadge: Boolean },
+      { cache }
+    ) => {
+      const queryResult = cache.readQuery<StoreInterface>({
+        query: GET_TRIBE_REQUEST_NOTIFICATION_BADGE
+      });
+
+      const data = {
+        ...queryResult,
+        showTribeRequestNotificationBadge
+      } as StoreInterface;
+
+      cache.writeQuery({ query: GET_TRIBE_REQUEST_NOTIFICATION_BADGE, data });
       return null;
     }
   }

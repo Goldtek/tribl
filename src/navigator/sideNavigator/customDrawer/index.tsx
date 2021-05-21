@@ -16,12 +16,14 @@ import { useThemeContext } from '../../../theme';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
   ActiveSideMenuRequestInterface,
-  ShowConnectionNotificationBadge
+  ShowConnectionNotificationBadge,
+  ShowTribeRequestNotificationBadge
 } from '../../../graphql/types';
 import {
   GET_ACTIVE_SIDE_MENU_STATE,
   GET_CONNECTION_NOTIFICATION_BADGE,
-  GET_SIDE_MENU
+  GET_SIDE_MENU,
+  GET_TRIBE_REQUEST_NOTIFICATION_BADGE
 } from '../../../graphql/cache/query';
 import { GET_USER_PASSPORT } from '../../../graphql/server/query';
 import { MyPassportInterface, ShowSideMenu } from '../../../graphql/types';
@@ -47,8 +49,12 @@ export default function CustomDrawerComponent() {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data } = useQuery<ShowConnectionNotificationBadge>(
+  const { data: showConnection } = useQuery<ShowConnectionNotificationBadge>(
     GET_CONNECTION_NOTIFICATION_BADGE
+  );
+
+  const { data: tribeRequest } = useQuery<ShowTribeRequestNotificationBadge>(
+    GET_TRIBE_REQUEST_NOTIFICATION_BADGE
   );
 
   const { data: sideMenuData } = useQuery<ActiveSideMenuRequestInterface>(
@@ -112,7 +118,16 @@ export default function CustomDrawerComponent() {
         toggleMenu();
       },
       drawerIcon: (
-        <AntDesign name="addusergroup" size={28} color={colors.PRIMARY_TEXT} />
+        <Fragment>
+          <AntDesign
+            name="addusergroup"
+            size={28}
+            color={colors.PRIMARY_TEXT}
+          />
+          {tribeRequest?.showTribeRequestNotificationBadge && (
+            <ConnectionBadgeWrapper style={{ top: 25, right: -10 }} />
+          )}
+        </Fragment>
       )
     },
     {
@@ -130,7 +145,9 @@ export default function CustomDrawerComponent() {
             size={24}
             color={colors.PRIMARY_TEXT}
           />
-          {data?.showConnectionNotificationBadge && <ConnectionBadgeWrapper />}
+          {showConnection?.showConnectionNotificationBadge && (
+            <ConnectionBadgeWrapper />
+          )}
         </Fragment>
       )
     },
@@ -171,7 +188,9 @@ export default function CustomDrawerComponent() {
       drawerIcon: (
         <Fragment>
           <SimpleLineIcons name="bell" size={24} color={colors.PRIMARY_TEXT} />
-          {data?.showConnectionNotificationBadge && <ConnectionBadgeWrapper />}
+          {showConnection?.showConnectionNotificationBadge && (
+            <ConnectionBadgeWrapper />
+          )}
         </Fragment>
       )
     },

@@ -42,6 +42,8 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     addressLine: '',
     addressCity: '',
     addressState: '',
+    addressCountry: details.name,
+    addressStateCode: '',
     addressPostalCode: '',
     addressCountryCode: details.iso2
   });
@@ -52,11 +54,21 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     addressLine,
     addressCity,
     addressState,
+    addressCountry,
+    addressStateCode,
     addressPostalCode,
     addressCountryCode
   } = billingDetails;
 
   useEffect(() => {
+    if (isLocal === false && addressCountryCode === 'US') {
+      setBillingDetails({
+        ...billingDetails,
+        addressState: 'Select'
+      });
+      setIsLocal(true);
+    }
+
     tagScreenName('BillingDetailsScreen');
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
@@ -68,6 +80,8 @@ export default function BillingDetailsScreen(props: ScreenProp) {
           addressLine,
           addressCity,
           addressState,
+          addressCountry,
+          addressStateCode,
           addressPostalCode,
           addressCountryCode
         },
@@ -248,12 +262,12 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                       textTransform: 'uppercase'
                     }}
                   >
-                    Country code
+                    Country
                   </Title>
                 </LabelContainer>
 
                 <TextInput
-                  value={addressCountryCode}
+                  value={addressCountry}
                   disabled={true}
                   style={{
                     height: 30,
@@ -287,7 +301,11 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                   value={handleStateValue()}
                   disabled={isLocal}
                   onChangeText={(addressState: string) =>
-                    setBillingDetails({ ...billingDetails, addressState })
+                    setBillingDetails({
+                      ...billingDetails,
+                      addressState,
+                      addressStateCode: addressState
+                    })
                   }
                   style={{
                     height: 30,

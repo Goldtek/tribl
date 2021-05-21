@@ -44,20 +44,10 @@ export default function NewChannelRequest(props: TribeRequestProp) {
     DECLINED
   }
 
-  const [acceptRequest, { loading }] = useMutation(APPROVE_REJECT_NEW_CHANNEL, {
-    variables: {
-      payload: { id: id, action: StatusOptions[0] }
-    }
-  });
+  const [acceptRequest, { loading }] = useMutation(APPROVE_REJECT_NEW_CHANNEL);
 
   const [declineRequest, { loading: declineLoading }] = useMutation(
-    APPROVE_REJECT_NEW_CHANNEL,
-    {
-      variables: {
-        payload: { id: id, action: StatusOptions[1] }
-      }
-    }
-  );
+    APPROVE_REJECT_NEW_CHANNEL);
 
   const handleAcceptInvitation = async () => {
     logEvent('accept tribe request', { from: 'passport' });
@@ -66,7 +56,11 @@ export default function NewChannelRequest(props: TribeRequestProp) {
         info: `Moderator approves New Channel creation`,
         'Activity Screen': 'Community Details Screen'
       });
-      await acceptRequest();
+      await acceptRequest({
+        variables: {
+          payload: { id: id, action: StatusOptions[0] }
+        }
+      });
       refetch();
     } catch (error) {
       crashlytics.recordError(error);
@@ -80,19 +74,25 @@ export default function NewChannelRequest(props: TribeRequestProp) {
         info: `Moderator declines New Channel creation`,
         'Activity Screen': 'Community Details Screen'
       });
-      await declineRequest();
+      await declineRequest({
+        variables: {
+          payload: { id: id, action: StatusOptions[1] }
+        }
+      });
       refetch();
     } catch (error) {
       crashlytics.recordError(error);
     }
   };
 
-  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT, {
-    variables: { id: userId }
-  });
+  const [getUserPassport] = useLazyQuery(GET_SINGLE_PASSPORT);
 
   useEffect(() => {
-    getUserPassport();
+    if (userId) {
+      getUserPassport({
+        variables: { id: userId }
+      });
+    }
   }, []);
 
   return (

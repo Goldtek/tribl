@@ -131,17 +131,10 @@ export default function DrawerStackNavigator() {
   const [id, setID] = useState('');
 
   const [getUserPassport, { refetch }] = useLazyQuery<UserPassportInterface>(
-    GET_SINGLE_PASSPORT,
-    {
-      variables: { id }
-    }
+    GET_SINGLE_PASSPORT
   );
 
-  const [declineConnection] = useMutation(REJECT_CONNECTION, {
-    variables: {
-      payload: { id: id }
-    }
-  });
+  const [declineConnection] = useMutation(REJECT_CONNECTION);
 
   const handleRemoveConnection = async (id: string) => {
     setID(id);
@@ -150,9 +143,15 @@ export default function DrawerStackNavigator() {
     });
     setConnectionLoading(true);
     try {
-      await declineConnection();
+      await declineConnection({
+        variables: {
+          payload: { id: id }
+        }
+      });
       setMenu(false);
-      getUserPassport();
+      getUserPassport({
+        variables: { id }
+      });
       refetch();
     } catch (error) {
       setConnectionLoading(false);
@@ -174,21 +173,21 @@ export default function DrawerStackNavigator() {
 
   const [unBlockUser, { loading: unblockLoading }] = useMutation(
     BLOCK_REPORT_USER,
-    {
-      variables: {
-        payload: {
-          passportId: id,
-          status: status[0],
-          notes: note
-        }
-      }
-    }
+
   );
 
   const handleUnBlock = async (id: string) => {
     setID(id);
     try {
-      await unBlockUser();
+      await unBlockUser({
+        variables: {
+          payload: {
+            passportId: id,
+            status: status[0],
+            notes: note
+          }
+        }
+      });
       setBlock(false);
       refetch();
     } catch (error) {
@@ -290,7 +289,7 @@ export default function DrawerStackNavigator() {
           },
           headerRight: () => (
             <TouchableRipple
-              onPress={() => {}}
+              onPress={() => { }}
               style={{
                 height: RFValue(40),
                 width: RFValue(40),
@@ -572,7 +571,7 @@ export default function DrawerStackNavigator() {
                     }}
                   />
                   {route?.params?.details?.connectionDetails?.status ===
-                  'ACCEPTED' ? (
+                    'ACCEPTED' ? (
                     <Fragment>
                       <Divider />
                       <Menu.Item
@@ -767,7 +766,7 @@ export default function DrawerStackNavigator() {
                 {
                   //@ts-ignore
                   route?.params?.details?.isModerator &&
-                  route?.params?.details?.isPrivate ? (
+                    route?.params?.details?.isPrivate ? (
                     <Fragment>
                       <Divider />
                       <Menu.Item
