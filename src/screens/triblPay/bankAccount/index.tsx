@@ -1,7 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
@@ -54,6 +52,7 @@ export default function BankAccountScreen(props: ScreenProp) {
     district: '',
     postalCode: '',
     country: '',
+    countryName: '',
     billingId: ''
   });
   const [isSwitchOn, setIsSwitchOn] = useState(false);
@@ -71,7 +70,8 @@ export default function BankAccountScreen(props: ScreenProp) {
     city,
     district,
     postalCode,
-    country
+    country,
+    countryName
   } = accountDetails;
   useEffect(() => {
     if (isLocal === false && country === 'United States of America') {
@@ -419,7 +419,7 @@ export default function BankAccountScreen(props: ScreenProp) {
                 </LabelContainer>
 
                 <TextInput
-                  value={country}
+                  value={countryName}
                   disabled={true}
                   style={{
                     height: 30,
