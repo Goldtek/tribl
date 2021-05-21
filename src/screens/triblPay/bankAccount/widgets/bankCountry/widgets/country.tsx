@@ -33,7 +33,8 @@ const CountryCard = (props: CountryCardProps) => {
   const handleSelect = () => {
     setAccountDetails({
       ...accountDetails,
-      country: name
+      country: iso2,
+      countryName: name
     });
     iso2 === 'US' ? setIsLocal(true) : setIsLocal(false);
     closeModal();
