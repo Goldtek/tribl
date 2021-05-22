@@ -1933,6 +1933,7 @@ export const GET_CARD_PCI_OUTPUT = gql`
     getCardPciKey {
         success
         key
+        keyId
     }
   }
 `;
