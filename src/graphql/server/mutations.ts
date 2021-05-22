@@ -346,7 +346,7 @@ export const REMOVE_USER_FROM_TRIBE = gql`
 `;
 
 export const SAVE_CARD_DETAILS = gql`
-  mutation saveCardDetails($payload: CardDetailsInput!) {
+  mutation saveCardDetails($payload: SaveCardDetailsInput!) {
     saveCardDetails(input: $payload) {
       success
       errorCode
