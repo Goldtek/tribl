@@ -58,7 +58,6 @@
     "expo-splash-screen": "^0.3.1",
     "expo-status-bar": "^1.0.0",
     "expo-updates": "^0.2.14",
-    "formik": "^2.2.7",
     "graphql": "^15.2.0",
     "graphql-tag": "^2.10.3",
     "i18next": "^19.5.4",
@@ -123,8 +122,7 @@
     "stream-chat": "^2.11.1",
     "stream-chat-expo": "^2.1.1",
     "styled-components": "^5.1.1",
-    "subscriptions-transport-ws": "^0.9.18",
-    "yup": "^0.32.9"
+    "subscriptions-transport-ws": "^0.9.18"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
