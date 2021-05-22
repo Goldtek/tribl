@@ -7,7 +7,8 @@ import {
   Text,
   TextInput,
   Divider,
-  ProgressBar
+  ProgressBar,
+  TouchableRipple
 } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -27,6 +28,8 @@ import {
 } from './styles';
 import { View, Switch } from 'react-native';
 import hexToRGB from '../../../utils/hexToRGB';
+import { Octicons, SimpleLineIcons } from '@expo/vector-icons';
+import CheckBox from '@react-native-community/checkbox';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -52,10 +55,11 @@ export default function BankAccountScreen(props: ScreenProp) {
     district: '',
     postalCode: '',
     country: '',
-    countryName: '',
+    countryName: 'Select',
     billingId: ''
   });
   const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const [billingDetailsType, setBillingDetailsType] = useState('old');
   const toggleSwitch = () => setIsSwitchOn((previousState) => !previousState);
 
   const [isLocal, setIsLocal] = useState(false);
@@ -91,9 +95,10 @@ export default function BankAccountScreen(props: ScreenProp) {
       setAccountDetails({ ...accountDetails, district: 'Select' });
     return district;
   };
+  const handleSelection = (type: string) => setBillingDetailsType(type);
 
   return (
-    <Fragment>
+    <View style={{ backgroundColor: colors.WHITE, flex: 1 }}>
       <KeyboardAwareScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
@@ -153,137 +158,194 @@ export default function BankAccountScreen(props: ScreenProp) {
               Please fill in bank information.
             </Text>
           </HeaderCover>
-          <HeaderCover>
-            <View
+
+          <View style={{ paddingHorizontal: 20 }}>
+            <TouchableRipple
+              onPress={() => handleSelection('old')}
               style={{
                 flexDirection: 'row',
+                borderColor: colors.PRIMARY,
+                borderWidth: 1,
+                borderRadius: 10,
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                padding: RFValue(10),
+                marginVertical: RFValue(10)
               }}
             >
-              <Title
+              <Fragment>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Octicons name="note" size={25} color={colors.PRIMARY} />
+                  <Text
+                    style={{
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+                      color: colors.SECONDARY_TEXT,
+                      textTransform: 'capitalize',
+                      lineHeight: RFValue(19),
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    Use existing details
+                  </Text>
+                </View>
+                <CheckBox
+                  disabled={true}
+                  value={billingDetailsType === 'old'}
+                  tintColors={{
+                    true: colors.PRIMARY,
+                    false: colors.INACTIVE
+                  }}
+                  animationDuration={0.2}
+                  tintColor={colors.INACTIVE}
+                  onCheckColor={colors.WHITE}
+                  onFillColor={colors.PRIMARY}
+                  onTintColor={colors.PRIMARY}
+                  style={{ width: RFValue(20), height: RFValue(20) }}
+                />
+              </Fragment>
+            </TouchableRipple>
+
+            <View
+              style={{
+                display: billingDetailsType === 'old' ? 'flex' : 'none',
+                marginBottom: 10
+              }}
+            >
+              <Text
                 style={{
-                  fontFamily: fonts.WORK_SANS_BOLD,
-                  fontSize: RFValue(fonts.LARGE_SIZE + 2),
-                  color: colors.PRIMARY
+                  paddingHorizontal: 10,
+                  fontFamily: fonts.WORK_SANS_MEDIUM
                 }}
               >
-                Account Details
-              </Title>
+                - 12 Boulevarde court, London, United Kingdom
+              </Text>
+            </View>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text
+            <TouchableRipple
+              onPress={() => handleSelection('new')}
+              style={{
+                flexDirection: 'row',
+                borderColor: colors.PRIMARY,
+                borderWidth: 1,
+                borderRadius: 10,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: RFValue(10),
+                marginVertical: RFValue(10)
+              }}
+            >
+              <Fragment>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <SimpleLineIcons
+                    name="note"
+                    size={22}
+                    color={colors.PRIMARY}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+                      color: colors.SECONDARY_TEXT,
+                      textTransform: 'capitalize',
+                      lineHeight: RFValue(19),
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    Enter New Details
+                  </Text>
+                </View>
+                <CheckBox
+                  disabled={true}
+                  value={billingDetailsType === 'new'}
+                  tintColors={{
+                    true: colors.PRIMARY,
+                    false: colors.INACTIVE
+                  }}
+                  animationDuration={0.2}
+                  tintColor={colors.INACTIVE}
+                  onCheckColor={colors.WHITE}
+                  onFillColor={colors.PRIMARY}
+                  onTintColor={colors.PRIMARY}
+                  style={{ width: RFValue(20), height: RFValue(20) }}
+                />
+              </Fragment>
+            </TouchableRipple>
+          </View>
+          <Divider style={{ marginTop: 5, marginBottom: 20 }} />
+
+          <View
+            style={{
+              display: billingDetailsType === 'new' ? 'flex' : 'none'
+            }}
+          >
+            <HeaderCover>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <Title
                   style={{
-                    marginRight: 10,
                     fontFamily: fonts.WORK_SANS_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT
+                    fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                    color: colors.PRIMARY
                   }}
                 >
-                  use iBan
-                </Text>
-                <Switch
-                  trackColor={{
-                    false: colors.INACTIVE,
-                    true: hexToRGB(colors.PRIMARY_LIGHT, 0.7)
-                  }}
-                  thumbColor={
-                    isSwitchOn ? hexToRGB(colors.PRIMARY, 6) : colors.INACTIVE
-                  }
-                  ios_backgroundColor={colors.INACTIVE}
-                  onValueChange={toggleSwitch}
-                  value={isSwitchOn}
-                />
+                  Account Details
+                </Title>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text
+                    style={{
+                      marginRight: 10,
+                      fontFamily: fonts.WORK_SANS_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT
+                    }}
+                  >
+                    use iBan
+                  </Text>
+                  <Switch
+                    trackColor={{
+                      false: colors.INACTIVE,
+                      true: hexToRGB(colors.PRIMARY_LIGHT, 0.7)
+                    }}
+                    thumbColor={
+                      isSwitchOn ? hexToRGB(colors.PRIMARY, 6) : colors.INACTIVE
+                    }
+                    ios_backgroundColor={colors.INACTIVE}
+                    onValueChange={toggleSwitch}
+                    value={isSwitchOn}
+                  />
+                </View>
               </View>
-            </View>
-          </HeaderCover>
+            </HeaderCover>
 
-          <Divider />
-          <ContactContainer>
-            {!isSwitchOn && (
-              <Fragment>
-                <InputContainer>
-                  <LabelContainer>
-                    <Title
-                      style={{
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      Account Number
-                    </Title>
-                  </LabelContainer>
-                  <TextInput
-                    multiline={true}
-                    dense={true}
-                    value={accountNumber}
-                    onChangeText={(accountNumber: string) =>
-                      setAccountDetails({ ...accountDetails, accountNumber })
-                    }
-                    style={{
-                      height: 30,
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      backgroundColor: colors.WHITE,
-                      borderColor: colors.PRIMARY,
-                      textTransform: 'capitalize'
-                    }}
-                  />
-                </InputContainer>
+            <Divider />
 
-                <InputContainer>
-                  <LabelContainer>
-                    <Title
-                      style={{
-                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                        fontSize: RFValue(fonts.MEDIUM_SIZE),
-                        color: colors.PRIMARY_TEXT,
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      Routing Number
-                    </Title>
-                  </LabelContainer>
-                  <TextInput
-                    value={routingNumber}
-                    onChangeText={(routingNumber: string) =>
-                      setAccountDetails({ ...accountDetails, routingNumber })
-                    }
-                    style={{
-                      height: 30,
-                      fontFamily: fonts.WORK_SANS_REGULAR,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                      color: colors.PRIMARY_TEXT,
-                      backgroundColor: colors.WHITE,
-                      borderColor: colors.PRIMARY,
-                      textTransform: 'capitalize'
-                    }}
-                  />
-                </InputContainer>
-              </Fragment>
-            )}
-
-            {isSwitchOn && (
+            <ContactContainer>
               <InputContainer>
                 <LabelContainer>
                   <Title
                     style={{
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                       fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      color: colors.PRIMARY_TEXT
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize'
                     }}
                   >
-                    iBan
+                    Bank Name
                   </Title>
                 </LabelContainer>
                 <TextInput
-                  value={iBan}
-                  onChangeText={(iBan: string) =>
-                    setAccountDetails({ ...accountDetails, iBan })
+                  value={name}
+                  onChangeText={(name: string) =>
+                    setAccountDetails({ ...accountDetails, name })
                   }
+                  placeholder="Enter Bank Name"
                   style={{
                     height: 30,
                     fontFamily: fonts.WORK_SANS_REGULAR,
@@ -295,115 +357,23 @@ export default function BankAccountScreen(props: ScreenProp) {
                   }}
                 />
               </InputContainer>
-            )}
+            </ContactContainer>
 
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  Account Name
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={name}
-                onChangeText={(name: string) =>
-                  setAccountDetails({ ...accountDetails, name })
-                }
+            <HeaderCover>
+              <Title
                 style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                  color: colors.PRIMARY
                 }}
-              />
-            </InputContainer>
-          </ContactContainer>
+              >
+                Bank Details
+              </Title>
+            </HeaderCover>
 
-          <HeaderCover>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 2),
-                color: colors.PRIMARY
-              }}
-            >
-              Bank Details
-            </Title>
-          </HeaderCover>
+            <Divider />
 
-          <Divider />
-
-          <ContactContainer>
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  Address Line 1
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={line1}
-                onChangeText={(line1: string) =>
-                  setAccountDetails({ ...accountDetails, line1 })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-
-            <InputContainer>
-              <LabelContainer>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.PRIMARY_TEXT,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  Address Line 2
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={line2}
-                onChangeText={(line2: string) =>
-                  setAccountDetails({ ...accountDetails, line2 })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-
-            <TouchableOpacity onPress={openModal}>
+            <ContactContainer>
               <InputContainer>
                 <LabelContainer>
                   <Title
@@ -414,142 +384,209 @@ export default function BankAccountScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                   >
-                    Country
-                  </Title>
-                </LabelContainer>
-
-                <TextInput
-                  value={countryName}
-                  disabled={true}
-                  style={{
-                    height: 30,
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                    color: colors.PRIMARY_TEXT,
-                    backgroundColor: colors.WHITE,
-                    borderColor: colors.DISABLED,
-                    textTransform: 'capitalize',
-                    borderBottomWidth: isLocal ? 1 : 0
-                  }}
-                />
-              </InputContainer>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={isLocal ? openStateModal : () => {}}>
-              <InputContainer>
-                <LabelContainer>
-                  <Title
-                    style={{
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE),
-                      color: colors.PRIMARY_TEXT,
-                      textTransform: 'capitalize'
-                    }}
-                  >
-                    State
+                    Address Line 1
                   </Title>
                 </LabelContainer>
                 <TextInput
-                  value={handleStateValue()}
-                  disabled={isLocal}
-                  onChangeText={(district: string) =>
-                    setAccountDetails({ ...accountDetails, district })
+                  value={line1}
+                  onChangeText={(line1: string) =>
+                    setAccountDetails({ ...accountDetails, line1 })
                   }
+                  placeholder="Enter Address Line 1"
                   style={{
                     height: 30,
                     fontFamily: fonts.WORK_SANS_REGULAR,
                     fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                     color: colors.PRIMARY_TEXT,
                     backgroundColor: colors.WHITE,
-                    borderColor: colors.DISABLED,
-                    textTransform: 'capitalize',
-                    borderBottomWidth: isLocal ? 1 : 0
+                    borderColor: colors.PRIMARY,
+                    textTransform: 'capitalize'
                   }}
                 />
               </InputContainer>
-            </TouchableOpacity>
 
-            <InputContainer>
-              <LabelContainer>
-                <Title
+              <InputContainer>
+                <LabelContainer>
+                  <Title
+                    style={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    Address Line 2
+                  </Title>
+                </LabelContainer>
+                <TextInput
+                  value={line2}
+                  onChangeText={(line2: string) =>
+                    setAccountDetails({ ...accountDetails, line2 })
+                  }
+                  placeholder="Enter Address Line 2"
                   style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    height: 30,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                     color: colors.PRIMARY_TEXT,
+                    backgroundColor: colors.WHITE,
+                    borderColor: colors.PRIMARY,
                     textTransform: 'capitalize'
                   }}
-                >
-                  City
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={city}
-                onChangeText={(city: string) =>
-                  setAccountDetails({ ...accountDetails, city })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize',
-                  marginBottom: 10
-                }}
-              />
-            </InputContainer>
+                />
+              </InputContainer>
 
-            <InputContainer>
-              <LabelContainer>
-                <Title
+              <TouchableOpacity onPress={openModal}>
+                <InputContainer>
+                  <LabelContainer>
+                    <Title
+                      style={{
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      Country
+                    </Title>
+                  </LabelContainer>
+
+                  <TextInput
+                    value={countryName}
+                    disabled={true}
+                    style={{
+                      height: 30,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      backgroundColor: colors.WHITE,
+                      borderColor: colors.DISABLED,
+                      textTransform: 'capitalize',
+                      borderBottomWidth: 1
+                    }}
+                  />
+                </InputContainer>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={isLocal ? openStateModal : () => {}}>
+                <InputContainer>
+                  <LabelContainer>
+                    <Title
+                      style={{
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        color: colors.PRIMARY_TEXT,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      State
+                    </Title>
+                  </LabelContainer>
+                  <TextInput
+                    value={handleStateValue()}
+                    disabled={isLocal}
+                    onChangeText={(district: string) =>
+                      setAccountDetails({ ...accountDetails, district })
+                    }
+                    placeholder="Enter State"
+                    style={{
+                      height: 30,
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                      color: colors.PRIMARY_TEXT,
+                      backgroundColor: colors.WHITE,
+                      borderColor: colors.DISABLED,
+                      textTransform: 'capitalize',
+                      borderBottomWidth: isLocal ? 1 : 0
+                    }}
+                  />
+                </InputContainer>
+              </TouchableOpacity>
+
+              <InputContainer>
+                <LabelContainer>
+                  <Title
+                    style={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    City
+                  </Title>
+                </LabelContainer>
+                <TextInput
+                  value={city}
+                  onChangeText={(city: string) =>
+                    setAccountDetails({ ...accountDetails, city })
+                  }
+                  placeholder="Enter City"
                   style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
+                    height: 30,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
                     color: colors.PRIMARY_TEXT,
+                    backgroundColor: colors.WHITE,
+                    borderColor: colors.PRIMARY,
+                    textTransform: 'capitalize',
+                    marginBottom: 10
+                  }}
+                />
+              </InputContainer>
+
+              <InputContainer>
+                <LabelContainer>
+                  <Title
+                    style={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE),
+                      color: colors.PRIMARY_TEXT,
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    Postal Code
+                  </Title>
+                </LabelContainer>
+                <TextInput
+                  value={postalCode}
+                  onChangeText={(postalCode: string) =>
+                    setAccountDetails({ ...accountDetails, postalCode })
+                  }
+                  placeholder="Enter Postal Code"
+                  style={{
+                    height: 30,
+                    fontFamily: fonts.WORK_SANS_REGULAR,
+                    fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
+                    color: colors.PRIMARY_TEXT,
+                    backgroundColor: colors.WHITE,
+                    borderColor: colors.PRIMARY,
                     textTransform: 'capitalize'
                   }}
-                >
-                  Postal Code
-                </Title>
-              </LabelContainer>
-              <TextInput
-                value={postalCode}
-                onChangeText={(postalCode: string) =>
-                  setAccountDetails({ ...accountDetails, postalCode })
-                }
-                style={{
-                  height: 30,
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
-                  color: colors.PRIMARY_TEXT,
-                  backgroundColor: colors.WHITE,
-                  borderColor: colors.PRIMARY,
-                  textTransform: 'capitalize'
-                }}
-              />
-            </InputContainer>
-          </ContactContainer>
-
-          <GradientButton
-            onPress={() =>
-              navigation.navigate('BankBillingDetailsScreen', {
-                accountDetails,
-                isSwitchOn
-              })
-            }
-            style={{ height: 50 }}
-            gradientContainerstyle={{
-              height: 50,
-              marginBottom: RFValue(30),
-              marginHorizontal: RFValue(15)
-            }}
-            contentStyle={{ height: 50 }}
-          >
-            Next
-          </GradientButton>
+                />
+              </InputContainer>
+            </ContactContainer>
+          </View>
         </Fragment>
       </KeyboardAwareScrollView>
+
+      <GradientButton
+        onPress={() =>
+          navigation.navigate('BankBillingDetailsScreen', {
+            accountDetails,
+            isSwitchOn
+          })
+        }
+        style={{ height: 50 }}
+        gradientContainerstyle={{
+          height: 50,
+          marginBottom: RFValue(30),
+          marginHorizontal: RFValue(15)
+        }}
+        contentStyle={{ height: 50 }}
+      >
+        Next
+      </GradientButton>
 
       <Countries
         modalizeRef={modalizeRef}
@@ -563,6 +600,6 @@ export default function BankAccountScreen(props: ScreenProp) {
         accountDetails={accountDetails}
         setAccountDetails={setAccountDetails}
       />
-    </Fragment>
+    </View>
   );
 }
