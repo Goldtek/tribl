@@ -4,6 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 export const ContactContainer = styled.View`
   flex: 1;
   padding: 20px ${RFValue(15)}px;
+  padding-top: 5px;
 `;
 
 export const LabelContainer = styled.View`
