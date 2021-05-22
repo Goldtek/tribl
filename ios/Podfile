@@ -22,6 +22,8 @@ target 'tribl' do
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
 
+  pod 'react-native-fast-openpgp', :path => '../node_modules/react-native-fast-openpgp'
+
   post_install do |installer|
     flipper_post_install(installer)
   end

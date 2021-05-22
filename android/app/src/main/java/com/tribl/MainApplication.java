@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import dev.jerson.RNFastOpenPGPPackage;
 import com.como.RNTShadowView.ShadowViewPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
