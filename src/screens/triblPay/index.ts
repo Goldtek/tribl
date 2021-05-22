@@ -5,6 +5,9 @@ import VerifyIdentityScreen from './verifyIdentity';
 import LinkAccountScreen from './linkedAccount';
 import WalletScreen from './wallet';
 import AddCashScreen from './addCash';
+import CryptoFaqScreen from './cryptoFaq';
+import BuyCryptoScreen from './buyCrytpo';
+import BuyCoinScreen from './buyCoin';
 
 export default {
   ActivateWalletScreen,
@@ -13,5 +16,8 @@ export default {
   VerifyIdentityScreen,
   LinkAccountScreen,
   WalletScreen,
-  AddCashScreen
+  AddCashScreen,
+  CryptoFaqScreen,
+  BuyCryptoScreen,
+  BuyCoinScreen
 };

@@ -226,7 +226,7 @@ dependencies {
     implementation project(':react-native-push-notification')
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
     implementation 'com.android.support:multidex:1.0.3'
-    implementation 'com.google.firebase:firebase-analytics:17.3.0'
+    implementation 'com.google.firebase:firebase-analytics:18.0.2'
     implementation 'com.google.firebase:firebase-messaging:+'
     implementation project(':react-native-simple-shadow-view')
     implementation project(':react-native-config')

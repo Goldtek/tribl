@@ -308,3 +308,11 @@ export const APPROVE_REJECT_NEW_CHANNEL = gql`
     }
   }
 `;
+
+export const BUY_CRYPTO = gql`
+  mutation buyCrypto($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
+      success
+    }
+  }
+`;

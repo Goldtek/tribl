@@ -118,6 +118,8 @@ export type RootStackParamList = {
   TribeDetailScreen?: Object;
   MemberPassportDetailScreen?: Object;
   WaitlistScreen?: Object;
+  CryptoFaqScreen?: Object;
+  BuyCryptoScreen?: Object;
 };
 
 export type RootStackParamScreensList =
@@ -215,7 +217,11 @@ export type RootStackParamScreensList =
   | 'PreviewScreen'
   | 'TribeDetailScreen'
   | 'MemberPassportDetailScreen'
-  | 'WaitlistScreen';
+  | 'WaitlistScreen'
+  | 'CryptoFaqScreen'
+  | 'BuyCryptoScreen'
+  | 'BuyCoinScreen'
+  ;
 
 interface StackNavigationInterface extends StackActionHelpers {
   toggleDrawer(): void;
