@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
+
 import {
   Title,
   Text,
@@ -6,21 +7,28 @@ import {
   Divider,
   TextInput
 } from 'react-native-paper';
-import { useQuery } from '@apollo/react-hooks';
 import { useTranslation } from 'react-i18next';
+import OpenPGP from 'react-native-fast-openpgp';
 import { Modalize } from 'react-native-modalize';
 import { TouchableOpacity, View } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { SimpleLineIcons, Octicons } from '@expo/vector-icons';
 import { CreditCardInput } from 'react-native-input-credit-card';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import Countries from './widgets/bankCountry';
+import { Base64 } from '../../../utils/base64';
 import LocalStates from './widgets/localStates';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
+import { crashlytics } from '../../../firebase/config';
+import ErrorModal from '../../../components/errorModal';
 import GradientButton from '../../../components/gradientButton';
+import { GET_CARD_PCI_OUTPUT } from '../../../graphql/server/query';
+import { SAVE_CARD_DETAILS } from '../../../graphql/server/mutations';
 
 import {
   ContactContainer,
@@ -28,10 +36,6 @@ import {
   InputContainer,
   LabelContainer
 } from './styles';
-import ErrorModal from '../../../components/errorModal';
-import { GET_CARD_PCI_OUTPUT } from '../../../graphql/server/query';
-import { Base64 } from '../../../utils/base64';
-import OpenPGP from 'react-native-fast-openpgp';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -53,7 +57,14 @@ export default function CreditCardScreen(props: ScreenProp) {
 
   const openModal = () => modalizeRef.current?.open();
 
+  const { data: cardPci } = useQuery(GET_CARD_PCI_OUTPUT);
+  const [saveCardDetails, { loading }] = useMutation(SAVE_CARD_DETAILS);
+  const [savebillIdCardDetails, { loading: billIdLoading }] = useMutation(
+    SAVE_CARD_DETAILS
+  );
+
   const [billingDetailsType, setBillingDetailsType] = useState('old');
+
   const [billingDetails, setBillingDetails] = useState({
     addressLine: '',
     addressCity: '',
@@ -65,7 +76,6 @@ export default function CreditCardScreen(props: ScreenProp) {
   });
 
   const [cardDetails, setCardDetails] = useState<any>();
-
   const [isLocal, setIsLocal] = useState(false);
 
   const {
@@ -82,11 +92,7 @@ export default function CreditCardScreen(props: ScreenProp) {
     setCardDetails(form);
   };
 
-  const { data: cardPci } = useQuery(GET_CARD_PCI_OUTPUT);
-
   useEffect(() => {
-    // console.tron('cardPci', cardPci.getCardPciKey.key);
-
     if (billingDetailsType === 'new') {
       scrollRef.current?.scrollToEnd(true);
     }
@@ -100,18 +106,67 @@ export default function CreditCardScreen(props: ScreenProp) {
     return addressState;
   };
 
-  // const logEncryption = async () => {};
   const submitCreditCardDetails = async () => {
-    const { key } = await cardPci.getCardPciKey;
-    console.tron('key', key);
+    const { key, keyId } = await cardPci.getCardPciKey;
+    const { values, valid, status } = cardDetails;
+
+    const expiry = values.expiry.split('/');
+    const expMonth = +expiry[0];
+    const expYear = +expiry[1] + 2000;
+
+    const options = {
+      number: values.number,
+      cvv: values.cvc
+    };
+
     const encrypted = await OpenPGP.encrypt(
-      JSON.stringify({
-        number: '4007400000000007',
-        cvv: '430'
-      }),
+      JSON.stringify(options),
       Base64.atob(`${key}`)
     );
-    console.tron(Base64.btoa(encrypted), 'log');
+
+    const payload = {
+      expYear,
+      expMonth,
+      encryptedData: Base64.btoa(encrypted),
+      keyId
+    };
+
+    try {
+      const { data } =
+        billingDetailsType === 'old'
+          ? await saveCardDetails({
+              variables: {
+                payload: {
+                  ...payload,
+                  billingId: ''
+                }
+              }
+            })
+          : await savebillIdCardDetails({
+              variables: {
+                payload: {
+                  ...payload,
+                  billingAddress: {
+                    addressLine,
+                    addressCity,
+                    addressState,
+                    addressCountry,
+                    addressStateCode,
+                    addressPostalCode,
+                    addressCountryCode
+                  }
+                }
+              }
+            });
+
+      if (data.saveCardDetails.success) {
+        navigation.navigate('WalletScreen');
+      }
+    } catch (error) {
+      openErrorModal();
+      crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+    }
   };
 
   return (
@@ -415,10 +470,8 @@ export default function CreditCardScreen(props: ScreenProp) {
         </ContactContainer>
 
         <GradientButton
-          // disabled={loading}
-          // loading={loading}
-          // onPress={() => navigation.navigate('WalletScreen')}
-          // onPress={() => openErrorModal()}
+          disabled={loading || billIdLoading}
+          loading={loading || billIdLoading}
           onPress={submitCreditCardDetails}
           style={{ height: 50 }}
           gradientContainerstyle={{
@@ -428,7 +481,7 @@ export default function CreditCardScreen(props: ScreenProp) {
           }}
           contentStyle={{ height: 50 }}
         >
-          Submit
+          {loading || billIdLoading ? 'loading...' : 'Submit'}
         </GradientButton>
       </KeyboardAwareScrollView>
 
