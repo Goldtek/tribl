@@ -1,42 +1,35 @@
 {
   "project_info": {
-    "project_number": "971011241618",
-    "firebase_url": "https://tribl-staging.firebaseio.com",
-    "project_id": "tribl-staging",
-    "storage_bucket": "tribl-staging.appspot.com"
+    "project_number": "354137256334",
+    "firebase_url": "https://tribl-2020.firebaseio.com",
+    "project_id": "tribl-2020",
+    "storage_bucket": "tribl-2020.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:971011241618:android:1aa6dd7644656e8cc4d84b",
+        "mobilesdk_app_id": "1:354137256334:android:5629dbb6dd1f72b694b4df",
         "android_client_info": {
           "package_name": "com.tribl"
         }
       },
       "oauth_client": [
         {
-          "client_id": "971011241618-dnhhto19i31g13odk2b39gp2mhjv0l0g.apps.googleusercontent.com",
+          "client_id": "354137256334-p42ektj9ppoi474es6a2p3fs5mpt5kah.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBibrbUT_dTNsneO0LQkiQHbtdrtdP604w"
+          "current_key": "AIzaSyCNGaVlxbK-NZcZ1t6sgFB5d3li5ukfLSg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "971011241618-dnhhto19i31g13odk2b39gp2mhjv0l0g.apps.googleusercontent.com",
+              "client_id": "354137256334-p42ektj9ppoi474es6a2p3fs5mpt5kah.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "971011241618-5n39k7no2ridpcmeciih0e079qhik0gp.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.thetriblnetwork.tribl"
-              }
             }
           ]
         }

@@ -12,6 +12,9 @@ import ActivateWalletScreen from './activateWallet';
 import BillingDetailsScreen from './billingDetails';
 import DocumentTypeSelectionScreen from './documentTypeSelection';
 import BankBillingDetailsScreen from './bankAccount/bankBillingDetails'
+import CryptoFaqScreen from './cryptoFaq';
+import BuyCryptoScreen from './buyCrytpo';
+import BuyCoinScreen from './buyCoin';
 
 export default {
   WalletScreen,
@@ -27,5 +30,8 @@ export default {
   VerifyIdentityScreen,
   BillingDetailsScreen,
   BankBillingDetailsScreen,
-  DocumentTypeSelectionScreen
+  DocumentTypeSelectionScreen,
+  CryptoFaqScreen,
+  BuyCryptoScreen,
+  BuyCoinScreen
 };

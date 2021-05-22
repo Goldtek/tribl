@@ -297,14 +297,14 @@
     "pay": "pay",
     "balance": "cash balance",
     "unavailable": "unavailable",
-    "linkedAccounts": "link accounts",
+    "linkedAccounts": "linked accounts",
     "accounts": "accounts",
     "linkedCreditCard": "Link Credit Card",
     "linkedBankAccount": "Link Bank Account",
     "addCash": "add cash",
     "cashOut": "cash out",
     "cashAccount": "cash account",
-    "cryptocurrency": "cryptocurrency account",
+    "cryptocurrency": "your crypto portfolio",
     "nativeCurrency": "native currency",
     "country": "country",
     "triblCoin": "tribl coin",
@@ -315,6 +315,34 @@
     "cashBalance": "cash balance",
     "tranfer": "transfer to bank",
     "wallet": "wallet",
-    "request": "request"
+    "request": "request",
+    "crypto": "buy crypto",
+    "learnmore": "learn more about crypto",
+    "content": " Buy, sell, and securely exchange cryptocurrencies with TRiBL Pay",
+    "buycoin":"Buy"
+  },
+  "crypto": {
+    "understand_crypto": "Understanding your crypto",
+    "bitcoin": "About Bitcoin",
+    "etherum": "About Etherum",
+    "tribl": "About TRIBL",
+    "faq": "Crypto on TRIBL FAQ",
+    "crypto_question": "What is Crypto",
+    "comparison": "Crypto vs Stocks",
+    "glosary": "About Glosary",
+    "blockchain": "What is Blockchain"
+  },
+  "currency": {
+    "etherum": "Etherum",
+    "bitcoin": "Bitcoin",
+    "tribl": "TRiBL",
+    "usd": "USD"
+  },
+  "maarket":{
+    "trade": "Trade",
+    "buy": "You are about to buy X amount of Tribl Coin, at 0.0001 TC/USD. Please note that the rate at the point of fulfilment might differ from the rate above.  Press confirm to proceed.",
+    "sell": "You are about to sell X amount of Tribl Coin, at 0.0001 TC/USD. Please note that the rate at the point of fulfilment might differ from the rate above.  Press confirm to proceed."
   }
+
+
 }

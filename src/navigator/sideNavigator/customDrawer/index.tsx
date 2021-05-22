@@ -163,18 +163,18 @@ export default function CustomDrawerComponent() {
         <SimpleLineIcons name="user" size={24} color={colors.PRIMARY_TEXT} />
       )
     },
-    // {
-    //   key: 'drawer_wallet_key',
-    //   name: `community.passport.wallet`,
-    //   onPress: () => {
-    //     changeSideMenu('drawer_wallet_key');
-    //     navigation?.navigate('TriblPayScreen', { screen: 'WalletScreen' });
-    //     toggleMenu();
-    //   },
-    //   drawerIcon: (
-    //     <Feather name="dollar-sign" size={24} color={colors.PRIMARY_TEXT} />
-    //   )
-    // },
+    {
+      key: 'drawer_wallet_key',
+      name: `community.passport.wallet`,
+      onPress: () => {
+        changeSideMenu('drawer_wallet_key');
+        navigation?.navigate('TriblPayScreen', { screen: 'WalletScreen' });
+        toggleMenu();
+      },
+      drawerIcon: (
+        <Feather name="dollar-sign" size={24} color={colors.PRIMARY_TEXT} />
+      )
+    },
     {
       key: 'drawer_activities_key',
       name: `community.sideNav.activities`,

@@ -359,6 +359,12 @@ export const SAVE_BANK_DETAILS = gql`
     saveBankDetails(input: $payload) {
       success
       errorCode
+`;
+
+export const BUY_CRYPTO = gql`
+  mutation buyCrypto($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
+      success
     }
   }
 `;

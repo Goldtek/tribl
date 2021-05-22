@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 export const Container = styled.View`
@@ -7,9 +8,9 @@ export const Container = styled.View`
   padding: ${RFValue(50)}px ${RFValue(15)}px 0 ${RFValue(15)}px;
 `;
 
-export const BalanceCover = styled.View`
-  flex-direction: row;
-  justify-content: center;
+export const textCover = styled.View`
+  margin-top:30px;
+  line-height: 1.8;
 `;
 
 export const ButtonCover = styled.View`
@@ -22,7 +23,7 @@ export const Cover = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-vertical: ${RFValue(10)}px;
+  margin-top: ${RFValue(10)}px;
 `;
 
 export const LeftCover = styled.View`
@@ -36,25 +37,15 @@ export const RightCover = styled.View`
   align-items: center;
 `;
 
-export const Overlay = styled.TouchableOpacity`
+export const GradientContainer = styled(LinearGradient)`
   flex: 1;
-  align-items: center;
-  justify-content: center;
-  padding-horizontal: 10px;
-  background-color: rgba(0, 0, 0, 0.7);
+  padding: ${RFValue(30)}px ${RFValue(15)}px;
+  border-radius: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `;
 
-export const ListCover = styled.View`
-  border: #535D7E solid 1px;
-  margin-top: ${RFValue(15)}px;
-  padding-left: ${RFValue(10)}px;
-  padding-right: ${RFValue(10)}px;
-  padding-top: 0px;
-  border-radius: ${RFValue(15)}px;
-  height: 235px;
+export const ScrollContainer = styled.ScrollView`
+
 `;
 
-
-export const TitleCover = styled.View`
-  flex-direction: row;
-`;

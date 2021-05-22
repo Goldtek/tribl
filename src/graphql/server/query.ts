@@ -1936,3 +1936,49 @@ export const GET_CARD_PCI_OUTPUT = gql`
     }
   }
 `;
+export const GET_PORTFOLIO = gql`query portfolio {
+  fetchPortfolio {
+    items {
+      asset
+      available
+      trading
+    }
+  }
+}`;
+
+export const GET_MARKET = gql`query fetchMarket {
+  fetchMarket {
+    markets {
+      market
+      today {
+        open
+        high
+        low
+        volume
+        range {
+          begin
+          end
+        }
+      }
+        best_bid {
+        amount
+        price
+      }
+      best_ask {
+        amount
+        price
+      }
+      last_day {
+        open
+        high
+        low
+        volume
+        range {
+          begin
+          end
+        }
+      }
+    }
+  }
+}`;
+

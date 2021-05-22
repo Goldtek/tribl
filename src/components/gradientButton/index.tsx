@@ -11,6 +11,7 @@ type GradientButtonProps = {
   loading?: boolean;
   uppercase?: boolean;
   color?: string;
+  bgColor?: string;
   mode?: 'text' | 'outlined' | 'contained' | undefined;
   onPress?: ((T?: any) => void) | undefined;
   labelStyle?: StyleProp<TextStyle>;
@@ -25,12 +26,14 @@ const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
     disabled,
     loading,
     color,
+    bgColor,
     mode,
     uppercase,
     labelStyle,
     style,
     contentStyle,
     onPress,
+    
     gradientContainerstyle
   } = props;
 
@@ -40,9 +43,9 @@ const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
     <Container
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 3 }}
-      colors={[colors.PRIMARY, colors.SECONDARY]}
+      colors={[bgColor ? bgColor : colors.PRIMARY, bgColor ? bgColor : colors.SECONDARY]}
       style={[
-        { borderRadius: 4, marginTop: RFValue(20) },
+        { borderRadius: 4, marginTop: RFValue(20)},
         gradientContainerstyle
       ]}
     >
@@ -59,7 +62,7 @@ const GradientButton: FunctionComponent<GradientButtonProps> = (props) => {
           },
           labelStyle
         ]}
-        contentStyle={[{ height: RFValue(55) }, contentStyle]}
+        contentStyle={[{ height: RFValue(55) }, contentStyle ]}
         style={[{ width: '100%', height: RFValue(55) }, style]}
         onPress={onPress}
         disabled={disabled}
