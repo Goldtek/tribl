@@ -45,7 +45,7 @@ export const Overlay = styled.TouchableOpacity`
 `;
 
 export const ListCover = styled.View`
-  border: #535D7E solid 1px;
+  border: #535d7e solid 1px;
   margin-top: ${RFValue(10)}px;
   padding-left: ${RFValue(10)}px;
   padding-right: ${RFValue(10)}px;
@@ -53,7 +53,6 @@ export const ListCover = styled.View`
   border-radius: ${RFValue(15)}px;
   height: 200px;
 `;
-
 
 export const TitleCover = styled.View`
   flex-direction: row;

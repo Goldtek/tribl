@@ -10,8 +10,7 @@ import GradientButton from '../../../components/gradientButton';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { GET_PORTFOLIO, GET_MARKET } from '../../../graphql/server/query';
-import Portfolio from "./widgets/portfolio";
-
+import Portfolio from './widgets/portfolio';
 
 import {
   Container,
@@ -31,16 +30,17 @@ interface charPortfolio {
 }
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface { }
+interface ScreenProp extends NavigationInterface {}
 
 export default function WalletScreen(props: ScreenProp) {
-  const { colors, fonts } = useThemeContext();
+  const { fonts, colors } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
   const [modalState, setModalState] = useState(false);
+
   const filtered_data = [];
   //TODO, define a type for these
-  const filtered_markets: any = []
+  const filtered_markets: any = [];
   const charPortfolio: any = {};
 
   const { data: requestData, refetch, error } = useQuery(GET_PORTFOLIO);
@@ -54,24 +54,30 @@ export default function WalletScreen(props: ScreenProp) {
 
   if (markets) {
     for (let item of markets) {
-      if (item.market === 'BTCUSD' || item.market === 'ETHUSD' || item.market === 'PAXGUSD') {
+      if (
+        item.market === 'BTCUSD' ||
+        item.market === 'ETHUSD' ||
+        item.market === 'PAXGUSD'
+      ) {
         filtered_markets.push(item);
       }
     }
   }
 
-
   if (portfolio) {
     for (let item of portfolio.items) {
-      if (item.asset === 'BTC' || item.asset === 'ETH' || item.asset === 'USD') {
+      if (
+        item.asset === 'BTC' ||
+        item.asset === 'ETH' ||
+        item.asset === 'USD'
+      ) {
         filtered_data.push(item);
         charPortfolio[item.asset] = {
           available: item.available
-        }
+        };
       }
     }
   }
-
 
   return (
     <Container>
@@ -86,7 +92,10 @@ export default function WalletScreen(props: ScreenProp) {
           paddingTop: 0
         }}
       >
-        {'\u0024'}{charPortfolio['USD'] !== undefined ? Math.ceil(charPortfolio['USD'].available) : 0.00}
+        {'\u0024'}
+        {charPortfolio['USD'] !== undefined
+          ? Math.ceil(charPortfolio['USD'].available)
+          : 0.0}
       </Title>
       <BalanceCover>
         <Text
@@ -102,7 +111,8 @@ export default function WalletScreen(props: ScreenProp) {
         </Text>
       </BalanceCover>
       <ButtonCover>
-        {(charPortfolio['USD'] !== undefined && charPortfolio['USD'].available > 0) ?
+        {charPortfolio['USD'] !== undefined &&
+        charPortfolio['USD'].available > 0 ? (
           <GradientButton
             onPress={() => navigation.navigate('CryptoFaqScreen', { refetch })}
             style={{
@@ -118,7 +128,7 @@ export default function WalletScreen(props: ScreenProp) {
           >
             {t(`community.passport.crypto`)}
           </GradientButton>
-          :
+        ) : (
           <GradientButton
             onPress={() => navigation.navigate('AddCashScreen')}
             style={{
@@ -134,10 +144,10 @@ export default function WalletScreen(props: ScreenProp) {
           >
             {t(`community.passport.addCash`)}
           </GradientButton>
-        }
+        )}
 
         <GradientButton
-          onPress={() => { }}
+          onPress={() => {}}
           style={{
             height: 50
           }}
@@ -347,14 +357,13 @@ export default function WalletScreen(props: ScreenProp) {
             </Title>
           </LeftCover>
           <RightCover>
-            <Feather
-              name="more-vertical"
-              size={22}
-              color={colors.BLACK}
-            />
+            <Feather name="more-vertical" size={22} color={colors.BLACK} />
           </RightCover>
         </Cover>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 10 }}
+        >
           <FlatList
             data={filtered_data}
             renderItem={({ item }) => (
@@ -365,8 +374,6 @@ export default function WalletScreen(props: ScreenProp) {
           />
         </ScrollView>
       </ListCover>
-
-     
 
       <Modal
         animationType="fade"
@@ -420,7 +427,6 @@ export default function WalletScreen(props: ScreenProp) {
           </View>
         </Overlay>
       </Modal>
-      
     </Container>
   );
 }
