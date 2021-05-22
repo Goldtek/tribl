@@ -25,6 +25,7 @@ import NearbyModal from '../../../../../components/nearby';
 import ActiveModal from '../../../../../components/activeMembers';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import {
+  MyPassportInterface,
   NearbyMembersRequestInterface,
   PassportInterface,
   RecommendedMembersRequestInterface
@@ -44,9 +45,9 @@ function MemberSTabScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
 
-  const { data: userData, refetch: passportRefetch } = useQuery(
-    GET_USER_PASSPORT
-  );
+  const { data: userData, refetch: passportRefetch } = useQuery<
+    MyPassportInterface
+  >(GET_USER_PASSPORT);
   const blockedUsers = userData?.myPassport?.privacy?.blocked;
   const userDetails = userData?.myPassport;
   const isFocused = useIsFocused();
@@ -88,11 +89,7 @@ function MemberSTabScreen(props: ScreenProp) {
   );
 
   const filteredUnblockedRecommendedMebers = filterRecommendedMebers?.filter(
-    function (users) {
-      return !blockedUsers?.some(function (userTwo: any) {
-        return users.id == userTwo.id;
-      });
-    }
+    (users) => !blockedUsers?.some((userTwo) => users.id == userTwo.id)
   );
 
   const { data: nearbyData, refetch: nearbyRefetch } = useQuery<

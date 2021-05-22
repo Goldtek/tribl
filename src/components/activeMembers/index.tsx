@@ -19,6 +19,7 @@ import { PAGINATION_DEFAULT } from '../../constants';
 import removeDuplicateMembers from '../../utils/removeDuplicatePassports';
 
 import {
+  MyPassportInterface,
   PassportInterface,
   RecommendedMembersRequestInterface
 } from '../../graphql/types';
@@ -49,31 +50,22 @@ function ActiveModal(props: ModalProp) {
     recommendedMembers?.slice()
   );
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
-  const userId = userDetails?.id;
   const blockedUsers = userDetails?.privacy?.blocked;
 
-  const filteredUsers = filterRecommendedMebers?.filter(function (users) {
-    return !blockedUsers?.some(function (userTwo: any) {
-      return users.id == userTwo.id;
-    });
-  });
+  const filteredUsers = filterRecommendedMebers?.filter(
+    (users) => !blockedUsers?.some((userTwo) => users.id == userTwo.id)
+  );
 
   const activeList = filteredUsers?.slice().sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
-
     if (a.firstName > b.firstName) return 1;
-
     return 0;
   });
 
-  const filterMembers = activeList?.filter((member) => member.id !== userId);
-
   const modalizeRef = useRef<Modalize>(null);
-
   const openModal = () => modalizeRef.current?.open();
-
   const closeModal = () => modalizeRef.current?.close();
 
   useEffect(() => {

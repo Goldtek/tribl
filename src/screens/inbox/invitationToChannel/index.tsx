@@ -30,11 +30,12 @@ import { Toast } from '../../../components/rootToaster';
 import { useKeyboardContext } from 'stream-chat-react-native-core';
 import { searchClient } from '../../../config';
 import InviteAlgoliaHighlight from '../../../components/inviteAlgoliaHighlight';
+import { chatClient } from '../../../stream/types';
 
 import { Container, ButtonCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface InviteFriendsScreenProp extends NavigationInterface { }
+interface InviteFriendsScreenProp extends NavigationInterface {}
 
 export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
   let numColumns = 2;
@@ -233,7 +234,9 @@ export default function InviteFriendsToChannel(props: InviteFriendsScreenProp) {
   ]);
 
   const _renderItem = ({ item }: any) => {
-    if (selected[item.id]) return null;
+    if (selected[item.id] || item.id === chatClient?.user?.id) {
+      return null;
+    }
 
     return (
       <InviteAlgoliaHighlight

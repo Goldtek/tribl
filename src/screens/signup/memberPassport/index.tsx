@@ -134,6 +134,7 @@ export default function PassportDetail(props: MemberDetailProps) {
       <ContactContainer>
         <Header>
           <SingleImage
+            userId={passport?.id}
             uri={avatar}
             style={{
               width: RFValue(100),

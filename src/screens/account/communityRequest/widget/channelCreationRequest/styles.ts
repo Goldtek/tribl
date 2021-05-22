@@ -8,7 +8,9 @@ export const Container = styled.View`
 `;
 
 export const RightCover = styled.View`
-  margin: 0 ${RFValue(15)}px 0 ${RFValue(10)}px;
+  flex: 1;
+  margin-left: ${RFValue(10)}px;
+  padding-right: ${RFValue(10)}px;
 `;
 
 export const TextContainer = styled.View`
@@ -18,5 +20,5 @@ export const TextContainer = styled.View`
 
 export const ButtonCover = styled.View`
   flex-direction: row;
-  margin-top: ${RFValue(10)}px;
+  margin-top: ${RFValue(7)}px;
 `;

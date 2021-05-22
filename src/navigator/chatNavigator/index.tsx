@@ -47,7 +47,7 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
   return (
     <ChatStack.Navigator
       headerMode="screen"
-      screenOptions={{ headerStyle: { height: RFValue(90) } }}
+      screenOptions={{ headerStyle: { height: RFValue(80) } }}
     >
       <ChatStack.Screen
         name="InboxScreen"
@@ -89,8 +89,8 @@ export default function ChatNavigator(props: ChatNavigatorProps) {
           headerRight: () => (
             <GradientButton
               gradientContainerstyle={{
-                width: RFValue(30),
-                height: RFValue(30),
+                width: RFValue(25),
+                height: RFValue(25),
                 marginBottom: RFValue(20)
               }}
               onPress={() => {

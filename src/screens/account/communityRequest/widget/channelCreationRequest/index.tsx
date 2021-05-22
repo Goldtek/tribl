@@ -47,7 +47,8 @@ export default function NewChannelRequest(props: TribeRequestProp) {
   const [acceptRequest, { loading }] = useMutation(APPROVE_REJECT_NEW_CHANNEL);
 
   const [declineRequest, { loading: declineLoading }] = useMutation(
-    APPROVE_REJECT_NEW_CHANNEL);
+    APPROVE_REJECT_NEW_CHANNEL
+  );
 
   const handleAcceptInvitation = async () => {
     logEvent('accept tribe request', { from: 'passport' });
@@ -57,9 +58,7 @@ export default function NewChannelRequest(props: TribeRequestProp) {
         'Activity Screen': 'Community Details Screen'
       });
       await acceptRequest({
-        variables: {
-          payload: { id: id, action: StatusOptions[0] }
-        }
+        variables: { payload: { id: id, action: StatusOptions[0] } }
       });
       refetch();
     } catch (error) {
@@ -89,9 +88,7 @@ export default function NewChannelRequest(props: TribeRequestProp) {
 
   useEffect(() => {
     if (userId) {
-      getUserPassport({
-        variables: { id: userId }
-      });
+      getUserPassport({ variables: { id: userId } });
     }
   }, []);
 
@@ -106,8 +103,7 @@ export default function NewChannelRequest(props: TribeRequestProp) {
         style={{
           width: RFValue(60),
           height: RFValue(60),
-          borderRadius: RFValue(4),
-          marginTop: RFValue(5)
+          borderRadius: RFValue(4)
         }}
       />
       <RightCover>
@@ -115,10 +111,7 @@ export default function NewChannelRequest(props: TribeRequestProp) {
           style={{
             fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
             fontFamily: fonts.WORK_SANS_REGULAR,
-            color: colors.PRIMARY_TEXT,
-            flexWrap: 'wrap',
-            marginRight: RFValue(15),
-            paddingRight: RFValue(15)
+            color: colors.PRIMARY_TEXT
           }}
         >
           <Text
@@ -126,8 +119,7 @@ export default function NewChannelRequest(props: TribeRequestProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE),
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              flexWrap: 'wrap'
+              textTransform: 'capitalize'
             }}
             onPress={handleMemberNavigation}
           >{`${firstName} ${lastName}`}</Text>{' '}
@@ -137,12 +129,10 @@ export default function NewChannelRequest(props: TribeRequestProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE),
               fontFamily: fonts.WORK_SANS_SEMI_BOLD,
               color: colors.PRIMARY_TEXT,
-              textTransform: 'capitalize',
-              flexWrap: 'wrap'
+              textTransform: 'capitalize'
             }}
           >
             {name}
-            {'  '}
           </Text>
         </Paragraph>
         <ButtonCover>

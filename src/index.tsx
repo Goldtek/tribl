@@ -7,7 +7,6 @@ import TriblPayNavigator from './navigator/triblPayNavigator';
 import SignupNavigator from './navigator/signupNavigator';
 import { navigationRef } from './constants';
 import { useThemeContext } from './theme';
-import AsyncStorage from '@react-native-community/async-storage';
 import Screens from './screens';
 import BottomNavigator from './navigator/bottomNavigator';
 import CustomDrawer from './navigator/sideNavigator/customDrawer';
@@ -16,10 +15,12 @@ import { Linking } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { LinkingOptions } from '@react-navigation/native';
 import { NotificationMessage, IFCMMessageTypes } from './graphql/types';
-import { DEVICE_OS } from './utils/device';
 import { crashlytics } from './firebase/config';
 import { useMutation } from '@apollo/react-hooks';
-import { CHANGE_CONNECTION_NOTIFICATION_BADGE } from './graphql/cache/mutations';
+import {
+  CHANGE_CONNECTION_NOTIFICATION_BADGE,
+  CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE
+} from './graphql/cache/mutations';
 
 const RootStack = createStackNavigator();
 
@@ -28,6 +29,10 @@ export default function AppNavigator() {
 
   const [changeConnectionNotification] = useMutation(
     CHANGE_CONNECTION_NOTIFICATION_BADGE
+  );
+
+  const [changeTribeRequestNotification] = useMutation(
+    CHANGE_TRIBE_REQUEST_NOTIFICATION_BADGE
   );
 
   // Deep links
@@ -58,6 +63,7 @@ export default function AppNavigator() {
           CreateTribeScreen: 'create_tribe_screen',
           ChannelChatScreen: 'channel_chat_screen',
           TribeDetailScreen: 'tribe_detail_screen',
+          TribeRequestScreen: 'tribe_request_screen',
           MyNotifications: 'my_notifications_screen',
           MemberDetailScreen: 'member_detail_screen',
           CommunityListScreen: 'community_list_screen',
@@ -104,21 +110,11 @@ export default function AppNavigator() {
 
       if (url != null) return url;
 
-      const localMessage = await AsyncStorage.getItem('BACK_GROUND_MESSAGE');
+      // Check whether an initial notification is available
+      const remoteMessage = await messaging().getInitialNotification();
 
-      if (!localMessage) return null;
-
-      const message = JSON.parse(localMessage) as {
-        data: NotificationMessage;
-        body: NotificationMessage;
-      };
-
-      const data =
-        DEVICE_OS === 'ios'
-          ? ((message?.body || message.data) as NotificationMessage)
-          : (message?.data as NotificationMessage);
-
-      await AsyncStorage.removeItem('BACK_GROUND_MESSAGE');
+      if (!remoteMessage) return null;
+      const data = (remoteMessage.data as unknown) as NotificationMessage;
 
       // Get deep link from data
       // if this is undefined, the app will open the default/home page
@@ -138,11 +134,7 @@ export default function AppNavigator() {
             `DEEP LINK NOTIFICATION MESSAGE, ${JSON.stringify(message)}`
           );
 
-          const data =
-            DEVICE_OS === 'ios'
-              ? //@ts-ignore
-              ((message?.body || message.data) as NotificationMessage)
-              : (message?.data as NotificationMessage);
+          const data = (message?.data as unknown) as NotificationMessage;
 
           // Any custom logic to check whether the URL needs to be handled
           // Call the listener to let React Navigation handle the URL
@@ -172,13 +164,33 @@ export default function AppNavigator() {
         return `${defaultUrl}/${data.link_url}?channelId=${data.channelId}&avatar=${data.sender_image}&title=${data.sender_title}&id=${data.sender_id}`;
 
       case IFCMMessageTypes.CONNECTION_REQUEST_ACCEPTED:
-        return `${defaultUrl}`;
+        return `${defaultUrl}/member_detail_screen?connectionAccepted=${true}&id=${
+          data.senderId
+        }&title=${data.senderName}`;
 
       case IFCMMessageTypes.CONNECTION_REQUEST_RECEIVED:
         changeConnectionNotification({
           variables: { showConnectionNotificationBadge: true }
         });
         return `${defaultUrl}/connection_request_screen`;
+
+      case IFCMMessageTypes.CHANNEL_INVITATION_RECEIVED:
+        return `${defaultUrl}/deep_link_channel_chat_screen?channelId=${data.channelId}&title=${data.channelName}`;
+
+      case IFCMMessageTypes.COMMUNITY_REQUEST_ACCEPTED:
+        return `${defaultUrl}/tribe_request_screen`;
+
+      case IFCMMessageTypes.COMMUNITY_INVITE_ACCEPTED:
+        // return `${defaultUrl}/tribe_request_screen?tribeAccepted=${true}&id=${
+        //   data.channelId
+        // }&title=${data.senderName}`;
+        return `${defaultUrl}`;
+
+      case IFCMMessageTypes.COMMUNITY_INVITE_RECEIVED:
+        changeTribeRequestNotification({
+          variables: { showTribeRequestNotificationBadge: true }
+        });
+        return `${defaultUrl}/tribe_request_screen`;
 
       default:
         return `${defaultUrl}`;

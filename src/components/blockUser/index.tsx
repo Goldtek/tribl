@@ -8,13 +8,8 @@ import { useThemeContext } from '../../theme';
 import { BLOCK_REPORT_USER } from '../../graphql/server/mutations';
 import { Mixpanel } from '../../config';
 import { crashlytics } from '../../firebase/config';
-import {
-  GET_SINGLE_PASSPORT,
-  GET_RECOMMENDED_MEMBERS,
-  GET_NEARBY_MEMBERS
-} from '../../graphql/server/query';
+import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
 import { UserPassportInterface } from '../../graphql/types';
-import { PAGINATION_DEFAULT } from '../../constants';
 
 import { Container, Cover, ButtonContainer } from './styles';
 
@@ -31,14 +26,8 @@ export default function BlockUserModal(props: BlockUserProps) {
   const { t } = useTranslation();
   const { colors, fonts } = useThemeContext();
   const [block, setBlock] = useState(false);
-
-  const [getRecommendedMembers] = useLazyQuery(GET_RECOMMENDED_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
-
-  const [getNearbyMembers] = useLazyQuery(GET_NEARBY_MEMBERS, {
-    variables: { input: { limit: PAGINATION_DEFAULT / 2 } }
-  });
+  const firstName = data?.details?.firstName || data?.title.split(' ')[0];
+  const passport = { ...data, ...data.details, firstName };
 
   const [getUserPassport] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT
@@ -48,9 +37,9 @@ export default function BlockUserModal(props: BlockUserProps) {
     props.getBlockedDetails(block);
   }, [block]);
 
-  const note = `${data?.details.firstName} ${t(
+  const note = `${passport?.firstName} ${t(
     `community.memberPassport.blockMessage`
-  )} ${data?.details.firstName}`;
+  )} ${passport?.firstName}`;
 
   enum status {
     BLOCK
@@ -59,7 +48,7 @@ export default function BlockUserModal(props: BlockUserProps) {
   const [blockUser, { loading }] = useMutation(BLOCK_REPORT_USER, {
     variables: {
       payload: {
-        passportId: data?.details?.id,
+        passportId: passport?.id,
         status: status[0],
         notes: note
       }
@@ -69,7 +58,7 @@ export default function BlockUserModal(props: BlockUserProps) {
   const handleBlock = async () => {
     try {
       Mixpanel.track('Block User', {
-        info: `Block ${data?.title}`,
+        info: `Block ${passport?.title}`,
         'Activity Screen': 'Member details screen'
       });
       await blockUser();
@@ -77,7 +66,7 @@ export default function BlockUserModal(props: BlockUserProps) {
       closeModal();
       refetch();
       if (data?.details?.id) {
-        getUserPassport({ variables: { id: data?.details?.id } });
+        getUserPassport({ variables: { id: passport?.id } });
       }
     } catch (error) {
       crashlytics.recordError(error);
@@ -104,7 +93,9 @@ export default function BlockUserModal(props: BlockUserProps) {
                 paddingHorizontal: RFValue(10),
                 marginBottom: RFValue(5)
               }}
-            >{`${t(`community.memberPassport.block`)} ${data?.title}`}</Title>
+            >{`${t(`community.memberPassport.block`)} ${
+              passport?.title
+            }`}</Title>
             <Text
               style={{
                 color: colors.PRIMARY_TEXT,
@@ -113,9 +104,9 @@ export default function BlockUserModal(props: BlockUserProps) {
                 textAlign: 'center',
                 paddingHorizontal: RFValue(10)
               }}
-            >{`${data?.details?.firstName} ${t(
+            >{`${passport?.firstName} ${t(
               `community.memberPassport.blockMessage`
-            )} ${data?.details?.firstName}`}</Text>
+            )} ${passport?.firstName}`}</Text>
             <Divider
               style={{
                 backgroundColor: colors.INPUT,

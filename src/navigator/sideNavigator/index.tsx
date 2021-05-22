@@ -128,8 +128,6 @@ export default function DrawerStackNavigator() {
 
   const [connectionLoading, setConnectionLoading] = useState(false);
 
-  const [id, setID] = useState('');
-
   const [getUserPassport, { refetch }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT
   );
@@ -137,7 +135,6 @@ export default function DrawerStackNavigator() {
   const [declineConnection] = useMutation(REJECT_CONNECTION);
 
   const handleRemoveConnection = async (id: string) => {
-    setID(id);
     logEvent('remove connection', {
       from: 'Member Detail Screen'
     });
@@ -172,12 +169,10 @@ export default function DrawerStackNavigator() {
   const note = `${t(`community.memberPassport.unblock`)} `;
 
   const [unBlockUser, { loading: unblockLoading }] = useMutation(
-    BLOCK_REPORT_USER,
-
+    BLOCK_REPORT_USER
   );
 
   const handleUnBlock = async (id: string) => {
-    setID(id);
     try {
       await unBlockUser({
         variables: {
@@ -289,7 +284,7 @@ export default function DrawerStackNavigator() {
           },
           headerRight: () => (
             <TouchableRipple
-              onPress={() => { }}
+              onPress={() => {}}
               style={{
                 height: RFValue(40),
                 width: RFValue(40),
@@ -452,8 +447,9 @@ export default function DrawerStackNavigator() {
       <DrawerStack.Screen
         name="MemberDetailScreen"
         component={MemberDetailScreen}
-        options={({ route }: any) => {
-          setID(route?.params?.details.id);
+        options={(props: any) => {
+          const route = props.route;
+          const userId = route?.params?.id || route?.params?.details.id;
           return {
             headerShown: true,
             headerTitle: () => null,
@@ -467,6 +463,28 @@ export default function DrawerStackNavigator() {
               flex: 1,
               paddingLeft: DEVICE_OS === 'ios' ? 30 : 0
             },
+            headerLeft: () => (
+              <TouchableRipple
+                onPress={() =>
+                  props.navigation.canGoBack()
+                    ? props.navigation.goBack()
+                    : props.navigation.replace('CommunityScreen')
+                }
+                style={{
+                  height: RFValue(40),
+                  width: RFValue(40),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: RFValue(40 / 2)
+                }}
+              >
+                <Ionicons
+                  name="md-arrow-back"
+                  size={RFValue(24)}
+                  color={colors.PRIMARY}
+                />
+              </TouchableRipple>
+            ),
             headerRight: () => (
               <Fragment>
                 <Menu
@@ -509,9 +527,7 @@ export default function DrawerStackNavigator() {
                 >
                   <Menu.Item
                     onPress={
-                      block
-                        ? () => handleUnBlock(route?.params?.details.id)
-                        : showBlockModal
+                      block ? () => handleUnBlock(userId) : showBlockModal
                     }
                     title={
                       <Fragment>
@@ -571,13 +587,11 @@ export default function DrawerStackNavigator() {
                     }}
                   />
                   {route?.params?.details?.connectionDetails?.status ===
-                    'ACCEPTED' ? (
+                  'ACCEPTED' ? (
                     <Fragment>
                       <Divider />
                       <Menu.Item
-                        onPress={() =>
-                          handleRemoveConnection(route?.params?.details.id)
-                        }
+                        onPress={() => handleRemoveConnection(userId)}
                         title={
                           <Fragment>
                             {connectionLoading ? (
@@ -618,9 +632,7 @@ export default function DrawerStackNavigator() {
                   <Divider />
 
                   <Menu.Item
-                    onPress={() =>
-                      inviteTribeNavigation(route?.params?.details.id)
-                    }
+                    onPress={() => inviteTribeNavigation(userId)}
                     title={t(`community.invitation.inviteTribe`)}
                     style={{
                       borderTopLeftRadius: 20,
@@ -641,9 +653,7 @@ export default function DrawerStackNavigator() {
                   />
                   <Divider />
                   <Menu.Item
-                    onPress={() =>
-                      inviteChannelNavigation(route?.params?.details.id)
-                    }
+                    onPress={() => inviteChannelNavigation(userId)}
                     title={t(`community.invitation.inviteChannel`)}
                     style={{
                       alignItems: 'center',
@@ -766,7 +776,7 @@ export default function DrawerStackNavigator() {
                 {
                   //@ts-ignore
                   route?.params?.details?.isModerator &&
-                    route?.params?.details?.isPrivate ? (
+                  route?.params?.details?.isPrivate ? (
                     <Fragment>
                       <Divider />
                       <Menu.Item

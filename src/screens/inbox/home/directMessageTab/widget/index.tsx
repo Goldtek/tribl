@@ -1,9 +1,10 @@
 import React, { Fragment, useState } from 'react';
-import { Badge, TouchableRipple } from 'react-native-paper';
+import { ActivityIndicator, Badge, TouchableRipple } from 'react-native-paper';
 import truncate from 'lodash/truncate';
 import { useThemeContext } from '../../../../../theme';
 import { hideSensitiveView } from '../../../../../utils/uxcamHelper';
 import FastImage from 'react-native-fast-image';
+import { Alert, Modal } from 'react-native';
 import {
   Avatar,
   ChannelPreviewMessengerProps,
@@ -28,15 +29,19 @@ import {
 } from '../../../../../stream/types';
 import { MyPassportInterface } from '../../../../../graphql/types';
 import { GET_USER_PASSPORT } from '../../../../../graphql/server/query';
+import { crashlytics } from '../../../../../firebase/config';
 
 // IMPORT FOR ALL CUSTOM STYLES
 import {
   Date,
   Title,
   Details,
+  Overlay,
   DetailsTop,
   DetailsBottom,
   StyledMessage,
+  LoaderMessage,
+  ModalContentWrapper,
   GroupImageContainer,
   NotificationContainer,
   LeftCover
@@ -64,6 +69,7 @@ export default function CustomDirectMessagePreview(
   } = props;
 
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
   const { colors, fonts } = useThemeContext();
   const { setChannel } = useStreamContext();
   const getMuteStatus = channel?.muteStatus().muted;
@@ -126,21 +132,72 @@ export default function CustomDirectMessagePreview(
   }
 
   const handleDeleteAction = async () => {
-    channel.removeMembers([`${chatClient.user?.id}`]);
+    const isGroup = Boolean(channel.data?.isGroup);
+
+    Alert.alert(
+      `Leave ${isGroup ? 'group' : 'conversation'}`,
+      `Are you sure you want to leave this ${
+        isGroup ? 'group' : 'conversation'
+      }`,
+
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel'
+        },
+        {
+          text: 'Leave',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await channel.removeMembers([`${chatClient.user?.id}`]);
+              setLoading(false);
+            } catch (error) {
+              setLoading(false);
+              crashlytics.recordError(new Error(error));
+              crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const toggleMuteAction = async () => {
-    try {
-      if (muted) {
-        await channel.unmute();
-        setMuted(false);
-      } else {
-        await channel.mute();
-        setMuted(true);
-      }
-    } catch {
-      setMuted(getMuteStatus);
-    }
+    const isGroup = Boolean(channel.data?.isGroup);
+
+    Alert.alert(
+      `Mute ${isGroup ? 'group' : 'conversation'}`,
+      `Are you sure you want to mute this ${
+        isGroup ? 'group' : 'conversation'
+      }`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel'
+        },
+        {
+          text: 'Mute',
+          onPress: async () => {
+            try {
+              if (muted) {
+                await channel.unmute();
+                setMuted(false);
+              } else {
+                await channel.mute();
+                setMuted(true);
+              }
+            } catch (error) {
+              setMuted(getMuteStatus);
+              crashlytics.recordError(new Error(error));
+              crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleNavigate = () => {
@@ -172,9 +229,7 @@ export default function CustomDirectMessagePreview(
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          borderBottomColor: colors.light,
           backgroundColor: colors.WHITE,
-          borderBottomWidth: 1,
           padding: 10
         }}
         onPress={handleNavigate}
@@ -329,6 +384,14 @@ export default function CustomDirectMessagePreview(
           </Details>
         </Fragment>
       </TouchableRipple>
+      <Modal animationType="fade" visible={loading} transparent>
+        <Overlay>
+          <ModalContentWrapper>
+            <ActivityIndicator size="small" color={colors.BLACK} />
+            <LoaderMessage>Leaving channel...</LoaderMessage>
+          </ModalContentWrapper>
+        </Overlay>
+      </Modal>
     </Swipeable>
   );
 }

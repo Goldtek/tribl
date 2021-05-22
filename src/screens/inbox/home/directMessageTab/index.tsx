@@ -5,6 +5,7 @@ import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
 import { ChannelSort } from 'stream-chat';
 import { useTranslation } from 'react-i18next';
 import CustomChannelPreview from './widget';
+import { Divider } from 'react-native-paper';
 import { NavigationInterface } from '../../../types';
 import { tagScreenName } from '../../../../utils/uxcamHelper';
 import EmptyMessageState from '../../../../components/emptyMessageState';
@@ -75,9 +76,13 @@ function DirectMessageTab(props: ScreenProp) {
           options={options}
           Preview={CustomChannelPreview}
           EmptyStateIndicator={EmptyMessageState}
-          LoadingIndicator={LoadingIndicatorState}
           LoadingErrorIndicator={LoadingErrorIndicator}
-          additionalFlatListProps={{ showsVerticalScrollIndicator: false }}
+          LoadingIndicator={() => <LoadingIndicatorState />}
+          additionalFlatListProps={{
+            showsVerticalScrollIndicator: false,
+            ItemSeparatorComponent: () => <Divider />,
+            contentContainerStyle: { paddingBottom: 70, flexGrow: 1 }
+          }}
         />
       </Container>
       <ButtonWrapper>

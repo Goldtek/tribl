@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import { Surface } from 'react-native-paper';
+import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
 
 export const ChatContainer = styled.View`
@@ -9,9 +10,10 @@ export const ChatContainer = styled.View`
 
 export const HeaderContainer = styled.View`
   width: 100%;
-  height: 70px;
+  height: ${RFValue(40)}px;
   margin-top: ${Constants.statusBarHeight}px;
   flex-direction: row;
+  padding-bottom: 10px;
   align-items: center;
   z-index: 999;
   position: absolute;
@@ -39,6 +41,7 @@ export const MessageListContainer = styled.View`
   position: relative;
 `;
 
-export const HeaderTitleContainer = styled.View`
+export const HeaderTitleContainer = styled.View<{ count: number }>`
   flex: 1;
+  margin-left: ${({ count }) => (count === 1 ? -20 : count >= 3 ? 15 : 0)}px;
 `;
