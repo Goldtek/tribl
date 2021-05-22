@@ -82,7 +82,7 @@ export default function WalletScreen(props: ScreenProp) {
           fontFamily: fonts.WORK_SANS_BOLD,
           lineHeight: RFValue(40),
           textAlign: 'center',
-          marginTop: 0,
+          marginTop: -10,
           paddingTop: 0
         }}
       >
@@ -330,58 +330,43 @@ export default function WalletScreen(props: ScreenProp) {
           />
         </RightCover>
       </Cover>
-      <Title
-        style={{
-          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-          fontSize: RFValue(fonts.LARGE_SIZE + 2),
-          color: colors.PRIMARY_TEXT,
-          lineHeight: RFValue(30),
-          marginTop: RFValue(25),
-          textTransform: 'capitalize'
-        }}
-      >
-        {t(`community.passport.cryptocurrency`)}
-      </Title>
-      <Cover>
-        <LeftCover>
-          <Text
-            style={{
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              lineHeight: RFValue(17),
-              textTransform: 'capitalize'
-            }}
-          >
-            {t(`community.passport.triblCoin`)}
-          </Text>
-        </LeftCover>
-        <RightCover>
-          <Text
-            style={{
-              color: colors.SECONDARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              lineHeight: RFValue(17)
-            }}
-          >
-            {'\u0024'}0.00 0.00000 TC
-          </Text>
-        </RightCover>
-      </Cover>
-      <Text
-        style={{
-          color: colors.PRIMARY,
-          fontSize: RFValue(fonts.LARGE_SIZE + 5),
-          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-          lineHeight: RFValue(20),
-          textAlign: 'center',
-          textTransform: 'capitalize',
-          marginTop: RFValue(60)
-        }}
-      >
-        {t(`community.passport.learn`)}
-      </Text>
+      <ListCover>
+        <Cover>
+          <LeftCover>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                color: colors.BLACK,
+                lineHeight: RFValue(30),
+                marginTop: RFValue(5),
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`community.passport.cryptocurrency`)}
+            </Title>
+          </LeftCover>
+          <RightCover>
+            <Feather
+              name="more-vertical"
+              size={22}
+              color={colors.BLACK}
+            />
+          </RightCover>
+        </Cover>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
+          <FlatList
+            data={filtered_data}
+            renderItem={({ item }) => (
+              <Portfolio item={item} markets={filtered_markets} />
+            )}
+            ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
+            keyExtractor={(item, index) => String(index)}
+          />
+        </ScrollView>
+      </ListCover>
+
+     
 
       <Modal
         animationType="fade"
@@ -435,42 +420,7 @@ export default function WalletScreen(props: ScreenProp) {
           </View>
         </Overlay>
       </Modal>
-      <ListCover>
-        <Cover>
-          <LeftCover>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 2),
-                color: colors.BLACK,
-                lineHeight: RFValue(30),
-                marginTop: RFValue(5),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.passport.cryptocurrency`)}
-            </Title>
-          </LeftCover>
-          <RightCover>
-            <Feather
-              name="more-vertical"
-              size={22}
-              color={colors.BLACK}
-            />
-          </RightCover>
-        </Cover>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
-          <FlatList
-            data={filtered_data}
-            renderItem={({ item }) => (
-              <Portfolio item={item} markets={filtered_markets} />
-            )}
-            ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
-            keyExtractor={(item, index) => String(index)}
-          />
-        </ScrollView>
-      </ListCover>
-
+      
     </Container>
   );
 }

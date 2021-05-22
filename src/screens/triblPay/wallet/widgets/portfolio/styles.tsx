@@ -20,7 +20,7 @@ export const RightCover = styled.View`
 `;
 
 export const Icon = styled.Image`
-    width: 30px;
-    height: 30px;
-    margin: 10px;
+    width: 25px;
+    height: 25px;
+    margin: 8px;
 `;
