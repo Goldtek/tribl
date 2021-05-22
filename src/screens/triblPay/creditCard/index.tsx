@@ -6,8 +6,8 @@ import {
   Divider,
   TextInput
 } from 'react-native-paper';
+import { useQuery } from '@apollo/react-hooks';
 import { useTranslation } from 'react-i18next';
-import OpenPGP from 'react-native-fast-openpgp';
 import { Modalize } from 'react-native-modalize';
 import { TouchableOpacity, View } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
@@ -16,7 +16,6 @@ import { SimpleLineIcons, Octicons } from '@expo/vector-icons';
 import { CreditCardInput } from 'react-native-input-credit-card';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
 import Countries from './widgets/bankCountry';
 import LocalStates from './widgets/localStates';
 import { useThemeContext } from '../../../theme';
@@ -30,21 +29,12 @@ import {
   LabelContainer
 } from './styles';
 import ErrorModal from '../../../components/errorModal';
+import { GET_CARD_PCI_OUTPUT } from '../../../graphql/server/query';
+import { Base64 } from '../../../utils/base64';
+import OpenPGP from 'react-native-fast-openpgp';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
-
-// Object to be encrypted
-interface CardDetails {
-  number?: string; // required when storing card details
-  cvv?: string; // required when cardVerification is set to cvv
-}
-
-// Encrypted result
-interface EncryptedValue {
-  encryptedData: string;
-  keyId: string;
-}
 
 export default function CreditCardScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
@@ -74,6 +64,8 @@ export default function CreditCardScreen(props: ScreenProp) {
     addressCountryCode: ''
   });
 
+  const [cardDetails, setCardDetails] = useState<any>();
+
   const [isLocal, setIsLocal] = useState(false);
 
   const {
@@ -86,14 +78,15 @@ export default function CreditCardScreen(props: ScreenProp) {
     addressCountryCode
   } = billingDetails;
 
-  const handleInput = async (form: any) => {
-    const publicKey =
-      'mQENBF0Tpe0BCADm+ja4vMKuodkQEhLm/092M/6gt4TaKwzv8QcA53/FrM3g8wabD4m65Neoc7DBEdvzgK9IUMpwG5N0t+0pfWLhs8AZdMxE7RbP=kbtq';
-    const encrypted = await OpenPGP.encrypt(form.values.number, publicKey);
-    console.tron('form', encrypted);
+  const handleInput = (form: any) => {
+    setCardDetails(form);
   };
 
+  const { data: cardPci } = useQuery(GET_CARD_PCI_OUTPUT);
+
   useEffect(() => {
+    // console.tron('cardPci', cardPci.getCardPciKey.key);
+
     if (billingDetailsType === 'new') {
       scrollRef.current?.scrollToEnd(true);
     }
@@ -105,6 +98,20 @@ export default function CreditCardScreen(props: ScreenProp) {
     if (isLocal && addressState === '')
       setBillingDetails({ ...billingDetails, addressState: 'Select' });
     return addressState;
+  };
+
+  // const logEncryption = async () => {};
+  const submitCreditCardDetails = async () => {
+    const { key } = await cardPci.getCardPciKey;
+    console.tron('key', key);
+    const encrypted = await OpenPGP.encrypt(
+      JSON.stringify({
+        number: '4007400000000007',
+        cvv: '430'
+      }),
+      Base64.atob(`${key}`)
+    );
+    console.tron(Base64.btoa(encrypted), 'log');
   };
 
   return (
@@ -171,6 +178,22 @@ export default function CreditCardScreen(props: ScreenProp) {
             </Fragment>
           </TouchableRipple>
 
+          <View
+            style={{
+              display: billingDetailsType === 'old' ? 'flex' : 'none',
+              marginBottom: 10
+            }}
+          >
+            <Text
+              style={{
+                paddingHorizontal: 10,
+                fontFamily: fonts.WORK_SANS_MEDIUM
+              }}
+            >
+              - 12 Boulevarde court, London, United Kingdom
+            </Text>
+          </View>
+
           <TouchableRipple
             onPress={() => handleSelection('new')}
             style={{
@@ -229,7 +252,7 @@ export default function CreditCardScreen(props: ScreenProp) {
                   fontFamily: fonts.WORK_SANS_BOLD,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
                   color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
+                  textTransform: 'capitalize'
                 }}
               >
                 address
@@ -242,6 +265,7 @@ export default function CreditCardScreen(props: ScreenProp) {
               onChangeText={(addressLine: string) =>
                 setBillingDetails({ ...billingDetails, addressLine })
               }
+              placeholder="Enter Address"
               style={{
                 height: 30,
                 fontFamily: fonts.WORK_SANS_REGULAR,
@@ -261,7 +285,7 @@ export default function CreditCardScreen(props: ScreenProp) {
                   fontFamily: fonts.WORK_SANS_BOLD,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
                   color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
+                  textTransform: 'capitalize'
                 }}
               >
                 Postal Code
@@ -272,6 +296,7 @@ export default function CreditCardScreen(props: ScreenProp) {
               onChangeText={(addressPostalCode: string) =>
                 setBillingDetails({ ...billingDetails, addressPostalCode })
               }
+              placeholder="Enter Postal Code"
               style={{
                 height: 30,
                 fontFamily: fonts.WORK_SANS_REGULAR,
@@ -292,7 +317,7 @@ export default function CreditCardScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   Country
@@ -302,6 +327,7 @@ export default function CreditCardScreen(props: ScreenProp) {
               <TextInput
                 value={addressCountry}
                 disabled={true}
+                placeholder="Enter Country"
                 style={{
                   height: 30,
                   fontFamily: fonts.WORK_SANS_REGULAR,
@@ -310,7 +336,7 @@ export default function CreditCardScreen(props: ScreenProp) {
                   backgroundColor: colors.WHITE,
                   borderColor: colors.DISABLED,
                   textTransform: 'capitalize',
-                  borderBottomWidth: isLocal ? 1 : 0
+                  borderBottomWidth: 1
                 }}
               />
             </InputContainer>
@@ -324,7 +350,7 @@ export default function CreditCardScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   State
@@ -340,6 +366,7 @@ export default function CreditCardScreen(props: ScreenProp) {
                     addressStateCode: addressState
                   })
                 }
+                placeholder="Enter State"
                 style={{
                   height: 30,
                   fontFamily: fonts.WORK_SANS_REGULAR,
@@ -361,7 +388,7 @@ export default function CreditCardScreen(props: ScreenProp) {
                   fontFamily: fonts.WORK_SANS_BOLD,
                   fontSize: RFValue(fonts.MEDIUM_SIZE),
                   color: colors.PRIMARY_TEXT,
-                  textTransform: 'uppercase'
+                  textTransform: 'capitalize'
                 }}
               >
                 City
@@ -372,6 +399,7 @@ export default function CreditCardScreen(props: ScreenProp) {
               onChangeText={(addressCity: string) =>
                 setBillingDetails({ ...billingDetails, addressCity })
               }
+              placeholder="Enter City"
               style={{
                 height: 30,
                 fontFamily: fonts.WORK_SANS_REGULAR,
@@ -390,7 +418,8 @@ export default function CreditCardScreen(props: ScreenProp) {
           // disabled={loading}
           // loading={loading}
           // onPress={() => navigation.navigate('WalletScreen')}
-          onPress={() => openErrorModal()}
+          // onPress={() => openErrorModal()}
+          onPress={submitCreditCardDetails}
           style={{ height: 50 }}
           gradientContainerstyle={{
             height: 50,
