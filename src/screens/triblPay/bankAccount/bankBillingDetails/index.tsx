@@ -57,7 +57,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
     addressLine2: '',
     addressCity: '',
     addressState: '',
-    addressCountry: '',
+    addressCountry: 'Select',
     addressStateCode: '',
     addressPostalCode: '',
     addressCountryCode: ''
@@ -151,7 +151,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
   });
 
   const submitBankDetails = async () => {
-    return console.tron('variables', Payload);
+    // return console.log('variables', Payload);
     // if (countWords(addressLine)) return alert('Address field is compulsory');
     // if (countWords(addressPostalCode))
     //   return alert('Postal code field is compulsory');
@@ -246,16 +246,17 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
-                  address
+                  address line 1
                 </Title>
               </LabelContainer>
               <TextInput
                 multiline={true}
                 dense={true}
                 value={addressLine}
+                placeholder="Enter Address Line 1"
                 onChangeText={(addressLine: string) =>
                   setBillingDetails({ ...billingDetails, addressLine })
                 }
@@ -278,16 +279,17 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
-                  address 2
+                  address line 2
                 </Title>
               </LabelContainer>
               <TextInput
                 multiline={true}
                 dense={true}
                 value={addressLine2}
+                placeholder="Enter Address Line 2"
                 onChangeText={(addressLine2: string) =>
                   setBillingDetails({ ...billingDetails, addressLine2 })
                 }
@@ -310,7 +312,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   Postal Code
@@ -321,6 +323,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                 onChangeText={(addressPostalCode: string) =>
                   setBillingDetails({ ...billingDetails, addressPostalCode })
                 }
+                placeholder="Enter Postal Code"
                 style={{
                   height: 30,
                   fontFamily: fonts.WORK_SANS_REGULAR,
@@ -341,7 +344,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                       fontFamily: fonts.WORK_SANS_BOLD,
                       fontSize: RFValue(fonts.MEDIUM_SIZE),
                       color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
+                      textTransform: 'capitalize'
                     }}
                   >
                     Country
@@ -359,7 +362,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                     backgroundColor: colors.WHITE,
                     borderColor: colors.DISABLED,
                     textTransform: 'capitalize',
-                    borderBottomWidth: isLocal ? 1 : 0
+                    borderBottomWidth: 1
                   }}
                 />
               </InputContainer>
@@ -373,7 +376,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                       fontFamily: fonts.WORK_SANS_BOLD,
                       fontSize: RFValue(fonts.MEDIUM_SIZE),
                       color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
+                      textTransform: 'capitalize'
                     }}
                   >
                     State
@@ -382,6 +385,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                 <TextInput
                   value={handleStateValue()}
                   disabled={isLocal}
+                  placeholder="Enter State"
                   onChangeText={(addressState: string) =>
                     setBillingDetails({
                       ...billingDetails,
@@ -410,7 +414,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   City
@@ -421,6 +425,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
                 onChangeText={(addressCity: string) =>
                   setBillingDetails({ ...billingDetails, addressCity })
                 }
+                placeholder="Enter City"
                 style={{
                   height: 30,
                   fontFamily: fonts.WORK_SANS_REGULAR,
