@@ -212,7 +212,7 @@ export default function DirectMessageInformation(props: GroupInformationProp) {
                   color: colors.PRIMARY_TEXT
                 }}
               >
-                {t(`community.invitation.inviteChannel`)}
+                {t(`community.invitation.inviteToGroup`)}
               </Text>
             </LeftCover>
           </OptionWrapper>
