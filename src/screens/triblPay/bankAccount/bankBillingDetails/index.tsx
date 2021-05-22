@@ -3,7 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/react-hooks';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Title, Text, ProgressBar, TextInput } from 'react-native-paper';
+import {
+  Title,
+  Text,
+  ProgressBar,
+  TextInput,
+  TouchableRipple,
+  Divider
+} from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Countries from './widgets/bankCountry';
@@ -23,6 +30,9 @@ import {
   InputContainer,
   ContactContainer
 } from './styles';
+import { View } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
+import { Octicons, SimpleLineIcons } from '@expo/vector-icons';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -64,6 +74,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
   });
 
   const [isLocal, setIsLocal] = useState(false);
+  const [billingDetailsType, setBillingDetailsType] = useState('old');
 
   const {
     addressLine,
@@ -89,35 +100,6 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
 
-  const Payload = {
-    payload: {
-      accountDetails: {
-        accountNumber: isSwitchOn ? '' : accountNumber,
-        routingNumber: isSwitchOn ? '' : routingNumber
-      },
-      iBan: isSwitchOn ? iBan : '',
-      bankAddress: {
-        name,
-        line1,
-        line2,
-        city,
-        district,
-        postalCode,
-        country
-      },
-      billingId: '',
-      billingAddress: {
-        addressLine,
-        addressLine2,
-        addressCity,
-        addressState,
-        addressCountry,
-        addressStateCode,
-        addressPostalCode,
-        addressCountryCode
-      }
-    }
-  };
   const [saveBankDetails, { loading }] = useMutation(SAVE_BANK_DETAILS, {
     variables: {
       payload: {
@@ -176,8 +158,10 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
     return addressState;
   };
 
+  const handleSelection = (type: string) => setBillingDetailsType(type);
+
   return (
-    <Fragment>
+    <View style={{ backgroundColor: colors.WHITE, flex: 1 }}>
       <KeyboardAwareScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
@@ -238,7 +222,126 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
             </Text>
           </HeaderCover>
 
-          <ContactContainer>
+          <View style={{ paddingHorizontal: 20 }}>
+            <TouchableRipple
+              onPress={() => handleSelection('old')}
+              style={{
+                flexDirection: 'row',
+                borderColor: colors.PRIMARY,
+                borderWidth: 1,
+                borderRadius: 10,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: RFValue(10),
+                marginVertical: RFValue(10)
+              }}
+            >
+              <Fragment>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Octicons name="note" size={25} color={colors.PRIMARY} />
+                  <Text
+                    style={{
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+                      color: colors.SECONDARY_TEXT,
+                      textTransform: 'capitalize',
+                      lineHeight: RFValue(19),
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    Use existing details
+                  </Text>
+                </View>
+                <CheckBox
+                  disabled={true}
+                  value={billingDetailsType === 'old'}
+                  tintColors={{
+                    true: colors.PRIMARY,
+                    false: colors.INACTIVE
+                  }}
+                  animationDuration={0.2}
+                  tintColor={colors.INACTIVE}
+                  onCheckColor={colors.WHITE}
+                  onFillColor={colors.PRIMARY}
+                  onTintColor={colors.PRIMARY}
+                  style={{ width: RFValue(20), height: RFValue(20) }}
+                />
+              </Fragment>
+            </TouchableRipple>
+
+            <View
+              style={{
+                display: billingDetailsType === 'old' ? 'flex' : 'none',
+                marginBottom: 10
+              }}
+            >
+              <Text
+                style={{
+                  paddingHorizontal: 10,
+                  fontFamily: fonts.WORK_SANS_MEDIUM
+                }}
+              >
+                - 12 Boulevarde court, London, United Kingdom
+              </Text>
+            </View>
+
+            <TouchableRipple
+              onPress={() => handleSelection('new')}
+              style={{
+                flexDirection: 'row',
+                borderColor: colors.PRIMARY,
+                borderWidth: 1,
+                borderRadius: 10,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: RFValue(10),
+                marginVertical: RFValue(10)
+              }}
+            >
+              <Fragment>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <SimpleLineIcons
+                    name="note"
+                    size={22}
+                    color={colors.PRIMARY}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+                      color: colors.SECONDARY_TEXT,
+                      textTransform: 'capitalize',
+                      lineHeight: RFValue(19),
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    Enter New Details
+                  </Text>
+                </View>
+                <CheckBox
+                  disabled={true}
+                  value={billingDetailsType === 'new'}
+                  tintColors={{
+                    true: colors.PRIMARY,
+                    false: colors.INACTIVE
+                  }}
+                  animationDuration={0.2}
+                  tintColor={colors.INACTIVE}
+                  onCheckColor={colors.WHITE}
+                  onFillColor={colors.PRIMARY}
+                  onTintColor={colors.PRIMARY}
+                  style={{ width: RFValue(20), height: RFValue(20) }}
+                />
+              </Fragment>
+            </TouchableRipple>
+          </View>
+          <Divider style={{ marginTop: 5 }} />
+
+          <ContactContainer
+            style={{
+              display: billingDetailsType === 'new' ? 'flex' : 'none'
+            }}
+          >
             <InputContainer>
               <LabelContainer>
                 <Title
@@ -470,6 +573,6 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
         billingDetails={billingDetails}
         setBillingDetails={setBillingDetails}
       />
-    </Fragment>
+    </View>
   );
 }
