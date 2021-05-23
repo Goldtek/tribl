@@ -19,6 +19,7 @@ interface TranasactionCardProp {
   side: string;
   source: string;
   type: string;
+  onPress: () => void;
 }
 
 export default function WalletCard(props: TranasactionCardProp) {
@@ -29,7 +30,7 @@ export default function WalletCard(props: TranasactionCardProp) {
 
   return (
     <TouchableRipple
-      onPress={handleNavigation}
+      onPress={props.onPress}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
