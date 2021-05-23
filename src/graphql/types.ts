@@ -295,7 +295,7 @@ type Wallet = {
   passport: PassportInterface;
   community: CommunityInterface;
   activities: WalletActivity;
-  fundingSources: FundingSource;
+  fundingSources: FundingSource[];
   billingDetails: BillingAddress[];
 };
 
