@@ -21,3 +21,11 @@ export const CashCover = styled.View`
   justify-content: center;
   margin-top: ${RFValue(30)}px;
 `;
+
+export const Overlay = styled.TouchableOpacity`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding-horizontal: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+`;
