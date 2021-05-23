@@ -16,7 +16,6 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { SimpleLineIcons, Octicons } from '@expo/vector-icons';
 import { CreditCardInput } from 'react-native-input-credit-card';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import {
