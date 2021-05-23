@@ -20,7 +20,7 @@ import ImageCustom from '../ImageCustom';
 import { USER_DEFAULT_AVATAR } from '../../../../constants';
 import { chatClient } from '../../../../stream/types';
 
-const ANIM_CONFIG = { duration: 200 };
+const ANIM_CONFIG = { duration: 200, useNativeDriver: false };
 const { width, height } = Dimensions.get('window');
 
 export default class SingleImage extends PureComponent {
@@ -168,13 +168,13 @@ export default class SingleImage extends PureComponent {
     return {
       opacity: panning
         ? this.pan.interpolate({
-            inputRange: [-height, 0, height],
-            outputRange: [0, 1, 0]
-          })
+          inputRange: [-height, 0, height],
+          outputRange: [0, 1, 0]
+        })
         : this.openAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, target.opacity]
-          })
+          inputRange: [0, 1],
+          outputRange: [0, target.opacity]
+        })
     };
   };
 
@@ -201,32 +201,32 @@ export default class SingleImage extends PureComponent {
 
     return !slidesDown
       ? {
-          left: this.openAnim.interpolate({
-            inputRange,
-            outputRange: [origin.x, target.x]
-          }),
-          top: this.openAnim.interpolate({
-            inputRange,
-            outputRange: [origin.y, target.y]
-          }),
-          width: this.openAnim.interpolate({
-            inputRange,
-            outputRange: [origin.width, width]
-          }),
-          height: this.openAnim.interpolate({
-            inputRange,
-            outputRange: [origin.height, height]
-          })
-        }
+        left: this.openAnim.interpolate({
+          inputRange,
+          outputRange: [origin.x, target.x]
+        }),
+        top: this.openAnim.interpolate({
+          inputRange,
+          outputRange: [origin.y, target.y]
+        }),
+        width: this.openAnim.interpolate({
+          inputRange,
+          outputRange: [origin.width, width]
+        }),
+        height: this.openAnim.interpolate({
+          inputRange,
+          outputRange: [origin.height, height]
+        })
+      }
       : {
-          left: 0,
-          right: 0,
-          height,
-          top: this.openAnim.interpolate({
-            inputRange,
-            outputRange: [height, target.y]
-          })
-        };
+        left: 0,
+        right: 0,
+        height,
+        top: this.openAnim.interpolate({
+          inputRange,
+          outputRange: [height, target.y]
+        })
+      };
   };
 
   handleAvatar = async () => {
