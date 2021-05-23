@@ -318,9 +318,51 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           }
         }}
       />
+
       <TriblpayStack.Screen
         name="WalletScreen"
         component={Screens.WalletScreen}
+        options={{
+          headerTitle: () => null,
+          headerRight: () => (
+            <HeaderRightCover>
+              <Image
+                source={require('../../../assets/images/logo.png')}
+                style={{
+                  resizeMode: 'contain',
+                  width: RFValue(30),
+                  height: RFValue(30)
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.PRIMARY,
+                  fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {t(`community.passport.pay`)}
+              </Text>
+            </HeaderRightCover>
+          ),
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            textTransform: 'capitalize',
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_SEMI_BOLD
+          }
+        }}
+      />
+      <TriblpayStack.Screen
+        name="CryptoTransactionHistoryScreen"
+        component={Screens.CryptoTransactionHistoryScreen}
         options={{
           headerTitle: () => null,
           headerRight: () => (
