@@ -178,6 +178,20 @@ export const GET_USER_PASSPORT = gql`
           id
           entityName
         }
+        billingDetails {
+          id
+          addressLine
+          addressLine2
+          countryCode
+          stateCode
+          city
+          postCode
+          name
+          createdAt
+          updatedAt
+          country
+          state
+        }
       }
     }
   }
