@@ -7,7 +7,7 @@ import { useThemeContext } from '../../theme';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Screens from '../../screens/community';
 import { Feather, Entypo } from '@expo/vector-icons';
-import { Menu, Divider, TouchableRipple } from 'react-native-paper';
+import { Menu, Divider, TouchableRipple, Text } from 'react-native-paper';
 import hexToRGB from '../../utils/hexToRGB';
 import { NavigationInterface } from '../../screens/types';
 import { GLOBAL_HEADER_STYLE } from '../../constants';
@@ -26,6 +26,7 @@ import { DEVICE_OS } from '../../utils/device';
 import { logEvent } from '../../utils/uxcamHelper';
 import { Mixpanel } from '../../config';
 import { MenuBadgeWrapper } from '../bottomNavigator/TabBar/styles';
+import { HeaderRightCover } from './style';
 
 const CommunityStack = createStackNavigator();
 
@@ -595,6 +596,50 @@ export default function CommunityNavigator(props: CommunityNavigatorProps) {
           }
         })}
       />
+
+
+        <CommunityStack.Screen
+          name="DonateScreen"
+          component={Screens.DonateScreen}
+          options={{
+            headerTitle: () => null,
+            headerRight: () => (
+              <HeaderRightCover>
+                <Image
+                  source={require('../../../assets/images/logo.png')}
+                  style={{
+                    resizeMode: 'contain',
+                    width: RFValue(30),
+                    height: RFValue(30)
+                  }}
+                />
+                <Text
+                  style={{
+                    color: colors.PRIMARY,
+                    fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                    fontFamily: fonts.WORK_SANS_BOLD,
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {t(`community.passport.pay`)}
+                </Text>
+              </HeaderRightCover>
+            ),
+            headerTitleContainerStyle: { alignItems: 'center' },
+            headerLeftContainerStyle: { marginLeft: 5 },
+            headerRightContainerStyle: {
+              marginRight: 10
+            },
+            headerBackTitleVisible: false,
+            headerTintColor: colors.PRIMARY,
+            headerTitleStyle: {
+              color: colors.PRIMARY_TEXT,
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              textTransform: 'capitalize'
+            }
+          }}
+        />    
     </CommunityStack.Navigator>
   );
 }

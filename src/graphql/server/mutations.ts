@@ -370,3 +370,20 @@ export const BUY_CRYPTO = gql`
     }
   }
 `;
+
+export const SEND_MONEY = gql`
+mutation sendMoney($payload: SendMoneyInput!) {
+  sendMoney(input: $payload){
+    success
+  }
+}
+`;
+
+// mutation sendMoney {
+//   sendMoney(input:{
+//     amount:"111",
+//     walletId:"1"
+//   }){
+//     success
+//   }
+// }
