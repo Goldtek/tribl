@@ -1997,3 +1997,21 @@ export const GET_MARKET = gql`query fetchMarket {
   }
 }`;
 
+//GET USER FUNDING SOURCES
+export const GET_FUNDING_SOURCES = gql`
+  query myFundingSources($input: TransactionArgsInput!) {
+    myFundingSources(input: $input) {
+      data {
+        id
+        entityName
+        card {
+          id
+          network
+          last4
+          expYear
+          expMonth
+        }
+      }
+    }
+  }
+`;
