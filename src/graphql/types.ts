@@ -264,6 +264,22 @@ type FundingSource = {
   updatedAt: string;
 }
 
+type BillingAddress = {
+  id: string;
+  addressLine: string;
+  addressLine2: string;
+  countryCode: string;
+  stateCode: string;
+  city: string;
+  postCode: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  country: string;
+  state: string;
+  wallet: Wallet;
+}
+
 type Wallet = {
   id: string;
   status: string;
@@ -280,6 +296,7 @@ type Wallet = {
   community: CommunityInterface;
   activities: WalletActivity;
   fundingSources: FundingSource;
+  billingDetails: BillingAddress[];
 };
 
 export interface PassportInterface {
