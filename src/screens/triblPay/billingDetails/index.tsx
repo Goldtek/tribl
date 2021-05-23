@@ -27,6 +27,11 @@ import {
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
+enum KycSource {
+  PASSPORT = 'PASSPORT',
+  TRIBE = 'TRIBE'
+}
+
 export default function BillingDetailsScreen(props: ScreenProp) {
   const { navigation } = props;
   const { idJob, selfieJob, details, document } = props.route.params;
@@ -73,23 +78,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
 
-  const [verifyKyc, { loading }] = useMutation(ONBOARD_USER, {
-    variables: {
-      payload: {
-        address: {
-          addressLine,
-          addressCity,
-          addressState,
-          addressCountry,
-          addressStateCode,
-          addressPostalCode,
-          addressCountryCode
-        },
-        jobId: idJob.id,
-        isLocal
-      }
-    }
-  });
+  const [verifyKyc, { loading }] = useMutation(ONBOARD_USER);
 
   const submitKyc = async () => {
     if (countWords(addressLine)) return alert('Address field is compulsory');
@@ -102,7 +91,25 @@ export default function BillingDetailsScreen(props: ScreenProp) {
     if (countWords(addressCity)) return alert('City field is compulsory');
 
     try {
-      const { data } = await verifyKyc();
+      const { data } = await verifyKyc({
+        variables: {
+          payload: {
+            address: {
+              addressLine,
+              addressCity,
+              addressState,
+              addressCountry,
+              addressStateCode,
+              addressPostalCode,
+              addressCountryCode
+            },
+            jobId: idJob.id,
+            source: KycSource.PASSPORT,
+            isLocal
+          }
+        }
+      });
+
       if (data.onBoardUser.status === 'APPROVED')
         return navigation.navigate('ActivateWalletScreen', { billingDetails });
       if (data.onBoardUser.status === 'MANUAL_REVIEW')
