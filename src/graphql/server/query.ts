@@ -1931,54 +1931,73 @@ export const GET_ALL_CHANNEL_CREATION_REQUEST = gql`
 export const GET_CARD_PCI_OUTPUT = gql`
   query getCardPciKey {
     getCardPciKey {
-        success
-        key
+      success
+      key
     }
   }
 `;
-export const GET_PORTFOLIO = gql`query portfolio {
-  fetchPortfolio {
-    items {
-      asset
-      available
-      trading
+export const GET_PORTFOLIO = gql`
+  query portfolio {
+    fetchPortfolio {
+      items {
+        asset
+        available
+        trading
+      }
     }
   }
-}`;
+`;
 
-export const GET_MARKET = gql`query fetchMarket {
-  fetchMarket {
-    markets {
-      market
-      today {
-        open
-        high
-        low
-        volume
-        range {
-          begin
-          end
+export const GET_MARKET = gql`
+  query fetchMarket {
+    fetchMarket {
+      markets {
+        market
+        today {
+          open
+          high
+          low
+          volume
+          range {
+            begin
+            end
+          }
         }
-      }
         best_bid {
-        amount
-        price
-      }
-      best_ask {
-        amount
-        price
-      }
-      last_day {
-        open
-        high
-        low
-        volume
-        range {
-          begin
-          end
+          amount
+          price
+        }
+        best_ask {
+          amount
+          price
+        }
+        last_day {
+          open
+          high
+          low
+          volume
+          range {
+            begin
+            end
+          }
         }
       }
     }
   }
-}`;
+`;
 
+export const GET_TRANSACTION_HISTORY = gql`
+  query getTransactionHistory($input: TransactionArgsInput!) {
+    getTransactionHistory(input: $input) {
+      data {
+        narration
+        currency
+        createdAt
+        amount
+        side
+        source
+        type
+      }
+    }
+  }
+`;

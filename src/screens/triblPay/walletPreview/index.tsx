@@ -15,7 +15,7 @@ export default function WalletScreen(props: ScreenProp) {
     { name: t(`community.passport.linkedAccount`), route: '' },
     {
       name: t(`community.passport.transactionHistory`),
-      route: 'CryptoTransactionHistoryScreen'
+      route: 'TransactionHistoryScreen'
     },
     { name: t(`community.passport.accountInfo`), route: '' }
   ];

@@ -1,16 +1,12 @@
 import React from 'react';
-// import { useTranslation } from 'react-i18next';
-// import { Title, Text } from 'react-native-paper';
-// import { Feather, FontAwesome } from '@expo/vector-icons';
-// import { RFValue } from 'react-native-responsive-fontsize';
-
-// import GradientButton from '../../../components/gradientButton';
 import { useThemeContext } from '../../../theme';
+import { useQuery } from '@apollo/react-hooks';
 import { NavigationInterface } from '../../types';
 import TransactionCard from './widget';
 import { ScrollView, FlatList } from 'react-native';
 
 import { Container } from './styles';
+import { GET_TRANSACTION_HISTORY } from '../../../graphql/server/query';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -26,16 +22,19 @@ const items = [
 ];
 
 export default function TransactionHistory(props: ScreenProp) {
-  // const { colors, fonts } = useThemeContext();
-  // const { t } = useTranslation();
-  // const { navigation } = props;
+  const { data: { getTransactionHistory: { data = [] } } = {} } = useQuery(
+    GET_TRANSACTION_HISTORY,
+    {
+      variables: { input: {} }
+    }
+  );
 
   const renderItem = ({ item }: any) => <TransactionCard {...item} />;
 
   return (
     <Container>
       <FlatList
-        data={items}
+        data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

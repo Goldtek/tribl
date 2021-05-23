@@ -4,6 +4,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 import { Paragraph, Title, TouchableRipple } from 'react-native-paper';
 import FastImage from 'react-native-fast-image';
+import timeSince from '../../../../utils/timeAgo';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { useThemeContext } from '../../../../theme';
 import { USER_DEFAULT_AVATAR } from '../../../../constants';
@@ -11,9 +12,13 @@ import { USER_DEFAULT_AVATAR } from '../../../../constants';
 // DEFINE SCREEN PROP TYPES
 interface TranasactionCardProp {
   // avatar: string;
-  name: string;
-  location: string;
-  time: string;
+  narration: string;
+  currency: string;
+  createdAt: string;
+  amount: string;
+  side: string;
+  source: string;
+  type: string;
 }
 
 export default function WalletCard(props: TranasactionCardProp) {
@@ -50,42 +55,42 @@ export default function WalletCard(props: TranasactionCardProp) {
             <Title
               style={{
                 fontFamily: fonts.WORK_SANS_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                fontSize: RFValue(fonts.LARGE_SIZE),
                 color: colors.PRIMARY_TEXT
               }}
             >
-              {props.name}
+              {'Default'}
             </Title>
             <Paragraph
               style={{
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
                 color: colors.PRIMARY_TEXT
               }}
             >
-              {props.location}
+              {props?.currency}
             </Paragraph>
             <Paragraph
               style={{
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_REGULAR,
+                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                fontFamily: fonts.WORK_SANS_MEDIUM,
                 color: colors.PRIMARY_TEXT
               }}
             >
-              {props.time}
+              {timeSince(parseInt(props.createdAt))}
             </Paragraph>
           </View>
         </View>
         <Text
           style={{
-            fontSize: RFValue(fonts.LARGE_SIZE + 2),
+            fontSize: RFValue(fonts.LARGE_SIZE),
             fontFamily: fonts.WORK_SANS_SEMI_BOLD,
             margin: 0,
             padding: 0,
             color: colors.RED
           }}
         >
-          $100
+          ${props.amount}
         </Text>
       </Fragment>
     </TouchableRipple>
