@@ -706,7 +706,7 @@ export default function PassportScreen(props: ScreenProp) {
 
   const handleWalletAction = () => {
     if (!userDetails) return;
-    const status = cache?.wallet?.status;
+    const status = userDetails?.wallet?.status;
 
     if (status === 'ACTIVE') {
       return navigation.navigate('TriblPayScreen', {
