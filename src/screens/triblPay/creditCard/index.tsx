@@ -61,7 +61,11 @@ export default function CreditCardScreen(props: ScreenProp) {
   const openModal = () => modalizeRef.current?.open();
 
   const { data: cardPci } = useQuery(GET_CARD_PCI_OUTPUT);
+
   const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userBillingDetails = userDetails?.wallet.billingDetails;
+
   const [saveCardDetails, { loading }] = useMutation(SAVE_CARD_DETAILS);
   const [savebillIdCardDetails, { loading: billIdLoading }] = useMutation(
     SAVE_CARD_DETAILS
@@ -97,13 +101,16 @@ export default function CreditCardScreen(props: ScreenProp) {
   };
 
   useEffect(() => {
-    // console.tron('userData', userData);
+    if (!userBillingDetails) setBillingDetailsType('new');
     if (billingDetailsType === 'new') {
       scrollRef.current?.scrollToEnd(true);
     }
   }, [billingDetailsType]);
 
-  const handleSelection = (type: string) => setBillingDetailsType(type);
+  const handleExistingSelection = (type: string) => {
+    if (!userBillingDetails) return;
+    setBillingDetailsType(type);
+  };
 
   const handleStateValue = () => {
     if (isLocal && addressState === '')
@@ -138,12 +145,12 @@ export default function CreditCardScreen(props: ScreenProp) {
 
     try {
       const { data } =
-        billingDetailsType === 'old'
+        billingDetailsType === 'old' && userBillingDetails
           ? await saveCardDetails({
               variables: {
                 payload: {
                   ...payload,
-                  billingId: ''
+                  billingId: userBillingDetails[0]?.id
                 }
               }
             })
@@ -164,13 +171,13 @@ export default function CreditCardScreen(props: ScreenProp) {
               }
             });
 
-      if (data.saveCardDetails.success) {
+      if (data) {
         navigation.navigate('WalletScreen');
       }
     } catch (error) {
-      openErrorModal();
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+      openErrorModal();
     }
   };
 
@@ -193,10 +200,12 @@ export default function CreditCardScreen(props: ScreenProp) {
         <Title style={{ paddingHorizontal: 20 }}>Enter Billing Details</Title>
         <View style={{ paddingHorizontal: 20 }}>
           <TouchableRipple
-            onPress={() => handleSelection('old')}
+            onPress={() => handleExistingSelection('old')}
             style={{
               flexDirection: 'row',
-              borderColor: colors.PRIMARY,
+              borderColor: userBillingDetails
+                ? colors.PRIMARY
+                : colors.DISABLED,
               borderWidth: 1,
               borderRadius: 10,
               alignItems: 'center',
@@ -222,7 +231,6 @@ export default function CreditCardScreen(props: ScreenProp) {
                 </Text>
               </View>
               <CheckBox
-                disabled={true}
                 value={billingDetailsType === 'old'}
                 tintColors={{
                   true: colors.PRIMARY,
@@ -238,24 +246,29 @@ export default function CreditCardScreen(props: ScreenProp) {
             </Fragment>
           </TouchableRipple>
 
-          <View
-            style={{
-              display: billingDetailsType === 'old' ? 'flex' : 'none',
-              marginBottom: 10
-            }}
-          >
-            <Text
+          {userBillingDetails && (
+            <View
               style={{
-                paddingHorizontal: 10,
-                fontFamily: fonts.WORK_SANS_MEDIUM
+                display: billingDetailsType === 'old' ? 'flex' : 'none',
+                marginBottom: 10
               }}
             >
-              - 12 Boulevarde court, London, United Kingdom
-            </Text>
-          </View>
+              {userBillingDetails.map((item) => (
+                <Text
+                  key={item.id}
+                  style={{
+                    paddingHorizontal: 10,
+                    fontFamily: fonts.WORK_SANS_MEDIUM
+                  }}
+                >
+                  {`- ${item.addressLine} ${item.city}, ${item.state}, ${item.countryCode} - ${item.postCode}`}
+                </Text>
+              ))}
+            </View>
+          )}
 
           <TouchableRipple
-            onPress={() => handleSelection('new')}
+            onPress={() => setBillingDetailsType('new')}
             style={{
               flexDirection: 'row',
               borderColor: colors.PRIMARY,
