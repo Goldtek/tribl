@@ -9,6 +9,10 @@ import { NavigationInterface } from '../../types';
 import GradientButton from '../../../components/gradientButton';
 
 import { Container, Cover, LogoCover, CashCover } from './styles';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { useQuery } from '@apollo/react-hooks';
+import { GET_FUNDING_SOURCES } from '../../../graphql/server/query';
+import { FontAwesome } from '@expo/vector-icons';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -18,15 +22,45 @@ export default function AddCashScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const { navigation } = props;
 
+  const { data: userFundingSources } = useQuery(GET_FUNDING_SOURCES, {
+    variables: { input: {} }
+  });
+
+  const { myFundingSources } = userFundingSources;
+
   const [number, setNumber] = useState('');
+  const [open, setOpen] = useState(false);
+
   const inputRef = useRef<TextInput>(null);
 
+  const [value, setValue] = useState<any>();
+  const [items, setItems] = useState<any>();
+
   useEffect(() => {
+    if (myFundingSources.data) {
+      setItems(
+        myFundingSources.data.map((x: any) => {
+          return {
+            label: `xxxx xxxx xxx ${x.card.last4}`,
+            value: x.card.last4,
+            icon: () => (
+              <FontAwesome
+                name="credit-card"
+                size={22}
+                color={colors.PRIMARY_TEXT}
+              />
+            )
+          };
+        })
+      );
+      setValue(myFundingSources.data[0]?.card?.last4);
+    }
+
     inputRef.current?.focus();
   }, []);
 
   return (
-    <Container>
+    <Container onPress={() => Keyboard.dismiss()}>
       <Cover>
         <LogoCover>
           <Image
@@ -42,7 +76,7 @@ export default function AddCashScreen(props: ScreenProp) {
               color: colors.PRIMARY,
               fontSize: RFValue(fonts.LARGE_SIZE + 7),
               fontFamily: fonts.WORK_SANS_BOLD,
-              textTransform: 'uppercase'
+              textTransform: 'capitalize'
             }}
           >
             {t(`community.passport.pay`)}
@@ -61,11 +95,11 @@ export default function AddCashScreen(props: ScreenProp) {
           </Title>
           <TextInput
             ref={inputRef}
-            onBlur={() => Keyboard.dismiss()}
             onChangeText={(number) => setNumber(number)}
             value={number}
             placeholder="0.00"
             keyboardType="numeric"
+            returnKeyType="done"
             placeholderTextColor={colors.BLACK}
             style={{
               color: colors.BLACK,
@@ -76,7 +110,7 @@ export default function AddCashScreen(props: ScreenProp) {
           />
         </CashCover>
 
-        <Text
+        {/* <Text
           style={{
             color: colors.PRIMARY_TEXT,
             fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
@@ -89,7 +123,17 @@ export default function AddCashScreen(props: ScreenProp) {
           }}
         >
           {t(`community.passport.account`)}: 12345
-        </Text>
+        </Text> */}
+
+        <DropDownPicker
+          style={{ marginTop: 50 }}
+          open={open}
+          value={value}
+          items={items}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setItems}
+        />
       </Cover>
 
       <GradientButton
