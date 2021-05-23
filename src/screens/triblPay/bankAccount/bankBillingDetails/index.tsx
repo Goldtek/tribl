@@ -1,8 +1,4 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useMutation } from '@apollo/react-hooks';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   Title,
   Text,
@@ -11,6 +7,10 @@ import {
   TouchableRipple,
   Divider
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Countries from './widgets/bankCountry';
@@ -33,12 +33,21 @@ import {
 import { View } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { Octicons, SimpleLineIcons } from '@expo/vector-icons';
+import { MyPassportInterface } from '../../../../graphql/types';
+import { GET_USER_PASSPORT } from '../../../../graphql/server/query';
+import { Toast } from '../../../../components/rootToaster';
+import ErrorModal from '../../../../components/errorModal';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function BankBillingDetailsScreen(props: ScreenProp) {
   const { navigation } = props;
+  const { colors, fonts } = useThemeContext();
+  const { t } = useTranslation();
+  const modalizeRef = useRef<Modalize>(null);
+  const modalizeStateRef = useRef<Modalize>(null);
+  const modalizeErrorRef = useRef<Modalize>(null);
   const {
     accountNumber,
     routingNumber,
@@ -54,14 +63,25 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
 
   const { isSwitchOn } = props.route.params;
 
-  const { colors, fonts } = useThemeContext();
-  const { t } = useTranslation();
-  const modalizeRef = useRef<Modalize>(null);
-  const modalizeStateRef = useRef<Modalize>(null);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+  const userDetails = userData?.myPassport;
+  const userBillingDetails = userDetails?.wallet.billingDetails;
 
-  const openModal = () => modalizeRef.current?.open();
-  const openStateModal = () => modalizeStateRef.current?.open();
+  const [saveiBanBankDetails, { loading: ibanBankLoading }] = useMutation(
+    SAVE_BANK_DETAILS
+  );
+  const [saveiBanBillIdBankDetails, { loading: ibanBillLoading }] = useMutation(
+    SAVE_BANK_DETAILS
+  );
+  const [saveAccBankDetails, { loading: accBankLoading }] = useMutation(
+    SAVE_BANK_DETAILS
+  );
+  const [saveAccBillIdBankDetails, { loading: accBillLoading }] = useMutation(
+    SAVE_BANK_DETAILS
+  );
 
+  const [isLocal, setIsLocal] = useState(false);
+  const [billingDetailsType, setBillingDetailsType] = useState('old');
   const [billingDetails, setBillingDetails] = useState({
     addressLine: '',
     addressLine2: '',
@@ -72,9 +92,6 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
     addressPostalCode: '',
     addressCountryCode: ''
   });
-
-  const [isLocal, setIsLocal] = useState(false);
-  const [billingDetailsType, setBillingDetailsType] = useState('old');
 
   const {
     addressLine,
@@ -88,6 +105,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
   } = billingDetails;
 
   useEffect(() => {
+    if (!userBillingDetails) setBillingDetailsType('new');
     if (isLocal === false && addressCountryCode === 'US') {
       setBillingDetails({
         ...billingDetails,
@@ -100,55 +118,104 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
     logEvent('Verify user identity', { from: 'passport' });
   }, []);
 
-  const [saveBankDetails, { loading }] = useMutation(SAVE_BANK_DETAILS, {
-    variables: {
-      payload: {
-        accountDetails: {
-          accountNumber: isSwitchOn ? '' : accountNumber,
-          routingNumber: isSwitchOn ? '' : routingNumber
-        },
-        iBan: isSwitchOn ? iBan : '',
-        bankAddress: {
-          name,
-          line1,
-          line2,
-          city,
-          district,
-          postalCode,
-          country
-        },
-        billingId: '',
-        billingAddress: {
-          addressLine,
-          addressLine2,
-          addressCity,
-          addressState,
-          addressCountry,
-          addressStateCode,
-          addressPostalCode,
-          addressCountryCode
-        }
-      }
+  const openErrorModal = () => modalizeErrorRef.current?.open();
+
+  const handleInputError = (error: string) => {
+    Toast.show(`${error}`);
+  };
+
+  const handleExistingSelection = (type: string) => {
+    if (!userBillingDetails) return;
+    setBillingDetailsType(type);
+  };
+
+  const openModal = () => modalizeRef.current?.open();
+  const openStateModal = () => modalizeStateRef.current?.open();
+
+  const bankAdressPayload = {
+    bankAddress: {
+      name,
+      line1,
+      line2,
+      city,
+      district,
+      postalCode,
+      country
     }
-  });
+  };
+
+  const billingAdressPayload = {
+    billingAddress: {
+      addressLine,
+      addressLine2,
+      addressCity,
+      addressState,
+      addressCountry,
+      addressStateCode,
+      addressPostalCode,
+      addressCountryCode
+    }
+  };
+
+  const accountDetailsPayload = {
+    accountDetails: {
+      accountNumber,
+      routingNumber
+    }
+  };
 
   const submitBankDetails = async () => {
-    // return console.log('variables', Payload);
-    // if (countWords(addressLine)) return alert('Address field is compulsory');
-    // if (countWords(addressPostalCode))
-    //   return alert('Postal code field is compulsory');
-    // if (countWords(addressCountryCode))
-    //   return alert('Country code field is compulsory');
-    // if (countWords(addressState) || addressState.trim() === 'Select')
-    //   return alert('State field is compulsory');
-    // if (countWords(addressCity)) return alert('City field is compulsory');
+    const withIban =
+      billingDetailsType === 'old' && userBillingDetails
+        ? saveiBanBillIdBankDetails({
+            variables: {
+              payload: {
+                ...bankAdressPayload,
+                iBan,
+                billingId: userBillingDetails[0].id
+              }
+            }
+          })
+        : saveiBanBankDetails({
+            variables: {
+              payload: {
+                ...bankAdressPayload,
+                ...billingAdressPayload,
+                iBan
+              }
+            }
+          });
+
+    const withoutIban =
+      billingDetailsType === 'old' && userBillingDetails
+        ? saveAccBillIdBankDetails({
+            variables: {
+              payload: {
+                ...bankAdressPayload,
+                ...accountDetailsPayload,
+                billingId: userBillingDetails[0].id
+              }
+            }
+          })
+        : saveAccBankDetails({
+            variables: {
+              payload: {
+                ...bankAdressPayload,
+                ...billingAdressPayload,
+                ...accountDetailsPayload
+              }
+            }
+          });
 
     try {
-      const { data } = await saveBankDetails();
-      console.tron('data', data);
+      const { data } = isSwitchOn ? await withIban : await withoutIban;
+      if (data) {
+        navigation.navigate('WalletScreen');
+      }
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+      openErrorModal();
     }
   };
 
@@ -157,8 +224,6 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
       setBillingDetails({ ...billingDetails, addressState: 'Select' });
     return addressState;
   };
-
-  const handleSelection = (type: string) => setBillingDetailsType(type);
 
   return (
     <View style={{ backgroundColor: colors.WHITE, flex: 1 }}>
@@ -224,7 +289,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
 
           <View style={{ paddingHorizontal: 20 }}>
             <TouchableRipple
-              onPress={() => handleSelection('old')}
+              onPress={() => handleExistingSelection('old')}
               style={{
                 flexDirection: 'row',
                 borderColor: colors.PRIMARY,
@@ -269,24 +334,29 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
               </Fragment>
             </TouchableRipple>
 
-            <View
-              style={{
-                display: billingDetailsType === 'old' ? 'flex' : 'none',
-                marginBottom: 10
-              }}
-            >
-              <Text
+            {userBillingDetails && (
+              <View
                 style={{
-                  paddingHorizontal: 10,
-                  fontFamily: fonts.WORK_SANS_MEDIUM
+                  display: billingDetailsType === 'old' ? 'flex' : 'none',
+                  marginBottom: 10
                 }}
               >
-                - 12 Boulevarde court, London, United Kingdom
-              </Text>
-            </View>
+                {userBillingDetails.map((item) => (
+                  <Text
+                    key={item.id}
+                    style={{
+                      paddingHorizontal: 10,
+                      fontFamily: fonts.WORK_SANS_MEDIUM
+                    }}
+                  >
+                    {`- ${item.addressLine} ${item.city}, ${item.state}, ${item.countryCode} - ${item.postCode}`}
+                  </Text>
+                ))}
+              </View>
+            )}
 
             <TouchableRipple
-              onPress={() => handleSelection('new')}
+              onPress={() => setBillingDetailsType('new')}
               style={{
                 flexDirection: 'row',
                 borderColor: colors.PRIMARY,
@@ -544,8 +614,18 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
           </ContactContainer>
 
           <GradientButton
-            // disabled={loading}
-            // loading={loading}
+            disabled={
+              ibanBankLoading ||
+              ibanBillLoading ||
+              accBankLoading ||
+              accBillLoading
+            }
+            loading={
+              ibanBankLoading ||
+              ibanBillLoading ||
+              accBankLoading ||
+              accBillLoading
+            }
             onPress={submitBankDetails}
             style={{ height: 50 }}
             gradientContainerstyle={{
@@ -555,8 +635,12 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
             }}
             contentStyle={{ height: 50 }}
           >
-            {/* {loading ? 'loading...' : 'Submit'} */}
-            Submit
+            {ibanBankLoading ||
+            ibanBillLoading ||
+            accBankLoading ||
+            accBillLoading
+              ? 'loading...'
+              : 'Submit'}
           </GradientButton>
         </Fragment>
       </KeyboardAwareScrollView>
@@ -573,6 +657,7 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
         billingDetails={billingDetails}
         setBillingDetails={setBillingDetails}
       />
+      <ErrorModal modalizeErrorRef={modalizeErrorRef} />
     </View>
   );
 }
