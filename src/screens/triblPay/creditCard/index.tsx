@@ -19,6 +19,10 @@ import { CreditCardInput } from 'react-native-input-credit-card';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import {
+  GET_CARD_PCI_OUTPUT,
+  GET_USER_PASSPORT
+} from '../../../graphql/server/query';
 import Countries from './widgets/bankCountry';
 import { Base64 } from '../../../utils/base64';
 import LocalStates from './widgets/localStates';
@@ -26,8 +30,8 @@ import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { crashlytics } from '../../../firebase/config';
 import ErrorModal from '../../../components/errorModal';
+import { MyPassportInterface } from '../../../graphql/types';
 import GradientButton from '../../../components/gradientButton';
-import { GET_CARD_PCI_OUTPUT } from '../../../graphql/server/query';
 import { SAVE_CARD_DETAILS } from '../../../graphql/server/mutations';
 
 import {
@@ -43,7 +47,6 @@ interface ScreenProp extends NavigationInterface {}
 export default function CreditCardScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const { navigation } = props;
 
   const scrollRef = useRef<KeyboardAwareScrollView>(null);
@@ -58,6 +61,7 @@ export default function CreditCardScreen(props: ScreenProp) {
   const openModal = () => modalizeRef.current?.open();
 
   const { data: cardPci } = useQuery(GET_CARD_PCI_OUTPUT);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const [saveCardDetails, { loading }] = useMutation(SAVE_CARD_DETAILS);
   const [savebillIdCardDetails, { loading: billIdLoading }] = useMutation(
     SAVE_CARD_DETAILS
@@ -93,6 +97,7 @@ export default function CreditCardScreen(props: ScreenProp) {
   };
 
   useEffect(() => {
+    // console.tron('userData', userData);
     if (billingDetailsType === 'new') {
       scrollRef.current?.scrollToEnd(true);
     }
@@ -108,14 +113,14 @@ export default function CreditCardScreen(props: ScreenProp) {
 
   const submitCreditCardDetails = async () => {
     const { key, keyId } = await cardPci.getCardPciKey;
-    const { values, valid, status } = cardDetails;
+    const { values } = cardDetails;
 
     const expiry = values.expiry.split('/');
     const expMonth = +expiry[0];
     const expYear = +expiry[1] + 2000;
 
     const options = {
-      number: values.number,
+      number: values.number.replace(/\s/g, ''),
       cvv: values.cvc
     };
 
