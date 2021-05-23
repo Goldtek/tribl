@@ -12,6 +12,7 @@ import InviteToTribeScreen from './invitationToTribe';
 import CommunityRequestScreen from './communityRequest';
 import InviteToTribeFromProfileScreen from './inviteToTribeFromProfile';
 import ChannelRequestScreen from './channelRequest';
+import DonateScreen from './donate';
 
 export default {
   HomeScreen,
@@ -27,5 +28,6 @@ export default {
   InviteToTribeScreen,
   CommunityRequestScreen,
   InviteToTribeFromProfileScreen,
-  ChannelRequestScreen
+  ChannelRequestScreen,
+  DonateScreen
 };

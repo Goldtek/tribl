@@ -203,7 +203,7 @@ function RecommendedCommunity(props: CommunityInterface) {
             textTransform: 'capitalize'
           }}
         >
-          {isPrivate ? 'Private' : 'Public'}
+          {isPrivate ? 'Private' : 'Public'} 
         </Text>
       </Card.Content>
       <Card.Content
