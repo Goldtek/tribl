@@ -1987,16 +1987,23 @@ export const GET_MARKET = gql`
 `;
 
 export const GET_TRANSACTION_HISTORY = gql`
-  query getTransactionHistory($input: TransactionArgsInput!) {
-    getTransactionHistory(input: $input) {
+  query getTransactionHistory {
+    getMyTransactionHistory(input: {}) {
       data {
-        narration
-        currency
-        createdAt
-        amount
-        side
-        source
+        asset
+        fees
+        salePrice
+        costPrice
+        equivalent
+        payee {
+          id
+          community {
+            avatar
+          }
+        }
         type
+        narration
+        createdAt
       }
     }
   }

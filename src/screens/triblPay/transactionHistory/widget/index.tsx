@@ -11,15 +11,16 @@ import { USER_DEFAULT_AVATAR } from '../../../../constants';
 
 // DEFINE SCREEN PROP TYPES
 interface TranasactionCardProp {
-  // avatar: string;
+  id: string;
   narration: string;
-  currency: string;
+  asset: string;
   createdAt: string;
-  amount: string;
+  costPrice: string;
   side: string;
   source: string;
   type: string;
-  onPress: () => void;
+  avatar: string;
+  onPress: (id: string) => void;
 }
 
 export default function WalletCard(props: TranasactionCardProp) {
@@ -30,7 +31,7 @@ export default function WalletCard(props: TranasactionCardProp) {
 
   return (
     <TouchableRipple
-      onPress={props.onPress}
+      onPress={() => props.onPress(props.id)}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -43,7 +44,7 @@ export default function WalletCard(props: TranasactionCardProp) {
           <FastImage
             resizeMode={FastImage.resizeMode.contain}
             source={{
-              uri: USER_DEFAULT_AVATAR,
+              uri: props.avatar,
               priority: FastImage.priority.high
             }}
             style={{
@@ -60,7 +61,7 @@ export default function WalletCard(props: TranasactionCardProp) {
                 color: colors.PRIMARY_TEXT
               }}
             >
-              {'Default'}
+              {props?.narration}
             </Title>
             <Paragraph
               style={{
@@ -69,7 +70,7 @@ export default function WalletCard(props: TranasactionCardProp) {
                 color: colors.PRIMARY_TEXT
               }}
             >
-              {props?.currency}
+              {props?.asset}
             </Paragraph>
             <Paragraph
               style={{
@@ -91,7 +92,7 @@ export default function WalletCard(props: TranasactionCardProp) {
             color: colors.RED
           }}
         >
-          ${props.amount}
+          ${props.costPrice}
         </Text>
       </Fragment>
     </TouchableRipple>
