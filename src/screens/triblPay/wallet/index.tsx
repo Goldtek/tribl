@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Title, Text, Button, Divider } from 'react-native-paper';
 import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
@@ -9,9 +9,12 @@ import { useQuery } from '@apollo/react-hooks';
 import GradientButton from '../../../components/gradientButton';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { GET_PORTFOLIO, GET_MARKET } from '../../../graphql/server/query';
-import Portfolio from "./widgets/portfolio";
-
+import {
+  GET_PORTFOLIO,
+  GET_MARKET,
+  GET_FUNDING_SOURCES
+} from '../../../graphql/server/query';
+import Portfolio from './widgets/portfolio';
 
 import {
   Container,
@@ -31,22 +34,28 @@ interface charPortfolio {
 }
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface { }
+interface ScreenProp extends NavigationInterface {}
 
 export default function WalletScreen(props: ScreenProp) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
   const [modalState, setModalState] = useState(false);
+  const [modalData, setModalData] = useState<any>();
   const filtered_data = [];
   //TODO, define a type for these
-  const filtered_markets: any = []
+  const filtered_markets: any = [];
   const charPortfolio: any = {};
 
   const { data: requestData, refetch, error } = useQuery(GET_PORTFOLIO);
 
   const { data: fetched_markets } = useQuery(GET_MARKET);
 
+  const { data: userFundingSources } = useQuery(GET_FUNDING_SOURCES, {
+    variables: { input: {} }
+  });
+
+  const { myFundingSources } = userFundingSources;
   const portfolio = requestData?.fetchPortfolio;
 
   const fetchMarket = fetched_markets?.fetchMarket;
@@ -54,24 +63,38 @@ export default function WalletScreen(props: ScreenProp) {
 
   if (markets) {
     for (let item of markets) {
-      if (item.market === 'BTCUSD' || item.market === 'ETHUSD' || item.market === 'PAXGUSD') {
+      if (
+        item.market === 'BTCUSD' ||
+        item.market === 'ETHUSD' ||
+        item.market === 'PAXGUSD'
+      ) {
         filtered_markets.push(item);
       }
     }
   }
 
-
   if (portfolio) {
     for (let item of portfolio.items) {
-      if (item.asset === 'BTC' || item.asset === 'ETH' || item.asset === 'USD') {
+      if (
+        item.asset === 'BTC' ||
+        item.asset === 'ETH' ||
+        item.asset === 'USD'
+      ) {
         filtered_data.push(item);
         charPortfolio[item.asset] = {
           available: item.available
-        }
+        };
       }
     }
   }
 
+  const openModal = (item: any) => {
+    setModalState(!modalState);
+    setModalData(item);
+  };
+  useEffect(() => {
+    console.tron('myFundingSources', myFundingSources);
+  }, []);
 
   return (
     <Container>
@@ -86,7 +109,10 @@ export default function WalletScreen(props: ScreenProp) {
           paddingTop: 0
         }}
       >
-        {'\u0024'}{charPortfolio['USD'] !== undefined ? Math.ceil(charPortfolio['USD'].available) : 0.00}
+        {'\u0024'}
+        {charPortfolio['USD'] !== undefined
+          ? Math.ceil(charPortfolio['USD'].available)
+          : 0.0}
       </Title>
       <BalanceCover>
         <Text
@@ -102,7 +128,8 @@ export default function WalletScreen(props: ScreenProp) {
         </Text>
       </BalanceCover>
       <ButtonCover>
-        {(charPortfolio['USD'] !== undefined && charPortfolio['USD'].available > 0) ?
+        {charPortfolio['USD'] !== undefined &&
+        charPortfolio['USD'].available > 0 ? (
           <GradientButton
             onPress={() => navigation.navigate('CryptoFaqScreen', { refetch })}
             style={{
@@ -118,7 +145,7 @@ export default function WalletScreen(props: ScreenProp) {
           >
             {t(`community.passport.crypto`)}
           </GradientButton>
-          :
+        ) : (
           <GradientButton
             onPress={() => navigation.navigate('AddCashScreen')}
             style={{
@@ -134,10 +161,10 @@ export default function WalletScreen(props: ScreenProp) {
           >
             {t(`community.passport.addCash`)}
           </GradientButton>
-        }
+        )}
 
         <GradientButton
-          onPress={() => { }}
+          onPress={() => {}}
           style={{
             height: 50
           }}
@@ -166,38 +193,33 @@ export default function WalletScreen(props: ScreenProp) {
       </Title>
       <Divider />
 
-      <TouchableOpacity onPress={() => setModalState(!modalState)}>
-        <Cover>
-          <LeftCover>
-            <FontAwesome name="bank" size={22} color={colors.PRIMARY_TEXT} />
-            <Text
-              style={{
-                color: colors.PRIMARY_TEXT,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                lineHeight: RFValue(17),
-                textTransform: 'capitalize',
-                marginLeft: RFValue(10)
-              }}
-            >
-              Bank of America
-            </Text>
-          </LeftCover>
-          <RightCover>
-            <Text
-              style={{
-                color: colors.SECONDARY_TEXT,
-                fontSize: RFValue(fonts.LARGE_SIZE),
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                lineHeight: RFValue(17),
-                textTransform: 'capitalize'
-              }}
-            >
-              ...12345
-            </Text>
-          </RightCover>
-        </Cover>
-      </TouchableOpacity>
+      {myFundingSources.data.map((item: any) => (
+        <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
+          <Cover>
+            <LeftCover>
+              {/* <FontAwesome name="bank" size={22} color={colors.PRIMARY_TEXT} /> */}
+              <FontAwesome
+                name="credit-card"
+                size={22}
+                color={colors.PRIMARY_TEXT}
+              />
+              <Text
+                style={{
+                  color: colors.PRIMARY_TEXT,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  lineHeight: RFValue(17),
+                  textTransform: 'lowercase',
+                  marginLeft: RFValue(10)
+                }}
+              >
+                {`xxxx xxxx xxxx ${item.card.last4}`}
+              </Text>
+            </LeftCover>
+          </Cover>
+        </TouchableOpacity>
+      ))}
+
       <Divider />
 
       <TouchableOpacity
@@ -416,9 +438,13 @@ export default function WalletScreen(props: ScreenProp) {
                 elevation: 5
               }}
             >
-              <FontAwesome name="bank" size={60} color={colors.PRIMARY} />
-              <Title>Bank of America</Title>
-              <Text>xxx 12345</Text>
+              <FontAwesome
+                name="credit-card"
+                size={60}
+                color={colors.PRIMARY}
+              />
+              {/* <Title>Bank of America</Title> */}
+              <Text>{`xxxx xxxx xxxx ${modalData?.card?.last4}`}</Text>
               <Button
                 style={{ marginTop: 50 }}
                 labelStyle={{
@@ -452,14 +478,13 @@ export default function WalletScreen(props: ScreenProp) {
             </Title>
           </LeftCover>
           <RightCover>
-            <Feather
-              name="more-vertical"
-              size={22}
-              color={colors.BLACK}
-            />
+            <Feather name="more-vertical" size={22} color={colors.BLACK} />
           </RightCover>
         </Cover>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 10 }}
+        >
           <FlatList
             data={filtered_data}
             renderItem={({ item }) => (
@@ -470,7 +495,6 @@ export default function WalletScreen(props: ScreenProp) {
           />
         </ScrollView>
       </ListCover>
-
     </Container>
   );
 }
