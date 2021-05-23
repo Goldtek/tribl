@@ -2011,6 +2011,26 @@ export const GET_FUNDING_SOURCES = gql`
           expYear
           expMonth
         }
+        bank {
+          id
+          description
+          paymentInstruction {
+            id
+            entityName
+            trackingRef
+            beneficiaryName
+            beneficiaryAddress1
+            beneficiaryAddress2
+            beneficiaryBankName
+            beneficiaryBankAddress
+            beneficiaryBankPostalCode
+            beneficiaryBankSwiftCode
+            beneficiaryBankCountry
+            beneficiaryBankCity
+            beneficiaryBankAccountNumber
+            beneficiaryBankRoutingNumber
+          }
+        }
       }
     }
   }
