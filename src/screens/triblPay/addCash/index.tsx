@@ -126,7 +126,7 @@ export default function AddCashScreen(props: ScreenProp) {
         </Text> */}
 
         <DropDownPicker
-          style={{ marginTop: 50 }}
+          containerStyle={{ marginTop: 50 }}
           open={open}
           value={value}
           items={items}
