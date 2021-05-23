@@ -167,48 +167,52 @@ export default function BankBillingDetailsScreen(props: ScreenProp) {
   const submitBankDetails = async () => {
     const withIban =
       billingDetailsType === 'old' && userBillingDetails
-        ? saveiBanBillIdBankDetails({
-            variables: {
-              payload: {
-                ...bankAdressPayload,
-                iBan,
-                billingId: userBillingDetails[0].id
+        ? async () =>
+            await saveiBanBillIdBankDetails({
+              variables: {
+                payload: {
+                  ...bankAdressPayload,
+                  iBan,
+                  billingId: userBillingDetails[0].id
+                }
               }
-            }
-          })
-        : saveiBanBankDetails({
-            variables: {
-              payload: {
-                ...bankAdressPayload,
-                ...billingAdressPayload,
-                iBan
+            })
+        : async () =>
+            await saveiBanBankDetails({
+              variables: {
+                payload: {
+                  ...bankAdressPayload,
+                  ...billingAdressPayload,
+                  iBan
+                }
               }
-            }
-          });
+            });
 
     const withoutIban =
       billingDetailsType === 'old' && userBillingDetails
-        ? saveAccBillIdBankDetails({
-            variables: {
-              payload: {
-                ...bankAdressPayload,
-                ...accountDetailsPayload,
-                billingId: userBillingDetails[0].id
+        ? async () =>
+            await saveAccBillIdBankDetails({
+              variables: {
+                payload: {
+                  ...bankAdressPayload,
+                  ...accountDetailsPayload,
+                  billingId: userBillingDetails[0].id
+                }
               }
-            }
-          })
-        : saveAccBankDetails({
-            variables: {
-              payload: {
-                ...bankAdressPayload,
-                ...billingAdressPayload,
-                ...accountDetailsPayload
+            })
+        : async () =>
+            await saveAccBankDetails({
+              variables: {
+                payload: {
+                  ...bankAdressPayload,
+                  ...billingAdressPayload,
+                  ...accountDetailsPayload
+                }
               }
-            }
-          });
+            });
 
     try {
-      const { data } = isSwitchOn ? await withIban : await withoutIban;
+      const { data } = isSwitchOn ? await withIban() : await withoutIban();
       if (data) {
         navigation.navigate('WalletScreen');
       }
