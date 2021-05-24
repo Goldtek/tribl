@@ -269,7 +269,7 @@ export default function WalletScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                   >
-                    {truncateString(item.bank.accountNumber, 4)}
+                    {`...${truncateString(item.bank.accountNumber, 4)}`}
                   </Text>
                 </RightCover>
               </Cover>
