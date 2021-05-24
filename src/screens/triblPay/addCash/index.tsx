@@ -1,13 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
+import {
+  Image,
+  TextInput,
+  Keyboard,
+  Modal,
+  Alert,
+  TouchableOpacity
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import OpenPGP from 'react-native-fast-openpgp';
-import { FontAwesome } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import View from 'react-native-simple-shadow-view';
-import { Title, Text, Button, ActivityIndicator } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { Image, TextInput, Keyboard, Modal, Alert } from 'react-native';
+import {
+  Title,
+  Text,
+  Button,
+  ActivityIndicator,
+  Divider
+} from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import {
@@ -35,6 +48,7 @@ import {
   LoaderMessage
 } from './styles';
 import { truncateString } from '../../../utils/truncate';
+
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
@@ -62,6 +76,7 @@ export default function AddCashScreen(props: ScreenProp) {
   const [number, setNumber] = useState<any>(null);
   const [open, setOpen] = useState(false);
   const [modalState, setModalState] = useState(false);
+  const [bankModalState, setBankModalState] = useState(false);
   const [cardCvc, setCardCvc] = useState<any>(null);
   const [fundingSource, setFundingSource] = useState<any>({});
 
@@ -72,7 +87,6 @@ export default function AddCashScreen(props: ScreenProp) {
   const [items, setItems] = useState<any>();
 
   useEffect(() => {
-    console.tron('userFundingSources', userFundingSources);
     if (myFundingSources.data) {
       setItems([
         ...myFundingSources.data
@@ -153,7 +167,7 @@ export default function AddCashScreen(props: ScreenProp) {
                 beneficiaryBankAccountNumber:
                   x.bank.paymentInstruction.beneficiaryBankAccountNumber,
                 beneficiaryBankRoutingNumber:
-                  x.bank.paymentInstruction.beneficiaryBankAccountNumber
+                  x.bank.paymentInstruction.beneficiaryBankRoutingNumber
               }
             };
           }),
@@ -245,7 +259,9 @@ export default function AddCashScreen(props: ScreenProp) {
                 }
               }
             });
-      if (data) navigation.navigate('WalletScreen');
+      data && fundingSource.type === 'CARD'
+        ? navigation.navigate('WalletScreen')
+        : setBankModalState(!bankModalState);
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
@@ -426,10 +442,10 @@ export default function AddCashScreen(props: ScreenProp) {
         <Modal
           animationType="fade"
           transparent={true}
-          visible={modalState}
-          onRequestClose={() => setModalState(!modalState)}
+          visible={bankModalState}
+          onRequestClose={() => setBankModalState(!bankModalState)}
         >
-          <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}>
+          <Overlay activeOpacity={1}>
             <KeyboardAwareScrollView
               bounces={false}
               showsVerticalScrollIndicator={false}
@@ -443,7 +459,7 @@ export default function AddCashScreen(props: ScreenProp) {
                   flex: 1,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginTop: DEVICE_FULL_HEIGHT / 2.5,
+                  marginTop: DEVICE_FULL_HEIGHT / 3.5,
                   marginBottom: 100
                 }}
               >
@@ -451,9 +467,10 @@ export default function AddCashScreen(props: ScreenProp) {
                   style={{
                     backgroundColor: colors.WHITE,
                     borderRadius: 10,
-                    padding: 20,
+                    padding: 10,
+                    paddingTop: 30,
                     width: DEVICE_FULL_WIDTH * 0.9,
-                    alignItems: 'center',
+                    // alignItems: 'center',
                     shadowColor: '#000',
                     shadowOffset: {
                       width: 0,
@@ -464,46 +481,154 @@ export default function AddCashScreen(props: ScreenProp) {
                     elevation: 5
                   }}
                 >
-                  <FontAwesome
-                    name="credit-card"
-                    size={60}
-                    color={colors.PRIMARY}
-                  />
-                  <Title>Please Confirm CVV/CVC</Title>
+                  <TouchableOpacity
+                    onPress={() => setBankModalState(!bankModalState)}
+                    style={{ position: 'absolute', right: 5, top: 5 }}
+                  >
+                    <AntDesign name="close" size={30} />
+                  </TouchableOpacity>
+                  <Title
+                    style={{
+                      color: colors.PRIMARY,
+                      fontFamily: fonts.WORK_SANS_BOLD
+                    }}
+                  >
+                    Bank Payment Instruction
+                  </Title>
+                  <Title
+                    style={{
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 3),
+                      fontFamily: fonts.WORK_SANS_REGULAR
+                      // textTransform: 'capitalize'
+                    }}
+                  >
+                    Kindly make transaction with the following bank
+                    information...
+                  </Title>
 
-                  <Text>{`**** **** **** ${fundingSource.last4}`}</Text>
-
-                  <View>
-                    <TextInput
-                      ref={modalInputRef}
-                      autoFocus={true}
-                      onChangeText={(number) => setCardCvc(number)}
-                      value={cardCvc}
-                      placeholder="xxx"
-                      keyboardType="numeric"
-                      placeholderTextColor={colors.INACTIVE}
+                  <Divider />
+                  <Divider />
+                  <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+                    <Text
                       style={{
                         color: colors.BLACK,
-                        fontSize: RFValue(fonts.LARGE_SIZE + 10),
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
                         fontFamily: fonts.WORK_SANS_BOLD,
                         marginTop: 10,
-                        lineHeight: RFValue(30)
+                        lineHeight: RFValue(30),
+                        textTransform: 'capitalize'
                       }}
-                    />
+                    >
+                      {' '}
+                      Bank Name:
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_MEDIUM,
+                        marginTop: 10,
+                        lineHeight: RFValue(30),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {' '}
+                      {fundingSource.paymentInstruction.beneficiaryBankName}
+                    </Text>
                   </View>
-                  <Button
-                    onPress={() => handleFundWallet()}
-                    style={{ marginTop: 20 }}
-                    labelStyle={{
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 5),
-                      color: colors.PRIMARY,
-                      textTransform: 'uppercase'
-                    }}
-                    contentStyle={{ justifyContent: 'flex-start' }}
-                  >
-                    Done
-                  </Button>
+
+                  <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+                    <Text
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_BOLD,
+                        marginTop: 10,
+                        lineHeight: RFValue(30),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {' '}
+                      Swift Code:
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_MEDIUM,
+                        marginTop: 10,
+                        lineHeight: RFValue(30),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {' '}
+                      {
+                        fundingSource.paymentInstruction
+                          .beneficiaryBankSwiftCode
+                      }
+                    </Text>
+                  </View>
+
+                  <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+                    <Text
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_BOLD,
+                        marginTop: 10,
+                        lineHeight: RFValue(30),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {' '}
+                      ACCOUNT NUMBER:
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_MEDIUM,
+                        marginTop: 10,
+                        lineHeight: RFValue(30),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {' '}
+                      {
+                        fundingSource.paymentInstruction
+                          ?.beneficiaryBankAccountNumber
+                      }
+                    </Text>
+                  </View>
+
+                  <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+                    <Text
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_BOLD,
+                        marginTop: 10,
+                        lineHeight: RFValue(30),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {' '}
+                      BENEFICIARY NAME:
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE),
+                        fontFamily: fonts.WORK_SANS_MEDIUM,
+                        marginTop: 10,
+                        lineHeight: RFValue(30),
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {' '}
+                      {fundingSource.paymentInstruction?.beneficiaryName}
+                    </Text>
+                  </View>
                 </View>
               </View>
             </KeyboardAwareScrollView>
