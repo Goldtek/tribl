@@ -19,7 +19,7 @@ import { crashlytics } from '../../../../../firebase/config';
 import { Cover, PrivateCover, Container, AvatarCover } from './styles';
 
 // DEFINE SCREEN PROP TYPES
-interface ScreenProp extends NavigationInterface {}
+interface ScreenProp extends NavigationInterface { }
 
 type StateType = {
   uri: string;
@@ -57,10 +57,10 @@ export default function CreateTribeScreen(props: ScreenProp) {
     const grantMediaPermission = async () => {
       if (Platform.OS !== 'web') {
         // @ts-ignore
-        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permission.granted) {
-          alert('Sorry, we need camera roll permissions to make this work!');
-        }
+          const permission = await ImagePicker.requestCameraRollPermissionsAsync();
+          if (!permission.granted) {
+            alert('Sorry, we need camera roll permissions to make this work!');
+          }
       }
     };
 
