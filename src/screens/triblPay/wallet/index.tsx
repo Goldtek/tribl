@@ -37,7 +37,7 @@ interface charPortfolio {
 interface ScreenProp extends NavigationInterface {}
 
 export default function WalletScreen(props: ScreenProp) {
-  const { colors, fonts } = useThemeContext();
+  const { fonts, colors } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
   const [modalState, setModalState] = useState(false);

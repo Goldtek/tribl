@@ -320,7 +320,10 @@
     "crypto": "buy crypto",
     "learnmore": "learn more about crypto",
     "content": " Buy, sell, and securely exchange cryptocurrencies with TRiBL Pay",
-    "buycoin":"Buy"
+    "buycoin":"Buy",
+    "transactionHistory": "Transaction History",
+    "linkedAccount": "Linked Accounts",
+    "accountInfo": "Account Info"
   },
   "crypto": {
     "understand_crypto": "Understanding your crypto",

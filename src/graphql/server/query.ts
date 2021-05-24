@@ -1951,51 +1951,83 @@ export const GET_CARD_PCI_OUTPUT = gql`
     }
   }
 `;
-export const GET_PORTFOLIO = gql`query portfolio {
-  fetchPortfolio {
-    items {
-      asset
-      available
-      trading
+export const GET_PORTFOLIO = gql`
+  query portfolio {
+    fetchPortfolio {
+      items {
+        asset
+        available
+        trading
+      }
     }
   }
-}`;
+`;
 
-export const GET_MARKET = gql`query fetchMarket {
-  fetchMarket {
-    markets {
-      market
-      today {
-        open
-        high
-        low
-        volume
-        range {
-          begin
-          end
+export const GET_MARKET = gql`
+  query fetchMarket {
+    fetchMarket {
+      markets {
+        market
+        today {
+          open
+          high
+          low
+          volume
+          range {
+            begin
+            end
+          }
         }
-      }
         best_bid {
-        amount
-        price
-      }
-      best_ask {
-        amount
-        price
-      }
-      last_day {
-        open
-        high
-        low
-        volume
-        range {
-          begin
-          end
+          amount
+          price
+        }
+        best_ask {
+          amount
+          price
+        }
+        last_day {
+          open
+          high
+          low
+          volume
+          range {
+            begin
+            end
+          }
         }
       }
     }
   }
-}`;
+`;
+
+export const GET_TRANSACTION_HISTORY = gql`
+  query getTransactionHistory($input: TransactionArgsInput!) {
+    getMyTransactionHistory(input: $input) {
+      data {
+        asset
+        fees
+        salePrice
+        costPrice
+        equivalent
+        source
+        fundingSource {
+          type
+        }
+        payee {
+          id
+          community {
+            avatar
+          }
+        }
+        type
+        narration
+        status
+        createdAt
+      }
+    }
+  }
+`;
 
 //GET USER FUNDING SOURCES
 export const GET_FUNDING_SOURCES = gql`
@@ -2031,6 +2063,33 @@ export const GET_FUNDING_SOURCES = gql`
             beneficiaryBankRoutingNumber
           }
         }
+      }
+    }
+  }
+`;
+
+export const GET_CRYPTO_TRANSACTION_HISTORY = gql`
+  query getTransactionHistory($input: TransactionArgsInput!) {
+    getMyTransactionHistory(input: $input) {
+      data {
+        asset
+        salePrice
+        costPrice
+        equivalent
+        fundingSource {
+          type
+          card {
+            last4
+            network
+          }
+          bank {
+            type
+          }
+        }
+
+        source
+        type
+        narration
       }
     }
   }

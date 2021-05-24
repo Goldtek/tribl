@@ -13,7 +13,7 @@ enum COLORS {
   textDark = 'rgba(0,0,0,1)',
   textGrey = 'rgba(0,0,0,0.5)',
   transparent = 'transparent',
-  bandColor = "#718CFB",
+  bandColor = '#718CFB',
   // END OF STREAM COLORS
 
   RED = '#FB4E4E',
@@ -39,7 +39,8 @@ enum COLORS {
   STATUS_BAR_COLOR = '#424242',
   CONTENT_COLOR = '#535D7E',
   GREEN = '#27AE60',
-  BORDER_COLOR = "#718CFB"
+  LIGHT_GREEN = '#48CF7E',
+  BORDER_COLOR = '#718CFB'
 }
 
 // All app font sizes
@@ -92,6 +93,7 @@ declare module 'styled-components/native' {
       GREY_LIGHT: string;
       CONTENT_COLOR: string;
       GREEN: string;
+      LIGHT_GREEN: string;
       BORDER_COLOR: string;
     };
 

@@ -168,7 +168,9 @@ export default function CustomDrawerComponent() {
       name: `community.passport.wallet`,
       onPress: () => {
         changeSideMenu('drawer_wallet_key');
-        navigation?.navigate('TriblPayScreen', { screen: 'WalletScreen' });
+        navigation?.navigate('TriblPayScreen', {
+          screen: 'WalletPreviewScreen'
+        });
         toggleMenu();
       },
       drawerIcon: (
