@@ -28,6 +28,7 @@ import {
 } from './styles';
 import { Modal, TouchableOpacity, View } from 'react-native';
 import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
+import truncate from 'lodash/truncate';
 
 interface charPortfolio {
   availabble: number;
@@ -93,7 +94,7 @@ export default function WalletScreen(props: ScreenProp) {
     setModalData(item);
   };
   useEffect(() => {
-    console.tron('myFundingSources', myFundingSources);
+    console.tron('userFundingSources', userFundingSources);
   }, []);
 
   return (
@@ -193,32 +194,84 @@ export default function WalletScreen(props: ScreenProp) {
       </Title>
       <Divider />
 
-      {myFundingSources.data.map((item: any) => (
-        <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
-          <Cover>
-            <LeftCover>
-              {/* <FontAwesome name="bank" size={22} color={colors.PRIMARY_TEXT} /> */}
-              <FontAwesome
-                name="credit-card"
-                size={22}
-                color={colors.PRIMARY_TEXT}
-              />
-              <Text
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  lineHeight: RFValue(17),
-                  textTransform: 'lowercase',
-                  marginLeft: RFValue(10)
-                }}
-              >
-                {`xxxx xxxx xxxx ${item.card.last4}`}
-              </Text>
-            </LeftCover>
-          </Cover>
-        </TouchableOpacity>
-      ))}
+      {myFundingSources &&
+        myFundingSources?.data
+          .filter((item: any) => item.card)
+          .map((item: any) => (
+            <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
+              <Cover>
+                <LeftCover>
+                  <FontAwesome
+                    name="credit-card"
+                    size={22}
+                    color={colors.PRIMARY_TEXT}
+                  />
+                  <Text
+                    style={{
+                      color: colors.PRIMARY_TEXT,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(17),
+                      textTransform: 'uppercase',
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    {`**** **** **** ${item.card.last4}`}
+                  </Text>
+                </LeftCover>
+              </Cover>
+            </TouchableOpacity>
+          ))}
+
+      {myFundingSources &&
+        myFundingSources?.data
+          .filter((item: any) => item.bank)
+          .map((item: any) => (
+            <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
+              <Cover>
+                <LeftCover>
+                  <FontAwesome
+                    name="bank"
+                    size={22}
+                    color={colors.PRIMARY_TEXT}
+                  />
+
+                  <Text
+                    style={{
+                      color: colors.PRIMARY_TEXT,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(17),
+                      textTransform: 'uppercase',
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    {`${item.bank.paymentInstruction.beneficiaryBankName}`}
+                  </Text>
+                </LeftCover>
+                <RightCover>
+                  <Text
+                    style={{
+                      color: colors.SECONDARY_TEXT,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {truncate(
+                      item.bank.paymentInstruction.beneficiaryBankAccountNumber,
+                      {
+                        length: 7,
+                        omission: '***'
+                      }
+                    )}
+                    {/* {`${item.bank.paymentInstruction.beneficiaryBankAccountNumber}`} */}
+                  </Text>
+                </RightCover>
+              </Cover>
+            </TouchableOpacity>
+          ))}
 
       <Divider />
 
