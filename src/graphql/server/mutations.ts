@@ -389,16 +389,16 @@ mutation sendMoney($payload: SendMoneyInput!) {
 // }
 
 export const FUND_WALLET_WITH_CARD = gql`
-  mutation fundWalletWithCard($payload: FundWalletInput!) {
-    fundWalletWithCard(input: $payload) {
+  mutation fundWallet($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
       success
     }
   }
 `;
 
 export const FUND_WALLET_WITH_BANK = gql`
-  mutation fundWalletWithBank($payload: FundWalletInput!) {
-    fundWalletWithBank(input: $payload) {
+  mutation fundWallet($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
       success
     }
   }
