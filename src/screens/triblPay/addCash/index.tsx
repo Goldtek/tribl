@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import OpenPGP from 'react-native-fast-openpgp';
 import { FontAwesome } from '@expo/vector-icons';
 import View from 'react-native-simple-shadow-view';
-import { Title, Text, Button } from 'react-native-paper';
+import { Title, Text, Button, ActivityIndicator } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { Image, TextInput, Keyboard, Modal } from 'react-native';
+import { Image, TextInput, Keyboard, Modal, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import {
@@ -25,7 +25,16 @@ import { crashlytics } from '../../../firebase/config';
 import GradientButton from '../../../components/gradientButton';
 import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
 
-import { Container, Cover, LogoCover, CashCover, Overlay } from './styles';
+import {
+  Container,
+  Cover,
+  LogoCover,
+  CashCover,
+  Overlay,
+  ModalContentWrapper,
+  LoaderMessage
+} from './styles';
+import { truncateString } from '../../../utils/truncate';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
@@ -40,13 +49,17 @@ export default function AddCashScreen(props: ScreenProp) {
 
   const { data: cardPci } = useQuery(GET_CARD_PCI_OUTPUT);
 
-  const [fundWalletWithCard] = useMutation(FUND_WALLET_WITH_CARD);
+  const [fundWalletWithCard, { loading: cardLoading }] = useMutation(
+    FUND_WALLET_WITH_CARD
+  );
 
-  const [fundWalletWithBank] = useMutation(FUND_WALLET_WITH_BANK);
+  const [fundWalletWithBank, { loading: bankLoading }] = useMutation(
+    FUND_WALLET_WITH_BANK
+  );
 
   const { myFundingSources } = userFundingSources;
 
-  const [number, setNumber] = useState('');
+  const [number, setNumber] = useState<any>(null);
   const [open, setOpen] = useState(false);
   const [modalState, setModalState] = useState(false);
   const [cardCvc, setCardCvc] = useState<any>(null);
@@ -59,6 +72,7 @@ export default function AddCashScreen(props: ScreenProp) {
   const [items, setItems] = useState<any>();
 
   useEffect(() => {
+    console.tron('userFundingSources', userFundingSources);
     if (myFundingSources.data) {
       setItems([
         ...myFundingSources.data
@@ -80,7 +94,10 @@ export default function AddCashScreen(props: ScreenProp) {
           .filter((item: any) => item.bank)
           .map((x: any) => {
             return {
-              label: `${x.bank.paymentInstruction.beneficiaryBankName} - ${x.bank.paymentInstruction.beneficiaryBankAccountNumber}`,
+              label: `${x.bank.name} - ${truncateString(
+                x.bank.accountNumber,
+                4
+              )}`,
               value: x.id,
               icon: () => (
                 <FontAwesome
@@ -110,9 +127,34 @@ export default function AddCashScreen(props: ScreenProp) {
               id: x.id,
               type: 'BANK_TRANSFER',
               verification: 'none',
-              bankName: x.bank.paymentInstruction.beneficiaryBankName,
-              accountNumber:
-                x.bank.paymentInstruction.beneficiaryBankAccountNumber
+              name: x.bank.name,
+              accountNumber: x.bank.accountNumber,
+              paymentInstruction: {
+                id: x.bank.paymentInstruction.id,
+                entityName: x.bank.paymentInstruction.entityName,
+                trackingRef: x.bank.paymentInstruction.trackingRef,
+                beneficiaryName: x.bank.paymentInstruction.beneficiaryName,
+                beneficiaryAddress1:
+                  x.bank.paymentInstruction.beneficiaryAddress1,
+                beneficiaryAddress2:
+                  x.bank.paymentInstruction.beneficiaryAddress2,
+                beneficiaryBankName:
+                  x.bank.paymentInstruction.beneficiaryBankName,
+                beneficiaryBankAddress:
+                  x.bank.paymentInstruction.beneficiaryBankAddress,
+                beneficiaryBankPostalCode:
+                  x.bank.paymentInstruction.beneficiaryBankPostalCode,
+                beneficiaryBankSwiftCode:
+                  x.bank.paymentInstruction.beneficiaryBankSwiftCode,
+                beneficiaryBankCountry:
+                  x.bank.paymentInstruction.beneficiaryBankCountry,
+                beneficiaryBankCity:
+                  x.bank.paymentInstruction.beneficiaryBankCity,
+                beneficiaryBankAccountNumber:
+                  x.bank.paymentInstruction.beneficiaryBankAccountNumber,
+                beneficiaryBankRoutingNumber:
+                  x.bank.paymentInstruction.beneficiaryBankAccountNumber
+              }
             };
           }),
         ...myFundingSources.data
@@ -130,8 +172,27 @@ export default function AddCashScreen(props: ScreenProp) {
     inputRef.current?.focus();
   }, [value]);
 
-  const openModal = () => {
-    setModalState(!modalState);
+  const handleAction = () => {
+    if (number < 5) {
+      return Alert.alert(
+        'Add Amount',
+        `please add an amount before you proceed`,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {},
+            style: 'cancel'
+          },
+          {
+            text: 'Add',
+            onPress: () => inputRef.current?.focus()
+          }
+        ]
+      );
+    }
+    fundingSource.type === 'CARD'
+      ? setModalState(!modalState)
+      : handleFundWallet();
   };
 
   const handleFundWallet = async () => {
@@ -237,7 +298,9 @@ export default function AddCashScreen(props: ScreenProp) {
               color: colors.BLACK,
               fontSize: RFValue(fonts.LARGE_SIZE * 3),
               fontFamily: fonts.WORK_SANS_BOLD,
-              lineHeight: RFValue(55)
+              lineHeight: RFValue(55),
+              minWidth: RFValue(50),
+              textAlign: 'center'
             }}
           />
         </CashCover>
@@ -252,25 +315,24 @@ export default function AddCashScreen(props: ScreenProp) {
           setItems={setItems}
         />
       </Cover>
-
-      <GradientButton
-        onPress={() => openModal()}
-        // onPress={() => handleFundWallet('item')}
-        style={{
-          height: 50
-        }}
-        gradientContainerstyle={{
-          height: 50,
-          marginBottom: RFValue(30)
-        }}
-        contentStyle={{
-          height: 50
-        }}
-      >
-        {/* {t(`community.passport.addAmount`)} */}
-        Add
-      </GradientButton>
-
+      {fundingSource && (
+        <GradientButton
+          onPress={handleAction}
+          style={{
+            height: 50
+          }}
+          gradientContainerstyle={{
+            height: 50,
+            marginBottom: RFValue(30),
+            backgroundColor: colors.WHITE
+          }}
+          contentStyle={{
+            height: 50
+          }}
+        >
+          {fundingSource.type === 'CARD' ? 'Next' : 'Submit'}
+        </GradientButton>
+      )}
       {fundingSource && fundingSource.type === 'CARD' && (
         <Modal
           animationType="fade"
@@ -278,7 +340,7 @@ export default function AddCashScreen(props: ScreenProp) {
           visible={modalState}
           onRequestClose={() => setModalState(!modalState)}
         >
-          <Overlay activeOpacity={1}>
+          <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}>
             <KeyboardAwareScrollView
               bounces={false}
               showsVerticalScrollIndicator={false}
@@ -359,6 +421,108 @@ export default function AddCashScreen(props: ScreenProp) {
           </Overlay>
         </Modal>
       )}
+
+      {fundingSource && fundingSource.type === 'BANK_TRANSFER' && (
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalState}
+          onRequestClose={() => setModalState(!modalState)}
+        >
+          <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}>
+            <KeyboardAwareScrollView
+              bounces={false}
+              showsVerticalScrollIndicator={false}
+              scrollEnabled={true}
+              keyboardShouldPersistTaps={'always'}
+              enableOnAndroid={true}
+              contentContainerStyle={{ paddingBottom: 100 }}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: DEVICE_FULL_HEIGHT / 2.5,
+                  marginBottom: 100
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: colors.WHITE,
+                    borderRadius: 10,
+                    padding: 20,
+                    width: DEVICE_FULL_WIDTH * 0.9,
+                    alignItems: 'center',
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 2
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 5
+                  }}
+                >
+                  <FontAwesome
+                    name="credit-card"
+                    size={60}
+                    color={colors.PRIMARY}
+                  />
+                  <Title>Please Confirm CVV/CVC</Title>
+
+                  <Text>{`**** **** **** ${fundingSource.last4}`}</Text>
+
+                  <View>
+                    <TextInput
+                      ref={modalInputRef}
+                      autoFocus={true}
+                      onChangeText={(number) => setCardCvc(number)}
+                      value={cardCvc}
+                      placeholder="xxx"
+                      keyboardType="numeric"
+                      placeholderTextColor={colors.INACTIVE}
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.LARGE_SIZE + 10),
+                        fontFamily: fonts.WORK_SANS_BOLD,
+                        marginTop: 10,
+                        lineHeight: RFValue(30)
+                      }}
+                    />
+                  </View>
+                  <Button
+                    onPress={() => handleFundWallet()}
+                    style={{ marginTop: 20 }}
+                    labelStyle={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 5),
+                      color: colors.PRIMARY,
+                      textTransform: 'uppercase'
+                    }}
+                    contentStyle={{ justifyContent: 'flex-start' }}
+                  >
+                    Done
+                  </Button>
+                </View>
+              </View>
+            </KeyboardAwareScrollView>
+          </Overlay>
+        </Modal>
+      )}
+
+      <Modal
+        animationType="fade"
+        visible={bankLoading || cardLoading}
+        transparent
+      >
+        <Overlay>
+          <ModalContentWrapper>
+            <ActivityIndicator size="small" color={colors.BLACK} />
+            <LoaderMessage>processing...</LoaderMessage>
+          </ModalContentWrapper>
+        </Overlay>
+      </Modal>
     </Container>
   );
 }
