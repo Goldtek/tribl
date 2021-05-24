@@ -88,7 +88,7 @@ export default function WalletScreen(props: ScreenProp) {
       }
     }
   }
-
+  const isBank = modalData.type === 'BANK';
   const openModal = (item: any) => {
     setModalState(!modalState);
     setModalData(item);
@@ -242,7 +242,7 @@ export default function WalletScreen(props: ScreenProp) {
                       fontSize: RFValue(fonts.LARGE_SIZE),
                       fontFamily: fonts.WORK_SANS_REGULAR,
                       lineHeight: RFValue(17),
-                      textTransform: 'uppercase',
+                      textTransform: 'capitalize',
                       marginLeft: RFValue(10)
                     }}
                   >
@@ -266,7 +266,6 @@ export default function WalletScreen(props: ScreenProp) {
                         omission: '***'
                       }
                     )}
-                    {/* {`${item.bank.paymentInstruction.beneficiaryBankAccountNumber}`} */}
                   </Text>
                 </RightCover>
               </Cover>
@@ -478,8 +477,17 @@ export default function WalletScreen(props: ScreenProp) {
                 size={60}
                 color={colors.PRIMARY}
               />
-              {/* <Title>Bank of America</Title> */}
-              <Text>{`xxxx xxxx xxxx ${modalData?.card?.last4}`}</Text>
+              {isBank && (
+                <Title style={{ textTransform: 'capitalize' }}>
+                  {modalData.bank.paymentInstruction.beneficiaryBankName}
+                </Title>
+              )}
+              <Text>
+                {isBank
+                  ? modalData.bank.paymentInstruction
+                      .beneficiaryBankAccountNumber
+                  : `xxxx xxxx xxxx ${modalData?.card?.last4}`}
+              </Text>
               <Button
                 style={{ marginTop: 50 }}
                 labelStyle={{
@@ -490,7 +498,7 @@ export default function WalletScreen(props: ScreenProp) {
                 }}
                 contentStyle={{ justifyContent: 'flex-start' }}
               >
-                Remove Bank
+                {isBank ? 'Remove Bank' : 'Remove Card'}
               </Button>
             </View>
           </View>
