@@ -88,14 +88,11 @@ export default function WalletScreen(props: ScreenProp) {
       }
     }
   }
-  const isBank = modalData.type === 'BANK';
+
   const openModal = (item: any) => {
     setModalState(!modalState);
     setModalData(item);
   };
-  useEffect(() => {
-    console.tron('userFundingSources', userFundingSources);
-  }, []);
 
   return (
     <Container>
@@ -477,13 +474,13 @@ export default function WalletScreen(props: ScreenProp) {
                 size={60}
                 color={colors.PRIMARY}
               />
-              {isBank && (
+              {modalData && modalData.type === 'BANK' && (
                 <Title style={{ textTransform: 'capitalize' }}>
                   {modalData.bank.paymentInstruction.beneficiaryBankName}
                 </Title>
               )}
               <Text>
-                {isBank
+                {modalData && modalData.type === 'BANK'
                   ? modalData.bank.paymentInstruction
                       .beneficiaryBankAccountNumber
                   : `xxxx xxxx xxxx ${modalData?.card?.last4}`}
@@ -498,7 +495,9 @@ export default function WalletScreen(props: ScreenProp) {
                 }}
                 contentStyle={{ justifyContent: 'flex-start' }}
               >
-                {isBank ? 'Remove Bank' : 'Remove Card'}
+                {modalData && modalData.type === 'BANK'
+                  ? 'Remove Bank'
+                  : 'Remove Card'}
               </Button>
             </View>
           </View>
