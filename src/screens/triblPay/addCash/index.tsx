@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useMemo,
-  useCallback
-} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Title, Text, Button } from 'react-native-paper';
 import { Image, TextInput, Keyboard, Modal } from 'react-native';
@@ -16,12 +10,22 @@ import GradientButton from '../../../components/gradientButton';
 
 import { Container, Cover, LogoCover, CashCover, Overlay } from './styles';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useQuery } from '@apollo/react-hooks';
-import { GET_FUNDING_SOURCES } from '../../../graphql/server/query';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import {
+  GET_CARD_PCI_OUTPUT,
+  GET_FUNDING_SOURCES
+} from '../../../graphql/server/query';
 import { FontAwesome } from '@expo/vector-icons';
 import View from 'react-native-simple-shadow-view';
 import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {
+  FUND_WALLET_WITH_BANK,
+  FUND_WALLET_WITH_CARD
+} from '../../../graphql/server/mutations';
+import { Base64 } from '../../../utils/base64';
+import OpenPGP from 'react-native-fast-openpgp';
+import { crashlytics } from '../../../firebase/config';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -35,13 +39,19 @@ export default function AddCashScreen(props: ScreenProp) {
     variables: { input: {} }
   });
 
+  const { data: cardPci } = useQuery(GET_CARD_PCI_OUTPUT);
+
+  const [fundWalletWithCard] = useMutation(FUND_WALLET_WITH_CARD);
+
+  const [fundWalletWithBank] = useMutation(FUND_WALLET_WITH_BANK);
+
   const { myFundingSources } = userFundingSources;
 
   const [number, setNumber] = useState('');
   const [open, setOpen] = useState(false);
   const [modalState, setModalState] = useState(false);
-  const [modalData, setModalData] = useState<any>(null);
   const [cardCvc, setCardCvc] = useState<any>(null);
+  const [fundingSource, setFundingSource] = useState<any>({});
 
   const inputRef = useRef<TextInput>(null);
   const modalInputRef = useRef<TextInput>(null);
@@ -51,30 +61,135 @@ export default function AddCashScreen(props: ScreenProp) {
 
   useEffect(() => {
     if (myFundingSources.data) {
-      setItems(
-        myFundingSources.data.map((x: any) => {
-          return {
-            label: `xxxx xxxx xxx ${x.card.last4}`,
-            value: x.card.last4,
-            icon: () => (
-              <FontAwesome
-                name="credit-card"
-                size={22}
-                color={colors.PRIMARY_TEXT}
-              />
-            )
-          };
-        })
-      );
-      setValue(myFundingSources.data[0]?.card?.last4);
-    }
+      setItems([
+        ...myFundingSources.data
+          .filter((item: any) => item.card)
+          .map((x: any) => {
+            return {
+              label: `**** **** **** ${x.card.last4}`,
+              value: x.card.id,
+              icon: () => (
+                <FontAwesome
+                  name="credit-card"
+                  size={22}
+                  color={colors.PRIMARY_TEXT}
+                />
+              )
+            };
+          }),
+        ...myFundingSources.data
+          .filter((item: any) => item.bank)
+          .map((x: any) => {
+            return {
+              label: `${x.bank.paymentInstruction.beneficiaryBankName} - ${x.bank.paymentInstruction.beneficiaryBankAccountNumber}`,
+              value: x.bank.id,
+              icon: () => (
+                <FontAwesome
+                  name="bank"
+                  size={22}
+                  color={colors.PRIMARY_TEXT}
+                />
+              )
+            };
+          })
+      ]);
 
+      myFundingSources.data[0].type === 'BANK'
+        ? setValue(myFundingSources.data[0]?.bank.id)
+        : setValue(myFundingSources.data[0]?.card?.id);
+    }
     inputRef.current?.focus();
   }, []);
 
-  const openModal = (item: any) => {
+  useEffect(() => {
+    setFundingSource(
+      [
+        ...myFundingSources.data
+          .filter((item: any) => item.bank)
+          .map((x: any) => {
+            return {
+              id: x.bank.id,
+              type: 'BANK_TRANSFER',
+              verification: 'none',
+              bankName: x.bank.paymentInstruction.beneficiaryBankName,
+              accountNumber:
+                x.bank.paymentInstruction.beneficiaryBankAccountNumber
+            };
+          }),
+        ...myFundingSources.data
+          .filter((item: any) => item.card)
+          .map((x: any) => {
+            return {
+              id: x.card.id,
+              type: x.type,
+              verification: 'cvv',
+              last4: x.card.last4
+            };
+          })
+      ].filter((item: any) => item.id === value)[0]
+    );
+    inputRef.current?.focus();
+  }, [value]);
+
+  const openModal = () => {
     setModalState(!modalState);
-    setModalData(item);
+  };
+
+  const handleFundWallet = async () => {
+    const { key, keyId } = await cardPci.getCardPciKey;
+    const options = {
+      cvv: cardCvc
+    };
+
+    const encrypted = await OpenPGP.encrypt(
+      JSON.stringify(options),
+      Base64.atob(`${key}`)
+    );
+
+    try {
+      const { data } =
+        fundingSource.type === 'CARD'
+          ? await fundWalletWithCard({
+              variables: {
+                payload: {
+                  amount: number,
+                  asset: 'USD',
+                  fiat: {
+                    verification: 'cvv',
+                    description: '',
+                    encryptedData: Base64.btoa(encrypted),
+                    keyId,
+                    source: {
+                      asset: 'USD',
+                      category: fundingSource?.type,
+                      id: fundingSource?.id
+                    }
+                  }
+                }
+              }
+            })
+          : await fundWalletWithBank({
+              variables: {
+                payload: {
+                  amount: number,
+                  asset: 'USD',
+                  fiat: {
+                    verification: fundingSource.verification,
+                    description: '',
+                    source: {
+                      asset: 'USD',
+                      category: fundingSource?.type,
+                      id: fundingSource?.id
+                    }
+                  }
+                }
+              }
+            });
+      if (data) navigation.navigate('WalletScreen');
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+    }
   };
 
   return (
@@ -140,13 +255,8 @@ export default function AddCashScreen(props: ScreenProp) {
       </Cover>
 
       <GradientButton
-        onPress={
-          cardCvc
-            ? () => navigation.navigate('WalletScreen')
-            : () => openModal('item')
-        }
-        // onPress={() => navigation.navigate('WalletScreen')}
-
+        onPress={() => openModal()}
+        // onPress={() => handleFundWallet('item')}
         style={{
           height: 50
         }}
@@ -159,95 +269,97 @@ export default function AddCashScreen(props: ScreenProp) {
         }}
       >
         {/* {t(`community.passport.addAmount`)} */}
-        {cardCvc ? 'Add' : 'Next'}
+        Add
       </GradientButton>
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalState}
-        onRequestClose={() => setModalState(!modalState)}
-      >
-        {/* <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}> */}
-        <Overlay activeOpacity={1}>
-          <KeyboardAwareScrollView
-            bounces={false}
-            showsVerticalScrollIndicator={false}
-            scrollEnabled={true}
-            keyboardShouldPersistTaps={'always'}
-            enableOnAndroid={true}
-            contentContainerStyle={{ paddingBottom: 100 }}
-          >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: DEVICE_FULL_HEIGHT / 2.5,
-                marginBottom: 100
-              }}
+      {fundingSource && fundingSource.type === 'CARD' && (
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalState}
+          onRequestClose={() => setModalState(!modalState)}
+        >
+          <Overlay activeOpacity={1}>
+            <KeyboardAwareScrollView
+              bounces={false}
+              showsVerticalScrollIndicator={false}
+              scrollEnabled={true}
+              keyboardShouldPersistTaps={'always'}
+              enableOnAndroid={true}
+              contentContainerStyle={{ paddingBottom: 100 }}
             >
               <View
                 style={{
-                  // margin: 20,
-                  backgroundColor: colors.WHITE,
-                  borderRadius: 10,
-                  padding: 20,
-                  width: DEVICE_FULL_WIDTH * 0.9,
+                  flex: 1,
+                  justifyContent: 'center',
                   alignItems: 'center',
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 2
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 4,
-                  elevation: 5
+                  marginTop: DEVICE_FULL_HEIGHT / 2.5,
+                  marginBottom: 100
                 }}
               >
-                <FontAwesome
-                  name="credit-card"
-                  size={60}
-                  color={colors.PRIMARY}
-                />
-                <Title>Please Confirm CVV/CVC</Title>
-                <Text>{`xxxx xxxx xxxx ${value}`}</Text>
-                <View>
-                  <TextInput
-                    ref={modalInputRef}
-                    autoFocus={true}
-                    onChangeText={(number) => setCardCvc(number)}
-                    value={cardCvc}
-                    placeholder="xxx"
-                    keyboardType="numeric"
-                    placeholderTextColor={colors.INACTIVE}
-                    style={{
-                      color: colors.BLACK,
-                      fontSize: RFValue(fonts.LARGE_SIZE + 10),
-                      fontFamily: fonts.WORK_SANS_BOLD,
-                      marginTop: 10,
-                      lineHeight: RFValue(30)
-                    }}
-                  />
-                </View>
-                <Button
-                  onPress={() => setModalState(!modalState)}
-                  style={{ marginTop: 20 }}
-                  labelStyle={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE + 5),
-                    color: colors.PRIMARY,
-                    textTransform: 'uppercase'
+                <View
+                  style={{
+                    backgroundColor: colors.WHITE,
+                    borderRadius: 10,
+                    padding: 20,
+                    width: DEVICE_FULL_WIDTH * 0.9,
+                    alignItems: 'center',
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 2
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 5
                   }}
-                  contentStyle={{ justifyContent: 'flex-start' }}
                 >
-                  Done
-                </Button>
+                  <FontAwesome
+                    name="credit-card"
+                    size={60}
+                    color={colors.PRIMARY}
+                  />
+                  <Title>Please Confirm CVV/CVC</Title>
+
+                  <Text>{`**** **** **** ${fundingSource.last4}`}</Text>
+
+                  <View>
+                    <TextInput
+                      ref={modalInputRef}
+                      autoFocus={true}
+                      onChangeText={(number) => setCardCvc(number)}
+                      value={cardCvc}
+                      placeholder="xxx"
+                      keyboardType="numeric"
+                      placeholderTextColor={colors.INACTIVE}
+                      style={{
+                        color: colors.BLACK,
+                        fontSize: RFValue(fonts.LARGE_SIZE + 10),
+                        fontFamily: fonts.WORK_SANS_BOLD,
+                        marginTop: 10,
+                        lineHeight: RFValue(30)
+                      }}
+                    />
+                  </View>
+                  <Button
+                    onPress={() => () => handleFundWallet()}
+                    style={{ marginTop: 20 }}
+                    labelStyle={{
+                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                      fontSize: RFValue(fonts.MEDIUM_SIZE + 5),
+                      color: colors.PRIMARY,
+                      textTransform: 'uppercase'
+                    }}
+                    contentStyle={{ justifyContent: 'flex-start' }}
+                  >
+                    Done
+                  </Button>
+                </View>
               </View>
-            </View>
-          </KeyboardAwareScrollView>
-        </Overlay>
-      </Modal>
+            </KeyboardAwareScrollView>
+          </Overlay>
+        </Modal>
+      )}
     </Container>
   );
 }
