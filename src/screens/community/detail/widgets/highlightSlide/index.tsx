@@ -31,7 +31,8 @@ import {
   PassportInterface,
   CommunityMembersRequestInterface,
   CommunityChannelRequestInterface,
-  ChannelInterface
+  ChannelInterface,
+  MyPassportInterface
 } from '../../../../../graphql/types';
 import { tagScreenName, logEvent } from '../../../../../utils/uxcamHelper';
 import { Mixpanel } from '../../../../../config';
@@ -43,20 +44,24 @@ import ChannelSkeleton from '../../../../../components/channelSkeleton';
 import { PAGINATION_DEFAULT } from '../../../../../constants';
 import MyChannel from '../../../memberPassport/widget/channelCard';
 import removeDuplicateMembers from '../../../../../utils/removeDuplicatePassports';
-import { DEVICE_FULL_WIDTH, DEVICE_FULL_HEIGHT } from '../../../../../utils/device';
-
+import {
+  DEVICE_FULL_WIDTH,
+  DEVICE_FULL_HEIGHT
+} from '../../../../../utils/device';
 
 import {
   Tags,
+  Cover,
   TagText,
+  Overlay,
   Container,
-  CardContainer,
+  RightCover,
+  TipButton,
   TextContainer,
   TagContainer,
-  Overlay,
-  Cover,
+  ButtonsWrapper,
+  CardContainer,
   DonateButton
-  
 } from './styles';
 
 interface singleCommunityScreenProp extends NavigationInterface {
@@ -75,6 +80,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     tags,
     name,
     avatar,
+    wallet,
     isMember,
     isPrivate,
     description,
@@ -156,7 +162,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     { variables: { input: { filter: { communityId: id } } } }
   );
 
-  const { data: userData } = useQuery(GET_USER_PASSPORT);
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
   const userDetails = userData?.myPassport;
   const userId = userDetails?.id;
   const myTribes = userDetails?.participantOf;
@@ -294,30 +300,29 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     setState({ ...state, tagModal: false });
   };
 
-
   const { data: requestData } = useQuery(GET_PORTFOLIO);
   const portfolio = requestData?.fetchPortfolio;
-  const charMap = {};
+  const charMap: { [key: string]: string } = {};
 
-  if(portfolio){
-    for(let item of portfolio.items){
-      if(item.asset === 'USD'){
+  if (portfolio) {
+    for (let item of portfolio.items) {
+      if (item.asset === 'USD') {
         charMap['USD'] = {
           available: item.available
-        }
+        };
       }
     }
   }
 
   const donate = (amount: number) => {
-    setModalState(!modalState)
-    if(amount !== undefined && amount > 0){
+    setModalState(!modalState);
+    if (amount !== undefined && amount > 0) {
       navigation.navigate('DonateScreen', {
-        amount, balance: Math.ceil(charMap['USD'].available)
+        amount,
+        balance: Math.ceil(charMap['USD'].available)
       });
     }
-
-  }
+  };
 
   return (
     <Fragment>
@@ -372,16 +377,57 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                   }}
                 />
                 <TextContainer>
-                  <Title
-                    style={{
-                      color: colors.PRIMARY_TEXT,
-                      fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                      fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
-                      lineHeight: RFValue(19)
-                    }}
-                  >
-                    {name}
-                  </Title>
+                  <RightCover style={{ alignItems: 'flex-start' }}>
+                    <Title
+                      style={{
+                        flex: 1,
+                        color: colors.PRIMARY_TEXT,
+                        fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                        fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+                        lineHeight: RFValue(19)
+                      }}
+                    >
+                      {name}
+                    </Title>
+
+                    <ButtonsWrapper>
+                      {wallet?.status === 'ACTIVE' &&
+                      userDetails?.wallet?.status === 'ACTIVE' ? (
+                        <TipButton onPress={() => setModalState(!modalState)}>
+                          <FontAwesome
+                            name="money"
+                            size={25}
+                            color={colors.textGrey}
+                          />
+                        </TipButton>
+                      ) : null}
+
+                      <Button
+                        mode="contained"
+                        disabled={isRequested ? true : false}
+                        loading={loading}
+                        onPress={
+                          isMember
+                            ? handleLeave
+                            : isPrivate
+                            ? handleJoinPrivateTribe
+                            : handleJoin
+                        }
+                        style={{ borderRadius: 4 }}
+                        labelStyle={{
+                          fontSize: fonts.MEDIUM_SIZE,
+                          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                          color: isRequested
+                            ? colors.PRIMARY_TEXT
+                            : colors.WHITE,
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {buttonLabel}
+                      </Button>
+                    </ButtonsWrapper>
+                  </RightCover>
+
                   <Paragraph
                     style={{
                       fontSize: RFValue(fonts.MEDIUM_SIZE - 1),
@@ -407,34 +453,6 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                     </Paragraph>
                   ) : null}
                 </TextContainer>
-                <FontAwesome name="money" size={20} color={colors.textGrey} onPress={()=> setModalState(!modalState)}/>
-                <Button
-                  mode="contained"
-                  disabled={isRequested ? true : false}
-                  loading={loading}
-                  onPress={
-                    isMember
-                      ? handleLeave
-                      : isPrivate
-                      ? handleJoinPrivateTribe
-                      : handleJoin
-                  }
-                  style={{
-                    borderRadius: 4,
-                    alignSelf: 'flex-start',
-                    position: 'absolute',
-                    right: RFValue(16),
-                    top: RFValue(16)
-                  }}
-                  labelStyle={{
-                    fontSize: fonts.MEDIUM_SIZE,
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    color: isRequested ? colors.PRIMARY_TEXT : colors.WHITE,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {buttonLabel}
-                </Button>
               </CardContainer>
 
               {tags?.length ? (
@@ -560,49 +578,50 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
       {state.showJoinCommunityModal ? (
         <JoinCommunity onPress={handleJoinCommunity} />
       ) : null}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalState}
-          onRequestClose={() => setModalState(!modalState)}
-        >
-          <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalState}
+        onRequestClose={() => setModalState(!modalState)}
+      >
+        <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: DEVICE_FULL_HEIGHT / 2.5
+            }}
+          >
             <View
               style={{
-                flex: 1,
-                justifyContent: 'center',
+                margin: 20,
+                backgroundColor: colors.WHITE,
+                borderRadius: 10,
+                padding: 20,
+                width: DEVICE_FULL_WIDTH * 0.9,
                 alignItems: 'center',
-                marginTop: DEVICE_FULL_HEIGHT / 2.5
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5
               }}
             >
-              <View
+              <Text
                 style={{
-                  margin: 20,
-                  backgroundColor: colors.WHITE,
-                  borderRadius: 10,
-                  padding: 20,
-                  width: DEVICE_FULL_WIDTH * 0.9,
-                  alignItems: 'center',
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 2
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 4,
-                  elevation: 5
+                  color: colors.BLACK,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontFamily: fonts.WORK_SANS_REGULAR,
+                  lineHeight: RFValue(17),
+                  textTransform: 'capitalize',
+                  marginLeft: RFValue(10)
                 }}
               >
-                 <Text
-                  style={{
-                    color: colors.BLACK,
-                    fontSize: RFValue(fonts.LARGE_SIZE),
-                    fontFamily: fonts.WORK_SANS_REGULAR,
-                    lineHeight: RFValue(17),
-                    textTransform: 'capitalize',
-                    marginLeft: RFValue(10),
-                  }}
-                >
                 Let us know how much you want to donate.
               </Text>
 
@@ -613,113 +632,112 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                   fontFamily: fonts.WORK_SANS_MEDIUM,
                   lineHeight: RFValue(17),
                   textTransform: 'capitalize',
-                  marginLeft: RFValue(10),
+                  marginLeft: RFValue(10)
                 }}
               >
                 {name}
               </Text>
 
               <FastImage
-                  resizeMode={FastImage.resizeMode.stretch}
-                  source={{
-                    uri: avatar,
-                    priority: FastImage.priority.high
-                  }}
-                  style={{
-                    width: RFValue(50),
-                    height: RFValue(50),
-                    borderRadius: 4,
-                    marginTop: RFValue(10)
-                  }}
-                />
-                <Cover>
-                  <DonateButton onPress={()=> donate(25)}>     
-                    <Text
-                      style={{
-                        color: colors.BLACK,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_MEDIUM,
-                        lineHeight: RFValue(17),
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {'\u0024'}25
-                    </Text>
-                  </DonateButton>
-                  <DonateButton onPress={()=> donate(50)}>     
-                    <Text
-                      style={{
-                        color: colors.BLACK,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_MEDIUM,
-                        lineHeight: RFValue(17),
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {'\u0024'}50
-                    </Text>
-                  </DonateButton>
-                  <DonateButton onPress={()=> donate(75)}>     
-                    <Text
-                      style={{
-                        color: colors.BLACK,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_MEDIUM,
-                        lineHeight: RFValue(17),
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {'\u0024'}75
-                    </Text>
-                  </DonateButton>
-                </Cover>
+                resizeMode={FastImage.resizeMode.stretch}
+                source={{
+                  uri: avatar,
+                  priority: FastImage.priority.high
+                }}
+                style={{
+                  width: RFValue(50),
+                  height: RFValue(50),
+                  borderRadius: 4,
+                  marginTop: RFValue(10)
+                }}
+              />
+              <Cover>
+                <DonateButton onPress={() => donate(25)}>
+                  <Text
+                    style={{
+                      color: colors.BLACK,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {'\u0024'}25
+                  </Text>
+                </DonateButton>
+                <DonateButton onPress={() => donate(50)}>
+                  <Text
+                    style={{
+                      color: colors.BLACK,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {'\u0024'}50
+                  </Text>
+                </DonateButton>
+                <DonateButton onPress={() => donate(75)}>
+                  <Text
+                    style={{
+                      color: colors.BLACK,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {'\u0024'}75
+                  </Text>
+                </DonateButton>
+              </Cover>
 
-                <Cover>
-                  <DonateButton onPress={()=> donate(100)}>     
-                    <Text
-                      style={{
-                        color: colors.BLACK,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_MEDIUM,
-                        lineHeight: RFValue(17),
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {'\u0024'}100
-                    </Text>
-                  </DonateButton>
-                  <DonateButton onPress={()=> donate(250)}>     
-                    <Text
-                      style={{
-                        color: colors.BLACK,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_MEDIUM,
-                        lineHeight: RFValue(17),
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {'\u0024'}250
-                    </Text>
-                  </DonateButton>
-                  <DonateButton onPress={()=> donate(0)}>     
-                    <Text
-                      style={{
-                        color: colors.BLACK,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_MEDIUM,
-                        lineHeight: RFValue(17),
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      custom
-                    </Text>
-                  </DonateButton>
-                </Cover>
-               
-              </View>
+              <Cover>
+                <DonateButton onPress={() => donate(100)}>
+                  <Text
+                    style={{
+                      color: colors.BLACK,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {'\u0024'}100
+                  </Text>
+                </DonateButton>
+                <DonateButton onPress={() => donate(250)}>
+                  <Text
+                    style={{
+                      color: colors.BLACK,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {'\u0024'}250
+                  </Text>
+                </DonateButton>
+                <DonateButton onPress={() => donate(0)}>
+                  <Text
+                    style={{
+                      color: colors.BLACK,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_MEDIUM,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    custom
+                  </Text>
+                </DonateButton>
+              </Cover>
             </View>
-          </Overlay>
-        </Modal>
+          </View>
+        </Overlay>
+      </Modal>
     </Fragment>
   );
 }

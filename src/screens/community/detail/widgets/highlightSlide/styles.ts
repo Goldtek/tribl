@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import hexToRGB from '../../../../../utils/hexToRGB';
 
 export const Container = styled.View`
   flex: 1;
@@ -7,9 +8,8 @@ export const Container = styled.View`
 `;
 
 export const CardContainer = styled.View`
-  position: relative;
   flex-direction: row;
-  padding: 20px 10px;
+  padding: 20px 5px 20px 10px;
 `;
 
 export const TextContainer = styled.View`
@@ -46,7 +46,7 @@ export const Overlay = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   padding-horizontal: 10px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: ${({ theme }) => hexToRGB(theme.colors.BLACK, 0.7)};
 `;
 
 export const Cover = styled.View`
@@ -60,16 +60,30 @@ export const DonateButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   padding: 15px;
-  border: 1px solid #718CFB;
+  border: 1px solid #718cfb;
   border-radius: 5px;
   margin: 3px 20px;
 `;
 
+export const TipButton = styled.TouchableOpacity`
+  align-items: center;
+  justify-content: center;
+  margin-horizontal: 5px;
+  width: 64px;
+  height: 32px;
+  border: 1px solid #718cfb;
+  border-radius: 5px;
+`;
 
+export const ButtonsWrapper = styled.View`
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: row;
+  margin-top: 2px;
+`;
 
 export const RightCover = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
 `;
-

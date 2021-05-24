@@ -382,6 +382,7 @@ export interface CommunityInterface {
   id: string;
   name: string;
   avatar: string;
+  wallet: Wallet;
   tags: Interest[];
   isMember: boolean;
   isPrivate: boolean;
