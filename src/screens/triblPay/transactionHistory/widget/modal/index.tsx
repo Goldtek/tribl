@@ -145,7 +145,10 @@ export default function TransactionModal({
                   : `${data.salePrice} per ${data.asset}`
               }
             />
-            <ModalItem label="Payment Method" value="Default" />
+            <ModalItem
+              label="Payment Method"
+              value={data?.fundingSource?.type ? data.source : 'Wallet'}
+            />
             <ModalItem label="Fee" value={`$${data.fees}`} />
             <ModalItem
               label="Date"
@@ -155,7 +158,10 @@ export default function TransactionModal({
               )}
             />
 
-            <ModalItem label="Status" value={data.status || 'Complete'} />
+            <ModalItem
+              label="Status"
+              value={data.status?.toLowerCase().replace('_', ' ') || 'Complete'}
+            />
           </View>
         </View>
       </Overlay>

@@ -9,19 +9,54 @@ import { useThemeContext } from '../../../../theme';
 import { Cover, LeftCover, RightCover } from '../styles';
 
 // DEFINE SCREEN PROP TYPES
+interface FundingSource {
+  bank?: {
+    name: string;
+    accountNumber: string;
+  };
+  card?: {
+    network: string;
+    last4: string;
+  };
+}
 interface TranasactionCardProp {
   id: string;
   narration: string;
   entityName: string;
   accountNumber: string;
   amount: string;
+  costPrice: string;
+  equivalent: string;
+  source: string;
+  asset: string;
+  salePrice: string;
+  fundingSource: FundingSource;
 }
 
 export default function WalletCard(props: TranasactionCardProp) {
-  const navigation = useNavigation();
   const { colors, fonts } = useThemeContext();
 
   const handleNavigation = () => {};
+
+  let source = '';
+  let accountDetails = '';
+  let amount = Math.floor(props.costPrice * props.salePrice);
+
+  if (props.source === 'BANK_TRANSFER') {
+    source = props.fundingSource?.bank?.name || '';
+    accountDetails = props.fundingSource?.bank?.accountNumber || '';
+  } else if (props.source === 'CARD') {
+    source = props.fundingSource?.card?.network || '';
+    accountDetails = props.fundingSource?.card?.last4
+      ? `******${props.fundingSource?.card?.last4}`
+      : '';
+  } else {
+    source = 'Using USD Account';
+  }
+
+  if (props.source !== 'WALLET' && !props.fundingSource) {
+    return <View></View>;
+  }
 
   return (
     <TouchableRipple
@@ -44,18 +79,24 @@ export default function WalletCard(props: TranasactionCardProp) {
               fontSize: RFValue(fonts.MEDIUM_SIZE + 2),
               fontFamily: fonts.WORK_SANS_REGULAR,
               padding: 0,
-              margin: 0
+              margin: 0,
+              textTransform: 'capitalize'
             }}
           >
             {props.narration}
           </Title>
           <Paragraph
-            style={{ fontSize: fonts.MEDIUM_SIZE, margin: 0, padding: 0 }}
+            style={{
+              fontSize: fonts.MEDIUM_SIZE,
+              margin: 0,
+              padding: 0,
+              textTransform: 'capitalize'
+            }}
           >
-            {props.entityName}
+            {source}
           </Paragraph>
           <Paragraph style={{ fontSize: fonts.MEDIUM_SIZE }}>
-            {props.accountNumber}
+            {accountDetails}
           </Paragraph>
         </View>
         <View style={{}}>
@@ -67,12 +108,12 @@ export default function WalletCard(props: TranasactionCardProp) {
               textAlign: 'right'
             }}
           >
-            {props.amount}
+            {amount} {props.asset}
           </Title>
           <Paragraph
             style={{ fontSize: fonts.MEDIUM_SIZE + 3, textAlign: 'right' }}
           >
-            $20.00
+            ${props.costPrice}
           </Paragraph>
         </View>
       </Fragment>

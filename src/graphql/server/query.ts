@@ -1987,14 +1987,18 @@ export const GET_MARKET = gql`
 `;
 
 export const GET_TRANSACTION_HISTORY = gql`
-  query getTransactionHistory {
-    getMyTransactionHistory(input: {}) {
+  query getTransactionHistory($input: TransactionArgsInput!) {
+    getMyTransactionHistory(input: $input) {
       data {
         asset
         fees
         salePrice
         costPrice
         equivalent
+        source
+        fundingSource {
+          type
+        }
         payee {
           id
           community {
@@ -2003,7 +2007,35 @@ export const GET_TRANSACTION_HISTORY = gql`
         }
         type
         narration
+        status
         createdAt
+      }
+    }
+  }
+`;
+
+export const GET_CRYPTO_TRANSACTION_HISTORY = gql`
+  query getTransactionHistory($input: TransactionArgsInput!) {
+    getMyTransactionHistory(input: $input) {
+      data {
+        asset
+        salePrice
+        costPrice
+        equivalent
+        fundingSource {
+          type
+          card {
+            last4
+            network
+          }
+          bank {
+            type
+          }
+        }
+
+        source
+        type
+        narration
       }
     }
   }

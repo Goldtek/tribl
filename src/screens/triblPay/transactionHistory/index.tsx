@@ -2,21 +2,29 @@ import React, { useState } from 'react';
 import uuid from 'uuid';
 import { useQuery } from '@apollo/react-hooks';
 import { NavigationInterface } from '../../types';
+import { Text, Button, ActivityIndicator } from 'react-native-paper';
 import TransactionCard from './widget';
 import { FlatList } from 'react-native';
 
 import { Container } from './styles';
 import { GET_TRANSACTION_HISTORY } from '../../../graphql/server/query';
 import TransactionModal from './widget/modal';
+import { useThemeContext } from '../../../theme';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function TransactionHistory(props: ScreenProp) {
+  const { colors, fonts } = useThemeContext();
   const {
-    data: { getMyTransactionHistory: { data = [] } = {} } = {}
+    data: { getMyTransactionHistory: { data = [] } = {} } = {},
+    networkStatus,
+    refetch,
+    fetchMore
   } = useQuery(GET_TRANSACTION_HISTORY, {
-    variables: { input: {} }
+    variables: { input: { limit: 5 } },
+    notifyOnNetworkStatusChange: true
   });
 
   const transactions = data.map((transaction: any) => {
@@ -57,6 +65,29 @@ export default function TransactionHistory(props: ScreenProp) {
     }
   };
 
+  const fetchMoreTransactions = () => {
+    fetchMore({
+      variables: { skip: data.length, limit: 5 },
+      updateQuery: (prev: any, { fetchMoreResult }: any) => {
+        console.tron(prev);
+        console.tron(fetchMoreResult);
+        if (!fetchMoreResult) {
+          return prev;
+        }
+
+        return Object.assign({}, prev, {
+          communityInvites: {
+            ...prev?.getMyTransactionHistory,
+            data: [
+              ...prev?.getMyTransactionHistory.data,
+              ...fetchMoreResult?.getMyTransactionHistory.data
+            ]
+          }
+        });
+      }
+    });
+  };
+
   const renderItem = ({ item }: any) => (
     <TransactionCard {...item} onPress={handleTransactionPress} />
   );
@@ -64,9 +95,29 @@ export default function TransactionHistory(props: ScreenProp) {
   return (
     <Container>
       <FlatList
+        refreshing={networkStatus === 4}
+        onRefresh={() => {
+          refetch();
+        }}
         data={transactions}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        onEndReachedThreshold={0.5}
+        onEndReached={() => {
+          fetchMoreTransactions();
+        }}
+        ListEmptyComponent={
+          <Text
+            style={{
+              fontSize: RFValue(fonts.LARGE_SIZE),
+              fontFamily: fonts.WORK_SANS_BOLD,
+              margin: RFValue(20),
+              textAlign: 'center'
+            }}
+          >
+            There is no transactions
+          </Text>
+        }
       />
 
       {currentTransaction && (

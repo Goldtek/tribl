@@ -1,69 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Title, Text, Button, Divider } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 import { FlatList } from 'react-native';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import GradientButton from '../../../components/gradientButton';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
-import { GET_PORTFOLIO, GET_MARKET } from '../../../graphql/server/query';
+import { GET_CRYPTO_TRANSACTION_HISTORY } from '../../../graphql/server/query';
 import TransactionCard from './widget';
 
 import { Container, BalanceCover } from './styles';
 import { View } from 'react-native';
 
-interface charPortfolio {
-  availabble: number;
-}
-
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
 export default function CryptoTransactionScreen(props: ScreenProp) {
+  const { price = '', asset = '' } = props.route.params;
+  const [
+    getTransactionHistory,
+    { data: { getMyTransactionHistory: { data = [] } = {} } = {} }
+  ] = useLazyQuery(GET_CRYPTO_TRANSACTION_HISTORY);
   const { fonts, colors } = useThemeContext();
   const { t } = useTranslation();
   const { navigation } = props;
-  const [modalState, setModalState] = useState(false);
 
-  const items = [
-    {
-      id: '1',
-      narration: 'Bought Tribl Coin',
-      entityName: 'Using Bank of America. BoA',
-      accountNumber: '1234*******',
-      amount: '20,000TC'
-    },
-    {
-      id: '2',
-      narration: 'Bought Tribl Coin',
-      entityName: 'Using Bank of America. BoA',
-      accountNumber: '1234*******',
-      amount: '20,000TC'
-    },
-    {
-      id: '3',
-      narration: 'Bought Tribl Coin',
-      entityName: 'Using Bank of America. BoA',
-      accountNumber: '1234*******',
-      amount: '20,000TC'
-    },
-    {
-      id: '4',
-      narration: 'Bought Tribl Coin',
-      entityName: 'Using Bank of America. BoA',
-      accountNumber: '1234*******',
-      amount: '20,000TC'
-    },
-    {
-      id: '5',
-      narration: 'Bought Tribl Coin',
-      entityName: 'Using Bank of America. BoA',
-      accountNumber: '1234*******',
-      amount: '20,000TC'
-    }
-  ];
+  useEffect(() => {
+    getTransactionHistory({ variables: { input: { filter: { asset } } } });
+  }, [asset]);
 
   const renderItem = ({ item }: any) => <TransactionCard {...item} />;
 
@@ -78,7 +44,7 @@ export default function CryptoTransactionScreen(props: ScreenProp) {
             textAlign: 'center'
           }}
         >
-          100,000 TC
+          0 {asset}
         </Title>
         <BalanceCover>
           <Text
@@ -89,7 +55,7 @@ export default function CryptoTransactionScreen(props: ScreenProp) {
               textTransform: 'capitalize'
             }}
           >
-            $100.00
+            ${price}
           </Text>
         </BalanceCover>
         <GradientButton
@@ -128,7 +94,7 @@ export default function CryptoTransactionScreen(props: ScreenProp) {
       </Title>
       <Divider></Divider>
       <FlatList
-        data={items}
+        data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
