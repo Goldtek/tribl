@@ -59,8 +59,8 @@ export const Cover = styled.View`
 export const DonateButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
-  padding: 15px;
-  border: 1px solid #718cfb;
+  padding: 10px;
+  border: 1px solid #718CFB;
   border-radius: 5px;
   margin: 3px 20px;
 `;
@@ -87,3 +87,4 @@ export const RightCover = styled.View`
   flex-wrap: wrap;
   align-items: center;
 `;
+

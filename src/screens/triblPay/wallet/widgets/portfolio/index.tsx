@@ -18,7 +18,6 @@ import { TouchableOpacity } from 'react-native';
 interface ItemProps {
   item: Item;
   markets: [Market];
-  refetch: () => void;
 }
 
 interface Item {
@@ -42,7 +41,7 @@ export default function Portfolio(props: ItemProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigate } = useNavigation();
-  const { item, markets, refetch } = props;
+  const { item, markets } = props;
   let price: Number = Number(item.available);
 
   for (let each_market of markets) {
@@ -56,7 +55,7 @@ export default function Portfolio(props: ItemProps) {
   return (
     <TouchableOpacity
       onPress={() =>
-        navigate('CryptoTransactionHistoryScreen', { price, asset: item.asset, refetch })
+        navigate('CryptoTransactionHistoryScreen', { price, asset: item.asset })
       }
     >
       <Cover>

@@ -21,7 +21,8 @@
     "leaveCommunity": "Leave Community",
     "trendingChannel": "trending channels",
     "myChannel": "my channels",
-    "newChannelRequest": "new channel requests"
+    "newChannelRequest": "new channel requests",
+    "activateWallet": "Activate Wallet"
   },
 
   "joinModal": {

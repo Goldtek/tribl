@@ -302,7 +302,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
 
   const { data: requestData } = useQuery(GET_PORTFOLIO);
   const portfolio = requestData?.fetchPortfolio;
-  const charMap: { [key: string]: string } = {};
+  const charMap: any = {};
 
   if (portfolio) {
     for (let item of portfolio.items) {
@@ -453,6 +453,36 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                     </Paragraph>
                   ) : null}
                 </TextContainer>
+                <DonateButton onPress={()=> setModalState(!modalState)}>
+                  <FontAwesome name="money" size={20} color={colors.textGrey} />
+                </DonateButton>
+                <Button
+                  mode="contained"
+                  disabled={isRequested ? true : false}
+                  loading={loading}
+                  onPress={
+                    isMember
+                      ? handleLeave
+                      : isPrivate
+                      ? handleJoinPrivateTribe
+                      : handleJoin
+                  }
+                  style={{
+                    borderRadius: 4,
+                    alignSelf: 'flex-start',
+                    position: 'absolute',
+                    right: RFValue(16),
+                    top: RFValue(16)
+                  }}
+                  labelStyle={{
+                    fontSize: fonts.MEDIUM_SIZE,
+                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                    color: isRequested ? colors.PRIMARY_TEXT : colors.WHITE,
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {buttonLabel}
+                </Button>
               </CardContainer>
 
               {tags?.length ? (

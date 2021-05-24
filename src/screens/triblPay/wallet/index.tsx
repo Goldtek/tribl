@@ -28,6 +28,7 @@ import {
 } from './styles';
 import { Modal, TouchableOpacity, View } from 'react-native';
 import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
+import truncate from 'lodash/truncate';
 
 interface charPortfolio {
   availabble: number;
@@ -55,12 +56,11 @@ export default function WalletScreen(props: ScreenProp) {
     variables: { input: {} }
   });
 
-  const { myFundingSources } = userFundingSources;
+  const myFundingSources = userFundingSources?.myFundingSources;
   const portfolio = requestData?.fetchPortfolio;
 
   const fetchMarket = fetched_markets?.fetchMarket;
   const markets = fetchMarket?.markets;
-
   if (markets) {
     for (let item of markets) {
       if (
@@ -102,7 +102,7 @@ export default function WalletScreen(props: ScreenProp) {
           fontFamily: fonts.WORK_SANS_BOLD,
           lineHeight: RFValue(40),
           textAlign: 'center',
-          marginTop: -10,
+          marginTop: -40,
           paddingTop: 0
         }}
       >
@@ -190,32 +190,83 @@ export default function WalletScreen(props: ScreenProp) {
       </Title>
       <Divider />
 
-      {myFundingSources.data.map((item: any) => (
-        <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
-          <Cover>
-            <LeftCover>
-              {/* <FontAwesome name="bank" size={22} color={colors.PRIMARY_TEXT} /> */}
-              <FontAwesome
-                name="credit-card"
-                size={22}
-                color={colors.PRIMARY_TEXT}
-              />
-              <Text
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  lineHeight: RFValue(17),
-                  textTransform: 'lowercase',
-                  marginLeft: RFValue(10)
-                }}
-              >
-                {`xxxx xxxx xxxx ${item.card.last4}`}
-              </Text>
-            </LeftCover>
-          </Cover>
-        </TouchableOpacity>
-      ))}
+      {myFundingSources &&
+        myFundingSources?.data
+          .filter((item: any) => item.card)
+          .map((item: any) => (
+            <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
+              <Cover>
+                <LeftCover>
+                  <FontAwesome
+                    name="credit-card"
+                    size={22}
+                    color={colors.PRIMARY_TEXT}
+                  />
+                  <Text
+                    style={{
+                      color: colors.PRIMARY_TEXT,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(16),
+                      textTransform: 'uppercase',
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    {`**** **** **** ${item.card.last4}`}
+                  </Text>
+                </LeftCover>
+              </Cover>
+            </TouchableOpacity>
+          ))}
+
+      {myFundingSources &&
+        myFundingSources?.data
+          .filter((item: any) => item.bank)
+          .map((item: any) => (
+            <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
+              <Cover>
+                <LeftCover>
+                  <FontAwesome
+                    name="bank"
+                    size={22}
+                    color={colors.PRIMARY_TEXT}
+                  />
+
+                  <Text
+                    style={{
+                      color: colors.PRIMARY_TEXT,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize',
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    {`${item.bank.paymentInstruction.beneficiaryBankName}`}
+                  </Text>
+                </LeftCover>
+                <RightCover>
+                  <Text
+                    style={{
+                      color: colors.SECONDARY_TEXT,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {truncate(
+                      item.bank.paymentInstruction.beneficiaryBankAccountNumber,
+                      {
+                        length: 7,
+                        omission: '***'
+                      }
+                    )}
+                  </Text>
+                </RightCover>
+              </Cover>
+            </TouchableOpacity>
+          ))}
 
       <Divider />
 
@@ -275,7 +326,7 @@ export default function WalletScreen(props: ScreenProp) {
           fontSize: RFValue(fonts.LARGE_SIZE + 2),
           color: colors.BLACK,
           lineHeight: RFValue(30),
-          marginTop: RFValue(25),
+          marginTop: RFValue(15),
           textTransform: 'capitalize'
         }}
       >
@@ -422,8 +473,17 @@ export default function WalletScreen(props: ScreenProp) {
                 size={60}
                 color={colors.PRIMARY}
               />
-              {/* <Title>Bank of America</Title> */}
-              <Text>{`xxxx xxxx xxxx ${modalData?.card?.last4}`}</Text>
+              {modalData && modalData.type === 'BANK' && (
+                <Title style={{ textTransform: 'capitalize' }}>
+                  {modalData.bank.paymentInstruction.beneficiaryBankName}
+                </Title>
+              )}
+              <Text>
+                {modalData && modalData.type === 'BANK'
+                  ? modalData.bank.paymentInstruction
+                      .beneficiaryBankAccountNumber
+                  : `xxxx xxxx xxxx ${modalData?.card?.last4}`}
+              </Text>
               <Button
                 style={{ marginTop: 50 }}
                 labelStyle={{
@@ -434,7 +494,9 @@ export default function WalletScreen(props: ScreenProp) {
                 }}
                 contentStyle={{ justifyContent: 'flex-start' }}
               >
-                Remove Bank
+                {modalData && modalData.type === 'BANK'
+                  ? 'Remove Bank'
+                  : 'Remove Card'}
               </Button>
             </View>
           </View>

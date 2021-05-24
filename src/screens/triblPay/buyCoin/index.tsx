@@ -46,7 +46,7 @@ export default function BuyCoinScreen(props: ScreenProp) {
     }
   }
 
-  const [buyOrSellCoin, { data: buyResponse, loading, error, onCompleted }] = useMutation(BUY_CRYPTO);
+  const [buyOrSellCoin, { data: response, loading, error }] = useMutation(BUY_CRYPTO);
 
   const { data: funding_sources, refetch: refetchFundingSource } = useQuery(GET_FUNDING_SOURCES, {
     variables: { input: {} }
@@ -76,10 +76,18 @@ export default function BuyCoinScreen(props: ScreenProp) {
      if(error){
        //Toast.show(`${error}`);
        console.log('error', error);
+      // Toast.show('Sorry, error while ')
      }
       refetch();
-      if(onCompleted){
-        Toast.show(`You have successfully purchased ${title} of $${cost}`);
+      if(response) {
+        const { fundWallet } = response;
+        const SaveCardOutput = fundWallet;
+        Toast.show(`Your transaction is been processed for ${title} of $${cost}`);
+          
+
+        if(SaveCardOutput.success){
+          navigation.navigate("CryptoTransactionHistoryScreen",{ price: 0, asset: short_symbol });
+        }
       }
     }
  

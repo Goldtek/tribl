@@ -832,6 +832,36 @@ export default function DrawerStackNavigator() {
                     </Fragment>
                   ) : null
                 }
+
+                {
+                  //@ts-ignore
+                  route?.params?.details?.isModerator ? (
+                    <Fragment>
+                      <Divider />
+                      <Menu.Item
+                        onPress={() =>
+                          //@ts-ignore
+                          ChannelRequestNavigation(route.params?.details?.id)
+                        }
+                        title={t(`community.recommended.activateWallet`)}
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: 10,
+                          paddingBottom: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                        titleStyle={{
+                          fontFamily: fonts.WORK_SANS_REGULAR,
+                          color: colors.PRIMARY_TEXT,
+                          textAlign: 'center',
+                          textTransform: 'capitalize'
+                        }}
+                      />
+                    </Fragment>
+                  ) : null
+                }
               </Menu>
             ) : null,
           headerTitleStyle: {

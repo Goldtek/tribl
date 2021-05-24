@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-export const Container = styled.View`
+export const Container = styled.TouchableOpacity`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.WHITE};
   justify-content: space-between;
@@ -20,4 +20,12 @@ export const CashCover = styled.View`
   align-items: center;
   justify-content: center;
   margin-top: ${RFValue(30)}px;
+`;
+
+export const Overlay = styled.TouchableOpacity`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding-horizontal: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
 `;

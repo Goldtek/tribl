@@ -55,7 +55,7 @@ export default function BuyCryptoScreen(props: ScreenProp) {
   console.log('2021-05-17T00:00:00Z', moment('2021-05-17T00:00:00Z').format('H'))
 
   const graphData = {
-    labels: timezone,
+   // labels: timezone,
     datasets: [
       {
         data: average_prices,

@@ -74,6 +74,7 @@ export default function Item(props: ItemProps) {
         value: percent,
         data: item,
         symbol: item.market,
+        
         refetch,
     });
   };

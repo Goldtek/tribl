@@ -378,3 +378,19 @@ mutation sendMoney($payload: SendMoneyInput!) {
   }
 }
 `;
+
+export const FUND_WALLET_WITH_CARD = gql`
+  mutation fundWallet($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
+      success
+    }
+  }
+`;
+
+export const FUND_WALLET_WITH_BANK = gql`
+  mutation fundWallet($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
+      success
+    }
+  }
+`;
