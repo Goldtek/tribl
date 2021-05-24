@@ -28,7 +28,7 @@ import {
 } from './styles';
 import { Modal, TouchableOpacity, View } from 'react-native';
 import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
-import truncate from 'lodash/truncate';
+import { truncateString } from '../../../utils/truncate';
 
 interface charPortfolio {
   availabble: number;
@@ -213,9 +213,22 @@ export default function WalletScreen(props: ScreenProp) {
                       marginLeft: RFValue(10)
                     }}
                   >
-                    {`**** **** **** ${item.card.last4}`}
+                    {`${item.card.network}`}
                   </Text>
                 </LeftCover>
+                <RightCover>
+                  <Text
+                    style={{
+                      color: colors.SECONDARY_TEXT,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(17),
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {`...${truncateString(item.card.last4, 4)}`}
+                  </Text>
+                </RightCover>
               </Cover>
             </TouchableOpacity>
           ))}
@@ -256,10 +269,7 @@ export default function WalletScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                   >
-                    {truncate(item.bank.accountNumber, {
-                      length: 4,
-                      omission: ''
-                    })}
+                    {truncateString(item.bank.accountNumber, 4)}
                   </Text>
                 </RightCover>
               </Cover>
@@ -473,13 +483,12 @@ export default function WalletScreen(props: ScreenProp) {
               />
               {modalData && modalData.type === 'BANK' && (
                 <Title style={{ textTransform: 'capitalize' }}>
-                  {modalData.bank.paymentInstruction.beneficiaryBankName}
+                  {modalData.bank.name}
                 </Title>
               )}
               <Text>
                 {modalData && modalData.type === 'BANK'
-                  ? modalData.bank.paymentInstruction
-                      .beneficiaryBankAccountNumber
+                  ? truncateString(modalData.bank.accountNumber, 4)
                   : `xxxx xxxx xxxx ${modalData?.card?.last4}`}
               </Text>
               <Button
