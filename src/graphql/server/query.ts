@@ -2003,6 +2003,7 @@ export const GET_FUNDING_SOURCES = gql`
     myFundingSources(input: $input) {
       data {
         id
+        type
         entityName
         card {
           id
@@ -2013,7 +2014,6 @@ export const GET_FUNDING_SOURCES = gql`
         }
         bank {
           id
-          description
           paymentInstruction {
             id
             entityName
