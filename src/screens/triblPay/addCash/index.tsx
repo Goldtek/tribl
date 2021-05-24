@@ -1,32 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import OpenPGP from 'react-native-fast-openpgp';
+import { FontAwesome } from '@expo/vector-icons';
+import View from 'react-native-simple-shadow-view';
 import { Title, Text, Button } from 'react-native-paper';
-import { Image, TextInput, Keyboard, Modal } from 'react-native';
-import { RFValue } from 'react-native-responsive-fontsize';
-
-import { useThemeContext } from '../../../theme';
-import { NavigationInterface } from '../../types';
-import GradientButton from '../../../components/gradientButton';
-
-import { Container, Cover, LogoCover, CashCover, Overlay } from './styles';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { Image, TextInput, Keyboard, Modal } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import {
   GET_CARD_PCI_OUTPUT,
   GET_FUNDING_SOURCES
 } from '../../../graphql/server/query';
-import { FontAwesome } from '@expo/vector-icons';
-import View from 'react-native-simple-shadow-view';
-import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   FUND_WALLET_WITH_BANK,
   FUND_WALLET_WITH_CARD
 } from '../../../graphql/server/mutations';
 import { Base64 } from '../../../utils/base64';
-import OpenPGP from 'react-native-fast-openpgp';
+import { useThemeContext } from '../../../theme';
+import { NavigationInterface } from '../../types';
 import { crashlytics } from '../../../firebase/config';
+import GradientButton from '../../../components/gradientButton';
+import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
 
+import { Container, Cover, LogoCover, CashCover, Overlay } from './styles';
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
 
@@ -67,7 +66,7 @@ export default function AddCashScreen(props: ScreenProp) {
           .map((x: any) => {
             return {
               label: `**** **** **** ${x.card.last4}`,
-              value: x.card.id,
+              value: x.id,
               icon: () => (
                 <FontAwesome
                   name="credit-card"
@@ -82,7 +81,7 @@ export default function AddCashScreen(props: ScreenProp) {
           .map((x: any) => {
             return {
               label: `${x.bank.paymentInstruction.beneficiaryBankName} - ${x.bank.paymentInstruction.beneficiaryBankAccountNumber}`,
-              value: x.bank.id,
+              value: x.id,
               icon: () => (
                 <FontAwesome
                   name="bank"
@@ -95,8 +94,8 @@ export default function AddCashScreen(props: ScreenProp) {
       ]);
 
       myFundingSources.data[0].type === 'BANK'
-        ? setValue(myFundingSources.data[0]?.bank.id)
-        : setValue(myFundingSources.data[0]?.card?.id);
+        ? setValue(myFundingSources.data[0]?.id)
+        : setValue(myFundingSources.data[0]?.id);
     }
     inputRef.current?.focus();
   }, []);
@@ -108,7 +107,7 @@ export default function AddCashScreen(props: ScreenProp) {
           .filter((item: any) => item.bank)
           .map((x: any) => {
             return {
-              id: x.bank.id,
+              id: x.id,
               type: 'BANK_TRANSFER',
               verification: 'none',
               bankName: x.bank.paymentInstruction.beneficiaryBankName,
@@ -120,7 +119,7 @@ export default function AddCashScreen(props: ScreenProp) {
           .filter((item: any) => item.card)
           .map((x: any) => {
             return {
-              id: x.card.id,
+              id: x.id,
               type: x.type,
               verification: 'cvv',
               last4: x.card.last4
@@ -342,7 +341,7 @@ export default function AddCashScreen(props: ScreenProp) {
                     />
                   </View>
                   <Button
-                    onPress={() => () => handleFundWallet()}
+                    onPress={() => handleFundWallet()}
                     style={{ marginTop: 20 }}
                     labelStyle={{
                       fontFamily: fonts.WORK_SANS_SEMI_BOLD,
