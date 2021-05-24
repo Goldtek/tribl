@@ -122,7 +122,7 @@ export default function PassportScreen(props: ScreenProp) {
   const [interestVisible, setInterestVisible] = useState(false);
   const [displayInterest, setDisplayInterest] = useState(false);
   const selectedCountries = props?.route?.params?.selectedCountries;
-
+  const tribeDetails = props?.route?.params?.tribeDetails;
   const [select, setSelect] = useState({
     identity: [],
     interest: [],
@@ -710,13 +710,15 @@ export default function PassportScreen(props: ScreenProp) {
 
     if (status === 'ACTIVE') {
       return navigation.navigate('TriblPayScreen', {
-        screen: 'WalletScreen'
+        screen: 'WalletScreen',
+        params: { tribeDetails }
       });
     }
 
     if (status === 'PENDING') {
       return navigation.navigate('TriblPayScreen', {
-        screen: 'PendingWalletStatusScreen'
+        screen: 'PendingWalletStatusScreen', 
+        params: { tribeDetails }
       });
     }
 
@@ -753,7 +755,7 @@ export default function PassportScreen(props: ScreenProp) {
 
     return navigation.navigate('TriblPayScreen', {
       screen: 'BankCountryScreen',
-      params: { userDetails: cache }
+      params: { userDetails: cache, tribeDetails }
     });
   };
 
@@ -1337,7 +1339,7 @@ export default function PassportScreen(props: ScreenProp) {
                     ) : null}
                     {!update ? (
                       <TouchableRipple
-                        onPress={() => navigation.navigate('CitizenshipScreen')}
+                        onPress={() => navigation.navigate('CitizenshipScreen', { tribeDetails })}
                       >
                         <AddIdentity>+</AddIdentity>
                       </TouchableRipple>

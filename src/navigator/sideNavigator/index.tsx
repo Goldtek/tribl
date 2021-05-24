@@ -33,14 +33,16 @@ import BlockUserModal from '../../components/blockUser';
 import ReportModal from '../../components/reportModal';
 import {
   REJECT_CONNECTION,
-  BLOCK_REPORT_USER
+  BLOCK_REPORT_USER,
+  ONBOARD_TRIBE
 } from '../../graphql/server/mutations';
-import { useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { useMutation, useLazyQuery, useQuery } from '@apollo/react-hooks';
 import { logEvent } from '../../utils/uxcamHelper';
 import { crashlytics } from '../../firebase/config';
-import { UserPassportInterface } from '../../graphql/types';
-import { GET_SINGLE_PASSPORT } from '../../graphql/server/query';
+import { MyPassportInterface, UserPassportInterface, UserDetails } from '../../graphql/types';
+import { GET_SINGLE_PASSPORT, GET_USER_PASSPORT } from '../../graphql/server/query';
 import { chatClient } from '../../stream/types';
+import { Toast } from '../../components/rootToaster';
 
 const DrawerStack = createStackNavigator();
 
@@ -126,13 +128,35 @@ export default function DrawerStackNavigator() {
     setCommunityMenu(false);
   };
 
+  const ActivateWallet = (tribeDetails: UserDetails) => {
+    if(userDetails?.wallet?.status === 'ACTIVE' ){
+      onboardTribe({variables:{ payload: { source:"TRIBE", communityId:tribeDetails?.id }}})
+      Toast.show(`${tribeDetails.name} Wallet has been activated`, 2000);
+
+      navigation.navigate('TriblPayScreen',  {
+        screen: 'WalletScreen',
+        params: { tribeDetails, isTribe: true }
+      });
+    } else {
+     // Toast.show('Your will be redirected to activate Your personal wallet before activating the Tribe Wallet',4000);
+      setTimeout(()=>   navigation.navigate('PassportScreen', { tribeDetails }), 4000);
+    }
+    setCommunityMenu(false);
+  }
+
   const [connectionLoading, setConnectionLoading] = useState(false);
 
   const [getUserPassport, { refetch }] = useLazyQuery<UserPassportInterface>(
     GET_SINGLE_PASSPORT
   );
 
+  const { data: userData } = useQuery<MyPassportInterface>(GET_USER_PASSPORT);
+
+  const userDetails = userData?.myPassport;
+
   const [declineConnection] = useMutation(REJECT_CONNECTION);
+
+    const [onboardTribe] = useMutation(ONBOARD_TRIBE);
 
   const handleRemoveConnection = async (id: string) => {
     logEvent('remove connection', {
@@ -728,7 +752,7 @@ export default function DrawerStackNavigator() {
                       name="dots-three-vertical"
                       color={menu ? colors.WHITE : colors.PRIMARY_TEXT}
                       size={20}
-                    />
+                    /> 
                   </TouchableRipple>
                 }
                 contentStyle={{
@@ -841,7 +865,8 @@ export default function DrawerStackNavigator() {
                       <Menu.Item
                         onPress={() =>
                           //@ts-ignore
-                          ChannelRequestNavigation(route.params?.details?.id)
+                          
+                          ActivateWallet(route.params?.details)
                         }
                         title={t(`community.recommended.activateWallet`)}
                         style={{

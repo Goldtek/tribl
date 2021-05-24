@@ -5,12 +5,13 @@ import { Image, TextInput, Keyboard, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import GradientButton from '../../../components/gradientButton';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { Container, Cover, LogoCover, CashCover } from './styles';
-import { SEND_MONEY } from '../../../graphql/server/mutations';
+import { DONATE_BY_WALLET } from '../../../graphql/server/mutations';
 import { Toast } from '../../../components/rootToaster';
+import { GET_FUNDING_SOURCES } from '../../../graphql/server/query';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -20,40 +21,72 @@ export default function DonateScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const { navigation } = props;
   const { params } = props.route;
-  const { balance, amount } = params;
-  const [value, setValue] = useState(0);
+  const { balance, amount, id } = params;
+  const [value, setValue] = useState('');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState([
-    {label: `Wallet Balance - ${balance !== undefined ? balance : 0}`, value: balance !== undefined ? balance : 0},
-  ]);
+  const [items, setItems] = useState([]);
+  const myFundingSources = props?.route?.params?.myFundingSources;
+  let labels = [];
+
+
+  if(myFundingSources){
+    console.tron('card', myFundingSources.data);
+    const dataItems = [{ type: 'WALLET', id: balance }, ...myFundingSources.data]
+    for(let source of dataItems) {
+      labels.push({label: `${source.type}` , value: `${source.type},${source.id}`});
+    }
+  }
+
   
-  const [number, setNumber] = useState('');
+  const [number, setNumber] = useState(amount);
   const inputRef = useRef<TextInput>(null);
 
-  const [SendMoney, { data: response }] = useMutation(SEND_MONEY);
+  const [SendMoneyByWallet, { data: response }] = useMutation(DONATE_BY_WALLET);
+
+  
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
 const process = () => {
-  if(value === 0){
+  const input = value.split(",");
+  if(input[0] === ''){
     return Toast.show("Please select the source to send money from.");
-  } else if(amount > value){ // check if it is wallet that is selected
-    return Toast.show("Your wallet balance is less than the amount you want to send.");
-  }
-  setLoading(true);
-  SendMoney({ variables: { payload:  { amount:"111", walletId:"854325a4-ecc9-4f5b-a2dc-a1b8771117f5", fiat: {
-    verification:'none',
-    description: "",
-      source: {  asset: 'USD', category: 'WALLET' }
-    },
-    type: 'TRIBE_DONATE',
-    origin: 'TRIBE' }
-  }});
+  } else if(input[0] === 'WALLET') {
+    
+    if(number > input[1]){ 
+      return Toast.show("Your wallet balance is less than the amount you want to send.");
+    }
+ 
+    SendMoneyByWallet({ variables: { payload:  { amount:number, walletId: id, fiat: {
+      verification:'none',
+      description: "",
+          source: {  asset: 'USD', category: 'WALLET' }
+        },
+        type: 'TRIBE_DONATE',
+        origin: 'TRIBE' 
+      }
+    }});
+    Toast.show("Your transaction is processing");
 
-  setLoading(false);
+  } else if(input[0] === 'CARD') {
+    SendMoneyByWallet({ variables: { payload:  { amount: number, walletId: id, fiat: {
+      verification:'none',
+      description: "",
+          source: {  asset: 'USD', category: 'WALLET' }
+        },
+        type: 'TRIBE_DONATE',
+        origin: 'TRIBE' 
+      }
+    }});
+
+  } else if(input[0] === 'BANK') {
+    
+  }
+  
+
 }
 
   return (
@@ -90,7 +123,7 @@ const process = () => {
           <DropDownPicker
             open={open}
             value={value}
-            items={items}
+            items={labels}
             setOpen={setOpen}
             setValue={setValue}
              setItems={setItems}

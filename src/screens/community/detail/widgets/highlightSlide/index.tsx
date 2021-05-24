@@ -17,7 +17,8 @@ import {
   GET_COMMUNITY_MEMBERS,
   GET_USER_PASSPORT,
   GET_COMMUNITY_CHANNELS,
-  GET_PORTFOLIO
+  GET_PORTFOLIO,
+  GET_FUNDING_SOURCES
 } from '../../../../../graphql/server/query';
 import RecommendedUserSkeleton from '../../../../../components/recommendedUserSkeleton';
 import JoinCommunity from '../../../../../components/joinCommunity';
@@ -89,6 +90,10 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     uniqueInterests
   } = communityDetails;
 
+  const { data: userFundingSources, refetch:refetchUserFundingSource } = useQuery(GET_FUNDING_SOURCES, {
+    variables: { input: {} }
+  });
+
   const { t } = useTranslation();
   const { colors, fonts } = useThemeContext();
 
@@ -128,6 +133,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   useEffect(() => {
     getTagModal();
     tagScreenName('TribeHighlightScreen');
+    refetchUserFundingSource();
   }, []);
 
   const displayTagModal = (childData: boolean) => {
@@ -171,6 +177,8 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
   const participants = communityMembers?.communityMembers?.data;
   const communityNearbyMembers = communityMembersData?.nearbyMembers?.data;
   const nearbyMembersData = NearbyMembers?.nearbyMembers?.data;
+
+  const myFundingSources = userFundingSources?.myFundingSources
 
   const filterNearbyMembers = removeDuplicateMembers(
     nearbyMembersData?.slice()
@@ -314,11 +322,14 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     }
   }
 
+  
   const donate = (amount: number) => {
     setModalState(!modalState);
     if (amount !== undefined && amount > 0) {
       navigation.navigate('DonateScreen', {
+        id,
         amount,
+        myFundingSources,
         balance: Math.ceil(charMap['USD'].available)
       });
     }
@@ -391,8 +402,8 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                     </Title>
 
                     <ButtonsWrapper>
-                      {wallet?.status === 'ACTIVE' &&
-                      userDetails?.wallet?.status === 'ACTIVE' ? (
+                      {/* {wallet?.status === 'ACTIVE' &&
+                      userDetails?.wallet?.status === 'ACTIVE' ? ( */}
                         <TipButton onPress={() => setModalState(!modalState)}>
                           <FontAwesome
                             name="money"
@@ -400,7 +411,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                             color={colors.textGrey}
                           />
                         </TipButton>
-                      ) : null}
+                        {/* ) : null} */}
 
                       <Button
                         mode="contained"
@@ -453,36 +464,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                     </Paragraph>
                   ) : null}
                 </TextContainer>
-                <DonateButton onPress={()=> setModalState(!modalState)}>
-                  <FontAwesome name="money" size={20} color={colors.textGrey} />
-                </DonateButton>
-                <Button
-                  mode="contained"
-                  disabled={isRequested ? true : false}
-                  loading={loading}
-                  onPress={
-                    isMember
-                      ? handleLeave
-                      : isPrivate
-                      ? handleJoinPrivateTribe
-                      : handleJoin
-                  }
-                  style={{
-                    borderRadius: 4,
-                    alignSelf: 'flex-start',
-                    position: 'absolute',
-                    right: RFValue(16),
-                    top: RFValue(16)
-                  }}
-                  labelStyle={{
-                    fontSize: fonts.MEDIUM_SIZE,
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    color: isRequested ? colors.PRIMARY_TEXT : colors.WHITE,
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {buttonLabel}
-                </Button>
+                
               </CardContainer>
 
               {tags?.length ? (

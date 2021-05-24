@@ -23,7 +23,7 @@ export default function BuyCoinScreen(props: ScreenProp) {
   const { params } = props.route;
   const { title, avatar, refetch, symbol, action, amount, balance } = params;
   const [cost, setCost] = useState(String(amount));
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState('');
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
     {label: `Wallet Balance - ${balance}`, value: balance},
@@ -34,6 +34,8 @@ export default function BuyCoinScreen(props: ScreenProp) {
   const { data: fetched_markets } = useQuery(GET_MARKET);
   const fetchMarket = fetched_markets?.fetchMarket;
   const markets = fetchMarket?.markets;
+  const myFundingSources = props?.route?.params?.myFundingSources;
+  let labels = [];
 
   if(markets){
     for(let item of markets){
@@ -48,11 +50,13 @@ export default function BuyCoinScreen(props: ScreenProp) {
 
   const [buyOrSellCoin, { data: response, loading, error }] = useMutation(BUY_CRYPTO);
 
-  const { data: funding_sources, refetch: refetchFundingSource } = useQuery(GET_FUNDING_SOURCES, {
-    variables: { input: {} }
-  });
+  if(myFundingSources){
+    const dataItems = [{ type: 'WALLET', id: balance }, ...myFundingSources.data]
+    for(let source of dataItems) {
+      labels.push({label: `${source.type}` , value: `${source.type},${source.id}`});
+    }
+  }
 
-  const { myFundingSources } = funding_sources;
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -60,35 +64,41 @@ export default function BuyCoinScreen(props: ScreenProp) {
 
 
   const handleTrade = () => {
-   
-    if(value === 0){
-      Toast.show("Please select a source of funding to perform your transaction");
-    } else if(Number(value) < Number(cost) && action === 'Buy'){
-      Toast.show(`You have insufficient funds to purchase $${cost} of ${title}`);
-    } else {
-      buyOrSellCoin({variables: {
-        payload: {
-          amount: cost,
-          asset: `${short_symbol}`,
-          crypto: { market: `${symbol}`, side: `${action.toUpperCase()}`, price: action === 'Buy' ? charmap[symbol].best_ask.price : charmap[symbol].best_bid.price}
-        }
-      }});
-     if(error){
-       //Toast.show(`${error}`);
-       console.log('error', error);
-      // Toast.show('Sorry, error while ')
-     }
-      refetch();
-      if(response) {
-        const { fundWallet } = response;
-        const SaveCardOutput = fundWallet;
-        Toast.show(`Your transaction is been processed for ${title} of $${cost}`);
-          
+    const input = value.split(",");
+    console.tron("input", input);
+    if(input[0] === ''){
+      return Toast.show("Please select a source of funding to perform your transaction");
+    } else if(input[0] === 'WALLET') {
+      if(Number(input[1]) < Number(cost) && action === 'Buy'){
+        Toast.show(`You have insufficient funds to purchase $${cost} of ${title}`);
+      } else {
+        buyOrSellCoin({variables: {
+          payload: {
+            amount: cost,
+            asset: `${short_symbol}`,
+            crypto: { market: `${symbol}`, side: `${action.toUpperCase()}`, price: action === 'Buy' ? charmap[symbol].best_ask.price : charmap[symbol].best_bid.price}
+          }
+        }});
+      if(error){
+      
+      }
+        refetch();
+        if(response) {
+          const { fundWallet } = response;
+          const SaveCardOutput = fundWallet;
+          Toast.show(`Your transaction is been processed for ${title} of $${cost}`);
+            
 
-        if(SaveCardOutput.success){
-          navigation.navigate("CryptoTransactionHistoryScreen",{ price: 0, asset: short_symbol });
+          if(SaveCardOutput.success){
+            navigation.navigate("CryptoTransactionHistoryScreen",{ price: 0, asset: short_symbol });
+          }
         }
       }
+    } else if(input[0] === 'CARD') {
+
+    } else if(input[0] === 'BANK') {
+
+
     }
  
   }
@@ -128,7 +138,7 @@ export default function BuyCoinScreen(props: ScreenProp) {
           <DropDownPicker
             open={open}
             value={value}
-            items={items}
+            items={labels}
             setOpen={setOpen}
             setValue={setValue}
             setItems={setItems}

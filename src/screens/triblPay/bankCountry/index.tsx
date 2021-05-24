@@ -25,7 +25,6 @@ export default function BankCountryScreen(props: ScreenProp) {
   const { userDetails } = props.route.params;
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
-
   const [state, setState] = useState({
     dataProvider: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(
       countriesDB.getAllCountries()

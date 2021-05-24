@@ -16,7 +16,7 @@ import {
   Icon
 } from './styles';
 import { chartConfig } from "../../../utils/chart";
-import {GET_PORTFOLIO, FETCH_MARKET_HISTORY} from '../../../graphql/server/query';
+import {GET_PORTFOLIO, FETCH_MARKET_HISTORY, GET_FUNDING_SOURCES} from '../../../graphql/server/query';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -36,7 +36,6 @@ export default function BuyCryptoScreen(props: ScreenProp) {
   const average_prices = [];
   const timezone = [];
   const charMap: any = {};
-  console.log('refetch', refetch);
     const {
       data: market_history
     } = useQuery(FETCH_MARKET_HISTORY, {
@@ -52,7 +51,13 @@ export default function BuyCryptoScreen(props: ScreenProp) {
     }
   }
 
-  console.log('2021-05-17T00:00:00Z', moment('2021-05-17T00:00:00Z').format('H'))
+  const { data: userFundingSources, refetch:refetchUserFundingSource } = useQuery(GET_FUNDING_SOURCES, {
+    variables: { input: {} }
+  });
+
+ const myFundingSources = userFundingSources?.myFundingSources
+
+
 
   const graphData = {
    // labels: timezone,
@@ -104,6 +109,7 @@ export default function BuyCryptoScreen(props: ScreenProp) {
         symbol,
         refetch, 
         amount,
+        myFundingSources,
         balance: Math.ceil(charMap['USD'].available),
         action: i == 0 ? 'Buy' : 'Sell',
       });

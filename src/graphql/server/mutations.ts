@@ -371,7 +371,7 @@ export const BUY_CRYPTO = gql`
   }
 `;
 
-export const SEND_MONEY = gql`
+export const DONATE_BY_WALLET = gql`
 mutation sendMoney($payload: SendMoneyInput!) {
   sendMoney(input: $payload){
     success
@@ -391,6 +391,24 @@ export const FUND_WALLET_WITH_BANK = gql`
   mutation fundWallet($payload: FundWalletInput!) {
     fundWallet(input: $payload) {
       success
+    }
+  }
+`;
+
+
+export const ONBOARD_TRIBE = gql`
+  mutation onBoardTribe($payload: OnBoardTribeInput!) {
+    onBoardTribe(input: $payload) {
+      status
+      tags
+      optional {
+        tags
+        message
+      }
+      required {
+        tags
+        message
+      }
     }
   }
 `;

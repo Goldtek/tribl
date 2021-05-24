@@ -537,6 +537,11 @@ export type AllChannelCreationRequestInterface = {
 // COMMUNITY USER SINGLE PASSPORT (RESPONSE) TYPE
 export type UserPassportInterface = { singlePassport: PassportInterface };
 
+export interface UserDetails {
+  name: string;
+  id: string;
+}
+
 // USER SELECTABLE IDENTITIES (RESPONSE) TYPE
 export type IdentitiesInterface = {
   Identity: {
