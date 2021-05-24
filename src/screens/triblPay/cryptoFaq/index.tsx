@@ -26,8 +26,9 @@ export default function CryptoFaqScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const { navigation } = props;
   const filtered_markets = [];
-
-
+  const { params } = props.route;
+  const { refetch } = params;
+  
   const { data: requestData } = useQuery(GET_MARKET);
   const fetchMarket = requestData?.fetchMarket;
   const markets = fetchMarket?.markets;
@@ -67,6 +68,7 @@ export default function CryptoFaqScreen(props: ScreenProp) {
           renderItem={({item}) => (
           <Item
               item={item}
+              refetch={refetch}
           />
           )}
            keyExtractor={(item, index) => String(index)}

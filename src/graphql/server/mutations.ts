@@ -378,12 +378,3 @@ mutation sendMoney($payload: SendMoneyInput!) {
   }
 }
 `;
-
-// mutation sendMoney {
-//   sendMoney(input:{
-//     amount:"111",
-//     walletId:"1"
-//   }){
-//     success
-//   }
-// }

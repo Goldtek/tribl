@@ -18,6 +18,7 @@ import { TouchableOpacity } from 'react-native';
 interface ItemProps {
   item: Item;
   markets: [Market];
+  refetch: () => void;
 }
 
 interface Item {
@@ -41,7 +42,7 @@ export default function Portfolio(props: ItemProps) {
   const { colors, fonts } = useThemeContext();
   const { t } = useTranslation();
   const { navigate } = useNavigation();
-  const { item, markets } = props;
+  const { item, markets, refetch } = props;
   let price: Number = Number(item.available);
 
   for (let each_market of markets) {
@@ -55,7 +56,7 @@ export default function Portfolio(props: ItemProps) {
   return (
     <TouchableOpacity
       onPress={() =>
-        navigate('CryptoTransactionHistoryScreen', { price, asset: item.asset })
+        navigate('CryptoTransactionHistoryScreen', { price, asset: item.asset, refetch })
       }
     >
       <Cover>
@@ -75,7 +76,8 @@ export default function Portfolio(props: ItemProps) {
               fontSize: RFValue(fonts.SMALL_SIZE + 3),
               fontFamily: fonts.WORK_SANS_REGULAR,
               lineHeight: RFValue(17),
-              textTransform: 'capitalize'
+              textTransform: 'capitalize',
+
             }}
           >
             {item.asset === 'ETH'
@@ -85,7 +87,7 @@ export default function Portfolio(props: ItemProps) {
               : t(`community.currency.bitcoin`)}
           </Text>
         </LeftCover>
-        <RightCover style={{}}>
+        <RightCover style={{flexDirection: 'column', alignItems:'flex-end' }}>
           <Text
             style={{
               color: colors.BLACK,
@@ -95,7 +97,18 @@ export default function Portfolio(props: ItemProps) {
             }}
           >
             {'\u0024'}
-            {Math.ceil(Number(price))}
+            {Math.round(Number(price))}
+          </Text>
+          <Text
+            style={{
+              color: colors.SECONDARY_TEXT,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              
+            }}
+          >
+            
+            {item.available}
           </Text>
         </RightCover>
       </Cover>

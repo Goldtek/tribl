@@ -77,8 +77,6 @@ export default function Item(props: ItemProps) {
         refetch,
     });
   };
-
- 
   
   return (
     <Container>

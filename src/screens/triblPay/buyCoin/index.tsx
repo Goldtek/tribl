@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Title, Text } from 'react-native-paper';
+import { Title, ActivityIndicator } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Image, TextInput, Keyboard } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
 import { Container, Cover, LogoCover, CashCover } from './styles';
-import { GET_PORTFOLIO , GET_MARKET} from '../../../graphql/server/query';
+import { GET_PORTFOLIO , GET_MARKET, GET_FUNDING_SOURCES} from '../../../graphql/server/query';
+import { Toast } from '../../../components/rootToaster';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -24,14 +25,12 @@ export default function BuyCoinScreen(props: ScreenProp) {
   const [cost, setCost] = useState(String(amount));
   const [value, setValue] = useState(0);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([
     {label: `Wallet Balance - ${balance}`, value: balance},
   ]);
   const short_symbol =  symbol === 'ETHUSD' ?  'ETH' : symbol === 'PAXGUSD' ? 'USD' : 'BTC';
-  const [number, setNumber] = useState('');
   const inputRef = useRef<TextInput>(null);
-  const charmap = {};
+  const charmap: any = {};
   const { data: fetched_markets } = useQuery(GET_MARKET);
   const fetchMarket = fetched_markets?.fetchMarket;
   const markets = fetchMarket?.markets;
@@ -47,16 +46,13 @@ export default function BuyCoinScreen(props: ScreenProp) {
     }
   }
 
-  const [buyOrSellCoin, { data: buyResponse }] = useMutation(BUY_CRYPTO, {
-    variables: {
-      payload: {
-        amount: amount,
-        asset: `${short_symbol}`,
-        crypto: { market: `${symbol}`, side: `${action.toUpperCase()}`, price: action === 'Buy' ? charmap[symbol].best_ask.price : charmap[symbol].best_bid.price}
-      }
-    }
+  const [buyOrSellCoin, { data: buyResponse, loading, error, onCompleted }] = useMutation(BUY_CRYPTO);
+
+  const { data: funding_sources, refetch: refetchFundingSource } = useQuery(GET_FUNDING_SOURCES, {
+    variables: { input: {} }
   });
 
+  const { myFundingSources } = funding_sources;
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -64,37 +60,35 @@ export default function BuyCoinScreen(props: ScreenProp) {
 
 
   const handleTrade = () => {
-    if(value < amount){
-
+   
+    if(value === 0){
+      Toast.show("Please select a source of funding to perform your transaction");
+    } else if(Number(value) < Number(cost) && action === 'Buy'){
+      Toast.show(`You have insufficient funds to purchase $${cost} of ${title}`);
     } else {
-      buyOrSellCoin();
+      buyOrSellCoin({variables: {
+        payload: {
+          amount: cost,
+          asset: `${short_symbol}`,
+          crypto: { market: `${symbol}`, side: `${action.toUpperCase()}`, price: action === 'Buy' ? charmap[symbol].best_ask.price : charmap[symbol].best_bid.price}
+        }
+      }});
+     if(error){
+       //Toast.show(`${error}`);
+       console.log('error', error);
+     }
+      refetch();
+      if(onCompleted){
+        Toast.show(`You have successfully purchased ${title} of $${cost}`);
+      }
     }
+ 
   }
 
 
   return (
     <Container>
       <Cover>
-        <LogoCover>
-          <Image
-            source={require('../../../../assets/images/logo.png')}
-            style={{
-              resizeMode: 'contain',
-              width: RFValue(40),
-              height: RFValue(40)
-            }}
-          />
-          <Text
-            style={{
-              color: colors.PRIMARY,
-              fontSize: RFValue(fonts.LARGE_SIZE + 7),
-              fontFamily: fonts.WORK_SANS_BOLD,
-              textTransform: 'uppercase'
-            }}
-          >
-            {t(`community.passport.pay`)}
-          </Text>
-        </LogoCover>
         <CashCover>
           <Title
             style={{
@@ -109,8 +103,8 @@ export default function BuyCoinScreen(props: ScreenProp) {
           <TextInput
             ref={inputRef}
             onBlur={() => Keyboard.dismiss()}
-            onChangeText={(number) => setNumber(number)}
-            value={number}
+            onChangeText={(number) => setCost(number)}
+            value={cost}
             placeholder={cost}
             keyboardType="numeric"
             placeholderTextColor={colors.BLACK}
@@ -148,7 +142,8 @@ export default function BuyCoinScreen(props: ScreenProp) {
           height: 50
         }}
       >
-      {action}
+        {loading ? (<ActivityIndicator animating={true} color={colors.WHITE} size="small" />) : null}
+       {"  "} {action}
       </GradientButton>
     </Container>
   );

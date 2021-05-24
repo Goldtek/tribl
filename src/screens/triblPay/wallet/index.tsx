@@ -92,9 +92,6 @@ export default function WalletScreen(props: ScreenProp) {
     setModalState(!modalState);
     setModalData(item);
   };
-  useEffect(() => {
-    console.tron('myFundingSources', myFundingSources);
-  }, []);
 
   return (
     <Container>
@@ -111,7 +108,7 @@ export default function WalletScreen(props: ScreenProp) {
       >
         {'\u0024'}
         {charPortfolio['USD'] !== undefined
-          ? Math.ceil(charPortfolio['USD'].available)
+          ? Math.round(charPortfolio['USD'].available)
           : 0.0}
       </Title>
       <BalanceCover>

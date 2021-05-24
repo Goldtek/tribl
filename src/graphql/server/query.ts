@@ -2045,7 +2045,6 @@ export const GET_FUNDING_SOURCES = gql`
         }
         bank {
           id
-          description
           paymentInstruction {
             id
             entityName
@@ -2091,6 +2090,22 @@ export const GET_CRYPTO_TRANSACTION_HISTORY = gql`
         type
         narration
       }
+    }
+  }
+`;
+
+export const FETCH_MARKET_HISTORY = gql`
+  query fetchMarketHistory ($input: GetMarketHistoryInput!) {
+    fetchMarketHistory(input: $input){
+      metadata {
+        totalCount
+      }
+     
+        prices {
+          average_price
+          timestamp
+        }
+      
     }
   }
 `;

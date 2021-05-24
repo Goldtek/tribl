@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { LineChart } from "react-native-chart-kit";
 import ActionSheet from 'react-native-actionsheet';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import moment from 'moment';
 import GradientButton from '../../../components/gradientButton';
 import { useThemeContext } from '../../../theme';
 import { NavigationInterface } from '../../types';
@@ -15,7 +16,7 @@ import {
   Icon
 } from './styles';
 import { chartConfig } from "../../../utils/chart";
-import {GET_PORTFOLIO} from '../../../graphql/server/query';
+import {GET_PORTFOLIO, FETCH_MARKET_HISTORY} from '../../../graphql/server/query';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -27,22 +28,43 @@ export default function BuyCryptoScreen(props: ScreenProp) {
   const { t } = useTranslation();
   const { navigation } = props;
   const { params } = props.route;
-  const { title, avatar, value, refetch, symbol } = params;
+  const { title, avatar, value, refetch, symbol, data } = params;
   const [index, setIndex] = useState(0);
   const [amount, setAmount] = useState(0);
   const [isset, setIsset] = useState(false);
   const actionRef = useRef<ActionSheet>(null);
-  const charMap = {};
-  const data = {
-    labels: ["24H", "1W", "1M", "3M", "6M", "1Y", "ALL"],
+  const average_prices = [];
+  const timezone = [];
+  const charMap: any = {};
+  console.log('refetch', refetch);
+    const {
+      data: market_history
+    } = useQuery(FETCH_MARKET_HISTORY, {
+      variables: { input: { limit: '10',skip: '0', market: `${symbol}`, from : moment.utc().subtract(15,"day").format()} },
+    });
+    
+    const histories = market_history?.fetchMarketHistory?.prices;
+    
+  if(histories){
+    for(let history of histories){
+     average_prices.push(history.average_price);
+     timezone.push(moment(history.timestamp).format('H'));
+    }
+  }
+
+  console.log('2021-05-17T00:00:00Z', moment('2021-05-17T00:00:00Z').format('H'))
+
+  const graphData = {
+    labels: timezone,
     datasets: [
       {
-        data: [20, 45, 50, 80, 100, 500],
+        data: average_prices,
         color: (opacity = 1) => `rgba(0, 108, 255, ${opacity})`, 
         strokeWidth: 2 
       }
     ],
   };
+
  
   const { data: requestData } = useQuery(GET_PORTFOLIO);
   const portfolio = requestData?.fetchPortfolio;
@@ -74,16 +96,18 @@ export default function BuyCryptoScreen(props: ScreenProp) {
     if(isset){
       setIsset(false);
     }
-    navigation.navigate("BuyCoinScreen", 
-    {
-      title,
-      avatar, 
-      symbol,
-      refetch, 
-      amount,
-      balance: Math.ceil(charMap['USD'].available),
-      action: i == 0 ? 'Buy' : 'Sell',
-    });
+    if(i == 0 || i == 1) {
+      navigation.navigate("BuyCoinScreen", 
+      {
+        title,
+        avatar, 
+        symbol,
+        refetch, 
+        amount,
+        balance: Math.ceil(charMap['USD'].available),
+        action: i == 0 ? 'Buy' : 'Sell',
+      });
+    }
   }
 
 
@@ -138,14 +162,17 @@ export default function BuyCryptoScreen(props: ScreenProp) {
 
       {/* <BorderLine /> */}
 
-      <Cover>
-      <LineChart
-        data={data}
-        width={width}
-        height={220}
-        chartConfig={chartConfig}
-      />
-      </Cover>
+     
+      {histories ? (
+        <LineChart
+          data={graphData}
+          width={width}
+          height={220}
+          chartConfig={chartConfig}
+        />
+      ) : null}
+      
+      
 
     
       <Cover>

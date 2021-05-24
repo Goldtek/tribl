@@ -33,19 +33,26 @@ export default function DonateScreen(props: ScreenProp) {
 
   const [SendMoney, { data: response }] = useMutation(SEND_MONEY);
 
-
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
 const process = () => {
-  // if(value === 0){
-  //   return Toast.show("Please select the source to send money from.");
-  // } else if(amount > value){ // check if it is wallet that is selected
-  //   return Toast.show("Your wallet balance is less than the amount you want to send.");
-  // }
+  if(value === 0){
+    return Toast.show("Please select the source to send money from.");
+  } else if(amount > value){ // check if it is wallet that is selected
+    return Toast.show("Your wallet balance is less than the amount you want to send.");
+  }
   setLoading(true);
-  SendMoney({ variables: { payload:  { amount:"111", walletId:"1" }}});
+  SendMoney({ variables: { payload:  { amount:"111", walletId:"854325a4-ecc9-4f5b-a2dc-a1b8771117f5", fiat: {
+    verification:'none',
+    description: "",
+      source: {  asset: 'USD', category: 'WALLET' }
+    },
+    type: 'TRIBE_DONATE',
+    origin: 'TRIBE' }
+  }});
+
   setLoading(false);
 }
 

@@ -442,7 +442,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
                   color: colors.PRIMARY,
                   fontSize: RFValue(fonts.LARGE_SIZE + 2),
                   fontFamily: fonts.WORK_SANS_BOLD,
-                  textTransform: 'uppercase'
+                  textTransform: 'capitalize'
                 }}
               >
                 {t(`community.passport.pay`)}
@@ -485,7 +485,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
                   color: colors.PRIMARY,
                   fontSize: RFValue(fonts.LARGE_SIZE + 2),
                   fontFamily: fonts.WORK_SANS_BOLD,
-                  textTransform: 'uppercase'
+                  textTransform: 'capitalize'
                 }}
               >
                 {t(`community.passport.pay`)}
@@ -511,8 +511,31 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
       <TriblpayStack.Screen
         name="BuyCoinScreen"
         component={Screens.BuyCoinScreen}
-        options={{
-          headerTitle: 'Buy Coin',
+        options = {({route}) => ({
+          headerRight: () => (
+            <HeaderRightCover>
+              <Image
+                source={require('../../../assets/images/logo.png')}
+                style={{
+                  resizeMode: 'contain',
+                  width: RFValue(30),
+                  height: RFValue(30)
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.PRIMARY,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {t(`community.passport.pay`)}
+              </Text>
+            </HeaderRightCover>
+          ),
+          //@ts-ignore
+          headerTitle: `Buy ${route.params?.title}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -526,7 +549,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
             fontFamily: fonts.WORK_SANS_REGULAR,
             textTransform: 'capitalize'
           }
-        }}
+        })}
       />
     </TriblpayStack.Navigator>
   );
