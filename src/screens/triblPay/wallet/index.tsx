@@ -243,7 +243,7 @@ export default function WalletScreen(props: ScreenProp) {
                       marginLeft: RFValue(10)
                     }}
                   >
-                    {`${item.bank.paymentInstruction.beneficiaryBankName}`}
+                    {`${item.bank.name}`}
                   </Text>
                 </LeftCover>
                 <RightCover>
@@ -256,13 +256,10 @@ export default function WalletScreen(props: ScreenProp) {
                       textTransform: 'capitalize'
                     }}
                   >
-                    {truncate(
-                      item.bank.paymentInstruction.beneficiaryBankAccountNumber,
-                      {
-                        length: 7,
-                        omission: '***'
-                      }
-                    )}
+                    {truncate(item.bank.accountNumber, {
+                      length: 4,
+                      omission: ''
+                    })}
                   </Text>
                 </RightCover>
               </Cover>
