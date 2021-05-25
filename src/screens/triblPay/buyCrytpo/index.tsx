@@ -101,8 +101,20 @@ export default function BuyCryptoScreen(props: ScreenProp) {
     if(isset){
       setIsset(false);
     }
-    if(i == 0 || i == 1) {
+    if(i == 0) {
       navigation.navigate("BuyCoinScreen", 
+      {
+        title,
+        avatar, 
+        symbol,
+        refetch, 
+        amount,
+        myFundingSources,
+        balance: Math.ceil(charMap['USD'].available),
+        action: i == 0 ? 'Buy' : 'Sell',
+      });
+    } else if (i == 1) {
+      navigation.navigate("SellCoinScreen", 
       {
         title,
         avatar, 

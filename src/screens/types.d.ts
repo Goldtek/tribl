@@ -239,6 +239,7 @@ export type RootStackParamScreensList =
   | 'BuyCryptoScreen'
   | 'BuyCoinScreen'
   | 'DonateScreen'
+  | 'SellCoinScreen'
   ;
 
 interface StackNavigationInterface extends StackActionHelpers {

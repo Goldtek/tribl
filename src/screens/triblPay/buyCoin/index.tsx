@@ -70,7 +70,8 @@ export default function AddCashScreen(props: ScreenProp) {
   const amount = props?.route?.params?.amount;
   const action = props?.route?.params?.action;
   const symbol = props?.route?.params?.symbol;
- 
+  const refetch =  props?.route?.params?.refetch;
+
   const charmap: any = {};
   const { data: fetched_markets } = useQuery(GET_MARKET);
   const fetchMarket = fetched_markets?.fetchMarket;
@@ -249,15 +250,7 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
         if(number > balance){
           return Toast.show("The amount you want to purchase coin is higher than the amount in your wallet.");
         }
-        buyWithWallet(
-          {variables: {
-            payload: {
-              amount: String(number),
-              asset: `${short_symbol}`,
-              crypto: { market: `${symbol}`, side: `${action.toUpperCase()}`, price: charmap[symbol].best_ask.price}
-            }
-          }});
-          navigation.navigate('TransactionHistoryScreen');
+        buyWithWallet();
       }
     }
     
@@ -325,16 +318,35 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
               }
             }) 
             :null;
-            // navigation.navigate('TriblPayScreen', { screen: 'TransactionHistoryScreen' })
+          refetch();
       data && fundingSource.type === 'CARD' || value === 'WALLET'
         ? navigation.navigate('TransactionHistoryScreen')
         : setBankModalState(!bankModalState);
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-      console.tron('error', walletError)
     }
   };
+
+  const handleWallet = async () => {
+
+    try{
+      buyWithWallet(
+        {variables: {
+          payload: {
+            amount: String(number),
+            asset: `${short_symbol}`,
+            crypto: { market: `${symbol}`, side: `${action.toUpperCase()}`, price: charmap[symbol].best_ask.price}
+          }
+        }
+      });
+      refetch();
+      navigation.navigate('TransactionHistoryScreen');
+    } catch (error) {
+      crashlytics.recordError(new Error(error));
+      crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
+    }
+  }
 
   return (
     <Container onPress={() => Keyboard.dismiss()}>
@@ -571,7 +583,7 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
                   <TouchableOpacity
                     onPress={() => { 
                       setBankModalState(!bankModalState)
-                      navigation.navigate('TransactionHistoryScreen')
+                      navigation.navigate('TransactionHistoryScreen');
                     }}
                     style={{ position: 'absolute', right: 5, top: 5 }}
                   >

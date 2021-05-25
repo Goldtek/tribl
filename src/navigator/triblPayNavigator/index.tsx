@@ -551,6 +551,50 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
           }
         })}
       />
+
+<TriblpayStack.Screen
+        name="SellCoinScreen"
+        component={Screens.SellCoinScreen}
+        options = {({route}) => ({
+          headerRight: () => (
+            <HeaderRightCover>
+              <Image
+                source={require('../../../assets/images/logo.png')}
+                style={{
+                  resizeMode: 'contain',
+                  width: RFValue(30),
+                  height: RFValue(30)
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.PRIMARY,
+                  fontSize: RFValue(fonts.LARGE_SIZE),
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  textTransform: 'capitalize'
+                }}
+              >
+                {t(`community.passport.pay`)}
+              </Text>
+            </HeaderRightCover>
+          ),
+          //@ts-ignore
+          headerTitle: `Sell ${route.params?.title}`,
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            textTransform: 'capitalize'
+          }
+        })}
+      />
     </TriblpayStack.Navigator>
   );
 }

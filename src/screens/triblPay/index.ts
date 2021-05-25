@@ -18,6 +18,7 @@ import BuyCryptoScreen from './buyCrytpo';
 import BuyCoinScreen from './buyCoin';
 import WalletPreviewScreen from './walletPreview';
 import CryptoTransactionHistoryScreen from './cryptoTransactionHistory';
+import SellCoinScreen from './sellCoin';
 
 export default {
   WalletScreen,
@@ -39,5 +40,6 @@ export default {
   BuyCoinScreen,
   TransactionHistoryScreen,
   WalletPreviewScreen,
-  CryptoTransactionHistoryScreen
+  CryptoTransactionHistoryScreen,
+  SellCoinScreen
 };
