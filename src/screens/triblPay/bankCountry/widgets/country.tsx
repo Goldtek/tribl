@@ -20,13 +20,6 @@ const CountryCard = (props: CountryCardProps) => {
   const { name, iso2, emoji, navigation, userDetails } = props;
 
   const handleSelect = () => {
-    if (name === 'United States of America' || iso2 === 'US') {
-      return navigation.navigate('VerifyIdentityScreen', {
-        details: { name, iso2, emoji },
-        userDetails
-      });
-    }
-
     navigation.navigate('SelfieScreen', {
       details: { name, iso2, emoji },
       userDetails
