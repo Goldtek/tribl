@@ -69,8 +69,6 @@ export default function TransactionHistory(props: ScreenProp) {
     fetchMore({
       variables: { skip: data.length, limit: 5 },
       updateQuery: (prev: any, { fetchMoreResult }: any) => {
-        console.tron(prev);
-        console.tron(fetchMoreResult);
         if (!fetchMoreResult) {
           return prev;
         }

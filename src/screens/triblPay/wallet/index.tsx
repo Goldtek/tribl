@@ -29,7 +29,6 @@ import {
 import { Modal, TouchableOpacity, View } from 'react-native';
 import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
 
-
 interface charPortfolio {
   availabble: number;
 }
@@ -47,7 +46,7 @@ export default function WalletScreen(props: ScreenProp) {
   //TODO, define a type for these
   const filtered_markets: any = [];
   const charPortfolio: any = {};
-  const isTribe = props?.route?.params?.isTribe
+  const isTribe = props?.route?.params?.isTribe;
   const { data: requestData, refetch, error } = useQuery(GET_PORTFOLIO);
 
   const { data: fetched_markets } = useQuery(GET_MARKET);
@@ -58,7 +57,6 @@ export default function WalletScreen(props: ScreenProp) {
 
   const myFundingSources = userFundingSources?.myFundingSources;
   const portfolio = requestData?.fetchPortfolio;
-  console.tron('userFundingSources', userFundingSources)
   const fetchMarket = fetched_markets?.fetchMarket;
   const markets = fetchMarket?.markets;
   if (markets) {
@@ -128,7 +126,7 @@ export default function WalletScreen(props: ScreenProp) {
         {charPortfolio['USD'] !== undefined &&
         charPortfolio['USD'].available > 0 ? (
           <GradientButton
-             onPress={() => navigation.navigate('CryptoFaqScreen', { refetch })}
+            onPress={() => navigation.navigate('CryptoFaqScreen', { refetch })}
             style={{
               height: 50
             }}
@@ -140,7 +138,7 @@ export default function WalletScreen(props: ScreenProp) {
               height: 50
             }}
           >
-           {t(`community.passport.addCash`)}
+            {t(`community.passport.addCash`)}
           </GradientButton>
         ) : (
           <GradientButton
@@ -352,42 +350,41 @@ export default function WalletScreen(props: ScreenProp) {
         </RightCover>
       </Cover>
       {!isTribe || filtered_data.length == 0 ? (
-      <ListCover>
-        <Cover>
-          <LeftCover>
-            <Title
-              style={{
-                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                fontSize: RFValue(fonts.LARGE_SIZE + 2),
-                color: colors.BLACK,
-                lineHeight: RFValue(30),
-                marginTop: RFValue(5),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.passport.cryptocurrency`)}
-            </Title>
-          </LeftCover>
-          <RightCover>
-            <Feather name="more-vertical" size={22} color={colors.BLACK} />
-          </RightCover>
-        </Cover>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 10 }}
-        >
-          
-          <FlatList
-            data={filtered_data}
-            renderItem={({ item }) => (
-              <Portfolio item={item} markets={filtered_markets} />
-            )}
-            ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
-            keyExtractor={(item, index) => String(index)}
-          />
-        </ScrollView>
-      </ListCover>
-      ): null}
+        <ListCover>
+          <Cover>
+            <LeftCover>
+              <Title
+                style={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                  color: colors.BLACK,
+                  lineHeight: RFValue(30),
+                  marginTop: RFValue(5),
+                  textTransform: 'capitalize'
+                }}
+              >
+                {t(`community.passport.cryptocurrency`)}
+              </Title>
+            </LeftCover>
+            <RightCover>
+              <Feather name="more-vertical" size={22} color={colors.BLACK} />
+            </RightCover>
+          </Cover>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 10 }}
+          >
+            <FlatList
+              data={filtered_data}
+              renderItem={({ item }) => (
+                <Portfolio item={item} markets={filtered_markets} />
+              )}
+              ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
+              keyExtractor={(item, index) => String(index)}
+            />
+          </ScrollView>
+        </ListCover>
+      ) : null}
       <Modal
         animationType="fade"
         transparent={true}

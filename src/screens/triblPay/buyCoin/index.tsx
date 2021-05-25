@@ -332,7 +332,6 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-      console.tron('error', walletError)
     }
   };
 
