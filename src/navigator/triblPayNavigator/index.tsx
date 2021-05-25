@@ -70,7 +70,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="BankCountryScreen"
         component={Screens.BankCountryScreen}
         options={{
-          headerTitle: `1 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `1 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -349,111 +349,111 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
       />
 
       <TriblpayStack.Screen
-          name="CryptoFaqScreen"
-          component={Screens.CryptoFaqScreen}
-          options={{
-            headerTitle: () => null,
-            headerRight: () => (
-              <HeaderRightCover>
-                <Image
-                  source={require('../../../assets/images/logo.png')}
-                  style={{
-                    resizeMode: 'contain',
-                    width: RFValue(30),
-                    height: RFValue(30)
-                  }}
-                />
-                <Text
-                  style={{
-                    color: colors.PRIMARY,
-                    fontSize: RFValue(fonts.LARGE_SIZE + 2),
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {t(`community.passport.pay`)}
-                </Text>
-              </HeaderRightCover>
-            ),
-            headerTitleContainerStyle: { alignItems: 'center' },
-            headerLeftContainerStyle: { marginLeft: 5 },
-            headerRightContainerStyle: {
-              marginRight: 10
-            },
-            headerBackTitleVisible: false,
-            headerTintColor: colors.PRIMARY,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              textTransform: 'capitalize'
-            }
-          }}
-        />
+        name="CryptoFaqScreen"
+        component={Screens.CryptoFaqScreen}
+        options={{
+          headerTitle: () => null,
+          headerRight: () => (
+            <HeaderRightCover>
+              <Image
+                source={require('../../../assets/images/logo.png')}
+                style={{
+                  resizeMode: 'contain',
+                  width: RFValue(30),
+                  height: RFValue(30)
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.PRIMARY,
+                  fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {t(`community.passport.pay`)}
+              </Text>
+            </HeaderRightCover>
+          ),
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            textTransform: 'capitalize'
+          }
+        }}
+      />
 
-        <TriblpayStack.Screen
-          name="BuyCryptoScreen"
-          component={Screens.BuyCryptoScreen}
-          options={{
-            headerTitle: () => null,
-            headerRight: () => (
-              <HeaderRightCover>
-                <Image
-                  source={require('../../../assets/images/logo.png')}
-                  style={{
-                    resizeMode: 'contain',
-                    width: RFValue(30),
-                    height: RFValue(30)
-                  }}
-                />
-                <Text
-                  style={{
-                    color: colors.PRIMARY,
-                    fontSize: RFValue(fonts.LARGE_SIZE + 2),
-                    fontFamily: fonts.WORK_SANS_BOLD,
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  {t(`community.passport.pay`)}
-                </Text>
-              </HeaderRightCover>
-            ),
-            headerTitleContainerStyle: { alignItems: 'center' },
-            headerLeftContainerStyle: { marginLeft: 5 },
-            headerRightContainerStyle: {
-              marginRight: 10
-            },
-            headerBackTitleVisible: false,
-            headerTintColor: colors.PRIMARY,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              textTransform: 'capitalize'
-            }
-          }}
-        />
+      <TriblpayStack.Screen
+        name="BuyCryptoScreen"
+        component={Screens.BuyCryptoScreen}
+        options={{
+          headerTitle: () => null,
+          headerRight: () => (
+            <HeaderRightCover>
+              <Image
+                source={require('../../../assets/images/logo.png')}
+                style={{
+                  resizeMode: 'contain',
+                  width: RFValue(30),
+                  height: RFValue(30)
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.PRIMARY,
+                  fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                  fontFamily: fonts.WORK_SANS_BOLD,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {t(`community.passport.pay`)}
+              </Text>
+            </HeaderRightCover>
+          ),
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            textTransform: 'capitalize'
+          }
+        }}
+      />
 
-        <TriblpayStack.Screen
-          name="BuyCoinScreen"
-          component={Screens.BuyCoinScreen}
-          options={{
-            headerTitle: "Buy Coin",
-            headerTitleContainerStyle: { alignItems: 'center' },
-            headerLeftContainerStyle: { marginLeft: 5 },
-            headerRightContainerStyle: {
-              marginRight: 10
-            },
-            headerBackTitleVisible: false,
-            headerTintColor: colors.PRIMARY,
-            headerTitleStyle: {
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.LARGE_SIZE),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              textTransform: 'capitalize'
-            }
-          }}
-        />
+      <TriblpayStack.Screen
+        name="BuyCoinScreen"
+        component={Screens.BuyCoinScreen}
+        options={{
+          headerTitle: 'Buy Coin',
+          headerTitleContainerStyle: { alignItems: 'center' },
+          headerLeftContainerStyle: { marginLeft: 5 },
+          headerRightContainerStyle: {
+            marginRight: 10
+          },
+          headerBackTitleVisible: false,
+          headerTintColor: colors.PRIMARY,
+          headerTitleStyle: {
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.LARGE_SIZE),
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            textTransform: 'capitalize'
+          }
+        }}
+      />
     </TriblpayStack.Navigator>
   );
 }
