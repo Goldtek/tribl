@@ -64,6 +64,7 @@ import {
   CardContainer,
   DonateButton
 } from './styles';
+import { cos } from 'react-native-reanimated';
 
 interface singleCommunityScreenProp extends NavigationInterface {
   route: {
@@ -101,6 +102,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     showJoinCommunityModal: false,
     tagModal: false
   });
+
 
   const [buttonLabel, setButtonLabel] = useState(
     t(`community.recommended.join`)
@@ -327,7 +329,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
     setModalState(!modalState);
     if (amount !== undefined && amount > 0) {
       navigation.navigate('DonateScreen', {
-        id,
+        id: wallet?.id,
         amount,
         myFundingSources,
         balance: Math.ceil(charMap['USD'].available)
@@ -402,8 +404,8 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                     </Title>
 
                     <ButtonsWrapper>
-                      {/* {wallet?.status === 'ACTIVE' &&
-                      userDetails?.wallet?.status === 'ACTIVE' ? ( */}
+                      {wallet?.status === 'ACTIVE' &&
+                      userDetails?.wallet?.status === 'ACTIVE' ? (
                         <TipButton onPress={() => setModalState(!modalState)}>
                           <FontAwesome
                             name="money"
@@ -411,7 +413,7 @@ export default function SingleCommunity(props: singleCommunityScreenProp) {
                             color={colors.textGrey}
                           />
                         </TipButton>
-                        {/* ) : null} */}
+                        ) : null}
 
                       <Button
                         mode="contained"

@@ -70,7 +70,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="BankCountryScreen"
         component={Screens.BankCountryScreen}
         options={{
-          headerTitle: `1 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `1 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -110,7 +110,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="SelfieScreen"
         component={Screens.SelfieScreen}
         options={{
-          headerTitle: `3 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `2 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -130,7 +130,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="DocumentTypeSelectionScreen"
         component={Screens.DocumentTypeSelectionScreen}
         options={{
-          headerTitle: `4 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `3 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -150,7 +150,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="CountryIdScreen"
         component={Screens.CountryIdScreen}
         options={{
-          headerTitle: `5 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `4 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
@@ -170,7 +170,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="BillingDetailsScreen"
         component={Screens.BillingDetailsScreen}
         options={{
-          headerTitle: `6 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `5 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {

@@ -47,7 +47,7 @@ export default function WalletScreen(props: ScreenProp) {
   //TODO, define a type for these
   const filtered_markets: any = [];
   const charPortfolio: any = {};
-
+  const isTribe = props?.route?.params?.isTribe
   const { data: requestData, refetch, error } = useQuery(GET_PORTFOLIO);
 
   const { data: fetched_markets } = useQuery(GET_MARKET);
@@ -351,6 +351,7 @@ export default function WalletScreen(props: ScreenProp) {
           />
         </RightCover>
       </Cover>
+      {!isTribe || filtered_data.length == 0 ? (
       <ListCover>
         <Cover>
           <LeftCover>
@@ -375,6 +376,7 @@ export default function WalletScreen(props: ScreenProp) {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 10 }}
         >
+          
           <FlatList
             data={filtered_data}
             renderItem={({ item }) => (
@@ -385,7 +387,7 @@ export default function WalletScreen(props: ScreenProp) {
           />
         </ScrollView>
       </ListCover>
-
+      ): null}
       <Modal
         animationType="fade"
         transparent={true}

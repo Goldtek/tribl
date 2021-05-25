@@ -114,7 +114,7 @@ export default function SelfieScreen(props: ScreenProp) {
     <Container>
       <HeaderCover>
         <ProgressBar
-          progress={3 / 6}
+          progress={2 / 5}
           color={colors.PRIMARY}
           style={{
             height: RFValue(5),

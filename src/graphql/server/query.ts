@@ -631,6 +631,10 @@ export const GET_NEARBY_MEMBERS_OF_A_COMMUNITY = gql`
         connectionDetails {
           status
         }
+        wallet {
+          id
+          status
+        }
       }
     }
   }
@@ -654,6 +658,10 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
         tags {
           id
           name
+        }
+        wallet {
+          id
+          status
         }
         uniqueInterests {
           name
@@ -732,6 +740,10 @@ export const GET_MY_COMMUNITIES = gql`
         tags {
           id
           name
+        }
+        wallet {
+          id
+          status
         }
         uniqueInterests {
           name
@@ -1013,6 +1025,10 @@ export const GET_SINGLE_COMMUNITY = gql`
         isMember
         isPrivate
         isInvited
+        wallet {
+          id
+          status
+        }
         description
         isModerator
         description
@@ -1377,6 +1393,10 @@ export const GET_COMMUNITY_MEMBERS = gql`
           name
         }
         connectionDetails {
+          status
+        }
+        wallet {
+          id
           status
         }
       }
@@ -1875,6 +1895,10 @@ export const GET_COMMUNITY_CREATION_REQUEST = gql`
           id
           firstName
           lastName
+        }
+        wallet {
+          id
+          status
         }
       }
     }

@@ -51,6 +51,7 @@ import {
   LoaderMessage
 } from './styles';
 import { truncateString } from '../../../utils/truncate';
+import { Toast } from '../../../components/rootToaster';
 
 // DEFINE SCREEN PROP TYPES
 interface ScreenProp extends NavigationInterface {}
@@ -69,7 +70,7 @@ export default function AddCashScreen(props: ScreenProp) {
   const amount = props?.route?.params?.amount;
   const action = props?.route?.params?.action;
   const symbol = props?.route?.params?.symbol;
-
+ 
   const charmap: any = {};
   const { data: fetched_markets } = useQuery(GET_MARKET);
   const fetchMarket = fetched_markets?.fetchMarket;
@@ -86,7 +87,7 @@ export default function AddCashScreen(props: ScreenProp) {
     }
   }
 
-const [buyWithWallet, { loading: walletLoading }] = useMutation(BUY_CRYPTO_WALLET);
+const [buyWithWallet, { loading: walletLoading, error: walletError }] = useMutation(BUY_CRYPTO_WALLET);
 const [buyWithCard,  { loading: cardLoading }] = useMutation(BUY_CRYPTO_CARD);
 const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
 
@@ -99,7 +100,7 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
   const [bankModalState, setBankModalState] = useState(false);
   const [cardCvc, setCardCvc] = useState<any>(null);
   const [fundingSource, setFundingSource] = useState<any>({});
-
+  const short_symbol =  symbol === 'ETHUSD' ?  'ETH' : symbol === 'PAXGUSD' ? 'USD' : 'BTC';
   const inputRef = useRef<TextInput>(null);
   const modalInputRef = useRef<TextInput>(null);
 
@@ -144,7 +145,7 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
           }),
           {
             label: `WALLET - ${truncateString(
-               `$${balance}`
+               `$${balance}`,
             )}`,
             value: 'WALLET',
             icon: () => (
@@ -243,6 +244,23 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
         ? setModalState(!modalState)
         : handleTransaction();
     }
+    if(value){
+      if(value === 'WALLET'){
+        if(number > balance){
+          return Toast.show("The amount you want to purchase coin is higher than the amount in your wallet.");
+        }
+        buyWithWallet(
+          {variables: {
+            payload: {
+              amount: String(number),
+              asset: `${short_symbol}`,
+              crypto: { market: `${symbol}`, side: `${action.toUpperCase()}`, price: charmap[symbol].best_ask.price}
+            }
+          }});
+          navigation.navigate('TransactionHistoryScreen');
+      }
+    }
+    
   };
 
   const handleTransaction = async () => {
@@ -263,7 +281,7 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
               variables: {
                 payload: {
                   amount: String(number),
-                  asset: 'USD',
+                  asset: `${short_symbol}`,
                   fiat: {
                     verification: 'cvv',
                     description: '',
@@ -306,37 +324,15 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
                 }
               }
             }) 
-            :
-            await buyWithWallet({
-              variables: {
-                payload: {
-                  amount: String(number),
-                  asset: 'USD',
-                  fiat: {
-                    verification: fundingSource.verification,
-                    description: '',
-                    source: {
-                      asset: 'USD',
-                      category: 'WALLET',
-                      id: fundingSource?.id
-                    }
-                  },
-                  crypto: { 
-                    market: `${symbol}`, 
-                    side: `${action.toUpperCase()}`,
-                    price: charmap[symbol].best_ask.price
-                  }
-                }
-              }
-            });
-            console.tron('success', data)
+            :null;
+            // navigation.navigate('TriblPayScreen', { screen: 'TransactionHistoryScreen' })
       data && fundingSource.type === 'CARD' || value === 'WALLET'
-        ? navigation.navigate('WalletScreen')
+        ? navigation.navigate('TransactionHistoryScreen')
         : setBankModalState(!bankModalState);
     } catch (error) {
       crashlytics.recordError(new Error(error));
       crashlytics.log(`ERROR MESSAGE, ${error.toString()}`);
-      console.tron('error', error)
+      console.tron('error', walletError)
     }
   };
 
@@ -573,7 +569,10 @@ const [buyWithBank,  { loading: bankLoading }] = useMutation(BUY_CRYPTO_BANK);
                   }}
                 >
                   <TouchableOpacity
-                    onPress={() => setBankModalState(!bankModalState)}
+                    onPress={() => { 
+                      setBankModalState(!bankModalState)
+                      navigation.navigate('TransactionHistoryScreen')
+                    }}
                     style={{ position: 'absolute', right: 5, top: 5 }}
                   >
                     <AntDesign name="close" size={30} />
