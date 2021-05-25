@@ -655,6 +655,12 @@ export const GET_RECOMMENDED_COMMUNITIES = gql`
         isModerator
         isRequested
         isInvited
+        creator {
+          id
+          firstName
+          lastName
+          avatar
+        }
         tags {
           id
           name
@@ -706,6 +712,12 @@ export const GET_POPULAR_COMMUNITIES = gql`
         isModerator
         isRequested
         isInvited
+        creator {
+          id
+          firstName
+          lastName
+          avatar
+        }
         tags {
           id
           name
@@ -737,6 +749,12 @@ export const GET_MY_COMMUNITIES = gql`
         isModerator
         isRequested
         isInvited
+        creator {
+          id
+          firstName
+          lastName
+          avatar
+        }
         tags {
           id
           name
@@ -1028,6 +1046,12 @@ export const GET_SINGLE_COMMUNITY = gql`
         wallet {
           id
           status
+        }
+        creator {
+          id
+          firstName
+          lastName
+          avatar
         }
         description
         isModerator
@@ -1969,9 +1993,9 @@ export const GET_ALL_CHANNEL_CREATION_REQUEST = gql`
 export const GET_CARD_PCI_OUTPUT = gql`
   query getCardPciKey {
     getCardPciKey {
-        success
-        key
-        keyId
+      success
+      key
+      keyId
     }
   }
 `;
@@ -2122,17 +2146,16 @@ export const GET_CRYPTO_TRANSACTION_HISTORY = gql`
 `;
 
 export const FETCH_MARKET_HISTORY = gql`
-  query fetchMarketHistory ($input: GetMarketHistoryInput!) {
-    fetchMarketHistory(input: $input){
+  query fetchMarketHistory($input: GetMarketHistoryInput!) {
+    fetchMarketHistory(input: $input) {
       metadata {
         totalCount
       }
-     
-        prices {
-          average_price
-          timestamp
-        }
-      
+
+      prices {
+        average_price
+        timestamp
+      }
     }
   }
 `;

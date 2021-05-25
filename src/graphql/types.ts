@@ -214,8 +214,8 @@ type FundingBillingAddress = {
   createdAt: string;
   updatedAt: string;
   name: string;
-  wallet: Wallet
-}
+  wallet: Wallet;
+};
 
 type FundingCard = {
   id: string;
@@ -227,7 +227,7 @@ type FundingCard = {
   expMonth: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 enum FundingBankType {
   WIRE = 'WIRE',
@@ -244,7 +244,7 @@ type FundingBank = {
   source: FundingSource;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 enum FundingSourceType {
   CARD = 'CARD',
@@ -262,7 +262,7 @@ type FundingSource = {
   type: FundingSourceType;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 type BillingAddress = {
   id: string;
@@ -278,7 +278,7 @@ type BillingAddress = {
   country: string;
   state: string;
   wallet: Wallet;
-}
+};
 
 type Wallet = {
   id: string;
@@ -391,6 +391,7 @@ export interface CommunityInterface {
   membersCount: number;
   isRequested: boolean;
   isModerator: boolean;
+  creator: PassportInterface;
   privacy: CommunityPrivacy;
   channels: ChannelInterface[];
   moderators: PassportInterface[];
@@ -696,4 +697,3 @@ export type SingleCommunityRequestInterface = {
     data: CommunityInterface[];
   };
 };
-
