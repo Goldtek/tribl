@@ -128,7 +128,7 @@ export default function WalletScreen(props: ScreenProp) {
         {charPortfolio['USD'] !== undefined &&
         charPortfolio['USD'].available > 0 ? (
           <GradientButton
-            onPress={() => navigation.navigate('CryptoFaqScreen', { refetch })}
+             onPress={() => navigation.navigate('CryptoFaqScreen', { refetch })}
             style={{
               height: 50
             }}

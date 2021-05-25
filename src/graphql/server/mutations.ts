@@ -364,12 +364,37 @@ export const SAVE_BANK_DETAILS = gql`
 `;
 
 export const BUY_CRYPTO = gql`
-  mutation buyCrypto($payload: FundWalletInput!) {
+  mutation fundWallet($payload: FundWalletInput!) {
     fundWallet(input: $payload) {
       success
     }
   }
 `;
+
+export const BUY_CRYPTO_WALLET= gql`
+  mutation fundWallet($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
+      success
+    }
+  }
+`;
+
+export const BUY_CRYPTO_BANK = gql`
+  mutation fundWallet($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
+      success
+    }
+  }
+`;
+
+export const BUY_CRYPTO_CARD = gql`
+  mutation fundWallet($payload: FundWalletInput!) {
+    fundWallet(input: $payload) {
+      success
+    }
+  }
+`;
+
 
 export const DONATE_BY_WALLET = gql`
 mutation sendMoney($payload: SendMoneyInput!) {
