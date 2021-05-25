@@ -110,7 +110,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="SelfieScreen"
         component={Screens.SelfieScreen}
         options={{
-          headerTitle: `3 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `2 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
