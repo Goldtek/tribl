@@ -464,7 +464,7 @@ export default function PassportScreen(props: ScreenProp) {
     const grantMediaPermission = async () => {
       if (Platform.OS !== 'web') {
         // @ts-ignore
-        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const permission = await ImagePicker.requestCameraRollPermissionsAsync();
         if (!permission.granted) {
           Alert.alert(
             'Sorry, we need camera roll permissions to make this work!'

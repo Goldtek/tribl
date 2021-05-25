@@ -28,8 +28,7 @@ import {
 } from './styles';
 import { Modal, TouchableOpacity, View } from 'react-native';
 import { DEVICE_FULL_HEIGHT, DEVICE_FULL_WIDTH } from '../../../utils/device';
-import truncate from 'lodash/truncate';
-import { color } from 'react-native-reanimated';
+
 
 interface charPortfolio {
   availabble: number;
@@ -48,7 +47,7 @@ export default function WalletScreen(props: ScreenProp) {
   //TODO, define a type for these
   const filtered_markets: any = [];
   const charPortfolio: any = {};
-  const isTribe = props?.route?.params?.isTribe;
+
   const { data: requestData, refetch, error } = useQuery(GET_PORTFOLIO);
 
   const { data: fetched_markets } = useQuery(GET_MARKET);
@@ -59,7 +58,7 @@ export default function WalletScreen(props: ScreenProp) {
 
   const myFundingSources = userFundingSources?.myFundingSources;
   const portfolio = requestData?.fetchPortfolio;
-
+  console.tron('userFundingSources', userFundingSources)
   const fetchMarket = fetched_markets?.fetchMarket;
   const markets = fetchMarket?.markets;
   if (markets) {
@@ -95,75 +94,41 @@ export default function WalletScreen(props: ScreenProp) {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: colors.WHITE, paddingBottom: 120 }}>
-      <Container>
-        <Title
+    <Container>
+      <Title
+        style={{
+          color: colors.BLACK,
+          fontSize: RFValue(fonts.LARGE_SIZE * 2),
+          fontFamily: fonts.WORK_SANS_BOLD,
+          lineHeight: RFValue(40),
+          textAlign: 'center',
+          marginTop: -0,
+          paddingTop: 0
+        }}
+      >
+        {'\u0024'}
+        {charPortfolio['USD'] !== undefined
+          ? Math.round(charPortfolio['USD'].available)
+          : 0.0}
+      </Title>
+      <BalanceCover>
+        <Text
           style={{
-            color: colors.BLACK,
-            fontSize: RFValue(fonts.LARGE_SIZE * 2),
-            fontFamily: fonts.WORK_SANS_BOLD,
-            lineHeight: RFValue(40),
-            textAlign: 'center',
-            marginTop: -40,
-            paddingTop: 0
+            color: colors.PRIMARY_TEXT,
+            fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
+            fontFamily: fonts.WORK_SANS_REGULAR,
+            lineHeight: RFValue(17),
+            textTransform: 'capitalize'
           }}
         >
-          {'\u0024'}
-          {charPortfolio['USD'] !== undefined
-            ? Math.round(charPortfolio['USD'].available)
-            : 0.0}
-        </Title>
-        <BalanceCover>
-          <Text
-            style={{
-              color: colors.PRIMARY_TEXT,
-              fontSize: RFValue(fonts.MEDIUM_SIZE + 1),
-              fontFamily: fonts.WORK_SANS_REGULAR,
-              lineHeight: RFValue(17),
-              textTransform: 'capitalize'
-            }}
-          >
-            {t(`community.passport.cashBalance`)}
-          </Text>
-        </BalanceCover>
-        <ButtonCover>
-          {charPortfolio['USD'] !== undefined &&
-          charPortfolio['USD'].available > 0 ? (
-            <GradientButton
-              onPress={() => navigation.navigate('CryptoFaqScreen', { refetch })}
-              style={{
-                height: 50
-              }}
-              gradientContainerstyle={{
-                height: 50,
-                width: '48%'
-              }}
-              contentStyle={{
-                height: 50
-              }}
-            >
-              {t(`community.passport.crypto`)}
-            </GradientButton>
-          ) : (
-            <GradientButton
-              onPress={() => navigation.navigate('AddCashScreen')}
-              style={{
-                height: 50
-              }}
-              gradientContainerstyle={{
-                height: 50,
-                width: '48%'
-              }}
-              contentStyle={{
-                height: 50
-              }}
-            >
-              {t(`community.passport.addCash`)}
-            </GradientButton>
-          )}
-
+          {t(`community.passport.cashBalance`)}
+        </Text>
+      </BalanceCover>
+      <ButtonCover>
+        {charPortfolio['USD'] !== undefined &&
+        charPortfolio['USD'].available > 0 ? (
           <GradientButton
-            onPress={() => {}}
+            onPress={() => navigation.navigate('CryptoFaqScreen', { refetch })}
             style={{
               height: 50
             }}
@@ -175,339 +140,319 @@ export default function WalletScreen(props: ScreenProp) {
               height: 50
             }}
           >
-            {t(`community.passport.cashOut`)}
+           {t(`community.passport.addCash`)}
           </GradientButton>
-        </ButtonCover>
-        <Title
+        ) : (
+          <GradientButton
+            onPress={() => navigation.navigate('AddCashScreen')}
+            style={{
+              height: 50
+            }}
+            gradientContainerstyle={{
+              height: 50,
+              width: '48%'
+            }}
+            contentStyle={{
+              height: 50
+            }}
+          >
+            {t(`community.passport.addCash`)}
+          </GradientButton>
+        )}
+
+        <GradientButton
+          onPress={() => {}}
           style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.LARGE_SIZE + 2),
-            color: colors.BLACK,
-            lineHeight: RFValue(30),
-            marginTop: RFValue(25),
-            textTransform: 'capitalize'
+            height: 50
+          }}
+          gradientContainerstyle={{
+            height: 50,
+            width: '48%'
+          }}
+          contentStyle={{
+            height: 50
           }}
         >
-          {t(`community.passport.linkedAccounts`)}
-        </Title>
-        <Divider />
+          {t(`community.passport.cashOut`)}
+        </GradientButton>
+      </ButtonCover>
+      <Title
+        style={{
+          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+          fontSize: RFValue(fonts.LARGE_SIZE + 2),
+          color: colors.BLACK,
+          lineHeight: RFValue(30),
+          marginTop: RFValue(25),
+          textTransform: 'capitalize'
+        }}
+      >
+        {t(`community.passport.linkedAccounts`)}
+      </Title>
+      <Divider />
 
-        {myFundingSources &&
-          myFundingSources?.data
-            .filter((item: any) => item.card)
-            .map((item: any) => (
-              <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
-                <Cover>
-                  <LeftCover>
-                    <FontAwesome
-                      name="credit-card"
-                      size={22}
-                      color={colors.PRIMARY_TEXT}
-                    />
-                    <Text
-                      style={{
-                        color: colors.PRIMARY_TEXT,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        lineHeight: RFValue(16),
-                        textTransform: 'uppercase',
-                        marginLeft: RFValue(10)
-                      }}
-                    >
-                      {`**** **** **** ${item.card.last4}`}
-                    </Text>
-                  </LeftCover>
-                </Cover>
-              </TouchableOpacity>
-            ))}
+      {myFundingSources &&
+        myFundingSources?.data
+          .filter((item: any) => item.card)
+          .map((item: any) => (
+            <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
+              <Cover>
+                <LeftCover>
+                  <FontAwesome
+                    name="credit-card"
+                    size={22}
+                    color={colors.PRIMARY_TEXT}
+                  />
+                  <Text
+                    style={{
+                      color: colors.PRIMARY_TEXT,
+                      fontSize: RFValue(fonts.LARGE_SIZE),
+                      fontFamily: fonts.WORK_SANS_REGULAR,
+                      lineHeight: RFValue(17),
+                      textTransform: 'uppercase',
+                      marginLeft: RFValue(10)
+                    }}
+                  >
+                    {`**** **** **** ${item.card.last4}`}
+                  </Text>
+                </LeftCover>
+              </Cover>
+            </TouchableOpacity>
+          ))}
 
-        {myFundingSources &&
-          myFundingSources?.data
-            .filter((item: any) => item.bank)
-            .map((item: any) => (
-              <TouchableOpacity key={item.id} onPress={() => openModal(item)}>
-                <Cover>
-                  <LeftCover>
-                    <FontAwesome
-                      name="bank"
-                      size={22}
-                      color={colors.PRIMARY_TEXT}
-                    />
+      <Divider />
 
-                    <Text
-                      style={{
-                        color: colors.PRIMARY_TEXT,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        lineHeight: RFValue(17),
-                        textTransform: 'capitalize',
-                        marginLeft: RFValue(10)
-                      }}
-                    >
-                      {`${item.bank.paymentInstruction.beneficiaryBankName}`}
-                    </Text>
-                  </LeftCover>
-                  <RightCover>
-                    <Text
-                      style={{
-                        color: colors.SECONDARY_TEXT,
-                        fontSize: RFValue(fonts.LARGE_SIZE),
-                        fontFamily: fonts.WORK_SANS_REGULAR,
-                        lineHeight: RFValue(17),
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      {truncate(
-                        item.bank.paymentInstruction.beneficiaryBankAccountNumber,
-                        {
-                          length: 7,
-                          omission: '***'
-                        }
-                      )}
-                    </Text>
-                  </RightCover>
-                </Cover>
-              </TouchableOpacity>
-            ))}
-
-        <Divider />
-
-        <TouchableOpacity
-          onPress={() => navigation.navigate('LinkAccountScreen')}
-        >
-          <Cover>
-            <LeftCover>
-              <AntDesign name="plus" size={22} color={colors.PRIMARY_TEXT} />
-              <Text
-                style={{
-                  color: colors.PRIMARY_TEXT,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  lineHeight: RFValue(17),
-                  textTransform: 'capitalize',
-                  marginLeft: RFValue(10)
-                }}
-              >
-                Add a payment method
-              </Text>
-            </LeftCover>
-            <RightCover>
-              <Text
-                style={{
-                  color: colors.SECONDARY_TEXT,
-                  fontSize: RFValue(fonts.LARGE_SIZE),
-                  fontFamily: fonts.WORK_SANS_REGULAR,
-                  lineHeight: RFValue(17),
-                  textTransform: 'capitalize'
-                }}
-              >
-                <Button
-                  labelStyle={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.WHITE,
-                    textTransform: 'uppercase'
-                  }}
-                  contentStyle={{ justifyContent: 'flex-start' }}
-                  style={{
-                    width: '40%',
-                    backgroundColor: colors.ONLINE
-                  }}
-                >
-                  Add
-                </Button>
-              </Text>
-            </RightCover>
-          </Cover>
-        </TouchableOpacity>
-
-        <Divider />
-        <Title
-          style={{
-            fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-            fontSize: RFValue(fonts.LARGE_SIZE + 2),
-            color: colors.BLACK,
-            lineHeight: RFValue(30),
-            marginTop: RFValue(15),
-            textTransform: 'capitalize'
-          }}
-        >
-          {t(`community.passport.cashAccount`)}
-        </Title>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('LinkAccountScreen')}
+      >
         <Cover>
           <LeftCover>
+            <AntDesign name="plus" size={22} color={colors.PRIMARY_TEXT} />
             <Text
               style={{
-                color: colors.BLACK,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                lineHeight: RFValue(17),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.passport.nativeCurrency`)}
-            </Text>
-          </LeftCover>
-          <RightCover>
-            <Text
-              style={{
-                color: colors.BLACK,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                lineHeight: RFValue(17),
-                textTransform: 'uppercase',
-                marginRight: RFValue(5)
-              }}
-            >
-              USD
-            </Text>
-            <Feather
-              name="chevron-right"
-              size={22}
-              color={colors.SECONDARY_TEXT}
-            />
-          </RightCover>
-        </Cover>
-        <Cover>
-          <LeftCover>
-            <Text
-              style={{
-                color: colors.BLACK,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
-                fontFamily: fonts.WORK_SANS_REGULAR,
-                lineHeight: RFValue(17),
-                textTransform: 'capitalize'
-              }}
-            >
-              {t(`community.passport.country`)}
-            </Text>
-          </LeftCover>
-          <RightCover>
-            <Text
-              style={{
-                color: colors.BLACK,
-                fontSize: RFValue(fonts.MEDIUM_SIZE),
+                color: colors.PRIMARY_TEXT,
+                fontSize: RFValue(fonts.LARGE_SIZE),
                 fontFamily: fonts.WORK_SANS_REGULAR,
                 lineHeight: RFValue(17),
                 textTransform: 'capitalize',
-                marginRight: RFValue(5)
+                marginLeft: RFValue(10)
               }}
             >
-              United States
+              Add a payment method
             </Text>
-            <Feather
-              name="chevron-right"
-              size={22}
-              color={colors.SECONDARY_TEXT}
-            />
-          </RightCover>
-        </Cover>
-        {!isTribe ? (
-          <ListCover>
-            <Cover>
-              <LeftCover>
-                <Title
-                  style={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.LARGE_SIZE + 2),
-                    color: colors.BLACK,
-                    lineHeight: RFValue(30),
-                    marginTop: RFValue(5),
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {t(`community.passport.cryptocurrency`)}
-                </Title>
-              </LeftCover>
-              <RightCover>
-                <Feather name="more-vertical" size={22} color={colors.BLACK} />
-              </RightCover>
-            </Cover>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 10 }}
-            >
-            
-              <FlatList
-                data={filtered_data}
-                renderItem={({ item }) => (
-                  <Portfolio item={item} markets={filtered_markets} />
-                )}
-                ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
-                keyExtractor={(item, index) => String(index)}
-              />
-            
-            </ScrollView>
-        </ListCover>
-      ): null}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalState}
-          onRequestClose={() => setModalState(!modalState)}
-        >
-          <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}>
-            <View
+          </LeftCover>
+          <RightCover>
+            <Text
               style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: DEVICE_FULL_HEIGHT / 2.5
+                color: colors.SECONDARY_TEXT,
+                fontSize: RFValue(fonts.LARGE_SIZE),
+                fontFamily: fonts.WORK_SANS_REGULAR,
+                lineHeight: RFValue(17),
+                textTransform: 'capitalize'
               }}
             >
-              <View
+              <Button
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.WHITE,
+                  textTransform: 'uppercase'
+                }}
+                contentStyle={{ justifyContent: 'flex-start' }}
                 style={{
-                  margin: 20,
-                  backgroundColor: colors.WHITE,
-                  borderRadius: 10,
-                  padding: 20,
-                  width: DEVICE_FULL_WIDTH * 0.9,
-                  alignItems: 'center',
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 2
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 4,
-                  elevation: 5
+                  width: '40%',
+                  backgroundColor: colors.ONLINE
                 }}
               >
-                <FontAwesome
-                  name="credit-card"
-                  size={60}
-                  color={colors.PRIMARY}
-                />
-                {modalData && modalData.type === 'BANK' && (
-                  <Title style={{ textTransform: 'capitalize' }}>
-                    {modalData.bank.paymentInstruction.beneficiaryBankName}
-                  </Title>
-                )}
-                <Text>
-                  {modalData && modalData.type === 'BANK'
-                    ? modalData.bank.paymentInstruction
-                        .beneficiaryBankAccountNumber
-                    : `xxxx xxxx xxxx ${modalData?.card?.last4}`}
-                </Text>
-                <Button
-                  style={{ marginTop: 50 }}
-                  labelStyle={{
-                    fontFamily: fonts.WORK_SANS_SEMI_BOLD,
-                    fontSize: RFValue(fonts.MEDIUM_SIZE),
-                    color: colors.RED,
-                    textTransform: 'uppercase'
-                  }}
-                  contentStyle={{ justifyContent: 'flex-start' }}
-                >
-                  {modalData && modalData.type === 'BANK'
-                    ? 'Remove Bank'
-                    : 'Remove Card'}
-                </Button>
-              </View>
+                Add
+              </Button>
+            </Text>
+          </RightCover>
+        </Cover>
+      </TouchableOpacity>
+
+      <Divider />
+      <Title
+        style={{
+          fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+          fontSize: RFValue(fonts.LARGE_SIZE + 2),
+          color: colors.BLACK,
+          lineHeight: RFValue(30),
+          marginTop: RFValue(25),
+          textTransform: 'capitalize'
+        }}
+      >
+        {t(`community.passport.cashAccount`)}
+      </Title>
+      <Cover>
+        <LeftCover>
+          <Text
+            style={{
+              color: colors.BLACK,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              lineHeight: RFValue(17),
+              textTransform: 'capitalize'
+            }}
+          >
+            {t(`community.passport.nativeCurrency`)}
+          </Text>
+        </LeftCover>
+        <RightCover>
+          <Text
+            style={{
+              color: colors.BLACK,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              lineHeight: RFValue(17),
+              textTransform: 'uppercase',
+              marginRight: RFValue(5)
+            }}
+          >
+            USD
+          </Text>
+          <Feather
+            name="chevron-right"
+            size={22}
+            color={colors.SECONDARY_TEXT}
+          />
+        </RightCover>
+      </Cover>
+      <Cover>
+        <LeftCover>
+          <Text
+            style={{
+              color: colors.BLACK,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              lineHeight: RFValue(17),
+              textTransform: 'capitalize'
+            }}
+          >
+            {t(`community.passport.country`)}
+          </Text>
+        </LeftCover>
+        <RightCover>
+          <Text
+            style={{
+              color: colors.BLACK,
+              fontSize: RFValue(fonts.MEDIUM_SIZE),
+              fontFamily: fonts.WORK_SANS_REGULAR,
+              lineHeight: RFValue(17),
+              textTransform: 'capitalize',
+              marginRight: RFValue(5)
+            }}
+          >
+            United States
+          </Text>
+          <Feather
+            name="chevron-right"
+            size={22}
+            color={colors.SECONDARY_TEXT}
+          />
+        </RightCover>
+      </Cover>
+      <ListCover>
+        <Cover>
+          <LeftCover>
+            <Title
+              style={{
+                fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                fontSize: RFValue(fonts.LARGE_SIZE + 2),
+                color: colors.BLACK,
+                lineHeight: RFValue(30),
+                marginTop: RFValue(5),
+                textTransform: 'capitalize'
+              }}
+            >
+              {t(`community.passport.cryptocurrency`)}
+            </Title>
+          </LeftCover>
+          <RightCover>
+            <Feather name="more-vertical" size={22} color={colors.BLACK} />
+          </RightCover>
+        </Cover>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 10 }}
+        >
+          <FlatList
+            data={filtered_data}
+            renderItem={({ item }) => (
+              <Portfolio item={item} markets={filtered_markets} />
+            )}
+            ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
+            keyExtractor={(item, index) => String(index)}
+          />
+        </ScrollView>
+      </ListCover>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalState}
+        onRequestClose={() => setModalState(!modalState)}
+      >
+        <Overlay activeOpacity={1} onPress={() => setModalState(!modalState)}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: DEVICE_FULL_HEIGHT / 2.5
+            }}
+          >
+            <View
+              style={{
+                margin: 20,
+                backgroundColor: colors.WHITE,
+                borderRadius: 10,
+                padding: 20,
+                width: DEVICE_FULL_WIDTH * 0.9,
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5
+              }}
+            >
+              <FontAwesome
+                name="credit-card"
+                size={60}
+                color={colors.PRIMARY}
+              />
+              {modalData && modalData.type === 'BANK' && (
+                <Title style={{ textTransform: 'capitalize' }}>
+                  {modalData.bank.paymentInstruction.beneficiaryBankName}
+                </Title>
+              )}
+              <Text>
+                {modalData && modalData.type === 'BANK'
+                  ? modalData.bank.paymentInstruction
+                      .beneficiaryBankAccountNumber
+                  : `xxxx xxxx xxxx ${modalData?.card?.last4}`}
+              </Text>
+              <Button
+                style={{ marginTop: 50 }}
+                labelStyle={{
+                  fontFamily: fonts.WORK_SANS_SEMI_BOLD,
+                  fontSize: RFValue(fonts.MEDIUM_SIZE),
+                  color: colors.RED,
+                  textTransform: 'uppercase'
+                }}
+                contentStyle={{ justifyContent: 'flex-start' }}
+              >
+                {modalData && modalData.type === 'BANK'
+                  ? 'Remove Bank'
+                  : 'Remove Card'}
+              </Button>
             </View>
-          </Overlay>
-        </Modal>
-      </Container>
-    </ScrollView>
+          </View>
+        </Overlay>
+      </Modal>
+    </Container>
   );
 }

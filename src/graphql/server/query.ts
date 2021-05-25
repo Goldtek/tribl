@@ -2046,6 +2046,8 @@ export const GET_FUNDING_SOURCES = gql`
         }
         bank {
           id
+          name
+          accountNumber
           paymentInstruction {
             id
             entityName
