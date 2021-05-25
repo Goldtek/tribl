@@ -150,7 +150,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="CountryIdScreen"
         component={Screens.CountryIdScreen}
         options={{
-          headerTitle: `5 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `4 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
