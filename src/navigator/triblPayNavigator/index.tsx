@@ -170,7 +170,7 @@ export default function TriblPayNavigator(props: TriblPayNavigatorProps) {
         name="BillingDetailsScreen"
         component={Screens.BillingDetailsScreen}
         options={{
-          headerTitle: `6 of 6 ${t(`community.passport.steps`)}`,
+          headerTitle: `5 of 5 ${t(`community.passport.steps`)}`,
           headerTitleContainerStyle: { alignItems: 'center' },
           headerLeftContainerStyle: { marginLeft: 5 },
           headerRightContainerStyle: {
