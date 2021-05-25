@@ -203,7 +203,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   address
@@ -235,7 +235,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   Postal Code
@@ -266,7 +266,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                       fontFamily: fonts.WORK_SANS_BOLD,
                       fontSize: RFValue(fonts.MEDIUM_SIZE),
                       color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
+                      textTransform: 'capitalize'
                     }}
                   >
                     Country
@@ -284,7 +284,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                     backgroundColor: colors.WHITE,
                     borderColor: colors.DISABLED,
                     textTransform: 'capitalize',
-                    borderBottomWidth: isLocal ? 1 : 0
+                    borderBottomWidth: 1
                   }}
                 />
               </InputContainer>
@@ -298,7 +298,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                       fontFamily: fonts.WORK_SANS_BOLD,
                       fontSize: RFValue(fonts.MEDIUM_SIZE),
                       color: colors.PRIMARY_TEXT,
-                      textTransform: 'uppercase'
+                      textTransform: 'capitalize'
                     }}
                   >
                     State
@@ -335,7 +335,7 @@ export default function BillingDetailsScreen(props: ScreenProp) {
                     fontFamily: fonts.WORK_SANS_BOLD,
                     fontSize: RFValue(fonts.MEDIUM_SIZE),
                     color: colors.PRIMARY_TEXT,
-                    textTransform: 'uppercase'
+                    textTransform: 'capitalize'
                   }}
                 >
                   City
